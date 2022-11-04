@@ -2,7 +2,7 @@
 
 This is the frontend for footlight admin application.
 
-This is a creat react app project.
+This is a create react app project.
 
 ## Available Scripts
 
@@ -41,4 +41,40 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
+## Project structure
 
+```
+├── build                   # Production build folder
+├── commitlint.config.js    # Commit linter configuration file (https://github.com/conventional-changelog/commitlint)
+├── eslintrc.json           # Eslint and prettier configurations for formatting code
+├── branch-name-lint.json   # Branch naming conventions configuration
+├── package.json            # project dependencies
+├── public                  # More info about public folder here(https://create-react-app.dev/docs/using-the-public-folder/)
+├── src                     # Source Code
+	├── App.jsx             # Main App component
+	├── assets              # images, icons and etc...
+	├── components          # components folter
+	├── config              # configurations
+    ├── constants           # constants used in the project
+	├── hooks               # custom hooks
+	├── index.css           # main css file
+	├── index.jsx           # Root app script file
+	├── layouts             # custom layout wrappers
+	├── locales             # translations file
+	├── pages               # pages
+	├── router              # routes & file related to routing
+	├── services            # API slices (https://redux-toolkit.js.org/tutorials/rtk-query#create-an-api-service)
+	├── redux               # Redux reducers
+	├── theme               # Configuration for styles
+	└── utils               # Reuseable helper methods
+└── package-lock.json       # dependencies
+
+```
+
+## Component Structure
+
+```
+    MyComponent.jsx             #Component file
+    myComponent.scss            #File for styles
+    index.js                    #File for default export
+```
