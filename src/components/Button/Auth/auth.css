@@ -1,0 +1,17 @@
+.login-form-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 16px;
+  gap: 8px;
+  width: 438px;
+  height: 40px;
+  background: #1b3de6;
+  border-radius: 4px;
+  flex: none;
+  order: 3;
+  align-self: stretch;
+  flex-grow: 0;
+  border: 0px;
+}
