@@ -1,5 +1,6 @@
 import React from 'react';
 import './navigationBar.css';
+import OutlinedButton from '../Button/Outlined';
 
 function NavigationBar() {
   return (
@@ -12,7 +13,9 @@ function NavigationBar() {
         />
         <h6 className="logo-name">Footlight</h6>
       </div>
-      <div>Button</div>
+      <div>
+        <OutlinedButton label="Français" />
+      </div>
     </div>
   );
 }
