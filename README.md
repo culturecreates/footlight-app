@@ -75,6 +75,6 @@ You don't have to ever use `eject`. The curated feature set is suitable for smal
 
 ```
     MyComponent.jsx             #Component file
-    myComponent.scss            #File for styles
+    myComponent.css            #File for styles
     index.js                    #File for default export
 ```

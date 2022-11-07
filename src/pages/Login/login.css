@@ -1,0 +1,14 @@
+.login-wrapper {
+  height: 100%;
+  width: 100%;
+}
+
+.login-wrapper .login-header {
+  height: auto;
+}
+
+.login-wrapper .login-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
