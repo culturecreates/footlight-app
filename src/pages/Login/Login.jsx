@@ -29,6 +29,7 @@ const Login = () => {
               scrollToFirstError={true}
               onFinish={onFinish}>
               <Form.Item
+                className="login-form-item"
                 name="email"
                 label="Email"
                 labelAlign="left"
@@ -41,6 +42,7 @@ const Login = () => {
                 <AuthenticationInput type="email" placeholder="Enter your email address" />
               </Form.Item>
               <Form.Item
+                className="login-form-item"
                 name="password"
                 label="Password"
                 labelAlign="left"
@@ -54,16 +56,16 @@ const Login = () => {
               </Form.Item>
               <Form.Item>
                 <Form.Item name="remember" valuePropName="checked" noStyle>
-                  <Checkbox>Remember me</Checkbox>
+                  <Checkbox>
+                    <span className="login-remember-me">Remember me</span>
+                  </Checkbox>
                 </Form.Item>
               </Form.Item>
 
               <Form.Item>
                 <LoginButton label="Log in" />
               </Form.Item>
-              <a className="login-form-forgot" href="">
-                Reset my password
-              </a>
+              <span className="reset-my-password">Reset my password</span>
             </Form>
           </div>
         </Content>

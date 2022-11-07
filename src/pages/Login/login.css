@@ -17,8 +17,9 @@
 .login-wrapper .login-content .content-wrap {
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: flex-start;
+  gap: 32px;
+  margin-top: 10%;
 }
 
 .login-wrapper .login-content .login-heading {
@@ -30,5 +31,44 @@
 
 .login-wrapper .login-content .login-form {
   max-width: 438px;
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
+.login-wrapper .login-content .login-form-item {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  color: #222732;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.login-wrapper .login-content .reset-my-password {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #1b3de6;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+.login-wrapper .login-content .login-remember-me {
+  margin-left: 8px;
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: #222732;
+}

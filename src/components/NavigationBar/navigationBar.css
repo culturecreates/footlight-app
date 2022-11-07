@@ -10,7 +10,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 85%;
+  justify-content: space-between;
 }
 
 .navigation-bar-wrapper .logo-wrapper {
@@ -33,4 +33,3 @@
   font-size: 20px;
   color: #222732;
 }
-

@@ -5,7 +5,7 @@ function Auth(props) {
   const { label } = props;
   return (
     <Button type="primary" htmlType="submit" className="login-form-button">
-      {label}
+      <span>{label}</span>
     </Button>
   );
 }
