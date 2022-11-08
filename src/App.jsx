@@ -6,7 +6,6 @@ function App() {
   return (
     <React.Fragment>
       <RouterProvider router={router} />
-      hai
     </React.Fragment>
   );
 }
