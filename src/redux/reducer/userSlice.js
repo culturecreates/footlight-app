@@ -1,18 +1,42 @@
 import { createSlice } from '@reduxjs/toolkit';
+import Cookies from 'js-cookie';
 
 const initialState = {
-  value: null
+  _id: '',
+  accessToken: '',
+  refreshToken: '',
+  isEmailVerified: false,
+  lastLogin: '',
+  status: '',
+  firstName: '',
+  lastName: '',
+  profileImage: '',
+  email: '',
+  timezone: '',
+  userRoleInfo: {
+    editingPermissions: [''],
+    name: '',
+    pagePermissions: ['']
+  }
 };
 
 export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    userDetails: (state, action) => {
-      state.value = action.payload;
+    setToken: (state, { payload: { accessToken, refreshToken } }) => {
+      state.accessToken = accessToken;
+      state.refreshToken = refreshToken;
     },
-    logout: (state) => {
-      state.value = null;
+    setUser: (state, action) => {
+      return {
+        ...state,
+        ...action.payload
+      };
+    },
+    clearUser: () => {
+      Cookies.remove('accessToken');
+      return initialState;
     }
   }
 });

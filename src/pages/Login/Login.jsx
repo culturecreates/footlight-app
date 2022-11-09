@@ -6,9 +6,6 @@ import LoginButton from '../../components/Button/Auth';
 import AuthenticationInput from '../../components/Input/Common';
 const { Header, Content } = Layout;
 const Login = () => {
-  const onFinish = (values) => {
-    console.log('Received values of form: ', values);
-  };
   return (
     <>
       <Layout className="login-wrapper">
@@ -26,8 +23,7 @@ const Login = () => {
               }}
               layout="vertical"
               autoComplete="off"
-              scrollToFirstError={true}
-              onFinish={onFinish}>
+              scrollToFirstError={true}>
               <Form.Item
                 className="login-form-item"
                 name="email"
