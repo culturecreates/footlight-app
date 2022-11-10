@@ -4,8 +4,12 @@ import './login.css';
 import NavigationBar from '../../components/NavigationBar';
 import LoginButton from '../../components/Button/Auth';
 import AuthenticationInput from '../../components/Input/Common';
+import { useGetUserRolesQuery } from '../../services/users';
 const { Header, Content } = Layout;
 const Login = () => {
+  const { data, error, isLoading } = useGetUserRolesQuery();
+  console.log(data, error, isLoading);
+
   return (
     <>
       <Layout className="login-wrapper">
