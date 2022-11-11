@@ -1,14 +1,19 @@
-import { Layout, Checkbox, Form } from 'antd';
+import { Layout, Checkbox, Form, Input } from 'antd';
+import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import React from 'react';
 import './login.css';
 import NavigationBar from '../../components/NavigationBar';
 import LoginButton from '../../components/Button/Auth';
-import AuthenticationInput from '../../components/Input/Common';
-import { useGetUserRolesQuery } from '../../services/users';
+// import AuthenticationInput from '../../components/Input/Common';
+// import { useLoginMutation } from '../../services/login';
 const { Header, Content } = Layout;
 const Login = () => {
-  const { data, error, isLoading } = useGetUserRolesQuery();
-  console.log(data, error, isLoading);
+  const [form] = Form.useForm();
+  // const [login] = useLoginMutation();
+
+  const onFinish = (values) => {
+    console.log('Received values of form: ', values);
+  };
 
   return (
     <>
@@ -27,7 +32,9 @@ const Login = () => {
               }}
               layout="vertical"
               autoComplete="off"
-              scrollToFirstError={true}>
+              scrollToFirstError={true}
+              form={form}
+              onFinish={onFinish}>
               <Form.Item
                 className="login-form-item"
                 name="email"
@@ -35,11 +42,15 @@ const Login = () => {
                 labelAlign="left"
                 rules={[
                   {
-                    required: true,
-                    message: 'Please enter your email!',
+                    type: 'email',
+                    message: 'The input is not valid E-mail!'
                   },
+                  {
+                    required: true,
+                    message: 'Please input your E-mail!'
+                  }
                 ]}>
-                <AuthenticationInput type="email" placeholder="Enter your email address" />
+                <Input placeholder="Enter your email id" />
               </Form.Item>
               <Form.Item
                 className="login-form-item"
@@ -52,7 +63,10 @@ const Login = () => {
                     message: 'Please enter your password!',
                   },
                 ]}>
-                <AuthenticationInput type="password" placeholder="Enter your password" />
+                <Input.Password
+                  placeholder="input password"
+                  iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                />
               </Form.Item>
               <Form.Item>
                 <Form.Item name="remember" valuePropName="checked" noStyle>
@@ -63,7 +77,7 @@ const Login = () => {
               </Form.Item>
 
               <Form.Item>
-                <LoginButton label="Log in" />
+                <LoginButton label="Log in" htmlType="htmlType" />
               </Form.Item>
               <span className="reset-my-password">Reset my password</span>
             </Form>

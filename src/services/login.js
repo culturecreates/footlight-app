@@ -5,13 +5,10 @@ export const loginApi = createApi({
   baseQuery: baseQuery,
   endpoints: (builder) => ({
     login: builder.mutation({
-      query: () => ({
-        url: `/login`,
+      query: (credentials) => ({
+        url: 'login',
         method: 'POST',
-        body: {
-          email: 'email',
-          password: 'password'
-        }
+        body: credentials
       })
     })
   })
