@@ -5,14 +5,17 @@ import './login.css';
 import NavigationBar from '../../components/NavigationBar';
 import LoginButton from '../../components/Button/Auth';
 // import AuthenticationInput from '../../components/Input/Common';
-// import { useLoginMutation } from '../../services/login';
+import { useLoginMutation } from '../../services/login';
 const { Header, Content } = Layout;
 const Login = () => {
   const [form] = Form.useForm();
-  // const [login] = useLoginMutation();
+  const [login] = useLoginMutation();
 
   const onFinish = (values) => {
-    console.log('Received values of form: ', values);
+    login({ email: values.email, password: values.password })
+      .unwrap()
+      .then((data) => console.log(data))
+      .catch((error) => console.log(error));
   };
 
   return (
