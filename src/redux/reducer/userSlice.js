@@ -2,8 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import Cookies from 'js-cookie';
 
 const initialState = {
-  accessToken:
-    '"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzA4ZTcxZWVlYjMxZTAwNGQyYjAyMjkiLCJpYXQiOjE2Njc5ODE4MDAsImV4cCI6MTY2ODA2ODIwMH0.PRMhplCWc4Oq2kMot4z8FQujP94Iu5YZ2-9tv-F-qlI',
+  accessToken: '',
   expiredTime: '',
   refreshToken: {
     token: '',
