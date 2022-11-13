@@ -21,8 +21,8 @@ const Login = () => {
   const onFinish = (values) => {
     login({ email: values.email, password: values.password })
       .unwrap()
-      .then((data) => console.log(data))
-      .catch((error) => console.log(error));
+      .then(() => navigate(PathName.Dashboard))
+      .catch((error) => console.log(error.data.message));
   };
 
   useEffect(() => {
@@ -46,6 +46,7 @@ const Login = () => {
               }}
               layout="vertical"
               autoComplete="off"
+              requiredMark={false}
               scrollToFirstError={true}
               form={form}
               onFinish={onFinish}>
@@ -57,14 +58,14 @@ const Login = () => {
                 rules={[
                   {
                     type: 'email',
-                    message: 'The input is not valid E-mail!'
+                    message: 'The input is not a valid email!'
                   },
                   {
                     required: true,
-                    message: 'Please input your E-mail!'
+                    message: 'Please enter your email address!'
                   }
                 ]}>
-                <Input placeholder="Enter your email id" />
+                <Input className="form-item-input-style" placeholder="Enter your email address" />
               </Form.Item>
               <Form.Item
                 className="login-form-item"
@@ -78,7 +79,8 @@ const Login = () => {
                   }
                 ]}>
                 <Input.Password
-                  placeholder="input password"
+                  placeholder="Enter your password"
+                  className="form-item-input-style"
                   iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                 />
               </Form.Item>
