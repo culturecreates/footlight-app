@@ -1,3 +1,5 @@
+@import '~antd/dist/antd.css';
+
 .login-wrapper {
   height: 100%;
   width: 100%;
@@ -5,6 +7,8 @@
 
 .login-wrapper .login-header {
   height: auto;
+  background: none;
+  padding: 0;
 }
 
 .login-wrapper .login-content {
@@ -20,6 +24,7 @@
   justify-content: flex-start;
   gap: 32px;
   margin-top: 10%;
+  padding: 20px;
 }
 
 .login-wrapper .login-content .login-heading {
@@ -27,6 +32,7 @@
   font-weight: 700;
   font-size: 48px;
   line-height: 120%;
+  margin-bottom: 0;
 }
 
 .login-wrapper .login-content .login-form {
@@ -46,6 +52,7 @@
   flex: none;
   order: 0;
   flex-grow: 0;
+  margin-bottom: 0;
 }
 
 .login-wrapper .login-content .reset-my-password {
@@ -71,4 +78,22 @@
   font-size: 16px;
   line-height: 24px;
   color: #222732;
+}
+
+.login-wrapper .login-content .login-form .form-item-input-style {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 8px;
+  gap: 10px;
+  width: 100%;
+  height: 40px;
+  background: #ffffff;
+  border: 1px solid #b6c1c9;
+  border-radius: 4px;
+  flex: none;
+  order: 1;
+  align-self: stretch;
+  flex-grow: 0;
 }
