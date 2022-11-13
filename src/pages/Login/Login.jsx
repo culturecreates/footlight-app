@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 const { Header, Content } = Layout;
 const Login = () => {
   const [form] = Form.useForm();
-  const [login] = useLoginMutation();
+  const [login, { error }] = useLoginMutation();
   const navigate = useNavigate();
   const { accessToken } = useSelector(getUserDetails);
 
@@ -25,7 +25,7 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (accessToken) navigate(PathName.Dashboard);
+    if (!accessToken) navigate(PathName.Dashboard);
   }, [accessToken]);
 
   return (
@@ -54,6 +54,10 @@ const Login = () => {
                 name="email"
                 label="Email"
                 labelAlign="left"
+                {...(error && {
+                  help: error.data.message,
+                  validateStatus: 'error'
+                })}
                 rules={[
                   {
                     type: 'email',
