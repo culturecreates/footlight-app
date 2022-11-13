@@ -1,4 +1,5 @@
 export const PathName = {
   Login: '/',
-  NotFound: '*',
+  Dashboard: '/dashboard',
+  NotFound: '*'
 };
