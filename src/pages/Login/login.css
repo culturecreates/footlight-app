@@ -84,7 +84,7 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center;
   padding: 8px;
   gap: 10px;
   width: 100%;
