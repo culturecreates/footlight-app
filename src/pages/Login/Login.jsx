@@ -61,11 +61,11 @@ const Login = () => {
                 rules={[
                   {
                     type: 'email',
-                    message: 'The input is not a valid email!'
+                    message: 'Please enter a valid email.'
                   },
                   {
                     required: true,
-                    message: 'Please enter your email address!'
+                    message: 'Please enter your email address.'
                   }
                 ]}>
                 <Input className="form-item-input-style" placeholder="Enter your email address" />
@@ -78,8 +78,8 @@ const Login = () => {
                 rules={[
                   {
                     required: true,
-                    message: 'Please enter your password!',
-                  },
+                    message: 'Please enter your password.'
+                  }
                 ]}>
                 <Input.Password
                   placeholder="Enter your password"
