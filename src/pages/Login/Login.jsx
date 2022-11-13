@@ -1,4 +1,4 @@
-import { Layout, Checkbox, Form, Input } from 'antd';
+import { Layout, Checkbox, Form, Input, Button } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import React, { useEffect } from 'react';
 import './login.css';
@@ -21,8 +21,7 @@ const Login = () => {
   const onFinish = (values) => {
     login({ email: values.email, password: values.password })
       .unwrap()
-      .then(() => navigate(PathName.Dashboard))
-      .catch((error) => console.log(error.data.message));
+      .then(() => navigate(PathName.Dashboard));
   };
 
   useEffect(() => {
@@ -95,7 +94,9 @@ const Login = () => {
               <Form.Item>
                 <LoginButton label="Log in" htmlType="htmlType" />
               </Form.Item>
-              <span className="reset-my-password">Reset my password</span>
+              <Button className="reset-my-password" type="text" onClick={() => navigate(PathName.ResetPassword)}>
+                Reset my password
+              </Button>
             </Form>
           </div>
         </Content>
