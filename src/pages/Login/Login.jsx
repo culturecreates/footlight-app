@@ -1,15 +1,22 @@
 import { Layout, Checkbox, Form, Input } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-import React from 'react';
+import React, { useEffect } from 'react';
 import './login.css';
 import NavigationBar from '../../components/NavigationBar';
 import LoginButton from '../../components/Button/Auth';
 // import AuthenticationInput from '../../components/Input/Common';
 import { useLoginMutation } from '../../services/login';
+import { useSelector } from 'react-redux';
+import { getUserDetails } from '../../redux/reducer/userSlice';
+import { PathName } from '../../constants/pathName';
+import { useNavigate } from 'react-router-dom';
+
 const { Header, Content } = Layout;
 const Login = () => {
   const [form] = Form.useForm();
   const [login] = useLoginMutation();
+  const navigate = useNavigate();
+  const { accessToken } = useSelector(getUserDetails);
 
   const onFinish = (values) => {
     login({ email: values.email, password: values.password })
@@ -17,6 +24,10 @@ const Login = () => {
       .then((data) => console.log(data))
       .catch((error) => console.log(error));
   };
+
+  useEffect(() => {
+    if (accessToken) navigate(PathName.Dashboard);
+  }, [accessToken]);
 
   return (
     <>
