@@ -75,6 +75,28 @@ You don't have to ever use `eject`. The curated feature set is suitable for smal
 
 ```
     MyComponent.jsx             #Component file
-    myComponent.scss            #File for styles
+    myComponent.css            #File for styles
     index.js                    #File for default export
+```
+
+## Commit Format
+
+```
+  Real world examples can look like this:
+
+chore: run tests on travis ci
+fix(server): send cors headers
+feat(blog): add comment section
+
+Common types according to commitlint-config-conventional can be:
+
+build
+chore
+docs
+feat
+fix
+refactor
+revert
+style
+test
 ```

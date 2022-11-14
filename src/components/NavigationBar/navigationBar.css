@@ -1,0 +1,36 @@
+.navigation-bar-wrapper {
+  height: 72px;
+  width: 100%;
+  padding: 16px 32px;
+  background: #f9faff;
+  border-bottom: 1px solid #b6c1c9;
+  box-sizing: border-box;
+  left: 0px;
+  top: 0px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navigation-bar-wrapper .logo-wrapper {
+  height: auto;
+  width: auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.navigation-bar-wrapper .footlight-logo {
+  height: 32px;
+  width: 32px;
+}
+
+.navigation-bar-wrapper .logo-name {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  color: #222732;
+  margin-bottom: 0;
+}

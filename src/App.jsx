@@ -1,13 +1,12 @@
-import './App.css';
+import React from 'react';
+import { RouterProvider } from 'react-router-dom';
+import { router } from './router/index';
 
 function App() {
-  console.log(process.env.REACT_APP_API_URL);
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>Footlight-admin app</p>
-      </header>
-    </div>
+    <React.Fragment>
+      <RouterProvider router={router} />
+    </React.Fragment>
   );
 }
 
