@@ -25,7 +25,7 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (accessToken) navigate(PathName.Dashboard);
+    // if (accessToken) navigate(PathName.Dashboard);
   }, [accessToken]);
 
   return (
