@@ -5,9 +5,9 @@ export const usersApi = createApi({
   baseQuery: baseQuery,
   endpoints: (builder) => ({
     getUserRoles: builder.query({
-      query: () => `users/roles`
-    })
-  })
+      query: () => `users/roles`,
+    }),
+  }),
 });
 
 // Export hooks for usage in functional components, which are

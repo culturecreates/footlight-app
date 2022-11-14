@@ -11,7 +11,7 @@ export const loginApi = createApi({
       query: (credentials) => ({
         url: 'login',
         method: 'POST',
-        body: credentials
+        body: credentials,
       }),
       transformResponse: (response) => {
         Cookies.set('accessToken', response.accessToken);
@@ -23,9 +23,9 @@ export const loginApi = createApi({
         if (data) {
           dispatch(setUser(data));
         }
-      }
-    })
-  })
+      },
+    }),
+  }),
 });
 
 export const { useLoginMutation } = loginApi;

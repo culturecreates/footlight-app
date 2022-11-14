@@ -6,7 +6,7 @@ const initialState = {
   expiredTime: '',
   refreshToken: {
     token: '',
-    expiredTime: ''
+    expiredTime: '',
   },
   user: {
     id: '',
@@ -16,8 +16,8 @@ const initialState = {
     profileImage: '',
     roles: [],
     isSuperAdmin: false,
-    interfaceLanguage: ''
-  }
+    interfaceLanguage: '',
+  },
 };
 
 export const userSlice = createSlice({
@@ -30,14 +30,14 @@ export const userSlice = createSlice({
     setUser: (state, action) => {
       return {
         ...state,
-        ...action.payload
+        ...action.payload,
       };
     },
     clearUser: () => {
       Cookies.remove('accessToken');
       return initialState;
-    }
-  }
+    },
+  },
 });
 
 export const { setToken, setUser, clearUser } = userSlice.actions;

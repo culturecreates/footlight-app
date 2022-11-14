@@ -5,6 +5,6 @@ import Login from '../pages/Login';
 export const router = createBrowserRouter([
   {
     path: PathName.Login,
-    element: <Login />
-  }
+    element: <Login />,
+  },
 ]);
