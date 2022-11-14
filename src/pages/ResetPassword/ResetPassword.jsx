@@ -14,15 +14,15 @@ function ResetPassword() {
   const navigate = useNavigate();
 
   return (
-    <Auth>
+    <Auth className="reset-password">
       <span className="back-to-login" onClick={() => navigate(PathName.Login)}>
         <UpOutlined rotate="-90" className="back-to-login-icon" />
         <span className="back-to-login-text">{t('resetPassword.backToLogin')}</span>
       </span>
-      <h3 className="login-heading">{t('resetPassword.header')}</h3>
+      <h3 className="reset-password-heading">{t('resetPassword.header')}</h3>
       <Form
         name="normal_login"
-        className="forgot-password-form"
+        className="reset-password-form"
         initialValues={{
           remember: true,
         }}
@@ -32,7 +32,7 @@ function ResetPassword() {
         scrollToFirstError={true}
         form={form}>
         <Form.Item
-          className="forgot-password-form-item"
+          className="reset-password-form-item"
           name="email"
           label={t('resetPassword.email')}
           labelAlign="left"
@@ -46,13 +46,13 @@ function ResetPassword() {
               message: t('forgotPassword.validations.emptyEmail'),
             },
           ]}>
-          <Input className="forgot-password-form-item-input-style" placeholder={t('resetPassword.emailPlaceHolder')} />
+          <Input className="reset-password-form-item-input-style" placeholder={t('resetPassword.emailPlaceHolder')} />
         </Form.Item>
-        <Form.Item label={t('resetPassword.inputNumber')} className="forgot-password-form-item">
-          <InputNumber className="form-item-input-style" />
+        <Form.Item label={t('resetPassword.inputNumber')} className="reset-password-form-item">
+          <InputNumber className="reset-password-input-number-style" controls={false} />
         </Form.Item>
         <Form.Item
-          className="login-form-item"
+          className="reset-password-form-item"
           name="new-password"
           label={t('resetPassword.newPassword')}
           labelAlign="left"
@@ -64,12 +64,12 @@ function ResetPassword() {
           ]}>
           <Input.Password
             placeholder={t('login.passwordPlaceHolder')}
-            className="form-item-input-style"
+            className="reset-password-form-item-input-style"
             iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
           />
         </Form.Item>
         <Form.Item
-          className="login-form-item"
+          className="reset-password-form-item"
           name="confirm-new-password"
           label={t('resetPassword.confirmNewPassword')}
           labelAlign="left"
@@ -81,15 +81,15 @@ function ResetPassword() {
           ]}>
           <Input.Password
             placeholder={t('login.passwordPlaceHolder')}
-            className="form-item-input-style"
+            className="reset-password-form-item-input-style"
             iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
           />
         </Form.Item>
 
-        <Form.Item className="forgot-password-reset-code-button-form-item">
+        <Form.Item className="reset-password-reset-my-password">
           <LoginButton label={t('resetPassword.resetPassword')} htmlType="htmlType" />
         </Form.Item>
-        <Button className="forgot-password-reset-my-password" type="text">
+        <Button className="reset-password-resend-code" type="text">
           {t('resetPassword.newResetcode')}
         </Button>
       </Form>
