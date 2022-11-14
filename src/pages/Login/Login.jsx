@@ -22,7 +22,7 @@ const Login = () => {
               name="normal_login"
               className="login-form"
               initialValues={{
-                remember: true
+                remember: true,
               }}
               layout="vertical"
               autoComplete="off"
@@ -35,8 +35,8 @@ const Login = () => {
                 rules={[
                   {
                     required: true,
-                    message: 'Please enter your email!'
-                  }
+                    message: 'Please enter your email!',
+                  },
                 ]}>
                 <AuthenticationInput type="email" placeholder="Enter your email address" />
               </Form.Item>
@@ -47,8 +47,8 @@ const Login = () => {
                 rules={[
                   {
                     required: true,
-                    message: 'Please enter your password!'
-                  }
+                    message: 'Please enter your password!',
+                  },
                 ]}>
                 <AuthenticationInput type="password" placeholder="Enter your password" />
               </Form.Item>
