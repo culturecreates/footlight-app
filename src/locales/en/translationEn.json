@@ -1,6 +1,6 @@
 {
   "login": {
-    "header": "Log in to FootLight",
+    "header": "Log in to Footlight",
     "email": "Email",
     "password": "Password",
     "emailPlaceHolder": "Enter your email address",
@@ -13,5 +13,29 @@
       "emptyEmail": "Please enter your email address.",
       "emptyPassword": "Please enter your password."
     }
+  },
+  "forgotPassword": {
+    "backToLogin": "Back to login",
+    "header": "Reset your password",
+    "email": "Email",
+    "emailPlaceHolder": "Enter your email address",
+    "sentResetCodeText": "Send reset code",
+    "alreadyHaveCode": "I already have a reset code",
+    "validations": {
+      "invalidEmail": "Please enter a valid email.",
+      "emptyEmail": "Please enter your email address.",
+      "emptyPassword": "Please enter your password."
+    }
+  },
+  "resetPassword": {
+    "backToLogin": "Back to login",
+    "header": "Check your email",
+    "email": "Email",
+    "emailPlaceHolder": "Enter your email address",
+    "inputNumber": "6-digit reset code",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "resetPassword": "Reset password",
+    "newResetcode": "Send new reset code"
   }
 }

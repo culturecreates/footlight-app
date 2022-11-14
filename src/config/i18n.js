@@ -6,12 +6,12 @@ import fr from '../locales/fr/transalationFr.json';
 i18n.use(initReactI18next).init({
   resources: {
     en: { translation: en },
-    fr: { translation: fr }
+    fr: { translation: fr },
   },
   lng: 'en',
   fallbackLng: 'en',
 
   interpolation: {
-    escapeValue: false
-  }
+    escapeValue: false,
+  },
 });
