@@ -34,7 +34,7 @@ function ForgotPassword() {
         <Form.Item
           className="forgot-password-form-item"
           name="email"
-          label="Email"
+          label={t('forgotPassword.email')}
           labelAlign="left"
           rules={[
             {
