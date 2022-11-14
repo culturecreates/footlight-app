@@ -3,15 +3,15 @@
     "header": "Se connecter à Footlight",
     "email": "Courriel",
     "password": "Mot de passe",
-    "emailPlaceHolder": "Entrez votre adresse email",
-    "passwordPlaceHolder": "Tapez votre mot de passe",
-    "rememberMe": "Souviens-toi de moi",
-    "loginButtonText": "Connexion",
-    "resetMyPasswordText": "Réinitialiser mon mot de passe",
+    "emailPlaceHolder": "Entrez votre courriel",
+    "passwordPlaceHolder": "Entrez votre mot de passe",
+    "rememberMe": "Se souvenir de moi",
+    "loginButtonText": "Se Connecter ",
+    "resetMyPasswordText": "Réinitialiser votre mot de passe",
     "validations": {
-      "invalidEmail": "Veuillez saisir une adresse e-mail valide.",
-      "emptyEmail": "Veuillez saisir votre adresse e-mail.",
-      "emptyPassword": "s'il vous plait entrez votre mot de passe."
+      "invalidEmail": "Veuillez saisir une adresse courriel valide.",
+      "emptyEmail": "Veuillez saisir votre adresse courriel.",
+      "emptyPassword": "S'il vous plait entrez votre mot de passe."
     }
   },
   "forgotPassword": {

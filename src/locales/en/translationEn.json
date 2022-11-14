@@ -5,7 +5,7 @@
     "password": "Password",
     "emailPlaceHolder": "Enter your email address",
     "passwordPlaceHolder": "Enter your password",
-    "rememberMe": "Remember Me",
+    "rememberMe": "Remember me",
     "loginButtonText": "Log in",
     "resetMyPasswordText": "Reset my password",
     "validations": {
