@@ -9,8 +9,8 @@
     "loginButtonText": "Se Connecter ",
     "resetMyPasswordText": "Réinitialiser votre mot de passe",
     "validations": {
-      "invalidEmail": "Veuillez saisir une adresse courriel valide.",
-      "emptyEmail": "Veuillez saisir votre adresse courriel.",
+      "invalidEmail": "Veuillez saisir un courriel valide.",
+      "emptyEmail": "Veuillez saisir votre courriel.",
       "emptyPassword": "S'il vous plait entrez votre mot de passe."
     }
   },
