@@ -20,6 +20,7 @@ function ResetPassword() {
         <span className="back-to-login-text">{t('resetPassword.backToLogin')}</span>
       </span>
       <h3 className="reset-password-heading">{t('resetPassword.header')}</h3>
+
       <Form
         name="normal_login"
         className="reset-password-form"
