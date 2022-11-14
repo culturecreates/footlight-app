@@ -46,7 +46,7 @@ const Login = () => {
         <Form.Item
           className="login-form-item"
           name="email"
-          label="Email"
+          label={t('login.email')}
           labelAlign="left"
           {...(error && {
             help: error.data.message,

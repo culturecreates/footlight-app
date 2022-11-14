@@ -2,7 +2,7 @@
   "login": {
     "header": "Se connecter à Footlight",
     "email": "Courriel",
-    "password": "le mot de passe",
+    "password": "Mot de passe",
     "emailPlaceHolder": "Entrez votre adresse email",
     "passwordPlaceHolder": "Tapez votre mot de passe",
     "rememberMe": "Souviens-toi de moi",
