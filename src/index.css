@@ -1,6 +1,6 @@
 * {
   margin: 0;
-  font-family: 'Roboto';
+  font-family: 'Roboto' !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -12,5 +12,5 @@ body,
 }
 
 body {
-  font-family: 'Roboto';
+  font-family: 'Roboto' !important;
 }
