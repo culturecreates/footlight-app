@@ -22,7 +22,7 @@ function ForgotPassword() {
       <h3 className="login-heading">{t('forgotPassword.header')}</h3>
       <Form
         name="normal_login"
-        className="login-form"
+        className="forgot-password-form"
         initialValues={{
           remember: true,
         }}
@@ -32,7 +32,7 @@ function ForgotPassword() {
         scrollToFirstError={true}
         form={form}>
         <Form.Item
-          className="login-form-item"
+          className="forgot-password-form-item"
           name="email"
           label="Email"
           labelAlign="left"
@@ -46,13 +46,16 @@ function ForgotPassword() {
               message: t('forgotPassword.validations.emptyEmail'),
             },
           ]}>
-          <Input className="form-item-input-style" placeholder={t('forgotPassword.emailPlaceHolder')} />
+          <Input className="forgot-password-form-item-input-style" placeholder={t('forgotPassword.emailPlaceHolder')} />
         </Form.Item>
 
-        <Form.Item className="reset-code-button-form-item">
+        <Form.Item className="forgot-password-reset-code-button-form-item">
           <LoginButton label={t('forgotPassword.sentResetCodeText')} htmlType="htmlType" />
         </Form.Item>
-        <Button className="reset-my-password" type="text" onClick={() => navigate(PathName.ResetPassword)}>
+        <Button
+          className="forgot-password-reset-my-password"
+          type="text"
+          onClick={() => navigate(PathName.ResetPassword)}>
           {t('forgotPassword.alreadyHaveCode')}
         </Button>
       </Form>
