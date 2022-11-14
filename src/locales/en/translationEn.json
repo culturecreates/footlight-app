@@ -13,5 +13,17 @@
       "emptyEmail": "Please enter your email address.",
       "emptyPassword": "Please enter your password."
     }
+  },
+  "forgotPassword": {
+    "backToLogin": "Back to login",
+    "header": "Reset your password",
+    "emailPlaceHolder": "Enter your email address",
+    "sentResetCodeText": "Send reset code",
+    "alreadyHaveCode": "I already have a reset code",
+    "validations": {
+      "invalidEmail": "Please enter a valid email.",
+      "emptyEmail": "Please enter your email address.",
+      "emptyPassword": "Please enter your password."
+    }
   }
 }
