@@ -33,6 +33,7 @@
   font-size: 48px;
   line-height: 120%;
   margin-bottom: 0;
+  max-width: 438px;
 }
 
 .login-wrapper .login-content .login-form {
