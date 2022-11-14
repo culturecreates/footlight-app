@@ -8,5 +8,5 @@ export const baseQuery = fetchBaseQuery({
       headers.set('authorization', `Bearer ${token}`);
     }
     return headers;
-  }
+  },
 });

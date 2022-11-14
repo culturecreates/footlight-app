@@ -1,33 +1,6 @@
 @import '~antd/dist/antd.css';
 
-.login-wrapper {
-  height: 100%;
-  width: 100%;
-}
-
-.login-wrapper .login-header {
-  height: auto;
-  background: none;
-  padding: 0;
-}
-
-.login-wrapper .login-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: #ffffff;
-}
-
-.login-wrapper .login-content .content-wrap {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 32px;
-  margin-top: 10%;
-  padding: 20px;
-}
-
-.login-wrapper .login-content .login-heading {
+.login-heading {
   font-style: normal;
   font-weight: 700;
   font-size: 48px;
@@ -36,14 +9,14 @@
   max-width: 438px;
 }
 
-.login-wrapper .login-content .login-form {
+.login-form {
   max-width: 438px;
   gap: 10px;
   display: flex;
   flex-direction: column;
 }
 
-.login-wrapper .login-content .login-form-item {
+.login-form-item {
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 700;
@@ -56,7 +29,7 @@
   margin-bottom: 0;
 }
 
-.login-wrapper .login-content .reset-my-password {
+.reset-my-password {
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 600;
@@ -71,7 +44,7 @@
   order: 0;
   flex-grow: 0;
 }
-.login-wrapper .login-content .login-remember-me {
+.login-remember-me {
   margin-left: 8px;
   font-family: 'Roboto';
   font-style: normal;
@@ -81,7 +54,7 @@
   color: #222732;
 }
 
-.login-wrapper .login-content .login-form .form-item-input-style {
+.login-form .form-item-input-style {
   box-sizing: border-box;
   display: flex;
   flex-direction: row;

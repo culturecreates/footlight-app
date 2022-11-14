@@ -13,5 +13,17 @@
       "emptyEmail": "Veuillez saisir votre adresse e-mail.",
       "emptyPassword": "s'il vous plait entrez votre mot de passe."
     }
+  },
+  "forgotPassword": {
+    "backToLogin": "Retour à la connection",
+    "header": "Réinitialiser votre mot de passe",
+    "emailPlaceHolder": "Entrez votre adresse email",
+    "sentResetCodeText": "Envoyer",
+    "alreadyHaveCode": "J'ai déjà un code",
+    "validations": {
+      "invalidEmail": "Veuillez saisir une adresse e-mail valide.",
+      "emptyEmail": "Veuillez saisir votre adresse e-mail.",
+      "emptyPassword": "s'il vous plait entrez votre mot de passe."
+    }
   }
 }

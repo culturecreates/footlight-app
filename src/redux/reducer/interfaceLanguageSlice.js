@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import Cookies from 'js-cookie';
 
 const initialState = {
-  language: 'en'
+  language: 'en',
 };
 
 export const interfaceLanguageSlice = createSlice({
@@ -12,8 +12,8 @@ export const interfaceLanguageSlice = createSlice({
     setInterfaceLanguage: (state, action) => {
       Cookies.set('interfaceLanguage', action.payload);
       state.language = action.payload;
-    }
-  }
+    },
+  },
 });
 
 export const { setInterfaceLanguage } = interfaceLanguageSlice.actions;
