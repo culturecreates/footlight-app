@@ -1,0 +1,17 @@
+{
+  "login": {
+    "header": "Log in to FootLight",
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceHolder": "Enter your email address",
+    "passwordPlaceHolder": "Enter your password",
+    "rememberMe": "Remember Me",
+    "loginButtonText": "Log in",
+    "resetMyPasswordText": "Reset my password",
+    "validations": {
+      "invalidEmail": "Please enter a valid email.",
+      "emptyEmail": "Please enter your email address.",
+      "emptyPassword": "Please enter your password."
+    }
+  }
+}
