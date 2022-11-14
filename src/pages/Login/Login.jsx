@@ -92,7 +92,7 @@ const Login = () => {
         <Form.Item>
           <LoginButton label={t('login.loginButtonText')} htmlType="htmlType" />
         </Form.Item>
-        <Button className="reset-my-password" type="text" onClick={() => navigate(PathName.ResetPassword)}>
+        <Button className="reset-my-password" type="text" onClick={() => navigate(PathName.ForgotPassword)}>
           {t('login.resetMyPasswordText')}
         </Button>
       </Form>

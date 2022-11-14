@@ -15,7 +15,7 @@ function ForgotPassword() {
 
   return (
     <Auth>
-      <span className="back-to-login">
+      <span className="back-to-login" onClick={() => navigate(PathName.Login)}>
         <UpOutlined rotate="-90" className="back-to-login-icon" />
         <span className="back-to-login-text">{t('forgotPassword.backToLogin')}</span>
       </span>
@@ -49,7 +49,7 @@ function ForgotPassword() {
           <Input className="form-item-input-style" placeholder={t('forgotPassword.emailPlaceHolder')} />
         </Form.Item>
 
-        <Form.Item>
+        <Form.Item className="reset-code-button-form-item">
           <LoginButton label={t('forgotPassword.sentResetCodeText')} htmlType="htmlType" />
         </Form.Item>
         <Button className="reset-my-password" type="text" onClick={() => navigate(PathName.ResetPassword)}>
