@@ -1,7 +1,7 @@
 {
   "login": {
     "header": "Se connecter à Footlight",
-    "email": "Email",
+    "email": "Courriel",
     "password": "le mot de passe",
     "emailPlaceHolder": "Entrez votre adresse email",
     "passwordPlaceHolder": "Tapez votre mot de passe",
@@ -17,6 +17,7 @@
   "forgotPassword": {
     "backToLogin": "Retour à la connection",
     "header": "Réinitialiser votre mot de passe",
+    "email": "Courriel",
     "emailPlaceHolder": "Entrez votre adresse email",
     "sentResetCodeText": "Envoyer",
     "alreadyHaveCode": "J'ai déjà un code",
@@ -25,5 +26,16 @@
       "emptyEmail": "Veuillez saisir votre adresse e-mail.",
       "emptyPassword": "s'il vous plait entrez votre mot de passe."
     }
+  },
+  "resetPassword": {
+    "backToLogin": "Retour à la connection",
+    "header": "Vérifiez votre courriel",
+    "email": "Courriel",
+    "emailPlaceHolder": "Entrez votre adresse email",
+    "inputNumber": "Code de réinitialisation à 6 chiffres",
+    "newPassword": "Nouveau mot de passe",
+    "confirmNewPassword": "Confirmer votre nouveau mot de passe",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "newResetcode": "Envoyer un nouveau code de réinitialisation"
   }
 }
