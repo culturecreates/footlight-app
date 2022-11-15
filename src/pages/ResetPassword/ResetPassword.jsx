@@ -21,9 +21,7 @@ function ResetPassword() {
       email: values.email,
       newPassword: values.confirmNewPassword,
       oneTimePassword: values.oneTimePassword,
-    })
-      .then((data) => console.log(data))
-      .catch((error) => console.log(error));
+    }).then(() => navigate(PathName.Login));
   };
   return (
     <Auth className="reset-password">
@@ -106,6 +104,14 @@ function ResetPassword() {
               required: true,
               message: t('login.validations.emptyPassword'),
             },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('newPassword') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('The two passwords that you entered do not match!'));
+              },
+            }),
           ]}>
           <Input.Password
             placeholder={t('login.passwordPlaceHolder')}
@@ -117,7 +123,7 @@ function ResetPassword() {
         <Form.Item className="reset-password-reset-my-password">
           <LoginButton label={t('resetPassword.resetPassword')} htmlType="htmlType" />
         </Form.Item>
-        <Button className="reset-password-resend-code" type="text">
+        <Button className="reset-password-resend-code" type="text" onClick={() => navigate(PathName.ForgotPassword)}>
           {t('resetPassword.newResetcode')}
         </Button>
       </Form>
