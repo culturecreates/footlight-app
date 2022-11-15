@@ -7,11 +7,19 @@ import Auth from '../../layout/Auth';
 import './forgotPassword.css';
 import LoginButton from '../../components/Button/Auth';
 import { PathName } from '../../constants/pathName';
+import { useForgotPasswordMutation } from '../../services/users';
 
 function ForgotPassword() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const [forgotPassword, { error }] = useForgotPasswordMutation();
+
+  const onFinish = (values) => {
+    forgotPassword(values.email)
+      .unwrap()
+      .then(() => navigate(PathName.ResetPassword));
+  };
 
   return (
     <Auth>
@@ -30,12 +38,17 @@ function ForgotPassword() {
         autoComplete="off"
         requiredMark={false}
         scrollToFirstError={true}
-        form={form}>
+        form={form}
+        onFinish={onFinish}>
         <Form.Item
           className="forgot-password-form-item"
           name="email"
           label={t('forgotPassword.email')}
           labelAlign="left"
+          {...(error && {
+            help: error.data.message,
+            validateStatus: 'error',
+          })}
           rules={[
             {
               type: 'email',
