@@ -21,6 +21,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "start": "env-cmd -f .env.staging react-scripts start",
     "start:staging": "env-cmd -f .env.staging react-scripts start",
     "start:production": "env-cmd -f .env.production react-scripts start",
     "build:staging": "env-cmd -f .env.staging react-scripts build",
@@ -30,6 +31,10 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
+  },
+  "engines": {
+    "node": ">=15.0.0",
+    "npm": ">=8.0.0"
   },
   "eslintConfig": {
     "extends": [
