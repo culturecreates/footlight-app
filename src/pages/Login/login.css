@@ -71,3 +71,7 @@
   align-self: stretch;
   flex-grow: 0;
 }
+
+.login-form .form-item-input-style input[type='password'] {
+  margin-left: -10px;
+}
