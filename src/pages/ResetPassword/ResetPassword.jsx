@@ -7,12 +7,24 @@ import Auth from '../../layout/Auth';
 import './resetPassword.css';
 import LoginButton from '../../components/Button/Auth';
 import { PathName } from '../../constants/pathName';
+import { useResetPasswordMutation } from '../../services/users';
 
 function ResetPassword() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const [resetPassword] = useResetPasswordMutation();
 
+  const onFinish = (values) => {
+    console.log(values);
+    resetPassword({
+      email: values.email,
+      newPassword: values.confirmNewPassword,
+      oneTimePassword: values.oneTimePassword,
+    })
+      .then((data) => console.log(data))
+      .catch((error) => console.log(error));
+  };
   return (
     <Auth className="reset-password">
       <span className="back-to-login" onClick={() => navigate(PathName.Login)}>
@@ -20,6 +32,7 @@ function ResetPassword() {
         <span className="back-to-login-text">{t('resetPassword.backToLogin')}</span>
       </span>
       <h3 className="reset-password-heading">{t('resetPassword.header')}</h3>
+      <p className="reset-password-subheading">{t('resetPassword.subHeading')}</p>
 
       <Form
         name="normal_login"
@@ -31,7 +44,8 @@ function ResetPassword() {
         autoComplete="off"
         requiredMark={false}
         scrollToFirstError={true}
-        form={form}>
+        form={form}
+        onFinish={onFinish}>
         <Form.Item
           className="reset-password-form-item"
           name="email"
@@ -40,27 +54,40 @@ function ResetPassword() {
           rules={[
             {
               type: 'email',
-              message: t('forgotPassword.validations.invalidEmail'),
+              message: t('resetPassword.validations.invalidEmail'),
             },
             {
               required: true,
-              message: t('forgotPassword.validations.emptyEmail'),
+              message: t('resetPassword.validations.emptyEmail'),
             },
           ]}>
           <Input className="reset-password-form-item-input-style" placeholder={t('resetPassword.emailPlaceHolder')} />
         </Form.Item>
-        <Form.Item label={t('resetPassword.inputNumber')} className="reset-password-form-item">
-          <InputNumber className="reset-password-input-number-style" controls={false} />
+        <Form.Item
+          label={t('resetPassword.inputNumber')}
+          name="oneTimePassword"
+          rules={[
+            {
+              required: true,
+              message: 'Please enter the 6-digit reset code',
+            },
+          ]}
+          className="reset-password-form-item">
+          <InputNumber
+            className="reset-password-input-number-style"
+            controls={false}
+            placeholder={t('resetPassword.inputNumberPlaceholder')}
+          />
         </Form.Item>
         <Form.Item
           className="reset-password-form-item"
-          name="new-password"
+          name="newPassword"
           label={t('resetPassword.newPassword')}
           labelAlign="left"
           rules={[
             {
               required: true,
-              message: t('login.validations.emptyPassword'),
+              message: t('resetPassword.validations.emptyPassword'),
             },
           ]}>
           <Input.Password
@@ -71,7 +98,7 @@ function ResetPassword() {
         </Form.Item>
         <Form.Item
           className="reset-password-form-item"
-          name="confirm-new-password"
+          name="confirmNewPassword"
           label={t('resetPassword.confirmNewPassword')}
           labelAlign="left"
           rules={[

@@ -30,12 +30,19 @@
   "resetPassword": {
     "backToLogin": "Retour à la connection",
     "header": "Vérifiez votre courriel",
+    "subHeading": "Saisissez votre code de réinitialisation à 6 chiffres. Créez et confirmez votre nouveau mot de passe.",
     "email": "Courriel",
     "emailPlaceHolder": "Entrez votre courriel",
     "inputNumber": "Code de réinitialisation à 6 chiffres",
+    "inputNumberPlaceholder": "Entrer votre code",
     "newPassword": "Nouveau mot de passe",
     "confirmNewPassword": "Confirmer votre nouveau mot de passe",
     "resetPassword": "Réinitialiser le mot de passe",
-    "newResetcode": "Envoyer un nouveau code de réinitialisation"
+    "newResetcode": "Envoyer un nouveau code de réinitialisation",
+    "validations": {
+        "invalidEmail": "Veuillez saisir un courriel valide.",
+        "emptyEmail": "Veuillez saisir votre courriel.",
+        "emptyPassword": "S'il vous plait entrez votre mot de passe."
+      }
   }
 }

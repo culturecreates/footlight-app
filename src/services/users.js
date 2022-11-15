@@ -16,9 +16,19 @@ export const usersApi = createApi({
         };
       },
     }),
+    resetPassword: builder.mutation({
+      query: (body) => {
+        console.log(body);
+        return {
+          url: `users/reset-password`,
+          method: 'POST',
+          body,
+        };
+      },
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetUserRolesQuery, useForgotPasswordMutation } = usersApi;
+export const { useGetUserRolesQuery, useForgotPasswordMutation, useResetPasswordMutation } = usersApi;
