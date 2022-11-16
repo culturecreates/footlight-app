@@ -1,5 +1,13 @@
 @import '~antd/dist/antd.css';
 
+.login-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  gap: 32px;
+  position: relative;
+}
 .login-heading {
   font-style: normal;
   font-weight: 700;

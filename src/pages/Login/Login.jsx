@@ -30,72 +30,75 @@ const Login = () => {
 
   return (
     <Auth>
-      <h3 className="login-heading">{t('login.header')}</h3>
-      <Form
-        name="normal_login"
-        className="login-form"
-        initialValues={{
-          remember: true,
-        }}
-        layout="vertical"
-        autoComplete="off"
-        requiredMark={false}
-        scrollToFirstError={true}
-        form={form}
-        onFinish={onFinish}>
-        <Form.Item
-          className="login-form-item"
-          name="email"
-          label={t('login.email')}
-          labelAlign="left"
-          {...(error && {
-            help: error.data.message,
-            validateStatus: 'error',
-          })}
-          rules={[
-            {
-              type: 'email',
-              message: t('login.validations.invalidEmail'),
-            },
-            {
-              required: true,
-              message: t('login.validations.emptyEmail'),
-            },
-          ]}>
-          <Input className="form-item-input-style" placeholder={t('login.emailPlaceHolder')} />
-        </Form.Item>
-        <Form.Item
-          className="login-form-item"
-          name="password"
-          label={t('login.password')}
-          labelAlign="left"
-          rules={[
-            {
-              required: true,
-              message: t('login.validations.emptyPassword'),
-            },
-          ]}>
-          <Input.Password
-            placeholder={t('login.passwordPlaceHolder')}
-            className="form-item-input-style"
-            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-          />
-        </Form.Item>
-        <Form.Item>
-          <Form.Item name="remember" valuePropName="checked" noStyle>
-            <Checkbox>
-              <span className="login-remember-me">{t('login.rememberMe')}</span>
-            </Checkbox>
+      <div className="login-page-wrapper">
+        {' '}
+        <h3 className="login-heading">{t('login.header')}</h3>
+        <Form
+          name="normal_login"
+          className="login-form"
+          initialValues={{
+            remember: true,
+          }}
+          layout="vertical"
+          autoComplete="off"
+          requiredMark={false}
+          scrollToFirstError={true}
+          form={form}
+          onFinish={onFinish}>
+          <Form.Item
+            className="login-form-item"
+            name="email"
+            label={t('login.email')}
+            labelAlign="left"
+            {...(error && {
+              help: error.data.message,
+              validateStatus: 'error',
+            })}
+            rules={[
+              {
+                type: 'email',
+                message: t('login.validations.invalidEmail'),
+              },
+              {
+                required: true,
+                message: t('login.validations.emptyEmail'),
+              },
+            ]}>
+            <Input className="form-item-input-style" placeholder={t('login.emailPlaceHolder')} />
           </Form.Item>
-        </Form.Item>
+          <Form.Item
+            className="login-form-item"
+            name="password"
+            label={t('login.password')}
+            labelAlign="left"
+            rules={[
+              {
+                required: true,
+                message: t('login.validations.emptyPassword'),
+              },
+            ]}>
+            <Input.Password
+              placeholder={t('login.passwordPlaceHolder')}
+              className="form-item-input-style"
+              iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+            />
+          </Form.Item>
+          <Form.Item>
+            <Form.Item name="remember" valuePropName="checked" noStyle>
+              <Checkbox>
+                <span className="login-remember-me">{t('login.rememberMe')}</span>
+              </Checkbox>
+            </Form.Item>
+          </Form.Item>
 
-        <Form.Item>
-          <LoginButton label={t('login.loginButtonText')} htmlType="htmlType" />
-        </Form.Item>
-        <Button className="reset-my-password" type="text" onClick={() => navigate(PathName.ForgotPassword)}>
-          {t('login.resetMyPasswordText')}
-        </Button>
-      </Form>
+          <Form.Item>
+            <LoginButton label={t('login.loginButtonText')} htmlType="htmlType" />
+          </Form.Item>
+          <Button className="reset-my-password" type="text" onClick={() => navigate(PathName.ForgotPassword)}>
+            {t('login.resetMyPasswordText')}
+          </Button>
+        </Form>
+      </div>
     </Auth>
   );
 };

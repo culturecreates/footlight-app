@@ -10,9 +10,18 @@ export const usersApi = createApi({
     forgotPassword: builder.mutation({
       query: (email) => {
         return {
-          url: `users/forgot-password`,
-          method: 'POST',
+          url: `users/recover-password`,
+          method: 'PATCH',
           body: { email },
+        };
+      },
+    }),
+    resetPassword: builder.mutation({
+      query: (body) => {
+        return {
+          url: `users/reset-password`,
+          method: 'PATCH',
+          body,
         };
       },
     }),
@@ -21,4 +30,4 @@ export const usersApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetUserRolesQuery, useForgotPasswordMutation } = usersApi;
+export const { useGetUserRolesQuery, useForgotPasswordMutation, useResetPasswordMutation } = usersApi;
