@@ -37,6 +37,7 @@
     "inputNumberPlaceholder": "Entrer votre code",
     "newPassword": "Nouveau mot de passe",
     "confirmNewPassword": "Confirmer votre nouveau mot de passe",
+    "passwordPlaceHolder": "Entrez votre mot de passe",
     "resetPassword": "Réinitialiser le mot de passe",
     "newResetcode": "Envoyer un nouveau code de réinitialisation",
     "validations": {

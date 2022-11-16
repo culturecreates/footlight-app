@@ -36,6 +36,7 @@
     "inputNumber": "6-digit reset code",
     "inputNumberPlaceholder": "Enter your code",
     "newPassword": "New Password",
+    "passwordPlaceHolder": "Enter your password",
     "confirmNewPassword": "Confirm New Password",
     "resetPassword": "Reset password",
     "newResetcode": "Send new reset code",
