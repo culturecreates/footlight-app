@@ -24,7 +24,11 @@ function ResetPassword() {
       email: values.email,
       newPassword: values.confirmNewPassword,
       oneTimePassword: values.oneTimePassword,
-    }).then(() => navigate(PathName.Login));
+    })
+      .then(() => {
+        navigate(PathName.Login);
+      })
+      .catch((error) => console.log(error));
   };
   return (
     <Auth>

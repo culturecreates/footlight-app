@@ -10,8 +10,8 @@ export const usersApi = createApi({
     forgotPassword: builder.mutation({
       query: (email) => {
         return {
-          url: `users/forgot-password`,
-          method: 'POST',
+          url: `users/recover-password`,
+          method: 'PATCH',
           body: { email },
         };
       },
@@ -20,7 +20,7 @@ export const usersApi = createApi({
       query: (body) => {
         return {
           url: `users/reset-password`,
-          method: 'POST',
+          method: 'PATCH',
           body,
         };
       },
