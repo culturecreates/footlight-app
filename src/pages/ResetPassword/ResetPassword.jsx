@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Form, Input, Button, InputNumber } from 'antd';
 import { UpOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,6 @@ import './resetPassword.css';
 import LoginButton from '../../components/Button/Auth';
 import { PathName } from '../../constants/pathName';
 import { useResetPasswordMutation } from '../../services/users';
-import { usePasswordValidation } from '../../hooks/usePasswordValidation';
 import Auth from '../../layout/Auth';
 
 function ResetPassword() {
@@ -15,8 +14,6 @@ function ResetPassword() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [resetPassword, { error }] = useResetPasswordMutation();
-  const [password, setPassword] = useState();
-  const [validLength, hasNumber, upperCase, lowerCase, specialChar] = usePasswordValidation(password);
 
   const onFinish = (values) => {
     console.log(values);
@@ -98,23 +95,11 @@ function ResetPassword() {
                 required: true,
                 message: t('resetPassword.validations.emptyPassword'),
               },
-              () => ({
-                validator() {
-                  if (validLength && hasNumber && upperCase && lowerCase && specialChar) return Promise.resolve();
-                  else
-                    return Promise.reject(
-                      new Error(
-                        'The password must contain atleast 8 characters,including an uppercase,a lowercase,a number and a special character.',
-                      ),
-                    );
-                },
-              }),
             ]}>
             <Input.Password
               placeholder={t('resetPassword.passwordPlaceHolder')}
               className="reset-password-form-item-input-style"
               iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-              onChange={() => setPassword(event.target.value)}
             />
           </Form.Item>
           <Form.Item
