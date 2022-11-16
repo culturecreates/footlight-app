@@ -14,7 +14,7 @@ function ResetPassword() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const navigate = useNavigate();
-  const [resetPassword] = useResetPasswordMutation();
+  const [resetPassword, { error }] = useResetPasswordMutation();
   const [password, setPassword] = useState();
   const [validLength, hasNumber, upperCase, lowerCase, specialChar] = usePasswordValidation(password);
 
@@ -24,11 +24,11 @@ function ResetPassword() {
       email: values.email,
       newPassword: values.confirmNewPassword,
       oneTimePassword: values.oneTimePassword,
-    })
-      .then(() => {
+    }).then((response) => {
+      if (response.StatusCode == 202) {
         navigate(PathName.Login);
-      })
-      .catch((error) => console.log(error));
+      }
+    });
   };
   return (
     <Auth>
@@ -71,6 +71,10 @@ function ResetPassword() {
           <Form.Item
             label={t('resetPassword.inputNumber')}
             name="oneTimePassword"
+            {...(error && {
+              help: error.data.message,
+              validateStatus: 'error',
+            })}
             rules={[
               {
                 required: true,

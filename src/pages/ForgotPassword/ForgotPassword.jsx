@@ -18,7 +18,11 @@ function ForgotPassword() {
   const onFinish = (values) => {
     forgotPassword(values.email)
       .unwrap()
-      .then(() => navigate(PathName.ResetPassword));
+      .then((response) => {
+        if (response.StatusCode == 202) {
+          navigate(PathName.ResetPassword);
+        }
+      });
   };
 
   return (
