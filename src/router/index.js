@@ -14,12 +14,13 @@ export const router = createBrowserRouter([
     path: PathName.ForgotPassword,
     element: <ForgotPassword />,
   },
-  {
-    path: PathName.Dashboard,
-    element: <Dashboard />,
-  },
+
   {
     path: PathName.ResetPassword,
     element: <ResetPassword />,
+  },
+  {
+    path: PathName.Dashboard,
+    element: <Dashboard />,
   },
 ]);

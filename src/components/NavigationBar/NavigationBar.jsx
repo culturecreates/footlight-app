@@ -3,11 +3,15 @@ import './navigationBar.css';
 import OutlinedButton from '../Button/Outlined';
 import { setInterfaceLanguage } from '../../redux/reducer/interfaceLanguageSlice';
 import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { getUserDetails } from '../../redux/reducer/userSlice';
 import i18n from 'i18next';
 
 function NavigationBar() {
   const dispatch = useDispatch();
   const [changeLanguageTo, setchangeLanguageTo] = useState('Français');
+  const { accessToken } = useSelector(getUserDetails);
+
   const changeLanguageHandler = (event) => {
     if (event.target.outerText === 'Français') {
       dispatch(setInterfaceLanguage('fr'));
@@ -30,7 +34,11 @@ function NavigationBar() {
         <h6 className="logo-name">Footlight</h6>
       </div>
       <div>
-        <OutlinedButton label={changeLanguageTo} onClick={(event) => changeLanguageHandler(event)} />
+        {accessToken ? (
+          <>hai</>
+        ) : (
+          <OutlinedButton label={changeLanguageTo} onClick={(event) => changeLanguageHandler(event)} />
+        )}
       </div>
     </div>
   );
