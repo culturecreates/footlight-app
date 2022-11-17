@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import NavigationBar from '../../components/NavigationBar';
+import NavigationBar from '../../components/NavigationBar/Login';
 import { Layout } from 'antd';
 import './auth.css';
 

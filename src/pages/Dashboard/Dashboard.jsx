@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './dashboard.css';
 import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu } from 'antd';
-import NavigationBar from '../../components/NavigationBar';
+import NavigationBar from '../../components/NavigationBar/Dashboard';
 
 const { Header, Content, Sider } = Layout;
 
@@ -26,7 +26,7 @@ function Dashboard() {
   const [collapsed, setCollapsed] = useState(false);
   return (
     <Layout>
-      <Header className="header">
+      <Header className="dashboard-header">
         <NavigationBar />
       </Header>
       <Layout>
@@ -44,7 +44,6 @@ function Dashboard() {
               height: '100%',
               borderRight: 0,
             }}
-            inlineCollapsed={true}
             items={items2}
           />
         </Sider>
