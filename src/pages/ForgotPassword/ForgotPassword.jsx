@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, notification } from 'antd';
 import { UpOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -19,7 +19,12 @@ function ForgotPassword() {
     forgotPassword(values.email)
       .unwrap()
       .then((response) => {
-        if (response.StatusCode == 202) {
+        if (response.statusCode == 202) {
+          //ToDo: Add the description to the locale
+          notification.info({
+            description: 'Password reset code is sent to the email address',
+            placement: 'top',
+          });
           navigate(PathName.ResetPassword);
         }
       });

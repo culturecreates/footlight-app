@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Button, InputNumber } from 'antd';
+import { Form, Input, Button, InputNumber, notification } from 'antd';
 import { UpOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -22,7 +22,12 @@ function ResetPassword() {
       newPassword: values.confirmNewPassword,
       oneTimePassword: values.oneTimePassword,
     }).then((response) => {
-      if (response.StatusCode == 202) {
+      if (response.statusCode == 202) {
+        //ToDo: Add the description to the locale
+        notification.info({
+          description: 'Password has been changed successfully.',
+          placement: 'top',
+        });
         navigate(PathName.Login);
       }
     });
@@ -116,8 +121,7 @@ function ResetPassword() {
                 validator(_, value) {
                   if (!value || getFieldValue('newPassword') === value) {
                     return Promise.resolve();
-                  }
-                  return Promise.reject(new Error('The two passwords that you entered do not match!'));
+                  } else return Promise.reject(new Error('The two passwords that you entered do not match!'));
                 },
               }),
             ]}>
