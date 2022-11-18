@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Button, InputNumber, notification } from 'antd';
+import { Form, Button, InputNumber, notification } from 'antd';
 import { UpOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,8 @@ import LoginButton from '../../components/Button/Auth';
 import { PathName } from '../../constants/pathName';
 import { useResetPasswordMutation } from '../../services/users';
 import Auth from '../../layout/Auth';
+import LoginInput from '../../components/Input/Common';
+import PasswordInput from '../../components/Input/Password';
 
 function ResetPassword() {
   const { t } = useTranslation();
@@ -68,7 +70,7 @@ function ResetPassword() {
                 message: t('resetPassword.validations.emptyEmail'),
               },
             ]}>
-            <Input className="reset-password-form-item-input-style" placeholder={t('resetPassword.emailPlaceHolder')} />
+            <LoginInput placeholder={t('resetPassword.emailPlaceHolder')} />
           </Form.Item>
           <Form.Item
             label={t('resetPassword.inputNumber')}
@@ -101,9 +103,8 @@ function ResetPassword() {
                 message: t('resetPassword.validations.emptyPassword'),
               },
             ]}>
-            <Input.Password
+            <PasswordInput
               placeholder={t('resetPassword.passwordPlaceHolder')}
-              className="reset-password-form-item-input-style"
               iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
             />
           </Form.Item>
@@ -125,9 +126,8 @@ function ResetPassword() {
                 },
               }),
             ]}>
-            <Input.Password
+            <PasswordInput
               placeholder={t('resetPassword.passwordPlaceHolder')}
-              className="reset-password-form-item-input-style"
               iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
             />
           </Form.Item>

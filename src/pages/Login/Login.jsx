@@ -1,4 +1,4 @@
-import { Checkbox, Form, Input, Button } from 'antd';
+import { Checkbox, Form, Button } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import React, { useEffect } from 'react';
 import './login.css';
@@ -10,6 +10,8 @@ import { PathName } from '../../constants/pathName';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Auth from '../../layout/Auth';
+import LoginInput from '../../components/Input/Common';
+import PasswordInput from '../../components/Input/Password';
 
 const Login = () => {
   const { t } = useTranslation();
@@ -19,13 +21,14 @@ const Login = () => {
   const { accessToken } = useSelector(getUserDetails);
 
   const onFinish = (values) => {
+    console.log(values);
     login({ email: values.email, password: values.password })
       .unwrap()
       .then(() => navigate(PathName.Dashboard));
   };
 
   useEffect(() => {
-    if (accessToken) navigate(PathName.Dashboard);
+    // if (accessToken) navigate(PathName.Dashboard);
   }, [accessToken]);
 
   return (
@@ -64,7 +67,7 @@ const Login = () => {
                 message: t('login.validations.emptyEmail'),
               },
             ]}>
-            <Input className="form-item-input-style" placeholder={t('login.emailPlaceHolder')} />
+            <LoginInput placeholder={t('login.emailPlaceHolder')} />
           </Form.Item>
           <Form.Item
             className="login-form-item"
@@ -77,9 +80,8 @@ const Login = () => {
                 message: t('login.validations.emptyPassword'),
               },
             ]}>
-            <Input.Password
+            <PasswordInput
               placeholder={t('login.passwordPlaceHolder')}
-              className="form-item-input-style"
               iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
             />
           </Form.Item>
