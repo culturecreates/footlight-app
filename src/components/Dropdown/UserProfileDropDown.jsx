@@ -2,18 +2,19 @@ import { UserOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { Dropdown, Avatar } from 'antd';
 import React from 'react';
 import './UserProfileDropDown.css';
-import { userNameItems } from '../../constants/userNameItems';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../redux/reducer/userSlice';
+import { userNameItems } from '../../constants/userNameItems';
 
 const UserProfileDropDown = () => {
   const { user } = useSelector(getUserDetails);
 
+  const items = userNameItems;
   return (
     <Dropdown
       className="user-profile-dropdown"
       menu={{
-        userNameItems,
+        items,
       }}
       trigger={['click']}>
       <div className="user-profile-dropwdown-content">
