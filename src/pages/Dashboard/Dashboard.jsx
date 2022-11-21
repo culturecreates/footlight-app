@@ -8,7 +8,7 @@ const { Header, Content } = Layout;
 
 function Dashboard() {
   return (
-    <Layout>
+    <Layout className="dashboard-wrapper">
       <Header className="dashboard-header">
         <NavigationBar />
       </Header>

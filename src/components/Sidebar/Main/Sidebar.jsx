@@ -14,15 +14,11 @@ function Sidebar() {
       key: key,
       icon: item.icon,
       label: item.name,
+      className: 'sidebar-menu-item',
     };
   });
   return (
-    <Sider
-      width={200}
-      className="sidebar-wrapper"
-      collapsible
-      collapsed={collapsed}
-      onCollapse={(value) => setCollapsed(value)}>
+    <Sider width={256} className="sidebar-wrapper" collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
       <Menu
         defaultSelectedKeys={['1']}
         style={{
