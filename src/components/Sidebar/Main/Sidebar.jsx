@@ -24,7 +24,6 @@ function Sidebar() {
       collapsed={collapsed}
       onCollapse={(value) => setCollapsed(value)}>
       <Menu
-        mode="inline"
         defaultSelectedKeys={['1']}
         style={{
           height: '100%',
