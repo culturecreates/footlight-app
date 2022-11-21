@@ -13,6 +13,7 @@ const UserProfileDropDown = () => {
   return (
     <Dropdown
       className="user-profile-dropdown"
+      placement="bottom"
       menu={{
         items,
       }}
