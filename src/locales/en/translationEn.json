@@ -45,5 +45,12 @@
       "emptyEmail": "Please enter your email address.",
       "emptyPassword": "Please enter your password."
     }
+  },
+  "sidebar": {
+    "events": "Events",
+    "places": "Places",
+    "organizations": "Organizations",
+    "taxonomies": "Taxonomies",
+    "settings": "Settings"
   }
 }

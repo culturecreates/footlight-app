@@ -37,7 +37,12 @@ function Sidebar() {
     },
   ];
   return (
-    <Sider width={256} className="sidebar-wrapper" collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
+    <Sider
+      width={256}
+      className="sidebar-wrapper"
+      collapsed={collapsed}
+      onCollapse={(value) => setCollapsed(value)}
+      breakpoint={'lg'}>
       <Menu
         defaultSelectedKeys={['1']}
         style={{
@@ -45,6 +50,7 @@ function Sidebar() {
           borderRight: 0,
         }}
         items={calendarItem}
+        expandIcon={() => <div>hai</div>}
       />
       <Menu
         defaultSelectedKeys={['1']}
