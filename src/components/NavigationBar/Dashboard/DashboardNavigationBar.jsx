@@ -1,6 +1,6 @@
 import React from 'react';
 import './dashboardNavigationBar.css';
-import Dropdown from '../../Dropdown';
+import Dropdown from '../../Dropdown/UserProfile';
 
 function NavigationBar() {
   return (

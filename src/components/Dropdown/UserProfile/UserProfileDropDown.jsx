@@ -3,8 +3,8 @@ import { Dropdown, Avatar } from 'antd';
 import React from 'react';
 import './UserProfileDropDown.css';
 import { useSelector } from 'react-redux';
-import { getUserDetails } from '../../redux/reducer/userSlice';
-import { userNameItems } from '../../constants/userNameItems';
+import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { userNameItems } from '../../../constants/userNameItems';
 
 const UserProfileDropDown = () => {
   const { user } = useSelector(getUserDetails);
