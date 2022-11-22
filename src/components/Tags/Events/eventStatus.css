@@ -1,0 +1,12 @@
+.event-status-tag {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 4px 8px;
+  width: 70px;
+  height: 24px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: capitalize;
+}

@@ -3,6 +3,7 @@ import './dashboard.css';
 import { Layout } from 'antd';
 import NavigationBar from '../../components/NavigationBar/Dashboard';
 import Sidebar from '../../components/Sidebar/Main';
+import EventStatus from '../../components/Tags/Events/EventStatus';
 
 const { Header, Content } = Layout;
 
@@ -25,6 +26,7 @@ function Dashboard() {
               margin: 0,
               minHeight: 280,
             }}>
+            <EventStatus />
             Content
           </Content>
         </Layout>
