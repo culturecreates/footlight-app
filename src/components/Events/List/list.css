@@ -1,0 +1,12 @@
+.event-listing-wrapper {
+  height: 144px;
+}
+
+.event-listing-wrapper .event-list-image {
+  height: 75px;
+  width: 75px;
+}
+
+.event-listing-wrapper .event-info-section {
+  width: 285px;
+}
