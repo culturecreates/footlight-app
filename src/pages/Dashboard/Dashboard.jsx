@@ -1,9 +1,9 @@
 import React from 'react';
 import './dashboard.css';
 import { Layout } from 'antd';
+import { Outlet } from 'react-router-dom';
 import NavigationBar from '../../components/NavigationBar/Dashboard';
 import Sidebar from '../../components/Sidebar/Main';
-import EventStatus from '../../components/Tags/Events/EventStatus';
 
 const { Header, Content } = Layout;
 
@@ -17,17 +17,16 @@ function Dashboard() {
         <Sidebar />
         <Layout
           style={{
-            padding: '0 24px 24px',
+            background: '#ffffff',
           }}>
           <Content
             className="site-layout-background"
             style={{
-              padding: 24,
+              padding: '34px 32px 0px 32px',
               margin: 0,
               minHeight: 280,
             }}>
-            <EventStatus />
-            Content
+            <Outlet />
           </Content>
         </Layout>
       </Layout>

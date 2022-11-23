@@ -5,7 +5,7 @@ import './eventStatus.css';
 function EventStatus(props) {
   return (
     <Tag {...props} className="event-status-tag">
-      magenta
+      {props.label}
     </Tag>
   );
 }

@@ -41,9 +41,21 @@
     "resetPassword": "Réinitialiser le mot de passe",
     "newResetcode": "Envoyer un nouveau code de réinitialisation",
     "validations": {
-        "invalidEmail": "Veuillez saisir un courriel valide.",
-        "emptyEmail": "Veuillez saisir votre courriel.",
-        "emptyPassword": "S'il vous plait entrez votre mot de passe."
-      }
+      "invalidEmail": "Veuillez saisir un courriel valide.",
+      "emptyEmail": "Veuillez saisir votre courriel.",
+      "emptyPassword": "S'il vous plait entrez votre mot de passe."
+    }
+  },
+  "dashboard": {
+    "sidebar": {
+      "events": "Événements",
+      "places": "Lieux",
+      "organizations": "Organisations",
+      "taxonomies": "Taxonomies",
+      "settings": "Paramètres"
+    },
+    "events": {
+      "heading": "Calendrier des événements"
+    }
   }
 }

@@ -8,31 +8,31 @@ const iconStyle = {
 };
 export const sidebarItems = [
   {
-    name: 'Events',
+    name: 'dashboard.sidebar.events',
     path: '/events',
     component: <div>events</div>,
     icon: <CalendarOutlined style={iconStyle} />,
   },
   {
-    name: 'Places',
+    name: 'dashboard.sidebar.places',
     path: '/places',
     component: <div>places</div>,
     icon: <EnvironmentOutlined style={iconStyle} />,
   },
   {
-    name: 'Organizations',
+    name: 'dashboard.sidebar.organizations',
     path: '/organizations',
     component: <div>organizations</div>,
     icon: <Icon component={Organizations} style={iconStyle} />,
   },
   {
-    name: 'Taxonomies',
+    name: 'dashboard.sidebar.taxonomies',
     path: '/taxonomies',
     component: <div>hai</div>,
     icon: <DatabaseOutlined style={iconStyle} />,
   },
   {
-    name: 'Settings',
+    name: 'dashboard.sidebar.settings',
     path: '/settings',
     component: <div>hai</div>,
     icon: <SettingOutlined style={iconStyle} />,

@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import './sidebar.css';
 import { Layout, Menu } from 'antd';
 import { sidebarItems } from '../../../constants/sidebarItems';
+import { useTranslation } from 'react-i18next';
 // import CalendarList from '../../Dropdown/Calendar';
 
 const { Sider } = Layout;
 
 function Sidebar() {
+  const { t } = useTranslation();
+
   const [collapsed, setCollapsed] = useState(false);
 
   const items = sidebarItems.map((item, index) => {
@@ -14,7 +17,7 @@ function Sidebar() {
     return {
       key: key,
       icon: item.icon,
-      label: item.name,
+      label: t(item.name),
       className: 'sidebar-menu-item',
     };
   });

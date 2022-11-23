@@ -4,6 +4,7 @@ import Login from '../pages/Login';
 import ForgotPassword from '../pages/ForgotPassword';
 import Dashboard from '../pages/Dashboard';
 import ResetPassword from '../pages/ResetPassword';
+import Events from '../pages/Dashboard/Events';
 
 export const router = createBrowserRouter([
   {
@@ -22,5 +23,11 @@ export const router = createBrowserRouter([
   {
     path: PathName.Dashboard,
     element: <Dashboard />,
+    children: [
+      {
+        path: ':calendarId/events',
+        element: <Events />,
+      },
+    ],
   },
 ]);
