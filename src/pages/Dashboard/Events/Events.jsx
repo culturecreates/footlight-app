@@ -2,6 +2,7 @@ import React from 'react';
 import './events.css';
 import { Col, Row } from 'antd';
 import { useTranslation } from 'react-i18next';
+import EventsSearch from '../../../components/Search/Events/EventsSearch';
 
 // import EventList from '../../../components/Events/List';
 
@@ -18,7 +19,7 @@ function Events() {
         </Row>
         <Row>
           <Col xs={2} sm={4} md={6} lg={8} xl={10}>
-            Search
+            <EventsSearch placeholder={t('dashboard.events.searchPlaceholder')} />
           </Col>
         </Row>
         <Row>

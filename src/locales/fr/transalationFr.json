@@ -55,7 +55,8 @@
       "settings": "Paramètres"
     },
     "events": {
-      "heading": "Calendrier des événements"
+      "heading": "Calendrier des événements",
+      "searchPlaceholder": "Rechercher un événement"
     }
   }
 }

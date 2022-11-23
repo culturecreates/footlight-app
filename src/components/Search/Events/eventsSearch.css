@@ -1,0 +1,12 @@
+.events-search {
+  width: 256px;
+  height: 40px;
+  background: #ffffff;
+  border: 1px solid #b6c1c9;
+  border-radius: 68px;
+  color: #646d7b;
+}
+
+.events-search .events-search-icon {
+  font-size: 24px;
+}
