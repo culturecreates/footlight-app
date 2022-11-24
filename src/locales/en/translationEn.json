@@ -59,7 +59,12 @@
     },
     "events": {
       "heading": "Event calendar",
-      "searchPlaceholder": "Search an event"
+      "searchPlaceholder": "Search an event",
+      "publishOptions": {
+        "publishEvent": "Publish event",
+        "unpublishEvent": "Unpublish event",
+        "deleteEvent": "Delete event"
+      }
     }
   }
 }

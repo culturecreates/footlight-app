@@ -4,6 +4,7 @@ import { List } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
 import EventStatus from '../../Tags/Events';
 import EventNumber from '../../Tags/EventNumber';
+import EventStatusOptions from '../../Dropdown/EventStatus/EventStatus';
 
 const data = [
   {
@@ -34,7 +35,14 @@ function Lists() {
         pageSize: 3,
       }}
       renderItem={(item, index) => (
-        <List.Item actions={[<MoreOutlined className="event-list-more-icon" key={index} />]}>
+        <List.Item
+          actions={[
+            <EventStatusOptions key={index}>
+              <span>
+                <MoreOutlined className="event-list-more-icon" key={index} />
+              </span>
+            </EventStatusOptions>,
+          ]}>
           <List.Item.Meta
             avatar={<img src="https://joeschmoe.io/api/v1/random" className="event-list-image" />}
             title={

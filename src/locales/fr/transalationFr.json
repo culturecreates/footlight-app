@@ -59,7 +59,12 @@
     },
     "events": {
       "heading": "Calendrier des événements",
-      "searchPlaceholder": "Rechercher un événement"
+      "searchPlaceholder": "Rechercher un événement",
+      "publishOptions": {
+        "publishEvent": "Publier l’événement",
+        "unpublishEvent": "Dépublier l’événement",
+        "deleteEvent": "Supprimer l’événement"
+      }
     }
   }
 }

@@ -1,21 +1,24 @@
 import React from 'react';
 import { Dropdown } from 'antd';
+import { useTranslation } from 'react-i18next';
 import './eventStatus.css';
 
 function EventStatusOptions({ children }) {
+  const { t } = useTranslation();
+
   const items = [
     {
-      label: <a href="https://www.antgroup.com">1st menu item</a>,
+      label: t('dashboard.events.publishOptions.publishEvent'),
       key: '0',
     },
     {
-      label: <a href="https://www.aliyun.com">2nd menu item</a>,
+      label: t('dashboard.events.publishOptions.unpublishEvent'),
       key: '1',
     },
 
     {
-      label: '3rd menu item',
-      key: '3',
+      label: t('dashboard.events.publishOptions.deleteEvent'),
+      key: '2',
     },
   ];
   return (
