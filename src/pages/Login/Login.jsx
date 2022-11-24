@@ -46,6 +46,7 @@ const Login = () => {
           autoComplete="off"
           requiredMark={false}
           scrollToFirstError={true}
+          validateTrigger={'onBlur'}
           form={form}
           onFinish={onFinish}>
           <Form.Item
