@@ -1,42 +1,66 @@
 import React from 'react';
 import './list.css';
-import { Row, Col } from 'antd';
+import { List } from 'antd';
+import { MoreOutlined } from '@ant-design/icons';
 
-function List() {
+const data = [
+  {
+    title: 'Ant Design Title 1',
+  },
+  {
+    title: 'Ant Design Title 2',
+  },
+  {
+    title: 'Ant Design Title 3',
+  },
+  {
+    title: 'Ant Design Title 4',
+  },
+];
+
+function Lists() {
   return (
-    <Row className="event-listing-wrapper">
-      <Col>
-        <img className="event-list-image" />
-      </Col>{' '}
-      <Col>
-        <Row>
-          <Col>date</Col>
-          <Col>events</Col>
-        </Row>
-        <Row>
-          <Col>Title</Col>
-        </Row>
-        <Row>
-          <Col>Place</Col>
-        </Row>
-      </Col>{' '}
-      <Col className="event-info-section">
-        <Row>
-          <Col>empty</Col>
-        </Row>
-        <Row>
-          <Col>status</Col>
-        </Row>
-        <Row>
-          <Col>Created</Col>
-        </Row>
-        <Row>
-          <Col>Updated</Col>
-        </Row>
-      </Col>
-      <Col span={2}>options</Col>
-    </Row>
+    <List
+      itemLayout="horizontal"
+      dataSource={data}
+      bordered={false}
+      pagination={{
+        onChange: (page) => {
+          console.log(page);
+        },
+        pageSize: 3,
+      }}
+      renderItem={(item, index) => (
+        <List.Item actions={[<MoreOutlined style={{ fontSize: '24px' }} key={index} />]}>
+          <List.Item.Meta
+            avatar={<img src="https://joeschmoe.io/api/v1/random" style={{ height: '104px', width: '104px' }} />}
+            title={
+              <div style={{ display: 'flex' }}>
+                <a href="https://ant.design">{item.title}</a>&nbsp;&nbsp;
+                <a href="https://ant.design">{item.title}</a>
+              </div>
+            }
+            description={
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <a href="https://ant.design">{item.title}</a>
+                <a href="https://ant.design">{item.title}</a>
+              </div>
+            }
+          />
+          <List.Item.Meta
+            style={{ textAlign: 'right' }}
+            title={<a href="https://ant.design">{item.title}</a>}
+            description={
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <a href="https://ant.design">{item.title}</a>
+                <a href="https://ant.design">{item.title}</a>
+              </div>
+            }
+          />
+        </List.Item>
+      )}
+    />
   );
 }
 
-export default List;
+export default Lists;

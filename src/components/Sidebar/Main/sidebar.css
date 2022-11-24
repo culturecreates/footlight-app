@@ -9,8 +9,8 @@
 .sidebar-wrapper .sidebar-menu-item {
   border-radius: 8px;
   font-size: 16px;
-  width: 224px;
-  height: 56px;
+  /* width: 224px;
+  height: 56px; */
 }
 .sidebar-wrapper .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
   background-color: #eff2ff;
@@ -20,7 +20,7 @@
 }
 .sidebar-wrapper .sidebar-calendar {
   gap: 8px;
-  width: 224px;
+  /* width: 224px; */
   height: 48px;
   background: rgba(255, 255, 255, 0.005);
   font-weight: 700;

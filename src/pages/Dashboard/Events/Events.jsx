@@ -23,14 +23,11 @@ function Events() {
         </Row>
         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} span={24}>
           <Col span={24}>
-            {[0, 1, 2, 3, 4].map((index) => {
+            {[0].map((index) => {
               return <EventList key={index} />;
             })}
           </Col>
         </Row>
-      </Col>
-      <Col span={4} offset={2}>
-        col-6
       </Col>
     </Row>
   );
