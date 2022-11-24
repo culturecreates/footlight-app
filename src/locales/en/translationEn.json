@@ -25,7 +25,8 @@
       "invalidEmail": "Please enter a valid email.",
       "emptyEmail": "Please enter your email address.",
       "emptyPassword": "Please enter your password."
-    }
+    },
+    "successNotification": "Check your email for your reset code. If you need help, contact admin@culturecreates.com."
   },
   "resetPassword": {
     "backToLogin": "Back to login",
@@ -44,7 +45,8 @@
       "invalidEmail": "Please enter a valid email.",
       "emptyEmail": "Please enter your email address.",
       "emptyPassword": "Please enter your password."
-    }
+    },
+    "successNotification": "Success! Your password has been reset."
   },
   "dashboard": {
     "sidebar": {

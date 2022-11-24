@@ -21,9 +21,8 @@ function ForgotPassword() {
       .unwrap()
       .then((response) => {
         if (response.statusCode == 202) {
-          //ToDo: Add the description to the locale
           notification.info({
-            description: 'Password reset code is sent to the email address',
+            description: t('forgotPassword.successNotification'),
             placement: 'top',
           });
           navigate(PathName.ResetPassword);

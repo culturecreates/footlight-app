@@ -25,9 +25,8 @@ function ResetPassword() {
       oneTimePassword: values.oneTimePassword,
     }).then((response) => {
       if (response.statusCode == 202) {
-        //ToDo: Add the description to the locale
         notification.info({
-          description: 'Password has been changed successfully.',
+          description: t('resetPassword.successNotification'),
           placement: 'top',
         });
         navigate(PathName.Login);

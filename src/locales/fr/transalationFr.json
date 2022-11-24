@@ -25,7 +25,8 @@
       "invalidEmail": "Veuillez saisir un courriel valide.",
       "emptyEmail": "Veuillez saisir votre courriel.",
       "emptyPassword": "S'il vous plait entrez votre mot de passe."
-    }
+    },
+    "successNotification": "Vérifiez votre adresse courriel pour votre code de réinitialisation. Si vous avez besoin d'aide, contactez admin@culturecreates.com."
   },
   "resetPassword": {
     "backToLogin": "Retour à la connection",
@@ -44,7 +45,8 @@
       "invalidEmail": "Veuillez saisir un courriel valide.",
       "emptyEmail": "Veuillez saisir votre courriel.",
       "emptyPassword": "S'il vous plait entrez votre mot de passe."
-    }
+    },
+    "successNotification": "Succès! Votre mot de passe a été réinitialisé."
   },
   "dashboard": {
     "sidebar": {
