@@ -3,7 +3,7 @@ import './sidebar.css';
 import { Layout, Menu } from 'antd';
 import { sidebarItems } from '../../../constants/sidebarItems';
 import { useTranslation } from 'react-i18next';
-// import CalendarList from '../../Dropdown/Calendar';
+import CalendarList from '../../Dropdown/Calendar';
 
 const { Sider } = Layout;
 
@@ -46,14 +46,16 @@ function Sidebar() {
       collapsed={collapsed}
       onCollapse={(value) => setCollapsed(value)}
       breakpoint={('sm', 'xs', 'lg')}>
-      <Menu
-        defaultSelectedKeys={['1']}
-        style={{
-          height: 'auto',
-          borderRight: 0,
-        }}
-        items={calendarItem}
-      />
+      <CalendarList>
+        <Menu
+          defaultSelectedKeys={['1']}
+          style={{
+            height: 'auto',
+            borderRight: 0,
+          }}
+          items={calendarItem}
+        />
+      </CalendarList>
       <Menu
         defaultSelectedKeys={['1']}
         style={{

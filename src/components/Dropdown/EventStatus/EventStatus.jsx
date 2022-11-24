@@ -1,8 +1,8 @@
 import React from 'react';
-import './calendar.css';
 import { Dropdown } from 'antd';
+import './eventStatus.css';
 
-function Calendar({ children }) {
+function EventStatusOptions({ children }) {
   const items = [
     {
       label: <a href="https://www.antgroup.com">1st menu item</a>,
@@ -20,6 +20,7 @@ function Calendar({ children }) {
   ];
   return (
     <Dropdown
+      className="calendar-dropdown-wrapper"
       menu={{
         items,
       }}
@@ -29,4 +30,4 @@ function Calendar({ children }) {
   );
 }
 
-export default Calendar;
+export default EventStatusOptions;

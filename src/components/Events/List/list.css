@@ -1,5 +1,6 @@
 .event-list-wrapper .event-list-more-icon {
   font-size: 24px;
+  cursor: pointer;
 }
 
 .event-list-wrapper .event-list-image {
