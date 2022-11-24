@@ -2,6 +2,7 @@ import React from 'react';
 import './list.css';
 import { List } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
+import EventStatus from '../../Tags/Events';
 
 const data = [
   {
@@ -49,7 +50,7 @@ function Lists() {
           />
           <List.Item.Meta
             style={{ textAlign: 'right' }}
-            title={<a href="https://ant.design">{item.title}</a>}
+            title={<EventStatus label="waiting for approval" />}
             description={
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <a href="https://ant.design">{item.title}</a>
