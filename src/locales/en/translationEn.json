@@ -9,9 +9,9 @@
     "loginButtonText": "Log in",
     "resetMyPasswordText": "Reset my password",
     "validations": {
-      "invalidEmail": "Please enter a valid email.",
-      "emptyEmail": "Please enter your email address.",
-      "emptyPassword": "Please enter your password."
+      "invalidEmail": "Enter a valid email address.",
+      "emptyEmail": "Enter an email address.",
+      "emptyPassword": "Enter your password."
     }
   },
   "forgotPassword": {
@@ -22,8 +22,8 @@
     "sentResetCodeText": "Send reset code",
     "alreadyHaveCode": "I already have a reset code",
     "validations": {
-      "invalidEmail": "Please enter a valid email.",
-      "emptyEmail": "Please enter your email address.",
+      "invalidEmail": "Enter a valid email address.",
+      "emptyEmail": "Enter an email address.",
       "emptyPassword": "Please enter your password."
     },
     "successNotification": "Check your email for your reset code. If you need help, contact admin@culturecreates.com."
@@ -42,9 +42,10 @@
     "resetPassword": "Reset password",
     "newResetcode": "Send new reset code",
     "validations": {
-      "invalidEmail": "Please enter a valid email.",
-      "emptyEmail": "Please enter your email address.",
-      "emptyPassword": "Please enter your password."
+      "invalidEmail": "Enter a valid email address.",
+      "emptyEmail": "Enter an email address.",
+      "emptyPassword": "Enter your password.",
+      "passwordMatch": "The two passwords you entered do not match."
     },
     "successNotification": "Success! Your password has been reset."
   },

@@ -122,7 +122,7 @@ function ResetPassword() {
                 validator(_, value) {
                   if (!value || getFieldValue('newPassword') === value) {
                     return Promise.resolve();
-                  } else return Promise.reject(new Error('The two passwords that you entered do not match!'));
+                  } else return Promise.reject(new Error(t('resetPassword.validations.passwordMatch')));
                 },
               }),
             ]}>
