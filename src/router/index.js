@@ -25,8 +25,24 @@ export const router = createBrowserRouter([
     element: <Dashboard />,
     children: [
       {
-        path: ':calendarId/events',
+        path: `:calendarId${PathName.Events}`,
         element: <Events />,
+      },
+      {
+        path: `:calendarId${PathName.Places}`,
+        element: <div>Places</div>,
+      },
+      {
+        path: `:calendarId${PathName.Organizations}`,
+        element: <div>Organisations</div>,
+      },
+      {
+        path: `:calendarId${PathName.Taxonomies}`,
+        element: <div>Taxonomies</div>,
+      },
+      {
+        path: `:calendarId${PathName.Settings}`,
+        element: <div>Settings</div>,
       },
     ],
   },
