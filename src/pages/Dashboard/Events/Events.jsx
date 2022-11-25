@@ -3,7 +3,7 @@ import './events.css';
 import { Col, Row } from 'antd';
 import { useTranslation } from 'react-i18next';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
-import EventList from '../../../components/Events/List';
+import EventList from '../../../components/List/Events';
 
 function Events() {
   const { t } = useTranslation();
