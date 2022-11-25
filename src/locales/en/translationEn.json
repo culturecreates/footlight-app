@@ -50,6 +50,10 @@
     "successNotification": "Success! Your password has been reset."
   },
   "dashboard": {
+    "topNavigation": {
+      "userProfile": "User Profile",
+      "logOut": "Log out"
+    },
     "sidebar": {
       "events": "Events",
       "places": "Places",

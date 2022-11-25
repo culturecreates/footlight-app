@@ -1,12 +1,12 @@
 import { SettingOutlined, LogoutOutlined } from '@ant-design/icons';
 export const userNameItems = [
   {
-    label: 'User Profile',
+    label: 'dashboard.topNavigation.userProfile',
     icon: <SettingOutlined />,
     key: '0',
   },
   {
-    label: 'Log out',
+    label: 'dashboard.topNavigation.logOut',
     key: '1',
     icon: <LogoutOutlined />,
   },

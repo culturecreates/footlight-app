@@ -5,11 +5,20 @@ import './UserProfileDropDown.css';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { userNameItems } from '../../../constants/userNameItems';
+import { useTranslation } from 'react-i18next';
 
 const UserProfileDropDown = () => {
   const { user } = useSelector(getUserDetails);
 
-  const items = userNameItems;
+  const { t } = useTranslation();
+  const items = userNameItems.map((item, index) => {
+    const key = String(index + 1);
+    return {
+      key: key,
+      label: t(item.label),
+      icon: item.icon,
+    };
+  });
   return (
     <Dropdown
       className="user-profile-dropdown"

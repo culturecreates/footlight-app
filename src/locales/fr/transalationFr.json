@@ -50,6 +50,10 @@
     "successNotification": "Succès! Votre mot de passe a été réinitialisé."
   },
   "dashboard": {
+    "topNavigation": {
+      "userProfile": "Profil",
+      "logOut": "Déconnexion"
+    },
     "sidebar": {
       "events": "Événements",
       "places": "Lieux",
