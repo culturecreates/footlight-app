@@ -2,12 +2,15 @@ import React from 'react';
 import './calendar.css';
 import { Dropdown } from 'antd';
 import { useGetAllCalendarsQuery } from '../../../services/calendar';
+import { useDispatch } from 'react-redux';
+import { setSelectedCalendar } from '../../../redux/reducer/selectedCalendarSlice';
 
 function Calendar({ children }) {
+  const dispatch = useDispatch();
   const { data } = useGetAllCalendarsQuery();
 
-  const items = data?.data?.map((item, index) => {
-    const key = String(index + 1);
+  const items = data?.data?.map((item) => {
+    const key = item?.id;
     return {
       label: (
         <span className="calendar-name-wrapper">
@@ -28,10 +31,10 @@ function Calendar({ children }) {
       ),
     };
   });
-
   const onClick = ({ key }) => {
     //Set params after dashboard in route for the selected calendar
     console.log(key);
+    dispatch(setSelectedCalendar(String(key)));
   };
   return (
     <Dropdown

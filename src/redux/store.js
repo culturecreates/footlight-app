@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage';
 import { persistStore, persistReducer } from 'redux-persist';
 import userReducer from './reducer/userSlice';
 import interfaceLanguageReducer from './reducer/interfaceLanguageSlice';
+import selectedCalendarReducer from './reducer/selectedCalendarSlice';
 import { loginApi } from '../services/login';
 import { usersApi } from '../services/users';
 import { eventsApi } from '../services/events';
@@ -18,6 +19,7 @@ const middlewares = [loginApi.middleware, usersApi.middleware, eventsApi.middlew
 const appReducer = combineReducers({
   user: userReducer,
   interfaceLanguage: interfaceLanguageReducer,
+  selectedCalendar: selectedCalendarReducer,
   [loginApi.reducerPath]: loginApi.reducer,
   [usersApi.reducerPath]: usersApi.reducer,
   [eventsApi.reducerPath]: eventsApi.reducer,
