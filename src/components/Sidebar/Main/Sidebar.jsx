@@ -4,12 +4,15 @@ import { Layout, Menu } from 'antd';
 import { sidebarItems } from '../../../constants/sidebarItems';
 import { useTranslation } from 'react-i18next';
 import CalendarList from '../../Dropdown/Calendar';
+import { useNavigate, useParams } from 'react-router-dom';
+import { PathName } from '../../../constants/pathName';
 
 const { Sider } = Layout;
 
 function Sidebar() {
   const { t } = useTranslation();
-
+  const navigate = useNavigate();
+  let { calendarId } = useParams();
   const [collapsed, setCollapsed] = useState(false);
 
   const items = sidebarItems.map((item, index) => {
@@ -19,6 +22,7 @@ function Sidebar() {
       icon: item.icon,
       label: t(item.name),
       className: 'sidebar-menu-item',
+      path: item.path,
     };
   });
 
@@ -39,6 +43,9 @@ function Sidebar() {
       className: 'sidebar-calendar',
     },
   ];
+  const onSidebarClickHandler = ({ item }) => {
+    navigate(`${PathName.Dashboard}/${calendarId}${item.props.path}`);
+  };
   return (
     <Sider
       width={256}
@@ -63,6 +70,7 @@ function Sidebar() {
           borderRight: 0,
         }}
         items={items}
+        onClick={onSidebarClickHandler}
       />
     </Sider>
   );
