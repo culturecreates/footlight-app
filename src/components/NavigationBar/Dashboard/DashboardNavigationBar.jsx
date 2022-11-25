@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './dashboardNavigationBar.css';
 import { Drawer, List, Avatar, Menu } from 'antd';
 import { useSelector } from 'react-redux';
-// import Dropdown from '../../Dropdown/UserProfile';
+import Dropdown from '../../Dropdown/UserProfile';
 import { MenuOutlined } from '@ant-design/icons';
 import { userNameItems } from '../../../constants/userNameItems';
 import { useTranslation } from 'react-i18next';
@@ -68,8 +68,8 @@ function NavigationBar() {
         />
         <h6 className="logo-name">Footlight</h6>
       </div>
-      {/* <Dropdown /> */}
-      <MenuOutlined onClick={showDrawer} />
+      <Dropdown className="navigation-user-profile-dropdown" />
+      <MenuOutlined onClick={showDrawer} className="navigation-responsive-sidebar-menu" />
       <Drawer
         title={
           <CalendarList>

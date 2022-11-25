@@ -34,3 +34,18 @@
   color: #222732;
   margin-bottom: 0;
 }
+
+.navigation-responsive-sidebar-menu {
+  display: none;
+}
+
+@media only screen and (max-width: 600px) {
+  .navigation-bar-wrapper {
+    padding: 20px 16px 20px 16px;
+  }
+  .navigation-responsive-sidebar-menu {
+    display: inherit;
+    font-size: 24px;
+    color: #1b3de6;
+  }
+}

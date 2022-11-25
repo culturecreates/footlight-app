@@ -36,3 +36,8 @@
 .sidebar-wrapper .sidebar-calendar > span {
   margin-left: 0;
 }
+@media only screen and (max-width: 600px) {
+  .sidebar-wrapper {
+    display: none;
+  }
+}

@@ -21,7 +21,7 @@ function Events() {
             <EventsSearch placeholder={t('dashboard.events.searchPlaceholder')} />
           </Col>
         </Row>
-        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} span={24}>
+        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} span={24} className="events-content">
           <Col span={24}>
             {[0].map((index) => {
               return <EventList key={index} />;

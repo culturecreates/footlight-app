@@ -2,3 +2,13 @@
   font-weight: 700;
   font-size: 34px;
 }
+
+.events-wrapper .events-content {
+  padding-top: 24px;
+}
+
+@media only screen and (max-width: 600px) {
+  .events-wrapper .events-heading {
+    white-space: nowrap;
+  }
+}

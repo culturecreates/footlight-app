@@ -26,3 +26,9 @@
   align-items: center;
   color: #222732;
 }
+
+@media only screen and (max-width: 600px) {
+  .user-profile-dropwdown-content {
+    display: none;
+  }
+}
