@@ -14,6 +14,7 @@ function EventStatus(props) {
       setFontColor('#222732');
     } else if (
       props.label.toLowerCase() === 'waiting for approval' ||
+      props.label.toLowerCase() === 'pending review' ||
       props.label.toLowerCase() === 'attente d’approbation'
     ) {
       setBackgroundColor('#FFF7CC');

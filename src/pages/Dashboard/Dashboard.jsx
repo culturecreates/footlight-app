@@ -34,6 +34,7 @@ function Dashboard() {
               padding: '34px 32px 0px 32px',
               margin: 0,
               minHeight: 280,
+              overflowY: 'scroll',
             }}>
             <Outlet />
           </Content>

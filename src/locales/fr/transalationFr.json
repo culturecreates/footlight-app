@@ -72,7 +72,8 @@
       "list": {
         "createdBy": "Créé par",
         "updatedBy": "Modifié le",
-        "by": "par"
+        "by": "par",
+        "to": "au"
       }
     }
   }

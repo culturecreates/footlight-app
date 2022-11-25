@@ -8,7 +8,7 @@ import EventStatusOptions from '../../Dropdown/EventStatus/EventStatus';
 import { useSelector } from 'react-redux';
 import { getinterfaceLanguage } from '../../../redux/reducer/interfaceLanguageSlice';
 import { useTranslation } from 'react-i18next';
-// import moment from 'moment';
+import moment from 'moment';
 
 function Lists(props) {
   const { t } = useTranslation();
@@ -16,7 +16,6 @@ function Lists(props) {
   const interfaceLanguage = useSelector(getinterfaceLanguage);
 
   const { data } = props;
-  console.log(data);
 
   return (
     <List
@@ -28,7 +27,7 @@ function Lists(props) {
         onChange: (page) => {
           console.log(page);
         },
-        pageSize: 3,
+        pageSize: 10,
       }}
       renderItem={(eventItem, index) => (
         <List.Item
@@ -43,7 +42,11 @@ function Lists(props) {
             avatar={<img src={eventItem?.image?.original?.uri} className="event-list-image" />}
             title={
               <div className="event-list-title">
-                <span className="event-list-title-heading">title</span>&nbsp;&nbsp;
+                <span className="event-list-title-heading">
+                  {moment(eventItem?.startDate).format('DD-MM-YYYY')}&nbsp;{t('dashboard.events.list.to')}&nbsp;
+                  {moment(eventItem?.endDate).format('DD-MM-YYYY')}
+                </span>
+                &nbsp;&nbsp;
                 <EventNumber label="24" />
               </div>
             }
@@ -67,11 +70,12 @@ function Lists(props) {
               <div className="event-list-status">
                 <span>
                   {t('dashboard.events.list.createdBy')}&nbsp;
-                  <span className="event-list-status-userdetail">username</span>
+                  <span className="event-list-status-userdetail">{eventItem?.creator?.userName}</span>
                 </span>
                 <span>
-                  {t('dashboard.events.list.updatedBy')} 17-OCT-2022 {t('dashboard.events.list.by')}&nbsp;
-                  <span className="event-list-status-userdetail">username</span>
+                  {t('dashboard.events.list.updatedBy')}&nbsp;
+                  {moment(eventItem?.modifier?.date).format('DD-MM-YYYY')} {t('dashboard.events.list.by')}&nbsp;
+                  <span className="event-list-status-userdetail">{eventItem?.modifier?.userName}</span>
                 </span>
               </div>
             }
