@@ -13,6 +13,7 @@ function Sidebar() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   let { calendarId } = useParams();
+
   const [collapsed, setCollapsed] = useState(false);
 
   const items = sidebarItems.map((item, index) => {

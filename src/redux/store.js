@@ -7,12 +7,13 @@ import interfaceLanguageReducer from './reducer/interfaceLanguageSlice';
 import { loginApi } from '../services/login';
 import { usersApi } from '../services/users';
 import { eventsApi } from '../services/events';
+import { calendarApi } from '../services/calendar';
 
 const persistConfig = {
   key: 'root',
   storage,
 };
-const middlewares = [loginApi.middleware, usersApi.middleware, eventsApi.middleware];
+const middlewares = [loginApi.middleware, usersApi.middleware, eventsApi.middleware, calendarApi.middleware];
 
 const appReducer = combineReducers({
   user: userReducer,
@@ -20,6 +21,7 @@ const appReducer = combineReducers({
   [loginApi.reducerPath]: loginApi.reducer,
   [usersApi.reducerPath]: usersApi.reducer,
   [eventsApi.reducerPath]: eventsApi.reducer,
+  [calendarApi.reducerPath]: calendarApi.reducer,
 });
 
 const rootReducer = (state, action) => appReducer(state, action);
