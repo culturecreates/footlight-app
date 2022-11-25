@@ -1,12 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './events.css';
 import { Col, Row } from 'antd';
 import { useTranslation } from 'react-i18next';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import EventList from '../../../components/List/Events';
+import { useLazyGetEventsQuery } from '../../../services/events';
 
 function Events() {
   const { t } = useTranslation();
+  const [getEvents, { data: eventsData, isLoading }] = useLazyGetEventsQuery();
+
+  useEffect(() => {
+    getEvents({ pageNumber: 1, limit: 12, calendarId: '62df90a4820e41f7c1359760' });
+  }, []);
+
+  useEffect(() => {
+    console.log(eventsData);
+  }, [eventsData]);
 
   return (
     <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
@@ -22,11 +32,7 @@ function Events() {
           </Col>
         </Row>
         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} span={24} className="events-content">
-          <Col span={24}>
-            {[0].map((index) => {
-              return <EventList key={index} />;
-            })}
-          </Col>
+          <Col span={24}>{!isLoading && eventsData ? <EventList data={eventsData} /> : ''}</Col>
         </Row>
       </Col>
     </Row>

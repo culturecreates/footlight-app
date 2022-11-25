@@ -68,6 +68,11 @@
         "publishEvent": "Publish event",
         "unpublishEvent": "Unpublish event",
         "deleteEvent": "Delete event"
+      },
+      "list": {
+        "createdBy": "Created by",
+        "updatedBy": "Updated",
+        "by": "by"
       }
     }
   }

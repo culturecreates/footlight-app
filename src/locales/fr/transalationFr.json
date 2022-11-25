@@ -68,6 +68,11 @@
         "publishEvent": "Publier l’événement",
         "unpublishEvent": "Dépublier l’événement",
         "deleteEvent": "Supprimer l’événement"
+      },
+      "list": {
+        "createdBy": "Créé par",
+        "updatedBy": "Modifié le",
+        "by": "par"
       }
     }
   }

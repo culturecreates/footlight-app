@@ -5,28 +5,24 @@ import { MoreOutlined } from '@ant-design/icons';
 import EventStatus from '../../Tags/Events';
 import EventNumber from '../../Tags/EventNumber';
 import EventStatusOptions from '../../Dropdown/EventStatus/EventStatus';
+import { useSelector } from 'react-redux';
+import { getinterfaceLanguage } from '../../../redux/reducer/interfaceLanguageSlice';
+import { useTranslation } from 'react-i18next';
+// import moment from 'moment';
 
-const data = [
-  {
-    title: 'Ant Design Title 1',
-  },
-  {
-    title: 'Ant Design Title 2',
-  },
-  {
-    title: 'Ant Design Title 3',
-  },
-  {
-    title: 'Ant Design Title 4',
-  },
-];
+function Lists(props) {
+  const { t } = useTranslation();
 
-function Lists() {
+  const interfaceLanguage = useSelector(getinterfaceLanguage);
+
+  const { data } = props;
+  console.log(data);
+
   return (
     <List
       className="event-list-wrapper"
       itemLayout="horizontal"
-      dataSource={data}
+      dataSource={data.data}
       bordered={false}
       pagination={{
         onChange: (page) => {
@@ -34,7 +30,7 @@ function Lists() {
         },
         pageSize: 3,
       }}
-      renderItem={(item, index) => (
+      renderItem={(eventItem, index) => (
         <List.Item
           actions={[
             <EventStatusOptions key={index}>
@@ -44,30 +40,38 @@ function Lists() {
             </EventStatusOptions>,
           ]}>
           <List.Item.Meta
-            avatar={<img src="https://joeschmoe.io/api/v1/random" className="event-list-image" />}
+            avatar={<img src={eventItem?.image?.original?.uri} className="event-list-image" />}
             title={
               <div className="event-list-title">
-                <span className="event-list-title-heading">{item.title}</span>&nbsp;&nbsp;
+                <span className="event-list-title-heading">title</span>&nbsp;&nbsp;
                 <EventNumber label="24" />
               </div>
             }
             description={
               <div className="event-list-description">
-                <span className="event-list-description-name">{item.title}</span>
-                <span className="event-list-description-place">{item.title}</span>
+                <span className="event-list-description-name">
+                  {interfaceLanguage == 'en' ? eventItem?.name?.en : eventItem?.name?.fr}
+                </span>
+                <span className="event-list-description-place">
+                  {eventItem?.location?.map((place) => {
+                    return place?.name?.en;
+                  })}
+                </span>
               </div>
             }
           />
           <List.Item.Meta
             style={{ textAlign: 'right' }}
-            title={<EventStatus label="waiting for approval" />}
+            title={<EventStatus label={eventItem?.publishState} />}
             description={
               <div className="event-list-status">
                 <span>
-                  Created by&nbsp;<span className="event-list-status-userdetail">username</span>
+                  {t('dashboard.events.list.createdBy')}&nbsp;
+                  <span className="event-list-status-userdetail">username</span>
                 </span>
                 <span>
-                  Updated 17-OCT-2022 by&nbsp;<span className="event-list-status-userdetail">username</span>
+                  {t('dashboard.events.list.updatedBy')} 17-OCT-2022 {t('dashboard.events.list.by')}&nbsp;
+                  <span className="event-list-status-userdetail">username</span>
                 </span>
               </div>
             }
