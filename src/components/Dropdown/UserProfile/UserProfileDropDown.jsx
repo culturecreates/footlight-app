@@ -3,11 +3,16 @@ import { Dropdown, Avatar } from 'antd';
 import React from 'react';
 import './UserProfileDropDown.css';
 import { useSelector } from 'react-redux';
-import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { clearUser, getUserDetails } from '../../../redux/reducer/userSlice';
 import { userNameItems } from '../../../constants/userNameItems';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { PathName } from '../../../constants/pathName';
+import { useDispatch } from 'react-redux';
 
 const UserProfileDropDown = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user } = useSelector(getUserDetails);
 
   const { t } = useTranslation();
@@ -19,12 +24,20 @@ const UserProfileDropDown = () => {
       icon: item.icon,
     };
   });
+
+  const onClick = ({ key }) => {
+    if (key == 2) {
+      dispatch(clearUser());
+      navigate(PathName.Login);
+    }
+  };
   return (
     <Dropdown
       className="user-profile-dropdown"
       placement="bottom"
       menu={{
         items,
+        onClick,
       }}
       trigger={['click']}>
       <div className="user-profile-dropwdown-content">
