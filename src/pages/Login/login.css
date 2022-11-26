@@ -1,0 +1,85 @@
+@import '~antd/dist/antd.css';
+
+.login-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  gap: 32px;
+  position: relative;
+}
+.login-heading {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 48px;
+  line-height: 120%;
+  margin-bottom: 0;
+  max-width: 438px;
+}
+
+.login-form {
+  max-width: 438px;
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-form-item {
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  color: #222732;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  margin-bottom: 0;
+}
+
+.reset-my-password {
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #1b3de6;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+.login-remember-me {
+  margin-left: 8px;
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: #222732;
+}
+
+.login-form .form-item-input-style {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 8px;
+  gap: 10px;
+  width: 100%;
+  height: 40px;
+  background: #ffffff;
+  border: 1px solid #b6c1c9;
+  border-radius: 4px;
+  flex: none;
+  order: 1;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.login-form .form-item-input-style input[type='password'] {
+  margin-left: -10px;
+}

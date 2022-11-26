@@ -1,0 +1,32 @@
+.outlined-button {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 16px;
+  gap: 8px;
+  width: 93px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.005);
+  border: 2px solid #607efc;
+  border-radius: 4px;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+}
+
+.outlined-label {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #1b3de6;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}

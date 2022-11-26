@@ -1,0 +1,17 @@
+.login-wrapper .login-content .login-form .form-item-input-style {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 8px;
+  gap: 10px;
+  width: 438px;
+  height: 40px;
+  background: #ffffff;
+  border: 1px solid #b6c1c9;
+  border-radius: 4px;
+  flex: none;
+  order: 1;
+  align-self: stretch;
+  flex-grow: 0;
+}

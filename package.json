@@ -9,16 +9,22 @@
     "@testing-library/user-event": "^13.5.0",
     "antd": "^4.24.0",
     "env-cmd": "^10.1.0",
+    "i18next": "^22.0.5",
+    "js-cookie": "^3.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-i18next": "^12.0.0",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.4.3",
     "react-scripts": "5.0.1",
+    "redux-persist": "^6.0.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "start": "env-cmd -f .env.staging react-scripts start",
     "start:staging": "env-cmd -f .env.staging react-scripts start",
     "start:production": "env-cmd -f .env.production react-scripts start",
+    "build": "env-cmd -f .env.staging react-scripts build",
     "build:staging": "env-cmd -f .env.staging react-scripts build",
     "build:production": "env-cmd -f .env.production react-scripts build",
     "test": "react-scripts test",
@@ -26,6 +32,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
+  },
+  "engines": {
+    "node": "^14.17.0"
   },
   "eslintConfig": {
     "extends": [
