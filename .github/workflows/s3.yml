@@ -7,8 +7,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: jeanlescure/react-deploy-to-s3-action@v1
+    - uses: actions/checkout
+    - uses: jeanlescure/react-deploy-to-s3-action
       with:
         args: --acl public-read --follow-symlinks --delete
       env:
