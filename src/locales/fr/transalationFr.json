@@ -1,0 +1,49 @@
+{
+  "login": {
+    "header": "Se connecter à Footlight",
+    "email": "Courriel",
+    "password": "Mot de passe",
+    "emailPlaceHolder": "Entrez votre courriel",
+    "passwordPlaceHolder": "Entrez votre mot de passe",
+    "rememberMe": "Se souvenir de moi",
+    "loginButtonText": "Se Connecter ",
+    "resetMyPasswordText": "Réinitialiser votre mot de passe",
+    "validations": {
+      "invalidEmail": "Veuillez saisir un courriel valide.",
+      "emptyEmail": "Veuillez saisir votre courriel.",
+      "emptyPassword": "S'il vous plait entrez votre mot de passe."
+    }
+  },
+  "forgotPassword": {
+    "backToLogin": "Retour à la connection",
+    "header": "Réinitialiser votre mot de passe",
+    "email": "Courriel",
+    "emailPlaceHolder": "Entrez votre courriel",
+    "sentResetCodeText": "Envoyer",
+    "alreadyHaveCode": "J'ai déjà un code",
+    "validations": {
+      "invalidEmail": "Veuillez saisir un courriel valide.",
+      "emptyEmail": "Veuillez saisir votre courriel.",
+      "emptyPassword": "S'il vous plait entrez votre mot de passe."
+    }
+  },
+  "resetPassword": {
+    "backToLogin": "Retour à la connection",
+    "header": "Vérifiez votre courriel",
+    "subHeading": "Saisissez votre code de réinitialisation à 6 chiffres. Créez et confirmez votre nouveau mot de passe.",
+    "email": "Courriel",
+    "emailPlaceHolder": "Entrez votre courriel",
+    "inputNumber": "Code de réinitialisation à 6 chiffres",
+    "inputNumberPlaceholder": "Entrer votre code",
+    "newPassword": "Nouveau mot de passe",
+    "confirmNewPassword": "Confirmer votre nouveau mot de passe",
+    "passwordPlaceHolder": "Entrez votre mot de passe",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "newResetcode": "Envoyer un nouveau code de réinitialisation",
+    "validations": {
+        "invalidEmail": "Veuillez saisir un courriel valide.",
+        "emptyEmail": "Veuillez saisir votre courriel.",
+        "emptyPassword": "S'il vous plait entrez votre mot de passe."
+      }
+  }
+}

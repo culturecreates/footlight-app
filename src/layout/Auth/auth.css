@@ -1,0 +1,28 @@
+@import '~antd/dist/antd.css';
+
+.login-wrapper {
+  height: 100%;
+  width: 100%;
+}
+
+.login-wrapper .login-header {
+  height: auto;
+  background: none;
+  padding: 0;
+}
+
+.login-wrapper .login-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #ffffff;
+  overflow-y: auto;
+}
+
+.login-wrapper .login-content .content-wrap {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+  max-width: 438px;
+}
