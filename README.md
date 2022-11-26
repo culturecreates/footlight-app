@@ -1,6 +1,6 @@
-# Footlight Admin Portal
+# Footlight App
 
-This is the frontend for footlight admin application.
+This is the frontend for footlight CMS application.
 
 This is a create react app project.
 
