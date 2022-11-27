@@ -4,11 +4,13 @@ import { Dropdown } from 'antd';
 import { useGetAllCalendarsQuery } from '../../../services/calendar';
 import { useDispatch } from 'react-redux';
 import { setSelectedCalendar } from '../../../redux/reducer/selectedCalendarSlice';
+import { useNavigate } from 'react-router-dom';
+import { PathName } from '../../../constants/pathName';
 
 function Calendar({ children }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { data } = useGetAllCalendarsQuery();
-
   const items = data?.data?.map((item) => {
     const key = item?.id;
     return {
@@ -33,9 +35,10 @@ function Calendar({ children }) {
   });
   const onClick = ({ key }) => {
     //Set params after dashboard in route for the selected calendar
-    console.log(key);
+    navigate(`${PathName.Dashboard}/${key}${PathName.Events}`);
     dispatch(setSelectedCalendar(String(key)));
   };
+
   return (
     <Dropdown
       menu={{

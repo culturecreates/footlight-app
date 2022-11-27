@@ -43,8 +43,8 @@ const UserProfileDropDown = () => {
       <div className="user-profile-dropwdown-content">
         <Avatar className="dropdown-avatar" src={user.profileImage} size={32} />
         <span className="user-profile-user-name">
-          {user.firstName}
-          {user.lastName}
+          {user?.firstName?.charAt(0)}
+          {user?.lastName}
         </span>
         <CaretDownOutlined />
       </div>

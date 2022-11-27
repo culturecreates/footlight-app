@@ -1,8 +1,8 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { baseQuery } from '../utils/services';
+import { baseQueryWithReauth } from '../utils/services';
 export const eventsApi = createApi({
   reducerPath: 'eventsApi',
-  baseQuery: baseQuery,
+  baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
     getEvents: builder.query({
       query: ({ pageNumber, limit, calendarId }) => ({

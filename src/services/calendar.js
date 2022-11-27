@@ -1,13 +1,16 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { baseQuery } from '../utils/services';
+import { baseQueryWithReauth } from '../utils/services';
 export const calendarApi = createApi({
   reducerPath: 'calendarApi',
-  baseQuery: baseQuery,
+  baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
     getAllCalendars: builder.query({
       query: () => 'calendars',
     }),
+    getCalendar: builder.query({
+      query: ({ id }) => `calendars/${id}`,
+    }),
   }),
 });
 
-export const { useGetAllCalendarsQuery } = calendarApi;
+export const { useGetAllCalendarsQuery, useLazyGetCalendarQuery } = calendarApi;

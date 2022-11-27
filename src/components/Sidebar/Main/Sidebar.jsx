@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './sidebar.css';
 import { Layout, Menu } from 'antd';
 import { sidebarItems } from '../../../constants/sidebarItems';
@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import CalendarList from '../../Dropdown/Calendar';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
+import { useLazyGetCalendarQuery } from '../../../services/calendar';
 
 const { Sider } = Layout;
 
@@ -13,6 +14,7 @@ function Sidebar() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   let { calendarId } = useParams();
+  const [getCalendar] = useLazyGetCalendarQuery();
 
   const [collapsed, setCollapsed] = useState(false);
 
@@ -44,6 +46,10 @@ function Sidebar() {
       className: 'sidebar-calendar',
     },
   ];
+  useEffect(() => {
+    if (calendarId) getCalendar({ id: calendarId });
+  }, [calendarId]);
+
   const onSidebarClickHandler = ({ item }) => {
     navigate(`${PathName.Dashboard}/${calendarId}${item.props.path}`);
   };
