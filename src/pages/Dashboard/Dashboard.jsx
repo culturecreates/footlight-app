@@ -6,14 +6,16 @@ import NavigationBar from '../../components/NavigationBar/Dashboard';
 import Sidebar from '../../components/Sidebar/Main';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../constants/pathName';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { getUserDetails } from '../../redux/reducer/userSlice';
 import { useLazyGetCalendarQuery, useGetAllCalendarsQuery } from '../../services/calendar';
+import { setSelectedCalendar } from '../../redux/reducer/selectedCalendarSlice';
 
 const { Header, Content } = Layout;
 
 function Dashboard() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [getCalendar, { data: currentCalendarData }] = useLazyGetCalendarQuery();
   const { data: allCalendarsData } = useGetAllCalendarsQuery();
 
@@ -22,11 +24,13 @@ function Dashboard() {
 
   useEffect(() => {
     if (!accessToken && accessToken === '') navigate(PathName.Login);
-    else if (accessToken && !calendarId) navigate();
   }, [accessToken]);
 
   useEffect(() => {
-    if (calendarId) getCalendar({ id: calendarId });
+    if (calendarId) {
+      getCalendar({ id: calendarId });
+      dispatch(setSelectedCalendar(String(calendarId)));
+    }
   }, [calendarId]);
   return (
     <Layout className="dashboard-wrapper">

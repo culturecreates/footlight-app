@@ -24,11 +24,11 @@ const Login = () => {
     console.log(values);
     login({ email: values.email, password: values.password })
       .unwrap()
-      .then(() => navigate(PathName.Dashboard));
+      .then(() => navigate(PathName.Dashboard, { state: { previousPath: 'login' } }));
   };
 
   useEffect(() => {
-    if (accessToken && accessToken != '') navigate(PathName.Dashboard);
+    if (accessToken && accessToken != '') navigate(PathName.Dashboard, { state: { previousPath: 'login' } });
   }, [accessToken]);
 
   return (
