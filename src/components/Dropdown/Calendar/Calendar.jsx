@@ -1,17 +1,15 @@
 import React from 'react';
 import './calendar.css';
 import { Dropdown } from 'antd';
-import { useGetAllCalendarsQuery } from '../../../services/calendar';
 import { useDispatch } from 'react-redux';
 import { setSelectedCalendar } from '../../../redux/reducer/selectedCalendarSlice';
 import { useNavigate } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 
-function Calendar({ children }) {
+function Calendar({ children, allCalendarsData }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { data } = useGetAllCalendarsQuery();
-  const items = data?.data?.map((item) => {
+  const items = allCalendarsData?.data?.map((item) => {
     const key = item?.id;
     return {
       label: (

@@ -4,26 +4,37 @@ import { Layout } from 'antd';
 import { Outlet } from 'react-router-dom';
 import NavigationBar from '../../components/NavigationBar/Dashboard';
 import Sidebar from '../../components/Sidebar/Main';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../constants/pathName';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../redux/reducer/userSlice';
+import { useLazyGetCalendarQuery, useGetAllCalendarsQuery } from '../../services/calendar';
 
 const { Header, Content } = Layout;
 
 function Dashboard() {
   const navigate = useNavigate();
+  const [getCalendar, { data: currentCalendarData }] = useLazyGetCalendarQuery();
+  const { data: allCalendarsData } = useGetAllCalendarsQuery();
+
+  let { calendarId } = useParams();
   const { accessToken } = useSelector(getUserDetails);
+
   useEffect(() => {
     if (!accessToken && accessToken === '') navigate(PathName.Login);
+    else if (accessToken && !calendarId) navigate();
   }, [accessToken]);
+
+  useEffect(() => {
+    if (calendarId) getCalendar({ id: calendarId });
+  }, [calendarId]);
   return (
     <Layout className="dashboard-wrapper">
       <Header className="dashboard-header">
         <NavigationBar />
       </Header>
       <Layout>
-        <Sidebar />
+        <Sidebar currentCalendarData={currentCalendarData} allCalendarsData={allCalendarsData} />
         <Layout
           style={{
             background: '#ffffff',

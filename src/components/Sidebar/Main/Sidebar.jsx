@@ -6,15 +6,14 @@ import { useTranslation } from 'react-i18next';
 import CalendarList from '../../Dropdown/Calendar';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
-import { useLazyGetCalendarQuery } from '../../../services/calendar';
 
 const { Sider } = Layout;
 
-function Sidebar() {
+function Sidebar(props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { currentCalendarData, allCalendarsData } = props;
   let { calendarId } = useParams();
-  const [getCalendar, { data: currentCalendarData }] = useLazyGetCalendarQuery();
 
   const [collapsed, setCollapsed] = useState(false);
   const [calendarItem, setCalendarItem] = useState([]);
@@ -29,10 +28,6 @@ function Sidebar() {
       path: item.path,
     };
   });
-
-  useEffect(() => {
-    if (calendarId) getCalendar({ id: calendarId });
-  }, [calendarId]);
 
   useEffect(() => {
     setCalendarItem([
@@ -64,7 +59,7 @@ function Sidebar() {
       collapsed={collapsed}
       onCollapse={(value) => setCollapsed(value)}
       breakpoint={('sm', 'xs', 'lg')}>
-      <CalendarList>
+      <CalendarList allCalendarsData={allCalendarsData}>
         <Menu
           defaultSelectedKeys={['1']}
           style={{
