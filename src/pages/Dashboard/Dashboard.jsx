@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import './dashboard.css';
 import { Layout } from 'antd';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import NavigationBar from '../../components/NavigationBar/Dashboard';
 import Sidebar from '../../components/Sidebar/Main';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -16,6 +16,7 @@ const { Header, Content } = Layout;
 function Dashboard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
   const [getCalendar, { data: currentCalendarData }] = useLazyGetCalendarQuery();
   const { data: allCalendarsData } = useGetAllCalendarsQuery();
 
@@ -24,6 +25,10 @@ function Dashboard() {
 
   useEffect(() => {
     if (!accessToken && accessToken === '') navigate(PathName.Login);
+    else {
+      if (location?.state?.previousPath?.toLowerCase() === 'login' || !calendarId)
+        navigate(`${PathName.Dashboard}/${allCalendarsData?.data[0]?.id}${PathName.Events}`);
+    }
   }, [accessToken]);
 
   useEffect(() => {
@@ -32,6 +37,7 @@ function Dashboard() {
       dispatch(setSelectedCalendar(String(calendarId)));
     }
   }, [calendarId]);
+
   return (
     <Layout className="dashboard-wrapper">
       <Header className="dashboard-header">

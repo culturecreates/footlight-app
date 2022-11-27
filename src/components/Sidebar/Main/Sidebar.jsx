@@ -29,10 +29,10 @@ function Sidebar(props) {
     };
   });
 
-  useEffect(() => {
-    setCalendarItem([
+  const selectedCalendar = (id, uri, label) => {
+    return [
       {
-        key: currentCalendarData?.id,
+        key: id,
         icon: (
           <img
             style={{
@@ -40,13 +40,19 @@ function Sidebar(props) {
               height: '32px',
               borderRadius: '73px',
             }}
-            src={currentCalendarData?.image?.uri}
+            src={uri}
           />
         ),
-        label: currentCalendarData?.name?.en,
+        label,
         className: 'sidebar-calendar',
       },
-    ]);
+    ];
+  };
+
+  useEffect(() => {
+    setCalendarItem(
+      selectedCalendar(currentCalendarData?.id, currentCalendarData?.image?.uri, currentCalendarData?.name?.en),
+    );
   }, [currentCalendarData]);
 
   const onSidebarClickHandler = ({ item }) => {
