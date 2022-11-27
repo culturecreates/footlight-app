@@ -8,7 +8,7 @@ export const calendarApi = createApi({
       query: () => 'calendars',
     }),
     getCalendar: builder.query({
-      query: ({ id }) => `calendars/${id}`,
+      query: ({ id }) => `calendars/{id}?id=${id}`,
     }),
   }),
 });

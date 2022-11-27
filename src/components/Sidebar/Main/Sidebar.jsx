@@ -14,9 +14,10 @@ function Sidebar() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   let { calendarId } = useParams();
-  const [getCalendar] = useLazyGetCalendarQuery();
+  const [getCalendar, { data: currentCalendarData }] = useLazyGetCalendarQuery();
 
   const [collapsed, setCollapsed] = useState(false);
+  const [calendarItem, setCalendarItem] = useState([]);
 
   const items = sidebarItems.map((item, index) => {
     const key = String(index + 1);
@@ -29,26 +30,29 @@ function Sidebar() {
     };
   });
 
-  const calendarItem = [
-    {
-      key: '0',
-      icon: (
-        <img
-          style={{
-            width: '32px',
-            height: '32px',
-            borderRadius: '73px',
-          }}
-          src={require('../../../assets/images/logo-tout-culture.png')}
-        />
-      ),
-      label: 'calendar',
-      className: 'sidebar-calendar',
-    },
-  ];
   useEffect(() => {
     if (calendarId) getCalendar({ id: calendarId });
   }, [calendarId]);
+
+  useEffect(() => {
+    setCalendarItem([
+      {
+        key: currentCalendarData?.id,
+        icon: (
+          <img
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '73px',
+            }}
+            src={currentCalendarData?.image?.uri}
+          />
+        ),
+        label: currentCalendarData?.name?.en,
+        className: 'sidebar-calendar',
+      },
+    ]);
+  }, [currentCalendarData]);
 
   const onSidebarClickHandler = ({ item }) => {
     navigate(`${PathName.Dashboard}/${calendarId}${item.props.path}`);
