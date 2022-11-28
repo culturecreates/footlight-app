@@ -5,14 +5,16 @@ import { useTranslation } from 'react-i18next';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import EventList from '../../../components/List/Events';
 import { useLazyGetEventsQuery } from '../../../services/events';
+import { useParams } from 'react-router-dom';
 
 function Events() {
   const { t } = useTranslation();
+  const { calendarId } = useParams();
   const [getEvents, { data: eventsData, isLoading }] = useLazyGetEventsQuery();
 
   useEffect(() => {
-    getEvents({ pageNumber: 1, limit: 12, calendarId: '62df90a4820e41f7c1359760' });
-  }, []);
+    getEvents({ pageNumber: 1, limit: 12, calendarId });
+  }, [calendarId]);
 
   useEffect(() => {
     console.log(eventsData);
