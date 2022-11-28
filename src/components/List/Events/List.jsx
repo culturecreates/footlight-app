@@ -15,8 +15,8 @@ function Lists(props) {
 
   const interfaceLanguage = useSelector(getinterfaceLanguage);
 
-  const { data } = props;
-
+  const { data, pageNumber, setPageNumber } = props;
+  const totalCount = data?.totalCount;
   return (
     <List
       className="event-list-wrapper"
@@ -26,8 +26,11 @@ function Lists(props) {
       pagination={{
         onChange: (page) => {
           console.log(page);
+          setPageNumber(page);
         },
         pageSize: 10,
+        total: totalCount,
+        current: pageNumber,
       }}
       renderItem={(eventItem, index) => (
         <List.Item
@@ -47,7 +50,7 @@ function Lists(props) {
                   {moment(eventItem?.endDate).format('DD-MM-YYYY')}
                 </span>
                 &nbsp;&nbsp;
-                <EventNumber label="24" />
+                <EventNumber label={eventItem?.subEventDetails?.upcomingSubEventCount} />
               </div>
             }
             description={

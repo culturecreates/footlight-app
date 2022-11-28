@@ -5,20 +5,26 @@ import { useTranslation } from 'react-i18next';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import EventList from '../../../components/List/Events';
 import { useLazyGetEventsQuery } from '../../../services/events';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams, createSearchParams } from 'react-router-dom';
+import { useState } from 'react';
 
 function Events() {
   const { t } = useTranslation();
   const { calendarId } = useParams();
+  let [searchParams, setSearchParams] = useSearchParams();
   const [getEvents, { data: eventsData, isLoading }] = useLazyGetEventsQuery();
 
-  useEffect(() => {
-    getEvents({ pageNumber: 1, limit: 12, calendarId });
-  }, [calendarId]);
+  const [pageNumber, setPageNumber] = useState(searchParams.get('page') ?? 1);
+  const [eventSearchQuery, setEventSearchQuery] = useState(searchParams.get('query') ?? '');
 
   useEffect(() => {
-    console.log(eventsData);
-  }, [eventsData]);
+    getEvents({ pageNumber, limit: 10, calendarId, query: eventSearchQuery });
+    setSearchParams(createSearchParams({ page: pageNumber, query: eventSearchQuery }));
+  }, [calendarId, pageNumber, eventSearchQuery]);
+
+  const onSearchHandler = (event) => {
+    setEventSearchQuery(event.target.value);
+  };
 
   return (
     <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
@@ -30,11 +36,21 @@ function Events() {
         </Row>
         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
           <Col xs={24} sm={24} md={12} lg={10} xl={8}>
-            <EventsSearch placeholder={t('dashboard.events.searchPlaceholder')} />
+            <EventsSearch
+              placeholder={t('dashboard.events.searchPlaceholder')}
+              onPressEnter={(e) => onSearchHandler(e)}
+              defaultValue={eventSearchQuery}
+            />
           </Col>
         </Row>
         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} span={24} className="events-content">
-          <Col span={24}>{!isLoading && eventsData ? <EventList data={eventsData} /> : ''}</Col>
+          <Col span={24}>
+            {!isLoading && eventsData ? (
+              <EventList data={eventsData} pageNumber={pageNumber} setPageNumber={setPageNumber} />
+            ) : (
+              ''
+            )}
+          </Col>
         </Row>
       </Col>
     </Row>
