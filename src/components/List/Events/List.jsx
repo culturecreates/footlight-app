@@ -1,6 +1,6 @@
 import React from 'react';
 import './list.css';
-import { List } from 'antd';
+import { List, Grid } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
 import EventStatus from '../../Tags/Events';
 import EventNumber from '../../Tags/EventNumber';
@@ -11,17 +11,21 @@ import { bilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getinterfaceLanguage } from '../../../redux/reducer/interfaceLanguageSlice';
 
+const { useBreakpoint } = Grid;
+
 function Lists(props) {
   const { t } = useTranslation();
+  const screens = useBreakpoint();
   const { data, pageNumber, setPageNumber } = props;
 
   const interfaceLanguage = useSelector(getinterfaceLanguage);
 
   const totalCount = data?.totalCount;
+
   return (
     <List
       className="event-list-wrapper"
-      itemLayout="horizontal"
+      itemLayout={screens.xs ? 'vertical' : 'horizontal'}
       dataSource={data?.data}
       bordered={false}
       pagination={{
@@ -76,7 +80,7 @@ function Lists(props) {
             }
           />
           <List.Item.Meta
-            style={{ textAlign: 'right' }}
+            className="event-status-list-item"
             title={<EventStatus label={eventItem?.publishState} />}
             description={
               <div className="event-list-status">
