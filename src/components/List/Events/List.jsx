@@ -39,6 +39,7 @@ function Lists(props) {
       }}
       renderItem={(eventItem, index) => (
         <List.Item
+          className="event-list-item-wrapper"
           actions={[
             <EventStatusOptions key={index}>
               <span>
