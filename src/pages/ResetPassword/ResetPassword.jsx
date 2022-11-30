@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Button, InputNumber, notification } from 'antd';
 import { UpOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './resetPassword.css';
 import LoginButton from '../../components/Button/Auth';
 import { PathName } from '../../constants/pathName';
@@ -15,10 +15,10 @@ function ResetPassword() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const location = useLocation();
   const [resetPassword, { error }] = useResetPasswordMutation();
 
   const onFinish = (values) => {
-    console.log(values);
     resetPassword({
       email: values.email,
       newPassword: values.confirmNewPassword,
@@ -33,6 +33,7 @@ function ResetPassword() {
       }
     });
   };
+
   return (
     <Auth>
       <div className="reset-password-page-wrapper">
@@ -60,6 +61,7 @@ function ResetPassword() {
             name="email"
             label={t('resetPassword.email')}
             labelAlign="left"
+            initialValue={location?.state?.email}
             rules={[
               {
                 type: 'email',
@@ -70,7 +72,10 @@ function ResetPassword() {
                 message: t('resetPassword.validations.emptyEmail'),
               },
             ]}>
-            <LoginInput placeholder={t('resetPassword.emailPlaceHolder')} />
+            <LoginInput
+              placeholder={t('resetPassword.emailPlaceHolder')}
+              disabled={location?.state?.email ? true : false}
+            />
           </Form.Item>
           <Form.Item
             label={t('resetPassword.inputNumber')}

@@ -25,7 +25,7 @@ function ForgotPassword() {
             description: t('forgotPassword.successNotification'),
             placement: 'top',
           });
-          navigate(PathName.ResetPassword);
+          navigate(PathName.ResetPassword, { state: { email: values?.email } });
         }
       });
   };
