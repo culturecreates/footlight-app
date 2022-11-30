@@ -73,7 +73,8 @@
         "createdBy": "Créé par",
         "updatedBy": "Modifié le",
         "by": "par",
-        "to": "au"
+        "to": "au",
+        "event": "événements"
       }
     }
   }

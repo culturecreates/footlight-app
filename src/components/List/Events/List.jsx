@@ -5,15 +5,11 @@ import { MoreOutlined } from '@ant-design/icons';
 import EventStatus from '../../Tags/Events';
 import EventNumber from '../../Tags/EventNumber';
 import EventStatusOptions from '../../Dropdown/EventStatus/EventStatus';
-import { useSelector } from 'react-redux';
-import { getinterfaceLanguage } from '../../../redux/reducer/interfaceLanguageSlice';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
-
+import { bilingual } from '../../../utils/bilingual';
 function Lists(props) {
   const { t } = useTranslation();
-
-  const interfaceLanguage = useSelector(getinterfaceLanguage);
 
   const { data, pageNumber, setPageNumber } = props;
   const totalCount = data?.totalCount;
@@ -56,11 +52,11 @@ function Lists(props) {
             description={
               <div className="event-list-description">
                 <span className="event-list-description-name">
-                  {interfaceLanguage == 'en' ? eventItem?.name?.en : eventItem?.name?.fr}
+                  {bilingual({ en: eventItem?.name?.en, fr: eventItem?.name?.fr })}
                 </span>
                 <span className="event-list-description-place">
                   {eventItem?.location?.map((place) => {
-                    return place?.name?.en;
+                    return bilingual({ en: place?.name?.en, fr: place?.name?.fr });
                   })}
                 </span>
               </div>

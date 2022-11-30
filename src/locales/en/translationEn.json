@@ -73,7 +73,8 @@
         "createdBy": "Created by",
         "updatedBy": "Updated",
         "by": "by",
-        "to":"to"
+        "to": "to",
+        "event": "event"
       }
     }
   }
