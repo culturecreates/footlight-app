@@ -19,7 +19,10 @@ function Events() {
 
   useEffect(() => {
     getEvents({ pageNumber, limit: 10, calendarId, query: eventSearchQuery });
-    setSearchParams(createSearchParams({ page: pageNumber, query: eventSearchQuery }));
+    if (!eventSearchQuery || eventSearchQuery === '') setSearchParams(createSearchParams({ page: pageNumber }));
+    else {
+      setSearchParams(createSearchParams({ page: pageNumber, query: eventSearchQuery }));
+    }
   }, [calendarId, pageNumber, eventSearchQuery]);
 
   const onSearchHandler = (event) => {
