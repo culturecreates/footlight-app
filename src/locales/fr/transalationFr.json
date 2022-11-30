@@ -45,7 +45,8 @@
       "invalidEmail": "Entrer une adresse courriel valide.",
       "emptyEmail": "Entrez une adresse courriel.",
       "emptyPassword": "Entrez votre mot de passe.",
-      "passwordMatch": "Les deux mots de passe ne correspondent pas."
+      "passwordMatch": "Les deux mots de passe ne correspondent pas.",
+      "digitCode": "Entrer votre code"
     },
     "successNotification": "Succès! Votre mot de passe a été réinitialisé."
   },

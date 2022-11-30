@@ -6,16 +6,22 @@ import { setSelectedCalendar } from '../../../redux/reducer/selectedCalendarSlic
 import { useNavigate } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import { bilingual } from '../../../utils/bilingual';
+import { useSelector } from 'react-redux';
+import { getinterfaceLanguage } from '../../../redux/reducer/interfaceLanguageSlice';
 
 function Calendar({ children, allCalendarsData }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const interfaceLanguage = useSelector(getinterfaceLanguage);
+
   const items = allCalendarsData?.data?.map((item) => {
     const key = item?.id;
     return {
       label: (
         <span className="calendar-name-wrapper">
-          <span className="calendar-name">{bilingual({ en: item?.name?.en, fr: item?.name?.fr })}</span>
+          <span className="calendar-name">
+            {bilingual({ en: item?.name?.en, fr: item?.name?.fr, interfaceLanguage: interfaceLanguage })}
+          </span>
           <span className="calendar-organisation-details">{item?.organizationTypes?.length}&nbsp;members </span>
         </span>
       ),

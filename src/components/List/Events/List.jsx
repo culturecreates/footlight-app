@@ -8,16 +8,21 @@ import EventStatusOptions from '../../Dropdown/EventStatus/EventStatus';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { bilingual } from '../../../utils/bilingual';
+import { useSelector } from 'react-redux';
+import { getinterfaceLanguage } from '../../../redux/reducer/interfaceLanguageSlice';
+
 function Lists(props) {
   const { t } = useTranslation();
-
   const { data, pageNumber, setPageNumber } = props;
+
+  const interfaceLanguage = useSelector(getinterfaceLanguage);
+
   const totalCount = data?.totalCount;
   return (
     <List
       className="event-list-wrapper"
       itemLayout="horizontal"
-      dataSource={data.data}
+      dataSource={data?.data}
       bordered={false}
       pagination={{
         onChange: (page) => {
@@ -52,11 +57,19 @@ function Lists(props) {
             description={
               <div className="event-list-description">
                 <span className="event-list-description-name">
-                  {bilingual({ en: eventItem?.name?.en, fr: eventItem?.name?.fr })}
+                  {bilingual({
+                    en: eventItem?.name?.en,
+                    fr: eventItem?.name?.fr,
+                    interfaceLanguage: interfaceLanguage,
+                  })}
                 </span>
                 <span className="event-list-description-place">
                   {eventItem?.location?.map((place) => {
-                    return bilingual({ en: place?.name?.en, fr: place?.name?.fr });
+                    return bilingual({
+                      en: place?.name?.en,
+                      fr: place?.name?.fr,
+                      interfaceLanguage: interfaceLanguage,
+                    });
                   })}
                 </span>
               </div>

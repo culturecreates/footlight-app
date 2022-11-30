@@ -29,7 +29,7 @@ function Sidebar(props) {
     };
   });
 
-  const selectedCalendar = (id, uri, label) => {
+  const selectedCalendar = (id, uri, label = '') => {
     return [
       {
         key: id,

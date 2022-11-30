@@ -87,7 +87,7 @@ function ResetPassword() {
             rules={[
               {
                 required: true,
-                message: 'Please enter the 6-digit reset code',
+                message: t('resetPassword.validations.digitCode'),
               },
             ]}
             className="reset-password-form-item">

@@ -45,7 +45,8 @@
       "invalidEmail": "Enter a valid email address.",
       "emptyEmail": "Enter an email address.",
       "emptyPassword": "Enter your password.",
-      "passwordMatch": "The two passwords you entered do not match."
+      "passwordMatch": "The two passwords you entered do not match.",
+      "digitCode": "Enter your code"
     },
     "successNotification": "Success! Your password has been reset."
   },
