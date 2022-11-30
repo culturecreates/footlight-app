@@ -3,6 +3,7 @@ import { baseQueryWithReauth } from '../utils/services';
 export const calendarApi = createApi({
   reducerPath: 'calendarApi',
   baseQuery: baseQueryWithReauth,
+  tagTypes: ['Calendar'],
   endpoints: (builder) => ({
     getAllCalendars: builder.query({
       query: () => 'calendars',
