@@ -1,37 +1,39 @@
 import React from 'react';
-import { Form, Input, Button, InputNumber, notification } from 'antd';
+import { Form, Button, InputNumber, notification } from 'antd';
 import { UpOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './resetPassword.css';
 import LoginButton from '../../components/Button/Auth';
 import { PathName } from '../../constants/pathName';
 import { useResetPasswordMutation } from '../../services/users';
 import Auth from '../../layout/Auth';
+import LoginInput from '../../components/Input/Common';
+import PasswordInput from '../../components/Input/Password';
 
 function ResetPassword() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const location = useLocation();
   const [resetPassword, { error }] = useResetPasswordMutation();
 
   const onFinish = (values) => {
-    console.log(values);
     resetPassword({
       email: values.email,
       newPassword: values.confirmNewPassword,
       oneTimePassword: values.oneTimePassword,
     }).then((response) => {
       if (response.statusCode == 202) {
-        //ToDo: Add the description to the locale
         notification.info({
-          description: 'Password has been changed successfully.',
+          description: t('resetPassword.successNotification'),
           placement: 'top',
         });
         navigate(PathName.Login);
       }
     });
   };
+
   return (
     <Auth>
       <div className="reset-password-page-wrapper">
@@ -51,6 +53,7 @@ function ResetPassword() {
           autoComplete="off"
           requiredMark={false}
           scrollToFirstError={true}
+          validateTrigger={'onBlur'}
           form={form}
           onFinish={onFinish}>
           <Form.Item
@@ -58,6 +61,7 @@ function ResetPassword() {
             name="email"
             label={t('resetPassword.email')}
             labelAlign="left"
+            initialValue={location?.state?.email}
             rules={[
               {
                 type: 'email',
@@ -68,7 +72,10 @@ function ResetPassword() {
                 message: t('resetPassword.validations.emptyEmail'),
               },
             ]}>
-            <Input className="reset-password-form-item-input-style" placeholder={t('resetPassword.emailPlaceHolder')} />
+            <LoginInput
+              placeholder={t('resetPassword.emailPlaceHolder')}
+              disabled={location?.state?.email ? true : false}
+            />
           </Form.Item>
           <Form.Item
             label={t('resetPassword.inputNumber')}
@@ -80,7 +87,7 @@ function ResetPassword() {
             rules={[
               {
                 required: true,
-                message: 'Please enter the 6-digit reset code',
+                message: t('resetPassword.validations.digitCode'),
               },
             ]}
             className="reset-password-form-item">
@@ -101,9 +108,8 @@ function ResetPassword() {
                 message: t('resetPassword.validations.emptyPassword'),
               },
             ]}>
-            <Input.Password
+            <PasswordInput
               placeholder={t('resetPassword.passwordPlaceHolder')}
-              className="reset-password-form-item-input-style"
               iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
             />
           </Form.Item>
@@ -121,13 +127,12 @@ function ResetPassword() {
                 validator(_, value) {
                   if (!value || getFieldValue('newPassword') === value) {
                     return Promise.resolve();
-                  } else return Promise.reject(new Error('The two passwords that you entered do not match!'));
+                  } else return Promise.reject(new Error(t('resetPassword.validations.passwordMatch')));
                 },
               }),
             ]}>
-            <Input.Password
+            <PasswordInput
               placeholder={t('resetPassword.passwordPlaceHolder')}
-              className="reset-password-form-item-input-style"
               iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
             />
           </Form.Item>

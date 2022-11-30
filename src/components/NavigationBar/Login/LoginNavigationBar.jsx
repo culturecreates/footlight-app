@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
-import './navigationBar.css';
-import OutlinedButton from '../Button/Outlined';
-import { setInterfaceLanguage } from '../../redux/reducer/interfaceLanguageSlice';
+import './loginNavigationBar.css';
+import OutlinedButton from '../../Button/Outlined';
+import { setInterfaceLanguage } from '../../../redux/reducer/interfaceLanguageSlice';
 import { useDispatch } from 'react-redux';
 import i18n from 'i18next';
+import Cookies from 'js-cookie';
 
 function NavigationBar() {
   const dispatch = useDispatch();
-  const [changeLanguageTo, setchangeLanguageTo] = useState('Français');
+  const [changeLanguageTo, setchangeLanguageTo] = useState(
+    Cookies.get('interfaceLanguage') === 'fr' ? 'English' : 'Français',
+  );
+
   const changeLanguageHandler = (event) => {
     if (event.target.outerText === 'Français') {
       dispatch(setInterfaceLanguage('fr'));
@@ -23,7 +27,7 @@ function NavigationBar() {
     <div className="navigation-bar-wrapper">
       <div className="logo-wrapper">
         <img
-          src={require('../../assets/images/footlight-logo-small.png')}
+          src={require('../../../assets/images/footlight-logo-small.png')}
           alt="Footlight logo"
           className="footlight-logo"
         />

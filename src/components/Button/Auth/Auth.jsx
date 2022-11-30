@@ -2,9 +2,9 @@ import React from 'react';
 import './auth.css';
 import { Button } from 'antd';
 function Auth(props) {
-  const { label, onClick, htmlType } = props;
+  const { label } = props;
   return (
-    <Button type="primary" htmlType={htmlType} className="login-form-button" onClick={onClick}>
+    <Button type="primary" className="login-form-button" {...props}>
       <span>{label}</span>
     </Button>
   );

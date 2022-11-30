@@ -1,0 +1,18 @@
+.events-wrapper .events-heading {
+  font-weight: 700;
+  white-space: nowrap;
+  font-size: 34px;
+}
+
+.events-wrapper .events-content {
+  padding-top: 24px;
+}
+
+@media only screen and (max-width: 428px) {
+  .events-wrapper .events-heading {
+    font-size: 24px;
+  }
+  .events-wrapper .events-content {
+    padding: 16px;
+  }
+}

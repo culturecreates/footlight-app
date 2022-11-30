@@ -3,9 +3,9 @@ import './outlined.css';
 import { Button } from 'antd';
 
 function Outlined(props) {
-  const { label, onClick } = props;
+  const { label } = props;
   return (
-    <Button className="outlined-button" shape="default" onClick={onClick}>
+    <Button className="outlined-button" shape="default" {...props}>
       <span className="outlined-label">{label}</span>
     </Button>
   );
