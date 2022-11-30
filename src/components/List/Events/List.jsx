@@ -80,11 +80,11 @@ function Lists(props) {
             title={<EventStatus label={eventItem?.publishState} />}
             description={
               <div className="event-list-status">
-                <span>
+                <span className="event-list-status-created-by">
                   {t('dashboard.events.list.createdBy')}&nbsp;
                   <span className="event-list-status-userdetail">{eventItem?.creator?.userName}</span>
                 </span>
-                <span>
+                <span className="event-list-status-updated-by">
                   {t('dashboard.events.list.updatedBy')}&nbsp;
                   {moment(eventItem?.modifier?.date).format('DD-MM-YYYY')} {t('dashboard.events.list.by')}&nbsp;
                   <span className="event-list-status-userdetail">{eventItem?.modifier?.userName}</span>

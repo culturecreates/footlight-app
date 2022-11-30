@@ -44,3 +44,18 @@
   text-decoration: underline;
   font-weight: 600;
 }
+
+@media only screen and (max-width: 1024px) {
+  .event-list-wrapper {
+    width: 592px;
+  }
+
+  .event-list-wrapper .event-list-title-heading {
+    white-space: nowrap;
+  }
+
+  .event-list-wrapper .event-list-status-updated-by {
+    width: 120px;
+    margin-left: auto;
+  }
+}
