@@ -24,7 +24,6 @@ const Login = () => {
   const { accessToken, user } = useSelector(getUserDetails);
 
   const onFinish = (values) => {
-    console.log(values);
     login({ email: values.email, password: values.password })
       .unwrap()
       .then((response) => {
