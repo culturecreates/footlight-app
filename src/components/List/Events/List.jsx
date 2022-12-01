@@ -61,8 +61,15 @@ function Lists(props) {
             title={
               <div className="event-list-title">
                 <span className="event-list-title-heading">
-                  {moment(eventItem?.startDate).format('DD-MM-YYYY')}&nbsp;{t('dashboard.events.list.to')}&nbsp;
-                  {moment(eventItem?.endDate).format('DD-MM-YYYY')}
+                  {moment(eventItem?.startDate).format('DD-MM-YYYY')}
+                  {eventItem?.endDate ? (
+                    <>
+                      &nbsp;{t('dashboard.events.list.to')}&nbsp;
+                      {moment(eventItem?.endDate).format('DD-MM-YYYY')}
+                    </>
+                  ) : (
+                    <></>
+                  )}
                 </span>
                 &nbsp;&nbsp;
                 {eventItem?.subEventDetails?.upcomingSubEventCount &&
@@ -103,11 +110,15 @@ function Lists(props) {
                   {t('dashboard.events.list.createdBy')}&nbsp;
                   <span className="event-list-status-userdetail">{eventItem?.creator?.userName}</span>
                 </span>
-                <span className="event-list-status-updated-by">
-                  {t('dashboard.events.list.updatedBy')}&nbsp;
-                  {moment(eventItem?.modifier?.date).format('DD-MM-YYYY')} {t('dashboard.events.list.by')}&nbsp;
-                  <span className="event-list-status-userdetail">{eventItem?.modifier?.userName}</span>
-                </span>
+                {eventItem?.modifier?.userName ? (
+                  <span className="event-list-status-updated-by">
+                    {t('dashboard.events.list.updatedBy')}&nbsp;
+                    {moment(eventItem?.modifier?.date).format('DD-MM-YYYY')} {t('dashboard.events.list.by')}&nbsp;
+                    <span className="event-list-status-userdetail">{eventItem?.modifier?.userName}</span>
+                  </span>
+                ) : (
+                  <></>
+                )}
               </div>
             }
           />
