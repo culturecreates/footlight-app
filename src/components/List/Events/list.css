@@ -90,4 +90,9 @@
     margin-top: 8px;
     margin-bottom: 8px;
   }
+  .event-list-item-wrapper .ant-list-item-extra {
+    margin: 0;
+    align-self: center;
+    font-size: 24px;
+  }
 }
