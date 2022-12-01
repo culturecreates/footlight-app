@@ -48,11 +48,13 @@ function Lists(props) {
             </EventStatusOptions>,
           ]}
           extra={[
-            <EventStatusOptions key={index} className="event-list-options-responsive">
-              <span>
-                <MoreOutlined className="event-list-more-icon-responsive" key={index} />
-              </span>
-            </EventStatusOptions>,
+            <span key={index} className="event-list-options-responsive">
+              <EventStatusOptions>
+                <span>
+                  <MoreOutlined className="event-list-more-icon-responsive" key={index} />
+                </span>
+              </EventStatusOptions>
+            </span>,
           ]}>
           <List.Item.Meta
             avatar={<img src={eventItem?.image?.original?.uri} className="event-list-image" />}

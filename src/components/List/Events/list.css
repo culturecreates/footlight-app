@@ -52,6 +52,10 @@
   font-weight: 600;
 }
 
+.event-list-item-wrapper .event-list-options-responsive {
+  display: none;
+}
+
 @media only screen and (max-width: 1024px) {
   .event-list-wrapper {
     width: 592px;
@@ -89,6 +93,9 @@
   .event-list-wrapper .event-list-item-wrapper {
     margin-top: 8px;
     margin-bottom: 8px;
+  }
+  .event-list-item-wrapper .event-list-options-responsive {
+    display: block;
   }
   .event-list-item-wrapper .ant-list-item-extra {
     margin: 0;
