@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import './dashboardNavigationBar.css';
 import { Drawer, List, Avatar, Menu, Button } from 'antd';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import UserProfileDropdown from '../../Dropdown/UserProfile';
 import { MenuOutlined, CloseOutlined } from '@ant-design/icons';
 import { userNameItems } from '../../../constants/userNameItems';
 import { useTranslation } from 'react-i18next';
-import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { clearUser, getUserDetails } from '../../../redux/reducer/userSlice';
 import { sidebarItems } from '../../../constants/sidebarItems';
 import CalendarList from '../../Dropdown/Calendar';
 import { PathName } from '../../../constants/pathName';
@@ -16,6 +16,7 @@ function NavigationBar(props) {
   const { t } = useTranslation();
   let { calendarId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user } = useSelector(getUserDetails);
   const { currentCalendarData, allCalendarsData } = props;
 
@@ -72,6 +73,12 @@ function NavigationBar(props) {
   const onSidebarClickHandler = ({ item }) => {
     navigate(`${PathName.Dashboard}/${calendarId}${item.props.path}`);
   };
+  const logoutHandler = ({ key }) => {
+    if (key == 2) {
+      dispatch(clearUser());
+      navigate(PathName.Login);
+    }
+  };
   return (
     <div className="navigation-bar-wrapper">
       <div className="logo-wrapper">
@@ -118,7 +125,7 @@ function NavigationBar(props) {
                 <List.Item.Meta
                   avatar={<Avatar className="dropdown-avatar" src={user.profileImage} size={32} />}
                   title={
-                    <span>
+                    <span className="username-responsive">
                       {user?.firstName?.charAt(0)}
                       {user?.lastName}
                     </span>
@@ -130,7 +137,7 @@ function NavigationBar(props) {
               itemLayout="horizontal"
               dataSource={items}
               renderItem={(item) => (
-                <List.Item>
+                <List.Item onClick={() => logoutHandler(item)}>
                   <List.Item.Meta avatar={item.icon} title={<span>{item.label}</span>} />
                 </List.Item>
               )}

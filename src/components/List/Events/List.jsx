@@ -48,7 +48,7 @@ function Lists(props) {
           ]}
           extra={[
             <span key={index} className="event-list-options-responsive">
-              <EventStatusOptions>
+              <EventStatusOptions key={index}>
                 <span>
                   <MoreOutlined className="event-list-more-icon-responsive" key={index} />
                 </span>
