@@ -64,6 +64,17 @@
   align-items: center;
   padding: 8px;
 }
+.sidebar-navigation-menu-responsive-drawer .ant-drawer-extra {
+  margin-left: 17px;
+}
+
+.sidebar-navigation-menu-responsive-drawer .ant-drawer-header {
+  border-bottom: none;
+}
+
+.sidebar-navigation-menu-responsive-drawer .ant-drawer-footer {
+  border: none;
+}
 
 @media only screen and (max-width: 600px) {
   .navigation-bar-wrapper {
