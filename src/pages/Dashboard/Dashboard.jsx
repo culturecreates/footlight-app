@@ -41,7 +41,7 @@ function Dashboard() {
   return (
     <Layout className="dashboard-wrapper">
       <Header className="dashboard-header">
-        <NavigationBar />
+        <NavigationBar currentCalendarData={currentCalendarData} allCalendarsData={allCalendarsData} />
       </Header>
       <Layout>
         <Sidebar currentCalendarData={currentCalendarData} allCalendarsData={allCalendarsData} />

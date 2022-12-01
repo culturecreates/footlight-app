@@ -21,7 +21,6 @@ function Lists(props) {
   const interfaceLanguage = useSelector(getinterfaceLanguage);
 
   const totalCount = data?.totalCount;
-
   return (
     <List
       className="event-list-wrapper"
@@ -30,10 +29,10 @@ function Lists(props) {
       bordered={false}
       pagination={{
         onChange: (page) => {
-          console.log(page);
           setPageNumber(page);
         },
         pageSize: 10,
+        hideOnSinglePage: true,
         total: totalCount,
         current: pageNumber,
       }}
