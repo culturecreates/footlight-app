@@ -65,7 +65,12 @@ function Lists(props) {
                   {moment(eventItem?.endDate).format('DD-MM-YYYY')}
                 </span>
                 &nbsp;&nbsp;
-                <EventNumber label={eventItem?.subEventDetails?.upcomingSubEventCount} />
+                {eventItem?.subEventDetails?.upcomingSubEventCount &&
+                eventItem?.subEventDetails?.upcomingSubEventCount != 0 ? (
+                  <EventNumber label={eventItem?.subEventDetails?.upcomingSubEventCount} />
+                ) : (
+                  <></>
+                )}
               </div>
             }
             description={
