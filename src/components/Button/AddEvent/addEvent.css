@@ -1,0 +1,10 @@
+.add-event-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  background: #1b3de6;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 16px;
+}
