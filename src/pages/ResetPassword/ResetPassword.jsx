@@ -24,7 +24,7 @@ function ResetPassword() {
       newPassword: values.confirmNewPassword,
       oneTimePassword: values.oneTimePassword,
     }).then((response) => {
-      if (response.statusCode == 202) {
+      if (response?.data?.statusCode == 202) {
         notification.info({
           description: t('resetPassword.successNotification'),
           placement: 'top',

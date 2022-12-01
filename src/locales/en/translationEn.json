@@ -65,6 +65,7 @@
     "events": {
       "heading": "Event calendar",
       "searchPlaceholder": "Search an event",
+      "addEvent": "Event",
       "publishOptions": {
         "publishEvent": "Publish event",
         "unpublishEvent": "Unpublish event",

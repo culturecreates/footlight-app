@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './events.css';
 import { Col, Row } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +6,7 @@ import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import EventList from '../../../components/List/Events';
 import { useLazyGetEventsQuery } from '../../../services/events';
 import { useParams, useSearchParams, createSearchParams } from 'react-router-dom';
-import { useState } from 'react';
+import AddEvent from '../../../components/Button/AddEvent';
 
 function Events() {
   const { t } = useTranslation();
@@ -55,6 +55,9 @@ function Events() {
             )}
           </Col>
         </Row>
+      </Col>
+      <Col span={6}>
+        <AddEvent label={t('dashboard.events.addEvent')} />
       </Col>
     </Row>
   );

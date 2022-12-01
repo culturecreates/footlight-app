@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import './login.css';
 import LoginButton from '../../components/Button/Auth';
 import { useLoginMutation } from '../../services/login';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../redux/reducer/userSlice';
 import { PathName } from '../../constants/pathName';
 import { useNavigate } from 'react-router-dom';
@@ -12,23 +12,33 @@ import { useTranslation } from 'react-i18next';
 import Auth from '../../layout/Auth';
 import LoginInput from '../../components/Input/Common';
 import PasswordInput from '../../components/Input/Password';
+import { setInterfaceLanguage } from '../../redux/reducer/interfaceLanguageSlice';
+import i18n from 'i18next';
 
 const Login = () => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const [login, { error }] = useLoginMutation();
   const navigate = useNavigate();
-  const { accessToken } = useSelector(getUserDetails);
+  const dispatch = useDispatch();
+  const { accessToken, user } = useSelector(getUserDetails);
 
   const onFinish = (values) => {
-    console.log(values);
     login({ email: values.email, password: values.password })
       .unwrap()
-      .then(() => navigate(PathName.Dashboard, { state: { previousPath: 'login' } }));
+      .then((response) => {
+        navigate(PathName.Dashboard, { state: { previousPath: 'login' } });
+        dispatch(setInterfaceLanguage(response.user.interfaceLanguage));
+        i18n.changeLanguage(response?.user?.interfaceLanguage);
+      });
   };
 
   useEffect(() => {
-    if (accessToken && accessToken != '') navigate(PathName.Dashboard, { state: { previousPath: 'login' } });
+    if (accessToken && accessToken != '') {
+      navigate(PathName.Dashboard, { state: { previousPath: 'login' } });
+      dispatch(setInterfaceLanguage(user?.interfaceLanguage));
+      i18n.changeLanguage(user?.interfaceLanguage);
+    }
   }, [accessToken]);
 
   return (

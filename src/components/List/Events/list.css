@@ -50,6 +50,11 @@
 .event-list-wrapper .event-list-status-userdetail {
   text-decoration: underline;
   font-weight: 600;
+  text-transform: lowercase;
+}
+
+.event-list-item-wrapper .event-list-options-responsive {
+  display: none;
 }
 
 @media only screen and (max-width: 1024px) {
@@ -89,5 +94,13 @@
   .event-list-wrapper .event-list-item-wrapper {
     margin-top: 8px;
     margin-bottom: 8px;
+  }
+  .event-list-item-wrapper .event-list-options-responsive {
+    display: block;
+  }
+  .event-list-item-wrapper .ant-list-item-extra {
+    margin: 0;
+    align-self: center;
+    font-size: 24px;
   }
 }

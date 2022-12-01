@@ -21,7 +21,6 @@ function Lists(props) {
   const interfaceLanguage = useSelector(getinterfaceLanguage);
 
   const totalCount = data?.totalCount;
-
   return (
     <List
       className="event-list-wrapper"
@@ -30,10 +29,10 @@ function Lists(props) {
       bordered={false}
       pagination={{
         onChange: (page) => {
-          console.log(page);
           setPageNumber(page);
         },
         pageSize: 10,
+        hideOnSinglePage: true,
         total: totalCount,
         current: pageNumber,
       }}
@@ -46,17 +45,38 @@ function Lists(props) {
                 <MoreOutlined className="event-list-more-icon" key={index} />
               </span>
             </EventStatusOptions>,
+          ]}
+          extra={[
+            <span key={index} className="event-list-options-responsive">
+              <EventStatusOptions key={index}>
+                <span>
+                  <MoreOutlined className="event-list-more-icon-responsive" key={index} />
+                </span>
+              </EventStatusOptions>
+            </span>,
           ]}>
           <List.Item.Meta
             avatar={<img src={eventItem?.image?.original?.uri} className="event-list-image" />}
             title={
               <div className="event-list-title">
                 <span className="event-list-title-heading">
-                  {moment(eventItem?.startDate).format('DD-MM-YYYY')}&nbsp;{t('dashboard.events.list.to')}&nbsp;
-                  {moment(eventItem?.endDate).format('DD-MM-YYYY')}
+                  {moment(eventItem?.startDate).format('DD-MM-YYYY')}
+                  {eventItem?.endDate ? (
+                    <>
+                      &nbsp;{t('dashboard.events.list.to')}&nbsp;
+                      {moment(eventItem?.endDate).format('DD-MM-YYYY')}
+                    </>
+                  ) : (
+                    <></>
+                  )}
                 </span>
                 &nbsp;&nbsp;
-                <EventNumber label={eventItem?.subEventDetails?.upcomingSubEventCount} />
+                {eventItem?.subEventDetails?.upcomingSubEventCount &&
+                eventItem?.subEventDetails?.upcomingSubEventCount != 0 ? (
+                  <EventNumber label={eventItem?.subEventDetails?.upcomingSubEventCount} />
+                ) : (
+                  <></>
+                )}
               </div>
             }
             description={
@@ -89,11 +109,15 @@ function Lists(props) {
                   {t('dashboard.events.list.createdBy')}&nbsp;
                   <span className="event-list-status-userdetail">{eventItem?.creator?.userName}</span>
                 </span>
-                <span className="event-list-status-updated-by">
-                  {t('dashboard.events.list.updatedBy')}&nbsp;
-                  {moment(eventItem?.modifier?.date).format('DD-MM-YYYY')} {t('dashboard.events.list.by')}&nbsp;
-                  <span className="event-list-status-userdetail">{eventItem?.modifier?.userName}</span>
-                </span>
+                {eventItem?.modifier?.userName ? (
+                  <span className="event-list-status-updated-by">
+                    {t('dashboard.events.list.updatedBy')}&nbsp;
+                    {moment(eventItem?.modifier?.date).format('DD-MM-YYYY')} {t('dashboard.events.list.by')}&nbsp;
+                    <span className="event-list-status-userdetail">{eventItem?.modifier?.userName}</span>
+                  </span>
+                ) : (
+                  <></>
+                )}
               </div>
             }
           />

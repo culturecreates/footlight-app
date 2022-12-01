@@ -1,21 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './dashboardNavigationBar.css';
-import { Drawer, List, Avatar, Menu } from 'antd';
-import { useSelector } from 'react-redux';
+import { Drawer, List, Avatar, Menu, Button } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
 import UserProfileDropdown from '../../Dropdown/UserProfile';
-import { MenuOutlined } from '@ant-design/icons';
+import { MenuOutlined, CloseOutlined } from '@ant-design/icons';
 import { userNameItems } from '../../../constants/userNameItems';
 import { useTranslation } from 'react-i18next';
-import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { clearUser, getUserDetails } from '../../../redux/reducer/userSlice';
 import { sidebarItems } from '../../../constants/sidebarItems';
 import CalendarList from '../../Dropdown/Calendar';
+import { PathName } from '../../../constants/pathName';
+import { useNavigate, useParams } from 'react-router-dom';
 
-function NavigationBar() {
+function NavigationBar(props) {
   const { t } = useTranslation();
+  let { calendarId } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user } = useSelector(getUserDetails);
+  const { currentCalendarData, allCalendarsData } = props;
 
   const [open, setOpen] = useState(false);
-
-  const { user } = useSelector(getUserDetails);
+  const [calendarItem, setCalendarItem] = useState([]);
 
   const showDrawer = () => {
     setOpen(true);
@@ -40,24 +46,39 @@ function NavigationBar() {
       path: item.path,
     };
   });
-  const calendarItem = [
-    {
-      key: '0',
-      icon: (
-        <img
-          style={{
-            width: '32px',
-            height: '32px',
-            borderRadius: '73px',
-          }}
-          src={require('../../../assets/images/logo-tout-culture.png')}
-        />
-      ),
-      label: 'calendar',
-      className: 'sidebar-calendar',
-    },
-  ];
-
+  const selectedCalendar = (id, uri, label = '') => {
+    return [
+      {
+        key: id,
+        icon: (
+          <img
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '73px',
+            }}
+            src={uri}
+          />
+        ),
+        label,
+        className: 'sidebar-calendar',
+      },
+    ];
+  };
+  useEffect(() => {
+    setCalendarItem(
+      selectedCalendar(currentCalendarData?.id, currentCalendarData?.image?.uri, currentCalendarData?.name?.en),
+    );
+  }, [currentCalendarData]);
+  const onSidebarClickHandler = ({ item }) => {
+    navigate(`${PathName.Dashboard}/${calendarId}${item.props.path}`);
+  };
+  const logoutHandler = ({ key }) => {
+    if (key == 2) {
+      dispatch(clearUser());
+      navigate(PathName.Login);
+    }
+  };
   return (
     <div className="navigation-bar-wrapper">
       <div className="logo-wrapper">
@@ -71,8 +92,9 @@ function NavigationBar() {
       <UserProfileDropdown className="navigation-user-profile-dropdown" />
       <MenuOutlined onClick={showDrawer} className="navigation-responsive-sidebar-menu" />
       <Drawer
+        className="sidebar-navigation-menu-responsive-drawer"
         title={
-          <CalendarList>
+          <CalendarList allCalendarsData={allCalendarsData}>
             <Menu
               defaultSelectedKeys={['1']}
               style={{
@@ -83,8 +105,15 @@ function NavigationBar() {
             />
           </CalendarList>
         }
+        extra={
+          <Button
+            onClick={onClose}
+            type="text"
+            icon={<CloseOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />}
+          />
+        }
         placement="right"
-        closable={true}
+        closable={false}
         onClose={onClose}
         open={open}
         key="right"
@@ -96,7 +125,7 @@ function NavigationBar() {
                 <List.Item.Meta
                   avatar={<Avatar className="dropdown-avatar" src={user.profileImage} size={32} />}
                   title={
-                    <span>
+                    <span className="username-responsive">
                       {user?.firstName?.charAt(0)}
                       {user?.lastName}
                     </span>
@@ -108,7 +137,7 @@ function NavigationBar() {
               itemLayout="horizontal"
               dataSource={items}
               renderItem={(item) => (
-                <List.Item>
+                <List.Item onClick={() => logoutHandler(item)}>
                   <List.Item.Meta avatar={item.icon} title={<span>{item.label}</span>} />
                 </List.Item>
               )}
@@ -122,6 +151,7 @@ function NavigationBar() {
             borderRight: 0,
           }}
           items={itemsOptions}
+          onClick={onSidebarClickHandler}
         />
       </Drawer>
     </div>
