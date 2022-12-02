@@ -71,6 +71,11 @@
         "unpublishEvent": "Unpublish event",
         "deleteEvent": "Delete event"
       },
+      "publishState": {
+        "published": "Published",
+        "draft": "Draft",
+        "pendingReview": "Pending Review"
+      },
       "list": {
         "createdBy": "Created by",
         "updatedBy": "Updated",
