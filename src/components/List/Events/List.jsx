@@ -107,13 +107,18 @@ function Lists(props) {
               <div className="event-list-status">
                 <span className="event-list-status-created-by">
                   {t('dashboard.events.list.createdBy')}&nbsp;
-                  <span className="event-list-status-userdetail">{eventItem?.creator?.userName}</span>
+                  <span className="event-list-status-userdetail">
+                    {eventItem?.creator?.firstName?.charAt(0)}
+                    {eventItem?.creator?.lastName}
+                  </span>
                 </span>
-                {eventItem?.modifier?.userName ? (
+                {eventItem?.modifier?.firstName ? (
                   <span className="event-list-status-updated-by">
                     {t('dashboard.events.list.updatedBy')}&nbsp;
                     {moment(eventItem?.modifier?.date).format('DD-MM-YYYY')} {t('dashboard.events.list.by')}&nbsp;
-                    <span className="event-list-status-userdetail">{eventItem?.modifier?.userName}</span>
+                    <span className="event-list-status-userdetail">
+                      {eventItem?.modifier?.firstName?.charAt(0)} {eventItem?.creator?.lastName}
+                    </span>
                   </span>
                 ) : (
                   <></>
