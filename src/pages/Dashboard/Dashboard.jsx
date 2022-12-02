@@ -10,6 +10,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getUserDetails } from '../../redux/reducer/userSlice';
 import { useLazyGetCalendarQuery, useGetAllCalendarsQuery } from '../../services/calendar';
 import { setSelectedCalendar } from '../../redux/reducer/selectedCalendarSlice';
+import { setInterfaceLanguage } from '../../redux/reducer/interfaceLanguageSlice';
+import i18n from 'i18next';
 
 const { Header, Content } = Layout;
 
@@ -21,13 +23,15 @@ function Dashboard() {
   const { data: allCalendarsData } = useGetAllCalendarsQuery();
 
   let { calendarId } = useParams();
-  const { accessToken } = useSelector(getUserDetails);
+  const { accessToken, user } = useSelector(getUserDetails);
 
   useEffect(() => {
     if (!accessToken && accessToken === '') navigate(PathName.Login);
     else {
       if (location?.state?.previousPath?.toLowerCase() === 'login' || !calendarId)
         navigate(`${PathName.Dashboard}/${allCalendarsData?.data[0]?.id}${PathName.Events}`);
+      dispatch(setInterfaceLanguage(user?.interfaceLanguage?.toLowerCase()));
+      i18n.changeLanguage(user?.interfaceLanguage?.toLowerCase());
     }
   }, [accessToken]);
 

@@ -71,6 +71,11 @@
         "unpublishEvent": "Dépublier l’événement",
         "deleteEvent": "Supprimer l’événement"
       },
+      "publishState": {
+        "published": "Publié",
+        "draft": "Brouillon",
+        "pendingReview": "Attente D’approbation"
+      },
       "list": {
         "createdBy": "Créé par",
         "updatedBy": "Modifié le",

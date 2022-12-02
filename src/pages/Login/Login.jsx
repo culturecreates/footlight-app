@@ -21,23 +21,21 @@ const Login = () => {
   const [login, { error }] = useLoginMutation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { accessToken, user } = useSelector(getUserDetails);
+  const { accessToken } = useSelector(getUserDetails);
 
   const onFinish = (values) => {
     login({ email: values.email, password: values.password })
       .unwrap()
       .then((response) => {
         navigate(PathName.Dashboard, { state: { previousPath: 'login' } });
-        dispatch(setInterfaceLanguage(response.user.interfaceLanguage));
-        i18n.changeLanguage(response?.user?.interfaceLanguage);
+        dispatch(setInterfaceLanguage(response.user.interfaceLanguage?.toLowerCase()));
+        i18n.changeLanguage(response?.user?.interfaceLanguage?.toLowerCase());
       });
   };
 
   useEffect(() => {
     if (accessToken && accessToken != '') {
       navigate(PathName.Dashboard, { state: { previousPath: 'login' } });
-      dispatch(setInterfaceLanguage(user?.interfaceLanguage));
-      i18n.changeLanguage(user?.interfaceLanguage);
     }
   }, [accessToken]);
 
