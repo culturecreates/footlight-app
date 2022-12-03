@@ -60,11 +60,11 @@ function Lists(props) {
             title={
               <div className="event-list-title">
                 <span className="event-list-title-heading">
-                  {moment(eventItem?.startDate).format('DD-MM-YYYY')}
+                  {moment(eventItem?.startDate).format('DD-MMM-YYYY')?.toUpperCase()}
                   {eventItem?.endDate ? (
                     <>
                       &nbsp;{t('dashboard.events.list.to')}&nbsp;
-                      {moment(eventItem?.endDate).format('DD-MM-YYYY')}
+                      {moment(eventItem?.endDate).format('DD-MMM-YYYY')?.toUpperCase()}
                     </>
                   ) : (
                     <></>
@@ -115,7 +115,8 @@ function Lists(props) {
                 {eventItem?.modifier?.firstName ? (
                   <span className="event-list-status-updated-by">
                     {t('dashboard.events.list.updatedBy')}&nbsp;
-                    {moment(eventItem?.modifier?.date).format('DD-MM-YYYY')} {t('dashboard.events.list.by')}&nbsp;
+                    {moment(eventItem?.modifier?.date).format('DD-MMM-YYYY')?.toUpperCase()}&nbsp;
+                    {t('dashboard.events.list.by')}&nbsp;
                     <span className="event-list-status-userdetail">
                       {eventItem?.modifier?.firstName?.charAt(0)}
                       {eventItem?.creator?.lastName}
