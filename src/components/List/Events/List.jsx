@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { bilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
-import { getinterfaceLanguage } from '../../../redux/reducer/interfaceLanguageSlice';
+import { getUserDetails } from '../../../redux/reducer/userSlice';
 
 const { useBreakpoint } = Grid;
 
@@ -18,7 +18,7 @@ function Lists(props) {
   const screens = useBreakpoint();
   const { data, pageNumber, setPageNumber } = props;
 
-  const interfaceLanguage = useSelector(getinterfaceLanguage);
+  const { user } = useSelector(getUserDetails);
 
   const totalCount = data?.totalCount;
   return (
@@ -85,7 +85,7 @@ function Lists(props) {
                   {bilingual({
                     en: eventItem?.name?.en,
                     fr: eventItem?.name?.fr,
-                    interfaceLanguage: interfaceLanguage,
+                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                   })}
                 </span>
                 <span className="event-list-description-place">
@@ -93,7 +93,7 @@ function Lists(props) {
                     return bilingual({
                       en: place?.name?.en,
                       fr: place?.name?.fr,
-                      interfaceLanguage: interfaceLanguage,
+                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                     });
                   })}
                 </span>
