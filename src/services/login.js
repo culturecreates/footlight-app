@@ -1,11 +1,11 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { baseQuery } from '../utils/services';
+import { baseQueryWithReauth } from '../utils/services';
 import Cookies from 'js-cookie';
 import { setUser } from '../redux/reducer/userSlice';
 
 export const loginApi = createApi({
   reducerPath: 'loginApi',
-  baseQuery: baseQuery,
+  baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (credentials) => ({

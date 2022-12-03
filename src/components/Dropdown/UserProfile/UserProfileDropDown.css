@@ -1,0 +1,35 @@
+.user-profile-dropwdown-content .dropdown-avatar {
+  background: #1b3de6;
+}
+
+.user-profile-dropwdown-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  gap: 12px;
+  height: 32px;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  cursor: pointer;
+}
+
+.user-profile-dropwdown-content .user-profile-user-name {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  color: #222732;
+  text-transform: lowercase;
+}
+
+@media only screen and (max-width: 600px) {
+  .user-profile-dropwdown-content {
+    display: none;
+  }
+}

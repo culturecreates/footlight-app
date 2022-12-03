@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Button, notification } from 'antd';
+import { Form, Button, notification } from 'antd';
 import { UpOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,7 @@ import './forgotPassword.css';
 import LoginButton from '../../components/Button/Auth';
 import { PathName } from '../../constants/pathName';
 import { useForgotPasswordMutation } from '../../services/users';
+import LoginInput from '../../components/Input/Common';
 
 function ForgotPassword() {
   const { t } = useTranslation();
@@ -20,12 +21,11 @@ function ForgotPassword() {
       .unwrap()
       .then((response) => {
         if (response.statusCode == 202) {
-          //ToDo: Add the description to the locale
           notification.info({
-            description: 'Password reset code is sent to the email address',
+            description: t('forgotPassword.successNotification'),
             placement: 'top',
           });
-          navigate(PathName.ResetPassword);
+          navigate(PathName.ResetPassword, { state: { email: values?.email } });
         }
       });
   };
@@ -48,6 +48,7 @@ function ForgotPassword() {
           autoComplete="off"
           requiredMark={false}
           scrollToFirstError={true}
+          validateTrigger={'onBlur'}
           form={form}
           onFinish={onFinish}>
           <Form.Item
@@ -69,10 +70,7 @@ function ForgotPassword() {
                 message: t('forgotPassword.validations.emptyEmail'),
               },
             ]}>
-            <Input
-              className="forgot-password-form-item-input-style"
-              placeholder={t('forgotPassword.emailPlaceHolder')}
-            />
+            <LoginInput placeholder={t('forgotPassword.emailPlaceHolder')} />
           </Form.Item>
 
           <Form.Item className="forgot-password-reset-code-button-form-item">

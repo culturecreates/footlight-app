@@ -9,9 +9,9 @@
     "loginButtonText": "Se Connecter ",
     "resetMyPasswordText": "Réinitialiser votre mot de passe",
     "validations": {
-      "invalidEmail": "Veuillez saisir un courriel valide.",
-      "emptyEmail": "Veuillez saisir votre courriel.",
-      "emptyPassword": "S'il vous plait entrez votre mot de passe."
+      "invalidEmail": "Entrer une adresse courriel valide.",
+      "emptyEmail": "Entrez une adresse courriel.",
+      "emptyPassword": "Entrez votre mot de passe."
     }
   },
   "forgotPassword": {
@@ -22,10 +22,11 @@
     "sentResetCodeText": "Envoyer",
     "alreadyHaveCode": "J'ai déjà un code",
     "validations": {
-      "invalidEmail": "Veuillez saisir un courriel valide.",
-      "emptyEmail": "Veuillez saisir votre courriel.",
+      "invalidEmail": "Entrer une adresse courriel valide.",
+      "emptyEmail": "Entrez une adresse courriel.",
       "emptyPassword": "S'il vous plait entrez votre mot de passe."
-    }
+    },
+    "successNotification": "Vérifiez votre adresse courriel pour votre code de réinitialisation. Si vous avez besoin d'aide, contactez admin@culturecreates.com."
   },
   "resetPassword": {
     "backToLogin": "Retour à la connection",
@@ -41,9 +42,47 @@
     "resetPassword": "Réinitialiser le mot de passe",
     "newResetcode": "Envoyer un nouveau code de réinitialisation",
     "validations": {
-        "invalidEmail": "Veuillez saisir un courriel valide.",
-        "emptyEmail": "Veuillez saisir votre courriel.",
-        "emptyPassword": "S'il vous plait entrez votre mot de passe."
+      "invalidEmail": "Entrer une adresse courriel valide.",
+      "emptyEmail": "Entrez une adresse courriel.",
+      "emptyPassword": "Entrez votre mot de passe.",
+      "passwordMatch": "Les deux mots de passe ne correspondent pas.",
+      "digitCode": "Entrer votre code"
+    },
+    "successNotification": "Succès! Votre mot de passe a été réinitialisé."
+  },
+  "dashboard": {
+    "topNavigation": {
+      "userProfile": "Profil",
+      "logOut": "Déconnexion"
+    },
+    "sidebar": {
+      "events": "Événements",
+      "places": "Lieux",
+      "organizations": "Organisations",
+      "taxonomies": "Taxonomies",
+      "settings": "Paramètres"
+    },
+    "events": {
+      "heading": "Calendrier des événements",
+      "searchPlaceholder": "Rechercher un événement",
+      "addEvent": "Événement",
+      "publishOptions": {
+        "publishEvent": "Publier l’événement",
+        "unpublishEvent": "Dépublier l’événement",
+        "deleteEvent": "Supprimer l’événement"
+      },
+      "publishState": {
+        "published": "Publié",
+        "draft": "Brouillon",
+        "pendingReview": "Attente D’approbation"
+      },
+      "list": {
+        "createdBy": "Créé par",
+        "updatedBy": "Modifié le",
+        "by": "par",
+        "to": "au",
+        "event": "événements"
       }
+    }
   }
 }

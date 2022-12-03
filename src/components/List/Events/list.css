@@ -1,0 +1,106 @@
+.event-list-wrapper .event-list-more-icon {
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.event-list-wrapper .event-list-item-wrapper {
+  border-bottom: none;
+}
+
+.event-list-wrapper .event-list-image {
+  height: 104px;
+  width: 104px;
+}
+.event-list-wrapper .event-list-title {
+  display: flex;
+  align-items: center;
+}
+.event-list-wrapper .event-list-title-heading {
+  font-weight: 600;
+  font-size: 12px;
+  color: #222732;
+}
+.event-list-wrapper .event-list-description {
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+  gap: 8px;
+}
+
+.event-list-wrapper .event-list-description-name {
+  font-weight: 700;
+  color: #222732;
+}
+.event-list-wrapper .event-list-description-place {
+  font-weight: 400;
+  color: #646d7b;
+}
+
+.event-list-wrapper .event-list-status {
+  font-weight: 400;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  color: #646d7b;
+}
+.event-list-wrapper .event-status-list-item {
+  text-align: right;
+}
+
+.event-list-wrapper .event-list-status-userdetail {
+  text-decoration: underline;
+  font-weight: 600;
+  text-transform: lowercase;
+}
+
+.event-list-item-wrapper .event-list-options-responsive {
+  display: none;
+}
+
+@media only screen and (max-width: 1024px) {
+  .event-list-wrapper {
+    width: 592px;
+  }
+
+  .event-list-wrapper .event-list-title-heading {
+    white-space: nowrap;
+  }
+
+  .event-list-wrapper .event-list-status-updated-by {
+    width: 120px;
+    margin-left: auto;
+  }
+}
+@media only screen and (max-width: 428px) {
+  .event-list-wrapper {
+    width: 328px;
+  }
+
+  .event-list-wrapper .ant-list-item-meta-avatar {
+    display: none;
+  }
+  .event-list-wrapper .event-status-list-item {
+    text-align: left;
+  }
+  .event-list-wrapper .event-list-status-updated-by {
+    width: initial;
+    margin-left: initial;
+  }
+
+  .event-list-wrapper .ant-list-item-action {
+    display: none;
+  }
+
+  .event-list-wrapper .event-list-item-wrapper {
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+  .event-list-item-wrapper .event-list-options-responsive {
+    display: block;
+  }
+  .event-list-item-wrapper .ant-list-item-extra {
+    margin: 0;
+    align-self: center;
+    font-size: 24px;
+  }
+}

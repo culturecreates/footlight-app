@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import Cookies from 'js-cookie';
 
 const initialState = {
-  language: 'en',
+  language: '',
 };
 
 export const interfaceLanguageSlice = createSlice({

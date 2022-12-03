@@ -1,0 +1,22 @@
+.calendar-name-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-name-wrapper .calendar-name {
+  font-weight: 700;
+  font-size: 16px;
+  color: #222732;
+}
+
+.calendar-name-wrapper .calendar-organisation-details {
+  font-weight: 400;
+  font-size: 12px;
+  color: #222732;
+}
+
+.calendar-name-wrapper .calendar-name:hover,
+.calendar-name-wrapper .calendar-organisation-details:hover,
+.calendar-name-wrapper:hover {
+  color: #0f0e98;
+}
