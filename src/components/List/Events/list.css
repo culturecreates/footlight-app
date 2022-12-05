@@ -10,6 +10,7 @@
 .event-list-wrapper .event-list-image {
   height: 104px;
   width: 104px;
+  object-fit: cover;
 }
 .event-list-wrapper .event-list-title {
   display: flex;
