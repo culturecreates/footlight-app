@@ -23,7 +23,6 @@ function Calendar({ children, allCalendarsData }) {
           <span className="calendar-name">
             {bilingual({ en: item?.name?.en, fr: item?.name?.fr, interfaceLanguage: interfaceLanguage })}
           </span>
-          <span className="calendar-organisation-details">{item?.organizationTypes?.length}&nbsp;members </span>
         </span>
       ),
       key: key,
