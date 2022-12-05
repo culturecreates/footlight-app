@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './calendar.css';
 import { Dropdown } from 'antd';
 import { useDispatch } from 'react-redux';
@@ -14,6 +14,7 @@ function Calendar({ children, allCalendarsData }) {
   const navigate = useNavigate();
   const interfaceLanguage = useSelector(getinterfaceLanguage);
 
+  const [open, setOpen] = useState(false);
   const items = allCalendarsData?.data?.map((item) => {
     const key = item?.id;
     return {
@@ -44,12 +45,18 @@ function Calendar({ children, allCalendarsData }) {
     dispatch(setSelectedCalendar(String(key)));
   };
 
+  const handleOpenChange = (flag) => {
+    if (allCalendarsData?.data?.length > 1) setOpen(flag);
+  };
+
   return (
     <Dropdown
       menu={{
         items,
         onClick,
       }}
+      open={open}
+      onOpenChange={handleOpenChange}
       trigger={['click']}>
       {children}
     </Dropdown>
