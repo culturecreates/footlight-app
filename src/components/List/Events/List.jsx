@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { bilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
-import { getinterfaceLanguage } from '../../../redux/reducer/interfaceLanguageSlice';
+import { getUserDetails } from '../../../redux/reducer/userSlice';
 
 const { useBreakpoint } = Grid;
 
@@ -18,7 +18,7 @@ function Lists(props) {
   const screens = useBreakpoint();
   const { data, pageNumber, setPageNumber } = props;
 
-  const interfaceLanguage = useSelector(getinterfaceLanguage);
+  const { user } = useSelector(getUserDetails);
 
   const totalCount = data?.totalCount;
   return (
@@ -60,11 +60,11 @@ function Lists(props) {
             title={
               <div className="event-list-title">
                 <span className="event-list-title-heading">
-                  {moment(eventItem?.startDate).format('DD-MM-YYYY')}
+                  {moment(eventItem?.startDate).format('DD-MMM-YYYY')?.toUpperCase()}
                   {eventItem?.endDate ? (
                     <>
                       &nbsp;{t('dashboard.events.list.to')}&nbsp;
-                      {moment(eventItem?.endDate).format('DD-MM-YYYY')}
+                      {moment(eventItem?.endDate).format('DD-MMM-YYYY')?.toUpperCase()}
                     </>
                   ) : (
                     <></>
@@ -85,7 +85,7 @@ function Lists(props) {
                   {bilingual({
                     en: eventItem?.name?.en,
                     fr: eventItem?.name?.fr,
-                    interfaceLanguage: interfaceLanguage,
+                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                   })}
                 </span>
                 <span className="event-list-description-place">
@@ -93,7 +93,7 @@ function Lists(props) {
                     return bilingual({
                       en: place?.name?.en,
                       fr: place?.name?.fr,
-                      interfaceLanguage: interfaceLanguage,
+                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                     });
                   })}
                 </span>
@@ -115,9 +115,11 @@ function Lists(props) {
                 {eventItem?.modifier?.firstName ? (
                   <span className="event-list-status-updated-by">
                     {t('dashboard.events.list.updatedBy')}&nbsp;
-                    {moment(eventItem?.modifier?.date).format('DD-MM-YYYY')} {t('dashboard.events.list.by')}&nbsp;
+                    {moment(eventItem?.modifier?.date).format('DD-MMM-YYYY')?.toUpperCase()}&nbsp;
+                    {t('dashboard.events.list.by')}&nbsp;
                     <span className="event-list-status-userdetail">
-                      {eventItem?.modifier?.firstName?.charAt(0)} {eventItem?.creator?.lastName}
+                      {eventItem?.modifier?.firstName?.charAt(0)}
+                      {eventItem?.creator?.lastName}
                     </span>
                   </span>
                 ) : (
