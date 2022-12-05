@@ -43,6 +43,7 @@ function Events() {
               placeholder={t('dashboard.events.searchPlaceholder')}
               onPressEnter={(e) => onSearchHandler(e)}
               defaultValue={eventSearchQuery}
+              allowClear={true}
             />
           </Col>
         </Row>

@@ -12,7 +12,7 @@
   /* width: 224px;
   height: 56px; */
 }
-.sidebar-wrapper .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
+.sidebar-wrapper .sidebar-main-menu .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
   background-color: #eff2ff;
   font-weight: 700;
   font-size: 16px;
