@@ -6,8 +6,8 @@
     "emailPlaceHolder": "Entrez votre courriel",
     "passwordPlaceHolder": "Entrez votre mot de passe",
     "rememberMe": "Se souvenir de moi",
-    "loginButtonText": "Se Connecter ",
-    "resetMyPasswordText": "Réinitialiser votre mot de passe",
+    "loginButtonText": "Se connecter ",
+    "resetMyPasswordText": "Réinitialisez votre mot de passe",
     "validations": {
       "invalidEmail": "Entrer une adresse courriel valide.",
       "emptyEmail": "Entrez une adresse courriel.",
@@ -16,7 +16,7 @@
   },
   "forgotPassword": {
     "backToLogin": "Retour à la connection",
-    "header": "Réinitialiser votre mot de passe",
+    "header": "Réinitialisez votre mot de passe",
     "email": "Courriel",
     "emailPlaceHolder": "Entrez votre courriel",
     "sentResetCodeText": "Envoyer",
@@ -35,7 +35,7 @@
     "email": "Courriel",
     "emailPlaceHolder": "Entrez votre courriel",
     "inputNumber": "Code de réinitialisation à 6 chiffres",
-    "inputNumberPlaceholder": "Entrer votre code",
+    "inputNumberPlaceholder": "Entrez votre code",
     "newPassword": "Nouveau mot de passe",
     "confirmNewPassword": "Confirmer votre nouveau mot de passe",
     "passwordPlaceHolder": "Entrez votre mot de passe",
@@ -67,21 +67,21 @@
       "searchPlaceholder": "Rechercher un événement",
       "addEvent": "Événement",
       "publishOptions": {
-        "publishEvent": "Publier l’événement",
-        "unpublishEvent": "Dépublier l’événement",
-        "deleteEvent": "Supprimer l’événement"
+        "publishEvent": "Publier l'événement",
+        "unpublishEvent": "Dépublier l'événement",
+        "deleteEvent": "Supprimer l'événement"
       },
       "publishState": {
         "published": "Publié",
         "draft": "Brouillon",
-        "pendingReview": "Attente D’approbation"
+        "pendingReview": "Attente d'approbation"
       },
       "list": {
         "createdBy": "Créé par",
         "updatedBy": "Modifié le",
         "by": "par",
         "to": "au",
-        "event": "événements"
+        "event": "événement"
       }
     }
   }
