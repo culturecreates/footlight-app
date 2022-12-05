@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './calendar.css';
 import { Dropdown } from 'antd';
 import { useDispatch } from 'react-redux';
@@ -14,6 +14,7 @@ function Calendar({ children, allCalendarsData }) {
   const navigate = useNavigate();
   const { user } = useSelector(getUserDetails);
 
+  const [open, setOpen] = useState(false);
   const items = allCalendarsData?.data?.map((item) => {
     const key = item?.id;
     return {
@@ -44,6 +45,11 @@ function Calendar({ children, allCalendarsData }) {
   const onClick = ({ key }) => {
     navigate(`${PathName.Dashboard}/${key}${PathName.Events}`);
     dispatch(setSelectedCalendar(String(key)));
+    setOpen(false);
+  };
+
+  const handleOpenChange = (flag) => {
+    if (allCalendarsData?.data?.length > 1) setOpen(flag);
   };
 
   return (
@@ -52,6 +58,8 @@ function Calendar({ children, allCalendarsData }) {
         items,
         onClick,
       }}
+      open={open}
+      onOpenChange={handleOpenChange}
       trigger={['click']}>
       {children}
     </Dropdown>
