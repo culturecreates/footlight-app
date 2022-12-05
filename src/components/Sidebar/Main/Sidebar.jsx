@@ -72,25 +72,29 @@ function Sidebar(props) {
       collapsed={collapsed}
       onCollapse={(value) => setCollapsed(value)}
       breakpoint={('sm', 'xs', 'lg')}>
-      <CalendarList allCalendarsData={allCalendarsData}>
+      <div className="sidebar-calendar-menu">
+        <CalendarList allCalendarsData={allCalendarsData}>
+          <Menu
+            defaultSelectedKeys={['1']}
+            style={{
+              height: 'auto',
+              borderRight: 0,
+            }}
+            items={calendarItem}
+          />
+        </CalendarList>
+      </div>
+      <div className="sidebar-main-menu">
         <Menu
           defaultSelectedKeys={['1']}
           style={{
             height: 'auto',
             borderRight: 0,
           }}
-          items={calendarItem}
+          items={items}
+          onClick={onSidebarClickHandler}
         />
-      </CalendarList>
-      <Menu
-        defaultSelectedKeys={['1']}
-        style={{
-          height: 'auto',
-          borderRight: 0,
-        }}
-        items={items}
-        onClick={onSidebarClickHandler}
-      />
+      </div>
     </Sider>
   );
 }
