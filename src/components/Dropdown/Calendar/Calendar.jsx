@@ -42,6 +42,7 @@ function Calendar({ children, allCalendarsData }) {
     //Set params after dashboard in route for the selected calendar
     navigate(`${PathName.Dashboard}/${key}${PathName.Events}`);
     dispatch(setSelectedCalendar(String(key)));
+    setOpen(false);
   };
 
   const handleOpenChange = (flag) => {
