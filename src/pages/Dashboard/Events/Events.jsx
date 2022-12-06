@@ -26,6 +26,7 @@ function Events() {
   }, [calendarId, pageNumber, eventSearchQuery]);
 
   const onSearchHandler = (event) => {
+    setPageNumber(1);
     setEventSearchQuery(event.target.value);
   };
 
