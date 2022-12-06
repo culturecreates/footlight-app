@@ -19,7 +19,6 @@ function Lists(props) {
   const { data, pageNumber, setPageNumber } = props;
 
   const { user } = useSelector(getUserDetails);
-
   const totalCount = data?.totalCount;
   return (
     <List
@@ -34,7 +33,7 @@ function Lists(props) {
         pageSize: 10,
         hideOnSinglePage: true,
         total: totalCount,
-        current: pageNumber,
+        current: Number(pageNumber),
       }}
       renderItem={(eventItem, index) => (
         <List.Item
