@@ -5,10 +5,13 @@ import { setInterfaceLanguage } from '../../../redux/reducer/interfaceLanguageSl
 import { useDispatch } from 'react-redux';
 import { locale } from '../../../constants/localeSupport';
 import i18n from 'i18next';
+import Cookies from 'js-cookie';
 
 function NavigationBar() {
   const dispatch = useDispatch();
-  const [changeLanguageTo, setchangeLanguageTo] = useState(locale.FRENCH.label);
+  const [changeLanguageTo, setchangeLanguageTo] = useState(
+    Cookies.get('interfaceLanguage') === locale.FRENCH.key ? locale.ENGLISH.label : locale.FRENCH.label,
+  );
 
   const changeLanguageHandler = (event) => {
     if (event.target.outerText === locale.FRENCH.label) {
