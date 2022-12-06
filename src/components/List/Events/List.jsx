@@ -55,6 +55,7 @@ function Lists(props) {
             </span>,
           ]}>
           <List.Item.Meta
+            className="event-list-item-meta"
             avatar={<img src={eventItem?.image?.original?.uri} className="event-list-image" />}
             title={
               <div className="event-list-title">
