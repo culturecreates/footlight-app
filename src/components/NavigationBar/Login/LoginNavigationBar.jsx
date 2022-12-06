@@ -4,13 +4,10 @@ import OutlinedButton from '../../Button/Outlined';
 import { setInterfaceLanguage } from '../../../redux/reducer/interfaceLanguageSlice';
 import { useDispatch } from 'react-redux';
 import i18n from 'i18next';
-import Cookies from 'js-cookie';
 
 function NavigationBar() {
   const dispatch = useDispatch();
-  const [changeLanguageTo, setchangeLanguageTo] = useState(
-    Cookies.get('interfaceLanguage') === 'fr' ? 'English' : 'Français',
-  );
+  const [changeLanguageTo, setchangeLanguageTo] = useState('Français');
 
   const changeLanguageHandler = (event) => {
     if (event.target.outerText === 'Français') {

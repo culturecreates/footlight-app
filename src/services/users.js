@@ -8,10 +8,13 @@ export const usersApi = createApi({
       query: () => `users/roles`,
     }),
     forgotPassword: builder.mutation({
-      query: (email) => {
+      query: ({ email, language }) => {
         return {
           url: `users/recover-password`,
           method: 'PATCH',
+          headers: {
+            language: language,
+          },
           body: { email },
         };
       },
