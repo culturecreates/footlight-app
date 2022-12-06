@@ -94,16 +94,18 @@ function NavigationBar(props) {
       <Drawer
         className="sidebar-navigation-menu-responsive-drawer"
         title={
-          <CalendarList allCalendarsData={allCalendarsData}>
-            <Menu
-              defaultSelectedKeys={['1']}
-              style={{
-                height: 'auto',
-                borderRight: 0,
-              }}
-              items={calendarItem}
-            />
-          </CalendarList>
+          <div className="sidebar-calendar-menu-responsive">
+            <CalendarList allCalendarsData={allCalendarsData}>
+              <Menu
+                defaultSelectedKeys={['1']}
+                style={{
+                  height: 'auto',
+                  borderRight: 0,
+                }}
+                items={calendarItem}
+              />
+            </CalendarList>
+          </div>
         }
         extra={
           <Button
@@ -144,15 +146,17 @@ function NavigationBar(props) {
             />
           </>
         }>
-        <Menu
-          defaultSelectedKeys={['1']}
-          style={{
-            height: 'auto',
-            borderRight: 0,
-          }}
-          items={itemsOptions}
-          onClick={onSidebarClickHandler}
-        />
+        <div className="sidebar-main-menu-repsonsive">
+          <Menu
+            defaultSelectedKeys={['1']}
+            style={{
+              height: 'auto',
+              borderRight: 0,
+            }}
+            items={itemsOptions}
+            onClick={onSidebarClickHandler}
+          />
+        </div>
       </Drawer>
     </div>
   );
