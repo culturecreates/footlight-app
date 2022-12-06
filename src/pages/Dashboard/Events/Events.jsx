@@ -36,6 +36,9 @@ function Events() {
           <Col xs={2} sm={4} md={6} lg={8} xl={10}>
             <h4 className="events-heading">{t('dashboard.events.heading')}</h4>
           </Col>
+          <div className="event-add-button">
+            <AddEvent label={t('dashboard.events.addEvent')} />
+          </div>
         </Row>
         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
           <Col xs={24} sm={24} md={12} lg={10} xl={8}>
@@ -56,9 +59,6 @@ function Events() {
             )}
           </Col>
         </Row>
-      </Col>
-      <Col span={6}>
-        <AddEvent label={t('dashboard.events.addEvent')} />
       </Col>
     </Row>
   );
