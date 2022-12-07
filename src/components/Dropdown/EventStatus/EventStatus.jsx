@@ -3,6 +3,7 @@ import { Dropdown } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { eventPublishOptions } from '../../../constants/eventPublishOptions';
 import './eventStatus.css';
+import ProtectedComponents from '../../../layout/ProtectedComponents';
 
 function EventStatusOptions({ children }) {
   const { t } = useTranslation();
@@ -13,15 +14,18 @@ function EventStatusOptions({ children }) {
       label: t(item.label),
     };
   });
+
   return (
-    <Dropdown
-      className="calendar-dropdown-wrapper"
-      menu={{
-        items,
-      }}
-      trigger={['click']}>
-      {children}
-    </Dropdown>
+    <ProtectedComponents>
+      <Dropdown
+        className="calendar-dropdown-wrapper"
+        menu={{
+          items,
+        }}
+        trigger={['click']}>
+        {children}
+      </Dropdown>
+    </ProtectedComponents>
   );
 }
 
