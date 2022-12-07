@@ -40,7 +40,7 @@ function Lists(props) {
         <List.Item
           className="event-list-item-wrapper"
           actions={[
-            <EventStatusOptions key={index}>
+            <EventStatusOptions key={index} publishState={eventItem?.publishState}>
               <span>
                 <MoreOutlined className="event-list-more-icon" key={index} />
               </span>
@@ -48,7 +48,7 @@ function Lists(props) {
           ]}
           extra={[
             <span key={index} className="event-list-options-responsive">
-              <EventStatusOptions key={index}>
+              <EventStatusOptions key={index} publishState={eventItem?.publishState}>
                 <span>
                   <MoreOutlined className="event-list-more-icon-responsive" key={index} />
                 </span>
