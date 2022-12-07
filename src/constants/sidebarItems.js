@@ -2,8 +2,7 @@ import Icon, { CalendarOutlined, SettingOutlined, DatabaseOutlined, EnvironmentO
 import { ReactComponent as Organizations } from '../assets/icons/organisations.svg';
 
 const iconStyle = {
-  height: '24px',
-  width: '24px',
+  fontSize: '18px',
   color: '#1B3DE6',
 };
 export const sidebarItems = [
