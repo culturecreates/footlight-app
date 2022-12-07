@@ -12,6 +12,7 @@ import { useLazyGetCalendarQuery, useGetAllCalendarsQuery } from '../../services
 import { setSelectedCalendar } from '../../redux/reducer/selectedCalendarSlice';
 import { setInterfaceLanguage } from '../../redux/reducer/interfaceLanguageSlice';
 import i18n from 'i18next';
+import moment from 'moment';
 
 const { Header, Content } = Layout;
 
@@ -32,6 +33,7 @@ function Dashboard() {
         navigate(`${PathName.Dashboard}/${allCalendarsData?.data[0]?.id}${PathName.Events}`);
       dispatch(setInterfaceLanguage(user?.interfaceLanguage?.toLowerCase()));
       i18n.changeLanguage(user?.interfaceLanguage?.toLowerCase());
+      moment.locale(user?.interfaceLanguage?.toLowerCase());
     }
   }, [accessToken]);
 
