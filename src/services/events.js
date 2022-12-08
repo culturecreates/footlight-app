@@ -13,9 +13,30 @@ export const eventsApi = createApi({
           'calendar-id': calendarId,
         },
       }),
+      providesTags: ['Events'],
       transformResponse: (response) => response,
+    }),
+    updateEventState: builder.mutation({
+      query: ({ id, calendarId }) => ({
+        url: `events/${id}/toggle-publish`,
+        method: 'PATCH',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+      invalidatesTags: ['Events'],
+    }),
+    deleteEvent: builder.mutation({
+      query: ({ id, calendarId }) => ({
+        url: `events/${id}`,
+        method: 'DELETE',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+      invalidatesTags: ['Events'],
     }),
   }),
 });
 
-export const { useLazyGetEventsQuery } = eventsApi;
+export const { useLazyGetEventsQuery, useUpdateEventStateMutation, useDeleteEventMutation } = eventsApi;
