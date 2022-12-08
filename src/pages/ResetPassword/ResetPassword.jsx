@@ -81,7 +81,7 @@ function ResetPassword() {
             label={t('resetPassword.inputNumber')}
             name="oneTimePassword"
             {...(error && {
-              help: error?.data?.message,
+              help: t('resetPassword.failure'),
               validateStatus: 'error',
             })}
             rules={[
