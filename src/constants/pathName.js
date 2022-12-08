@@ -8,5 +8,6 @@ export const PathName = {
   Organizations: '/organizations',
   Taxonomies: '/taxonomies',
   Settings: '/settings',
+  AddEvent: '/add-event',
   NotFound: '*',
 };

@@ -5,12 +5,14 @@ import { useTranslation } from 'react-i18next';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import EventList from '../../../components/List/Events';
 import { useLazyGetEventsQuery } from '../../../services/events';
-import { useParams, useSearchParams, createSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams, createSearchParams, useNavigate } from 'react-router-dom';
 import AddEvent from '../../../components/Button/AddEvent';
+import { PathName } from '../../../constants/pathName';
 
 function Events() {
   const { t } = useTranslation();
   const { calendarId } = useParams();
+  const navigate = useNavigate();
   let [searchParams, setSearchParams] = useSearchParams();
   const [getEvents, { data: eventsData, isLoading }] = useLazyGetEventsQuery();
 
@@ -29,7 +31,9 @@ function Events() {
     setPageNumber(1);
     setEventSearchQuery(event.target.value);
   };
-
+  const addEventHandler = () => {
+    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}`);
+  };
   return (
     <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
       <Col span={18}>
@@ -38,7 +42,7 @@ function Events() {
             <h4 className="events-heading">{t('dashboard.events.heading')}</h4>
           </Col>
           <div className="event-add-button">
-            <AddEvent label={t('dashboard.events.addEvent')} />
+            <AddEvent label={t('dashboard.events.addEvent')} onClick={addEventHandler} />
           </div>
         </Row>
         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
