@@ -20,7 +20,7 @@ function Dashboard() {
   const dispatch = useDispatch();
   const location = useLocation();
   const [getCalendar, { data: currentCalendarData }] = useLazyGetCalendarQuery();
-  const { data: allCalendarsData } = useGetAllCalendarsQuery();
+  const { data: allCalendarsData, isLoading } = useGetAllCalendarsQuery();
 
   let { calendarId } = useParams();
   const { accessToken, user } = useSelector(getUserDetails);
@@ -29,8 +29,7 @@ function Dashboard() {
     if (!accessToken && accessToken === '') navigate(PathName.Login);
     else {
       if (location?.state?.previousPath?.toLowerCase() === 'login' || !calendarId)
-        navigate(`${PathName.Dashboard}/${allCalendarsData?.data[0]?.id}${PathName.Events}`);
-      dispatch(setInterfaceLanguage(user?.interfaceLanguage?.toLowerCase()));
+        dispatch(setInterfaceLanguage(user?.interfaceLanguage?.toLowerCase()));
       i18n.changeLanguage(user?.interfaceLanguage?.toLowerCase());
     }
   }, [accessToken]);
@@ -39,8 +38,9 @@ function Dashboard() {
     if (calendarId) {
       getCalendar({ id: calendarId });
       dispatch(setSelectedCalendar(String(calendarId)));
-    }
-  }, [calendarId]);
+    } else if (!isLoading && allCalendarsData?.data)
+      navigate(`${PathName.Dashboard}/${allCalendarsData?.data[0]?.id}${PathName.Events}`);
+  }, [calendarId, isLoading, allCalendarsData]);
 
   return (
     <Layout className="dashboard-wrapper">

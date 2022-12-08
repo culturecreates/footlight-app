@@ -70,7 +70,6 @@ function ResponsiveSidebar(props) {
     }
   };
   useEffect(() => {
-    console.log(currentCalendarData);
     const calendarLabel = bilingual({
       en: currentCalendarData?.name?.en,
       fr: currentCalendarData?.name?.fr,
