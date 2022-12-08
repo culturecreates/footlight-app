@@ -5,6 +5,7 @@ import ForgotPassword from '../pages/ForgotPassword';
 import Dashboard from '../pages/Dashboard';
 import ResetPassword from '../pages/ResetPassword';
 import Events from '../pages/Dashboard/Events';
+import AddEvent from '../pages/Dashboard/AddEvent';
 
 export const router = createBrowserRouter([
   {
@@ -28,7 +29,7 @@ export const router = createBrowserRouter([
         path: `:calendarId${PathName.Events}`,
         element: <Events />,
       },
-      { path: `:calendarId${PathName.Events}${PathName.AddEvent}`, element: <>hai</> },
+      { path: `:calendarId${PathName.Events}${PathName.AddEvent}`, element: <AddEvent /> },
 
       {
         path: `:calendarId${PathName.Places}`,
