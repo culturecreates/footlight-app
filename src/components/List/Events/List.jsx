@@ -6,10 +6,11 @@ import EventStatus from '../../Tags/Events';
 import EventNumber from '../../Tags/EventNumber';
 import EventStatusOptions from '../../Dropdown/EventStatus/EventStatus';
 import { useTranslation } from 'react-i18next';
-import moment from 'moment';
+import FormatDate from '../../Date/FormatDate';
 import { bilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
+import i18n from 'i18next';
 
 const { useBreakpoint } = Grid;
 
@@ -17,9 +18,8 @@ function Lists(props) {
   const { t } = useTranslation();
   const screens = useBreakpoint();
   const { data, pageNumber, setPageNumber } = props;
-
+  const lang = i18n.language;
   const { user } = useSelector(getUserDetails);
-
   const totalCount = data?.totalCount;
   return (
     <List
@@ -34,7 +34,7 @@ function Lists(props) {
         pageSize: 10,
         hideOnSinglePage: true,
         total: totalCount,
-        current: pageNumber,
+        current: Number(pageNumber),
       }}
       renderItem={(eventItem, index) => (
         <List.Item
@@ -56,15 +56,16 @@ function Lists(props) {
             </span>,
           ]}>
           <List.Item.Meta
+            className="event-list-item-meta"
             avatar={<img src={eventItem?.image?.original?.uri} className="event-list-image" />}
             title={
               <div className="event-list-title">
                 <span className="event-list-title-heading">
-                  {moment(eventItem?.startDate).format('DD-MMM-YYYY')?.toUpperCase()}
+                  <FormatDate date={eventItem?.startDate} lang={lang} />
                   {eventItem?.endDate ? (
                     <>
                       &nbsp;{t('dashboard.events.list.to')}&nbsp;
-                      {moment(eventItem?.endDate).format('DD-MMM-YYYY')?.toUpperCase()}
+                      <FormatDate date={eventItem?.endDate} lang={lang} />
                     </>
                   ) : (
                     <></>
@@ -115,7 +116,8 @@ function Lists(props) {
                 {eventItem?.modifier?.firstName ? (
                   <span className="event-list-status-updated-by">
                     {t('dashboard.events.list.updatedBy')}&nbsp;
-                    {moment(eventItem?.modifier?.date).format('DD-MMM-YYYY')?.toUpperCase()}&nbsp;
+                    <FormatDate date={eventItem?.modifier?.date} lang={lang} />
+                    &nbsp;
                     {t('dashboard.events.list.by')}&nbsp;
                     <span className="event-list-status-userdetail">
                       {eventItem?.modifier?.firstName?.charAt(0)}

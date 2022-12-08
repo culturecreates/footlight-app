@@ -1,26 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './loginNavigationBar.css';
 import OutlinedButton from '../../Button/Outlined';
-import { setInterfaceLanguage } from '../../../redux/reducer/interfaceLanguageSlice';
-import { useDispatch } from 'react-redux';
 import i18n from 'i18next';
-import Cookies from 'js-cookie';
+import { useTranslation } from 'react-i18next';
 
 function NavigationBar() {
-  const dispatch = useDispatch();
-  const [changeLanguageTo, setchangeLanguageTo] = useState(
-    Cookies.get('interfaceLanguage') === 'fr' ? 'English' : 'Français',
-  );
-
-  const changeLanguageHandler = (event) => {
-    if (event.target.outerText === 'Français') {
-      dispatch(setInterfaceLanguage('fr'));
+  const { t } = useTranslation();
+  const changeLanguageHandler = (lang) => {
+    if (lang == 'en') {
       i18n.changeLanguage('fr');
-      setchangeLanguageTo('English');
     } else {
-      dispatch(setInterfaceLanguage('en'));
       i18n.changeLanguage('en');
-      setchangeLanguageTo('Français');
     }
   };
   return (
@@ -34,7 +24,7 @@ function NavigationBar() {
         <h6 className="logo-name">Footlight</h6>
       </div>
       <div>
-        <OutlinedButton label={changeLanguageTo} onClick={(event) => changeLanguageHandler(event)} />
+        <OutlinedButton label={t('login.changeLanguageTo')} onClick={() => changeLanguageHandler(i18n.language)} />
       </div>
     </div>
   );

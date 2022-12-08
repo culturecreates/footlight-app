@@ -12,7 +12,8 @@
       "invalidEmail": "Enter a valid email address.",
       "emptyEmail": "Enter an email address.",
       "emptyPassword": "Enter your password."
-    }
+    },
+    "changeLanguageTo": "Français"
   },
   "forgotPassword": {
     "backToLogin": "Back to login",
