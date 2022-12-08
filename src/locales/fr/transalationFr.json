@@ -95,6 +95,9 @@
         },
         "FETCH_ERROR" : {
           "message": "La connexion Internet semble être hors ligne."
+        },
+        "403": {
+          "message": "Non autorisé"
         }
       }
     }

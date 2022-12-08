@@ -18,8 +18,16 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
   if (result.error && result.error.status === 401) {
     // HTTP 401 Unauthorized response status code
     // indicates that the client request has not been completed because it lacks valid authentication credentials for the requested resource.
-    console.log('not ALLOWED');
     api.dispatch(clearUser());
+  }
+  if (result.error && result.error.status === 403) {
+    // HTTP 403 Forbidden response status code indicates that the server understands the request but refuses to authorize it.
+    // This status is similar to 401, but for the 403 Forbidden status code, re-authenticating makes no difference.
+    // The access is tied to the application logic, such as insufficient rights to a resource.
+    notification.info({
+      message: <Translation>{(t) => t('common.server.status.403.message')}</Translation>,
+      placement: 'top',
+    });
   }
   if (result?.meta?.response && result?.meta?.response.status === 503) {
     // HTTP 503 Service Unavailable server error response code indicates that the server is not ready to handle the request.

@@ -95,6 +95,9 @@
         },
         "FETCH_ERROR" : {
           "message": "The Internet connection appears to be offline."
+        },
+        "403": {
+          "message": "Not Authorized"
         }
       }
     }
