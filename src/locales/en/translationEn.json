@@ -90,8 +90,11 @@
     "server": {
       "status": {
         "503": {
-          "message": "Service Temporarily unavailable",
+          "message": "Service Temporarily Unavailable",
           "description": "The server is not responding. Please try again later."
+        },
+        "FETCH_ERROR" : {
+          "message": "The Internet connection appears to be offline."
         }
       }
     }

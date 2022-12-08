@@ -92,6 +92,9 @@
         "503": {
           "message": "Service temporairement indisponible",
           "description": "Le serveur ne répond pas. Veuillez réessayer plus tard."
+        },
+        "FETCH_ERROR" : {
+          "message": "La connexion Internet semble être hors ligne."
         }
       }
     }
