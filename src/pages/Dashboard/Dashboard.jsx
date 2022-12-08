@@ -56,7 +56,7 @@ function Dashboard() {
           <Content
             className="site-layout-background"
             style={{
-              padding: '34px 32px 0px 32px',
+              padding: '34px 32px 32px 32px',
               margin: 0,
               minHeight: 280,
               overflowY: 'scroll',

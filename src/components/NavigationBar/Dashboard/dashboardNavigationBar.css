@@ -42,9 +42,15 @@
 .sidebar-navigation-menu-responsive-drawer .sidebar-menu-item {
   border-radius: 8px;
   font-size: 16px;
+  height: 56px;
+  display: flex;
+  align-items: center;
 }
 
-.sidebar-navigation-menu-responsive-drawer .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
+.sidebar-navigation-menu-responsive-drawer
+  .sidebar-main-menu-repsonsive
+  .ant-menu:not(.ant-menu-horizontal)
+  .ant-menu-item-selected {
   background-color: #eff2ff;
   font-weight: 700;
   font-size: 16px;

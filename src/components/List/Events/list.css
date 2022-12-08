@@ -35,6 +35,7 @@
 .event-list-wrapper .event-list-description-place {
   font-weight: 400;
   color: #646d7b;
+  width: max-content;
 }
 
 .event-list-wrapper .event-list-status {
@@ -58,6 +59,14 @@
   display: none;
 }
 
+.event-list-wrapper .event-list-item-meta {
+  display: flex;
+  align-items: center;
+}
+
+.event-list-wrapper .event-list-item-meta .ant-list-item-meta-content {
+  max-width: 341px;
+}
 @media only screen and (max-width: 1024px) {
   .event-list-wrapper {
     width: 592px;
@@ -70,6 +79,9 @@
   .event-list-wrapper .event-list-status-updated-by {
     width: 120px;
     margin-left: auto;
+  }
+  .event-list-wrapper .event-list-description-place {
+    width: auto;
   }
 }
 @media only screen and (max-width: 428px) {
@@ -103,5 +115,8 @@
     margin: 0;
     align-self: center;
     font-size: 24px;
+  }
+  .event-list-wrapper .event-list-description-place {
+    width: auto;
   }
 }

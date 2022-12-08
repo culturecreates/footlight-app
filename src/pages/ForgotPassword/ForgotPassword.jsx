@@ -9,6 +9,7 @@ import LoginButton from '../../components/Button/Auth';
 import { PathName } from '../../constants/pathName';
 import { useForgotPasswordMutation } from '../../services/users';
 import LoginInput from '../../components/Input/Common';
+import i18n from 'i18next';
 
 function ForgotPassword() {
   const { t } = useTranslation();
@@ -17,7 +18,7 @@ function ForgotPassword() {
   const [forgotPassword, { error }] = useForgotPasswordMutation();
 
   const onFinish = (values) => {
-    forgotPassword(values.email)
+    forgotPassword({ email: values.email, language: i18n?.language?.toUpperCase() })
       .unwrap()
       .then((response) => {
         if (response.statusCode == 202) {

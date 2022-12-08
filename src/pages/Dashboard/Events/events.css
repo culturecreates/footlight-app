@@ -4,6 +4,10 @@
   font-size: 34px;
 }
 
+.events-wrapper .event-add-button {
+  position: absolute;
+  left: 100%;
+}
 .events-wrapper .events-content {
   padding-top: 24px;
 }
