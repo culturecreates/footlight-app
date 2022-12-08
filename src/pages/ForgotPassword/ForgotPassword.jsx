@@ -58,7 +58,7 @@ function ForgotPassword() {
             label={t('forgotPassword.email')}
             labelAlign="left"
             {...(error && {
-              help: error.data.message,
+              help: error?.data?.message,
               validateStatus: 'error',
             })}
             rules={[
