@@ -85,5 +85,15 @@
         "event": "event"
       }
     }
+  },
+  "common": {
+    "server": {
+      "status": {
+        "503": {
+          "message": "Service Temporarily unavailable",
+          "description": "The server is not responding. Please try again later."
+        }
+      }
+    }
   }
 }
