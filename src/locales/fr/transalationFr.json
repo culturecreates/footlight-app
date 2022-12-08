@@ -14,7 +14,7 @@
       "emptyPassword": "Entrez votre mot de passe."
     },
     "changeLanguageTo": "English",
-    "failure": "Votre adresse courriel ou mot de passe est peut-être incorrect."
+    "failure": "Nom de addresse courriel ou mot de passe incorrect."
   },
   "forgotPassword": {
     "backToLogin": "Retour à la connection",
@@ -28,7 +28,7 @@
       "emptyEmail": "Entrez une adresse courriel.",
       "emptyPassword": "S'il vous plait entrez votre mot de passe."
     },
-    "successNotification": "Vérifiez votre adresse courriel pour votre code de réinitialisation. Si vous avez besoin d'aide, contactez admin@culturecreates.com.",
+    "successNotification": "Vérifiez votre adresse courriel pour votre code de réinitialisation.",
     "failure": "Nous ne trouvons pas de compte avec cette adresse courriel."
   },
   "resetPassword": {

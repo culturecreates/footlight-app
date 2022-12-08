@@ -14,7 +14,7 @@
       "emptyPassword": "Enter your password."
     },
     "changeLanguageTo": "Français",
-    "failure": "Your email address or password may be incorrect."
+    "failure": "Incorrect email or password."
   },
   "forgotPassword": {
     "backToLogin": "Back to login",
@@ -28,7 +28,7 @@
       "emptyEmail": "Enter an email address.",
       "emptyPassword": "Please enter your password."
     },
-    "successNotification": "Check your email for your reset code. If you need help, contact admin@culturecreates.com.",
+    "successNotification": "Check your email for your reset code.",
     "failure": "We cannot find an account with that e-mail address."
   },
   "resetPassword": {
