@@ -14,7 +14,7 @@
       "emptyPassword": "Entrez votre mot de passe."
     },
     "changeLanguageTo": "English",
-    "failure": "Nom de adresse courriel ou mot de passe incorrect."
+    "failure": "Adresse courriel ou mot de passe incorrect."
   },
   "forgotPassword": {
     "backToLogin": "Retour à la connection",
