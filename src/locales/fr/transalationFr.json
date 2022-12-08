@@ -12,7 +12,8 @@
       "invalidEmail": "Entrer une adresse courriel valide.",
       "emptyEmail": "Entrez une adresse courriel.",
       "emptyPassword": "Entrez votre mot de passe."
-    }
+    },
+    "changeLanguageTo": "English"
   },
   "forgotPassword": {
     "backToLogin": "Retour à la connection",
