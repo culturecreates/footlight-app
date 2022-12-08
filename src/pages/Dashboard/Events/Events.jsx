@@ -29,7 +29,9 @@ function Events() {
     setPageNumber(1);
     setEventSearchQuery(event.target.value);
   };
-
+  const onChangeHandler = (event) => {
+    if (event.target.value === '') setEventSearchQuery('');
+  };
   return (
     <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
       <Col span={18}>
@@ -48,6 +50,7 @@ function Events() {
               onPressEnter={(e) => onSearchHandler(e)}
               defaultValue={eventSearchQuery}
               allowClear={true}
+              onChange={onChangeHandler}
             />
           </Col>
         </Row>
