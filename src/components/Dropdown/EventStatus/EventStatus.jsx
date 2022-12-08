@@ -6,7 +6,7 @@ import './eventStatus.css';
 import ProtectedComponents from '../../../layout/ProtectedComponents';
 import { eventPublishState } from '../../../constants/eventPublishState';
 
-function EventStatusOptions({ children, publishState }) {
+function EventStatusOptions({ children, publishState, creator }) {
   const { t } = useTranslation();
   const items = eventPublishOptions.map((item) => {
     if (publishState == eventPublishState.PUBLISHED) {
@@ -26,7 +26,7 @@ function EventStatusOptions({ children, publishState }) {
   });
 
   return (
-    <ProtectedComponents>
+    <ProtectedComponents creator={creator}>
       <Dropdown
         className="calendar-dropdown-wrapper"
         menu={{

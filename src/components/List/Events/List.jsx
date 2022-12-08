@@ -40,7 +40,7 @@ function Lists(props) {
         <List.Item
           className="event-list-item-wrapper"
           actions={[
-            <EventStatusOptions key={index} publishState={eventItem?.publishState}>
+            <EventStatusOptions key={index} publishState={eventItem?.publishState} creator={eventItem?.creator}>
               <span>
                 <MoreOutlined className="event-list-more-icon" key={index} />
               </span>
@@ -48,7 +48,7 @@ function Lists(props) {
           ]}
           extra={[
             <span key={index} className="event-list-options-responsive">
-              <EventStatusOptions key={index} publishState={eventItem?.publishState}>
+              <EventStatusOptions key={index} publishState={eventItem?.publishState} creator={eventItem?.creator}>
                 <span>
                   <MoreOutlined className="event-list-more-icon-responsive" key={index} />
                 </span>
@@ -121,7 +121,7 @@ function Lists(props) {
                     {t('dashboard.events.list.by')}&nbsp;
                     <span className="event-list-status-userdetail">
                       {eventItem?.modifier?.firstName?.charAt(0)}
-                      {eventItem?.creator?.lastName}
+                      {eventItem?.modifier?.lastName}
                     </span>
                   </span>
                 ) : (

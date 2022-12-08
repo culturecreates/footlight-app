@@ -3,19 +3,26 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../redux/reducer/userSlice';
 import { userRoles } from '../../constants/userRoles';
 
-function ProtectedComponents({ children }) {
+function ProtectedComponents({ children, creator }) {
   let { calendarId } = useParams();
   const { user } = useSelector(getUserDetails);
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
-  if (calendar[0]?.role === userRoles.GUEST) return;
-  else if (
-    calendar[0]?.role === userRoles.CONTRIBUTOR ||
-    calendar[0]?.role === userRoles.ADMIN ||
-    calendar[0]?.role === userRoles.EDITOR
-  )
-    return children;
+
+  switch (calendar[0]?.role) {
+    case userRoles.GUEST:
+      return;
+    case userRoles.CONTRIBUTOR:
+      if (user?.id === creator?.userId) return children;
+      else return;
+    case userRoles.EDITOR:
+      return children;
+    case userRoles.ADMIN:
+      return children;
+    default:
+      return;
+  }
 }
 
 export default ProtectedComponents;
