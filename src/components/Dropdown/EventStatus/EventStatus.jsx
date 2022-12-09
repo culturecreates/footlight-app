@@ -38,6 +38,7 @@ function EventStatusOptions({ children, publishState, creator, eventId }) {
       okText: t('dashboard.events.deleteEvent.ok'),
       okType: 'danger',
       cancelText: t('dashboard.events.deleteEvent.cancel'),
+      className: 'delete-modal-container',
       onOk() {
         deleteEvent({ id: eventId, calendarId: calendarId });
       },
