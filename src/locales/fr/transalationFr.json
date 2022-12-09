@@ -9,11 +9,12 @@
     "loginButtonText": "Se connecter ",
     "resetMyPasswordText": "Réinitialisez votre mot de passe",
     "validations": {
-      "invalidEmail": "Entrer une adresse courriel valide.",
+      "invalidEmail": "Entrez une adresse courriel valide.",
       "emptyEmail": "Entrez une adresse courriel.",
       "emptyPassword": "Entrez votre mot de passe."
     },
-    "changeLanguageTo": "English"
+    "changeLanguageTo": "English",
+    "failure": "Adresse courriel ou mot de passe incorrect."
   },
   "forgotPassword": {
     "backToLogin": "Retour à la connection",
@@ -23,11 +24,12 @@
     "sentResetCodeText": "Envoyer",
     "alreadyHaveCode": "J'ai déjà un code",
     "validations": {
-      "invalidEmail": "Entrer une adresse courriel valide.",
+      "invalidEmail": "Entrez une adresse courriel valide.",
       "emptyEmail": "Entrez une adresse courriel.",
       "emptyPassword": "S'il vous plait entrez votre mot de passe."
     },
-    "successNotification": "Vérifiez votre adresse courriel pour votre code de réinitialisation. Si vous avez besoin d'aide, contactez admin@culturecreates.com."
+    "successNotification": "Vérifiez votre adresse courriel pour votre code de réinitialisation.",
+    "failure": "Nous ne trouvons pas de compte avec cette adresse courriel."
   },
   "resetPassword": {
     "backToLogin": "Retour à la connection",
@@ -43,13 +45,14 @@
     "resetPassword": "Réinitialiser le mot de passe",
     "newResetcode": "Envoyer un nouveau code de réinitialisation",
     "validations": {
-      "invalidEmail": "Entrer une adresse courriel valide.",
+      "invalidEmail": "Entrez une adresse courriel valide.",
       "emptyEmail": "Entrez une adresse courriel.",
       "emptyPassword": "Entrez votre mot de passe.",
       "passwordMatch": "Les deux mots de passe ne correspondent pas.",
-      "digitCode": "Entrer votre code"
+      "digitCode": "Entrez votre code"
     },
-    "successNotification": "Succès! Votre mot de passe a été réinitialisé."
+    "successNotification": "Succès! Votre mot de passe a été réinitialisé.",
+    "failure": "Les informations de réinitialisation sont incorrectes ou ont expiré."
   },
   "dashboard": {
     "topNavigation": {
@@ -83,6 +86,12 @@
         "by": "par",
         "to": "au",
         "event": "événement"
+      },
+      "deleteEvent": {
+        "title": "Confirmer la suppression",
+        "description": "Êtes-vous sûr de vouloir supprimer définitivement cet événement ?",
+        "ok": "OK",
+        "cancel": "Annuler"
       }
     }
   },
@@ -92,6 +101,12 @@
         "503": {
           "message": "Service temporairement indisponible",
           "description": "Le serveur ne répond pas. Veuillez réessayer plus tard."
+        },
+        "FETCH_ERROR": {
+          "message": "La connexion Internet semble être hors ligne."
+        },
+        "403": {
+          "message": "Non autorisé"
         }
       }
     }
