@@ -37,7 +37,9 @@ function Events() {
       <Col span={18}>
         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
           <Col xs={2} sm={4} md={6} lg={8} xl={10}>
-            <h4 className="events-heading">{t('dashboard.events.heading')}</h4>
+            <div className="events-heading-wrapper">
+              <h4 className="events-heading">{t('dashboard.events.heading')}</h4>
+            </div>
           </Col>
           <div className="event-add-button">
             <AddEvent label={t('dashboard.events.addEvent')} />
