@@ -13,10 +13,14 @@
 }
 
 @media only screen and (max-width: 428px) {
-  .events-wrapper .events-heading {
+  .events-wrapper .events-heading-wrapper .events-heading {
     font-size: 24px;
+    white-space: normal;
   }
   .events-wrapper .events-content {
     padding: 16px;
+  }
+  .events-wrapper .events-heading-wrapper {
+    width: 200px;
   }
 }
