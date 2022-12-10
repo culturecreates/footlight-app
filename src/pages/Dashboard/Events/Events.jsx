@@ -25,6 +25,10 @@ function Events() {
     }
   }, [calendarId, pageNumber, eventSearchQuery]);
 
+  useEffect(() => {
+    if (calendarId) setPageNumber(1);
+  }, [calendarId]);
+
   const onSearchHandler = (event) => {
     setPageNumber(1);
     setEventSearchQuery(event.target.value);
