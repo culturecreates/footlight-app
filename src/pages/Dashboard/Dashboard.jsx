@@ -19,8 +19,8 @@ function Dashboard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
-  const [getCalendar, { data: currentCalendarData }] = useLazyGetCalendarQuery();
-  const { data: allCalendarsData, isLoading } = useGetAllCalendarsQuery();
+  const [getCalendar, { currentData: currentCalendarData }] = useLazyGetCalendarQuery();
+  const { currentData: allCalendarsData, isLoading } = useGetAllCalendarsQuery();
 
   let { calendarId } = useParams();
   const { accessToken, user } = useSelector(getUserDetails);
@@ -36,6 +36,7 @@ function Dashboard() {
 
   useEffect(() => {
     if (calendarId) {
+      console.log({ calendarId });
       getCalendar({ id: calendarId });
       dispatch(setSelectedCalendar(String(calendarId)));
     } else if (!isLoading && allCalendarsData?.data)
