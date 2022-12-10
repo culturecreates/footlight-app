@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import './dashboard.css';
 import { Layout } from 'antd';
 import { Outlet, useLocation } from 'react-router-dom';
@@ -19,8 +19,10 @@ function Dashboard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+  const timestampRef = useRef(Date.now()).current;
+
   const [getCalendar, { currentData: currentCalendarData }] = useLazyGetCalendarQuery();
-  const { currentData: allCalendarsData, isLoading } = useGetAllCalendarsQuery();
+  const { currentData: allCalendarsData, isLoading } = useGetAllCalendarsQuery({ sessionId: timestampRef });
 
   let { calendarId } = useParams();
   const { accessToken, user } = useSelector(getUserDetails);
@@ -36,7 +38,6 @@ function Dashboard() {
 
   useEffect(() => {
     if (calendarId) {
-      console.log({ calendarId });
       getCalendar({ id: calendarId });
       dispatch(setSelectedCalendar(String(calendarId)));
     } else if (!isLoading && allCalendarsData?.data)
