@@ -13,7 +13,6 @@ function Events() {
   const { calendarId } = useParams();
   let [searchParams, setSearchParams] = useSearchParams();
   const [getEvents, { currentData: eventsData, isLoading }] = useLazyGetEventsQuery();
-
   const [pageNumber, setPageNumber] = useState(searchParams.get('page') ?? 1);
   const [eventSearchQuery, setEventSearchQuery] = useState(searchParams.get('query') ?? '');
 
