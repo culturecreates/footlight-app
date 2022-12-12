@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './list.css';
 import { List, Grid } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
@@ -11,16 +12,22 @@ import { bilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import i18n from 'i18next';
+import { PathName } from '../../../constants/pathName';
 
 const { useBreakpoint } = Grid;
 
 function Lists(props) {
   const { t } = useTranslation();
   const screens = useBreakpoint();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { data, pageNumber, setPageNumber } = props;
   const lang = i18n.language;
   const { user } = useSelector(getUserDetails);
   const totalCount = data?.totalCount;
+  const listItemHandler = (id) => {
+    navigate(`${location.pathname}${PathName.AddEvent}/${id}`);
+  };
   return (
     <List
       className="event-list-wrapper"
@@ -39,6 +46,7 @@ function Lists(props) {
       renderItem={(eventItem, index) => (
         <List.Item
           className="event-list-item-wrapper"
+          onClick={() => listItemHandler(eventItem?.id)}
           actions={[
             <EventStatusOptions
               key={index}

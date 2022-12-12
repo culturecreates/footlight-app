@@ -29,7 +29,16 @@ export const router = createBrowserRouter([
         path: `:calendarId${PathName.Events}`,
         element: <Events />,
       },
-      { path: `:calendarId${PathName.Events}${PathName.AddEvent}`, element: <AddEvent /> },
+      {
+        path: `:calendarId${PathName.Events}${PathName.AddEvent}`,
+        element: <AddEvent />,
+        children: [
+          {
+            path: ':eventId',
+            element: <AddEvent />,
+          },
+        ],
+      },
 
       {
         path: `:calendarId${PathName.Places}`,

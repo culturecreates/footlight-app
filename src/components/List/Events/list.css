@@ -63,6 +63,9 @@
   display: flex;
   align-items: center;
 }
+.event-list-wrapper ul li {
+  cursor: pointer;
+}
 
 .event-list-wrapper .event-list-item-meta .ant-list-item-meta-content {
   max-width: 341px;
