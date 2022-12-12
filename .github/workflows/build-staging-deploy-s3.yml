@@ -11,7 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: npm install
-    - run: npm run build
+    - run: npm run build:staging
     - run: aws s3 sync ./build s3://staging.cms.footlight.io/ --acl public-read --delete
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
