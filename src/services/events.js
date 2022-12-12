@@ -36,7 +36,19 @@ export const eventsApi = createApi({
       }),
       invalidatesTags: ['Events'],
     }),
+    addEvent: builder.mutation({
+      query: ({ data, calendarId }) => ({
+        url: 'events',
+        method: 'POST',
+        headers: {
+          'calendar-id': calendarId,
+        },
+        body: data,
+      }),
+      invalidatesTags: ['Events'],
+    }),
   }),
 });
 
-export const { useLazyGetEventsQuery, useUpdateEventStateMutation, useDeleteEventMutation } = eventsApi;
+export const { useLazyGetEventsQuery, useUpdateEventStateMutation, useDeleteEventMutation, useAddEventMutation } =
+  eventsApi;
