@@ -1,16 +1,19 @@
+import React, { useEffect } from 'react';
 import './addEvent.css';
 import { Tabs, Form, Button, DatePicker } from 'antd';
 import LanguageInput from '../../../components/Input/Common/AuthenticationInput';
 import moment from 'moment';
 // import { useAddEventMutation } from '../../../services/events';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useGetEventQuery } from '../../../services/events';
+import { PathName } from '../../../constants/pathName';
 
 function AddEvent() {
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   // const [addEvent] = useAddEventMutation();
   const { calendarId, eventId } = useParams();
-  const { data: eventData } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
+  const { data: eventData, isError } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
 
   const items = [
     {
@@ -32,6 +35,7 @@ function AddEvent() {
       ),
     },
   ];
+
   const onFinish = (values) => {
     // var startDate = new Date(values?.datePicker?._d);
     // startDate = startDate?.toISOString();
@@ -49,6 +53,10 @@ function AddEvent() {
     //   console.log(res).catch((error) => console.log(error));
     // });
   };
+  useEffect(() => {
+    if (isError) navigate(`${PathName.NotFound}`);
+  }, [isError]);
+
   return (
     <Form form={form} layout="vertical" onFinish={onFinish} name="event">
       <div className="card-container">

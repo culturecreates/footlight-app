@@ -9,5 +9,5 @@ export const PathName = {
   Taxonomies: '/taxonomies',
   Settings: '/settings',
   AddEvent: '/add-event',
-  NotFound: '*',
+  NotFound: '/*',
 };
