@@ -50,12 +50,6 @@
   text-align: right;
 }
 
-.event-list-wrapper .event-list-status-userdetail {
-  text-decoration: underline;
-  font-weight: 600;
-  text-transform: lowercase;
-}
-
 .event-list-item-wrapper .event-list-options-responsive {
   display: none;
 }

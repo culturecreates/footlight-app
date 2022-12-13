@@ -11,6 +11,7 @@ import { bilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import i18n from 'i18next';
+import Username from '../../Username';
 
 const { useBreakpoint } = Grid;
 
@@ -116,21 +117,15 @@ function Lists(props) {
               <div className="event-list-status">
                 <span className="event-list-status-created-by">
                   {t('dashboard.events.list.createdBy')}&nbsp;
-                  <span className="event-list-status-userdetail">
-                    {eventItem?.creator?.firstName?.charAt(0)}
-                    {eventItem?.creator?.lastName}
-                  </span>
+                  <Username firstName={eventItem?.creator?.firstName} lastName={eventItem?.creator?.lastName} />
                 </span>
-                {eventItem?.modifier?.firstName ? (
+                {eventItem?.modifier?.firstName && eventItem?.modifier?.lastName ? (
                   <span className="event-list-status-updated-by">
                     {t('dashboard.events.list.updatedBy')}&nbsp;
                     <FormatDate date={eventItem?.modifier?.date} lang={lang} />
                     &nbsp;
                     {t('dashboard.events.list.by')}&nbsp;
-                    <span className="event-list-status-userdetail">
-                      {eventItem?.modifier?.firstName?.charAt(0)}
-                      {eventItem?.modifier?.lastName}
-                    </span>
+                    <Username firstName={eventItem?.modifier?.firstName} lastName={eventItem?.modifier?.lastName} />
                   </span>
                 ) : (
                   <></>
