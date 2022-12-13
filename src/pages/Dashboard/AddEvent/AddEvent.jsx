@@ -4,32 +4,38 @@ import LanguageInput from '../../../components/Input/Common/AuthenticationInput'
 import moment from 'moment';
 // import { useAddEventMutation } from '../../../services/events';
 import { useParams } from 'react-router-dom';
+import { useGetEventQuery } from '../../../services/events';
 
 function AddEvent() {
   const [form] = Form.useForm();
   // const [addEvent] = useAddEventMutation();
   const { calendarId, eventId } = useParams();
+  const { data: eventData } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
 
-  const languageItems = [
-    { label: 'French', key: 'french' },
-    { label: 'English', key: 'english' },
-  ];
-
-  const items = languageItems.map((language) => {
-    return {
-      label: language?.label,
-      key: language?.key,
+  const items = [
+    {
+      label: 'French',
+      key: 'fr',
       children: (
-        <Form.Item name={language?.key}>
+        <Form.Item name="french" initialValue={eventData?.name?.fr}>
           <LanguageInput autoComplete="off" />
         </Form.Item>
       ),
-    };
-  });
+    },
+    {
+      label: 'English',
+      key: 'en',
+      children: (
+        <Form.Item name="english" initialValue={eventData?.name?.en}>
+          <LanguageInput autoComplete="off" />
+        </Form.Item>
+      ),
+    },
+  ];
   const onFinish = (values) => {
-    var startDate = new Date(values?.datePicker?._d);
-    startDate = startDate?.toISOString();
-    console.log(startDate);
+    // var startDate = new Date(values?.datePicker?._d);
+    // startDate = startDate?.toISOString();
+    console.log(values);
     // addEvent({
     //   data: {
     //     name: {
@@ -41,7 +47,6 @@ function AddEvent() {
     //   calendarId,
     // }).then((res) => {
     //   console.log(res).catch((error) => console.log(error));
-    console.log(calendarId, eventId);
     // });
   };
   return (
@@ -49,10 +54,11 @@ function AddEvent() {
       <div className="card-container">
         <Tabs type="card" items={items} />
       </div>
+
       <Form.Item
         name="datePicker"
         label="Date"
-        initialValue={moment()}
+        initialValue={moment(eventData?.startDate)}
         rules={[{ required: false, type: 'object', whitespace: true }]}>
         <DatePicker format="MM/DD/YYYY" />
       </Form.Item>

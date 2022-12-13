@@ -3,7 +3,7 @@ import { baseQueryWithReauth } from '../utils/services';
 export const eventsApi = createApi({
   reducerPath: 'eventsApi',
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['Events'],
+  tagTypes: ['Events', 'Event'],
   endpoints: (builder) => ({
     getEvents: builder.query({
       query: ({ pageNumber = 1, limit, calendarId, query = '' }) => ({
@@ -16,9 +16,20 @@ export const eventsApi = createApi({
       providesTags: ['Events'],
       transformResponse: (response) => response,
     }),
+    getEvent: builder.query({
+      query: ({ eventId, calendarId }) => ({
+        url: `events/${eventId}`,
+        method: 'GET',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+      providesTags: ['Event'],
+      transformResponse: (response) => response,
+    }),
     updateEventState: builder.mutation({
-      query: ({ id, calendarId }) => ({
-        url: `events/${id}/toggle-publish`,
+      query: ({ eventId, calendarId }) => ({
+        url: `events/${eventId}/toggle-publish`,
         method: 'PATCH',
         headers: {
           'calendar-id': calendarId,
@@ -45,10 +56,15 @@ export const eventsApi = createApi({
         },
         body: data,
       }),
-      invalidatesTags: ['Events'],
+      invalidatesTags: ['Events', 'Event'],
     }),
   }),
 });
 
-export const { useLazyGetEventsQuery, useUpdateEventStateMutation, useDeleteEventMutation, useAddEventMutation } =
-  eventsApi;
+export const {
+  useLazyGetEventsQuery,
+  useUpdateEventStateMutation,
+  useDeleteEventMutation,
+  useAddEventMutation,
+  useGetEventQuery,
+} = eventsApi;
