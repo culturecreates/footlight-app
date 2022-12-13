@@ -6,6 +6,7 @@ import Dashboard from '../pages/Dashboard';
 import ResetPassword from '../pages/ResetPassword';
 import Events from '../pages/Dashboard/Events';
 import AddEvent from '../pages/Dashboard/AddEvent';
+import { ReactComponent as NotFound } from '../../src/assets/images/illustatus.svg';
 
 export const router = createBrowserRouter([
   {
@@ -57,5 +58,13 @@ export const router = createBrowserRouter([
         element: <div>Settings</div>,
       },
     ],
+  },
+  {
+    path: PathName.NotFound,
+    element: (
+      <div>
+        <NotFound />
+      </div>
+    ),
   },
 ]);

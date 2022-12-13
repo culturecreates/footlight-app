@@ -4,13 +4,13 @@ function FormatDate(props) {
   let compDate;
   if (lang === 'en') {
     // This is non-standard custom format 6-JAN-2022
-    const day = date.getDay();
+    const day = date.getDate();
     const month = date.toLocaleDateString('en', { month: 'short' }).toUpperCase();
     const year = date.getFullYear();
     compDate = `${day}-${month}-${year}`;
   } else {
     // This is for standard format in most locales
-    compDate = date.toLocaleDateString(lang, { dateStyle: 'short' });
+    compDate = date.toLocaleDateString(lang, { dateStyle: 'medium' });
   }
 
   return <span style={{ whiteSpace: 'nowrap' }}>{compDate}</span>;

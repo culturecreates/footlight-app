@@ -51,7 +51,6 @@ function Calendar({ children, allCalendarsData }) {
   const handleOpenChange = (flag) => {
     if (allCalendarsData?.data?.length > 1) setOpen(flag);
   };
-
   return (
     <Dropdown
       menu={{

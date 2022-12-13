@@ -63,7 +63,7 @@ const Login = () => {
             label={t('login.email')}
             labelAlign="left"
             {...(error && {
-              help: error.data.message,
+              help: t('login.failure'),
               validateStatus: 'error',
             })}
             rules={[
@@ -83,6 +83,10 @@ const Login = () => {
             name="password"
             label={t('login.password')}
             labelAlign="left"
+            {...(error && {
+              help: t('login.failure'),
+              validateStatus: 'error',
+            })}
             rules={[
               {
                 required: true,

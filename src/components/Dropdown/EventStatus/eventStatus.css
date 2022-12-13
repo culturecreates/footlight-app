@@ -1,0 +1,13 @@
+.delete-modal-container .ant-modal-content {
+  filter: drop-shadow(0px 8px 32px rgba(0, 0, 0, 0.2));
+  border-radius: 8px;
+}
+.delete-modal-container .ant-modal-confirm-title {
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.delete-modal-container .ant-modal-confirm-content {
+  font-weight: 400;
+  font-size: 16px;
+}
