@@ -20,7 +20,6 @@ function Dashboard() {
   const dispatch = useDispatch();
   const location = useLocation();
   const timestampRef = useRef(Date.now()).current;
-
   const [getCalendar, { currentData: currentCalendarData }] = useLazyGetCalendarQuery();
   const { currentData: allCalendarsData, isLoading } = useGetAllCalendarsQuery({ sessionId: timestampRef });
 
