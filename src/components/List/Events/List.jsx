@@ -50,7 +50,6 @@ function Lists(props) {
       renderItem={(eventItem, index) => (
         <List.Item
           className="event-list-item-wrapper"
-          onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId)}
           actions={[
             <EventStatusOptions
               key={index}
@@ -77,6 +76,7 @@ function Lists(props) {
           ]}>
           <List.Item.Meta
             className="event-list-item-meta"
+            onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId)}
             avatar={<img src={eventItem?.image?.original?.uri} className="event-list-image" />}
             title={
               <div className="event-list-title">
@@ -123,6 +123,7 @@ function Lists(props) {
           />
           <List.Item.Meta
             className="event-status-list-item"
+            onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId)}
             title={<EventStatus label={eventItem?.publishState} />}
             description={
               <div className="event-list-status">
