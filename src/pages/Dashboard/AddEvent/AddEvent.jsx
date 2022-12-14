@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { userRoles } from '../../../constants/userRoles';
 import PublishState from '../../../components/Dropdown/PublishState/PublishState';
+import { eventPublishState } from '../../../constants/eventPublishState';
 
 function AddEvent() {
   const navigate = useNavigate();
@@ -140,20 +141,66 @@ function AddEvent() {
             </Form.Item>
           </>
         );
-    } else
-      return (
-        <>
-          <Form.Item>
-            <PublishState eventId={eventId}>
-              <span>{eventData?.publishState}</span>
-            </PublishState>
-          </Form.Item>
-          <Form.Item>
-            <PrimaryButton htmlType="submit" label={t('dashboard.events.addEditEvent.saveOptions.save')} />
-          </Form.Item>
-        </>
-      );
+    } else {
+      if (eventData?.publishState === eventPublishState.PUBLISHED)
+        return (
+          <>
+            <Form.Item>
+              <PublishState eventId={eventId}>
+                <span>{eventData?.publishState}</span>
+              </PublishState>
+            </Form.Item>
+            <Form.Item>
+              <PrimaryButton htmlType="submit" label={t('dashboard.events.addEditEvent.saveOptions.save')} />
+            </Form.Item>
+          </>
+        );
+      else if (
+        calendar[0]?.role === userRoles.EDITOR ||
+        calendar[0]?.role === userRoles.ADMIN ||
+        calendar[0]?.role === userRoles.CONTRIBUTOR
+      )
+        return (
+          <>
+            <Form.Item>
+              <Outlined
+                htmlType="submit"
+                label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
+                onClick={saveAsDraftHandler}
+              />
+            </Form.Item>
+            <Form.Item>
+              <PrimaryButton
+                htmlType="submit"
+                label={t('dashboard.events.addEditEvent.saveOptions.publish')}
+                onClick={reviewPublishHandler}
+              />
+            </Form.Item>
+          </>
+        );
+      else
+        return (
+          <>
+            <Form.Item>
+              <Outlined
+                htmlType="submit"
+                label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
+                onClick={saveAsDraftHandler}
+              />
+            </Form.Item>
+
+            <Form.Item>
+              <PrimaryButton
+                htmlType="submit"
+                label={t('dashboard.events.addEditEvent.saveOptions.sendToReview')}
+                onClick={reviewPublishHandler}
+              />
+            </Form.Item>
+          </>
+        );
+    }
   };
+
   return (
     <Form form={form} layout="vertical" name="event">
       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="add-edit-wrapper">
