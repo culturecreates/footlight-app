@@ -7,6 +7,7 @@ import moment from 'moment';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGetEventQuery } from '../../../services/events';
 import { PathName } from '../../../constants/pathName';
+import Outlined from '../../../components/Button/Outlined';
 
 function AddEvent() {
   const navigate = useNavigate();
@@ -72,8 +73,21 @@ function AddEvent() {
       </Form.Item>
 
       <Form.Item>
+        <Outlined htmlType="submit" label="Save as Draft" />
+      </Form.Item>
+      <Form.Item>
         <Button type="primary" htmlType="submit">
-          Submit
+          Send for review
+        </Button>
+      </Form.Item>
+      <Form.Item>
+        <Button type="primary" htmlType="submit">
+          Publish
+        </Button>
+      </Form.Item>
+      <Form.Item>
+        <Button type="primary" htmlType="submit">
+          Save
         </Button>
       </Form.Item>
     </Form>

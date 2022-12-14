@@ -31,6 +31,10 @@ export const router = createBrowserRouter([
         element: <Events />,
       },
       {
+        path: `:calendarId${PathName.Events}/:eventId`,
+        element: <div>Read Only Page</div>,
+      },
+      {
         path: `:calendarId${PathName.Events}${PathName.AddEvent}`,
         element: <AddEvent />,
         children: [

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import './list.css';
 import { List, Grid } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
@@ -14,6 +14,7 @@ import { getUserDetails } from '../../../redux/reducer/userSlice';
 import i18n from 'i18next';
 import { PathName } from '../../../constants/pathName';
 import Username from '../../Username/index';
+import { routinghandler } from '../../../utils/roleRoutingHandler';
 const { useBreakpoint } = Grid;
 
 function Lists(props) {
@@ -22,11 +23,14 @@ function Lists(props) {
   const location = useLocation();
   const navigate = useNavigate();
   const { data, pageNumber, setPageNumber } = props;
+  let { calendarId } = useParams();
   const lang = i18n.language;
   const { user } = useSelector(getUserDetails);
   const totalCount = data?.totalCount;
-  const listItemHandler = (id) => {
-    navigate(`${location.pathname}${PathName.AddEvent}/${id}`);
+
+  const listItemHandler = (id, creatorId) => {
+    if (routinghandler(user, calendarId, creatorId)) navigate(`${location.pathname}${PathName.AddEvent}/${id}`);
+    else navigate(`${location.pathname}/${id}`);
   };
   return (
     <List
@@ -46,7 +50,7 @@ function Lists(props) {
       renderItem={(eventItem, index) => (
         <List.Item
           className="event-list-item-wrapper"
-          onClick={() => listItemHandler(eventItem?.id)}
+          onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId)}
           actions={[
             <EventStatusOptions
               key={index}
