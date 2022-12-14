@@ -5,19 +5,25 @@ import LanguageInput from '../../../components/Input/Common/AuthenticationInput'
 import moment from 'moment';
 // import { useAddEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useGetEventQuery } from '../../../services/events';
+import { useGetEventQuery, useUpdateEventStateMutation } from '../../../services/events';
 import { PathName } from '../../../constants/pathName';
 import Outlined from '../../../components/Button/Outlined';
 import PrimaryButton from '../../../components/Button/Primary';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { userRoles } from '../../../constants/userRoles';
+import PublishState from '../../../components/Dropdown/PublishState/PublishState';
 
 function AddEvent() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   // const [addEvent] = useAddEventMutation();
   const { calendarId, eventId } = useParams();
+  const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
   const { data: eventData, isError } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
+  const [updateEventState] = useUpdateEventStateMutation();
 
   const items = [
     {
@@ -56,11 +62,10 @@ function AddEvent() {
     },
   ];
 
-  const onFinish = (values) => {
+  const saveAsDraftHandler = () => {
     // var startDate = new Date(values?.datePicker?._d);
     // startDate = startDate?.toISOString();
-    console.log(values);
-    console.log(form.getFieldsValue(['french', 'english']));
+    console.log('Save as draft', form.getFieldsValue(true));
     // addEvent({
     //   data: {
     //     name: {
@@ -70,16 +75,87 @@ function AddEvent() {
     //     startDate: startDate,
     //   },
     //   calendarId,
-    // }).then((res) => {
+    // }).unwrap().then((res) => {
     //   console.log(res).catch((error) => console.log(error));
     // });
   };
+
+  const reviewPublishHandler = () => {
+    console.log('Send to review/publish', form.getFieldsValue(true));
+    updateEventState({ eventId, calendarId })
+      .unwrap()
+      .then((res) => console.log(res).catch((error) => console.log(error)));
+  };
+
   useEffect(() => {
     if (isError) navigate(`${PathName.NotFound}`);
   }, [isError]);
+  // !calendarId => save as draft & role = guest ? send to review:role = guest,editor,contributor ? publish
+  //calendarId=> state dropdown (role = guest ? disabled: enabled)&role = guest,editor,contributor ? save
+  const ButtonDisplayHandler = () => {
+    const calendar = user?.roles.filter((calendar) => {
+      return calendar.calendarId === calendarId;
+    });
+    if (!eventId) {
+      if (
+        calendar[0]?.role === userRoles.EDITOR ||
+        calendar[0]?.role === userRoles.ADMIN ||
+        calendar[0]?.role === userRoles.CONTRIBUTOR
+      )
+        return (
+          <>
+            <Form.Item>
+              <Outlined
+                htmlType="submit"
+                label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
+                onClick={saveAsDraftHandler}
+              />
+            </Form.Item>
+            <Form.Item>
+              <PrimaryButton
+                htmlType="submit"
+                label={t('dashboard.events.addEditEvent.saveOptions.publish')}
+                onClick={reviewPublishHandler}
+              />
+            </Form.Item>
+          </>
+        );
+      else
+        return (
+          <>
+            <Form.Item>
+              <Outlined
+                htmlType="submit"
+                label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
+                onClick={saveAsDraftHandler}
+              />
+            </Form.Item>
 
+            <Form.Item>
+              <PrimaryButton
+                htmlType="submit"
+                label={t('dashboard.events.addEditEvent.saveOptions.sendToReview')}
+                onClick={reviewPublishHandler}
+              />
+            </Form.Item>
+          </>
+        );
+    } else
+      return (
+        <>
+          <Form.Item>
+            <PublishState eventId={eventId}>
+              <span>{eventData?.publishState}</span>
+            </PublishState>
+          </Form.Item>
+          <Form.Item>
+            <PrimaryButton htmlType="submit" label={t('dashboard.events.addEditEvent.saveOptions.save')} />
+          </Form.Item>
+        </>
+      );
+  };
   return (
-    <Form form={form} layout="vertical" onFinish={onFinish} name="event">
+    <Form form={form} layout="vertical" name="event">
       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="add-edit-wrapper">
         <Col span={24}>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
@@ -89,18 +165,7 @@ function AddEvent() {
               </div>
             </Col>
             <div className="add-event-button-wrap">
-              <Form.Item>
-                <Outlined htmlType="submit" label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')} />
-              </Form.Item>
-              <Form.Item>
-                <PrimaryButton htmlType="submit" label={t('dashboard.events.addEditEvent.saveOptions.sendToReview')} />
-              </Form.Item>
-              <Form.Item>
-                <PrimaryButton htmlType="submit" label={t('dashboard.events.addEditEvent.saveOptions.publish')} />
-              </Form.Item>
-              <Form.Item>
-                <PrimaryButton htmlType="submit" label={t('dashboard.events.addEditEvent.saveOptions.save')} />
-              </Form.Item>
+              <ButtonDisplayHandler />
             </div>
           </Row>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
