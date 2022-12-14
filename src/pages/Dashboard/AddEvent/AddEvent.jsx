@@ -9,12 +9,14 @@ import { useGetEventQuery } from '../../../services/events';
 import { PathName } from '../../../constants/pathName';
 import Outlined from '../../../components/Button/Outlined';
 import PrimaryButton from '../../../components/Button/Primary';
+import { useTranslation } from 'react-i18next';
 
 function AddEvent() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   // const [addEvent] = useAddEventMutation();
   const { calendarId, eventId } = useParams();
+  const { t } = useTranslation();
   const { data: eventData, isError } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
 
   const items = [
@@ -66,21 +68,21 @@ function AddEvent() {
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col xs={2} sm={4} md={6} lg={8} xl={10}>
               <div>
-                <h4>New Event</h4>
+                <h4>{t('dashboard.events.addEditEvent.heading')}</h4>
               </div>
             </Col>
             <div>
               <Form.Item>
-                <Outlined htmlType="submit" label="Save as Draft" />
+                <Outlined htmlType="submit" label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')} />
               </Form.Item>
               <Form.Item>
-                <PrimaryButton htmlType="submit" label="Send for review" />
+                <PrimaryButton htmlType="submit" label={t('dashboard.events.addEditEvent.saveOptions.sendToReview')} />
               </Form.Item>
               <Form.Item>
-                <PrimaryButton htmlType="submit" label="Publish" />
+                <PrimaryButton htmlType="submit" label={t('dashboard.events.addEditEvent.saveOptions.publish')} />
               </Form.Item>
               <Form.Item>
-                <PrimaryButton htmlType="submit" label="Save" />
+                <PrimaryButton htmlType="submit" label={t('dashboard.events.addEditEvent.saveOptions.save')} />
               </Form.Item>
             </div>
           </Row>
@@ -95,10 +97,10 @@ function AddEvent() {
           </Row>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} span={24} className="events-content">
             <Col span={24}>
-              <div>Dates</div>
+              <div>{t('dashboard.events.addEditEvent.dates.dates')}</div>
               <Form.Item
                 name="datePicker"
-                label="Date"
+                label={t('dashboard.events.addEditEvent.dates.singleDate')}
                 initialValue={moment(eventData?.startDate)}
                 rules={[{ required: false, type: 'object', whitespace: true }]}>
                 <DatePicker format="MM/DD/YYYY" />

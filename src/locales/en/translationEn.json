@@ -70,6 +70,26 @@
       "heading": "Event calendar",
       "searchPlaceholder": "Search an event",
       "addEvent": "Event",
+      "addEditEvent": {
+        "heading": "[New/Edit] event",
+        "language": {
+          "title": "Event title",
+          "titleLabel": "English"
+        },
+
+        "dates": {
+          "dates": "Dates",
+          "singleDate": "Date"
+        },
+
+        "status": "Status",
+        "saveOptions": {
+          "publish": "Publish",
+          "saveAsDraft": "Save as draft",
+          "save": "Save",
+          "sendToReview": "Send to review"
+        }
+      },
       "publishOptions": {
         "publishEvent": "Publish event",
         "unpublishEvent": "Unpublish event",

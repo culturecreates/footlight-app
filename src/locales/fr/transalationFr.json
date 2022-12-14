@@ -70,6 +70,25 @@
       "heading": "Calendrier des événements",
       "searchPlaceholder": "Rechercher un événement",
       "addEvent": "Événement",
+      "addEditEvent": {
+        "heading": "[Ajouter/Modifier] un événement",
+        "language": {
+          "title": "Titre de l'événement",
+          "titleLabel": "English"
+        },
+        "dates": {
+          "dates": "Dates",
+          "singleDate": "Date"
+        },
+        "status": "Statut",
+        "saveOptions": {
+          "publish": "Publier",
+          "saveAsDraft": "Enregistrer comme brouillon",
+          "save": "Save",
+          "sendToReview": "Envoyer pour révision"
+        }
+      },
+
       "publishOptions": {
         "publishEvent": "Publier l'événement",
         "unpublishEvent": "Dépublier l'événement",
