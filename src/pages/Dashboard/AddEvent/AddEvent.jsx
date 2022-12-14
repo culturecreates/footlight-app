@@ -93,54 +93,58 @@ function AddEvent() {
   }, [isError]);
   // !calendarId => save as draft & role = guest ? send to review:role = guest,editor,contributor ? publish
   //calendarId=> state dropdown (role = guest ? disabled: enabled)&role = guest,editor,contributor ? save
-  const ButtonDisplayHandler = () => {
+
+  const roleCheckHandler = () => {
     const calendar = user?.roles.filter((calendar) => {
       return calendar.calendarId === calendarId;
     });
-    if (!eventId) {
-      if (
-        calendar[0]?.role === userRoles.EDITOR ||
-        calendar[0]?.role === userRoles.ADMIN ||
-        calendar[0]?.role === userRoles.CONTRIBUTOR
-      )
-        return (
-          <>
-            <Form.Item>
-              <Outlined
-                htmlType="submit"
-                label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
-                onClick={saveAsDraftHandler}
-              />
-            </Form.Item>
-            <Form.Item>
-              <PrimaryButton
-                htmlType="submit"
-                label={t('dashboard.events.addEditEvent.saveOptions.publish')}
-                onClick={reviewPublishHandler}
-              />
-            </Form.Item>
-          </>
-        );
-      else
-        return (
-          <>
-            <Form.Item>
-              <Outlined
-                htmlType="submit"
-                label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
-                onClick={saveAsDraftHandler}
-              />
-            </Form.Item>
+    if (
+      calendar[0]?.role === userRoles.EDITOR ||
+      calendar[0]?.role === userRoles.ADMIN ||
+      calendar[0]?.role === userRoles.CONTRIBUTOR
+    )
+      return (
+        <>
+          <Form.Item>
+            <Outlined
+              htmlType="submit"
+              label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
+              onClick={saveAsDraftHandler}
+            />
+          </Form.Item>
+          <Form.Item>
+            <PrimaryButton
+              htmlType="submit"
+              label={t('dashboard.events.addEditEvent.saveOptions.publish')}
+              onClick={reviewPublishHandler}
+            />
+          </Form.Item>
+        </>
+      );
+    else
+      return (
+        <>
+          <Form.Item>
+            <Outlined
+              htmlType="submit"
+              label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
+              onClick={saveAsDraftHandler}
+            />
+          </Form.Item>
 
-            <Form.Item>
-              <PrimaryButton
-                htmlType="submit"
-                label={t('dashboard.events.addEditEvent.saveOptions.sendToReview')}
-                onClick={reviewPublishHandler}
-              />
-            </Form.Item>
-          </>
-        );
+          <Form.Item>
+            <PrimaryButton
+              htmlType="submit"
+              label={t('dashboard.events.addEditEvent.saveOptions.sendToReview')}
+              onClick={reviewPublishHandler}
+            />
+          </Form.Item>
+        </>
+      );
+  };
+  const ButtonDisplayHandler = () => {
+    if (!eventId) {
+      return roleCheckHandler();
     } else {
       if (eventData?.publishState === eventPublishState.PUBLISHED)
         return (
@@ -155,49 +159,7 @@ function AddEvent() {
             </Form.Item>
           </>
         );
-      else if (
-        calendar[0]?.role === userRoles.EDITOR ||
-        calendar[0]?.role === userRoles.ADMIN ||
-        calendar[0]?.role === userRoles.CONTRIBUTOR
-      )
-        return (
-          <>
-            <Form.Item>
-              <Outlined
-                htmlType="submit"
-                label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
-                onClick={saveAsDraftHandler}
-              />
-            </Form.Item>
-            <Form.Item>
-              <PrimaryButton
-                htmlType="submit"
-                label={t('dashboard.events.addEditEvent.saveOptions.publish')}
-                onClick={reviewPublishHandler}
-              />
-            </Form.Item>
-          </>
-        );
-      else
-        return (
-          <>
-            <Form.Item>
-              <Outlined
-                htmlType="submit"
-                label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
-                onClick={saveAsDraftHandler}
-              />
-            </Form.Item>
-
-            <Form.Item>
-              <PrimaryButton
-                htmlType="submit"
-                label={t('dashboard.events.addEditEvent.saveOptions.sendToReview')}
-                onClick={reviewPublishHandler}
-              />
-            </Form.Item>
-          </>
-        );
+      else return roleCheckHandler();
     }
   };
 
