@@ -24,7 +24,15 @@ function AddEvent() {
       label: 'French',
       key: 'fr',
       children: (
-        <Form.Item name="french" initialValue={eventData?.name?.fr}>
+        <Form.Item
+          name="french"
+          initialValue={eventData?.name?.fr}
+          rules={[
+            {
+              required: true,
+              message: t('dashboard.events.addEditEvent.validations.title'),
+            },
+          ]}>
           <LanguageInput autoComplete="off" />
         </Form.Item>
       ),
@@ -33,7 +41,15 @@ function AddEvent() {
       label: 'English',
       key: 'en',
       children: (
-        <Form.Item name="english" initialValue={eventData?.name?.en}>
+        <Form.Item
+          name="english"
+          initialValue={eventData?.name?.en}
+          rules={[
+            {
+              required: true,
+              message: t('dashboard.events.addEditEvent.validations.title'),
+            },
+          ]}>
           <LanguageInput autoComplete="off" />
         </Form.Item>
       ),
@@ -44,6 +60,7 @@ function AddEvent() {
     // var startDate = new Date(values?.datePicker?._d);
     // startDate = startDate?.toISOString();
     console.log(values);
+    console.log(form.getFieldsValue(['french', 'english']));
     // addEvent({
     //   data: {
     //     name: {
@@ -88,7 +105,7 @@ function AddEvent() {
           </Row>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col xs={24} sm={24} md={12} lg={10} xl={8}>
-              <Form.Item label={t('dashboard.events.addEditEvent.language.title')} required={true}>
+              <Form.Item label={t('dashboard.events.addEditEvent.language.title')}>
                 <div className="card-container">
                   <Tabs type="card" items={items} />
                 </div>
@@ -102,7 +119,7 @@ function AddEvent() {
                 name="datePicker"
                 label={t('dashboard.events.addEditEvent.dates.singleDate')}
                 initialValue={moment(eventData?.startDate)}
-                rules={[{ required: true, type: 'object', whitespace: true }]}>
+                rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
                 <DatePicker format="MM/DD/YYYY" />
               </Form.Item>
             </Col>

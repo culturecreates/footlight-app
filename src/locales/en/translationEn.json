@@ -88,6 +88,10 @@
           "saveAsDraft": "Save as draft",
           "save": "Save",
           "sendToReview": "Send to review"
+        },
+        "validations": {
+          "title": "Event title is required.",
+          "date": "Event date is required."
         }
       },
       "publishOptions": {

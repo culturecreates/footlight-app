@@ -86,6 +86,10 @@
           "saveAsDraft": "Enregistrer comme brouillon",
           "save": "Save",
           "sendToReview": "Envoyer pour révision"
+        },
+        "validations": {
+          "title": "Le titre de l'événement est requis.",
+          "date": "La date de l'événement est requise."
         }
       },
 
