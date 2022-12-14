@@ -45,3 +45,43 @@
   background: #141414;
   border-color: #141414;
 }
+
+.add-edit-wrapper .add-edit-event-heading h4 {
+  font-weight: 700;
+  font-size: 34px;
+  color: #222732;
+  font-family: 'Roboto';
+  font-style: normal;
+}
+.add-edit-wrapper .add-event-button-wrap {
+  display: flex;
+  gap: 16px;
+}
+
+.add-edit-wrapper .ant-form-item-label > label {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  color: #222732;
+}
+.add-edit-wrapper
+  .ant-form-item-label
+  > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+  display: none;
+}
+.add-edit-wrapper
+  .ant-form-item-label
+  > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after {
+  display: inline-block;
+  margin-right: 4px;
+  color: #F43131;
+  font-size: 14px;
+  font-family: 'Roboto';
+  line-height: 1;
+  content: '*';
+}
+.add-edit-wrapper .add-event-date-wrap {
+  font-weight: 700;
+  font-size: 24px;
+  color: #222732;
+}

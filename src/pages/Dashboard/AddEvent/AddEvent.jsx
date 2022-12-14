@@ -63,15 +63,15 @@ function AddEvent() {
 
   return (
     <Form form={form} layout="vertical" onFinish={onFinish} name="event">
-      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="add-edit-wrapper">
         <Col span={24}>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col xs={2} sm={4} md={6} lg={8} xl={10}>
-              <div>
+              <div className="add-edit-event-heading">
                 <h4>{t('dashboard.events.addEditEvent.heading')}</h4>
               </div>
             </Col>
-            <div>
+            <div className="add-event-button-wrap">
               <Form.Item>
                 <Outlined htmlType="submit" label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')} />
               </Form.Item>
@@ -88,21 +88,21 @@ function AddEvent() {
           </Row>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col xs={24} sm={24} md={12} lg={10} xl={8}>
-              <div className="card-container">
-                <Form.Item label="Event Title">
+              <Form.Item label={t('dashboard.events.addEditEvent.language.title')} required={true}>
+                <div className="card-container">
                   <Tabs type="card" items={items} />
-                </Form.Item>
-              </div>
+                </div>
+              </Form.Item>
             </Col>
           </Row>
-          <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} span={24} className="events-content">
-            <Col span={24}>
-              <div>{t('dashboard.events.addEditEvent.dates.dates')}</div>
+          <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-content">
+            <Col xs={24} sm={24} md={12} lg={10} xl={8}>
+              <div className="add-event-date-wrap">{t('dashboard.events.addEditEvent.dates.dates')}</div>
               <Form.Item
                 name="datePicker"
                 label={t('dashboard.events.addEditEvent.dates.singleDate')}
                 initialValue={moment(eventData?.startDate)}
-                rules={[{ required: false, type: 'object', whitespace: true }]}>
+                rules={[{ required: true, type: 'object', whitespace: true }]}>
                 <DatePicker format="MM/DD/YYYY" />
               </Form.Item>
             </Col>
