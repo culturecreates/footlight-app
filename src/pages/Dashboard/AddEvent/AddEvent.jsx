@@ -110,10 +110,12 @@ function AddEvent() {
   };
 
   const reviewPublishHandler = () => {
-    console.log('Send to review/publish', form.getFieldsValue(true));
+    console.log({ eventId, calendarId });
     updateEventState({ eventId, calendarId })
       .unwrap()
-      .then((res) => console.log(res).catch((error) => console.log(error)));
+      .then(() =>
+        navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`).catch((error) => console.log(error)),
+      );
   };
 
   useEffect(() => {
@@ -181,7 +183,11 @@ function AddEvent() {
               </PublishState>
             </Form.Item>
             <Form.Item>
-              <PrimaryButton htmlType="submit" label={t('dashboard.events.addEditEvent.saveOptions.save')} />
+              <PrimaryButton
+                htmlType="submit"
+                label={t('dashboard.events.addEditEvent.saveOptions.save')}
+                onClick={saveAsDraftHandler}
+              />
             </Form.Item>
           </>
         );
