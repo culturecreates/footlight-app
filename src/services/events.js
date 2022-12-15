@@ -35,7 +35,7 @@ export const eventsApi = createApi({
           'calendar-id': calendarId,
         },
       }),
-      invalidatesTags: ['Events'],
+      invalidatesTags: ['Events', 'Event'],
     }),
     deleteEvent: builder.mutation({
       query: ({ id, calendarId }) => ({
