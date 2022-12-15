@@ -71,7 +71,7 @@
       "searchPlaceholder": "Search an event",
       "addEvent": "Event",
       "addEditEvent": {
-        "heading": "[New/Edit] event",
+        "heading": { "newEvent": "New Event", "editEvent": "Edit Event" },
         "language": {
           "title": "Event title",
           "titleLabel": "English"

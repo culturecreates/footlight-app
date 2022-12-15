@@ -56,7 +56,17 @@ export const eventsApi = createApi({
         },
         body: data,
       }),
-      invalidatesTags: ['Events', 'Event'],
+    }),
+    updateEvent: builder.mutation({
+      query: ({ data, calendarId, eventId }) => ({
+        url: `events/${eventId}`,
+        method: 'PATCH',
+        headers: {
+          'calendar-id': calendarId,
+        },
+        body: data,
+      }),
+      invalidatesTags: ['Event'],
     }),
   }),
 });
@@ -67,4 +77,5 @@ export const {
   useDeleteEventMutation,
   useAddEventMutation,
   useGetEventQuery,
+  useUpdateEventMutation,
 } = eventsApi;

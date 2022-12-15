@@ -71,7 +71,7 @@
       "searchPlaceholder": "Rechercher un événement",
       "addEvent": "Événement",
       "addEditEvent": {
-        "heading": "[Ajouter/Modifier] un événement",
+        "heading": { "newEvent": "Ajouter un événement", "editEvent": "Modifier un événement" },
         "language": {
           "title": "Titre de l'événement",
           "titleLabel": "English"

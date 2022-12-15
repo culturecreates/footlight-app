@@ -3,7 +3,7 @@ import './addEvent.css';
 import { Tabs, Form, DatePicker, Row, Col } from 'antd';
 import LanguageInput from '../../../components/Input/Common/AuthenticationInput';
 import moment from 'moment';
-// import { useAddEventMutation } from '../../../services/events';
+import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGetEventQuery, useUpdateEventStateMutation } from '../../../services/events';
 import { PathName } from '../../../constants/pathName';
@@ -19,12 +19,13 @@ import { eventPublishState } from '../../../constants/eventPublishState';
 function AddEvent() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  // const [addEvent] = useAddEventMutation();
+  const [addEvent] = useAddEventMutation();
   const { calendarId, eventId } = useParams();
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
   const { data: eventData, isError } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
   const [updateEventState] = useUpdateEventStateMutation();
+  const [updateEvent] = useUpdateEventMutation();
 
   const items = [
     {
@@ -64,21 +65,48 @@ function AddEvent() {
   ];
 
   const saveAsDraftHandler = () => {
-    // var startDate = new Date(values?.datePicker?._d);
-    // startDate = startDate?.toISOString();
-    console.log('Save as draft', form.getFieldsValue(true));
-    // addEvent({
-    //   data: {
-    //     name: {
-    //       en: values?.english,
-    //       fr: values?.french,
-    //     },
-    //     startDate: startDate,
-    //   },
-    //   calendarId,
-    // }).unwrap().then((res) => {
-    //   console.log(res).catch((error) => console.log(error));
-    // });
+    form.validateFields().then((values) => {
+      var startDate = new Date(values?.datePicker?._d);
+      startDate = startDate?.toISOString();
+      if (!eventId || eventId === '') {
+        addEvent({
+          data: {
+            name: {
+              en: values?.english,
+              fr: values?.french,
+            },
+            startDate: startDate,
+          },
+          calendarId,
+        })
+          .unwrap()
+          .then(() => {
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`).catch((error) => console.log(error));
+          })
+          .catch((errorInfo) => {
+            console.log(errorInfo);
+          });
+      } else {
+        updateEvent({
+          data: {
+            name: {
+              en: values?.english,
+              fr: values?.french,
+            },
+            startDate: startDate,
+          },
+          calendarId,
+          eventId,
+        })
+          .unwrap()
+          .then(() => {
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    });
   };
 
   const reviewPublishHandler = () => {
@@ -91,8 +119,6 @@ function AddEvent() {
   useEffect(() => {
     if (isError) navigate(`${PathName.NotFound}`);
   }, [isError]);
-  // !calendarId => save as draft & role = guest ? send to review:role = guest,editor,contributor ? publish
-  //calendarId=> state dropdown (role = guest ? disabled: enabled)&role = guest,editor,contributor ? save
 
   const roleCheckHandler = () => {
     const calendar = user?.roles.filter((calendar) => {
@@ -170,7 +196,11 @@ function AddEvent() {
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col xs={2} sm={4} md={6} lg={8} xl={10}>
               <div className="add-edit-event-heading">
-                <h4>{t('dashboard.events.addEditEvent.heading')}</h4>
+                <h4>
+                  {eventId
+                    ? t('dashboard.events.addEditEvent.heading.editEvent')
+                    : t('dashboard.events.addEditEvent.heading.newEvent')}
+                </h4>
               </div>
             </Col>
             <div className="add-event-button-wrap">
