@@ -111,7 +111,7 @@ function AddEvent() {
 
   const reviewPublishHandler = () => {
     console.log({ eventId, calendarId });
-    updateEventState({ eventId, calendarId })
+    updateEventState({ id: eventId, calendarId })
       .unwrap()
       .then(() =>
         navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`).catch((error) => console.log(error)),
