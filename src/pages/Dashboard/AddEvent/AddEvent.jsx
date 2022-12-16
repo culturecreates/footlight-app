@@ -230,7 +230,11 @@ function AddEvent() {
               <Col xs={24} sm={24} md={12} lg={10} xl={8}>
                 <Form.Item label={t('dashboard.events.addEditEvent.language.title')} required={true}>
                   <div className="card-container">
-                    <Tabs type="card" items={items} />
+                    <Tabs
+                      type="card"
+                      items={items}
+                      defaultActiveKey={eventId && eventData ? (eventData?.name?.fr ? 'fr' : 'en') : 'fr'}
+                    />
                   </div>
                 </Form.Item>
               </Col>
