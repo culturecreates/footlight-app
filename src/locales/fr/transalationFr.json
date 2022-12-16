@@ -79,6 +79,7 @@
         "dates": {
           "dates": "Dates",
           "date": "Date",
+          "heading": "Sélectionnez le type de date que vous souhaitez saisir pour votre événement :",
           "singleDate": "Date unique",
           "dateRange": "Plage de dates",
           "multipleDates": "Plusieurs dates"

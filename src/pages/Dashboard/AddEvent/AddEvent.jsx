@@ -24,10 +24,14 @@ function AddEvent() {
   const { calendarId, eventId } = useParams();
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
-  const { data: eventData, isError } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
+  const {
+    data: eventData,
+    isError,
+    isLoading,
+  } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
-  const [dateType, setDateType] = useState();
+  const [dateType, setDateType] = useState('');
 
   const items = [
     {
@@ -195,82 +199,83 @@ function AddEvent() {
       );
     else return roleCheckHandler();
   };
-
   return (
-    <Form form={form} layout="vertical" name="event">
-      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="add-edit-wrapper">
-        <Col span={24}>
-          <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-            <Col xs={2} sm={4} md={6} lg={8} xl={10}>
-              <div className="add-edit-event-heading">
-                <h4>
-                  {eventId
-                    ? t('dashboard.events.addEditEvent.heading.editEvent')
-                    : t('dashboard.events.addEditEvent.heading.newEvent')}
-                </h4>
-              </div>
-            </Col>
-            <div className="add-event-button-wrap">
-              <ButtonDisplayHandler />
-            </div>
-          </Row>
-          <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-            <Col xs={24} sm={24} md={12} lg={10} xl={8}>
-              <Form.Item label={t('dashboard.events.addEditEvent.language.title')} required={true}>
-                <div className="card-container">
-                  <Tabs type="card" items={items} />
+    !isLoading && (
+      <Form form={form} layout="vertical" name="event">
+        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="add-edit-wrapper">
+          <Col span={24}>
+            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+              <Col xs={2} sm={4} md={6} lg={8} xl={10}>
+                <div className="add-edit-event-heading">
+                  <h4>
+                    {eventId
+                      ? t('dashboard.events.addEditEvent.heading.editEvent')
+                      : t('dashboard.events.addEditEvent.heading.newEvent')}
+                  </h4>
                 </div>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-content">
-            <Col xs={24} sm={24} md={12} lg={10} xl={8}>
-              <Row>
-                <Col>
-                  <div className="add-event-date-wrap">{t('dashboard.events.addEditEvent.dates.dates')}</div>
-                </Col>
-              </Row>
-              {dateType === '' ? (
+              </Col>
+              <div className="add-event-button-wrap">
+                <ButtonDisplayHandler />
+              </div>
+            </Row>
+            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+              <Col xs={24} sm={24} md={12} lg={10} xl={8}>
+                <Form.Item label={t('dashboard.events.addEditEvent.language.title')} required={true}>
+                  <div className="card-container">
+                    <Tabs type="card" items={items} />
+                  </div>
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-content">
+              <Col xs={24} sm={24} md={12} lg={10} xl={8}>
                 <Row>
                   <Col>
-                    <p className="add-event-date-heading">Select the type of date you want to enter for your event:</p>
+                    <div className="add-event-date-wrap">{t('dashboard.events.addEditEvent.dates.dates')}</div>
                   </Col>
                 </Row>
-              ) : (
-                <></>
-              )}
+                {dateType === '' ? (
+                  <Row>
+                    <Col>
+                      <p className="add-event-date-heading">{t('dashboard.events.addEditEvent.dates.heading')}</p>
+                    </Col>
+                  </Row>
+                ) : (
+                  <></>
+                )}
 
-              {dateType === 'single' ? (
-                <Row>
-                  <Col span={16}>
-                    <Form.Item
-                      name="datePicker"
-                      label={t('dashboard.events.addEditEvent.dates.date')}
-                      initialValue={moment(eventData?.startDate)}
-                      rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
-                      <DatePicker format="MM/DD/YYYY" />
-                    </Form.Item>
-                  </Col>
-                </Row>
-              ) : (
-                <Row>
-                  <Col>
-                    <div className="date-buttons">
-                      <DateAction
-                        label={t('dashboard.events.addEditEvent.dates.singleDate')}
-                        onClick={() => setDateType('single')}
-                      />
-                      <DateAction label={t('dashboard.events.addEditEvent.dates.dateRange')} disabled={true} />
-                      <DateAction label={t('dashboard.events.addEditEvent.dates.multipleDates')} disabled={true} />
-                    </div>
-                  </Col>
-                </Row>
-              )}
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-    </Form>
+                {dateType === 'single' ? (
+                  <Row>
+                    <Col span={16}>
+                      <Form.Item
+                        name="datePicker"
+                        label={t('dashboard.events.addEditEvent.dates.date')}
+                        initialValue={moment(eventData?.startDate)}
+                        rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
+                        <DatePicker format="MM/DD/YYYY" />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                ) : (
+                  <Row>
+                    <Col>
+                      <div className="date-buttons">
+                        <DateAction
+                          label={t('dashboard.events.addEditEvent.dates.singleDate')}
+                          onClick={() => setDateType('single')}
+                        />
+                        <DateAction label={t('dashboard.events.addEditEvent.dates.dateRange')} disabled={true} />
+                        <DateAction label={t('dashboard.events.addEditEvent.dates.multipleDates')} disabled={true} />
+                      </div>
+                    </Col>
+                  </Row>
+                )}
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Form>
+    )
   );
 }
 

@@ -80,6 +80,7 @@
         "dates": {
           "dates": "Dates",
           "date": "Date",
+          "heading": "Select the type of date you want to enter for your event:",
           "singleDate": "Single date",
           "dateRange": "Date range",
           "multipleDates": "Multiple dates"
