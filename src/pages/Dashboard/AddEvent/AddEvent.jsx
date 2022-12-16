@@ -35,11 +35,15 @@ function AddEvent() {
         <Form.Item
           name="french"
           initialValue={eventData?.name?.fr}
+          dependencies={['english']}
           rules={[
-            {
-              required: true,
-              message: t('dashboard.events.addEditEvent.validations.title'),
-            },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (value || getFieldValue('english')) {
+                  Promise.resolve();
+                } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+              },
+            }),
           ]}>
           <LanguageInput autoComplete="off" />
         </Form.Item>
@@ -52,11 +56,15 @@ function AddEvent() {
         <Form.Item
           name="english"
           initialValue={eventData?.name?.en}
+          dependencies={['french']}
           rules={[
-            {
-              required: true,
-              message: t('dashboard.events.addEditEvent.validations.title'),
-            },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (value || getFieldValue('french')) {
+                  Promise.resolve();
+                } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+              },
+            }),
           ]}>
           <LanguageInput autoComplete="off" />
         </Form.Item>
@@ -65,48 +73,51 @@ function AddEvent() {
   ];
 
   const saveAsDraftHandler = () => {
-    form.validateFields().then((values) => {
-      var startDate = new Date(values?.datePicker?._d);
-      startDate = startDate?.toISOString();
-      if (!eventId || eventId === '') {
-        addEvent({
-          data: {
-            name: {
-              en: values?.english,
-              fr: values?.french,
+    form
+      .validateFields()
+      .then((values) => {
+        var startDate = new Date(values?.datePicker?._d);
+        startDate = startDate?.toISOString();
+        if (!eventId || eventId === '') {
+          addEvent({
+            data: {
+              name: {
+                en: values?.english,
+                fr: values?.french,
+              },
+              startDate: startDate,
             },
-            startDate: startDate,
-          },
-          calendarId,
-        })
-          .unwrap()
-          .then(() => {
-            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`).catch((error) => console.log(error));
+            calendarId,
           })
-          .catch((errorInfo) => {
-            console.log(errorInfo);
-          });
-      } else {
-        updateEvent({
-          data: {
-            name: {
-              en: values?.english,
-              fr: values?.french,
+            .unwrap()
+            .then(() => {
+              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`).catch((error) => console.log(error));
+            })
+            .catch((errorInfo) => {
+              console.log(errorInfo);
+            });
+        } else {
+          updateEvent({
+            data: {
+              name: {
+                en: values?.english,
+                fr: values?.french,
+              },
+              startDate: startDate,
             },
-            startDate: startDate,
-          },
-          calendarId,
-          eventId,
-        })
-          .unwrap()
-          .then(() => {
-            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+            calendarId,
+            eventId,
           })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
-    });
+            .unwrap()
+            .then(() => {
+              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        }
+      })
+      .catch((error) => console.log(error));
   };
 
   const reviewPublishHandler = () => {
@@ -171,28 +182,24 @@ function AddEvent() {
       );
   };
   const ButtonDisplayHandler = () => {
-    if (!eventId) {
-      return roleCheckHandler();
-    } else {
-      if (eventData?.publishState === eventPublishState.PUBLISHED)
-        return (
-          <>
-            <Form.Item>
-              <PublishState eventId={eventId}>
-                <span>{eventData?.publishState}</span>
-              </PublishState>
-            </Form.Item>
-            <Form.Item>
-              <PrimaryButton
-                htmlType="submit"
-                label={t('dashboard.events.addEditEvent.saveOptions.save')}
-                onClick={saveAsDraftHandler}
-              />
-            </Form.Item>
-          </>
-        );
-      else return roleCheckHandler();
-    }
+    if (eventId && eventData?.publishState === eventPublishState.PUBLISHED)
+      return (
+        <>
+          <Form.Item>
+            <PublishState eventId={eventId}>
+              <span>{eventData?.publishState}</span>
+            </PublishState>
+          </Form.Item>
+          <Form.Item>
+            <PrimaryButton
+              htmlType="submit"
+              label={t('dashboard.events.addEditEvent.saveOptions.save')}
+              onClick={saveAsDraftHandler}
+            />
+          </Form.Item>
+        </>
+      );
+    else return roleCheckHandler();
   };
 
   return (
@@ -215,7 +222,7 @@ function AddEvent() {
           </Row>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col xs={24} sm={24} md={12} lg={10} xl={8}>
-              <Form.Item label={t('dashboard.events.addEditEvent.language.title')}>
+              <Form.Item label={t('dashboard.events.addEditEvent.language.title')} required={true}>
                 <div className="card-container">
                   <Tabs type="card" items={items} />
                 </div>
