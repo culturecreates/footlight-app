@@ -78,7 +78,10 @@
         },
         "dates": {
           "dates": "Dates",
-          "singleDate": "Date"
+          "date": "Date",
+          "singleDate": "Date unique",
+          "dateRange": "Plage de dates",
+          "multipleDates": "Plusieurs dates"
         },
         "status": "Statut",
         "saveOptions": {
