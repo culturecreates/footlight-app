@@ -79,7 +79,10 @@
 
         "dates": {
           "dates": "Dates",
-          "singleDate": "Date"
+          "date": "Date",
+          "singleDate": "Single date",
+          "dateRange": "Date range",
+          "multipleDates": "Multiple dates"
         },
 
         "status": "Status",

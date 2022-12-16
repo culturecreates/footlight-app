@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './addEvent.css';
 import { Tabs, Form, DatePicker, Row, Col } from 'antd';
 import LanguageInput from '../../../components/Input/Common/AuthenticationInput';
@@ -27,6 +27,7 @@ function AddEvent() {
   const { data: eventData, isError } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
+  const [dateType, setDateType] = useState();
 
   const items = [
     {
@@ -237,31 +238,42 @@ function AddEvent() {
                   <div className="add-event-date-wrap">{t('dashboard.events.addEditEvent.dates.dates')}</div>
                 </Col>
               </Row>
-              <Row>
-                <Col>
-                  <p className="add-event-date-heading">Select the type of date you want to enter for your event:</p>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <div className="date-buttons">
-                    <DateAction label="Single date" />
-                    <DateAction label="Single date" />
-                    <DateAction label="Single date" disabled={true} />
-                  </div>
-                </Col>
-              </Row>
-              <Row>
-                <Col xs={24} sm={24} md={12} lg={10} xl={8}>
-                  <Form.Item
-                    name="datePicker"
-                    label={t('dashboard.events.addEditEvent.dates.singleDate')}
-                    initialValue={moment(eventData?.startDate)}
-                    rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
-                    <DatePicker format="MM/DD/YYYY" />
-                  </Form.Item>
-                </Col>
-              </Row>
+              {dateType === '' ? (
+                <Row>
+                  <Col>
+                    <p className="add-event-date-heading">Select the type of date you want to enter for your event:</p>
+                  </Col>
+                </Row>
+              ) : (
+                <></>
+              )}
+
+              {dateType === 'single' ? (
+                <Row>
+                  <Col span={16}>
+                    <Form.Item
+                      name="datePicker"
+                      label={t('dashboard.events.addEditEvent.dates.date')}
+                      initialValue={moment(eventData?.startDate)}
+                      rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
+                      <DatePicker format="MM/DD/YYYY" />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              ) : (
+                <Row>
+                  <Col>
+                    <div className="date-buttons">
+                      <DateAction
+                        label={t('dashboard.events.addEditEvent.dates.singleDate')}
+                        onClick={() => setDateType('single')}
+                      />
+                      <DateAction label={t('dashboard.events.addEditEvent.dates.dateRange')} disabled={true} />
+                      <DateAction label={t('dashboard.events.addEditEvent.dates.multipleDates')} disabled={true} />
+                    </div>
+                  </Col>
+                </Row>
+              )}
             </Col>
           </Row>
         </Col>

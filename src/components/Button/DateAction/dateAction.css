@@ -9,6 +9,7 @@
   align-items: center;
   justify-content: center;
   color: #1b3de6;
+  gap: 8px;
 }
 
 .date-action-button:hover {
