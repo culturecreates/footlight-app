@@ -1,4 +1,4 @@
-.publish-state-dropdown ul li:hover {
+.publish-state-dropdown ul li::selection {
   background: #eff2ff;
 }
 .publish-state-dropdown-button {

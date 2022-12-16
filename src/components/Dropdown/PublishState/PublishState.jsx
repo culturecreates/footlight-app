@@ -29,6 +29,8 @@ function PublishState({ children, eventId }) {
       menu={{
         items,
         onClick,
+        selectable: true,
+        defaultSelectedKeys: ['0'],
       }}
       trigger={['click']}>
       <Button type="default" className="publish-state-dropdown-button">
