@@ -74,7 +74,9 @@
         "heading": { "newEvent": "New Event", "editEvent": "Edit Event" },
         "language": {
           "title": "Event title",
-          "titleLabel": "English"
+          "titleLabel": "English",
+          "placeHolderFrench": "Enter French event title",
+          "placeHolderEnglish": "Enter English event title"
         },
 
         "dates": {

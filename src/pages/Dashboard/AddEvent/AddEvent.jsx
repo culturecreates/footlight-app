@@ -51,7 +51,10 @@ function AddEvent() {
               },
             }),
           ]}>
-          <LanguageInput autoComplete="off" />
+          <LanguageInput
+            autoComplete="off"
+            placeHolder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
+          />
         </Form.Item>
       ),
     },
@@ -72,7 +75,10 @@ function AddEvent() {
               },
             }),
           ]}>
-          <LanguageInput autoComplete="off" />
+          <LanguageInput
+            autoComplete="off"
+            placeHolder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
+          />
         </Form.Item>
       ),
     },
