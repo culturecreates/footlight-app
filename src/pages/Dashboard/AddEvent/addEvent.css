@@ -74,7 +74,7 @@
   > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after {
   display: inline-block;
   margin-right: 4px;
-  color: #F43131;
+  color: #f43131;
   font-size: 14px;
   font-family: 'Roboto';
   line-height: 1;
@@ -84,4 +84,15 @@
   font-weight: 700;
   font-size: 24px;
   color: #222732;
+}
+
+.add-edit-wrapper .add-event-date-heading {
+  font-weight: 400;
+  font-size: 16px;
+  color: #646d7b;
+}
+.add-edit-wrapper .date-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
 }

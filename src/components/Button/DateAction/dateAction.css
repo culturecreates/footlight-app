@@ -1,0 +1,41 @@
+.date-action-button {
+  border: 1px solid #607efc;
+  border-radius: 6px;
+  background: #ffffff;
+  height: 88px;
+  width: 130.33px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #1b3de6;
+}
+
+.date-action-button:hover {
+  background-color: #eff2ff;
+  color: #1b3de6;
+}
+.date-action-button .date-action-button-icon {
+  font-size: 14px;
+  border-radius: 73px;
+  background: #ffffff;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  color: #607efc;
+  justify-content: center;
+}
+
+.date-action-button .date-action-button-label {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.date-action-button:disabled {
+  color: #646d7b;
+}
+
+.date-action-button:disabled .date-action-button-icon {
+  color: #646d7b;
+}

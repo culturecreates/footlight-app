@@ -15,6 +15,7 @@ import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { userRoles } from '../../../constants/userRoles';
 import PublishState from '../../../components/Dropdown/PublishState/PublishState';
 import { eventPublishState } from '../../../constants/eventPublishState';
+import DateAction from '../../../components/Button/DateAction';
 
 function AddEvent() {
   const navigate = useNavigate();
@@ -231,14 +232,36 @@ function AddEvent() {
           </Row>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-content">
             <Col xs={24} sm={24} md={12} lg={10} xl={8}>
-              <div className="add-event-date-wrap">{t('dashboard.events.addEditEvent.dates.dates')}</div>
-              <Form.Item
-                name="datePicker"
-                label={t('dashboard.events.addEditEvent.dates.singleDate')}
-                initialValue={moment(eventData?.startDate)}
-                rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
-                <DatePicker format="MM/DD/YYYY" />
-              </Form.Item>
+              <Row>
+                <Col>
+                  <div className="add-event-date-wrap">{t('dashboard.events.addEditEvent.dates.dates')}</div>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <p className="add-event-date-heading">Select the type of date you want to enter for your event:</p>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <div className="date-buttons">
+                    <DateAction label="Single date" />
+                    <DateAction label="Single date" />
+                    <DateAction label="Single date" disabled={true} />
+                  </div>
+                </Col>
+              </Row>
+              <Row>
+                <Col xs={24} sm={24} md={12} lg={10} xl={8}>
+                  <Form.Item
+                    name="datePicker"
+                    label={t('dashboard.events.addEditEvent.dates.singleDate')}
+                    initialValue={moment(eventData?.startDate)}
+                    rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
+                    <DatePicker format="MM/DD/YYYY" />
+                  </Form.Item>
+                </Col>
+              </Row>
             </Col>
           </Row>
         </Col>
