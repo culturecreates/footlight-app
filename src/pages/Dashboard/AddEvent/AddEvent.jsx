@@ -42,7 +42,7 @@ function AddEvent() {
             ({ getFieldValue }) => ({
               validator(_, value) {
                 if (value || getFieldValue('english')) {
-                  Promise.resolve();
+                  return Promise.resolve();
                 } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
               },
             }),
@@ -63,7 +63,7 @@ function AddEvent() {
             ({ getFieldValue }) => ({
               validator(_, value) {
                 if (value || getFieldValue('french')) {
-                  Promise.resolve();
+                  return Promise.resolve();
                 } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
               },
             }),
@@ -147,11 +147,7 @@ function AddEvent() {
       return (
         <>
           <Form.Item>
-            <Outlined
-              htmlType="submit"
-              label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
-              onClick={saveAsDraftHandler}
-            />
+            <Outlined label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')} onClick={saveAsDraftHandler} />
           </Form.Item>
           <Form.Item>
             <PrimaryButton
@@ -166,11 +162,7 @@ function AddEvent() {
       return (
         <>
           <Form.Item>
-            <Outlined
-              htmlType="submit"
-              label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
-              onClick={saveAsDraftHandler}
-            />
+            <Outlined label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')} onClick={saveAsDraftHandler} />
           </Form.Item>
 
           <Form.Item>
