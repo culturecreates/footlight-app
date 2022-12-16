@@ -47,13 +47,15 @@ function AddEvent() {
               validator(_, value) {
                 if (value || getFieldValue('english')) {
                   return Promise.resolve();
-                } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                } else if (!getFieldValue('english') && eventData?.name?.en) return Promise.resolve();
+                else if (!value && !getFieldValue('english'))
+                  return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
               },
             }),
           ]}>
           <LanguageInput
             autoComplete="off"
-            placeHolder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
+            placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
           />
         </Form.Item>
       ),
@@ -77,7 +79,7 @@ function AddEvent() {
           ]}>
           <LanguageInput
             autoComplete="off"
-            placeHolder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
+            placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
           />
         </Form.Item>
       ),
