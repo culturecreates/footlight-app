@@ -177,7 +177,7 @@ function AddEvent() {
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               <Col xs={24} sm={24} md={12} lg={10} xl={8}>
                 <Form.Item label={t('dashboard.events.addEditEvent.language.title')} required={true}>
-                  <BilingualInput form={form}>
+                  <BilingualInput fieldData={eventData?.name}>
                     <Form.Item
                       name="french"
                       initialValue={eventData?.name?.fr}
@@ -187,8 +187,7 @@ function AddEvent() {
                           validator(_, value) {
                             if (value || getFieldValue('english')) {
                               return Promise.resolve();
-                            } else if (!getFieldValue('english') && eventData?.name?.en) return Promise.resolve();
-                            else if (!value && !getFieldValue('english'))
+                            } else
                               return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
                           },
                         }),

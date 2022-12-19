@@ -125,6 +125,8 @@
     }
   },
   "common": {
+    "tabEnglish":"Anglais",
+    "tabFrench":"Français",
     "server": {
       "status": {
         "503": {

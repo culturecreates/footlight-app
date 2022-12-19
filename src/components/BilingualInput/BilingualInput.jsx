@@ -1,41 +1,45 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Tabs } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
 import './bilingualInput.css';
+import { useTranslation } from 'react-i18next';
 
 function BilingualInput(props) {
-  const { form } = props;
-  const [labelEn, setLabelEn] = useState('English');
-  const [labelFr, setLabelFr] = useState('French');
-
-  let enContent = form.getFieldValue('english');
-  let frContent = form.getFieldValue('french');
-
-  const onChange = () => {
-    if (!form.getFieldValue('french') || form.getFieldValue('french') === '')
-      setLabelFr(
-        <>
-          French&nbsp;
-          <WarningOutlined style={{ color: '#B59800' }} />
-        </>,
-      );
-    else setLabelFr('French');
-
-    if (!form.getFieldValue('english') || form.getFieldValue('english') === '')
-      setLabelEn(
-        <>
-          English&nbsp;
-          <WarningOutlined style={{ color: '#B59800' }} />
-        </>,
-      );
-    else setLabelEn('English');
-  };
+  const { t } = useTranslation();
+  let labelFr = t('common.tabFrench');
+  let labelEn = t('common.tabEnglish');
 
   let defaultTab = 'fr';
 
-  if (enContent && !frContent) {
-    defaultTab = 'en';
+  // Adjust tabs unless brand new entity
+  if (props.fieldData) {
+    let enContent = props.fieldData.en;
+    let frContent = props.fieldData.fr;
+
+    // Change default tab to 'en' if only english
+    if (enContent && !frContent) {
+      defaultTab = 'en';
+    }
+
+    // If field is empty add a warning
+    if (!frContent || frContent === '') {
+      labelFr = (
+        <>
+          {labelFr}&nbsp;
+          <WarningOutlined style={{ color: '#B59800' }} />
+        </>
+      );
+    }
+    if (!enContent || enContent === '') {
+      labelEn = (
+        <>
+          {labelEn}&nbsp;
+          <WarningOutlined style={{ color: '#B59800' }} />
+        </>
+      );
+    }
   }
+
   const items = [
     {
       label: labelFr,
@@ -56,7 +60,6 @@ function BilingualInput(props) {
       defaultActiveKey={defaultTab}
       items={items}
       size="small"
-      onChange={onChange}
       tabBarGutter="0"
       tabPosition="top"
       animated="false"
