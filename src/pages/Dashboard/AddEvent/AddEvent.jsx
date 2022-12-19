@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './addEvent.css';
-import { Tabs, Form, DatePicker, Row, Col } from 'antd';
+import { Form, DatePicker, Row, Col } from 'antd';
 import LanguageInput from '../../../components/Input/Common/AuthenticationInput';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
@@ -16,6 +16,7 @@ import { userRoles } from '../../../constants/userRoles';
 import PublishState from '../../../components/Dropdown/PublishState/PublishState';
 import { eventPublishState } from '../../../constants/eventPublishState';
 import DateAction from '../../../components/Button/DateAction';
+import BilingualInput from '../../../components/BilingualInput';
 
 function AddEvent() {
   const navigate = useNavigate();
@@ -32,59 +33,6 @@ function AddEvent() {
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
   const [dateType, setDateType] = useState('');
-
-  const items = [
-    {
-      label: 'French',
-      key: 'fr',
-      children: (
-        <Form.Item
-          name="french"
-          initialValue={eventData?.name?.fr}
-          dependencies={['english']}
-          rules={[
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (value || getFieldValue('english')) {
-                  return Promise.resolve();
-                } else if (!getFieldValue('english') && eventData?.name?.en) return Promise.resolve();
-                else if (!value && !getFieldValue('english'))
-                  return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
-              },
-            }),
-          ]}>
-          <LanguageInput
-            autoComplete="off"
-            placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
-          />
-        </Form.Item>
-      ),
-    },
-    {
-      label: 'English',
-      key: 'en',
-      children: (
-        <Form.Item
-          name="english"
-          initialValue={eventData?.name?.en}
-          dependencies={['french']}
-          rules={[
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (value || getFieldValue('french')) {
-                  return Promise.resolve();
-                } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
-              },
-            }),
-          ]}>
-          <LanguageInput
-            autoComplete="off"
-            placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
-          />
-        </Form.Item>
-      ),
-    },
-  ];
 
   const saveAsDraftHandler = () => {
     form
@@ -229,13 +177,47 @@ function AddEvent() {
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               <Col xs={24} sm={24} md={12} lg={10} xl={8}>
                 <Form.Item label={t('dashboard.events.addEditEvent.language.title')} required={true}>
-                  <div className="card-container">
-                    <Tabs
-                      type="card"
-                      items={items}
-                      defaultActiveKey={eventId && eventData ? (eventData?.name?.fr ? 'fr' : 'en') : 'fr'}
-                    />
-                  </div>
+                  <BilingualInput form={form}>
+                    <Form.Item
+                      name="french"
+                      initialValue={eventData?.name?.fr}
+                      dependencies={['english']}
+                      rules={[
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value || getFieldValue('english')) {
+                              return Promise.resolve();
+                            } else if (!getFieldValue('english') && eventData?.name?.en) return Promise.resolve();
+                            else if (!value && !getFieldValue('english'))
+                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                          },
+                        }),
+                      ]}>
+                      <LanguageInput
+                        autoComplete="off"
+                        placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name="english"
+                      initialValue={eventData?.name?.en}
+                      dependencies={['french']}
+                      rules={[
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value || getFieldValue('french')) {
+                              return Promise.resolve();
+                            } else
+                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                          },
+                        }),
+                      ]}>
+                      <LanguageInput
+                        autoComplete="off"
+                        placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
+                      />
+                    </Form.Item>
+                  </BilingualInput>
                 </Form.Item>
               </Col>
             </Row>
