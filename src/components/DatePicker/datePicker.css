@@ -1,0 +1,10 @@
+.date-picker-wrapper {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #b6c1c9;
+  border-radius: 4px;
+}
+
+.date-picker-wrapper .ant-picker-suffix {
+  color: #1b3de6;
+}

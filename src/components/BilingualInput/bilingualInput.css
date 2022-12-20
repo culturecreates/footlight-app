@@ -17,3 +17,7 @@
   background: #ffffff;
   color: #222732;
 }
+
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
+    border: 0;
+  }

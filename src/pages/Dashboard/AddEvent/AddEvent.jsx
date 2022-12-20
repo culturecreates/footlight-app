@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './addEvent.css';
-import { Form, DatePicker, Row, Col } from 'antd';
+import { Form, Row, Col } from 'antd';
 import LanguageInput from '../../../components/Input/Common/AuthenticationInput';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
@@ -17,6 +17,7 @@ import PublishState from '../../../components/Dropdown/PublishState/PublishState
 import { eventPublishState } from '../../../constants/eventPublishState';
 import DateAction from '../../../components/Button/DateAction';
 import BilingualInput from '../../../components/BilingualInput';
+import DatePickerStyled from '../../../components/DatePicker';
 
 function AddEvent() {
   const navigate = useNavigate();
@@ -241,13 +242,13 @@ function AddEvent() {
 
                 {dateType === 'single' ? (
                   <Row>
-                    <Col span={16}>
+                    <Col span={24}>
                       <Form.Item
                         name="datePicker"
                         label={t('dashboard.events.addEditEvent.dates.date')}
                         initialValue={moment(eventData?.startDate)}
                         rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
-                        <DatePicker format="MM/DD/YYYY" />
+                        <DatePickerStyled />
                       </Form.Item>
                     </Col>
                   </Row>
