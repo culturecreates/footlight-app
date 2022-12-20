@@ -8,3 +8,29 @@
 .date-picker-wrapper .ant-picker-suffix {
   color: #1b3de6;
 }
+
+.date-picker-calendar .ant-picker-panel-container {
+  background: #ffffff;
+  box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.date-picker-calendar .ant-picker-header-view {
+  font-weight: 700;
+  font-size: 16px;
+  text-align: center;
+  color: #222732;
+}
+
+.date-picker-calendar .ant-picker-cell-selected {
+  background: #607efc;
+  border-radius: 4px;
+}
+
+.date-picker-calendar .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
+  border: 0px;
+}
+
+.date-picker-calendar .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
+  background: none;
+}

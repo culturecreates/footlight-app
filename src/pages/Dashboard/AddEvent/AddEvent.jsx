@@ -33,7 +33,7 @@ function AddEvent() {
   } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
-  const [dateType, setDateType] = useState('');
+  const [dateType, setDateType] = useState(eventData ? 'single' : '');
 
   const saveAsDraftHandler = () => {
     form
