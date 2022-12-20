@@ -34,3 +34,11 @@
 .date-picker-calendar .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
   background: none;
 }
+
+.date-picker-calendar .ant-picker-header {
+  border-bottom: 1px solid #b6c1c9;
+}
+
+.date-picker-calendar .ant-picker-header button {
+  color: #222732;
+}
