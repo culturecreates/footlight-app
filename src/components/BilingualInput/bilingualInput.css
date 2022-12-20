@@ -1,0 +1,19 @@
+.ant-tabs-tab-btn {
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #e8e8e8;
+  color: #222732;
+}
+.ant-tabs-card.ant-tabs-small > .ant-tabs-nav .ant-tabs-tab {
+  padding: 4px;
+  background: #e8e8e8;
+}
+
+.ant-tabs > .ant-tabs-nav .ant-tabs-nav-list {
+  border-radius: 4px 4px 0px 0px;
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  background: #ffffff;
+  color: #222732;
+}
