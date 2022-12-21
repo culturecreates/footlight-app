@@ -246,7 +246,7 @@ function AddEvent() {
                       <Form.Item
                         name="datePicker"
                         label={t('dashboard.events.addEditEvent.dates.date')}
-                        initialValue={moment(eventData?.startDate)}
+                        initialValue={eventData?.startDate ? moment(eventData?.startDate) : ''}
                         rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
                         <DatePickerStyled />
                       </Form.Item>
