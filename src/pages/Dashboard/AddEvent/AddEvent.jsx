@@ -161,125 +161,144 @@ function AddEvent() {
   };
   return (
     !isLoading && (
-      <Form form={form} layout="vertical" name="event">
-        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="add-edit-wrapper">
-          <Col span={24}>
-            <Row gutter={[48]}>
-              <Col span={18}>
-                <div className="add-edit-event-heading">
-                  <h4>
-                    {eventId
-                      ? t('dashboard.events.addEditEvent.heading.editEvent')
-                      : t('dashboard.events.addEditEvent.heading.newEvent')}
-                  </h4>
-                </div>
-              </Col>
-              <Col>
-                <div className="add-event-button-wrap">
-                  <ButtonDisplayHandler />
-                </div>
-              </Col>
-            </Row>
-            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-              <Col xs={24} sm={24} md={12} lg={10} xl={8}>
-                <Form.Item label={t('dashboard.events.addEditEvent.language.title')} required={true}>
-                  <BilingualInput fieldData={eventData?.name}>
-                    <Form.Item
-                      name="french"
-                      initialValue={eventData?.name?.fr}
-                      dependencies={['english']}
-                      rules={[
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (value || getFieldValue('english')) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
-                          },
-                        }),
-                      ]}>
-                      <TextArea
-                        autoSize
-                        autoComplete="off"
-                        placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
-                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8' }}
-                        size="large"
-                      />
+      <div>
+        <Form form={form} layout="vertical" name="event">
+          <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="add-edit-wrapper">
+            <Col span={24}>
+              <Row gutter={[48]} justify="space-between">
+                <Col span={18}>
+                  <div className="add-edit-event-heading">
+                    <h4>
+                      {eventId
+                        ? t('dashboard.events.addEditEvent.heading.editEvent')
+                        : t('dashboard.events.addEditEvent.heading.newEvent')}
+                    </h4>
+                  </div>
+                </Col>
+                <Col>
+                  <div className="add-event-button-wrap">
+                    <ButtonDisplayHandler />
+                  </div>
+                </Col>
+              </Row>
+              <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                <Col xs={24} sm={24} md={12} lg={10} xl={10}>
+                  <div className="add-event-section-wrapper">
+                    <Form.Item label={t('dashboard.events.addEditEvent.language.title')} required={true}>
+                      <BilingualInput fieldData={eventData?.name}>
+                        <Form.Item
+                          name="french"
+                          initialValue={eventData?.name?.fr}
+                          dependencies={['english']}
+                          rules={[
+                            ({ getFieldValue }) => ({
+                              validator(_, value) {
+                                if (value || getFieldValue('english')) {
+                                  return Promise.resolve();
+                                } else
+                                  return Promise.reject(
+                                    new Error(t('dashboard.events.addEditEvent.validations.title')),
+                                  );
+                              },
+                            }),
+                          ]}>
+                          <TextArea
+                            autoSize
+                            autoComplete="off"
+                            placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
+                            style={{ borderRadius: '4px', border: '4px solid #E8E8E8' }}
+                            size="large"
+                          />
+                        </Form.Item>
+                        <Form.Item
+                          name="english"
+                          initialValue={eventData?.name?.en}
+                          dependencies={['french']}
+                          rules={[
+                            ({ getFieldValue }) => ({
+                              validator(_, value) {
+                                if (value || getFieldValue('french')) {
+                                  return Promise.resolve();
+                                } else
+                                  return Promise.reject(
+                                    new Error(t('dashboard.events.addEditEvent.validations.title')),
+                                  );
+                              },
+                            }),
+                          ]}>
+                          <TextArea
+                            autoSize
+                            autoComplete="off"
+                            placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
+                            style={{ borderRadius: '4px', border: '4px solid #E8E8E8' }}
+                            size="large"
+                          />
+                        </Form.Item>
+                      </BilingualInput>
                     </Form.Item>
-                    <Form.Item
-                      name="english"
-                      initialValue={eventData?.name?.en}
-                      dependencies={['french']}
-                      rules={[
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (value || getFieldValue('french')) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
-                          },
-                        }),
-                      ]}>
-                      <TextArea
-                        autoSize
-                        autoComplete="off"
-                        placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
-                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8' }}
-                        size="large"
-                      />
-                    </Form.Item>
-                  </BilingualInput>
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-content">
-              <Col xs={24} sm={24} md={12} lg={10} xl={8}>
-                <Row>
-                  <Col>
-                    <div className="add-event-date-wrap">{t('dashboard.events.addEditEvent.dates.dates')}</div>
-                  </Col>
-                </Row>
-                {dateType === '' ? (
-                  <Row>
-                    <Col>
-                      <p className="add-event-date-heading">{t('dashboard.events.addEditEvent.dates.heading')}</p>
-                    </Col>
-                  </Row>
-                ) : (
-                  <></>
-                )}
+                  </div>
+                </Col>
+                <Col xs={2} sm={2} md={8} lg={6} xl={6}>
+                  <div style={{ width: '100%' }}></div>
+                </Col>
+              </Row>
+              <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-content">
+                <Col xs={24} sm={24} md={12} lg={10} xl={10}>
+                  <div className="add-event-section-wrapper">
+                    <Row>
+                      <Col>
+                        <div className="add-event-date-wrap">{t('dashboard.events.addEditEvent.dates.dates')}</div>
+                      </Col>
+                    </Row>
+                    {dateType === '' ? (
+                      <Row>
+                        <Col>
+                          <p className="add-event-date-heading">{t('dashboard.events.addEditEvent.dates.heading')}</p>
+                        </Col>
+                      </Row>
+                    ) : (
+                      <></>
+                    )}
 
-                {dateType === 'single' || eventData?.startDate ? (
-                  <Row>
-                    <Col span={24}>
-                      <Form.Item
-                        name="datePicker"
-                        label={t('dashboard.events.addEditEvent.dates.date')}
-                        initialValue={eventData?.startDate ? moment(eventData?.startDate) : ''}
-                        rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
-                        <DatePickerStyled />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                ) : (
-                  <Row>
-                    <Col>
-                      <div className="date-buttons">
-                        <DateAction
-                          label={t('dashboard.events.addEditEvent.dates.singleDate')}
-                          onClick={() => setDateType('single')}
-                        />
-                        <DateAction label={t('dashboard.events.addEditEvent.dates.dateRange')} disabled={true} />
-                        <DateAction label={t('dashboard.events.addEditEvent.dates.multipleDates')} disabled={true} />
-                      </div>
-                    </Col>
-                  </Row>
-                )}
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-      </Form>
+                    {dateType === 'single' || eventData?.startDate ? (
+                      <Row>
+                        <Col span={24}>
+                          <Form.Item
+                            name="datePicker"
+                            label={t('dashboard.events.addEditEvent.dates.date')}
+                            initialValue={eventData?.startDate ? moment(eventData?.startDate) : ''}
+                            rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
+                            <DatePickerStyled />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    ) : (
+                      <Row>
+                        <Col>
+                          <div className="date-buttons">
+                            <DateAction
+                              label={t('dashboard.events.addEditEvent.dates.singleDate')}
+                              onClick={() => setDateType('single')}
+                            />
+                            <DateAction label={t('dashboard.events.addEditEvent.dates.dateRange')} disabled={true} />
+                            <DateAction
+                              label={t('dashboard.events.addEditEvent.dates.multipleDates')}
+                              disabled={true}
+                            />
+                          </div>
+                        </Col>
+                      </Row>
+                    )}
+                  </div>
+                </Col>
+                <Col md={8} lg={6} xl={6}>
+                  <div style={{ width: '100%' }}></div>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </Form>
+      </div>
     )
   );
 }
