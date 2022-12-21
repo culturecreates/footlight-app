@@ -163,9 +163,9 @@ function AddEvent() {
     !isLoading && (
       <div>
         <Form form={form} layout="vertical" name="event">
-          <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="add-edit-wrapper">
+          <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
-              <Row gutter={[48]} justify="space-between">
+              <Row justify="space-between">
                 <Col span={18}>
                   <div className="add-edit-event-heading">
                     <h4>
@@ -181,6 +181,8 @@ function AddEvent() {
                   </div>
                 </Col>
               </Row>
+            </Col>
+            <Col span={24}>
               <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
                 <Col xs={24} sm={24} md={12} lg={10} xl={10}>
                   <div className="add-event-section-wrapper">
@@ -242,6 +244,8 @@ function AddEvent() {
                   <div style={{ width: '100%' }}></div>
                 </Col>
               </Row>
+            </Col>
+            <Col span={24}>
               <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-content">
                 <Col xs={24} sm={24} md={12} lg={10} xl={10}>
                   <div className="add-event-section-wrapper">
