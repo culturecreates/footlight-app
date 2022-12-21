@@ -33,7 +33,7 @@ function AddEvent() {
   } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
-  const [dateType, setDateType] = useState(eventData ? 'single' : '');
+  const [dateType, setDateType] = useState(eventData?.startDate && !isLoading ? 'single' : '');
 
   const saveAsDraftHandler = () => {
     form
@@ -242,7 +242,7 @@ function AddEvent() {
                   <></>
                 )}
 
-                {dateType === 'single' ? (
+                {dateType === 'single' || eventData?.startDate ? (
                   <Row>
                     <Col span={24}>
                       <Form.Item
