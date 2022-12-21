@@ -84,12 +84,16 @@ function AddEvent() {
   };
 
   const reviewPublishHandler = () => {
-    console.log({ eventId, calendarId });
-    updateEventState({ id: eventId, calendarId })
-      .unwrap()
-      .then(() =>
-        navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`).catch((error) => console.log(error)),
-      );
+    form
+      .validateFields()
+      .then(() => {
+        updateEventState({ id: eventId, calendarId })
+          .unwrap()
+          .then(() =>
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`).catch((error) => console.log(error)),
+          );
+      })
+      .catch((error) => console.log(error));
   };
 
   useEffect(() => {
