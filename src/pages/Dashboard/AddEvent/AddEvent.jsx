@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './addEvent.css';
-import { Form, Row, Col } from 'antd';
-import LanguageInput from '../../../components/Input/Common/AuthenticationInput';
+import { Form, Row, Col, Input } from 'antd';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -18,7 +17,7 @@ import { eventPublishState } from '../../../constants/eventPublishState';
 import DateAction from '../../../components/Button/DateAction';
 import BilingualInput from '../../../components/BilingualInput';
 import DatePickerStyled from '../../../components/DatePicker';
-
+const { TextArea } = Input;
 function AddEvent() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
@@ -199,7 +198,8 @@ function AddEvent() {
                           },
                         }),
                       ]}>
-                      <LanguageInput
+                      <TextArea
+                        autoSize
                         autoComplete="off"
                         placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
                         style={{ borderRadius: '4px', border: '4px solid #E8E8E8' }}
@@ -219,7 +219,8 @@ function AddEvent() {
                           },
                         }),
                       ]}>
-                      <LanguageInput
+                      <TextArea
+                        autoSize
                         autoComplete="off"
                         placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
                         style={{ borderRadius: '4px', border: '4px solid #E8E8E8' }}
