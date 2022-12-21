@@ -161,8 +161,8 @@ function AddEvent() {
       <Form form={form} layout="vertical" name="event">
         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="add-edit-wrapper">
           <Col span={24}>
-            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-              <Col xs={2} sm={4} md={6} lg={8} xl={10}>
+            <Row gutter={[48]}>
+              <Col span={18}>
                 <div className="add-edit-event-heading">
                   <h4>
                     {eventId
@@ -171,9 +171,11 @@ function AddEvent() {
                   </h4>
                 </div>
               </Col>
-              <div className="add-event-button-wrap">
-                <ButtonDisplayHandler />
-              </div>
+              <Col>
+                <div className="add-event-button-wrap">
+                  <ButtonDisplayHandler />
+                </div>
+              </Col>
             </Row>
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               <Col xs={24} sm={24} md={12} lg={10} xl={8}>
