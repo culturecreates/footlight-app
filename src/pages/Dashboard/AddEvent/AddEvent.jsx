@@ -279,17 +279,33 @@ function AddEvent() {
                     ) : (
                       <Row>
                         <Col>
-                          <div className="date-buttons">
-                            <DateAction
-                              label={t('dashboard.events.addEditEvent.dates.singleDate')}
-                              onClick={() => setDateType('single')}
-                            />
-                            <DateAction label={t('dashboard.events.addEditEvent.dates.dateRange')} disabled={true} />
-                            <DateAction
-                              label={t('dashboard.events.addEditEvent.dates.multipleDates')}
-                              disabled={true}
-                            />
-                          </div>
+                          <Form.Item
+                            name="datePickerWrapper"
+                            dependencies={['datePicker']}
+                            rules={[
+                              ({ getFieldValue }) => ({
+                                validator() {
+                                  if (getFieldValue('datePicker')) {
+                                    return Promise.resolve();
+                                  } else
+                                    return Promise.reject(
+                                      new Error(t('dashboard.events.addEditEvent.validations.date')),
+                                    );
+                                },
+                              }),
+                            ]}>
+                            <div className="date-buttons">
+                              <DateAction
+                                label={t('dashboard.events.addEditEvent.dates.singleDate')}
+                                onClick={() => setDateType('single')}
+                              />
+                              <DateAction label={t('dashboard.events.addEditEvent.dates.dateRange')} disabled={true} />
+                              <DateAction
+                                label={t('dashboard.events.addEditEvent.dates.multipleDates')}
+                                disabled={true}
+                              />
+                            </div>
+                          </Form.Item>
                         </Col>
                       </Row>
                     )}
