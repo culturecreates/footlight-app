@@ -61,6 +61,7 @@ function Dashboard() {
               margin: 0,
               minHeight: 280,
               overflowY: 'scroll',
+              background: '#F9FAFF',
             }}>
             <Outlet />
           </Content>

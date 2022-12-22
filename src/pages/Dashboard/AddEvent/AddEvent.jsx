@@ -182,9 +182,9 @@ function AddEvent() {
                 </Col>
               </Row>
             </Col>
-            <Col span={24}>
+            <Col span={16} className="add-event-section-col">
               <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                <Col xs={24} sm={24} md={12} lg={10} xl={10}>
+                <Col xs={24} sm={24} md={12} lg={10} xl={14}>
                   <div className="add-event-section-wrapper">
                     <Form.Item label={t('dashboard.events.addEditEvent.language.title')} required={true}>
                       <BilingualInput fieldData={eventData?.name}>
@@ -240,14 +240,14 @@ function AddEvent() {
                     </Form.Item>
                   </div>
                 </Col>
-                <Col xs={2} sm={2} md={8} lg={6} xl={6}>
+                <Col xs={2} sm={2} md={8} lg={6} xl={8}>
                   <div style={{ width: '100%' }}></div>
                 </Col>
               </Row>
             </Col>
-            <Col span={24}>
+            <Col span={16} className="add-event-section-col">
               <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-content">
-                <Col xs={24} sm={24} md={12} lg={10} xl={10}>
+                <Col xs={24} sm={24} md={12} lg={10} xl={14}>
                   <div className="add-event-section-wrapper">
                     <Row>
                       <Col>
@@ -295,7 +295,7 @@ function AddEvent() {
                     )}
                   </div>
                 </Col>
-                <Col md={8} lg={6} xl={6}>
+                <Col md={8} lg={6} xl={8}>
                   <div style={{ width: '100%' }}></div>
                 </Col>
               </Row>
