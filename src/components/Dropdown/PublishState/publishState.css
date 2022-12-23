@@ -1,0 +1,12 @@
+.publish-state-dropdown ul li::selection {
+  background: #eff2ff;
+}
+.publish-state-dropdown-button {
+  border: 1px solid #b6c1c9;
+  background: #ffffff;
+  border-radius: 4px;
+  color: #222732;
+  font-weight: 600;
+  font-size: 16px;
+  height: 40px;
+}

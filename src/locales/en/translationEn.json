@@ -70,6 +70,36 @@
       "heading": "Event calendar",
       "searchPlaceholder": "Search an event",
       "addEvent": "Event",
+      "addEditEvent": {
+        "heading": { "newEvent": "New Event", "editEvent": "Edit Event" },
+        "language": {
+          "title": "Event title",
+          "titleLabel": "English",
+          "placeHolderFrench": "Enter French event title",
+          "placeHolderEnglish": "Enter English event title"
+        },
+
+        "dates": {
+          "dates": "Dates",
+          "date": "Date",
+          "heading": "Select the type of date you want to enter for your event:",
+          "singleDate": "Single date",
+          "dateRange": "Date range",
+          "multipleDates": "Multiple dates"
+        },
+
+        "status": "Status",
+        "saveOptions": {
+          "publish": "Publish",
+          "saveAsDraft": "Save as draft",
+          "save": "Save",
+          "sendToReview": "Send to review"
+        },
+        "validations": {
+          "title": "Event title is required.",
+          "date": "Event date is required."
+        }
+      },
       "publishOptions": {
         "publishEvent": "Publish event",
         "unpublishEvent": "Unpublish event",
@@ -96,6 +126,8 @@
     }
   },
   "common": {
+    "tabEnglish":"English",
+    "tabFrench":"French",
     "server": {
       "status": {
         "503": {

@@ -5,6 +5,7 @@ import ForgotPassword from '../pages/ForgotPassword';
 import Dashboard from '../pages/Dashboard';
 import ResetPassword from '../pages/ResetPassword';
 import Events from '../pages/Dashboard/Events';
+import AddEvent from '../pages/Dashboard/AddEvent';
 import { ReactComponent as NotFound } from '../../src/assets/images/illustatus.svg';
 
 export const router = createBrowserRouter([
@@ -29,6 +30,21 @@ export const router = createBrowserRouter([
         path: `:calendarId${PathName.Events}`,
         element: <Events />,
       },
+      {
+        path: `:calendarId${PathName.Events}/:eventId`,
+        element: <div>Read Only Page</div>,
+      },
+      {
+        path: `:calendarId${PathName.Events}${PathName.AddEvent}`,
+        element: <AddEvent />,
+        children: [
+          {
+            path: ':eventId',
+            element: <AddEvent />,
+          },
+        ],
+      },
+
       {
         path: `:calendarId${PathName.Places}`,
         element: <div>Places</div>,

@@ -1,0 +1,61 @@
+.add-edit-wrapper .add-edit-event-heading h4 {
+  font-weight: 700;
+  font-size: 34px;
+  color: #222732;
+  font-family: 'Roboto';
+  font-style: normal;
+}
+.add-edit-wrapper .add-event-button-wrap {
+  display: flex;
+  gap: 16px;
+}
+
+.add-edit-wrapper .ant-form-item-label > label {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  color: #222732;
+}
+.add-edit-wrapper
+  .ant-form-item-label
+  > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+  display: none;
+}
+.add-edit-wrapper
+  .ant-form-item-label
+  > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after {
+  display: inline-block;
+  margin-right: 4px;
+  color: #f43131;
+  font-size: 14px;
+  font-family: 'Roboto';
+  line-height: 1;
+  content: '*';
+}
+.add-edit-wrapper .add-event-date-wrap {
+  font-weight: 700;
+  font-size: 24px;
+  color: #222732;
+  margin-bottom: 24px;
+}
+
+.add-edit-wrapper .add-event-date-heading {
+  font-weight: 400;
+  font-size: 16px;
+  color: #646d7b;
+}
+.add-edit-wrapper .date-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
+
+.add-edit-wrapper .add-event-section-wrapper {
+  padding: 24px;
+  background-color: #ffffff;
+}
+
+.add-edit-wrapper .add-event-section-col {
+  background-color: #ffffff;
+  border-radius: 4px;
+}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import './list.css';
 import { List, Grid } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
@@ -11,17 +12,26 @@ import { bilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import i18n from 'i18next';
-import Username from '../../Username';
-
+import { PathName } from '../../../constants/pathName';
+import Username from '../../Username/index';
+import { routinghandler } from '../../../utils/roleRoutingHandler';
 const { useBreakpoint } = Grid;
 
 function Lists(props) {
   const { t } = useTranslation();
   const screens = useBreakpoint();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { data, pageNumber, setPageNumber } = props;
+  let { calendarId } = useParams();
   const lang = i18n.language;
   const { user } = useSelector(getUserDetails);
   const totalCount = data?.totalCount;
+
+  const listItemHandler = (id, creatorId) => {
+    if (routinghandler(user, calendarId, creatorId)) navigate(`${location.pathname}${PathName.AddEvent}/${id}`);
+    else navigate(`${location.pathname}/${id}`);
+  };
   return (
     <List
       className="event-list-wrapper"
@@ -66,6 +76,7 @@ function Lists(props) {
           ]}>
           <List.Item.Meta
             className="event-list-item-meta"
+            onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId)}
             avatar={<img src={eventItem?.image?.original?.uri} className="event-list-image" />}
             title={
               <div className="event-list-title">
@@ -112,6 +123,7 @@ function Lists(props) {
           />
           <List.Item.Meta
             className="event-status-list-item"
+            onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId)}
             title={<EventStatus label={eventItem?.publishState} />}
             description={
               <div className="event-list-status">

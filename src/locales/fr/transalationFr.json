@@ -70,6 +70,35 @@
       "heading": "Calendrier des événements",
       "searchPlaceholder": "Rechercher un événement",
       "addEvent": "Événement",
+      "addEditEvent": {
+        "heading": { "newEvent": "Ajouter un événement", "editEvent": "Modifier un événement" },
+        "language": {
+          "title": "Titre de l'événement",
+          "titleLabel": "English",
+          "placeHolderFrench": "Entrez titre en français",
+          "placeHolderEnglish": "Entrez titre en anglais"
+        },
+        "dates": {
+          "dates": "Dates",
+          "date": "Date",
+          "heading": "Sélectionnez le type de date que vous souhaitez saisir pour votre événement :",
+          "singleDate": "Date unique",
+          "dateRange": "Plage de dates",
+          "multipleDates": "Plusieurs dates"
+        },
+        "status": "Statut",
+        "saveOptions": {
+          "publish": "Publier",
+          "saveAsDraft": "Enregistrer comme brouillon",
+          "save": "Save",
+          "sendToReview": "Envoyer pour révision"
+        },
+        "validations": {
+          "title": "Le titre de l'événement est requis.",
+          "date": "La date de l'événement est requise."
+        }
+      },
+
       "publishOptions": {
         "publishEvent": "Publier l'événement",
         "unpublishEvent": "Dépublier l'événement",
@@ -96,6 +125,8 @@
     }
   },
   "common": {
+    "tabEnglish":"Anglais",
+    "tabFrench":"Français",
     "server": {
       "status": {
         "503": {
