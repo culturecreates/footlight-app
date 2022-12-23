@@ -42,17 +42,19 @@ function Events() {
   };
   return (
     <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
-      <Col span={18}>
-        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-          <Col xs={2} sm={4} md={6} lg={8} xl={10}>
-            <div className="events-heading-wrapper">
-              <h4 className="events-heading">{t('dashboard.events.heading')}</h4>
-            </div>
-          </Col>
-          <div className="event-add-button">
-            <AddEvent label={t('dashboard.events.addEvent')} onClick={addEventHandler} />
-          </div>
-        </Row>
+      <Col span={24}>
+        <Col style={{ paddingLeft: 0 }}>
+          <Row justify="space-between">
+            <Col>
+              <div className="events-heading-wrapper">
+                <h4 className="events-heading">{t('dashboard.events.heading')}</h4>
+              </div>
+            </Col>
+            <Col>
+              <AddEvent label={t('dashboard.events.addEvent')} onClick={addEventHandler} />
+            </Col>
+          </Row>
+        </Col>
         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
           <Col xs={24} sm={24} md={12} lg={10} xl={8}>
             <EventsSearch
@@ -64,8 +66,8 @@ function Events() {
             />
           </Col>
         </Row>
-        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} span={24} className="events-content">
-          <Col span={24}>
+        <Row className="events-content">
+          <Col flex="832px">
             {!isLoading && eventsData ? (
               <EventList data={eventsData} pageNumber={pageNumber} setPageNumber={setPageNumber} />
             ) : (
