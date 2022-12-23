@@ -3,6 +3,7 @@
   background: #ffffff;
   border: 1px solid #b6c1c9;
   border-radius: 4px;
+  max-width: 100%;
 }
 
 .date-picker-wrapper .ant-picker-suffix {
