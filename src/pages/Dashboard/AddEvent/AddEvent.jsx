@@ -208,7 +208,7 @@ function AddEvent() {
                             autoSize
                             autoComplete="off"
                             placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
-                            style={{ borderRadius: '4px', border: '4px solid #E8E8E8' }}
+                            style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                             size="large"
                           />
                         </Form.Item>
@@ -232,7 +232,7 @@ function AddEvent() {
                             autoSize
                             autoComplete="off"
                             placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
-                            style={{ borderRadius: '4px', border: '4px solid #E8E8E8' }}
+                            style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                             size="large"
                           />
                         </Form.Item>
@@ -272,7 +272,7 @@ function AddEvent() {
                             label={t('dashboard.events.addEditEvent.dates.date')}
                             initialValue={eventData?.startDate ? moment(eventData?.startDate) : ''}
                             rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
-                            <DatePickerStyled />
+                            <DatePickerStyled style={{ width: '423px' }} />
                           </Form.Item>
                         </Col>
                       </Row>
