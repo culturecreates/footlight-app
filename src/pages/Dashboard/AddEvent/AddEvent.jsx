@@ -166,7 +166,7 @@ function AddEvent() {
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
               <Row justify="space-between">
-                <Col span={18}>
+                <Col>
                   <div className="add-edit-event-heading">
                     <h4>
                       {eventId
@@ -182,9 +182,9 @@ function AddEvent() {
                 </Col>
               </Row>
             </Col>
-            <Col span={16} className="add-event-section-col">
+            <Col flex={'723px'} className="add-event-section-col">
               <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                <Col xs={24} sm={24} md={12} lg={10} xl={14}>
+                <Col flex={'423px'}>
                   <div className="add-event-section-wrapper">
                     <Form.Item label={t('dashboard.events.addEditEvent.language.title')} required={true}>
                       <BilingualInput fieldData={eventData?.name}>
@@ -240,14 +240,14 @@ function AddEvent() {
                     </Form.Item>
                   </div>
                 </Col>
-                <Col xs={2} sm={2} md={8} lg={6} xl={8}>
+                <Col flex="233px">
                   <div style={{ width: '100%' }}></div>
                 </Col>
               </Row>
             </Col>
-            <Col span={16} className="add-event-section-col">
+            <Col flex={'723px'} className="add-event-section-col">
               <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-content">
-                <Col xs={24} sm={24} md={12} lg={10} xl={14}>
+                <Col flex={'423px'}>
                   <div className="add-event-section-wrapper">
                     <Row>
                       <Col>
@@ -266,7 +266,7 @@ function AddEvent() {
 
                     {dateType === 'single' || eventData?.startDate ? (
                       <Row>
-                        <Col span={24}>
+                        <Col flex={'423px'}>
                           <Form.Item
                             name="datePicker"
                             label={t('dashboard.events.addEditEvent.dates.date')}
@@ -278,7 +278,7 @@ function AddEvent() {
                       </Row>
                     ) : (
                       <Row>
-                        <Col>
+                        <Col flex={'423px'}>
                           <Form.Item
                             name="datePickerWrapper"
                             dependencies={['datePicker']}
@@ -311,7 +311,7 @@ function AddEvent() {
                     )}
                   </div>
                 </Col>
-                <Col md={8} lg={6} xl={8}>
+                <Col flex={'233px'}>
                   <div style={{ width: '100%' }}></div>
                 </Col>
               </Row>
