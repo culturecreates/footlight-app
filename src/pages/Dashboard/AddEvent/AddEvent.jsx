@@ -340,12 +340,15 @@ function AddEvent() {
                     <Form.Item
                       label={t('dashboard.events.addEditEvent.otherInformation.description.title')}
                       required={true}>
-                      <BilingualInput fieldData={eventData?.name}>
+                      <BilingualInput fieldData={eventData?.description}>
                         <TextEditor
                           formName="frenchEditor"
                           initialValue={eventData?.description?.fr}
                           dependencies={['englishEditor']}
                           currentReactQuillRef={reactQuillRefFr}
+                          placeholder={t(
+                            'dashboard.events.addEditEvent.otherInformation.description.frenchPlaceholder',
+                          )}
                           rules={[
                             () => ({
                               validator() {
@@ -362,6 +365,19 @@ function AddEvent() {
                                   );
                               },
                             }),
+                            () => ({
+                              validator() {
+                                if (reactQuillRefFr?.current?.unprivilegedEditor?.getText() != '')
+                                  if (reactQuillRefFr?.current?.unprivilegedEditor?.getText().split(' ').length > 49) {
+                                    return Promise.resolve();
+                                  } else
+                                    return Promise.reject(
+                                      new Error(
+                                        t('dashboard.events.addEditEvent.validations.otherInformation.frenchShort'),
+                                      ),
+                                    );
+                              },
+                            }),
                           ]}
                         />
 
@@ -370,6 +386,9 @@ function AddEvent() {
                           initialValue={eventData?.description?.en}
                           dependencies={['frenchEditor']}
                           currentReactQuillRef={reactQuillRefEn}
+                          placeholder={t(
+                            'dashboard.events.addEditEvent.otherInformation.description.englishPlaceholder',
+                          )}
                           rules={[
                             () => ({
                               validator() {
@@ -384,6 +403,19 @@ function AddEvent() {
                                       t('dashboard.events.addEditEvent.validations.otherInformation.emptyDescription'),
                                     ),
                                   );
+                              },
+                            }),
+                            () => ({
+                              validator() {
+                                if (reactQuillRefEn?.current?.unprivilegedEditor?.getText() != '')
+                                  if (reactQuillRefEn?.current?.unprivilegedEditor?.getText().split(' ').length > 49) {
+                                    return Promise.resolve();
+                                  } else
+                                    return Promise.reject(
+                                      new Error(
+                                        t('dashboard.events.addEditEvent.validations.otherInformation.englishShort'),
+                                      ),
+                                    );
                               },
                             }),
                           ]}
