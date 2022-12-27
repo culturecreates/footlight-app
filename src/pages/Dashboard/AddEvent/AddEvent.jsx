@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
 import { Form, Row, Col, Input } from 'antd';
 import moment from 'moment';
@@ -17,7 +17,9 @@ import { eventPublishState } from '../../../constants/eventPublishState';
 import DateAction from '../../../components/Button/DateAction';
 import BilingualInput from '../../../components/BilingualInput';
 import DatePickerStyled from '../../../components/DatePicker';
+import TextEditor from '../../../components/TextEditor';
 const { TextArea } = Input;
+
 function AddEvent() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
@@ -33,11 +35,15 @@ function AddEvent() {
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
   const [dateType, setDateType] = useState(eventData?.startDate && !isLoading ? 'single' : '');
+  const reactQuillRefFr = useRef(null);
+  const reactQuillRefEn = useRef(null);
 
   const saveAsDraftHandler = () => {
     form
       .validateFields()
       .then((values) => {
+        console.log(values);
+        reactQuillRefFr?.getLength();
         var startDate = new Date(values?.datePicker?._d);
         startDate = startDate?.toISOString();
         if (!eventId || eventId === '') {
@@ -66,6 +72,10 @@ function AddEvent() {
                 fr: values?.french,
               },
               startDate: startDate,
+              description: {
+                en: values?.englishEditor,
+                fr: values?.frenchEditor,
+              },
             },
             calendarId,
             eventId,
@@ -312,6 +322,77 @@ function AddEvent() {
                   </div>
                 </Col>
                 <Col flex={'233px'}>
+                  <div style={{ width: '100%' }}></div>
+                </Col>
+              </Row>
+            </Col>
+            <Col flex={'723px'} className="add-event-section-col">
+              <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                <Col flex={'423px'}>
+                  <div className="add-event-section-wrapper">
+                    <Row>
+                      <Col>
+                        <div className="add-event-date-wrap">
+                          {t('dashboard.events.addEditEvent.otherInformation.title')}
+                        </div>
+                      </Col>
+                    </Row>
+                    <Form.Item
+                      label={t('dashboard.events.addEditEvent.otherInformation.description.title')}
+                      required={true}>
+                      <BilingualInput fieldData={eventData?.name}>
+                        <TextEditor
+                          formName="frenchEditor"
+                          initialValue={eventData?.description?.fr}
+                          dependencies={['englishEditor']}
+                          currentReactQuillRef={reactQuillRefFr}
+                          rules={[
+                            () => ({
+                              validator() {
+                                if (
+                                  reactQuillRefFr?.current?.unprivilegedEditor?.getLength() > 1 ||
+                                  reactQuillRefEn?.current?.unprivilegedEditor?.getLength() > 1
+                                ) {
+                                  return Promise.resolve();
+                                } else
+                                  return Promise.reject(
+                                    new Error(
+                                      t('dashboard.events.addEditEvent.validations.otherInformation.emptyDescription'),
+                                    ),
+                                  );
+                              },
+                            }),
+                          ]}
+                        />
+
+                        <TextEditor
+                          formName="englishEditor"
+                          initialValue={eventData?.description?.en}
+                          dependencies={['frenchEditor']}
+                          currentReactQuillRef={reactQuillRefEn}
+                          rules={[
+                            () => ({
+                              validator() {
+                                if (
+                                  reactQuillRefFr?.current?.unprivilegedEditor?.getLength() > 1 ||
+                                  reactQuillRefEn?.current?.unprivilegedEditor?.getLength() > 1
+                                ) {
+                                  return Promise.resolve();
+                                } else
+                                  return Promise.reject(
+                                    new Error(
+                                      t('dashboard.events.addEditEvent.validations.otherInformation.emptyDescription'),
+                                    ),
+                                  );
+                              },
+                            }),
+                          ]}
+                        />
+                      </BilingualInput>
+                    </Form.Item>
+                  </div>
+                </Col>
+                <Col flex="233px">
                   <div style={{ width: '100%' }}></div>
                 </Col>
               </Row>
