@@ -1,6 +1,7 @@
 import { Form } from 'antd';
 import React from 'react';
 import ReactQuill from 'react-quill';
+import './textEditor.css';
 import 'react-quill/dist/quill.snow.css';
 
 function TextEditor(props) {
@@ -8,7 +9,7 @@ function TextEditor(props) {
 
   return (
     <Form.Item name={formName} initialValue={initialValue} dependencies={dependencies} rules={rules}>
-      <ReactQuill ref={currentReactQuillRef} placeholder={placeholder} />
+      <ReactQuill ref={currentReactQuillRef} placeholder={placeholder} className="text-editor" />
     </Form.Item>
   );
 }
