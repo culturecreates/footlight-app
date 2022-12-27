@@ -14,3 +14,7 @@
 .text-editor .ql-toolbar.ql-snow {
   background-color: #f7f7f7;
 }
+
+.text-editor .ql-editor {
+  resize: vertical;
+}
