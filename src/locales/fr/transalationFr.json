@@ -86,6 +86,16 @@
           "dateRange": "Plage de dates",
           "multipleDates": "Plusieurs dates"
         },
+        "otherInformation": {
+          "title": "Autres informations",
+          "description": {
+            "title": "Description de l'événement",
+            "footerTitle": "Un minimum de 50 mots est requis.",
+            "word": "mot",
+            "frenchPlaceholder": "Entrez une description en français",
+            "englishPlaceholder": "Entrez une description en anglais"
+          }
+        },
         "status": "Statut",
         "saveOptions": {
           "publish": "Publier",
@@ -95,7 +105,12 @@
         },
         "validations": {
           "title": "Le titre de l'événement est requis.",
-          "date": "La date de l'événement est requise."
+          "date": "La date de l'événement est requise.",
+          "otherInformation": {
+            "emptyDescription": "Une description de l'événement est requise (50 mots minimum).",
+            "englishShort": "La description en anglais est trop courte.",
+            "frenchShort": "La description française est trop courte."
+          }
         }
       },
 
@@ -125,8 +140,8 @@
     }
   },
   "common": {
-    "tabEnglish":"Anglais",
-    "tabFrench":"Français",
+    "tabEnglish": "Anglais",
+    "tabFrench": "Français",
     "server": {
       "status": {
         "503": {
