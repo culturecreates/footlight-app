@@ -90,6 +90,7 @@
           "title": "Autres informations",
           "description": {
             "title": "Description de l'événement",
+            "footerTitle": "Un minimum de 50 mots est requis.",
             "frenchPlaceholder": "Entrez une description en français",
             "englishPlaceholder": "Entrez une description en anglais"
           }

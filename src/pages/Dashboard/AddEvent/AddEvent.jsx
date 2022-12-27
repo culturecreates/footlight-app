@@ -421,6 +421,10 @@ function AddEvent() {
                           ]}
                         />
                       </BilingualInput>
+                      <div className="event-description-footer">
+                        <p>{t('dashboard.events.addEditEvent.otherInformation.description.footerTitle')}</p>
+                        <p></p>
+                      </div>
                     </Form.Item>
                   </div>
                 </Col>

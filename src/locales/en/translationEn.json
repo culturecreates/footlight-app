@@ -91,6 +91,7 @@
           "title": "Other information",
           "description": {
             "title": "Event Description",
+            "footerTitle": "A minimum of 50 words is required.",
             "frenchPlaceholder": "Enter French description",
             "englishPlaceholder": "Enter English description"
           }

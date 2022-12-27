@@ -59,3 +59,11 @@
   background-color: #ffffff;
   border-radius: 4px;
 }
+
+.add-edit-wrapper .event-description-footer {
+  font-size: 16px;
+  color: #646d7b;
+  font-weight: 400;
+  display: flex;
+  justify-content: space-between;
+}
