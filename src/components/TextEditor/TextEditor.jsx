@@ -1,5 +1,5 @@
 import { Form } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 import './textEditor.css';
 import 'react-quill/dist/quill.snow.css';
@@ -21,6 +21,11 @@ function TextEditor(props) {
   const onChange = () => {
     setWordCount(currentReactQuillRef?.current?.unprivilegedEditor?.getText().split(' ').length);
   };
+
+  useEffect(() => {
+    setWordCount(currentReactQuillRef?.current?.unprivilegedEditor?.getText().split(' ').length);
+  }, [currentReactQuillRef?.current?.unprivilegedEditor?.getText().split(' ').length]);
+
   return (
     <>
       <Form.Item name={formName} initialValue={initialValue} dependencies={dependencies} rules={rules}>
