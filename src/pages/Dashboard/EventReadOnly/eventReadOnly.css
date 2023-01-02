@@ -1,0 +1,34 @@
+.read-only-wrapper .read-only-event-heading h4 {
+  font-weight: 700;
+  font-size: 34px;
+  color: #222732;
+  font-family: 'Roboto';
+  font-style: normal;
+}
+
+.read-only-wrapper .read-only-event-section-wrapper {
+  padding: 24px;
+  background-color: #ffffff;
+}
+
+.read-only-wrapper .read-only-event-section-col {
+  background-color: #ffffff;
+  border-radius: 4px;
+}
+.read-only-wrapper .read-only-event-content {
+  font-weight: 700;
+  font-size: 16px;
+  color: #222732;
+}
+
+.read-only-wrapper .read-only-event-content-sub-title-primary {
+  font-weight: 400;
+  font-size: 16px;
+  color: #646d7b;
+}
+
+.read-only-wrapper .read-only-event-content-sub-title-secondary {
+  font-weight: 400;
+  font-size: 12px;
+  color: #646d7b;
+}

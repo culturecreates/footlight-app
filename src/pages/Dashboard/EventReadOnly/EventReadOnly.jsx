@@ -19,11 +19,11 @@ function EventReadOnly() {
   return (
     !isLoading && (
       <div>
-        <Row gutter={[32, 24]} className="add-edit-wrapper">
+        <Row gutter={[32, 24]} className="read-only-wrapper">
           <Col span={24}>
             <Row>
               <Col>
-                <div className="add-edit-event-heading">
+                <div className="read-only-event-heading">
                   <h4>
                     {bilingual({
                       en: eventData?.name?.en,
@@ -35,11 +35,36 @@ function EventReadOnly() {
               </Col>
             </Row>
           </Col>
-          <Col flex={'723px'} className="add-event-section-col">
+          <Col flex={'723px'} className="read-only-event-section-col">
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               <Col flex={'423px'}>
-                <div className="add-event-section-wrapper">
-                  {t('dashboard.events.addEditEvent.language.placeHolderFrench')}
+                <div className="read-only-event-section-wrapper">
+                  <p className="read-only-event-content-sub-title-primary">
+                    {t('dashboard.events.addEditEvent.language.title')}
+                  </p>
+                  {eventData?.name?.en && (
+                    <>
+                      <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                      <p className="read-only-event-content">{eventData?.name?.en}</p>
+                    </>
+                  )}
+                  {eventData?.name?.fr && (
+                    <>
+                      <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                      <p className="read-only-event-content">{eventData?.name?.fr}</p>
+                    </>
+                  )}
+                </div>
+              </Col>
+              <Col flex="233px">
+                <div style={{ width: '100%' }}></div>
+              </Col>
+            </Row>
+          </Col>
+          <Col flex={'723px'} className="read-only-event-section-col">
+            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+              <Col flex={'423px'}>
+                <div className="read-only-event-section-wrapper">
                   {/* <TextArea
                   autoSize
                   autoComplete="off"
@@ -62,36 +87,10 @@ function EventReadOnly() {
               </Col>
             </Row>
           </Col>
-          <Col flex={'723px'} className="add-event-section-col">
+          <Col flex={'723px'} className="read-only-event-section-col">
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               <Col flex={'423px'}>
-                <div className="add-event-section-wrapper">
-                  {/* <TextArea
-                  autoSize
-                  autoComplete="off"
-                  placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
-                  style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                  size="large"
-                /> */}
-
-                  {/* <TextArea
-                  autoSize
-                  autoComplete="off"
-                  placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
-                  style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                  size="large"
-                /> */}
-                </div>
-              </Col>
-              <Col flex="233px">
-                <div style={{ width: '100%' }}></div>
-              </Col>
-            </Row>
-          </Col>
-          <Col flex={'723px'} className="add-event-section-col">
-            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-              <Col flex={'423px'}>
-                <div className="add-event-section-wrapper">
+                <div className="read-only-event-section-wrapper">
                   {/* <TextArea
                   autoSize
                   autoComplete="off"
