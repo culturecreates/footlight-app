@@ -1,5 +1,6 @@
 import React from 'react';
-import { Row, Col } from 'antd';
+import { Row, Col, Breadcrumb } from 'antd';
+import { LeftOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import './eventReadOnly.css';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +22,25 @@ function EventReadOnly() {
     !isLoading && (
       <div>
         <Row gutter={[32, 24]} className="read-only-wrapper">
+          <Col span={24}>
+            <Row>
+              <Col>
+                <Breadcrumb className="breadcrumb-item">
+                  <Breadcrumb.Item>
+                    <LeftOutlined style={{ marginRight: '17px' }} />
+                    {t('dashboard.sidebar.events')}
+                  </Breadcrumb.Item>
+                  <Breadcrumb.Item className="breadcrumb-item">
+                    {bilingual({
+                      en: eventData?.name?.en,
+                      fr: eventData?.name?.fr,
+                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                    })}
+                  </Breadcrumb.Item>
+                </Breadcrumb>
+              </Col>
+            </Row>
+          </Col>
           <Col span={24}>
             <Row>
               <Col>
