@@ -42,8 +42,6 @@ function AddEvent() {
     form
       .validateFields()
       .then((values) => {
-        console.log(values);
-        reactQuillRefFr?.getLength();
         var startDate = new Date(values?.datePicker?._d);
         startDate = startDate?.toISOString();
         if (!eventId || eventId === '') {
@@ -54,6 +52,10 @@ function AddEvent() {
                 fr: values?.french,
               },
               startDate: startDate,
+              description: {
+                en: values?.englishEditor,
+                fr: values?.frenchEditor,
+              },
             },
             calendarId,
           })

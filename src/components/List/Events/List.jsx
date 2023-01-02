@@ -32,7 +32,6 @@ function Lists(props) {
     if (routinghandler(user, calendarId, creatorId)) navigate(`${location.pathname}${PathName.AddEvent}/${id}`);
     else navigate(`${location.pathname}/${id}`);
   };
-  console.log(data);
 
   return (
     <List
