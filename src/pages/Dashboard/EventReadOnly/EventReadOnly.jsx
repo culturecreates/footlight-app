@@ -1,5 +1,6 @@
 import React from 'react';
 import { Row, Col } from 'antd';
+import moment from 'moment';
 import './eventReadOnly.css';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
@@ -42,18 +43,18 @@ function EventReadOnly() {
                   <p className="read-only-event-content-sub-title-primary">
                     {t('dashboard.events.addEditEvent.language.title')}
                   </p>
-                  {eventData?.name?.en && (
-                    <>
-                      <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-                      <p className="read-only-event-content">{eventData?.name?.en}</p>
-                    </>
-                  )}
                   {eventData?.name?.fr && (
                     <>
-                      <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                      <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
                       <p className="read-only-event-content">{eventData?.name?.fr}</p>
                     </>
                   )}
+                  {eventData?.name?.en && (
+                    <>
+                      <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                      <p className="read-only-event-content">{eventData?.name?.en}</p>
+                    </>
+                  )}
                 </div>
               </Col>
               <Col flex="233px">
@@ -65,21 +66,13 @@ function EventReadOnly() {
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               <Col flex={'423px'}>
                 <div className="read-only-event-section-wrapper">
-                  {/* <TextArea
-                  autoSize
-                  autoComplete="off"
-                  placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
-                  style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                  size="large"
-                /> */}
-
-                  {/* <TextArea
-                  autoSize
-                  autoComplete="off"
-                  placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
-                  style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                  size="large"
-                /> */}
+                  <p className="read-only-event-content-title">{t('dashboard.events.addEditEvent.dates.dates')}</p>
+                  <p className="read-only-event-content-sub-title-primary">
+                    {t('dashboard.events.addEditEvent.dates.date')}
+                  </p>
+                  <p className="read-only-event-content-date">
+                    {moment(eventData?.startDateTime).format('MM/DD/YYYY')}
+                  </p>
                 </div>
               </Col>
               <Col flex="233px">
@@ -91,21 +84,24 @@ function EventReadOnly() {
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               <Col flex={'423px'}>
                 <div className="read-only-event-section-wrapper">
-                  {/* <TextArea
-                  autoSize
-                  autoComplete="off"
-                  placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
-                  style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                  size="large"
-                /> */}
-
-                  {/* <TextArea
-                  autoSize
-                  autoComplete="off"
-                  placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
-                  style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                  size="large"
-                /> */}
+                  <p className="read-only-event-content-title">
+                    {t('dashboard.events.addEditEvent.otherInformation.title')}
+                  </p>
+                  <p className="read-only-event-content-sub-title-primary">
+                    {t('dashboard.events.addEditEvent.otherInformation.description.title')}
+                  </p>
+                  {eventData?.description?.fr && (
+                    <>
+                      <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                      <div dangerouslySetInnerHTML={{ __html: eventData?.description?.fr }} />
+                    </>
+                  )}
+                  {eventData?.description?.en && (
+                    <>
+                      <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                      <div dangerouslySetInnerHTML={{ __html: eventData?.description?.en }} />
+                    </>
+                  )}
                 </div>
               </Col>
               <Col flex="233px">

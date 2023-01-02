@@ -20,11 +20,20 @@
   font-size: 16px;
   color: #222732;
 }
-
+.read-only-wrapper .read-only-event-content-title {
+  font-weight: 700;
+  font-size: 24px;
+  color: #222732;
+}
 .read-only-wrapper .read-only-event-content-sub-title-primary {
   font-weight: 400;
   font-size: 16px;
   color: #646d7b;
+}
+.read-only-event-content .read-only-event-content-date {
+  font-weight: 400;
+  font-size: 16px;
+  color: #222732;
 }
 
 .read-only-wrapper .read-only-event-content-sub-title-secondary {
