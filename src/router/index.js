@@ -7,6 +7,7 @@ import ResetPassword from '../pages/ResetPassword';
 import Events from '../pages/Dashboard/Events';
 import AddEvent from '../pages/Dashboard/AddEvent';
 import { ReactComponent as NotFound } from '../../src/assets/images/illustatus.svg';
+import EventReadOnly from '../pages/Dashboard/EventReadOnly';
 
 export const router = createBrowserRouter([
   {
@@ -32,7 +33,7 @@ export const router = createBrowserRouter([
       },
       {
         path: `:calendarId${PathName.Events}/:eventId`,
-        element: <div>Read Only Page</div>,
+        element: <EventReadOnly />,
       },
       {
         path: `:calendarId${PathName.Events}${PathName.AddEvent}`,

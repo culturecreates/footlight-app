@@ -1,0 +1,54 @@
+.read-only-wrapper .breadcrumb-item {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  color: #0f0e98;
+}
+
+.read-only-wrapper .breadcrumb-item .ant-breadcrumb-separator {
+  color: #222732;
+}
+.read-only-wrapper .read-only-event-heading h4 {
+  font-weight: 700;
+  font-size: 34px;
+  color: #222732;
+  font-family: 'Roboto';
+  font-style: normal;
+}
+
+.read-only-wrapper .read-only-event-section-wrapper {
+  padding: 24px;
+  background-color: #ffffff;
+}
+
+.read-only-wrapper .read-only-event-section-col {
+  background-color: #ffffff;
+  border-radius: 4px;
+}
+.read-only-wrapper .read-only-event-content {
+  font-weight: 700;
+  font-size: 16px;
+  color: #222732;
+}
+.read-only-wrapper .read-only-event-content-title {
+  font-weight: 700;
+  font-size: 24px;
+  color: #222732;
+}
+.read-only-wrapper .read-only-event-content-sub-title-primary {
+  font-weight: 400;
+  font-size: 16px;
+  color: #646d7b;
+}
+.read-only-event-content .read-only-event-content-date {
+  font-weight: 400;
+  font-size: 16px;
+  color: #222732;
+}
+
+.read-only-wrapper .read-only-event-content-sub-title-secondary {
+  font-weight: 400;
+  font-size: 12px;
+  color: #646d7b;
+}
