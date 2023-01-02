@@ -32,6 +32,8 @@ function Lists(props) {
     if (routinghandler(user, calendarId, creatorId)) navigate(`${location.pathname}${PathName.AddEvent}/${id}`);
     else navigate(`${location.pathname}/${id}`);
   };
+  console.log(data);
+
   return (
     <List
       className="event-list-wrapper"
@@ -81,11 +83,11 @@ function Lists(props) {
             title={
               <div className="event-list-title">
                 <span className="event-list-title-heading">
-                  <FormatDate date={eventItem?.startDate} lang={lang} />
+                  <FormatDate date={eventItem?.startDate ?? eventItem?.startDateTime} lang={lang} />
                   {eventItem?.endDate ? (
                     <>
                       &nbsp;{t('dashboard.events.list.to')}&nbsp;
-                      <FormatDate date={eventItem?.endDate} lang={lang} />
+                      <FormatDate date={eventItem?.endDate ?? eventItem?.endDateTime} lang={lang} />
                     </>
                   ) : (
                     <></>

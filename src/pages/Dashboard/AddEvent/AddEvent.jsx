@@ -264,7 +264,7 @@ function AddEvent() {
                         <div className="add-event-date-wrap">{t('dashboard.events.addEditEvent.dates.dates')}</div>
                       </Col>
                     </Row>
-                    {dateType === '' ? (
+                    {dateType === '' && !eventData?.startDate && !eventData?.startDateTime ? (
                       <Row>
                         <Col>
                           <p className="add-event-date-heading">{t('dashboard.events.addEditEvent.dates.heading')}</p>
@@ -274,13 +274,19 @@ function AddEvent() {
                       <></>
                     )}
 
-                    {dateType === 'single' || eventData?.startDate ? (
+                    {dateType === 'single' || eventData?.startDate || eventData?.startDateTime ? (
                       <Row>
                         <Col flex={'423px'}>
                           <Form.Item
                             name="datePicker"
                             label={t('dashboard.events.addEditEvent.dates.date')}
-                            initialValue={eventData?.startDate ? moment(eventData?.startDate) : ''}
+                            initialValue={
+                              eventData?.startDate
+                                ? moment(eventData?.startDate)
+                                : eventData?.startDateTime
+                                ? moment(eventData?.startDateTime)
+                                : ''
+                            }
                             rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
                             <DatePickerStyled style={{ width: '423px' }} />
                           </Form.Item>
