@@ -1,6 +1,6 @@
 import React from 'react';
 import { Row, Col, Breadcrumb } from 'antd';
-import { LeftOutlined } from '@ant-design/icons';
+import { LeftOutlined, CalendarOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import './eventReadOnly.css';
 import { useTranslation } from 'react-i18next';
@@ -89,6 +89,7 @@ function EventReadOnly() {
                     {t('dashboard.events.addEditEvent.dates.date')}
                   </p>
                   <p className="read-only-event-content-date">
+                    <CalendarOutlined style={{ fontSize: '24px', color: '#1B3DE6', marginRight: '9px' }} />
                     {moment(eventData?.startDateTime).format('MM/DD/YYYY')}
                   </p>
                 </div>
