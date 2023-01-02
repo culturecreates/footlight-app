@@ -16,8 +16,6 @@ function EventReadOnly() {
   const { data: eventData, isLoading } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
   const { user } = useSelector(getUserDetails);
 
-  console.log(eventData);
-
   return (
     !isLoading && (
       <div>
