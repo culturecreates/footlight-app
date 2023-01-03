@@ -41,18 +41,19 @@ function AddEvent() {
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
   const dateTimeConverter = (date, time) => {
-    var dateSelected = moment(date).format('DD/MM/YYYY');
-    var timeSelected = moment(time).format('hh:mm:ss a');
-    var dateTime = moment(dateSelected + ' ' + timeSelected, 'DD/MM/YYYY HH:mm a');
+    let dateSelected = moment(date).format('DD/MM/YYYY');
+    let timeSelected = moment(time).format('hh:mm:ss a');
+    let dateTime = moment(dateSelected + ' ' + timeSelected, 'DD/MM/YYYY HH:mm a');
     return moment(dateTime).toISOString();
   };
   const saveAsDraftHandler = () => {
     form
       .validateFields()
       .then((values) => {
-        var startDateTime;
+        var startDateTime, endDateTime;
         if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
         else startDateTime = moment(values?.datePicker).format('DD/MM/YYYY');
+        if (values?.endTime) endDateTime = dateTimeConverter(values?.datePicker, values?.endTime);
 
         if (!eventId || eventId === '') {
           addEvent({
@@ -63,6 +64,7 @@ function AddEvent() {
               },
               startDate: !values?.startTime ? startDateTime : null,
               startDateTime: values?.startTime ? startDateTime : null,
+              endDateTime: values?.endTime ? endDateTime : null,
               eventStatus: values?.eventStatus,
               description: {
                 en: values?.englishEditor,
@@ -87,6 +89,7 @@ function AddEvent() {
               },
               startDate: !values?.startTime ? startDateTime : null,
               startDateTime: values?.startTime ? startDateTime : null,
+              endDateTime: values?.endTime ? endDateTime : null,
               eventStatus: values?.eventStatus,
               description: {
                 en: values?.englishEditor,
@@ -185,7 +188,6 @@ function AddEvent() {
       );
     else return roleCheckHandler();
   };
-
   return (
     !isLoading && (
       <div>
