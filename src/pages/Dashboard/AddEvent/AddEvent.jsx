@@ -40,13 +40,20 @@ function AddEvent() {
   const [dateType, setDateType] = useState(eventData?.startDate && !isLoading ? 'single' : '');
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
-
+  const dateTimeConverter = (date, time) => {
+    var dateSelected = moment(date).format('DD/MM/YYYY');
+    var timeSelected = moment(time).format('hh:mm:ss a');
+    var dateTime = moment(dateSelected + ' ' + timeSelected, 'DD/MM/YYYY HH:mm a');
+    return moment(dateTime).toISOString();
+  };
   const saveAsDraftHandler = () => {
     form
       .validateFields()
       .then((values) => {
-        var startDate = new Date(values?.datePicker?._d);
-        startDate = startDate?.toISOString();
+        var startDateTime;
+        if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
+        else startDateTime = moment(values?.datePicker).format('DD/MM/YYYY');
+
         if (!eventId || eventId === '') {
           addEvent({
             data: {
@@ -54,7 +61,8 @@ function AddEvent() {
                 en: values?.english,
                 fr: values?.french,
               },
-              startDate: startDate,
+              startDate: !values?.startTime ? startDateTime : null,
+              startDateTime: values?.startTime ? startDateTime : null,
               eventStatus: values?.eventStatus,
               description: {
                 en: values?.englishEditor,
@@ -77,7 +85,8 @@ function AddEvent() {
                 en: values?.english,
                 fr: values?.french,
               },
-              startDate: startDate,
+              startDate: !values?.startTime ? startDateTime : null,
+              startDateTime: values?.startTime ? startDateTime : null,
               eventStatus: values?.eventStatus,
               description: {
                 en: values?.englishEditor,
@@ -177,7 +186,6 @@ function AddEvent() {
     else return roleCheckHandler();
   };
 
-  console.log(eventData, moment('2022-12-30T08:25:17-05:00').format('MMMM Do YYYY, h:mm:ss a'));
   return (
     !isLoading && (
       <div>
@@ -309,7 +317,7 @@ function AddEvent() {
                             <Form.Item
                               name="startTime"
                               label={t('dashboard.events.addEditEvent.dates.startTime')}
-                              initialValue={eventData?.startDateTime ? moment(eventData?.startDateTime) : ''}>
+                              initialValue={eventData?.startDateTime ? moment(eventData?.startDateTime) : undefined}>
                               <TimePickerStyled />
                             </Form.Item>
                           </Col>
@@ -317,7 +325,7 @@ function AddEvent() {
                             <Form.Item
                               name="endTime"
                               label={t('dashboard.events.addEditEvent.dates.endTime')}
-                              initialValue={eventData?.startDateTime ? moment(eventData?.endDateTime) : ''}>
+                              initialValue={eventData?.endDateTime ? moment(eventData?.endDateTime) : undefined}>
                               <TimePickerStyled />
                             </Form.Item>
                           </Col>
