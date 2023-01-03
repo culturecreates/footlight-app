@@ -9,6 +9,7 @@ import { useGetEventQuery } from '../../../services/events';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual } from '../../../utils/bilingual';
+import { eventStatusOptions } from '../../../constants/eventStatus';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -92,6 +93,19 @@ function EventReadOnly() {
                     <CalendarOutlined style={{ fontSize: '24px', color: '#1B3DE6', marginRight: '9px' }} />
                     {moment(eventData?.startDateTime).format('MM/DD/YYYY')}
                   </p>
+                  <br />
+                  {eventData?.eventStatus && (
+                    <>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.dates.status')}
+                      </p>
+                      <p className="read-only-event-content">
+                        {eventStatusOptions?.map((status) => {
+                          if (status?.value === eventData?.eventStatus) return status?.label;
+                        })}
+                      </p>
+                    </>
+                  )}
                 </div>
               </Col>
               <Col flex="233px">

@@ -18,6 +18,8 @@ import DateAction from '../../../components/Button/DateAction';
 import BilingualInput from '../../../components/BilingualInput';
 import DatePickerStyled from '../../../components/DatePicker';
 import TextEditor from '../../../components/TextEditor';
+import Select from '../../../components/Select';
+import { eventStatus, eventStatusOptions } from '../../../constants/eventStatus';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -52,6 +54,7 @@ function AddEvent() {
                 fr: values?.french,
               },
               startDate: startDate,
+              eventStatus: values?.eventStatus,
               description: {
                 en: values?.englishEditor,
                 fr: values?.frenchEditor,
@@ -74,6 +77,7 @@ function AddEvent() {
                 fr: values?.french,
               },
               startDate: startDate,
+              eventStatus: values?.eventStatus,
               description: {
                 en: values?.englishEditor,
                 fr: values?.frenchEditor,
@@ -327,6 +331,16 @@ function AddEvent() {
                         </Col>
                       </Row>
                     )}
+                    <Row>
+                      <Col flex={'423px'}>
+                        <Form.Item
+                          name="eventStatus"
+                          label={t('dashboard.events.addEditEvent.dates.status')}
+                          initialValue={eventData?.eventStatus ?? eventStatus.EventScheduled}>
+                          <Select options={eventStatusOptions} />
+                        </Form.Item>
+                      </Col>
+                    </Row>
                   </div>
                 </Col>
                 <Col flex={'233px'}>
