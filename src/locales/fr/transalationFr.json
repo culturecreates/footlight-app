@@ -86,9 +86,9 @@
           "dateRange": "Plage de dates",
           "multipleDates": "Plusieurs dates",
           "status": "Statut",
-          "eventCancelled": "",
-          "eventPostponed": "",
-          "eventScheduled": ""
+          "eventCancelled": "Annulé",
+          "eventPostponed": "Reporté",
+          "eventScheduled": "Programmé"
         },
         "otherInformation": {
           "title": "Autres informations",
