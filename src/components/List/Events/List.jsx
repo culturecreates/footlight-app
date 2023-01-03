@@ -83,13 +83,11 @@ function Lists(props) {
               <div className="event-list-title">
                 <span className="event-list-title-heading">
                   <FormatDate date={eventItem?.startDate ?? eventItem?.startDateTime} lang={lang} />
-                  {eventItem?.endDate ? (
+                  {(eventItem?.endDate || eventItem?.endDateTime) && (
                     <>
                       &nbsp;{t('dashboard.events.list.to')}&nbsp;
                       <FormatDate date={eventItem?.endDate ?? eventItem?.endDateTime} lang={lang} />
                     </>
-                  ) : (
-                    <></>
                   )}
                 </span>
                 &nbsp;&nbsp;
