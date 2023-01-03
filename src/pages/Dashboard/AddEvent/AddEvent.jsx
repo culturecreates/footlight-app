@@ -20,6 +20,7 @@ import DatePickerStyled from '../../../components/DatePicker';
 import TextEditor from '../../../components/TextEditor';
 import Select from '../../../components/Select';
 import { eventStatus, eventStatusOptions } from '../../../constants/eventStatus';
+import TimePickerStyled from '../../../components/TimePicker/TimePicker';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -175,6 +176,8 @@ function AddEvent() {
       );
     else return roleCheckHandler();
   };
+
+  console.log(eventData, moment('2022-12-30T08:25:17-05:00').format('MMMM Do YYYY, h:mm:ss a'));
   return (
     !isLoading && (
       <div>
@@ -281,23 +284,45 @@ function AddEvent() {
                     )}
 
                     {dateType === 'single' || eventData?.startDate || eventData?.startDateTime ? (
-                      <Row>
-                        <Col flex={'423px'}>
-                          <Form.Item
-                            name="datePicker"
-                            label={t('dashboard.events.addEditEvent.dates.date')}
-                            initialValue={
-                              eventData?.startDate
-                                ? moment(eventData?.startDate)
-                                : eventData?.startDateTime
-                                ? moment(eventData?.startDateTime)
-                                : ''
-                            }
-                            rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
-                            <DatePickerStyled style={{ width: '423px' }} />
-                          </Form.Item>
-                        </Col>
-                      </Row>
+                      <>
+                        <Row>
+                          <Col flex={'423px'}>
+                            <Form.Item
+                              name="datePicker"
+                              label={t('dashboard.events.addEditEvent.dates.date')}
+                              initialValue={
+                                eventData?.startDate
+                                  ? moment(eventData?.startDate)
+                                  : eventData?.startDateTime
+                                  ? moment(eventData?.startDateTime)
+                                  : ''
+                              }
+                              rules={[
+                                { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
+                              ]}>
+                              <DatePickerStyled style={{ width: '423px' }} />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                        <Row justify="space-between">
+                          <Col flex={'203.5px'}>
+                            <Form.Item
+                              name="startTime"
+                              label={t('dashboard.events.addEditEvent.dates.startTime')}
+                              initialValue={eventData?.startDateTime ? moment(eventData?.startDateTime) : ''}>
+                              <TimePickerStyled />
+                            </Form.Item>
+                          </Col>
+                          <Col flex={'203.5px'}>
+                            <Form.Item
+                              name="endTime"
+                              label={t('dashboard.events.addEditEvent.dates.endTime')}
+                              initialValue={eventData?.startDateTime ? moment(eventData?.endDateTime) : ''}>
+                              <TimePickerStyled />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                      </>
                     ) : (
                       <Row>
                         <Col flex={'423px'}>
@@ -331,6 +356,7 @@ function AddEvent() {
                         </Col>
                       </Row>
                     )}
+
                     <Row>
                       <Col flex={'423px'}>
                         <Form.Item

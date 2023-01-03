@@ -85,6 +85,8 @@
           "singleDate": "Date unique",
           "dateRange": "Plage de dates",
           "multipleDates": "Plusieurs dates",
+          "startTime": "Heure de début",
+          "endTime": "Heure de fin",
           "status": "Statut",
           "eventCancelled": "Annulé",
           "eventPostponed": "Reporté",
