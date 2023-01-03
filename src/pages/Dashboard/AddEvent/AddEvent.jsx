@@ -75,7 +75,7 @@ function AddEvent() {
           })
             .unwrap()
             .then(() => {
-              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`).catch((error) => console.log(error));
+              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
             })
             .catch((errorInfo) => {
               console.log(errorInfo);
@@ -425,15 +425,18 @@ function AddEvent() {
                             }),
                             () => ({
                               validator() {
-                                if (reactQuillRefFr?.current?.unprivilegedEditor?.getText() != '')
-                                  if (reactQuillRefFr?.current?.unprivilegedEditor?.getText().split(' ').length > 49) {
-                                    return Promise.resolve();
-                                  } else
-                                    return Promise.reject(
-                                      new Error(
-                                        t('dashboard.events.addEditEvent.validations.otherInformation.frenchShort'),
-                                      ),
-                                    );
+                                if (reactQuillRefFr?.current?.unprivilegedEditor?.getText().split(' ').length > 49) {
+                                  return Promise.resolve();
+                                } else if (
+                                  reactQuillRefEn?.current?.unprivilegedEditor?.getText().split(' ').length > 49
+                                )
+                                  return Promise.resolve();
+                                else
+                                  return Promise.reject(
+                                    new Error(
+                                      t('dashboard.events.addEditEvent.validations.otherInformation.frenchShort'),
+                                    ),
+                                  );
                               },
                             }),
                           ]}
@@ -465,15 +468,18 @@ function AddEvent() {
                             }),
                             () => ({
                               validator() {
-                                if (reactQuillRefEn?.current?.unprivilegedEditor?.getText() != '')
-                                  if (reactQuillRefEn?.current?.unprivilegedEditor?.getText().split(' ').length > 49) {
-                                    return Promise.resolve();
-                                  } else
-                                    return Promise.reject(
-                                      new Error(
-                                        t('dashboard.events.addEditEvent.validations.otherInformation.englishShort'),
-                                      ),
-                                    );
+                                if (reactQuillRefEn?.current?.unprivilegedEditor?.getText().split(' ').length > 49) {
+                                  return Promise.resolve();
+                                } else if (
+                                  reactQuillRefFr?.current?.unprivilegedEditor?.getText().split(' ').length > 49
+                                )
+                                  return Promise.resolve();
+                                else
+                                  return Promise.reject(
+                                    new Error(
+                                      t('dashboard.events.addEditEvent.validations.otherInformation.englishShort'),
+                                    ),
+                                  );
                               },
                             }),
                           ]}
