@@ -94,6 +94,25 @@ function EventReadOnly() {
                     {moment(eventData?.startDateTime).format('MM/DD/YYYY')}
                   </p>
                   <br />
+                  <Row justify="space-between">
+                    {eventData?.startDateTime && (
+                      <Col>
+                        <p className="read-only-event-content-sub-title-primary">
+                          {t('dashboard.events.addEditEvent.dates.startTime')}
+                        </p>
+                        <p className="read-only-event-content">{moment(eventData?.startDateTime).format('h:mm a')}</p>
+                      </Col>
+                    )}
+                    {eventData?.endDateTime && (
+                      <Col>
+                        <p className="read-only-event-content-sub-title-primary">
+                          {t('dashboard.events.addEditEvent.dates.endTime')}
+                        </p>
+                        <p className="read-only-event-content">{moment(eventData?.endDateTime).format('h:mm a')}</p>
+                      </Col>
+                    )}
+                  </Row>
+                  <br />
                   {eventData?.eventStatus && (
                     <>
                       <p className="read-only-event-content-sub-title-primary">
