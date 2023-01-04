@@ -20,6 +20,7 @@ import DatePickerStyled from '../../../components/DatePicker';
 import TextEditor from '../../../components/TextEditor';
 import Select from '../../../components/Select';
 import { eventStatus, eventStatusOptions } from '../../../constants/eventStatus';
+import TimePickerStyled from '../../../components/TimePicker/TimePicker';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -39,13 +40,21 @@ function AddEvent() {
   const [dateType, setDateType] = useState(eventData?.startDate && !isLoading ? 'single' : '');
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
-
+  const dateTimeConverter = (date, time) => {
+    let dateSelected = moment(date).format('DD/MM/YYYY');
+    let timeSelected = moment(time).format('hh:mm:ss a');
+    let dateTime = moment(dateSelected + ' ' + timeSelected, 'DD/MM/YYYY HH:mm a');
+    return moment(dateTime).toISOString();
+  };
   const saveAsDraftHandler = () => {
     form
       .validateFields()
       .then((values) => {
-        var startDate = new Date(values?.datePicker?._d);
-        startDate = startDate?.toISOString();
+        var startDateTime, endDateTime;
+        if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
+        else startDateTime = moment(values?.datePicker).format('YYYY/MM/DD');
+        if (values?.endTime) endDateTime = dateTimeConverter(values?.datePicker, values?.endTime);
+
         if (!eventId || eventId === '') {
           addEvent({
             data: {
@@ -53,7 +62,9 @@ function AddEvent() {
                 en: values?.english,
                 fr: values?.french,
               },
-              startDate: startDate,
+              ...(values?.startTime && { startDateTime: startDateTime }),
+              ...(!values?.startTime && { startDate: startDateTime }),
+              ...(values?.endTime && { endDateTime: endDateTime }),
               eventStatus: values?.eventStatus,
               description: {
                 en: values?.englishEditor,
@@ -64,7 +75,7 @@ function AddEvent() {
           })
             .unwrap()
             .then(() => {
-              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`).catch((error) => console.log(error));
+              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
             })
             .catch((errorInfo) => {
               console.log(errorInfo);
@@ -76,7 +87,9 @@ function AddEvent() {
                 en: values?.english,
                 fr: values?.french,
               },
-              startDate: startDate,
+              ...(values?.startTime && { startDateTime: startDateTime }),
+              ...(!values?.startTime && { startDate: startDateTime }),
+              ...(values?.endTime && { endDateTime: endDateTime }),
               eventStatus: values?.eventStatus,
               description: {
                 en: values?.englishEditor,
@@ -281,23 +294,45 @@ function AddEvent() {
                     )}
 
                     {dateType === 'single' || eventData?.startDate || eventData?.startDateTime ? (
-                      <Row>
-                        <Col flex={'423px'}>
-                          <Form.Item
-                            name="datePicker"
-                            label={t('dashboard.events.addEditEvent.dates.date')}
-                            initialValue={
-                              eventData?.startDate
-                                ? moment(eventData?.startDate)
-                                : eventData?.startDateTime
-                                ? moment(eventData?.startDateTime)
-                                : ''
-                            }
-                            rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
-                            <DatePickerStyled style={{ width: '423px' }} />
-                          </Form.Item>
-                        </Col>
-                      </Row>
+                      <>
+                        <Row>
+                          <Col flex={'423px'}>
+                            <Form.Item
+                              name="datePicker"
+                              label={t('dashboard.events.addEditEvent.dates.date')}
+                              initialValue={
+                                eventData?.startDate
+                                  ? moment(eventData?.startDate)
+                                  : eventData?.startDateTime
+                                  ? moment(eventData?.startDateTime)
+                                  : ''
+                              }
+                              rules={[
+                                { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
+                              ]}>
+                              <DatePickerStyled style={{ width: '423px' }} />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                        <Row justify="space-between">
+                          <Col flex={'203.5px'}>
+                            <Form.Item
+                              name="startTime"
+                              label={t('dashboard.events.addEditEvent.dates.startTime')}
+                              initialValue={eventData?.startDateTime ? moment(eventData?.startDateTime) : undefined}>
+                              <TimePickerStyled />
+                            </Form.Item>
+                          </Col>
+                          <Col flex={'203.5px'}>
+                            <Form.Item
+                              name="endTime"
+                              label={t('dashboard.events.addEditEvent.dates.endTime')}
+                              initialValue={eventData?.endDateTime ? moment(eventData?.endDateTime) : undefined}>
+                              <TimePickerStyled />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                      </>
                     ) : (
                       <Row>
                         <Col flex={'423px'}>
@@ -331,6 +366,7 @@ function AddEvent() {
                         </Col>
                       </Row>
                     )}
+
                     <Row>
                       <Col flex={'423px'}>
                         <Form.Item
@@ -389,15 +425,18 @@ function AddEvent() {
                             }),
                             () => ({
                               validator() {
-                                if (reactQuillRefFr?.current?.unprivilegedEditor?.getText() != '')
-                                  if (reactQuillRefFr?.current?.unprivilegedEditor?.getText().split(' ').length > 49) {
-                                    return Promise.resolve();
-                                  } else
-                                    return Promise.reject(
-                                      new Error(
-                                        t('dashboard.events.addEditEvent.validations.otherInformation.frenchShort'),
-                                      ),
-                                    );
+                                if (reactQuillRefFr?.current?.unprivilegedEditor?.getText().split(' ').length > 49) {
+                                  return Promise.resolve();
+                                } else if (
+                                  reactQuillRefEn?.current?.unprivilegedEditor?.getText().split(' ').length > 49
+                                )
+                                  return Promise.resolve();
+                                else
+                                  return Promise.reject(
+                                    new Error(
+                                      t('dashboard.events.addEditEvent.validations.otherInformation.frenchShort'),
+                                    ),
+                                  );
                               },
                             }),
                           ]}
@@ -429,15 +468,18 @@ function AddEvent() {
                             }),
                             () => ({
                               validator() {
-                                if (reactQuillRefEn?.current?.unprivilegedEditor?.getText() != '')
-                                  if (reactQuillRefEn?.current?.unprivilegedEditor?.getText().split(' ').length > 49) {
-                                    return Promise.resolve();
-                                  } else
-                                    return Promise.reject(
-                                      new Error(
-                                        t('dashboard.events.addEditEvent.validations.otherInformation.englishShort'),
-                                      ),
-                                    );
+                                if (reactQuillRefEn?.current?.unprivilegedEditor?.getText().split(' ').length > 49) {
+                                  return Promise.resolve();
+                                } else if (
+                                  reactQuillRefFr?.current?.unprivilegedEditor?.getText().split(' ').length > 49
+                                )
+                                  return Promise.resolve();
+                                else
+                                  return Promise.reject(
+                                    new Error(
+                                      t('dashboard.events.addEditEvent.validations.otherInformation.englishShort'),
+                                    ),
+                                  );
                               },
                             }),
                           ]}

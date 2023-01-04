@@ -86,6 +86,8 @@
           "singleDate": "Single date",
           "dateRange": "Date range",
           "multipleDates": "Multiple dates",
+          "startTime": "Start time",
+          "endTime": "End time",
           "status": "Status",
           "eventCancelled": "Cancelled",
           "eventPostponed": "Postponed",
