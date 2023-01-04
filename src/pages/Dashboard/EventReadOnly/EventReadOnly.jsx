@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Breadcrumb } from 'antd';
 import { LeftOutlined, CalendarOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -10,12 +10,27 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual } from '../../../utils/bilingual';
 import { eventStatusOptions } from '../../../constants/eventStatus';
+import { dateTypes } from '../../../constants/dateTypes';
+import DateRangePicker from '../../../components/DateRangePicker';
 
 function EventReadOnly() {
   const { t } = useTranslation();
   const { calendarId, eventId } = useParams();
   const { data: eventData, isLoading } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
   const { user } = useSelector(getUserDetails);
+  const [dateType, setDateType] = useState();
+
+  useEffect(() => {
+    if (eventData?.startDate || eventData?.startDateTime) {
+      if (eventData?.endDate || eventData?.endDateTime) {
+        if (
+          moment(eventData?.startDateTime).format('DD/MM/YYYY') == moment(eventData?.endDateTime).format('DD/MM/YYYY')
+        )
+          setDateType(dateTypes.SINGLE);
+        else setDateType(dateTypes.RANGE);
+      } else if (!eventData?.endDate && !eventData?.endDateTime) setDateType(dateTypes.SINGLE);
+    }
+  }, [isLoading]);
 
   return (
     !isLoading && (
@@ -86,13 +101,38 @@ function EventReadOnly() {
               <Col flex={'423px'}>
                 <div className="read-only-event-section-wrapper">
                   <p className="read-only-event-content-title">{t('dashboard.events.addEditEvent.dates.dates')}</p>
-                  <p className="read-only-event-content-sub-title-primary">
-                    {t('dashboard.events.addEditEvent.dates.date')}
-                  </p>
-                  <p className="read-only-event-content-date">
-                    <CalendarOutlined style={{ fontSize: '24px', color: '#1B3DE6', marginRight: '9px' }} />
-                    {moment(eventData?.startDateTime).format('MM/DD/YYYY')}
-                  </p>
+                  {dateType == dateTypes.SINGLE && (
+                    <>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.dates.date')}
+                      </p>
+                      <p className="read-only-event-content-date">
+                        <CalendarOutlined style={{ fontSize: '24px', color: '#1B3DE6', marginRight: '9px' }} />
+                        {moment(eventData?.startDateTime).format('MM/DD/YYYY')}
+                      </p>
+                    </>
+                  )}
+                  {dateType == dateTypes.RANGE && (
+                    <>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.dates.dateRange')}
+                      </p>
+                      <p className="read-only-event-content-date">
+                        <CalendarOutlined style={{ fontSize: '24px', color: '#1B3DE6', marginRight: '9px' }} />
+                        <DateRangePicker
+                          defaultValue={[
+                            moment(eventData?.startDate ?? eventData?.startDateTime),
+                            moment(eventData?.endDate ?? eventData?.endDateTime),
+                          ]}
+                          suffixIcon={false}
+                          bordered={false}
+                          allowClear={false}
+                          inputReadOnly={true}
+                          open={false}
+                        />
+                      </p>
+                    </>
+                  )}
                   <br />
                   <Row justify="space-between">
                     {eventData?.startDateTime && (
