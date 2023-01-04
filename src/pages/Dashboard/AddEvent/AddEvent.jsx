@@ -52,7 +52,7 @@ function AddEvent() {
       .then((values) => {
         var startDateTime, endDateTime;
         if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
-        else startDateTime = moment(values?.datePicker).format('DD/MM/YYYY');
+        else startDateTime = moment(values?.datePicker).format('YYYY/MM/DD');
         if (values?.endTime) endDateTime = dateTimeConverter(values?.datePicker, values?.endTime);
 
         if (!eventId || eventId === '') {
