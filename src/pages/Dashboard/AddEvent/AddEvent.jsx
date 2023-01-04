@@ -21,6 +21,7 @@ import TextEditor from '../../../components/TextEditor';
 import Select from '../../../components/Select';
 import { eventStatus, eventStatusOptions } from '../../../constants/eventStatus';
 import TimePickerStyled from '../../../components/TimePicker/TimePicker';
+import DateRangePicker from '../../../components/DateRangePicker';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -293,25 +294,37 @@ function AddEvent() {
                       <></>
                     )}
 
-                    {dateType === 'single' || eventData?.startDate || eventData?.startDateTime ? (
+                    {dateType || eventData?.startDate || eventData?.startDateTime ? (
                       <>
                         <Row>
                           <Col flex={'423px'}>
-                            <Form.Item
-                              name="datePicker"
-                              label={t('dashboard.events.addEditEvent.dates.date')}
-                              initialValue={
-                                eventData?.startDate
-                                  ? moment(eventData?.startDate)
-                                  : eventData?.startDateTime
-                                  ? moment(eventData?.startDateTime)
-                                  : ''
-                              }
-                              rules={[
-                                { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
-                              ]}>
-                              <DatePickerStyled style={{ width: '423px' }} />
-                            </Form.Item>
+                            {dateType === 'single' && (
+                              <Form.Item
+                                name="datePicker"
+                                label={t('dashboard.events.addEditEvent.dates.date')}
+                                initialValue={
+                                  eventData?.startDate
+                                    ? moment(eventData?.startDate)
+                                    : eventData?.startDateTime
+                                    ? moment(eventData?.startDateTime)
+                                    : ''
+                                }
+                                rules={[
+                                  { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
+                                ]}>
+                                <DatePickerStyled style={{ width: '423px' }} />
+                              </Form.Item>
+                            )}
+                            {dateType === 'range' && (
+                              <Form.Item
+                                name="dateRangePicker"
+                                label={t('dashboard.events.addEditEvent.dates.dateRange')}
+                                rules={[
+                                  { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
+                                ]}>
+                                <DateRangePicker style={{ width: '423px' }} />
+                              </Form.Item>
+                            )}
                           </Col>
                         </Row>
                         <Row justify="space-between">
@@ -356,7 +369,10 @@ function AddEvent() {
                                 label={t('dashboard.events.addEditEvent.dates.singleDate')}
                                 onClick={() => setDateType('single')}
                               />
-                              <DateAction label={t('dashboard.events.addEditEvent.dates.dateRange')} disabled={true} />
+                              <DateAction
+                                label={t('dashboard.events.addEditEvent.dates.dateRange')}
+                                onClick={() => setDateType('range')}
+                              />
                               <DateAction
                                 label={t('dashboard.events.addEditEvent.dates.multipleDates')}
                                 disabled={true}

@@ -1,0 +1,17 @@
+.date-range-picker-wrapper {
+  border: 1px solid #b6c1c9;
+  border-radius: 4px;
+}
+
+.date-range-picker-wrapper .ant-picker-suffix {
+  color: #1b3de6;
+}
+
+.date-range-picker-wrapper .ant-picker-clear {
+  background: #ffffff;
+  color: #1b3de6;
+}
+
+.date-range-picker-wrapper .ant-picker-active-bar {
+  display: none;
+}
