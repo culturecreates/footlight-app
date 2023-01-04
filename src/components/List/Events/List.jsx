@@ -15,6 +15,7 @@ import i18n from 'i18next';
 import { PathName } from '../../../constants/pathName';
 import Username from '../../Username/index';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
+import moment from 'moment';
 const { useBreakpoint } = Grid;
 
 function Lists(props) {
@@ -85,8 +86,13 @@ function Lists(props) {
                   <FormatDate date={eventItem?.startDate ?? eventItem?.startDateTime} lang={lang} />
                   {(eventItem?.endDate || eventItem?.endDateTime) && (
                     <>
-                      &nbsp;{t('dashboard.events.list.to')}&nbsp;
-                      <FormatDate date={eventItem?.endDate ?? eventItem?.endDateTime} lang={lang} />
+                      {moment(eventItem?.startDateTime).format('DD/MM/YYYY') !=
+                        moment(eventItem?.endDateTime).format('DD/MM/YYYY') && (
+                        <>
+                          &nbsp;{t('dashboard.events.list.to')}&nbsp;
+                          <FormatDate date={eventItem?.endDate ?? eventItem?.endDateTime} lang={lang} />
+                        </>
+                      )}
                     </>
                   )}
                 </span>
