@@ -52,10 +52,17 @@ function AddEvent() {
       .validateFields()
       .then((values) => {
         var startDateTime, endDateTime;
-        if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
-        else startDateTime = moment(values?.datePicker).format('YYYY/MM/DD');
-        if (values?.endTime) endDateTime = dateTimeConverter(values?.datePicker, values?.endTime);
-
+        if (values?.datePicker) {
+          if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
+          else startDateTime = moment(values?.datePicker).format('YYYY/MM/DD');
+          if (values?.endTime) endDateTime = dateTimeConverter(values?.datePicker, values?.endTime);
+        }
+        if (values?.dateRangePicker) {
+          if (values?.startTime) startDateTime = dateTimeConverter(values?.dateRangePicker[0], values?.startTime);
+          else startDateTime = moment(values?.dateRangePicker[0]).format('YYYY/MM/DD');
+          if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
+          else endDateTime = moment(values?.dateRangePicker[1]).format('YYYY/MM/DD');
+        }
         if (!eventId || eventId === '') {
           addEvent({
             data: {
@@ -66,6 +73,7 @@ function AddEvent() {
               ...(values?.startTime && { startDateTime: startDateTime }),
               ...(!values?.startTime && { startDate: startDateTime }),
               ...(values?.endTime && { endDateTime: endDateTime }),
+              ...(!values?.endTime && { endDate: endDateTime }),
               eventStatus: values?.eventStatus,
               description: {
                 en: values?.englishEditor,
@@ -91,6 +99,7 @@ function AddEvent() {
               ...(values?.startTime && { startDateTime: startDateTime }),
               ...(!values?.startTime && { startDate: startDateTime }),
               ...(values?.endTime && { endDateTime: endDateTime }),
+              ...(!values?.endTime && { endDate: endDateTime }),
               eventStatus: values?.eventStatus,
               description: {
                 en: values?.englishEditor,
