@@ -22,6 +22,7 @@ import Select from '../../../components/Select';
 import { eventStatus, eventStatusOptions } from '../../../constants/eventStatus';
 import TimePickerStyled from '../../../components/TimePicker/TimePicker';
 import DateRangePicker from '../../../components/DateRangePicker';
+import { dateTypes } from '../../../constants/dateTypes';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -38,15 +39,17 @@ function AddEvent() {
   } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
-  const [dateType, setDateType] = useState(eventData?.startDate && !isLoading ? 'single' : '');
+  const [dateType, setDateType] = useState();
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
+
   const dateTimeConverter = (date, time) => {
     let dateSelected = moment(date).format('DD/MM/YYYY');
     let timeSelected = moment(time).format('hh:mm:ss a');
     let dateTime = moment(dateSelected + ' ' + timeSelected, 'DD/MM/YYYY HH:mm a');
     return moment(dateTime).toISOString();
   };
+
   const saveAsDraftHandler = () => {
     form
       .validateFields()
@@ -198,6 +201,17 @@ function AddEvent() {
       );
     else return roleCheckHandler();
   };
+  useEffect(() => {
+    if (eventData?.startDate || eventData?.startDateTime) {
+      if (eventData?.endDate || eventData?.endDateTime) {
+        if (
+          moment(eventData?.startDateTime).format('DD/MM/YYYY') == moment(eventData?.endDateTime).format('DD/MM/YYYY')
+        )
+          setDateType(dateTypes.SINGLE);
+        else setDateType(dateTypes.RANGE);
+      } else if (!eventData?.endDate && !eventData?.endDateTime) setDateType(dateTypes.SINGLE);
+    }
+  }, [isLoading]);
   return (
     !isLoading && (
       <div>
@@ -293,7 +307,7 @@ function AddEvent() {
                         <div className="add-event-date-wrap">{t('dashboard.events.addEditEvent.dates.dates')}</div>
                       </Col>
                     </Row>
-                    {dateType === '' && !eventData?.startDate && !eventData?.startDateTime ? (
+                    {!dateType ? (
                       <Row>
                         <Col>
                           <p className="add-event-date-heading">{t('dashboard.events.addEditEvent.dates.heading')}</p>
@@ -303,11 +317,11 @@ function AddEvent() {
                       <></>
                     )}
 
-                    {dateType || eventData?.startDate || eventData?.startDateTime ? (
+                    {dateType ? (
                       <>
                         <Row>
                           <Col flex={'423px'}>
-                            {dateType === 'single' && (
+                            {dateType === dateTypes.SINGLE && (
                               <Form.Item
                                 name="datePicker"
                                 label={t('dashboard.events.addEditEvent.dates.date')}
@@ -328,6 +342,10 @@ function AddEvent() {
                               <Form.Item
                                 name="dateRangePicker"
                                 label={t('dashboard.events.addEditEvent.dates.dateRange')}
+                                initialValue={[
+                                  moment(eventData?.startDate ?? eventData?.startDateTime),
+                                  moment(eventData?.endDate ?? eventData?.endDateTime),
+                                ]}
                                 rules={[
                                   { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
                                 ]}>
@@ -376,11 +394,11 @@ function AddEvent() {
                             <div className="date-buttons">
                               <DateAction
                                 label={t('dashboard.events.addEditEvent.dates.singleDate')}
-                                onClick={() => setDateType('single')}
+                                onClick={() => setDateType(dateTypes.SINGLE)}
                               />
                               <DateAction
                                 label={t('dashboard.events.addEditEvent.dates.dateRange')}
-                                onClick={() => setDateType('range')}
+                                onClick={() => setDateType(dateTypes.RANGE)}
                               />
                               <DateAction
                                 label={t('dashboard.events.addEditEvent.dates.multipleDates')}
