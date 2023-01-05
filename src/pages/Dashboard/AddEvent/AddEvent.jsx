@@ -315,7 +315,12 @@ function AddEvent() {
                 <Form.Item
                   name="targetAudience"
                   label={t('dashboard.events.addEditEvent.language.targetAudience')}
-                  required>
+                  rules={[
+                    {
+                      required: true,
+                      message: t('dashboard.events.addEditEvent.validations.targetAudience'),
+                    },
+                  ]}>
                   <SelectOption
                     allowClear
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
