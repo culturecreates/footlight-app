@@ -23,17 +23,13 @@
   color: #222732;
 }
 
-.date-picker-calendar .ant-picker-cell-selected {
+.date-picker-calendar .ant-picker-cell-selected .ant-picker-cell-inner {
   background: #607efc;
   border-radius: 4px;
 }
 
 .date-picker-calendar .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
   border: 0px;
-}
-
-.date-picker-calendar .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
-  background: none;
 }
 
 .date-picker-calendar .ant-picker-header {

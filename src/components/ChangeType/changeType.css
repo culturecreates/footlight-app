@@ -1,0 +1,31 @@
+.change-type-wrapper {
+  white-space: nowrap;
+}
+.change-type-wrapper .first-button {
+  background: #eff2ff;
+  border-radius: 4px;
+  color: #1b3de6;
+  border: 0px;
+}
+
+.change-type-wrapper .first-button[disabled] {
+  background-color: #f7f7f7;
+  color: #646d7b;
+}
+.change-type-wrapper .second-button {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  color: #1b3de6;
+}
+.change-type-wrapper .second-button[disabled] {
+  color: #646d7b;
+}
+.change-type-wrapper .third-button .ant-btn-text[disabled] {
+  color: #646d7b;
+}
+.change-type-wrapper .third-button {
+  color: #1b3de6;
+  background-color: #ffffff;
+}
