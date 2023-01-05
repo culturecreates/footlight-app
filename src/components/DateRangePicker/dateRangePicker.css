@@ -15,3 +15,27 @@
 .date-range-picker-wrapper .ant-picker-active-bar {
   display: none;
 }
+
+.date-range-picker-calendar .ant-picker-cell-range-start .ant-picker-cell-inner,
+.date-range-picker-calendar .ant-picker-cell-range-end .ant-picker-cell-inner {
+  background-color: #607efc;
+  border-radius: 4px;
+}
+
+.date-range-picker-calendar
+  .ant-picker-cell-in-view.ant-picker-cell-range-start:not(.ant-picker-cell-range-start-single):not(.ant-picker-cell-range-end)
+  .ant-picker-cell-inner,
+.date-range-picker-calendar
+  .ant-picker-cell-in-view.ant-picker-cell-range-end:not(.ant-picker-cell-range-end-single):not(.ant-picker-cell-range-start)
+  .ant-picker-cell-inner {
+  border-radius: 4px;
+}
+.date-range-picker-calendar .ant-picker-range-wrapper .ant-picker-panel-container {
+  box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+.date-range-picker-calendar .ant-picker-header-view {
+  color: #222732;
+  font-weight: 700;
+  font-size: 16px;
+}

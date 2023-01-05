@@ -7,6 +7,7 @@ function DateRangePicker(props) {
   return (
     <RangePicker
       className="date-range-picker-wrapper"
+      popupClassName="date-range-picker-calendar"
       size={'large'}
       format="MM/DD/YYYY"
       placeholder={['MM/DD/YYYY', 'MM/DD/YYYY']}
