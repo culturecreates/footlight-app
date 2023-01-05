@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
 import { Form, Row, Col, Input } from 'antd';
-import { SyncOutlined, InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { SyncOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -23,7 +23,7 @@ import Select from '../../../components/Select';
 import { eventStatus, eventStatusOptions } from '../../../constants/eventStatus';
 import TimePickerStyled from '../../../components/TimePicker/TimePicker';
 import DateRangePicker from '../../../components/DateRangePicker';
-import { dateTypes } from '../../../constants/dateTypes';
+import { dateTypeOptions, dateTypes } from '../../../constants/dateTypes';
 import ChangeType from '../../../components/ChangeType';
 const { TextArea } = Input;
 
@@ -237,7 +237,7 @@ function AddEvent() {
                 </Col>
               </Row>
             </Col>
-            <Col flex={'723px'} className="add-event-section-col">
+            <Col flex={'780px'} className="add-event-section-col">
               <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
                 <Col flex={'423px'}>
                   <div className="add-event-section-wrapper">
@@ -300,7 +300,7 @@ function AddEvent() {
                 </Col>
               </Row>
             </Col>
-            <Col flex={'723px'} className="add-event-section-col">
+            <Col flex={'780px'} className="add-event-section-col">
               <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-content">
                 <Col flex={'423px'}>
                   <div className="add-event-section-wrapper">
@@ -345,8 +345,10 @@ function AddEvent() {
                                 name="dateRangePicker"
                                 label={t('dashboard.events.addEditEvent.dates.dateRange')}
                                 initialValue={[
-                                  moment(eventData?.startDate ?? eventData?.startDateTime),
-                                  moment(eventData?.endDate ?? eventData?.endDateTime),
+                                  (eventData?.startDate || eventData?.startDateTime) &&
+                                    moment(eventData?.startDate ?? eventData?.startDateTime),
+                                  (eventData?.endDate || eventData?.endDateTime) &&
+                                    moment(eventData?.endDate ?? eventData?.endDateTime),
                                 ]}
                                 rules={[
                                   { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
@@ -426,31 +428,28 @@ function AddEvent() {
                 </Col>
                 <Col flex={'233px'}>
                   <div style={{ width: '100%', marginTop: '30%' }}>
-                    <Form.Item label="Change date type" style={{ lineHeight: '2.5' }}>
-                      <ChangeType
-                        primaryIcon={<SyncOutlined />}
-                        disabled={true}
-                        label={'Change to date range'}
-                        secondaryIcon={<InfoCircleOutlined />}
-                      />
-                      <ChangeType
-                        primaryIcon={<PlusOutlined />}
-                        disabled={false}
-                        label={'Virtual location'}
-                        secondaryIcon={<InfoCircleOutlined />}
-                      />
-                      <ChangeType
-                        primaryIcon={<SyncOutlined />}
-                        disabled={false}
-                        label={'Change to date range'}
-                        secondaryIcon={<InfoCircleOutlined />}
-                      />
-                    </Form.Item>
+                    {dateType && (
+                      <Form.Item label="Change date type" style={{ lineHeight: '2.5' }}>
+                        {dateTypeOptions.map((type) => {
+                          if (dateType != type.type)
+                            return (
+                              <ChangeType
+                                key={type.type}
+                                primaryIcon={<SyncOutlined />}
+                                disabled={type.disabled}
+                                label={type.label}
+                                secondaryIcon={<InfoCircleOutlined />}
+                                onClick={() => setDateType(type.type)}
+                              />
+                            );
+                        })}
+                      </Form.Item>
+                    )}
                   </div>
                 </Col>
               </Row>
             </Col>
-            <Col flex={'723px'} className="add-event-section-col">
+            <Col flex={'780px'} className="add-event-section-col">
               <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
                 <Col flex={'423px'}>
                   <div className="add-event-section-wrapper">

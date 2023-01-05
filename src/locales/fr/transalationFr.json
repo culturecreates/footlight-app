@@ -88,6 +88,9 @@
           "startTime": "Heure de début",
           "endTime": "Heure de fin",
           "status": "Statut",
+          "changeToSingleDate": "Changer en une date",
+          "changeToDateRange": "Change to plage de dates",
+          "changeToMultipleDate": "Changer en plusieurs dates",
           "eventCancelled": "Annulé",
           "eventPostponed": "Reporté",
           "eventScheduled": "Programmé"

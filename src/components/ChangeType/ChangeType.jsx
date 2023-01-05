@@ -2,11 +2,18 @@ import React from 'react';
 import { Button, Tooltip } from 'antd';
 import './changeType.css';
 function ChangeType(props) {
-  const { primaryIcon, disabled, label, secondaryIcon, promptText } = props;
+  const { key, primaryIcon, disabled, label, secondaryIcon, promptText, onClick } = props;
   return (
-    <div className="change-type-wrapper">
-      <Button type="primary" icon={primaryIcon} disabled={disabled} size="small" className="first-button" />
-      <Button type="text" disabled={disabled} size="small" className="second-button">
+    <div className="change-type-wrapper" key={key}>
+      <Button
+        type="primary"
+        icon={primaryIcon}
+        disabled={disabled}
+        size="small"
+        className="first-button"
+        onClick={onClick}
+      />
+      <Button type="text" disabled={disabled} size="small" className="second-button" onClick={onClick}>
         {label}
       </Button>
       <Tooltip title={promptText}>

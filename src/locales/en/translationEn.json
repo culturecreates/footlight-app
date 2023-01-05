@@ -89,6 +89,9 @@
           "startTime": "Start time",
           "endTime": "End time",
           "status": "Status",
+          "changeToSingleDate": "Change to single date",
+          "changeToDateRange": "Change to date range",
+          "changeToMultipleDate": "Change to multiple dates",
           "eventCancelled": "Cancelled",
           "eventPostponed": "Postponed",
           "eventScheduled": "Scheduled"
