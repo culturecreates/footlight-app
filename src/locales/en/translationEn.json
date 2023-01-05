@@ -76,7 +76,9 @@
           "title": "Event title",
           "titleLabel": "English",
           "placeHolderFrench": "Enter French event title",
-          "placeHolderEnglish": "Enter English event title"
+          "placeHolderEnglish": "Enter English event title",
+          "eventType": "Event type",
+          "targetAudience": "Target audience"
         },
 
         "dates": {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
 import { Form, Row, Col, Input } from 'antd';
-import { SyncOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { SyncOutlined, InfoCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -26,6 +26,9 @@ import DateRangePicker from '../../../components/DateRangePicker';
 import { dateTypeOptions, dateTypes } from '../../../constants/dateTypes';
 import ChangeType from '../../../components/ChangeType';
 import CardEvent from '../../../components/Card/Common/Event';
+import SelectOption from '../../../components/Select/SelectOption';
+import Tags from '../../../components/Tags/Common/Tags';
+
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -284,6 +287,45 @@ function AddEvent() {
                     />
                   </Form.Item>
                 </BilingualInput>
+                <Form.Item name="eventType" label={t('dashboard.events.addEditEvent.language.eventType')} required>
+                  <SelectOption
+                    mode="tags"
+                    options={[{ value: 'gold' }, { value: 'lime' }, { value: 'green' }, { value: 'cyan' }]}
+                    tagRender={(props) => {
+                      const { label, closable, onClose } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="targetAudience"
+                  label={t('dashboard.events.addEditEvent.language.targetAudience')}
+                  required>
+                  <SelectOption
+                    allowClear
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    mode="tags"
+                    options={[{ value: 'gold' }, { value: 'lime' }, { value: 'green' }, { value: 'cyan' }]}
+                    tagRender={(props) => {
+                      const { label, closable, onClose } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                  />
+                </Form.Item>
               </Form.Item>
             </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.dates.dates')}>
