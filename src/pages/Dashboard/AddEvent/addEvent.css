@@ -51,8 +51,8 @@
 }
 
 .add-edit-wrapper .add-event-section-wrapper {
-  padding: 24px;
-  background-color: #ffffff;
+  /* padding: 24px; */
+  background-color: #ffffff; 
 }
 
 .add-edit-wrapper .add-event-section-col {
