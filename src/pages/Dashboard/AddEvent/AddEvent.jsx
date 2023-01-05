@@ -287,7 +287,15 @@ function AddEvent() {
                     />
                   </Form.Item>
                 </BilingualInput>
-                <Form.Item name="eventType" label={t('dashboard.events.addEditEvent.language.eventType')} required>
+                <Form.Item
+                  name="eventType"
+                  label={t('dashboard.events.addEditEvent.language.eventType')}
+                  rules={[
+                    {
+                      required: true,
+                      message: t('dashboard.events.addEditEvent.validations.eventType'),
+                    },
+                  ]}>
                   <SelectOption
                     mode="tags"
                     options={[{ value: 'gold' }, { value: 'lime' }, { value: 'green' }, { value: 'cyan' }]}
