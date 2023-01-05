@@ -411,7 +411,10 @@ function AddEvent() {
                           disabled={type.disabled}
                           label={type.label}
                           secondaryIcon={<InfoCircleOutlined />}
-                          onClick={() => setDateType(type.type)}
+                          onClick={() => {
+                            setDateType(type.type);
+                            form.resetFields(['datePicker', 'dateRangePicker']);
+                          }}
                         />
                       );
                   })}
