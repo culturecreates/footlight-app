@@ -307,9 +307,9 @@ function AddEvent() {
                             name="datePicker"
                             label={t('dashboard.events.addEditEvent.dates.date')}
                             initialValue={
-                              eventData?.startDate
+                              eventData?.startDate && !eventData?.endDate && !eventData?.endDateTime
                                 ? moment(eventData?.startDate)
-                                : eventData?.startDateTime
+                                : eventData?.startDateTime && !eventData?.endDate && !eventData?.endDateTime
                                 ? moment(eventData?.startDateTime)
                                 : ''
                             }
@@ -321,12 +321,16 @@ function AddEvent() {
                           <Form.Item
                             name="dateRangePicker"
                             label={t('dashboard.events.addEditEvent.dates.dateRange')}
-                            initialValue={[
+                            initialValue={
                               (eventData?.startDate || eventData?.startDateTime) &&
-                                moment(eventData?.startDate ?? eventData?.startDateTime),
-                              (eventData?.endDate || eventData?.endDateTime) &&
-                                moment(eventData?.endDate ?? eventData?.endDateTime),
-                            ]}
+                              (eventData?.endDate || eventData?.endDateTime)
+                                ? [
+                                    moment(eventData?.startDate ?? eventData?.startDateTime),
+
+                                    moment(eventData?.endDate ?? eventData?.endDateTime),
+                                  ]
+                                : ''
+                            }
                             rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
                             <DateRangePicker style={{ width: '423px' }} />
                           </Form.Item>
