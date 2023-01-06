@@ -2,7 +2,10 @@
   width: 100%;
   border: 1px solid #b6c1c9;
   border-radius: 4px;
-  height: 48px;
+  padding: 8px;
+}
+.ant-select-selection-overflow {
+  gap: 8px;
 }
 
 .select-wrapper-dropdown {

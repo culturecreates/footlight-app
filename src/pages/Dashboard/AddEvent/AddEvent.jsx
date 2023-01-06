@@ -67,8 +67,9 @@ function AddEvent() {
 
   const saveAsDraftHandler = () => {
     form
-      .validateFields()
-      .then((values) => {
+      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker'])
+      .then(() => {
+        var values = form.getFieldsValue(true);
         var startDateTime,
           endDateTime,
           additionalType = [],
@@ -110,10 +111,12 @@ function AddEvent() {
               ...(values?.endTime && { endDateTime }),
               ...(!values?.endTime && { endDate: endDateTime }),
               eventStatus: values?.eventStatus,
-              description: {
-                en: values?.englishEditor,
-                fr: values?.frenchEditor,
-              },
+              ...((values?.en || values?.fr) && {
+                description: {
+                  en: values?.englishEditor,
+                  fr: values?.frenchEditor,
+                },
+              }),
               additionalType,
               audience,
             },
@@ -163,7 +166,16 @@ function AddEvent() {
 
   const reviewPublishHandler = () => {
     form
-      .validateFields()
+      .validateFields([
+        'french',
+        'english',
+        'datePicker',
+        'dateRangePicker',
+        'englishEditor',
+        'frenchEditor',
+        'eventType',
+        'targetAudience',
+      ])
       .then(() => {
         updateEventState({ id: eventId, calendarId })
           .unwrap()
