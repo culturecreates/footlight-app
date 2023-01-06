@@ -343,6 +343,9 @@ function AddEvent() {
                 <Form.Item
                   name="eventType"
                   label={t('dashboard.events.addEditEvent.language.eventType')}
+                  initialValue={eventData?.additionalType?.map((type) => {
+                    return type?.entityId;
+                  })}
                   rules={[
                     {
                       required: true,
@@ -351,6 +354,8 @@ function AddEvent() {
                   ]}>
                   <SelectOption
                     mode="tags"
+                    allowClear
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     options={taxonomyOptions('EventType')}
                     tagRender={(props) => {
                       const { label, closable, onClose } = props;
@@ -368,6 +373,9 @@ function AddEvent() {
                 <Form.Item
                   name="targetAudience"
                   label={t('dashboard.events.addEditEvent.language.targetAudience')}
+                  initialValue={eventData?.audience?.map((audience) => {
+                    return audience?.entityId;
+                  })}
                   rules={[
                     {
                       required: true,
