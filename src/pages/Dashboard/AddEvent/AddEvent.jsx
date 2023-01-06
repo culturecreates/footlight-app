@@ -251,12 +251,17 @@ function AddEvent() {
     else return roleCheckHandler();
   };
   useEffect(() => {
+    console.log(moment(eventData?.startDate).isSame(eventData?.endDateTime, 'day'));
+    console.log(moment(eventData?.startDate).format('MM/DD/YYYY'));
+    console.log(moment(eventData?.endDateTime).format('MM/DD/YYYY'));
+
     if (eventData?.startDate || eventData?.startDateTime) {
       if (eventData?.endDate || eventData?.endDateTime) {
         if (
-          eventData?.startDateTime &&
-          eventData?.endDateTime &&
-          moment(eventData?.startDateTime).isSame(eventData?.endDateTime, 'day')
+          (eventData?.startDateTime &&
+            eventData?.endDateTime &&
+            moment(eventData?.startDateTime).isSame(eventData?.endDateTime, 'day')) ||
+          moment(eventData?.startDate).isSame(eventData?.endDateTime, 'day')
         )
           setDateType(dateTypes.SINGLE);
         else setDateType(dateTypes.RANGE);
@@ -436,9 +441,10 @@ function AddEvent() {
                             name="dateRangePicker"
                             label={t('dashboard.events.addEditEvent.dates.dateRange')}
                             initialValue={
-                              (eventData?.startDate || eventData?.startDateTime) &&
-                              (eventData?.endDate || eventData?.endDateTime) &&
-                              !moment(eventData?.startDateTime).isSame(eventData?.endDateTime, 'day')
+                              ((eventData?.startDate || eventData?.startDateTime) &&
+                                (eventData?.endDate || eventData?.endDateTime) &&
+                                !moment(eventData?.startDateTime).isSame(eventData?.endDateTime, 'day')) ||
+                              !moment(eventData?.startDate).isSame(eventData?.endDateTime, 'day')
                                 ? [
                                     moment(eventData?.startDate ?? eventData?.startDateTime),
 

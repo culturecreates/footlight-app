@@ -88,7 +88,8 @@ function Lists(props) {
                       {((eventItem?.startDateTime &&
                         eventItem?.endDateTime &&
                         !moment(eventItem?.startDateTime).isSame(eventItem?.endDateTime, 'day')) ||
-                        eventItem?.endDate) && (
+                        eventItem?.endDate ||
+                        !moment(eventItem?.startDate).isSame(eventItem?.endDateTime, 'day')) && (
                         <>
                           &nbsp;{t('dashboard.events.list.to')}&nbsp;
                           <FormatDate date={eventItem?.endDate ?? eventItem?.endDateTime} lang={lang} />
