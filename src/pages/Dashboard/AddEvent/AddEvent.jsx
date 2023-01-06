@@ -29,6 +29,8 @@ import CardEvent from '../../../components/Card/Common/Event';
 import SelectOption from '../../../components/Select/SelectOption';
 import Tags from '../../../components/Tags/Common/Tags';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
+import { taxonomyClass } from '../../../constants/taxonomyClass';
+import { bilingual } from '../../../utils/bilingual';
 
 const { TextArea } = Input;
 
@@ -47,7 +49,7 @@ function AddEvent() {
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
-    taxonomyClass: 'EVENT',
+    taxonomyClass: taxonomyClass.EVENT,
     includeConcepts: true,
   });
   const [updateEventState] = useUpdateEventStateMutation();
@@ -63,11 +65,33 @@ function AddEvent() {
     return moment(dateTime).toISOString();
   };
 
+  const taxonomyOptions = (mappedToField) => {
+    let fieldData = allTaxonomyData?.data?.filter((taxonomy) => taxonomy?.mappedToField === mappedToField);
+    let concepts = fieldData?.map((field) => {
+      return field?.concept;
+    });
+
+    let options = concepts[0]?.map((concept) => {
+      return {
+        label: bilingual({
+          en: concept?.name?.en,
+          fr: concept?.name?.fr,
+          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+        }),
+        value: concept?.id,
+      };
+    });
+    return options;
+  };
+
   const saveAsDraftHandler = () => {
     form
       .validateFields()
       .then((values) => {
-        var startDateTime, endDateTime;
+        var startDateTime,
+          endDateTime,
+          additionalType = [],
+          audience = [];
         if (values?.datePicker) {
           if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
           else startDateTime = moment(values?.datePicker).format('YYYY/MM/DD');
@@ -79,6 +103,20 @@ function AddEvent() {
           if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
           else endDateTime = moment(values?.dateRangePicker[1]).format('YYYY/MM/DD');
         }
+        if (values?.eventType) {
+          additionalType = values?.eventType?.map((eventTypeId) => {
+            return {
+              entityId: eventTypeId,
+            };
+          });
+        }
+        if (values?.targetAudience) {
+          audience = values?.targetAudience?.map((audienceId) => {
+            return {
+              entityId: audienceId,
+            };
+          });
+        }
         if (!eventId || eventId === '') {
           addEvent({
             data: {
@@ -86,15 +124,17 @@ function AddEvent() {
                 en: values?.english,
                 fr: values?.french,
               },
-              ...(values?.startTime && { startDateTime: startDateTime }),
+              ...(values?.startTime && { startDateTime }),
               ...(!values?.startTime && { startDate: startDateTime }),
-              ...(values?.endTime && { endDateTime: endDateTime }),
+              ...(values?.endTime && { endDateTime }),
               ...(!values?.endTime && { endDate: endDateTime }),
               eventStatus: values?.eventStatus,
               description: {
                 en: values?.englishEditor,
                 fr: values?.frenchEditor,
               },
+              additionalType,
+              audience,
             },
             calendarId,
           })
@@ -112,16 +152,19 @@ function AddEvent() {
                 en: values?.english,
                 fr: values?.french,
               },
-              ...(values?.startTime && { startDateTime: startDateTime }),
+              ...(values?.startTime && { startDateTime }),
               ...(!values?.startTime && { startDate: startDateTime }),
-              ...(values?.endTime && { endDateTime: endDateTime }),
+              ...(values?.endTime && { endDateTime }),
               ...(!values?.endTime && { endDate: endDateTime }),
               eventStatus: values?.eventStatus,
               description: {
                 en: values?.englishEditor,
                 fr: values?.frenchEditor,
               },
+              additionalType,
+              audience,
             },
+
             calendarId,
             eventId,
           })
@@ -153,9 +196,6 @@ function AddEvent() {
   useEffect(() => {
     if (isError) navigate(`${PathName.NotFound}`);
   }, [isError]);
-  useEffect(() => {
-    console.log(allTaxonomyData);
-  }, [taxonomyLoading]);
 
   const roleCheckHandler = () => {
     const calendar = user?.roles.filter((calendar) => {
@@ -231,7 +271,8 @@ function AddEvent() {
     }
   }, [isLoading]);
   return (
-    !isLoading && (
+    !isLoading &&
+    !taxonomyLoading && (
       <div>
         <Form form={form} layout="vertical" name="event">
           <Row gutter={[32, 24]} className="add-edit-wrapper">
@@ -310,7 +351,7 @@ function AddEvent() {
                   ]}>
                   <SelectOption
                     mode="tags"
-                    options={[{ value: 'gold' }, { value: 'lime' }, { value: 'green' }, { value: 'cyan' }]}
+                    options={taxonomyOptions('EventType')}
                     tagRender={(props) => {
                       const { label, closable, onClose } = props;
                       return (
@@ -337,7 +378,7 @@ function AddEvent() {
                     allowClear
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     mode="tags"
-                    options={[{ value: 'gold' }, { value: 'lime' }, { value: 'green' }, { value: 'cyan' }]}
+                    options={taxonomyOptions('Audience')}
                     tagRender={(props) => {
                       const { label, closable, onClose } = props;
                       return (
