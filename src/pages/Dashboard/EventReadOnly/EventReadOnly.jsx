@@ -24,7 +24,9 @@ function EventReadOnly() {
     if (eventData?.startDate || eventData?.startDateTime) {
       if (eventData?.endDate || eventData?.endDateTime) {
         if (
-          moment(eventData?.startDateTime).format('DD/MM/YYYY') == moment(eventData?.endDateTime).format('DD/MM/YYYY')
+          eventData?.startDateTime &&
+          eventData?.endDateTime &&
+          moment(eventData?.startDateTime).isSame(eventData?.endDateTime, 'day')
         )
           setDateType(dateTypes.SINGLE);
         else setDateType(dateTypes.RANGE);
