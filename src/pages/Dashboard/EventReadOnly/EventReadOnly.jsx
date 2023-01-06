@@ -108,6 +108,7 @@ function EventReadOnly() {
                     {t('dashboard.events.addEditEvent.language.eventType')}
                   </p>
                   <SelectOption
+                    style={{ marginBottom: '1rem' }}
                     bordered={false}
                     open={false}
                     disabled
@@ -126,6 +127,7 @@ function EventReadOnly() {
                     {t('dashboard.events.addEditEvent.language.targetAudience')}
                   </p>
                   <SelectOption
+                    style={{ marginBottom: '1rem' }}
                     bordered={false}
                     open={false}
                     disabled

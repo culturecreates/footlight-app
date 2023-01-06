@@ -6,9 +6,12 @@
   display: flex;
   gap: 9px;
   text-transform: capitalize;
+  height: 32px;
+  align-items: center;
+  padding: 8px 16px;
 }
 
-.tags-wrapper .ant-tag-close-icon{
-    display: flex;
-    align-items: center;
+.tags-wrapper .ant-tag-close-icon {
+  display: flex;
+  align-items: center;
 }
