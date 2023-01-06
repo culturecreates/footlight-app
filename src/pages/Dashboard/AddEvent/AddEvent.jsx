@@ -28,6 +28,7 @@ import ChangeType from '../../../components/ChangeType';
 import CardEvent from '../../../components/Card/Common/Event';
 import SelectOption from '../../../components/Select/SelectOption';
 import Tags from '../../../components/Tags/Common/Tags';
+import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 
 const { TextArea } = Input;
 
@@ -43,6 +44,12 @@ function AddEvent() {
     isError,
     isLoading,
   } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
+  const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
+    calendarId,
+    search: '',
+    taxonomyClass: 'EVENT',
+    includeConcepts: true,
+  });
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
   const [dateType, setDateType] = useState();
@@ -146,6 +153,9 @@ function AddEvent() {
   useEffect(() => {
     if (isError) navigate(`${PathName.NotFound}`);
   }, [isError]);
+  useEffect(() => {
+    console.log(allTaxonomyData);
+  }, [taxonomyLoading]);
 
   const roleCheckHandler = () => {
     const calendar = user?.roles.filter((calendar) => {
@@ -211,7 +221,9 @@ function AddEvent() {
     if (eventData?.startDate || eventData?.startDateTime) {
       if (eventData?.endDate || eventData?.endDateTime) {
         if (
-          moment(eventData?.startDateTime).format('DD/MM/YYYY') == moment(eventData?.endDateTime).format('DD/MM/YYYY')
+          eventData?.startDateTime &&
+          eventData?.endDateTime &&
+          moment(eventData?.startDateTime).isSame(eventData?.endDateTime, 'day')
         )
           setDateType(dateTypes.SINGLE);
         else setDateType(dateTypes.RANGE);
@@ -362,10 +374,15 @@ function AddEvent() {
                             name="datePicker"
                             label={t('dashboard.events.addEditEvent.dates.date')}
                             initialValue={
-                              eventData?.startDate && !eventData?.endDate && !eventData?.endDateTime
-                                ? moment(eventData?.startDate)
-                                : eventData?.startDateTime && !eventData?.endDate && !eventData?.endDateTime
-                                ? moment(eventData?.startDateTime)
+                              (eventData?.startDate || eventData?.startDateTime) &&
+                              !eventData?.endDate &&
+                              !eventData?.endDateTime
+                                ? moment(eventData?.startDate ?? eventData?.startDateTime)
+                                : (eventData?.startDate || eventData?.startDateTime) &&
+                                  !eventData?.endDate &&
+                                  eventData?.endDateTime &&
+                                  moment(eventData?.startDateTime).isSame(eventData?.endDateTime, 'day')
+                                ? moment(eventData?.startDate ?? eventData?.startDateTime)
                                 : ''
                             }
                             rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
@@ -378,12 +395,15 @@ function AddEvent() {
                             label={t('dashboard.events.addEditEvent.dates.dateRange')}
                             initialValue={
                               (eventData?.startDate || eventData?.startDateTime) &&
-                              (eventData?.endDate || eventData?.endDateTime)
+                              (eventData?.endDate || eventData?.endDateTime) &&
+                              !moment(eventData?.startDateTime).isSame(eventData?.endDateTime, 'day')
                                 ? [
                                     moment(eventData?.startDate ?? eventData?.startDateTime),
 
                                     moment(eventData?.endDate ?? eventData?.endDateTime),
                                   ]
+                                : eventData?.startDate && eventData?.endDate
+                                ? [moment(eventData?.startDate), moment(eventData?.endDate)]
                                 : ''
                             }
                             rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>

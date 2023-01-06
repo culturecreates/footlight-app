@@ -33,7 +33,6 @@ function Lists(props) {
     if (routinghandler(user, calendarId, creatorId)) navigate(`${location.pathname}${PathName.AddEvent}/${id}`);
     else navigate(`${location.pathname}/${id}`);
   };
-
   return (
     <List
       className="event-list-wrapper"
@@ -86,8 +85,10 @@ function Lists(props) {
                   <FormatDate date={eventItem?.startDate ?? eventItem?.startDateTime} lang={lang} />
                   {(eventItem?.endDate || eventItem?.endDateTime) && (
                     <>
-                      {moment(eventItem?.startDateTime).format('DD/MM/YYYY') !=
-                        moment(eventItem?.endDateTime).format('DD/MM/YYYY') && (
+                      {((eventItem?.startDateTime &&
+                        eventItem?.endDateTime &&
+                        !moment(eventItem?.startDateTime).isSame(eventItem?.endDateTime, 'day')) ||
+                        eventItem?.endDate) && (
                         <>
                           &nbsp;{t('dashboard.events.list.to')}&nbsp;
                           <FormatDate date={eventItem?.endDate ?? eventItem?.endDateTime} lang={lang} />
