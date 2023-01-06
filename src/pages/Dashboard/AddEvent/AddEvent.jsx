@@ -30,7 +30,7 @@ import SelectOption from '../../../components/Select/SelectOption';
 import Tags from '../../../components/Tags/Common/Tags';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
-import { bilingual } from '../../../utils/bilingual';
+import { taxonomyOptions } from '../../../components/Select/selectOption.settings';
 
 const { TextArea } = Input;
 
@@ -63,25 +63,6 @@ function AddEvent() {
     let timeSelected = moment(time).format('hh:mm:ss a');
     let dateTime = moment(dateSelected + ' ' + timeSelected, 'DD/MM/YYYY HH:mm a');
     return moment(dateTime).toISOString();
-  };
-
-  const taxonomyOptions = (mappedToField) => {
-    let fieldData = allTaxonomyData?.data?.filter((taxonomy) => taxonomy?.mappedToField === mappedToField);
-    let concepts = fieldData?.map((field) => {
-      return field?.concept;
-    });
-
-    let options = concepts[0]?.map((concept) => {
-      return {
-        label: bilingual({
-          en: concept?.name?.en,
-          fr: concept?.name?.fr,
-          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-        }),
-        value: concept?.id,
-      };
-    });
-    return options;
   };
 
   const saveAsDraftHandler = () => {
@@ -356,7 +337,7 @@ function AddEvent() {
                     mode="tags"
                     allowClear
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    options={taxonomyOptions('EventType')}
+                    options={taxonomyOptions(allTaxonomyData, user, 'EventType')}
                     tagRender={(props) => {
                       const { label, closable, onClose } = props;
                       return (
@@ -386,7 +367,7 @@ function AddEvent() {
                     allowClear
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     mode="tags"
-                    options={taxonomyOptions('Audience')}
+                    options={taxonomyOptions(allTaxonomyData, user, 'Audience')}
                     tagRender={(props) => {
                       const { label, closable, onClose } = props;
                       return (
