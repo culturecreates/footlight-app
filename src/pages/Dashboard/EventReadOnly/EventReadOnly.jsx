@@ -104,44 +104,54 @@ function EventReadOnly() {
                       <p className="read-only-event-content">{eventData?.name?.en}</p>
                     </>
                   )}
-                  <br />
-                  <p className="read-only-event-content-sub-title-primary">
-                    {t('dashboard.events.addEditEvent.language.eventType')}
-                  </p>
-                  <SelectOption
-                    style={{ marginBottom: '1rem' }}
-                    bordered={false}
-                    open={false}
-                    disabled
-                    defaultValue={eventData?.additionalType?.map((type) => {
-                      return type?.entityId;
-                    })}
-                    mode="tags"
-                    options={taxonomyOptions(allTaxonomyData, user, 'EventType')}
-                    tagRender={(props) => {
-                      const { label } = props;
-                      return <Tags>{label}</Tags>;
-                    }}
-                  />
-                  <br />
-                  <p className="read-only-event-content-sub-title-primary">
-                    {t('dashboard.events.addEditEvent.language.targetAudience')}
-                  </p>
-                  <SelectOption
-                    style={{ marginBottom: '1rem' }}
-                    bordered={false}
-                    open={false}
-                    disabled
-                    defaultValue={eventData?.audience?.map((audience) => {
-                      return audience?.entityId;
-                    })}
-                    mode="tags"
-                    options={taxonomyOptions(allTaxonomyData, user, 'Audience')}
-                    tagRender={(props) => {
-                      const { label } = props;
-                      return <Tags>{label}</Tags>;
-                    }}
-                  />
+
+                  {eventData?.additionalType.length > 0 && (
+                    <>
+                      <br />
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.language.eventType')}
+                      </p>
+                      <SelectOption
+                        style={{ marginBottom: '1rem' }}
+                        bordered={false}
+                        open={false}
+                        disabled
+                        defaultValue={eventData?.additionalType?.map((type) => {
+                          return type?.entityId;
+                        })}
+                        mode="tags"
+                        options={taxonomyOptions(allTaxonomyData, user, 'EventType')}
+                        tagRender={(props) => {
+                          const { label } = props;
+                          return <Tags>{label}</Tags>;
+                        }}
+                      />
+                    </>
+                  )}
+
+                  {eventData?.audience.length > 0 && (
+                    <>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.language.targetAudience')}
+                      </p>
+
+                      <SelectOption
+                        style={{ marginBottom: '1rem' }}
+                        bordered={false}
+                        open={false}
+                        disabled
+                        defaultValue={eventData?.audience?.map((audience) => {
+                          return audience?.entityId;
+                        })}
+                        mode="tags"
+                        options={taxonomyOptions(allTaxonomyData, user, 'Audience')}
+                        tagRender={(props) => {
+                          const { label } = props;
+                          return <Tags>{label}</Tags>;
+                        }}
+                      />
+                    </>
+                  )}
                 </div>
               </Col>
               <Col flex="233px">
