@@ -8,3 +8,7 @@
   text-transform: capitalize;
 }
 
+.tags-wrapper .ant-tag-close-icon{
+    display: flex;
+    align-items: center;
+}
