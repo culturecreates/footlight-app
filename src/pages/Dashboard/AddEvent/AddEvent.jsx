@@ -31,6 +31,7 @@ import Tags from '../../../components/Tags/Common/Tags';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { taxonomyOptions } from '../../../components/Select/selectOption.settings';
+import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 
 const { TextArea } = Input;
 
@@ -69,17 +70,18 @@ function AddEvent() {
     form
       .validateFields(['french', 'english', 'datePicker', 'dateRangePicker'])
       .then(() => {
+        console.log(form.getFieldsValue(true));
         var values = form.getFieldsValue(true);
         var startDateTime,
           endDateTime,
           additionalType = [],
           audience = [];
-        if (values?.datePicker) {
+        if (dateType === dateTypes.SINGLE) {
           if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
           else startDateTime = moment(values?.datePicker).format('YYYY/MM/DD');
           if (values?.endTime) endDateTime = dateTimeConverter(values?.datePicker, values?.endTime);
         }
-        if (values?.dateRangePicker) {
+        if (dateType === dateTypes.RANGE) {
           if (values?.startTime) startDateTime = dateTimeConverter(values?.dateRangePicker[0], values?.startTime);
           else startDateTime = moment(values?.dateRangePicker[0]).format('YYYY/MM/DD');
           if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
@@ -250,24 +252,13 @@ function AddEvent() {
       );
     else return roleCheckHandler();
   };
-  useEffect(() => {
-    console.log(moment(eventData?.startDate).isSame(eventData?.endDateTime, 'day'));
-    console.log(moment(eventData?.startDate).format('MM/DD/YYYY'));
-    console.log(moment(eventData?.endDateTime).format('MM/DD/YYYY'));
 
-    if (eventData?.startDate || eventData?.startDateTime) {
-      if (eventData?.endDate || eventData?.endDateTime) {
-        if (
-          (eventData?.startDateTime &&
-            eventData?.endDateTime &&
-            moment(eventData?.startDateTime).isSame(eventData?.endDateTime, 'day')) ||
-          moment(eventData?.startDate).isSame(eventData?.endDateTime, 'day')
-        )
-          setDateType(dateTypes.SINGLE);
-        else setDateType(dateTypes.RANGE);
-      } else if (!eventData?.endDate && !eventData?.endDateTime) setDateType(dateTypes.SINGLE);
-    }
+  useEffect(() => {
+    setDateType(
+      dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
+    );
   }, [isLoading]);
+
   return (
     !isLoading &&
     !taxonomyLoading && (
@@ -421,16 +412,12 @@ function AddEvent() {
                             name="datePicker"
                             label={t('dashboard.events.addEditEvent.dates.date')}
                             initialValue={
-                              (eventData?.startDate || eventData?.startDateTime) &&
-                              !eventData?.endDate &&
-                              !eventData?.endDateTime
-                                ? moment(eventData?.startDate ?? eventData?.startDateTime)
-                                : (eventData?.startDate || eventData?.startDateTime) &&
-                                  !eventData?.endDate &&
-                                  eventData?.endDateTime &&
-                                  moment(eventData?.startDateTime).isSame(eventData?.endDateTime, 'day')
-                                ? moment(eventData?.startDate ?? eventData?.startDateTime)
-                                : ''
+                              dateTimeTypeHandler(
+                                eventData?.startDate,
+                                eventData?.startDateTime,
+                                eventData?.endDate,
+                                eventData?.endDateTime,
+                              ) === dateTypes.SINGLE && moment(eventData?.startDate ?? eventData?.startDateTime)
                             }
                             rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
                             <DatePickerStyled style={{ width: '423px' }} />
@@ -441,18 +428,15 @@ function AddEvent() {
                             name="dateRangePicker"
                             label={t('dashboard.events.addEditEvent.dates.dateRange')}
                             initialValue={
-                              ((eventData?.startDate || eventData?.startDateTime) &&
-                                (eventData?.endDate || eventData?.endDateTime) &&
-                                !moment(eventData?.startDateTime).isSame(eventData?.endDateTime, 'day')) ||
-                              !moment(eventData?.startDate).isSame(eventData?.endDateTime, 'day')
-                                ? [
-                                    moment(eventData?.startDate ?? eventData?.startDateTime),
-
-                                    moment(eventData?.endDate ?? eventData?.endDateTime),
-                                  ]
-                                : eventData?.startDate && eventData?.endDate
-                                ? [moment(eventData?.startDate), moment(eventData?.endDate)]
-                                : ''
+                              dateTimeTypeHandler(
+                                eventData?.startDate,
+                                eventData?.startDateTime,
+                                eventData?.endDate,
+                                eventData?.endDateTime,
+                              ) === dateTypes.RANGE && [
+                                moment(eventData?.startDate ?? eventData?.startDateTime),
+                                moment(eventData?.endDate ?? eventData?.endDateTime),
+                              ]
                             }
                             rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
                             <DateRangePicker style={{ width: '423px' }} />

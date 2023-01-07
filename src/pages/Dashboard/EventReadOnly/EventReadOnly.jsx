@@ -17,6 +17,7 @@ import { taxonomyClass } from '../../../constants/taxonomyClass';
 import SelectOption from '../../../components/Select';
 import Tags from '../../../components/Tags/Common/Tags';
 import { taxonomyOptions } from '../../../components/Select/selectOption.settings';
+import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -32,18 +33,9 @@ function EventReadOnly() {
   const [dateType, setDateType] = useState();
 
   useEffect(() => {
-    if (eventData?.startDate || eventData?.startDateTime) {
-      if (eventData?.endDate || eventData?.endDateTime) {
-        if (
-          (eventData?.startDateTime &&
-            eventData?.endDateTime &&
-            moment(eventData?.startDateTime).isSame(eventData?.endDateTime, 'day')) ||
-          moment(eventData?.startDate).isSame(eventData?.endDateTime, 'day')
-        )
-          setDateType(dateTypes.SINGLE);
-        else setDateType(dateTypes.RANGE);
-      } else if (!eventData?.endDate && !eventData?.endDateTime) setDateType(dateTypes.SINGLE);
-    }
+    setDateType(
+      dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
+    );
   }, [isLoading]);
 
   return (
@@ -171,7 +163,7 @@ function EventReadOnly() {
                       </p>
                       <p className="read-only-event-content-date">
                         <CalendarOutlined style={{ fontSize: '24px', color: '#1B3DE6', marginRight: '9px' }} />
-                        {moment(eventData?.startDateTime).format('MM/DD/YYYY')}
+                        {moment(eventData?.startDateTime ?? eventData?.startDate).format('MM/DD/YYYY')}
                       </p>
                     </>
                   )}
