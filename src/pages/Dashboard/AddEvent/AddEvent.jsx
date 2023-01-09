@@ -69,7 +69,7 @@ function AddEvent() {
 
   const saveAsDraftHandler = () => {
     form
-      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker', 'dragger'])
+      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker', 'dragger', 'datePickerWrapper'])
       .then(() => {
         console.log(form.getFieldsValue(true));
         var values = form.getFieldsValue(true);
@@ -175,6 +175,7 @@ function AddEvent() {
       .validateFields([
         'french',
         'english',
+        'datePickerWrapper',
         'datePicker',
         'dateRangePicker',
         'englishEditor',
@@ -476,7 +477,7 @@ function AddEvent() {
                         rules={[
                           ({ getFieldValue }) => ({
                             validator() {
-                              if (getFieldValue('datePicker')) {
+                              if (getFieldValue('datePicker') || getFieldValue('dateRangePicker')) {
                                 return Promise.resolve();
                               } else
                                 return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.date')));
