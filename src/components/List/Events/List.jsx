@@ -79,7 +79,7 @@ function Lists(props) {
           <List.Item.Meta
             className="event-list-item-meta"
             onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId)}
-            avatar={<img src={eventItem?.image?.original?.uri} className="event-list-image" />}
+            avatar={<img src={eventItem?.image?.original} className="event-list-image" />}
             title={
               <div className="event-list-title">
                 <span className="event-list-title-heading">
