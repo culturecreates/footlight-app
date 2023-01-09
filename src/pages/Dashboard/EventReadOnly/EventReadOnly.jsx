@@ -12,28 +12,35 @@ import { bilingual } from '../../../utils/bilingual';
 import { eventStatusOptions } from '../../../constants/eventStatus';
 import { dateTypes } from '../../../constants/dateTypes';
 import DateRangePicker from '../../../components/DateRangePicker';
+import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
+import { taxonomyClass } from '../../../constants/taxonomyClass';
+import SelectOption from '../../../components/Select';
+import Tags from '../../../components/Tags/Common/Tags';
+import { taxonomyOptions } from '../../../components/Select/selectOption.settings';
+import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 
 function EventReadOnly() {
   const { t } = useTranslation();
   const { calendarId, eventId } = useParams();
   const { data: eventData, isLoading } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
+  const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
+    calendarId,
+    search: '',
+    taxonomyClass: taxonomyClass.EVENT,
+    includeConcepts: true,
+  });
   const { user } = useSelector(getUserDetails);
   const [dateType, setDateType] = useState();
 
   useEffect(() => {
-    if (eventData?.startDate || eventData?.startDateTime) {
-      if (eventData?.endDate || eventData?.endDateTime) {
-        if (
-          moment(eventData?.startDateTime).format('DD/MM/YYYY') == moment(eventData?.endDateTime).format('DD/MM/YYYY')
-        )
-          setDateType(dateTypes.SINGLE);
-        else setDateType(dateTypes.RANGE);
-      } else if (!eventData?.endDate && !eventData?.endDateTime) setDateType(dateTypes.SINGLE);
-    }
+    setDateType(
+      dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
+    );
   }, [isLoading]);
 
   return (
-    !isLoading && (
+    !isLoading &&
+    !taxonomyLoading && (
       <div>
         <Row gutter={[32, 24]} className="read-only-wrapper">
           <Col span={24}>
@@ -89,6 +96,54 @@ function EventReadOnly() {
                       <p className="read-only-event-content">{eventData?.name?.en}</p>
                     </>
                   )}
+
+                  {eventData?.additionalType.length > 0 && (
+                    <>
+                      <br />
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.language.eventType')}
+                      </p>
+                      <SelectOption
+                        style={{ marginBottom: '1rem' }}
+                        bordered={false}
+                        open={false}
+                        disabled
+                        defaultValue={eventData?.additionalType?.map((type) => {
+                          return type?.entityId;
+                        })}
+                        mode="tags"
+                        options={taxonomyOptions(allTaxonomyData, user, 'EventType')}
+                        tagRender={(props) => {
+                          const { label } = props;
+                          return <Tags>{label}</Tags>;
+                        }}
+                      />
+                    </>
+                  )}
+
+                  {eventData?.audience.length > 0 && (
+                    <>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.language.targetAudience')}
+                      </p>
+
+                      <SelectOption
+                        style={{ marginBottom: '1rem' }}
+                        bordered={false}
+                        open={false}
+                        disabled
+                        defaultValue={eventData?.audience?.map((audience) => {
+                          return audience?.entityId;
+                        })}
+                        mode="tags"
+                        options={taxonomyOptions(allTaxonomyData, user, 'Audience')}
+                        tagRender={(props) => {
+                          const { label } = props;
+                          return <Tags>{label}</Tags>;
+                        }}
+                      />
+                    </>
+                  )}
                 </div>
               </Col>
               <Col flex="233px">
@@ -108,7 +163,7 @@ function EventReadOnly() {
                       </p>
                       <p className="read-only-event-content-date">
                         <CalendarOutlined style={{ fontSize: '24px', color: '#1B3DE6', marginRight: '9px' }} />
-                        {moment(eventData?.startDateTime).format('MM/DD/YYYY')}
+                        {moment(eventData?.startDateTime ?? eventData?.startDate).format('MM/DD/YYYY')}
                       </p>
                     </>
                   )}

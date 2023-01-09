@@ -9,12 +9,19 @@ import { loginApi } from '../services/login';
 import { usersApi } from '../services/users';
 import { eventsApi } from '../services/events';
 import { calendarApi } from '../services/calendar';
+import { taxonomyApi } from '../services/taxonomy';
 
 const persistConfig = {
   key: 'root',
   storage,
 };
-const middlewares = [loginApi.middleware, usersApi.middleware, eventsApi.middleware, calendarApi.middleware];
+const middlewares = [
+  loginApi.middleware,
+  usersApi.middleware,
+  eventsApi.middleware,
+  calendarApi.middleware,
+  taxonomyApi.middleware,
+];
 
 const appReducer = combineReducers({
   user: userReducer,
@@ -24,6 +31,7 @@ const appReducer = combineReducers({
   [usersApi.reducerPath]: usersApi.reducer,
   [eventsApi.reducerPath]: eventsApi.reducer,
   [calendarApi.reducerPath]: calendarApi.reducer,
+  [taxonomyApi.reducerPath]: taxonomyApi.reducer,
 });
 
 const rootReducer = (state, action) => appReducer(state, action);

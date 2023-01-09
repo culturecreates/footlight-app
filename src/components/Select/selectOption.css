@@ -2,6 +2,10 @@
   width: 100%;
   border: 1px solid #b6c1c9;
   border-radius: 4px;
+  padding: 8px;
+}
+.ant-select-selection-overflow {
+  gap: 8px;
 }
 
 .select-wrapper-dropdown {
@@ -16,4 +20,8 @@
 .select-wrapper-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
   background-color: #eff2ff;
   color: #0f0e98;
+}
+
+.select-wrapper {
+  width: 100%;
 }

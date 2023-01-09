@@ -76,7 +76,9 @@
           "title": "Event title",
           "titleLabel": "English",
           "placeHolderFrench": "Enter French event title",
-          "placeHolderEnglish": "Enter English event title"
+          "placeHolderEnglish": "Enter English event title",
+          "eventType": "Event type",
+          "targetAudience": "Target audience"
         },
 
         "dates": {
@@ -92,6 +94,9 @@
           "changeToSingleDate": "Change to single date",
           "changeToDateRange": "Change to date range",
           "changeToMultipleDate": "Change to multiple dates",
+          "singleDateTooltip": "Use when your event happens on one date.",
+          "multipleDatesTooltip": "Use when your event happens more than once on different dates such as a performance or a workshop.",
+          "dateRangeTooltip": "Use when your event spans multiple dates such as an art exhibition.",
           "eventCancelled": "Cancelled",
           "eventPostponed": "Postponed",
           "eventScheduled": "Scheduled"
@@ -117,6 +122,8 @@
         "validations": {
           "title": "Event title is required.",
           "date": "Event date is required.",
+          "eventType": "A minimum of one event type is required.",
+          "targetAudience": "",
           "otherInformation": {
             "emptyDescription": "Event description is required (50 word minimum).",
             "englishShort": "English description is too short.",

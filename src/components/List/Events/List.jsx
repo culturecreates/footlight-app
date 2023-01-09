@@ -15,7 +15,8 @@ import i18n from 'i18next';
 import { PathName } from '../../../constants/pathName';
 import Username from '../../Username/index';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
-import moment from 'moment';
+import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
+import { dateTypes } from '../../../constants/dateTypes';
 const { useBreakpoint } = Grid;
 
 function Lists(props) {
@@ -33,7 +34,6 @@ function Lists(props) {
     if (routinghandler(user, calendarId, creatorId)) navigate(`${location.pathname}${PathName.AddEvent}/${id}`);
     else navigate(`${location.pathname}/${id}`);
   };
-
   return (
     <List
       className="event-list-wrapper"
@@ -83,16 +83,18 @@ function Lists(props) {
             title={
               <div className="event-list-title">
                 <span className="event-list-title-heading">
-                  <FormatDate date={eventItem?.startDate ?? eventItem?.startDateTime} lang={lang} />
-                  {(eventItem?.endDate || eventItem?.endDateTime) && (
+                  {(eventItem?.startDate || eventItem?.startDateTime) && (
+                    <FormatDate date={eventItem?.startDate ?? eventItem?.startDateTime} lang={lang} />
+                  )}
+                  {dateTimeTypeHandler(
+                    eventItem?.startDate,
+                    eventItem?.startDateTime,
+                    eventItem?.endDate,
+                    eventItem?.endDateTime,
+                  ) === dateTypes.RANGE && (
                     <>
-                      {moment(eventItem?.startDateTime).format('DD/MM/YYYY') !=
-                        moment(eventItem?.endDateTime).format('DD/MM/YYYY') && (
-                        <>
-                          &nbsp;{t('dashboard.events.list.to')}&nbsp;
-                          <FormatDate date={eventItem?.endDate ?? eventItem?.endDateTime} lang={lang} />
-                        </>
-                      )}
+                      &nbsp;{t('dashboard.events.list.to')}&nbsp;
+                      <FormatDate date={eventItem?.endDate ?? eventItem?.endDateTime} lang={lang} />
                     </>
                   )}
                 </span>

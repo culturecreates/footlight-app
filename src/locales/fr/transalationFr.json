@@ -76,7 +76,9 @@
           "title": "Titre de l'événement",
           "titleLabel": "English",
           "placeHolderFrench": "Entrez titre en français",
-          "placeHolderEnglish": "Entrez titre en anglais"
+          "placeHolderEnglish": "Entrez titre en anglais",
+          "eventType": "Type de l’événement",
+          "targetAudience": "Public cible"
         },
         "dates": {
           "dates": "Dates",
@@ -91,6 +93,9 @@
           "changeToSingleDate": "Changer en une date",
           "changeToDateRange": "Change to plage de dates",
           "changeToMultipleDate": "Changer en plusieurs dates",
+          "singleDateTooltip": "À utiliser lorsque votre événement a lieu à une seule date.",
+          "multipleDatesTooltip": "À utiliser lorsque votre événement se produit plus d'une fois à des dates différentes, comme un spectacle ou un atelier.",
+          "dateRangeTooltip": "À utiliser lorsque votre événement s'étend sur plusieurs dates, comme une exposition d'art.",
           "eventCancelled": "Annulé",
           "eventPostponed": "Reporté",
           "eventScheduled": "Programmé"
@@ -115,6 +120,8 @@
         "validations": {
           "title": "Le titre de l'événement est requis.",
           "date": "La date de l'événement est requise.",
+          "eventType": "Un minimum d'un type d'événement est requis.",
+          "targetAudience": "",
           "otherInformation": {
             "emptyDescription": "Une description de l'événement est requise (50 mots minimum).",
             "englishShort": "La description en anglais est trop courte.",

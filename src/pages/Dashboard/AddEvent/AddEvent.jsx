@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
 import { Form, Row, Col, Input } from 'antd';
-import { SyncOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { SyncOutlined, InfoCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -26,6 +26,13 @@ import DateRangePicker from '../../../components/DateRangePicker';
 import { dateTypeOptions, dateTypes } from '../../../constants/dateTypes';
 import ChangeType from '../../../components/ChangeType';
 import CardEvent from '../../../components/Card/Common/Event';
+import SelectOption from '../../../components/Select/SelectOption';
+import Tags from '../../../components/Tags/Common/Tags';
+import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
+import { taxonomyClass } from '../../../constants/taxonomyClass';
+import { taxonomyOptions } from '../../../components/Select/selectOption.settings';
+import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
+
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -40,6 +47,12 @@ function AddEvent() {
     isError,
     isLoading,
   } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
+  const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
+    calendarId,
+    search: '',
+    taxonomyClass: taxonomyClass.EVENT,
+    includeConcepts: true,
+  });
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
   const [dateType, setDateType] = useState();
@@ -55,19 +68,38 @@ function AddEvent() {
 
   const saveAsDraftHandler = () => {
     form
-      .validateFields()
-      .then((values) => {
-        var startDateTime, endDateTime;
-        if (values?.datePicker) {
+      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker'])
+      .then(() => {
+        console.log(form.getFieldsValue(true));
+        var values = form.getFieldsValue(true);
+        var startDateTime,
+          endDateTime,
+          additionalType = [],
+          audience = [];
+        if (dateType === dateTypes.SINGLE) {
           if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
           else startDateTime = moment(values?.datePicker).format('YYYY/MM/DD');
           if (values?.endTime) endDateTime = dateTimeConverter(values?.datePicker, values?.endTime);
         }
-        if (values?.dateRangePicker) {
+        if (dateType === dateTypes.RANGE) {
           if (values?.startTime) startDateTime = dateTimeConverter(values?.dateRangePicker[0], values?.startTime);
           else startDateTime = moment(values?.dateRangePicker[0]).format('YYYY/MM/DD');
           if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
           else endDateTime = moment(values?.dateRangePicker[1]).format('YYYY/MM/DD');
+        }
+        if (values?.eventType) {
+          additionalType = values?.eventType?.map((eventTypeId) => {
+            return {
+              entityId: eventTypeId,
+            };
+          });
+        }
+        if (values?.targetAudience) {
+          audience = values?.targetAudience?.map((audienceId) => {
+            return {
+              entityId: audienceId,
+            };
+          });
         }
         if (!eventId || eventId === '') {
           addEvent({
@@ -76,15 +108,19 @@ function AddEvent() {
                 en: values?.english,
                 fr: values?.french,
               },
-              ...(values?.startTime && { startDateTime: startDateTime }),
+              ...(values?.startTime && { startDateTime }),
               ...(!values?.startTime && { startDate: startDateTime }),
-              ...(values?.endTime && { endDateTime: endDateTime }),
+              ...(values?.endTime && { endDateTime }),
               ...(!values?.endTime && { endDate: endDateTime }),
               eventStatus: values?.eventStatus,
-              description: {
-                en: values?.englishEditor,
-                fr: values?.frenchEditor,
-              },
+              ...((values?.en || values?.fr) && {
+                description: {
+                  en: values?.englishEditor,
+                  fr: values?.frenchEditor,
+                },
+              }),
+              additionalType,
+              audience,
             },
             calendarId,
           })
@@ -102,16 +138,19 @@ function AddEvent() {
                 en: values?.english,
                 fr: values?.french,
               },
-              ...(values?.startTime && { startDateTime: startDateTime }),
+              ...(values?.startTime && { startDateTime }),
               ...(!values?.startTime && { startDate: startDateTime }),
-              ...(values?.endTime && { endDateTime: endDateTime }),
+              ...(values?.endTime && { endDateTime }),
               ...(!values?.endTime && { endDate: endDateTime }),
               eventStatus: values?.eventStatus,
               description: {
                 en: values?.englishEditor,
                 fr: values?.frenchEditor,
               },
+              additionalType,
+              audience,
             },
+
             calendarId,
             eventId,
           })
@@ -129,7 +168,16 @@ function AddEvent() {
 
   const reviewPublishHandler = () => {
     form
-      .validateFields()
+      .validateFields([
+        'french',
+        'english',
+        'datePicker',
+        'dateRangePicker',
+        'englishEditor',
+        'frenchEditor',
+        'eventType',
+        'targetAudience',
+      ])
       .then(() => {
         updateEventState({ id: eventId, calendarId })
           .unwrap()
@@ -204,19 +252,16 @@ function AddEvent() {
       );
     else return roleCheckHandler();
   };
+
   useEffect(() => {
-    if (eventData?.startDate || eventData?.startDateTime) {
-      if (eventData?.endDate || eventData?.endDateTime) {
-        if (
-          moment(eventData?.startDateTime).format('DD/MM/YYYY') == moment(eventData?.endDateTime).format('DD/MM/YYYY')
-        )
-          setDateType(dateTypes.SINGLE);
-        else setDateType(dateTypes.RANGE);
-      } else if (!eventData?.endDate && !eventData?.endDateTime) setDateType(dateTypes.SINGLE);
-    }
+    setDateType(
+      dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
+    );
   }, [isLoading]);
+
   return (
-    !isLoading && (
+    !isLoading &&
+    !taxonomyLoading && (
       <div>
         <Form form={form} layout="vertical" name="event">
           <Row gutter={[32, 24]} className="add-edit-wrapper">
@@ -284,6 +329,66 @@ function AddEvent() {
                     />
                   </Form.Item>
                 </BilingualInput>
+                <Form.Item
+                  name="eventType"
+                  label={t('dashboard.events.addEditEvent.language.eventType')}
+                  initialValue={eventData?.additionalType?.map((type) => {
+                    return type?.entityId;
+                  })}
+                  rules={[
+                    {
+                      required: true,
+                      message: t('dashboard.events.addEditEvent.validations.eventType'),
+                    },
+                  ]}>
+                  <SelectOption
+                    mode="tags"
+                    allowClear
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    options={taxonomyOptions(allTaxonomyData, user, 'EventType')}
+                    tagRender={(props) => {
+                      const { label, closable, onClose } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="targetAudience"
+                  label={t('dashboard.events.addEditEvent.language.targetAudience')}
+                  initialValue={eventData?.audience?.map((audience) => {
+                    return audience?.entityId;
+                  })}
+                  rules={[
+                    {
+                      required: true,
+                      message: t('dashboard.events.addEditEvent.validations.targetAudience'),
+                    },
+                  ]}>
+                  <SelectOption
+                    allowClear
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    mode="tags"
+                    options={taxonomyOptions(allTaxonomyData, user, 'Audience')}
+                    tagRender={(props) => {
+                      const { label, closable, onClose } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                  />
+                </Form.Item>
               </Form.Item>
             </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.dates.dates')}>
@@ -307,11 +412,12 @@ function AddEvent() {
                             name="datePicker"
                             label={t('dashboard.events.addEditEvent.dates.date')}
                             initialValue={
-                              eventData?.startDate && !eventData?.endDate && !eventData?.endDateTime
-                                ? moment(eventData?.startDate)
-                                : eventData?.startDateTime && !eventData?.endDate && !eventData?.endDateTime
-                                ? moment(eventData?.startDateTime)
-                                : ''
+                              dateTimeTypeHandler(
+                                eventData?.startDate,
+                                eventData?.startDateTime,
+                                eventData?.endDate,
+                                eventData?.endDateTime,
+                              ) === dateTypes.SINGLE && moment(eventData?.startDate ?? eventData?.startDateTime)
                             }
                             rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
                             <DatePickerStyled style={{ width: '423px' }} />
@@ -322,14 +428,15 @@ function AddEvent() {
                             name="dateRangePicker"
                             label={t('dashboard.events.addEditEvent.dates.dateRange')}
                             initialValue={
-                              (eventData?.startDate || eventData?.startDateTime) &&
-                              (eventData?.endDate || eventData?.endDateTime)
-                                ? [
-                                    moment(eventData?.startDate ?? eventData?.startDateTime),
-
-                                    moment(eventData?.endDate ?? eventData?.endDateTime),
-                                  ]
-                                : ''
+                              dateTimeTypeHandler(
+                                eventData?.startDate,
+                                eventData?.startDateTime,
+                                eventData?.endDate,
+                                eventData?.endDateTime,
+                              ) === dateTypes.RANGE && [
+                                moment(eventData?.startDate ?? eventData?.startDateTime),
+                                moment(eventData?.endDate ?? eventData?.endDateTime),
+                              ]
                             }
                             rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
                             <DateRangePicker style={{ width: '423px' }} />
@@ -410,6 +517,7 @@ function AddEvent() {
                           primaryIcon={<SyncOutlined />}
                           disabled={type.disabled}
                           label={type.label}
+                          promptText={type.tooltip}
                           secondaryIcon={<InfoCircleOutlined />}
                           onClick={() => {
                             setDateType(type.type);
