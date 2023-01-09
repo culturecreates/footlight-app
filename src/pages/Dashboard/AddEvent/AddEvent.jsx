@@ -32,6 +32,7 @@ import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { taxonomyOptions } from '../../../components/Select/selectOption.settings';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
+import ImageUpload from '../../../components/ImageUpload';
 
 const { TextArea } = Input;
 
@@ -68,7 +69,7 @@ function AddEvent() {
 
   const saveAsDraftHandler = () => {
     form
-      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker'])
+      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker', 'dragger'])
       .then(() => {
         console.log(form.getFieldsValue(true));
         var values = form.getFieldsValue(true);
@@ -163,7 +164,10 @@ function AddEvent() {
             });
         }
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error);
+        form.getFieldValue(true);
+      });
   };
 
   const reviewPublishHandler = () => {
@@ -608,6 +612,16 @@ function AddEvent() {
                       ]}
                     />
                   </BilingualInput>
+                </Form.Item>
+                <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.image.title')} required={true}>
+                  <Row>
+                    <Col>
+                      <p className="add-event-date-heading">
+                        {t('dashboard.events.addEditEvent.otherInformation.image.subHeading')}
+                      </p>
+                    </Col>
+                  </Row>
+                  <ImageUpload />
                 </Form.Item>
               </>
             </CardEvent>

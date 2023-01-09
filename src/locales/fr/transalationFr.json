@@ -105,6 +105,12 @@
             "word": "mot",
             "frenchPlaceholder": "Entrez une description en français",
             "englishPlaceholder": "Entrez une description en anglais"
+          },
+          "image": {
+            "title": "Image",
+            "subHeading": "Uniquement les fichiers .jpeg et .png sont acceptés.",
+            "dragAndDrop": "ou glisser pour télécharger",
+            "browse": "Parcourir"
           }
         },
         "status": "Statut",
