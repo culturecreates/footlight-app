@@ -508,6 +508,7 @@ function AddEvent() {
                           primaryIcon={<SyncOutlined />}
                           disabled={type.disabled}
                           label={type.label}
+                          promptText={type.tooltip}
                           secondaryIcon={<InfoCircleOutlined />}
                           onClick={() => {
                             setDateType(type.type);

@@ -94,6 +94,9 @@
           "changeToSingleDate": "Change to single date",
           "changeToDateRange": "Change to date range",
           "changeToMultipleDate": "Change to multiple dates",
+          "singleDateTooltip": "Use when your event happens on one date.",
+          "multipleDatesTooltip": "Use when your event happens more than once on different dates such as a performance or a workshop.",
+          "dateRangeTooltip": "Use when your event spans multiple dates such as an art exhibition.",
           "eventCancelled": "Cancelled",
           "eventPostponed": "Postponed",
           "eventScheduled": "Scheduled"
