@@ -127,7 +127,7 @@
           "title": "Le titre de l'événement est requis.",
           "date": "La date de l'événement est requise.",
           "eventType": "Un minimum d'un type d'événement est requis.",
-          "targetAudience": "",
+          "targetAudience": "Le public cible est requis.",
           "otherInformation": {
             "emptyDescription": "Une description de l'événement est requise (50 mots minimum).",
             "englishShort": "La description en anglais est trop courte.",
