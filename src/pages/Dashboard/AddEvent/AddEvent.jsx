@@ -77,6 +77,7 @@ function AddEvent() {
           endDateTime,
           additionalType = [],
           audience = [];
+        let eventObj;
         if (dateType === dateTypes.SINGLE) {
           if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
           else startDateTime = moment(values?.datePicker).format('YYYY/MM/DD');
@@ -102,27 +103,28 @@ function AddEvent() {
             };
           });
         }
+        eventObj = {
+          name: {
+            en: values?.english,
+            fr: values?.french,
+          },
+          ...(values?.startTime && { startDateTime }),
+          ...(!values?.startTime && { startDate: startDateTime }),
+          ...(values?.endTime && { endDateTime }),
+          ...(!values?.endTime && { endDate: endDateTime }),
+          eventStatus: values?.eventStatus,
+          ...((values?.en || values?.fr) && {
+            description: {
+              en: values?.englishEditor,
+              fr: values?.frenchEditor,
+            },
+          }),
+          additionalType,
+          audience,
+        };
         if (!eventId || eventId === '') {
           addEvent({
-            data: {
-              name: {
-                en: values?.english,
-                fr: values?.french,
-              },
-              ...(values?.startTime && { startDateTime }),
-              ...(!values?.startTime && { startDate: startDateTime }),
-              ...(values?.endTime && { endDateTime }),
-              ...(!values?.endTime && { endDate: endDateTime }),
-              eventStatus: values?.eventStatus,
-              ...((values?.en || values?.fr) && {
-                description: {
-                  en: values?.englishEditor,
-                  fr: values?.frenchEditor,
-                },
-              }),
-              additionalType,
-              audience,
-            },
+            data: eventObj,
             calendarId,
           })
             .unwrap()
@@ -134,23 +136,7 @@ function AddEvent() {
             });
         } else {
           updateEvent({
-            data: {
-              name: {
-                en: values?.english,
-                fr: values?.french,
-              },
-              ...(values?.startTime && { startDateTime }),
-              ...(!values?.startTime && { startDate: startDateTime }),
-              ...(values?.endTime && { endDateTime }),
-              ...(!values?.endTime && { endDate: endDateTime }),
-              eventStatus: values?.eventStatus,
-              description: {
-                en: values?.englishEditor,
-                fr: values?.frenchEditor,
-              },
-              additionalType,
-              audience,
-            },
+            data: eventObj,
 
             calendarId,
             eventId,

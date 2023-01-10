@@ -37,13 +37,14 @@ function ImageUpload() {
     }
     if (info.file.status === 'done') {
       // Get this url from response in real world.
+      console.log(info);
       getBase64(info.file.originFileObj, (url) => {
         setLoading(false);
         setImageUrl(url);
       });
     }
   };
-  const dummyRequest = ({ onSuccess }) => {
+  const customRequest = ({ onSuccess }) => {
     setTimeout(() => {
       onSuccess('ok');
     }, 0);
@@ -65,7 +66,7 @@ function ImageUpload() {
         name="eventImage"
         accept='.png, .jpg, .jpeg"'
         multiple={false}
-        customRequest={dummyRequest}
+        customRequest={customRequest}
         showUploadList={true}
         maxCount={1}
         listType="picture"
