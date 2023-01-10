@@ -138,7 +138,6 @@ function AddEvent() {
         } else {
           updateEvent({
             data: eventObj,
-
             calendarId,
             eventId,
           })
