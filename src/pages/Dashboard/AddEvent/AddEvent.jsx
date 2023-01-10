@@ -40,14 +40,15 @@ function AddEvent() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [addEvent] = useAddEventMutation();
+  const timestampRef = useRef(Date.now()).current;
   const { calendarId, eventId } = useParams();
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
   const {
-    data: eventData,
+    currentData: eventData,
     isError,
     isLoading,
-  } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
+  } = useGetEventQuery({ eventId, calendarId, sessionId: timestampRef }, { skip: eventId ? false : true });
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
