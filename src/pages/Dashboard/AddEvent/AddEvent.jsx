@@ -33,6 +33,8 @@ import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { taxonomyOptions } from '../../../components/Select/selectOption.settings';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 import ImageUpload from '../../../components/ImageUpload';
+import Compressor from 'compressorjs';
+import { useAddImageMutation } from '../../../services/image';
 
 const { TextArea } = Input;
 
@@ -57,6 +59,8 @@ function AddEvent() {
   });
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
+  const [addImage] = useAddImageMutation();
+
   const [dateType, setDateType] = useState();
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -67,7 +71,34 @@ function AddEvent() {
     let dateTime = moment(dateSelected + ' ' + timeSelected, 'DD/MM/YYYY HH:mm a');
     return moment(dateTime).toISOString();
   };
-
+  const addUpdateEventApiHandler = (eventObj) => {
+    if (!eventId || eventId === '') {
+      addEvent({
+        data: eventObj,
+        calendarId,
+      })
+        .unwrap()
+        .then(() => {
+          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+        })
+        .catch((errorInfo) => {
+          console.log(errorInfo);
+        });
+    } else {
+      updateEvent({
+        data: eventObj,
+        calendarId,
+        eventId,
+      })
+        .unwrap()
+        .then(() => {
+          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  };
   const saveAsDraftHandler = () => {
     form
       .validateFields(['french', 'english', 'datePicker', 'dateRangePicker', 'dragger', 'datePickerWrapper'])
@@ -77,7 +108,8 @@ function AddEvent() {
         var startDateTime,
           endDateTime,
           additionalType = [],
-          audience = [];
+          audience = [],
+          image;
         let eventObj;
         if (dateType === dateTypes.SINGLE) {
           if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
@@ -123,31 +155,28 @@ function AddEvent() {
           additionalType,
           audience,
         };
-        if (!eventId || eventId === '') {
-          addEvent({
-            data: eventObj,
-            calendarId,
-          })
-            .unwrap()
-            .then(() => {
-              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
-            })
-            .catch((errorInfo) => {
-              console.log(errorInfo);
-            });
+        if (values?.dragger[0].originFileObj) {
+          new Compressor(values?.dragger[0].originFileObj, {
+            convertSize: 200000,
+            success: (compressedResult) => {
+              const formdata = new FormData();
+              formdata.append('files', values?.dragger[0].originFileObj);
+              formdata.append('files', new File([compressedResult], 'compressed' + compressedResult.name));
+              formdata &&
+                addImage({ data: formdata, calendarId })
+                  .unwrap()
+                  .then((response) => {
+                    image = response?.data;
+                    eventObj['image'] = image;
+                    addUpdateEventApiHandler(eventObj);
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                  });
+            },
+          });
         } else {
-          updateEvent({
-            data: eventObj,
-            calendarId,
-            eventId,
-          })
-            .unwrap()
-            .then(() => {
-              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
+          addUpdateEventApiHandler(eventObj);
         }
       })
       .catch((error) => {
