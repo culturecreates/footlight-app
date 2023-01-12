@@ -12,6 +12,7 @@ function TimePickerStyled(props) {
       use12Hours
       size="large"
       suffixIcon={false}
+      minuteStep={15}
       getPopupContainer={(trigger) => trigger.parentNode}
       {...props}
     />
