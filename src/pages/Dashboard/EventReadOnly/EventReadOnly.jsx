@@ -18,6 +18,7 @@ import SelectOption from '../../../components/Select';
 import Tags from '../../../components/Tags/Common/Tags';
 import { taxonomyOptions } from '../../../components/Select/selectOption.settings';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
+import ImageUpload from '../../../components/ImageUpload';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -247,6 +248,15 @@ function EventReadOnly() {
                     <>
                       <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
                       <div dangerouslySetInnerHTML={{ __html: eventData?.description?.en }} />
+                    </>
+                  )}
+                  <br />
+                  {eventData?.image && eventData?.image?.original && (
+                    <>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.otherInformation.image.title')}
+                      </p>
+                      <ImageUpload imageUrl={eventData?.image?.original} imageReadOnly={true} />
                     </>
                   )}
                 </div>

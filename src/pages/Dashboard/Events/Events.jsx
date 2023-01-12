@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './events.css';
 import { Col, Row } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -14,12 +14,13 @@ function Events() {
   const { calendarId } = useParams();
   const navigate = useNavigate();
   let [searchParams, setSearchParams] = useSearchParams();
+  const timestampRef = useRef(Date.now()).current;
   const [getEvents, { currentData: eventsData, isLoading }] = useLazyGetEventsQuery();
   const [pageNumber, setPageNumber] = useState(searchParams.get('page') ?? 1);
   const [eventSearchQuery, setEventSearchQuery] = useState(searchParams.get('query') ?? '');
 
   useEffect(() => {
-    getEvents({ pageNumber, limit: 10, calendarId, query: eventSearchQuery });
+    getEvents({ pageNumber, limit: 10, calendarId, query: eventSearchQuery, sessionId: timestampRef });
     if (!eventSearchQuery || eventSearchQuery === '') setSearchParams(createSearchParams({ page: pageNumber }));
     else {
       setSearchParams(createSearchParams({ page: pageNumber, query: eventSearchQuery }));

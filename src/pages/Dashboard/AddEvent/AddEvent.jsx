@@ -30,6 +30,9 @@ import Tags from '../../../components/Tags/Common/Tags';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
+import ImageUpload from '../../../components/ImageUpload';
+import Compressor from 'compressorjs';
+import { useAddImageMutation } from '../../../services/image';
 import TreeSelectOption from '../../../components/TreeSelectOption';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 
@@ -39,15 +42,15 @@ function AddEvent() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [addEvent] = useAddEventMutation();
-  const { calendarId, eventId } = useParams();
   const timestampRef = useRef(Date.now()).current;
+  const { calendarId, eventId } = useParams();
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
   const {
-    data: eventData,
+    currentData: eventData,
     isError,
     isLoading,
-  } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
+  } = useGetEventQuery({ eventId, calendarId, sessionId: timestampRef }, { skip: eventId ? false : true });
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
@@ -57,6 +60,8 @@ function AddEvent() {
   });
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
+  const [addImage] = useAddImageMutation();
+
   const [dateType, setDateType] = useState();
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -67,16 +72,45 @@ function AddEvent() {
     let dateTime = moment(dateSelected + ' ' + timeSelected, 'DD/MM/YYYY HH:mm a');
     return moment(dateTime).toISOString();
   };
-
+  const addUpdateEventApiHandler = (eventObj) => {
+    if (!eventId || eventId === '') {
+      addEvent({
+        data: eventObj,
+        calendarId,
+      })
+        .unwrap()
+        .then(() => {
+          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+        })
+        .catch((errorInfo) => {
+          console.log(errorInfo);
+        });
+    } else {
+      updateEvent({
+        data: eventObj,
+        calendarId,
+        eventId,
+      })
+        .unwrap()
+        .then(() => {
+          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  };
   const saveAsDraftHandler = () => {
     form
-      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker'])
+      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker', 'datePickerWrapper'])
       .then(() => {
         var values = form.getFieldsValue(true);
         var startDateTime,
           endDateTime,
           additionalType = [],
-          audience = [];
+          audience = [],
+          image;
+        let eventObj;
         if (dateType === dateTypes.SINGLE) {
           if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
           else startDateTime = moment(values?.datePicker).format('YYYY/MM/DD');
@@ -102,66 +136,50 @@ function AddEvent() {
             };
           });
         }
-        if (!eventId || eventId === '') {
-          addEvent({
-            data: {
-              name: {
-                en: values?.english,
-                fr: values?.french,
-              },
-              ...(values?.startTime && { startDateTime }),
-              ...(!values?.startTime && { startDate: startDateTime }),
-              ...(values?.endTime && { endDateTime }),
-              ...(!values?.endTime && { endDate: endDateTime }),
-              eventStatus: values?.eventStatus,
-              ...((values?.en || values?.fr) && {
-                description: {
-                  en: values?.englishEditor,
-                  fr: values?.frenchEditor,
-                },
-              }),
-              additionalType,
-              audience,
+        eventObj = {
+          name: {
+            en: values?.english,
+            fr: values?.french,
+          },
+          ...(values?.startTime && { startDateTime }),
+          ...(!values?.startTime && { startDate: startDateTime }),
+          ...(values?.endTime && { endDateTime }),
+          ...(!values?.endTime && { endDate: endDateTime }),
+          eventStatus: values?.eventStatus,
+          ...((values?.englishEditor || values?.frenchEditor) && {
+            description: {
+              en: values?.englishEditor,
+              fr: values?.frenchEditor,
             },
-            calendarId,
-          })
-            .unwrap()
-            .then(() => {
-              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
-            })
-            .catch((errorInfo) => {
-              console.log(errorInfo);
-            });
+          }),
+          additionalType,
+          audience,
+        };
+        if (values?.dragger && values?.dragger[0]?.originFileObj) {
+          new Compressor(values?.dragger[0].originFileObj, {
+            convertSize: 200000,
+            success: (compressedResult) => {
+              const formdata = new FormData();
+              formdata.append('files', values?.dragger[0].originFileObj);
+              formdata.append('files', new File([compressedResult], 'compressed' + compressedResult.name));
+              formdata &&
+                addImage({ data: formdata, calendarId })
+                  .unwrap()
+                  .then((response) => {
+                    image = response?.data;
+                    eventObj['image'] = image;
+                    addUpdateEventApiHandler(eventObj);
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                  });
+            },
+          });
         } else {
-          updateEvent({
-            data: {
-              name: {
-                en: values?.english,
-                fr: values?.french,
-              },
-              ...(values?.startTime && { startDateTime }),
-              ...(!values?.startTime && { startDate: startDateTime }),
-              ...(values?.endTime && { endDateTime }),
-              ...(!values?.endTime && { endDate: endDateTime }),
-              eventStatus: values?.eventStatus,
-              description: {
-                en: values?.englishEditor,
-                fr: values?.frenchEditor,
-              },
-              additionalType,
-              audience,
-            },
+          //ToDo : Check with Backend whether to pass image object on removal
+          if (values?.dragger && values?.length == 0) eventObj['image'] = null;
 
-            calendarId,
-            eventId,
-          })
-            .unwrap()
-            .then(() => {
-              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
+          addUpdateEventApiHandler(eventObj);
         }
       })
       .catch((error) => {
@@ -174,12 +192,14 @@ function AddEvent() {
       .validateFields([
         'french',
         'english',
+        'datePickerWrapper',
         'datePicker',
         'dateRangePicker',
         'englishEditor',
         'frenchEditor',
         'eventType',
         'targetAudience',
+        'dragger-wrap',
       ])
       .then(() => {
         updateEventState({ id: eventId, calendarId })
@@ -475,7 +495,7 @@ function AddEvent() {
                         rules={[
                           ({ getFieldValue }) => ({
                             validator() {
-                              if (getFieldValue('datePicker')) {
+                              if (getFieldValue('datePicker') || getFieldValue('dateRangePicker')) {
                                 return Promise.resolve();
                               } else
                                 return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.date')));
@@ -612,6 +632,30 @@ function AddEvent() {
                       ]}
                     />
                   </BilingualInput>
+                </Form.Item>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.otherInformation.image.title')}
+                  name="dragger-wrap"
+                  rules={[
+                    ({ getFieldValue }) => ({
+                      validator() {
+                        if (!getFieldValue('dragger') || getFieldValue('dragger')?.length == 0) {
+                          console.log(getFieldValue('dragger'));
+                          return Promise.reject(
+                            new Error(t('dashboard.events.addEditEvent.validations.otherInformation.emptyImage')),
+                          );
+                        } else return Promise.resolve();
+                      },
+                    }),
+                  ]}>
+                  <Row>
+                    <Col>
+                      <p className="add-event-date-heading">
+                        {t('dashboard.events.addEditEvent.otherInformation.image.subHeading')}
+                      </p>
+                    </Col>
+                  </Row>
+                  <ImageUpload imageUrl={eventData?.image?.original} imageReadOnly={false} />
                 </Form.Item>
               </>
             </CardEvent>
