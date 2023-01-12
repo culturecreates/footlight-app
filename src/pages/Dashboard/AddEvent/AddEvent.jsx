@@ -26,15 +26,15 @@ import DateRangePicker from '../../../components/DateRangePicker';
 import { dateTypeOptions, dateTypes } from '../../../constants/dateTypes';
 import ChangeType from '../../../components/ChangeType';
 import CardEvent from '../../../components/Card/Common/Event';
-import SelectOption from '../../../components/Select/SelectOption';
 import Tags from '../../../components/Tags/Common/Tags';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
-import { taxonomyOptions } from '../../../components/Select/selectOption.settings';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 import ImageUpload from '../../../components/ImageUpload';
 import Compressor from 'compressorjs';
 import { useAddImageMutation } from '../../../services/image';
+import TreeSelectOption from '../../../components/TreeSelectOption';
+import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 
 const { TextArea } = Input;
 
@@ -376,11 +376,10 @@ function AddEvent() {
                       message: t('dashboard.events.addEditEvent.validations.eventType'),
                     },
                   ]}>
-                  <SelectOption
-                    mode="tags"
+                  <TreeSelectOption
                     allowClear
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    options={taxonomyOptions(allTaxonomyData, user, 'EventType')}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType')}
                     tagRender={(props) => {
                       const { label, closable, onClose } = props;
                       return (
@@ -406,13 +405,12 @@ function AddEvent() {
                       message: t('dashboard.events.addEditEvent.validations.targetAudience'),
                     },
                   ]}>
-                  <SelectOption
+                  <TreeSelectOption
                     allowClear
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    mode="tags"
-                    options={taxonomyOptions(allTaxonomyData, user, 'Audience')}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience')}
                     tagRender={(props) => {
-                      const { label, closable, onClose } = props;
+                      const { closable, onClose, label } = props;
                       return (
                         <Tags
                           closable={closable}

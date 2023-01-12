@@ -12,6 +12,7 @@ function DatePickerStyled(props) {
       placeholder="MM/DD/YYYY"
       showToday={false}
       popupClassName="date-picker-calendar"
+      getPopupContainer={(trigger) => trigger.parentNode}
     />
   );
 }
