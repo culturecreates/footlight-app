@@ -13,7 +13,13 @@ function TextEditor(props) {
     currentReactQuillRef?.current?.unprivilegedEditor?.getText().split(' ').length,
   );
   const modules = {
-    toolbar: [['bold', 'italic', 'underline'], [{ align: [] }], [{ list: 'ordered' }, { list: 'bullet' }], ['link']],
+    toolbar: [
+      [{ header: '1' }],
+      ['bold', 'italic', 'underline'],
+      [{ align: [] }],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['link'],
+    ],
     clipboard: {
       matchVisual: false,
     },
