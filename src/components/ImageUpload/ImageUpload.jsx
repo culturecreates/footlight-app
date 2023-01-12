@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import './imageUpload.css';
 import { message, Upload, Form } from 'antd';
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { LoadingOutlined, DownloadOutlined, DeleteOutlined } from '@ant-design/icons';
+import Outlined from '../Button/Outlined';
+import { useTranslation } from 'react-i18next';
 
-function ImageUpload() {
+function ImageUpload(props) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState();
+  const [imageUrl, setImageUrl] = useState(props?.imageUrl ?? null);
 
   const normFile = (e) => {
     console.log('Upload event:', e);
@@ -44,33 +47,64 @@ function ImageUpload() {
       });
     }
   };
+
   const customRequest = ({ onSuccess }) => {
     setTimeout(() => {
       onSuccess('ok');
     }, 0);
   };
+
+  const onRemove = () => {
+    setImageUrl(false);
+  };
   const uploadButton = (
-    <div>
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div
+    <div style={{ padding: 8 }}>
+      {loading ? <LoadingOutlined /> : <></>}
+      <span
         style={{
-          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'row-reverse',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          gap: '8px',
         }}>
-        Upload
-      </div>
+        <Outlined label={t('dashboard.events.addEditEvent.otherInformation.image.browse')} />
+        <span style={{ color: '#646D7B', fontWeight: '400', fontSize: '16px' }}>
+          {t('dashboard.events.addEditEvent.otherInformation.image.dragAndDrop')}
+        </span>
+      </span>
     </div>
   );
+
   return (
     <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile}>
       <Upload.Dragger
         name="eventImage"
         accept='.png, .jpg, .jpeg"'
+        className="upload-wrapper"
         multiple={false}
         customRequest={customRequest}
-        showUploadList={true}
+        disabled={props?.imageReadOnly}
         maxCount={1}
+        onRemove={onRemove}
+        defaultFileList={
+          props?.imageUrl && [
+            {
+              uid: '1',
+              name: 'image',
+              status: 'done',
+              url: props.imageUrl,
+            },
+          ]
+        }
         listType="picture"
         beforeUpload={beforeUpload}
+        showUploadList={{
+          showDownloadIcon: props?.imageReadOnly ? true : false,
+          downloadIcon: <DownloadOutlined style={{ color: '#1B3DE6' }} />,
+          showRemoveIcon: imageUrl ? true : false,
+          removeIcon: <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />,
+        }}
         onChange={handleChange}>
         {imageUrl ? (
           <img

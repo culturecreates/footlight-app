@@ -101,7 +101,7 @@ function AddEvent() {
   };
   const saveAsDraftHandler = () => {
     form
-      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker', 'dragger', 'datePickerWrapper'])
+      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker', 'datePickerWrapper'])
       .then(() => {
         console.log(form.getFieldsValue(true));
         var values = form.getFieldsValue(true);
@@ -146,7 +146,7 @@ function AddEvent() {
           ...(values?.endTime && { endDateTime }),
           ...(!values?.endTime && { endDate: endDateTime }),
           eventStatus: values?.eventStatus,
-          ...((values?.en || values?.fr) && {
+          ...((values?.englishEditor || values?.frenchEditor) && {
             description: {
               en: values?.englishEditor,
               fr: values?.frenchEditor,
@@ -155,7 +155,7 @@ function AddEvent() {
           additionalType,
           audience,
         };
-        if (values?.dragger[0].originFileObj) {
+        if (values?.dragger && values?.dragger[0]?.originFileObj) {
           new Compressor(values?.dragger[0].originFileObj, {
             convertSize: 200000,
             success: (compressedResult) => {
@@ -638,7 +638,7 @@ function AddEvent() {
                       </p>
                     </Col>
                   </Row>
-                  <ImageUpload />
+                  <ImageUpload imageUrl={eventData?.image?.original} imageReadOnly={false} />
                 </Form.Item>
               </>
             </CardEvent>
