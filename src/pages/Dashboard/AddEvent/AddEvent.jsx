@@ -177,20 +177,8 @@ function AddEvent() {
           });
         } else {
           //ToDo : Check with Backend whether to pass image object on removal
-          if (values?.dragger && values?.length == 0) eventObj['image'] = undefined;
-          else if (!values?.dragger && eventData?.image?.original) {
-            eventObj['image'] = {
-              original: {
-                entityId: eventData.image?.original,
-              },
-              large: {
-                entityId: eventData.image?.large,
-              },
-              thumbnail: {
-                entityId: eventData.image?.thumbnail,
-              },
-            };
-          }
+          if (values?.dragger && values?.length == 0) eventObj['image'] = null;
+
           addUpdateEventApiHandler(eventObj);
         }
       })
