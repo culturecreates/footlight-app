@@ -105,7 +105,7 @@ function ImageUpload(props) {
             alt="avatar"
             style={{
               width: '423px',
-              height: '173px',
+              objectFit: 'cover',
             }}
           />
         ) : (
