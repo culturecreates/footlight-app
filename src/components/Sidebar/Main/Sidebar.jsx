@@ -30,6 +30,7 @@ function Sidebar(props) {
       label: t(item.name),
       className: 'sidebar-menu-item',
       path: item.path,
+      disabled: item.disabled,
     };
   });
 
