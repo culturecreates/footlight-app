@@ -3,6 +3,10 @@ import { TreeSelect } from 'antd';
 import './treeSelectOption.css';
 
 function TreeSelectOption(props) {
+  const filterTreeNode = (inputValue, treeNode) => {
+    if (treeNode?.title?.toLowerCase()?.includes(inputValue?.toLowerCase())) return true;
+    else return false;
+  };
   return (
     <TreeSelect
       getPopupContainer={(trigger) => trigger.parentNode}
@@ -12,6 +16,9 @@ function TreeSelectOption(props) {
         overflow: 'auto',
       }}
       multiple
+      showSearch
+      treeNodeFilterProp
+      filterTreeNode={filterTreeNode}
       {...props}
     />
   );
