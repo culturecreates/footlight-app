@@ -10,6 +10,7 @@ function DateRangePicker(props) {
       popupClassName="date-range-picker-calendar"
       size={'large'}
       format="MM/DD/YYYY"
+      getPopupContainer={(trigger) => trigger.parentNode}
       placeholder={['MM/DD/YYYY', 'MM/DD/YYYY']}
       separator={<RightOutlined style={{ color: '#646D7B' }} />}
       {...props}
