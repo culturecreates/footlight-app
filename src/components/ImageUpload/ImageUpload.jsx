@@ -91,7 +91,7 @@ function ImageUpload(props) {
           props?.imageUrl && [
             {
               uid: '1',
-              name: 'image',
+              name: 'Event image',
               status: 'done',
               url: props.imageUrl,
             },
