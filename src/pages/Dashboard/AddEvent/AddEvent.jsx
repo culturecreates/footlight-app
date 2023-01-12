@@ -211,6 +211,7 @@ function AddEvent() {
         'frenchEditor',
         'eventType',
         'targetAudience',
+        'dragger-wrap',
       ])
       .then(() => {
         updateEventState({ id: eventId, calendarId })
@@ -644,7 +645,21 @@ function AddEvent() {
                     />
                   </BilingualInput>
                 </Form.Item>
-                <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.image.title')} required={true}>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.otherInformation.image.title')}
+                  name="dragger-wrap"
+                  rules={[
+                    ({ getFieldValue }) => ({
+                      validator() {
+                        if (!getFieldValue('dragger') || getFieldValue('dragger')?.length == 0) {
+                          console.log(getFieldValue('dragger'));
+                          return Promise.reject(
+                            new Error(t('dashboard.events.addEditEvent.validations.otherInformation.emptyImage')),
+                          );
+                        } else return Promise.resolve();
+                      },
+                    }),
+                  ]}>
                   <Row>
                     <Col>
                       <p className="add-event-date-heading">
