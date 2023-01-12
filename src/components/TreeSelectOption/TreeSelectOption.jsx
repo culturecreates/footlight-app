@@ -4,7 +4,6 @@ import './treeSelectOption.css';
 
 function TreeSelectOption(props) {
   const filterTreeNode = (inputValue, treeNode) => {
-    console.log(inputValue, treeNode);
     if (treeNode?.title?.toLowerCase()?.includes(inputValue?.toLowerCase())) return true;
     else return false;
   };
