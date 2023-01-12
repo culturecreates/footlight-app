@@ -11,7 +11,6 @@ function ImageUpload(props) {
   const [imageUrl, setImageUrl] = useState(props?.imageUrl ?? null);
 
   const normFile = (e) => {
-    console.log('Upload event:', e);
     if (Array.isArray(e)) {
       return e;
     }
@@ -25,13 +24,9 @@ function ImageUpload(props) {
   const beforeUpload = (file) => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
-      message.error('You can only upload JPG/PNG file!');
+      message.error(t('dashboard.events.addEditEvent.otherInformation.image.subHeading'));
     }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error('Image must smaller than 2MB!');
-    }
-    return isJpgOrPng && isLt2M;
+    return isJpgOrPng;
   };
   const handleChange = (info) => {
     if (info.file.status === 'uploading') {
@@ -39,8 +34,6 @@ function ImageUpload(props) {
       return;
     }
     if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      console.log(info);
       getBase64(info.file.originFileObj, (url) => {
         setLoading(false);
         setImageUrl(url);

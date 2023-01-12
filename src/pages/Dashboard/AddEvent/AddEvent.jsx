@@ -103,7 +103,6 @@ function AddEvent() {
     form
       .validateFields(['french', 'english', 'datePicker', 'dateRangePicker', 'datePickerWrapper'])
       .then(() => {
-        console.log(form.getFieldsValue(true));
         var values = form.getFieldsValue(true);
         var startDateTime,
           endDateTime,
@@ -176,12 +175,13 @@ function AddEvent() {
             },
           });
         } else {
+          //ToDo : Check with Backend whether to pass image object on removal
+          if (values?.dragger && values?.length == 0) eventObj['image'] = undefined;
           addUpdateEventApiHandler(eventObj);
         }
       })
       .catch((error) => {
         console.log(error);
-        form.getFieldValue(true);
       });
   };
 
