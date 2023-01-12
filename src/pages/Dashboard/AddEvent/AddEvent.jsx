@@ -26,12 +26,12 @@ import DateRangePicker from '../../../components/DateRangePicker';
 import { dateTypeOptions, dateTypes } from '../../../constants/dateTypes';
 import ChangeType from '../../../components/ChangeType';
 import CardEvent from '../../../components/Card/Common/Event';
-import SelectOption from '../../../components/Select/SelectOption';
 import Tags from '../../../components/Tags/Common/Tags';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
-import { taxonomyOptions } from '../../../components/Select/selectOption.settings';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
+import TreeSelectOption from '../../../components/TreeSelectOption';
+import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 
 const { TextArea } = Input;
 
@@ -40,6 +40,7 @@ function AddEvent() {
   const [form] = Form.useForm();
   const [addEvent] = useAddEventMutation();
   const { calendarId, eventId } = useParams();
+  const timestampRef = useRef(Date.now()).current;
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
   const {
@@ -52,6 +53,7 @@ function AddEvent() {
     search: '',
     taxonomyClass: taxonomyClass.EVENT,
     includeConcepts: true,
+    sessionId: timestampRef,
   });
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
@@ -70,7 +72,6 @@ function AddEvent() {
     form
       .validateFields(['french', 'english', 'datePicker', 'dateRangePicker'])
       .then(() => {
-        console.log(form.getFieldsValue(true));
         var values = form.getFieldsValue(true);
         var startDateTime,
           endDateTime,
@@ -163,7 +164,9 @@ function AddEvent() {
             });
         }
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const reviewPublishHandler = () => {
@@ -341,11 +344,10 @@ function AddEvent() {
                       message: t('dashboard.events.addEditEvent.validations.eventType'),
                     },
                   ]}>
-                  <SelectOption
-                    mode="tags"
+                  <TreeSelectOption
                     allowClear
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    options={taxonomyOptions(allTaxonomyData, user, 'EventType')}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType')}
                     tagRender={(props) => {
                       const { label, closable, onClose } = props;
                       return (
@@ -371,13 +373,12 @@ function AddEvent() {
                       message: t('dashboard.events.addEditEvent.validations.targetAudience'),
                     },
                   ]}>
-                  <SelectOption
+                  <TreeSelectOption
                     allowClear
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    mode="tags"
-                    options={taxonomyOptions(allTaxonomyData, user, 'Audience')}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience')}
                     tagRender={(props) => {
-                      const { label, closable, onClose } = props;
+                      const { closable, onClose, label } = props;
                       return (
                         <Tags
                           closable={closable}
