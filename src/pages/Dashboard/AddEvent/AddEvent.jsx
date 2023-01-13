@@ -35,6 +35,7 @@ import Compressor from 'compressorjs';
 import { useAddImageMutation } from '../../../services/image';
 import TreeSelectOption from '../../../components/TreeSelectOption';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
+import StyledInput from '../../../components/Input/Common';
 
 const { TextArea } = Input;
 
@@ -154,6 +155,13 @@ function AddEvent() {
           }),
           additionalType,
           audience,
+          ...(values?.eventLink && {
+            url: {
+              uri: values?.eventLink,
+            },
+          }),
+          ...(values?.facebookLink && { facebookUrl: values?.facebookLink }),
+          ...(values?.videoLink && { videoUrl: values?.videoLink }),
         };
         if (values?.dragger && values?.dragger[0]?.originFileObj) {
           new Compressor(values?.dragger[0].originFileObj, {
@@ -664,6 +672,27 @@ function AddEvent() {
                   </Row>
                   <ImageUpload imageUrl={eventData?.image?.original} imageReadOnly={false} />
                 </Form.Item>
+                <Form.Item
+                  name="eventLink"
+                  label={t('dashboard.events.addEditEvent.otherInformation.eventLink')}
+                  initialValue={eventData?.url?.uri}>
+                  <StyledInput addonBefore="https://" />
+                </Form.Item>
+                <Form.Item
+                  name="videoLink"
+                  label={t('dashboard.events.addEditEvent.otherInformation.videoLink')}
+                  initialValue={eventData?.videoUrl}>
+                  <StyledInput addonBefore="https://" />
+                </Form.Item>
+                <Form.Item
+                  name="facebookLink"
+                  label={t('dashboard.events.addEditEvent.otherInformation.facebookLink')}
+                  initialValue={eventData?.facebookUrl}>
+                  <StyledInput addonBefore="https://" />
+                </Form.Item>
+                <p className="add-event-date-heading">
+                  {t('dashboard.events.addEditEvent.otherInformation.facebookLinkFooter')}
+                </p>
               </>
             </CardEvent>
           </Row>
