@@ -19,7 +19,6 @@ function TextEditor(props) {
       [{ list: 'ordered' }, { list: 'bullet' }],
       [{ color: [] }, { background: [] }], // dropdown with defaults from theme
       ['link'],
-      ['clean'],
     ],
     clipboard: {
       matchVisual: false,
