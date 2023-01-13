@@ -208,7 +208,9 @@ function AddEvent() {
             navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`).catch((error) => console.log(error)),
           );
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   useEffect(() => {
@@ -636,15 +638,20 @@ function AddEvent() {
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.image.title')}
                   name="dragger-wrap"
+                  initialValue={eventData?.image && eventData?.image?.original}
                   rules={[
                     ({ getFieldValue }) => ({
                       validator() {
-                        if (!getFieldValue('dragger') || getFieldValue('dragger')?.length == 0) {
-                          console.log(getFieldValue('dragger'));
+                        if (
+                          (getFieldValue('dragger') != undefined && getFieldValue('dragger')?.length > 0) ||
+                          (eventData?.image?.original && !getFieldValue('dragger')) ||
+                          (eventData?.image?.original && getFieldValue('dragger')?.length > 0)
+                        ) {
+                          return Promise.resolve();
+                        } else
                           return Promise.reject(
                             new Error(t('dashboard.events.addEditEvent.validations.otherInformation.emptyImage')),
                           );
-                        } else return Promise.resolve();
                       },
                     }),
                   ]}>
