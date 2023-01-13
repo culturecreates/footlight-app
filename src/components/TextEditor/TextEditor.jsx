@@ -5,7 +5,6 @@ import './textEditor.css';
 import 'react-quill/dist/quill.snow.css';
 import { useTranslation } from 'react-i18next';
 import { pluralize } from '../../utils/pluralise';
-
 function TextEditor(props) {
   const { formName, initialValue, dependencies, rules, currentReactQuillRef, placeholder } = props;
   const { t } = useTranslation();
@@ -18,12 +17,15 @@ function TextEditor(props) {
       ['bold', 'italic', 'underline'],
       [{ align: [] }],
       [{ list: 'ordered' }, { list: 'bullet' }],
+      [{ color: [] }, { background: [] }], // dropdown with defaults from theme
       ['link'],
+      ['clean'],
     ],
     clipboard: {
       matchVisual: false,
     },
   };
+
   const onChange = () => {
     setWordCount(currentReactQuillRef?.current?.unprivilegedEditor?.getText().split(' ').length);
   };
