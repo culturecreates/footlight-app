@@ -1,0 +1,17 @@
+.tags-wrapper {
+  color: #1b3de6;
+  font-weight: 600;
+  font-size: 12px;
+  border-radius: 50px;
+  display: flex;
+  gap: 9px;
+  text-transform: capitalize;
+  height: 32px;
+  align-items: center;
+  padding: 8px 16px;
+}
+
+.tags-wrapper .ant-tag-close-icon {
+  display: flex;
+  align-items: center;
+}

@@ -1,0 +1,7 @@
+export const taxonomyClass = {
+  EVENT: 'EVENT',
+  PLACE: 'PLACE',
+  ORGANIZATION: 'ORGANIZATION',
+  PERSON: 'PERSON',
+  VIRTUAL_LOCATION: 'VIRTUAL_LOCATION',
+};

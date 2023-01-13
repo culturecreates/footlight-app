@@ -70,6 +70,74 @@
       "heading": "Event calendar",
       "searchPlaceholder": "Search an event",
       "addEvent": "Event",
+      "addEditEvent": {
+        "heading": { "newEvent": "New Event", "editEvent": "Edit Event" },
+        "language": {
+          "title": "Event title",
+          "titleLabel": "English",
+          "placeHolderFrench": "Enter French event title",
+          "placeHolderEnglish": "Enter English event title",
+          "eventType": "Event type",
+          "targetAudience": "Target audience"
+        },
+
+        "dates": {
+          "dates": "Dates",
+          "date": "Date",
+          "heading": "Select the type of date you want to enter for your event:",
+          "singleDate": "Single date",
+          "dateRange": "Date range",
+          "multipleDates": "Multiple dates",
+          "startTime": "Start time",
+          "endTime": "End time",
+          "status": "Status",
+          "changeToSingleDate": "Change to single date",
+          "changeToDateRange": "Change to date range",
+          "changeToMultipleDate": "Change to multiple dates",
+          "singleDateTooltip": "Use when your event happens on one date.",
+          "multipleDatesTooltip": "Use when your event happens more than once on different dates such as a performance or a workshop.",
+          "dateRangeTooltip": "Use when your event spans multiple dates such as an art exhibition.",
+          "eventCancelled": "Cancelled",
+          "eventPostponed": "Postponed",
+          "eventScheduled": "Scheduled"
+        },
+        "otherInformation": {
+          "title": "Other information",
+          "description": {
+            "title": "Event Description",
+            "footerTitle": "A minimum of 50 words is required.",
+            "word": "word",
+            "frenchPlaceholder": "Enter French description",
+            "englishPlaceholder": "Enter English description"
+          },
+          "image": {
+            "title": "Image",
+            "subHeading": "Only JPEG and PNG files are supported.",
+            "dragAndDrop": "or drag and drop to upload",
+            "browse": "Browse"
+          }
+        },
+
+        "status": "Status",
+        "saveOptions": {
+          "publish": "Publish",
+          "saveAsDraft": "Save as draft",
+          "save": "Save",
+          "sendToReview": "Send to review"
+        },
+        "validations": {
+          "title": "Event title is required.",
+          "date": "Event date is required.",
+          "eventType": "A minimum of one event type is required.",
+          "targetAudience": "Target audience is required.",
+          "otherInformation": {
+            "emptyDescription": "Event description is required (50 word minimum).",
+            "englishShort": "English description is too short.",
+            "frenchShort": "French description is too short.",
+            "emptyImage":"An image is required. PNG and JPEG files are supported."
+          }
+        }
+      },
       "publishOptions": {
         "publishEvent": "Publish event",
         "unpublishEvent": "Unpublish event",
@@ -96,6 +164,8 @@
     }
   },
   "common": {
+    "tabEnglish": "English",
+    "tabFrench": "French",
     "server": {
       "status": {
         "503": {

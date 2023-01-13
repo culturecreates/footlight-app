@@ -70,6 +70,73 @@
       "heading": "Calendrier des événements",
       "searchPlaceholder": "Rechercher un événement",
       "addEvent": "Événement",
+      "addEditEvent": {
+        "heading": { "newEvent": "Ajouter un événement", "editEvent": "Modifier un événement" },
+        "language": {
+          "title": "Titre de l'événement",
+          "titleLabel": "English",
+          "placeHolderFrench": "Entrez titre en français",
+          "placeHolderEnglish": "Entrez titre en anglais",
+          "eventType": "Type de l’événement",
+          "targetAudience": "Public cible"
+        },
+        "dates": {
+          "dates": "Dates",
+          "date": "Date",
+          "heading": "Sélectionnez le type de date que vous souhaitez saisir pour votre événement :",
+          "singleDate": "Date unique",
+          "dateRange": "Plage de dates",
+          "multipleDates": "Plusieurs dates",
+          "startTime": "Heure de début",
+          "endTime": "Heure de fin",
+          "status": "Statut",
+          "changeToSingleDate": "Changer en une date",
+          "changeToDateRange": "Change to plage de dates",
+          "changeToMultipleDate": "Changer en plusieurs dates",
+          "singleDateTooltip": "À utiliser lorsque votre événement a lieu à une seule date.",
+          "multipleDatesTooltip": "À utiliser lorsque votre événement se produit plus d'une fois à des dates différentes, comme un spectacle ou un atelier.",
+          "dateRangeTooltip": "À utiliser lorsque votre événement s'étend sur plusieurs dates, comme une exposition d'art.",
+          "eventCancelled": "Annulé",
+          "eventPostponed": "Reporté",
+          "eventScheduled": "Programmé"
+        },
+        "otherInformation": {
+          "title": "Autres informations",
+          "description": {
+            "title": "Description de l'événement",
+            "footerTitle": "Un minimum de 50 mots est requis.",
+            "word": "mot",
+            "frenchPlaceholder": "Entrez une description en français",
+            "englishPlaceholder": "Entrez une description en anglais"
+          },
+          "image": {
+            "title": "Image",
+            "subHeading": "Uniquement les fichiers .jpeg et .png sont acceptés.",
+            "dragAndDrop": "ou glisser pour télécharger",
+            "browse": "Parcourir"
+          }
+        },
+        "status": "Statut",
+        "saveOptions": {
+          "publish": "Publier",
+          "saveAsDraft": "Enregistrer comme brouillon",
+          "save": "Save",
+          "sendToReview": "Envoyer pour révision"
+        },
+        "validations": {
+          "title": "Le titre de l'événement est requis.",
+          "date": "La date de l'événement est requise.",
+          "eventType": "Un minimum d'un type d'événement est requis.",
+          "targetAudience": "Le public cible est requis.",
+          "otherInformation": {
+            "emptyDescription": "Une description de l'événement est requise (50 mots minimum).",
+            "englishShort": "La description en anglais est trop courte.",
+            "frenchShort": "La description française est trop courte.",
+            "emptyImage":"Une image est requise. Les fichiers PNG et JPEG sont acceptés."
+          }
+        }
+      },
+
       "publishOptions": {
         "publishEvent": "Publier l'événement",
         "unpublishEvent": "Dépublier l'événement",
@@ -96,6 +163,8 @@
     }
   },
   "common": {
+    "tabEnglish": "Anglais",
+    "tabFrench": "Français",
     "server": {
       "status": {
         "503": {
