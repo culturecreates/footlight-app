@@ -264,9 +264,11 @@ function EventReadOnly() {
                       <p className="read-only-event-content-sub-title-primary">
                         {t('dashboard.events.addEditEvent.otherInformation.eventLink')}
                       </p>
-                      <a href={eventData?.url?.uri} className="url-links">
-                        {eventData?.url?.uri}
-                      </a>
+                      <p>
+                        <a href={eventData?.url?.uri} target="_blank" rel="noopener noreferrer" className="url-links">
+                          {eventData?.url?.uri}
+                        </a>
+                      </p>
                     </>
                   )}
                   {eventData?.videoUrl && (
@@ -274,9 +276,11 @@ function EventReadOnly() {
                       <p className="read-only-event-content-sub-title-primary">
                         {t('dashboard.events.addEditEvent.otherInformation.videoLink')}
                       </p>
-                      <a href={eventData?.videoUrl} className="url-links">
-                        {eventData?.videoUrl}
-                      </a>
+                      <p>
+                        <a href={eventData?.videoUrl} target="_blank" rel="noopener noreferrer" className="url-links">
+                          {eventData?.videoUrl}
+                        </a>
+                      </p>
                     </>
                   )}
                   {eventData?.facebookUrl && (
@@ -285,14 +289,18 @@ function EventReadOnly() {
                         {t('dashboard.events.addEditEvent.otherInformation.facebookLink')}
                       </p>
                       <div style={{ width: '420px' }}>
-                        <a
-                          href={eventData?.facebookUrl}
-                          className="url-links"
-                          style={{
-                            wordWrap: 'break-word',
-                          }}>
-                          {eventData?.facebookUrl}
-                        </a>
+                        <p>
+                          <a
+                            href={eventData?.facebookUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="url-links"
+                            style={{
+                              wordWrap: 'break-word',
+                            }}>
+                            {eventData?.facebookUrl}
+                          </a>
+                        </p>
                       </div>
                     </>
                   )}

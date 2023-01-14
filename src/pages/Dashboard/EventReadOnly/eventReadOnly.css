@@ -54,8 +54,9 @@
 }
 
 .read-only-wrapper .url-links {
-  text-decoration: 'underline';
-  color: '#1B3DE6';
-  font-weight: '600';
-  font-size: '16px';
+  font-weight: 600;
+  font-size: 16px;
+  color: #1b3de6;
+  text-decoration-line: underline;
+  margin-bottom: 32px;
 }
