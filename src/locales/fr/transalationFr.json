@@ -118,7 +118,8 @@
           "eventLink": "Lien de l’événement",
           "videoLink": "Video",
           "facebookLink": "Lien vers l'événement Facebook",
-          "facebookLinkFooter": "Collez l'URL de votre événement Facebook ici."
+          "facebookLinkFooter": "Collez l'URL de votre événement Facebook ici.",
+          "placeHolderLinks": "Enter web address URL"
         },
         "status": "Statut",
         "saveOptions": {

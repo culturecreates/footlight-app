@@ -119,7 +119,8 @@
           "eventLink": "Event link",
           "videoLink": "Video",
           "facebookLink": "Facebook event",
-          "facebookLinkFooter": "Paste your Facebook event URL here."
+          "facebookLinkFooter": "Paste your Facebook event URL here.",
+          "placeHolderLinks": "Enter web address URL"
         },
 
         "status": "Status",
