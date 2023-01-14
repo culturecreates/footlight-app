@@ -676,19 +676,19 @@ function AddEvent() {
                   name="eventLink"
                   label={t('dashboard.events.addEditEvent.otherInformation.eventLink')}
                   initialValue={eventData?.url?.uri}>
-                  <StyledInput addonBefore="https://" />
+                  <StyledInput addonBefore="https://" autoComplete="off" />
                 </Form.Item>
                 <Form.Item
                   name="videoLink"
                   label={t('dashboard.events.addEditEvent.otherInformation.videoLink')}
                   initialValue={eventData?.videoUrl}>
-                  <StyledInput addonBefore="https://" />
+                  <StyledInput addonBefore="https://" autoComplete="off" />
                 </Form.Item>
                 <Form.Item
                   name="facebookLink"
                   label={t('dashboard.events.addEditEvent.otherInformation.facebookLink')}
                   initialValue={eventData?.facebookUrl}>
-                  <StyledInput addonBefore="https://" />
+                  <StyledInput addonBefore="https://" autoComplete="off" />
                 </Form.Item>
                 <p className="add-event-date-heading">
                   {t('dashboard.events.addEditEvent.otherInformation.facebookLinkFooter')}
