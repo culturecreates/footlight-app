@@ -259,6 +259,43 @@ function EventReadOnly() {
                       <ImageUpload imageUrl={eventData?.image?.original} imageReadOnly={true} />
                     </>
                   )}
+                  {eventData?.url && eventData?.url?.uri && (
+                    <>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.otherInformation.eventLink')}
+                      </p>
+                      <a href={eventData?.url?.uri} className="url-links">
+                        {eventData?.url?.uri}
+                      </a>
+                    </>
+                  )}
+                  {eventData?.videoUrl && (
+                    <>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.otherInformation.videoLink')}
+                      </p>
+                      <a href={eventData?.videoUrl} className="url-links">
+                        {eventData?.videoUrl}
+                      </a>
+                    </>
+                  )}
+                  {eventData?.facebookUrl && (
+                    <>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.otherInformation.facebookLink')}
+                      </p>
+                      <div style={{ width: '420px' }}>
+                        <a
+                          href={eventData?.facebookUrl}
+                          className="url-links"
+                          style={{
+                            wordWrap: 'break-word',
+                          }}>
+                          {eventData?.facebookUrl}
+                        </a>
+                      </div>
+                    </>
+                  )}
                 </div>
               </Col>
               <Col flex="233px">
