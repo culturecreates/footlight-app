@@ -109,6 +109,7 @@ function AddEvent() {
           endDateTime,
           additionalType = [],
           audience = [],
+          accessibility = [],
           image;
         let eventObj;
         if (dateType === dateTypes.SINGLE) {
@@ -136,6 +137,14 @@ function AddEvent() {
             };
           });
         }
+        if (values?.eventAccessibility) {
+          accessibility = values?.eventAccessibility?.map((accessibilityId) => {
+            return {
+              entityId: accessibilityId,
+            };
+          });
+        }
+
         eventObj = {
           name: {
             en: values?.english,
@@ -151,6 +160,9 @@ function AddEvent() {
               en: values?.englishEditor,
               fr: values?.frenchEditor,
             },
+          }),
+          ...(values?.eventAccessibility && {
+            accessibility,
           }),
           additionalType,
           audience,
@@ -663,6 +675,34 @@ function AddEvent() {
                     </Col>
                   </Row>
                   <ImageUpload imageUrl={eventData?.image?.original} imageReadOnly={false} />
+                </Form.Item>
+              </>
+            </CardEvent>
+            <CardEvent title={t('dashboard.events.addEditEvent.eventAccessibility.title')}>
+              <>
+                <Form.Item
+                  name="eventAccessibility"
+                  label={t('dashboard.events.addEditEvent.eventAccessibility.title')}
+                  initialValue={eventData?.accessibility?.map((type) => {
+                    return type?.entityId;
+                  })}>
+                  <TreeSelectOption
+                    allowClear
+                    treeDefaultExpandAll
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility')}
+                    tagRender={(props) => {
+                      const { label, closable, onClose } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                  />
                 </Form.Item>
               </>
             </CardEvent>

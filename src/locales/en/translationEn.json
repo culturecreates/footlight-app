@@ -117,6 +117,10 @@
             "browse": "Browse"
           }
         },
+        "eventAccessibility": {
+          "title": "Event accessibility",
+          "note": "Note"
+        },
 
         "status": "Status",
         "saveOptions": {
@@ -134,7 +138,7 @@
             "emptyDescription": "Event description is required (50 word minimum).",
             "englishShort": "English description is too short.",
             "frenchShort": "French description is too short.",
-            "emptyImage":"An image is required. PNG and JPEG files are supported."
+            "emptyImage": "An image is required. PNG and JPEG files are supported."
           }
         }
       },
