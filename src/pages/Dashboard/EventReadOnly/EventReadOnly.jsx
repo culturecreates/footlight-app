@@ -263,61 +263,63 @@ function EventReadOnly() {
               </Col>
             </Row>
           </Col>
-          <Col flex={'723px'} className="read-only-event-section-col">
-            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-              <Col flex={'423px'}>
-                <div className="read-only-event-section-wrapper">
-                  <p className="read-only-event-content-title">
-                    {t('dashboard.events.addEditEvent.eventAccessibility.title')}
-                  </p>
-                  {eventData?.accessibility.length > 0 && (
-                    <>
-                      <p className="read-only-event-content-sub-title-primary">
-                        {t('dashboard.events.addEditEvent.eventAccessibility.title')}
-                      </p>
-                      <TreeSelectOption
-                        style={{ marginBottom: '1rem' }}
-                        bordered={false}
-                        open={false}
-                        disabled
-                        treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility')}
-                        defaultValue={eventData?.accessibility?.map((accessibility) => {
-                          return accessibility?.entityId;
-                        })}
-                        tagRender={(props) => {
-                          console.log(props);
-                          const { label } = props;
-                          return <Tags>{label}</Tags>;
-                        }}
-                      />
-                    </>
-                  )}
-                  {/* TODO: Check with Caitlin regarding the bilingual input for accessibility note */}
-                  {eventData?.accessibilityNote?.fr ||
-                    (eventData?.accessibilityNote?.en && (
-                      <p className="read-only-event-content-sub-title-primary">
-                        {t('dashboard.events.addEditEvent.eventAccessibility.note')}
-                      </p>
-                    ))}
-                  {eventData?.accessibilityNote?.fr && (
-                    <>
-                      <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-                      <p className="read-only-event-content">{eventData?.accessibilityNote?.fr}</p>
-                    </>
-                  )}
-                  {eventData?.accessibilityNote?.en && (
-                    <>
-                      <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-                      <p className="read-only-event-content">{eventData?.accessibilityNote?.en}</p>
-                    </>
-                  )}
-                </div>
-              </Col>
-              <Col flex="233px">
-                <div style={{ width: '100%' }}></div>
-              </Col>
-            </Row>
-          </Col>
+          {(eventData?.accessibility.length > 0 || eventData?.accessibilityNote) && (
+            <Col flex={'723px'} className="read-only-event-section-col">
+              <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                <Col flex={'423px'}>
+                  <div className="read-only-event-section-wrapper">
+                    <p className="read-only-event-content-title">
+                      {t('dashboard.events.addEditEvent.eventAccessibility.title')}
+                    </p>
+                    {eventData?.accessibility.length > 0 && (
+                      <>
+                        <p className="read-only-event-content-sub-title-primary">
+                          {t('dashboard.events.addEditEvent.eventAccessibility.title')}
+                        </p>
+                        <TreeSelectOption
+                          style={{ marginBottom: '1rem' }}
+                          bordered={false}
+                          open={false}
+                          disabled
+                          treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility')}
+                          defaultValue={eventData?.accessibility?.map((accessibility) => {
+                            return accessibility?.entityId;
+                          })}
+                          tagRender={(props) => {
+                            console.log(props);
+                            const { label } = props;
+                            return <Tags>{label}</Tags>;
+                          }}
+                        />
+                      </>
+                    )}
+                    {/* TODO: Check with Caitlin regarding the bilingual input for accessibility note */}
+                    {eventData?.accessibilityNote?.fr ||
+                      (eventData?.accessibilityNote?.en && (
+                        <p className="read-only-event-content-sub-title-primary">
+                          {t('dashboard.events.addEditEvent.eventAccessibility.note')}
+                        </p>
+                      ))}
+                    {eventData?.accessibilityNote?.fr && (
+                      <>
+                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        <p className="read-only-event-content">{eventData?.accessibilityNote?.fr}</p>
+                      </>
+                    )}
+                    {eventData?.accessibilityNote?.en && (
+                      <>
+                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        <p className="read-only-event-content">{eventData?.accessibilityNote?.en}</p>
+                      </>
+                    )}
+                  </div>
+                </Col>
+                <Col flex="233px">
+                  <div style={{ width: '100%' }}></div>
+                </Col>
+              </Row>
+            </Col>
+          )}
         </Row>
       </div>
     )
