@@ -110,6 +110,7 @@ function AddEvent() {
           endDateTime,
           additionalType = [],
           audience = [],
+          contactPoint,
           image;
         let eventObj;
         if (dateType === dateTypes.SINGLE) {
@@ -137,6 +138,23 @@ function AddEvent() {
             };
           });
         }
+        if (
+          values?.frenchContactTitle ||
+          values?.englishContactTitle ||
+          values?.contactWebsiteUrl ||
+          values?.contactEmail
+        ) {
+          contactPoint = {
+            name: {
+              en: values?.englishContactTitle,
+              fr: values?.frenchContactTitle,
+            },
+            url: {
+              uri: values?.contactWebsiteUrl,
+            },
+            email: values?.contactEmail,
+          };
+        }
         eventObj = {
           name: {
             en: values?.english,
@@ -162,6 +180,7 @@ function AddEvent() {
           }),
           ...(values?.facebookLink && { facebookUrl: values?.facebookLink }),
           ...(values?.videoLink && { videoUrl: values?.videoLink }),
+          ...(contactPoint && { contactPoint }),
         };
         if (values?.dragger && values?.dragger[0]?.originFileObj) {
           new Compressor(values?.dragger[0].originFileObj, {
