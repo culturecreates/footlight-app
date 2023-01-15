@@ -138,7 +138,8 @@
             "englishShort": "La description en anglais est trop courte.",
             "frenchShort": "La description française est trop courte.",
             "emptyImage": "Une image est requise. Les fichiers PNG et JPEG sont acceptés."
-          }
+          },
+          "url": "Entrez une URL valide."
         }
       },
 

@@ -140,7 +140,8 @@
             "englishShort": "English description is too short.",
             "frenchShort": "French description is too short.",
             "emptyImage": "An image is required. PNG and JPEG files are supported."
-          }
+          },
+          "url": "Enter a valid url."
         }
       },
       "publishOptions": {

@@ -675,7 +675,13 @@ function AddEvent() {
                 <Form.Item
                   name="eventLink"
                   label={t('dashboard.events.addEditEvent.otherInformation.eventLink')}
-                  initialValue={eventData?.url?.uri}>
+                  initialValue={eventData?.url?.uri}
+                  rules={[
+                    {
+                      type: 'url',
+                      message: t('dashboard.events.addEditEvent.validations.url'),
+                    },
+                  ]}>
                   <StyledInput
                     addonBefore="https://"
                     autoComplete="off"
@@ -685,7 +691,13 @@ function AddEvent() {
                 <Form.Item
                   name="videoLink"
                   label={t('dashboard.events.addEditEvent.otherInformation.videoLink')}
-                  initialValue={eventData?.videoUrl}>
+                  initialValue={eventData?.videoUrl}
+                  rules={[
+                    {
+                      type: 'url',
+                      message: t('dashboard.events.addEditEvent.validations.url'),
+                    },
+                  ]}>
                   <StyledInput
                     addonBefore="https://"
                     autoComplete="off"
@@ -695,7 +707,13 @@ function AddEvent() {
                 <Form.Item
                   name="facebookLink"
                   label={t('dashboard.events.addEditEvent.otherInformation.facebookLink')}
-                  initialValue={eventData?.facebookUrl}>
+                  initialValue={eventData?.facebookUrl}
+                  rules={[
+                    {
+                      type: 'url',
+                      message: t('dashboard.events.addEditEvent.validations.url'),
+                    },
+                  ]}>
                   <StyledInput
                     addonBefore="https://"
                     autoComplete="off"
