@@ -672,6 +672,64 @@ function AddEvent() {
                   </Row>
                   <ImageUpload imageUrl={eventData?.image?.original} imageReadOnly={false} />
                 </Form.Item>
+                <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.contact.title')}>
+                  <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}>
+                    <BilingualInput fieldData={eventData?.contactPoint?.name}>
+                      <Form.Item name="frenchContactTitle" initialValue={eventData?.contactPoint?.name?.fr}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          placeholder={t(
+                            'dashboard.events.addEditEvent.otherInformation.contact.placeHolderContactTitleFrench',
+                          )}
+                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          size="large"
+                        />
+                      </Form.Item>
+                      <Form.Item name="englishContactTitle" initialValue={eventData?.contactPoint?.name?.en}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          placeholder={t(
+                            'dashboard.events.addEditEvent.otherInformation.contact.placeHolderContactTitleEnglish',
+                          )}
+                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          size="large"
+                        />
+                      </Form.Item>
+                    </BilingualInput>
+                  </Form.Item>
+                  <Form.Item
+                    name="contactWebsiteUrl"
+                    label={t('dashboard.events.addEditEvent.otherInformation.contact.website')}
+                    initialValue={eventData?.contactPoint?.url?.uri}
+                    rules={[
+                      {
+                        type: 'url',
+                        message: t('dashboard.events.addEditEvent.validations.url'),
+                      },
+                    ]}>
+                    <StyledInput
+                      addonBefore="https://"
+                      autoComplete="off"
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="contactEmail"
+                    label={t('dashboard.events.addEditEvent.otherInformation.contact.email')}
+                    initialValue={eventData?.contactPoint?.email}
+                    rules={[
+                      {
+                        type: 'email',
+                        message: t('login.validations.invalidEmail'),
+                      },
+                    ]}>
+                    <StyledInput
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderEmail')}
+                    />
+                  </Form.Item>
+                </Form.Item>
                 <Form.Item
                   name="eventLink"
                   label={t('dashboard.events.addEditEvent.otherInformation.eventLink')}
