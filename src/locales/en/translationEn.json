@@ -124,6 +124,8 @@
           "contact": {
             "title": "Contact",
             "contactTitle": "Contact title",
+            "englishcontactTitle": "English contact title",
+            "frenchContactTitle": "French contact title",
             "website": "Website",
             "phoneNumber": "Phone number",
             "email": "Email",

@@ -123,6 +123,8 @@
           "contact": {
             "title": "Contact",
             "contactTitle": "Titre du contact",
+            "englishcontactTitle": "Titre du contact en français",
+            "frenchContactTitle": "Titre du contact en anglais",
             "website": "Site web",
             "phoneNumber": "Numéro de téléphone",
             "email": "Courriel",

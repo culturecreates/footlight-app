@@ -259,6 +259,55 @@ function EventReadOnly() {
                       <ImageUpload imageUrl={eventData?.image?.original} imageReadOnly={true} />
                     </>
                   )}
+
+                  {eventData?.contactPoint && (
+                    <p className="read-only-event-content-sub-title-primary">
+                      {t('dashboard.events.addEditEvent.otherInformation.contact.title')}
+                    </p>
+                  )}
+                  {eventData?.contactPoint?.name?.fr && (
+                    <>
+                      <p className="read-only-event-content-sub-title-secondary">
+                        {t('dashboard.events.addEditEvent.otherInformation.contact.frenchContactTitle')}
+                      </p>
+                      <p className="read-only-event-content">{eventData?.contactPoint?.name?.fr}</p>
+                    </>
+                  )}
+                  {eventData?.contactPoint?.name?.en && (
+                    <>
+                      <p className="read-only-event-content-sub-title-secondary">
+                        {t('dashboard.events.addEditEvent.otherInformation.contact.englishcontactTitle')}
+                      </p>
+                      <p className="read-only-event-content">{eventData?.contactPoint?.name?.en}</p>
+                    </>
+                  )}
+                  {eventData?.contactPoint?.url?.uri && (
+                    <>
+                      <p className="read-only-event-content-sub-title-secondary">
+                        {t('dashboard.events.addEditEvent.otherInformation.contact.website')}
+                      </p>
+                      <p>
+                        <a
+                          href={eventData?.contactPoint?.url?.uri}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="url-links">
+                          {eventData?.contactPoint?.url?.uri}
+                        </a>
+                      </p>
+                    </>
+                  )}
+                  {eventData?.contactPoint?.email && (
+                    <>
+                      <p className="read-only-event-content-sub-title-secondary">
+                        {t('dashboard.events.addEditEvent.otherInformation.contact.email')}
+                      </p>
+                      <p>
+                        <p className="url-links">{eventData?.contactPoint?.email}</p>
+                      </p>
+                    </>
+                  )}
+
                   {eventData?.url && eventData?.url?.uri && (
                     <>
                       <p className="read-only-event-content-sub-title-primary">
