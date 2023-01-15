@@ -119,8 +119,8 @@
         "eventAccessibility": {
           "title": "Accessibilité de l’événement",
           "note": "Note",
-          "placeHolderEventAccessibilityFrenchNote": "Add supplementary accessibility information.",
-          "placeHolderEventAccessibilityEnglishNote": "Add supplementary accessibility information."
+          "placeHolderEventAccessibilityFrenchNote": "Ajouter des informations supplémentaires sur l'accessibilité",
+          "placeHolderEventAccessibilityEnglishNote": "Ajouter des informations supplémentaires sur l'accessibilité"
         },
         "status": "Statut",
         "saveOptions": {
