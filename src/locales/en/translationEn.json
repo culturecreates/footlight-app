@@ -120,8 +120,8 @@
         "eventAccessibility": {
           "title": "Event accessibility",
           "note": "Note",
-          "placeHolderEventAccessibilityFrenchNote": "This is a note for accessibility.",
-          "placeHolderEventAccessibilityEnglishNote": "This is a note for accessibility."
+          "placeHolderEventAccessibilityFrenchNote": "Add supplementary accessibility information.",
+          "placeHolderEventAccessibilityEnglishNote": "Add supplementary accessibility information."
         },
 
         "status": "Status",
