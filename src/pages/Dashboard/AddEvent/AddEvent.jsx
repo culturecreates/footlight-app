@@ -110,6 +110,7 @@ function AddEvent() {
           additionalType = [],
           audience = [],
           accessibility = [],
+          // accessibilityNote,
           image;
         let eventObj;
         if (dateType === dateTypes.SINGLE) {
@@ -144,6 +145,13 @@ function AddEvent() {
             };
           });
         }
+        //TODO:Add accessibility note to api after changing the payload in backend
+        // if (values?.englishAccessibilityNote || values?.frenchAccessibilityNote) {
+        //   accessibilityNote = {
+        //     ...(values?.englishAccessibilityNote && { en: values?.englishAccessibilityNote }),
+        //     ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote }),
+        //   };
+        // }
 
         eventObj = {
           name: {
@@ -703,6 +711,30 @@ function AddEvent() {
                       );
                     }}
                   />
+                </Form.Item>
+                <Form.Item label={t('dashboard.events.addEditEvent.eventAccessibility.note')}>
+                  <BilingualInput fieldData={eventData?.accessibilityNote}>
+                    <Form.Item name="frenchAccessibilityNote" initialValue={eventData?.accessibilityNote?.fr}>
+                      <TextArea
+                        autoComplete="off"
+                        placeholder={t(
+                          'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityFrenchNote',
+                        )}
+                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px', resize: 'vertical' }}
+                        size="large"
+                      />
+                    </Form.Item>
+                    <Form.Item name="englishAccessibilityNote" initialValue={eventData?.accessibilityNote?.en}>
+                      <TextArea
+                        autoComplete="off"
+                        placeholder={t(
+                          'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityEnglishNote',
+                        )}
+                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px', resize: 'vertical' }}
+                        size="large"
+                      />
+                    </Form.Item>
+                  </BilingualInput>
                 </Form.Item>
               </>
             </CardEvent>
