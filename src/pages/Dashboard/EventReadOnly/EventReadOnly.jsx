@@ -14,11 +14,11 @@ import { dateTypes } from '../../../constants/dateTypes';
 import DateRangePicker from '../../../components/DateRangePicker';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
-import SelectOption from '../../../components/Select';
 import Tags from '../../../components/Tags/Common/Tags';
-import { taxonomyOptions } from '../../../components/Select/selectOption.settings';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 import ImageUpload from '../../../components/ImageUpload';
+import TreeSelectOption from '../../../components/TreeSelectOption';
+import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -104,16 +104,15 @@ function EventReadOnly() {
                       <p className="read-only-event-content-sub-title-primary">
                         {t('dashboard.events.addEditEvent.language.eventType')}
                       </p>
-                      <SelectOption
+                      <TreeSelectOption
                         style={{ marginBottom: '1rem' }}
                         bordered={false}
                         open={false}
                         disabled
+                        treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType')}
                         defaultValue={eventData?.additionalType?.map((type) => {
                           return type?.entityId;
                         })}
-                        mode="tags"
-                        options={taxonomyOptions(allTaxonomyData, user, 'EventType')}
                         tagRender={(props) => {
                           const { label } = props;
                           return <Tags>{label}</Tags>;
@@ -127,17 +126,15 @@ function EventReadOnly() {
                       <p className="read-only-event-content-sub-title-primary">
                         {t('dashboard.events.addEditEvent.language.targetAudience')}
                       </p>
-
-                      <SelectOption
+                      <TreeSelectOption
                         style={{ marginBottom: '1rem' }}
                         bordered={false}
                         open={false}
                         disabled
+                        treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience')}
                         defaultValue={eventData?.audience?.map((audience) => {
                           return audience?.entityId;
                         })}
-                        mode="tags"
-                        options={taxonomyOptions(allTaxonomyData, user, 'Audience')}
                         tagRender={(props) => {
                           const { label } = props;
                           return <Tags>{label}</Tags>;
@@ -273,20 +270,28 @@ function EventReadOnly() {
                   <p className="read-only-event-content-title">
                     {t('dashboard.events.addEditEvent.eventAccessibility.title')}
                   </p>
-                  <p className="read-only-event-content-sub-title-primary">
-                    {t('dashboard.events.addEditEvent.eventAccessibility.title')}
-                  </p>
-                  <SelectOption
-                    style={{ marginBottom: '1rem' }}
-                    bordered={false}
-                    open={false}
-                    disabled
-                    defaultValue={taxonomyOptions(allTaxonomyData, user, 'EventAccessibility')}
-                    tagRender={(props) => {
-                      const { label } = props;
-                      return <Tags>{label}</Tags>;
-                    }}
-                  />
+                  {eventData?.accessibility.length > 0 && (
+                    <>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.eventAccessibility.title')}
+                      </p>
+                      <TreeSelectOption
+                        style={{ marginBottom: '1rem' }}
+                        bordered={false}
+                        open={false}
+                        disabled
+                        treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility')}
+                        defaultValue={eventData?.accessibility?.map((accessibility) => {
+                          return accessibility?.entityId;
+                        })}
+                        tagRender={(props) => {
+                          console.log(props);
+                          const { label } = props;
+                          return <Tags>{label}</Tags>;
+                        }}
+                      />
+                    </>
+                  )}
                   {/* TODO: Check with Caitlin regarding the bilingual input for accessibility note */}
                   {eventData?.accessibilityNote?.fr ||
                     (eventData?.accessibilityNote?.en && (
