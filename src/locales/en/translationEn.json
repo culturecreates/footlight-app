@@ -136,6 +136,12 @@
             "placeHolderEmail": "Enter email address"
           }
         },
+        "eventAccessibility": {
+          "title": "Event accessibility",
+          "note": "Note",
+          "placeHolderEventAccessibilityFrenchNote": "Add supplementary accessibility information.",
+          "placeHolderEventAccessibilityEnglishNote": "Add supplementary accessibility information."
+        },
 
         "status": "Status",
         "saveOptions": {

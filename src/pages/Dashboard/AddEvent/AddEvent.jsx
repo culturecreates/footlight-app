@@ -111,6 +111,8 @@ function AddEvent() {
           additionalType = [],
           audience = [],
           contactPoint,
+          accessibility = [],
+          accessibilityNote,
           image;
         let eventObj;
         if (dateType === dateTypes.SINGLE) {
@@ -157,6 +159,21 @@ function AddEvent() {
             telephone: values?.contactPhoneNumber,
           };
         }
+        if (values?.eventAccessibility) {
+          accessibility = values?.eventAccessibility?.map((accessibilityId) => {
+            return {
+              entityId: accessibilityId,
+            };
+          });
+        }
+
+        if (values?.englishAccessibilityNote || values?.frenchAccessibilityNote) {
+          accessibilityNote = {
+            ...(values?.englishAccessibilityNote && { en: values?.englishAccessibilityNote }),
+            ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote }),
+          };
+        }
+
         eventObj = {
           name: {
             en: values?.english,
@@ -173,6 +190,10 @@ function AddEvent() {
               fr: values?.frenchEditor,
             },
           }),
+          ...(values?.eventAccessibility && {
+            accessibility,
+          }),
+          ...(accessibilityNote && { accessibilityNote }),
           additionalType,
           audience,
           ...(values?.eventLink && {
@@ -810,6 +831,58 @@ function AddEvent() {
                 <p className="add-event-date-heading">
                   {t('dashboard.events.addEditEvent.otherInformation.facebookLinkFooter')}
                 </p>
+              </>
+            </CardEvent>
+            <CardEvent title={t('dashboard.events.addEditEvent.eventAccessibility.title')}>
+              <>
+                <Form.Item
+                  name="eventAccessibility"
+                  label={t('dashboard.events.addEditEvent.eventAccessibility.title')}
+                  initialValue={eventData?.accessibility?.map((type) => {
+                    return type?.entityId;
+                  })}>
+                  <TreeSelectOption
+                    allowClear
+                    treeDefaultExpandAll
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility')}
+                    tagRender={(props) => {
+                      const { label, closable, onClose } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                  />
+                </Form.Item>
+                <Form.Item label={t('dashboard.events.addEditEvent.eventAccessibility.note')}>
+                  <BilingualInput fieldData={eventData?.accessibilityNote}>
+                    <Form.Item name="frenchAccessibilityNote" initialValue={eventData?.accessibilityNote?.fr}>
+                      <TextArea
+                        autoComplete="off"
+                        placeholder={t(
+                          'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityFrenchNote',
+                        )}
+                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px', resize: 'vertical' }}
+                        size="large"
+                      />
+                    </Form.Item>
+                    <Form.Item name="englishAccessibilityNote" initialValue={eventData?.accessibilityNote?.en}>
+                      <TextArea
+                        autoComplete="off"
+                        placeholder={t(
+                          'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityEnglishNote',
+                        )}
+                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px', resize: 'vertical' }}
+                        size="large"
+                      />
+                    </Form.Item>
+                  </BilingualInput>
+                </Form.Item>
               </>
             </CardEvent>
           </Row>

@@ -135,6 +135,12 @@
             "placeHolderEmail": "Entrez l’adresse courriel"
           }
         },
+        "eventAccessibility": {
+          "title": "Accessibilité de l’événement",
+          "note": "Note",
+          "placeHolderEventAccessibilityFrenchNote": "Ajouter des informations supplémentaires sur l'accessibilité",
+          "placeHolderEventAccessibilityEnglishNote": "Ajouter des informations supplémentaires sur l'accessibilité"
+        },
         "status": "Statut",
         "saveOptions": {
           "publish": "Publier",
