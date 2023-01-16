@@ -119,7 +119,9 @@
           "videoLink": "Video",
           "facebookLink": "Lien vers l'événement Facebook",
           "facebookLinkFooter": "Collez l'URL de votre événement Facebook ici.",
-          "placeHolderLinks": "Entrez l'adresse web URL"
+          "placeHolderLinks": "Entrez l'adresse web URL",
+          "keywords": "Mots clés",
+          "placeHolderKeywords": "Entrez des mots clés supplémentaires"
         },
         "eventAccessibility": {
           "title": "Accessibilité de l’événement",

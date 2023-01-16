@@ -36,6 +36,7 @@ import { useAddImageMutation } from '../../../services/image';
 import TreeSelectOption from '../../../components/TreeSelectOption';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import StyledInput from '../../../components/Input/Common';
+import SelectOption from '../../../components/Select/SelectOption';
 
 const { TextArea } = Input;
 
@@ -112,6 +113,7 @@ function AddEvent() {
           audience = [],
           accessibility = [],
           accessibilityNote,
+          keywords,
           image;
         let eventObj;
         if (dateType === dateTypes.SINGLE) {
@@ -153,6 +155,9 @@ function AddEvent() {
             ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote }),
           };
         }
+        if (values?.keywords?.length > 0) {
+          keywords = values?.keywords;
+        }
 
         eventObj = {
           name: {
@@ -183,6 +188,7 @@ function AddEvent() {
           }),
           ...(values?.facebookLink && { facebookUrl: values?.facebookLink }),
           ...(values?.videoLink && { videoUrl: values?.videoLink }),
+          ...(keywords && { keywords }),
         };
         if (values?.dragger && values?.dragger[0]?.originFileObj) {
           new Compressor(values?.dragger[0].originFileObj, {
@@ -744,6 +750,29 @@ function AddEvent() {
                 <p className="add-event-date-heading">
                   {t('dashboard.events.addEditEvent.otherInformation.facebookLinkFooter')}
                 </p>
+                <Form.Item
+                  name="keywords"
+                  label={t('dashboard.events.addEditEvent.otherInformation.keywords')}
+                  initialValue={eventData?.keywords}>
+                  <SelectOption
+                    mode="tags"
+                    allowClear
+                    placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderKeywords')}
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    open={false}
+                    tagRender={(props) => {
+                      const { label, closable, onClose } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                  />
+                </Form.Item>
               </>
             </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.eventAccessibility.title')}>
