@@ -14,11 +14,11 @@ import { dateTypes } from '../../../constants/dateTypes';
 import DateRangePicker from '../../../components/DateRangePicker';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
-import SelectOption from '../../../components/Select';
 import Tags from '../../../components/Tags/Common/Tags';
-import { taxonomyOptions } from '../../../components/Select/selectOption.settings';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 import ImageUpload from '../../../components/ImageUpload';
+import TreeSelectOption from '../../../components/TreeSelectOption';
+import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -104,16 +104,15 @@ function EventReadOnly() {
                       <p className="read-only-event-content-sub-title-primary">
                         {t('dashboard.events.addEditEvent.language.eventType')}
                       </p>
-                      <SelectOption
+                      <TreeSelectOption
                         style={{ marginBottom: '1rem' }}
                         bordered={false}
                         open={false}
                         disabled
+                        treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType')}
                         defaultValue={eventData?.additionalType?.map((type) => {
                           return type?.entityId;
                         })}
-                        mode="tags"
-                        options={taxonomyOptions(allTaxonomyData, user, 'EventType')}
                         tagRender={(props) => {
                           const { label } = props;
                           return <Tags>{label}</Tags>;
@@ -127,17 +126,15 @@ function EventReadOnly() {
                       <p className="read-only-event-content-sub-title-primary">
                         {t('dashboard.events.addEditEvent.language.targetAudience')}
                       </p>
-
-                      <SelectOption
+                      <TreeSelectOption
                         style={{ marginBottom: '1rem' }}
                         bordered={false}
                         open={false}
                         disabled
+                        treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience')}
                         defaultValue={eventData?.audience?.map((audience) => {
                           return audience?.entityId;
                         })}
-                        mode="tags"
-                        options={taxonomyOptions(allTaxonomyData, user, 'Audience')}
                         tagRender={(props) => {
                           const { label } = props;
                           return <Tags>{label}</Tags>;
@@ -259,6 +256,51 @@ function EventReadOnly() {
                       <ImageUpload imageUrl={eventData?.image?.original} imageReadOnly={true} />
                     </>
                   )}
+                  {eventData?.url && eventData?.url?.uri && (
+                    <>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.otherInformation.eventLink')}
+                      </p>
+                      <p>
+                        <a href={eventData?.url?.uri} target="_blank" rel="noopener noreferrer" className="url-links">
+                          {eventData?.url?.uri}
+                        </a>
+                      </p>
+                    </>
+                  )}
+                  {eventData?.videoUrl && (
+                    <>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.otherInformation.videoLink')}
+                      </p>
+                      <p>
+                        <a href={eventData?.videoUrl} target="_blank" rel="noopener noreferrer" className="url-links">
+                          {eventData?.videoUrl}
+                        </a>
+                      </p>
+                    </>
+                  )}
+                  {eventData?.facebookUrl && (
+                    <>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.otherInformation.facebookLink')}
+                      </p>
+                      <div style={{ width: '420px' }}>
+                        <p>
+                          <a
+                            href={eventData?.facebookUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="url-links"
+                            style={{
+                              wordWrap: 'break-word',
+                            }}>
+                            {eventData?.facebookUrl}
+                          </a>
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
               </Col>
               <Col flex="233px">
@@ -266,6 +308,61 @@ function EventReadOnly() {
               </Col>
             </Row>
           </Col>
+          {(eventData?.accessibility.length > 0 || eventData?.accessibilityNote) && (
+            <Col flex={'723px'} className="read-only-event-section-col">
+              <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                <Col flex={'423px'}>
+                  <div className="read-only-event-section-wrapper">
+                    <p className="read-only-event-content-title">
+                      {t('dashboard.events.addEditEvent.eventAccessibility.title')}
+                    </p>
+                    {eventData?.accessibility.length > 0 && (
+                      <>
+                        <p className="read-only-event-content-sub-title-primary">
+                          {t('dashboard.events.addEditEvent.eventAccessibility.title')}
+                        </p>
+                        <TreeSelectOption
+                          style={{ marginBottom: '1rem' }}
+                          bordered={false}
+                          open={false}
+                          disabled
+                          treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility')}
+                          defaultValue={eventData?.accessibility?.map((accessibility) => {
+                            return accessibility?.entityId;
+                          })}
+                          tagRender={(props) => {
+                            const { label } = props;
+                            return <Tags>{label}</Tags>;
+                          }}
+                        />
+                      </>
+                    )}
+
+                    {(eventData?.accessibilityNote?.fr || eventData?.accessibilityNote?.en) && (
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.eventAccessibility.note')}
+                      </p>
+                    )}
+                    {eventData?.accessibilityNote?.fr && (
+                      <>
+                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        <p className="read-only-event-content">{eventData?.accessibilityNote?.fr}</p>
+                      </>
+                    )}
+                    {eventData?.accessibilityNote?.en && (
+                      <>
+                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        <p className="read-only-event-content">{eventData?.accessibilityNote?.en}</p>
+                      </>
+                    )}
+                  </div>
+                </Col>
+                <Col flex="233px">
+                  <div style={{ width: '100%' }}></div>
+                </Col>
+              </Row>
+            </Col>
+          )}
         </Row>
       </div>
     )
