@@ -19,6 +19,7 @@ import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 import ImageUpload from '../../../components/ImageUpload';
 import TreeSelectOption from '../../../components/TreeSelectOption';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
+import SelectOption from '../../../components/Select/SelectOption';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -299,6 +300,24 @@ function EventReadOnly() {
                           </a>
                         </p>
                       </div>
+                    </>
+                  )}
+                  {eventData?.keywords.length > 0 && (
+                    <>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.otherInformation.keywords')}
+                      </p>
+                      <SelectOption
+                        mode="tags"
+                        bordered={false}
+                        open={false}
+                        disabled
+                        defaultValue={eventData?.keywords}
+                        tagRender={(props) => {
+                          const { label } = props;
+                          return <Tags>{label}</Tags>;
+                        }}
+                      />
                     </>
                   )}
                 </div>
