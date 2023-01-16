@@ -286,20 +286,18 @@ function EventReadOnly() {
                             return accessibility?.entityId;
                           })}
                           tagRender={(props) => {
-                            console.log(props);
                             const { label } = props;
                             return <Tags>{label}</Tags>;
                           }}
                         />
                       </>
                     )}
-                    {/* TODO: Check with Caitlin regarding the bilingual input for accessibility note */}
-                    {eventData?.accessibilityNote?.fr ||
-                      (eventData?.accessibilityNote?.en && (
-                        <p className="read-only-event-content-sub-title-primary">
-                          {t('dashboard.events.addEditEvent.eventAccessibility.note')}
-                        </p>
-                      ))}
+
+                    {(eventData?.accessibilityNote?.fr || eventData?.accessibilityNote?.en) && (
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.eventAccessibility.note')}
+                      </p>
+                    )}
                     {eventData?.accessibilityNote?.fr && (
                       <>
                         <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>

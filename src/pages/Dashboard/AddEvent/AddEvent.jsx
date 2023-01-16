@@ -110,7 +110,7 @@ function AddEvent() {
           additionalType = [],
           audience = [],
           accessibility = [],
-          // accessibilityNote,
+          accessibilityNote,
           image;
         let eventObj;
         if (dateType === dateTypes.SINGLE) {
@@ -145,13 +145,13 @@ function AddEvent() {
             };
           });
         }
-        //TODO:Add accessibility note to api after changing the payload in backend
-        // if (values?.englishAccessibilityNote || values?.frenchAccessibilityNote) {
-        //   accessibilityNote = {
-        //     ...(values?.englishAccessibilityNote && { en: values?.englishAccessibilityNote }),
-        //     ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote }),
-        //   };
-        // }
+
+        if (values?.englishAccessibilityNote || values?.frenchAccessibilityNote) {
+          accessibilityNote = {
+            ...(values?.englishAccessibilityNote && { en: values?.englishAccessibilityNote }),
+            ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote }),
+          };
+        }
 
         eventObj = {
           name: {
@@ -172,6 +172,7 @@ function AddEvent() {
           ...(values?.eventAccessibility && {
             accessibility,
           }),
+          ...(accessibilityNote && { accessibilityNote }),
           additionalType,
           audience,
         };
