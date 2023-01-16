@@ -2,7 +2,7 @@ import React from 'react';
 import { Row, Col } from 'antd';
 
 function Event(props) {
-  const { title } = props;
+  const { title, required } = props;
   return (
     <Col flex={'780px'} className="add-event-section-col">
       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-content">
@@ -11,7 +11,7 @@ function Event(props) {
             {title && (
               <Row>
                 <Col>
-                  <div className="add-event-date-wrap">{title}</div>
+                  <div className={`add-event-date-wrap ${required && 'title-required'}`}>{title}</div>
                 </Col>
               </Row>
             )}

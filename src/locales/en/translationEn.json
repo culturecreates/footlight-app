@@ -101,6 +101,14 @@
           "eventPostponed": "Postponed",
           "eventScheduled": "Scheduled"
         },
+        "location": {
+          "title": "Location",
+          "virtualLocation": "Virtual location",
+          "placeHolderVirtualLocationEn": "Enter English text to display",
+          "placeHolderVirtualLocationFr": "Enter French text to display",
+          "onlineLink": "Link for the online event",
+          "placeHolderOnlineLink": "Enter web address URL"
+        },
         "otherInformation": {
           "title": "Other information",
           "description": {
