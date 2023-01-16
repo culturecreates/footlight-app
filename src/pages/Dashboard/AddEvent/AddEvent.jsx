@@ -115,6 +115,7 @@ function AddEvent() {
           contactPoint,
           accessibility = [],
           accessibilityNote,
+          locationId,
           image;
         let eventObj;
         if (dateType === dateTypes.SINGLE) {
@@ -141,6 +142,24 @@ function AddEvent() {
               entityId: audienceId,
             };
           });
+        }
+        if (values?.frenchVirtualLocation || values?.englishVirtualLocation || values?.virtualLocationOnlineLink) {
+          locationId = {
+            place: {
+              entityId: null,
+            },
+            virtualLocation: {
+              name: {
+                en: values?.englishVirtualLocation,
+                fr: values?.frenchVirtualLocation,
+              },
+              description: {},
+              dynamicFields: [],
+              url: {
+                uri: values?.virtualLocationOnlineLink,
+              },
+            },
+          };
         }
         if (
           values?.frenchContactTitle ||
@@ -206,6 +225,7 @@ function AddEvent() {
           ...(values?.facebookLink && { facebookUrl: values?.facebookLink }),
           ...(values?.videoLink && { videoUrl: values?.videoLink }),
           ...(contactPoint && { contactPoint }),
+          ...(locationId && { locationId }),
         };
         if (values?.dragger && values?.dragger[0]?.originFileObj) {
           new Compressor(values?.dragger[0].originFileObj, {
