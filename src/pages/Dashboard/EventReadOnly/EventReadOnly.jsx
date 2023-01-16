@@ -256,6 +256,51 @@ function EventReadOnly() {
                       <ImageUpload imageUrl={eventData?.image?.original} imageReadOnly={true} />
                     </>
                   )}
+                  {eventData?.url && eventData?.url?.uri && (
+                    <>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.otherInformation.eventLink')}
+                      </p>
+                      <p>
+                        <a href={eventData?.url?.uri} target="_blank" rel="noopener noreferrer" className="url-links">
+                          {eventData?.url?.uri}
+                        </a>
+                      </p>
+                    </>
+                  )}
+                  {eventData?.videoUrl && (
+                    <>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.otherInformation.videoLink')}
+                      </p>
+                      <p>
+                        <a href={eventData?.videoUrl} target="_blank" rel="noopener noreferrer" className="url-links">
+                          {eventData?.videoUrl}
+                        </a>
+                      </p>
+                    </>
+                  )}
+                  {eventData?.facebookUrl && (
+                    <>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.otherInformation.facebookLink')}
+                      </p>
+                      <div style={{ width: '420px' }}>
+                        <p>
+                          <a
+                            href={eventData?.facebookUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="url-links"
+                            style={{
+                              wordWrap: 'break-word',
+                            }}>
+                            {eventData?.facebookUrl}
+                          </a>
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
               </Col>
               <Col flex="233px">

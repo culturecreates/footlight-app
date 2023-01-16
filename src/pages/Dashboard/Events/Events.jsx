@@ -15,6 +15,7 @@ function Events() {
   const navigate = useNavigate();
   let [searchParams, setSearchParams] = useSearchParams();
   const timestampRef = useRef(Date.now()).current;
+
   const [getEvents, { currentData: eventsData, isLoading }] = useLazyGetEventsQuery();
   const [pageNumber, setPageNumber] = useState(searchParams.get('page') ?? 1);
   const [eventSearchQuery, setEventSearchQuery] = useState(searchParams.get('query') ?? '');

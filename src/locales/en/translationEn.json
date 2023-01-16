@@ -115,7 +115,12 @@
             "subHeading": "Only JPEG and PNG files are supported.",
             "dragAndDrop": "or drag and drop to upload",
             "browse": "Browse"
-          }
+          },
+          "eventLink": "Event link",
+          "videoLink": "Video",
+          "facebookLink": "Facebook event",
+          "facebookLinkFooter": "Paste your Facebook event URL here.",
+          "placeHolderLinks": "Enter web address URL"
         },
         "eventAccessibility": {
           "title": "Event accessibility",
@@ -141,7 +146,8 @@
             "englishShort": "English description is too short.",
             "frenchShort": "French description is too short.",
             "emptyImage": "An image is required. PNG and JPEG files are supported."
-          }
+          },
+          "url": "Enter a valid url."
         }
       },
       "publishOptions": {
