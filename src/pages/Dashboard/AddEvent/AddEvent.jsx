@@ -715,7 +715,9 @@ function AddEvent() {
                   <ImageUpload imageUrl={eventData?.image?.original} imageReadOnly={false} />
                 </Form.Item>
                 <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.contact.title')}>
-                  <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}>
+                  <Form.Item
+                    label={t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}
+                    className="subheading-wrap">
                     <BilingualInput fieldData={eventData?.contactPoint?.name}>
                       <Form.Item name="frenchContactTitle" initialValue={eventData?.contactPoint?.name?.fr}>
                         <TextArea
@@ -743,6 +745,7 @@ function AddEvent() {
                   </Form.Item>
                   <Form.Item
                     name="contactWebsiteUrl"
+                    className="subheading-wrap"
                     label={t('dashboard.events.addEditEvent.otherInformation.contact.website')}
                     initialValue={eventData?.contactPoint?.url?.uri}
                     rules={[
@@ -759,6 +762,7 @@ function AddEvent() {
                   </Form.Item>
                   <Form.Item
                     name="contactPhoneNumber"
+                    className="subheading-wrap"
                     label={t('dashboard.events.addEditEvent.otherInformation.contact.phoneNumber')}
                     initialValue={eventData?.contactPoint?.telephone}>
                     <StyledInput
@@ -767,6 +771,7 @@ function AddEvent() {
                   </Form.Item>
                   <Form.Item
                     name="contactEmail"
+                    className="subheading-wrap"
                     label={t('dashboard.events.addEditEvent.otherInformation.contact.email')}
                     initialValue={eventData?.contactPoint?.email}
                     rules={[
