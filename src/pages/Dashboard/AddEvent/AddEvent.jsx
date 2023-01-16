@@ -36,6 +36,7 @@ import { useAddImageMutation } from '../../../services/image';
 import TreeSelectOption from '../../../components/TreeSelectOption';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import StyledInput from '../../../components/Input/Common';
+import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 
 const { TextArea } = Input;
 
@@ -153,7 +154,7 @@ function AddEvent() {
               fr: values?.frenchContactTitle,
             },
             url: {
-              uri: values?.contactWebsiteUrl,
+              uri: urlProtocolCheck(values?.contactWebsiteUrl),
             },
             email: values?.contactEmail,
             telephone: values?.contactPhoneNumber,
@@ -196,13 +197,13 @@ function AddEvent() {
           ...(accessibilityNote && { accessibilityNote }),
           additionalType,
           audience,
-          ...(values?.eventLink && {
-            url: {
-              uri: values?.eventLink,
-            },
-          }),
-          ...(values?.facebookLink && { facebookUrl: values?.facebookLink }),
-          ...(values?.videoLink && { videoUrl: values?.videoLink }),
+
+          url: {
+            uri: urlProtocolCheck(values?.eventLink),
+          },
+
+          ...(values?.facebookLink && { facebookUrl: urlProtocolCheck(values?.facebookLink) }),
+          ...(values?.videoLink && { videoUrl: urlProtocolCheck(values?.videoLink) }),
           ...(contactPoint && { contactPoint }),
         };
         if (values?.dragger && values?.dragger[0]?.originFileObj) {
