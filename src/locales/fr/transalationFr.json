@@ -121,6 +121,12 @@
           "facebookLinkFooter": "Collez l'URL de votre événement Facebook ici.",
           "placeHolderLinks": "Entrez l'adresse web URL"
         },
+        "eventAccessibility": {
+          "title": "Accessibilité de l’événement",
+          "note": "Note",
+          "placeHolderEventAccessibilityFrenchNote": "Ajouter des informations supplémentaires sur l'accessibilité",
+          "placeHolderEventAccessibilityEnglishNote": "Ajouter des informations supplémentaires sur l'accessibilité"
+        },
         "status": "Statut",
         "saveOptions": {
           "publish": "Publier",

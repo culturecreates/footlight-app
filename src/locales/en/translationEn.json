@@ -122,6 +122,12 @@
           "facebookLinkFooter": "Paste your Facebook event URL here.",
           "placeHolderLinks": "Enter web address URL"
         },
+        "eventAccessibility": {
+          "title": "Event accessibility",
+          "note": "Note",
+          "placeHolderEventAccessibilityFrenchNote": "Add supplementary accessibility information.",
+          "placeHolderEventAccessibilityEnglishNote": "Add supplementary accessibility information."
+        },
 
         "status": "Status",
         "saveOptions": {
