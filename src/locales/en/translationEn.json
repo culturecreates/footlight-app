@@ -163,6 +163,7 @@
           "date": "Event date is required.",
           "eventType": "A minimum of one event type is required.",
           "targetAudience": "Target audience is required.",
+          "location": "A place or virtual location is required.",
           "otherInformation": {
             "emptyDescription": "Event description is required (50 word minimum).",
             "englishShort": "English description is too short.",

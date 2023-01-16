@@ -272,6 +272,7 @@ function AddEvent() {
         'eventType',
         'targetAudience',
         'dragger-wrap',
+        'location-form-wrapper',
       ])
       .then(() => {
         updateEventState({ id: eventId, calendarId })
@@ -627,8 +628,22 @@ function AddEvent() {
               )}
             </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.location.title')} required={true}>
-              <>
-                <Form.Item label={t('dashboard.events.addEditEvent.location.title')}>
+              <Form.Item
+                name="location-form-wrapper"
+                rules={[
+                  ({ getFieldValue }) => ({
+                    validator() {
+                      if (
+                        getFieldValue('frenchVirtualLocation') ||
+                        getFieldValue('englishVirtualLocation') ||
+                        getFieldValue('virtualLocationOnlineLink')
+                      ) {
+                        return Promise.resolve();
+                      } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.location')));
+                    },
+                  }),
+                ]}>
+                <Form.Item label={t('dashboard.events.addEditEvent.location.virtualLocation')}>
                   <BilingualInput fieldData={initialVirtualLocation[0]?.name}>
                     <Form.Item name="frenchVirtualLocation" initialValue={initialVirtualLocation[0]?.name?.fr}>
                       <TextArea
@@ -667,7 +682,7 @@ function AddEvent() {
                     placeholder={t('dashboard.events.addEditEvent.location.placeHolderOnlineLink')}
                   />
                 </Form.Item>
-              </>
+              </Form.Item>
             </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.otherInformation.title')}>
               <>
