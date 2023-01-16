@@ -142,7 +142,8 @@ function AddEvent() {
           values?.frenchContactTitle ||
           values?.englishContactTitle ||
           values?.contactWebsiteUrl ||
-          values?.contactEmail
+          values?.contactEmail ||
+          values?.contactPhoneNumber
         ) {
           contactPoint = {
             name: {
@@ -153,6 +154,7 @@ function AddEvent() {
               uri: values?.contactWebsiteUrl,
             },
             email: values?.contactEmail,
+            telephone: values?.contactPhoneNumber,
           };
         }
         eventObj = {
@@ -732,6 +734,14 @@ function AddEvent() {
                       addonBefore="https://"
                       autoComplete="off"
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="contactPhoneNumber"
+                    label={t('dashboard.events.addEditEvent.otherInformation.contact.phoneNumber')}
+                    initialValue={eventData?.contactPoint?.telephone}>
+                    <StyledInput
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderPhoneNumber')}
                     />
                   </Form.Item>
                   <Form.Item

@@ -297,6 +297,16 @@ function EventReadOnly() {
                       </p>
                     </>
                   )}
+                  {eventData?.contactPoint?.telephone && (
+                    <>
+                      <p className="read-only-event-content-sub-title-secondary">
+                        {t('dashboard.events.addEditEvent.otherInformation.contact.phoneNumber')}
+                      </p>
+                      <p>
+                        <p className="url-links">{eventData?.contactPoint?.telephone}</p>
+                      </p>
+                    </>
+                  )}
                   {eventData?.contactPoint?.email && (
                     <>
                       <p className="read-only-event-content-sub-title-secondary">
