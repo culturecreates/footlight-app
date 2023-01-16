@@ -67,6 +67,8 @@ function AddEvent() {
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
 
+  let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
+
   const dateTimeConverter = (date, time) => {
     let dateSelected = moment(date).format('DD/MM/YYYY');
     let timeSelected = moment(time).format('hh:mm:ss a');
@@ -607,8 +609,8 @@ function AddEvent() {
             <CardEvent title={t('dashboard.events.addEditEvent.location.title')} required={true}>
               <>
                 <Form.Item label={t('dashboard.events.addEditEvent.location.title')}>
-                  <BilingualInput fieldData={eventData?.contactPoint?.name}>
-                    <Form.Item name="frenchVirtualLocation" initialValue={eventData?.contactPoint?.name?.fr}>
+                  <BilingualInput fieldData={initialVirtualLocation[0]?.name}>
+                    <Form.Item name="frenchVirtualLocation" initialValue={initialVirtualLocation[0]?.name?.fr}>
                       <TextArea
                         autoSize
                         autoComplete="off"
@@ -617,7 +619,7 @@ function AddEvent() {
                         size="large"
                       />
                     </Form.Item>
-                    <Form.Item name="englishVirtualLocation" initialValue={eventData?.contactPoint?.name?.en}>
+                    <Form.Item name="englishVirtualLocation" initialValue={initialVirtualLocation[0]?.name?.en}>
                       <TextArea
                         autoSize
                         autoComplete="off"
@@ -632,7 +634,7 @@ function AddEvent() {
                   name="virtualLocationOnlineLink"
                   className="subheading-wrap"
                   label={t('dashboard.events.addEditEvent.location.onlineLink')}
-                  initialValue={eventData?.contactPoint?.url?.uri}
+                  initialValue={initialVirtualLocation[0]?.url?.uri}
                   rules={[
                     {
                       type: 'url',
