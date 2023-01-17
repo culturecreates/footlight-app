@@ -36,6 +36,7 @@ import { useAddImageMutation } from '../../../services/image';
 import TreeSelectOption from '../../../components/TreeSelectOption';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import StyledInput from '../../../components/Input/Common';
+import SelectOption from '../../../components/Select/SelectOption';
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 
 const { TextArea } = Input;
@@ -116,6 +117,7 @@ function AddEvent() {
           contactPoint,
           accessibility = [],
           accessibilityNote,
+          keywords,
           locationId,
           image;
         let eventObj;
@@ -157,7 +159,7 @@ function AddEvent() {
               description: {},
               dynamicFields: [],
               url: {
-                uri: values?.virtualLocationOnlineLink,
+                uri: urlProtocolCheck(values?.virtualLocationOnlineLink),
               },
             },
           };
@@ -195,6 +197,9 @@ function AddEvent() {
             ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote }),
           };
         }
+        if (values?.keywords?.length > 0) {
+          keywords = values?.keywords;
+        }
 
         eventObj = {
           name: {
@@ -227,6 +232,7 @@ function AddEvent() {
           ...(values?.videoLink && { videoUrl: urlProtocolCheck(values?.videoLink) }),
           ...(contactPoint && { contactPoint }),
           ...(locationId && { locationId }),
+          ...(keywords && { keywords }),
         };
         if (values?.dragger && values?.dragger[0]?.originFileObj) {
           new Compressor(values?.dragger[0].originFileObj, {
@@ -917,6 +923,29 @@ function AddEvent() {
                 <p className="add-event-date-heading">
                   {t('dashboard.events.addEditEvent.otherInformation.facebookLinkFooter')}
                 </p>
+                <Form.Item
+                  name="keywords"
+                  label={t('dashboard.events.addEditEvent.otherInformation.keywords')}
+                  initialValue={eventData?.keywords}>
+                  <SelectOption
+                    mode="tags"
+                    allowClear
+                    placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderKeywords')}
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    open={false}
+                    tagRender={(props) => {
+                      const { label, closable, onClose } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                  />
+                </Form.Item>
               </>
             </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.eventAccessibility.title')}>
