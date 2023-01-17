@@ -101,6 +101,14 @@
           "eventPostponed": "Postponed",
           "eventScheduled": "Scheduled"
         },
+        "location": {
+          "title": "Location",
+          "virtualLocation": "Virtual location",
+          "placeHolderVirtualLocationEn": "Enter English text to display",
+          "placeHolderVirtualLocationFr": "Enter French text to display",
+          "onlineLink": "Link for the online event",
+          "placeHolderOnlineLink": "Enter web address URL"
+        },
         "otherInformation": {
           "title": "Other information",
           "description": {
@@ -122,7 +130,21 @@
           "facebookLinkFooter": "Paste your Facebook event URL here.",
           "placeHolderLinks": "Enter web address URL",
           "keywords": "Keywords",
-          "placeHolderKeywords": "Enter additional keywords"
+          "placeHolderKeywords": "Enter additional keywords",
+          "contact": {
+            "title": "Contact",
+            "contactTitle": "Contact title",
+            "englishcontactTitle": "English contact title",
+            "frenchContactTitle": "French contact title",
+            "website": "Website",
+            "phoneNumber": "Phone number",
+            "email": "Email",
+            "placeHolderContactTitleFrench": "Enter French contact title",
+            "placeHolderContactTitleEnglish": "Enter English contact title",
+            "placeHolderWebsite": "Enter web address URL",
+            "placeHolderPhoneNumber": "Enter phone number",
+            "placeHolderEmail": "Enter email address"
+          }
         },
         "eventAccessibility": {
           "title": "Event accessibility",
@@ -143,6 +165,7 @@
           "date": "Event date is required.",
           "eventType": "A minimum of one event type is required.",
           "targetAudience": "Target audience is required.",
+          "location": "A place or virtual location is required.",
           "otherInformation": {
             "emptyDescription": "Event description is required (50 word minimum).",
             "englishShort": "English description is too short.",

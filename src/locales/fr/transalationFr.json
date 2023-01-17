@@ -100,6 +100,14 @@
           "eventPostponed": "Reporté",
           "eventScheduled": "Programmé"
         },
+        "location": {
+          "title": "Endroit",
+          "virtualLocation": "Emplacement virtuel",
+          "placeHolderVirtualLocationEn": "Entrez le texte anglais à afficher",
+          "placeHolderVirtualLocationFr": "Entrez le texte français à afficher",
+          "onlineLink": "Lien pour l'événement en ligne",
+          "placeHolderOnlineLink": "Entrez l'adresse web URL"
+        },
         "otherInformation": {
           "title": "Autres informations",
           "description": {
@@ -121,7 +129,21 @@
           "facebookLinkFooter": "Collez l'URL de votre événement Facebook ici.",
           "placeHolderLinks": "Entrez l'adresse web URL",
           "keywords": "Mots clés",
-          "placeHolderKeywords": "Entrez des mots clés supplémentaires"
+          "placeHolderKeywords": "Entrez des mots clés supplémentaires",
+          "contact": {
+            "title": "Contact",
+            "contactTitle": "Titre du contact",
+            "englishcontactTitle": "Titre du contact en français",
+            "frenchContactTitle": "Titre du contact en anglais",
+            "website": "Site web",
+            "phoneNumber": "Numéro de téléphone",
+            "email": "Courriel",
+            "placeHolderContactTitleFrench": "Entrez le titre du contact français",
+            "placeHolderContactTitleEnglish": "Entrez le titre du contact anglais",
+            "placeHolderWebsite": "Entrez l'adresse web URL",
+            "placeHolderPhoneNumber": "Entrez le numéro de téléphone",
+            "placeHolderEmail": "Entrez l’adresse courriel"
+          }
         },
         "eventAccessibility": {
           "title": "Accessibilité de l’événement",
@@ -141,6 +163,7 @@
           "date": "La date de l'événement est requise.",
           "eventType": "Un minimum d'un type d'événement est requis.",
           "targetAudience": "Le public cible est requis.",
+          "location": "Un lieu ou un emplacement virtuel est requis.",
           "otherInformation": {
             "emptyDescription": "Une description de l'événement est requise (50 mots minimum).",
             "englishShort": "La description en anglais est trop courte.",

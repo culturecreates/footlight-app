@@ -37,6 +37,7 @@ import TreeSelectOption from '../../../components/TreeSelectOption';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import StyledInput from '../../../components/Input/Common';
 import SelectOption from '../../../components/Select/SelectOption';
+import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 
 const { TextArea } = Input;
 
@@ -67,6 +68,8 @@ function AddEvent() {
   const [dateType, setDateType] = useState();
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
+
+  let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
 
   const dateTimeConverter = (date, time) => {
     let dateSelected = moment(date).format('DD/MM/YYYY');
@@ -111,9 +114,11 @@ function AddEvent() {
           endDateTime,
           additionalType = [],
           audience = [],
+          contactPoint,
           accessibility = [],
           accessibilityNote,
           keywords,
+          locationId,
           image;
         let eventObj;
         if (dateType === dateTypes.SINGLE) {
@@ -140,6 +145,43 @@ function AddEvent() {
               entityId: audienceId,
             };
           });
+        }
+        if (values?.frenchVirtualLocation || values?.englishVirtualLocation || values?.virtualLocationOnlineLink) {
+          locationId = {
+            place: {
+              entityId: null,
+            },
+            virtualLocation: {
+              name: {
+                en: values?.englishVirtualLocation,
+                fr: values?.frenchVirtualLocation,
+              },
+              description: {},
+              dynamicFields: [],
+              url: {
+                uri: urlProtocolCheck(values?.virtualLocationOnlineLink),
+              },
+            },
+          };
+        }
+        if (
+          values?.frenchContactTitle ||
+          values?.englishContactTitle ||
+          values?.contactWebsiteUrl ||
+          values?.contactEmail ||
+          values?.contactPhoneNumber
+        ) {
+          contactPoint = {
+            name: {
+              en: values?.englishContactTitle,
+              fr: values?.frenchContactTitle,
+            },
+            url: {
+              uri: urlProtocolCheck(values?.contactWebsiteUrl),
+            },
+            email: values?.contactEmail,
+            telephone: values?.contactPhoneNumber,
+          };
         }
         if (values?.eventAccessibility) {
           accessibility = values?.eventAccessibility?.map((accessibilityId) => {
@@ -181,13 +223,15 @@ function AddEvent() {
           ...(accessibilityNote && { accessibilityNote }),
           additionalType,
           audience,
-          ...(values?.eventLink && {
-            url: {
-              uri: values?.eventLink,
-            },
-          }),
-          ...(values?.facebookLink && { facebookUrl: values?.facebookLink }),
-          ...(values?.videoLink && { videoUrl: values?.videoLink }),
+
+          url: {
+            uri: urlProtocolCheck(values?.eventLink),
+          },
+
+          ...(values?.facebookLink && { facebookUrl: urlProtocolCheck(values?.facebookLink) }),
+          ...(values?.videoLink && { videoUrl: urlProtocolCheck(values?.videoLink) }),
+          ...(contactPoint && { contactPoint }),
+          ...(locationId && { locationId }),
           ...(keywords && { keywords }),
         };
         if (values?.dragger && values?.dragger[0]?.originFileObj) {
@@ -235,6 +279,7 @@ function AddEvent() {
         'eventType',
         'targetAudience',
         'dragger-wrap',
+        'location-form-wrapper',
       ])
       .then(() => {
         updateEventState({ id: eventId, calendarId })
@@ -451,7 +496,7 @@ function AddEvent() {
                 </Form.Item>
               </Form.Item>
             </CardEvent>
-            <CardEvent title={t('dashboard.events.addEditEvent.dates.dates')}>
+            <CardEvent title={t('dashboard.events.addEditEvent.dates.dates')} required={true}>
               <>
                 {!dateType ? (
                   <Row>
@@ -589,6 +634,63 @@ function AddEvent() {
                 </Form.Item>
               )}
             </CardEvent>
+            <CardEvent title={t('dashboard.events.addEditEvent.location.title')} required={true}>
+              <Form.Item
+                name="location-form-wrapper"
+                rules={[
+                  ({ getFieldValue }) => ({
+                    validator() {
+                      if (
+                        getFieldValue('frenchVirtualLocation') ||
+                        getFieldValue('englishVirtualLocation') ||
+                        getFieldValue('virtualLocationOnlineLink')
+                      ) {
+                        return Promise.resolve();
+                      } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.location')));
+                    },
+                  }),
+                ]}>
+                <Form.Item label={t('dashboard.events.addEditEvent.location.virtualLocation')}>
+                  <BilingualInput fieldData={initialVirtualLocation[0]?.name}>
+                    <Form.Item name="frenchVirtualLocation" initialValue={initialVirtualLocation[0]?.name?.fr}>
+                      <TextArea
+                        autoSize
+                        autoComplete="off"
+                        placeholder={t('dashboard.events.addEditEvent.location.placeHolderVirtualLocationFr')}
+                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                        size="large"
+                      />
+                    </Form.Item>
+                    <Form.Item name="englishVirtualLocation" initialValue={initialVirtualLocation[0]?.name?.en}>
+                      <TextArea
+                        autoSize
+                        autoComplete="off"
+                        placeholder={t('dashboard.events.addEditEvent.location.placeHolderVirtualLocationEn')}
+                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                        size="large"
+                      />
+                    </Form.Item>
+                  </BilingualInput>
+                </Form.Item>
+                <Form.Item
+                  name="virtualLocationOnlineLink"
+                  className="subheading-wrap"
+                  label={t('dashboard.events.addEditEvent.location.onlineLink')}
+                  initialValue={initialVirtualLocation[0]?.url?.uri}
+                  rules={[
+                    {
+                      type: 'url',
+                      message: t('dashboard.events.addEditEvent.validations.url'),
+                    },
+                  ]}>
+                  <StyledInput
+                    addonBefore="https://"
+                    autoComplete="off"
+                    placeholder={t('dashboard.events.addEditEvent.location.placeHolderOnlineLink')}
+                  />
+                </Form.Item>
+              </Form.Item>
+            </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.otherInformation.title')}>
               <>
                 <Form.Item
@@ -698,6 +800,77 @@ function AddEvent() {
                     </Col>
                   </Row>
                   <ImageUpload imageUrl={eventData?.image?.original} imageReadOnly={false} />
+                </Form.Item>
+                <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.contact.title')}>
+                  <Form.Item
+                    label={t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}
+                    className="subheading-wrap">
+                    <BilingualInput fieldData={eventData?.contactPoint?.name}>
+                      <Form.Item name="frenchContactTitle" initialValue={eventData?.contactPoint?.name?.fr}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          placeholder={t(
+                            'dashboard.events.addEditEvent.otherInformation.contact.placeHolderContactTitleFrench',
+                          )}
+                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          size="large"
+                        />
+                      </Form.Item>
+                      <Form.Item name="englishContactTitle" initialValue={eventData?.contactPoint?.name?.en}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          placeholder={t(
+                            'dashboard.events.addEditEvent.otherInformation.contact.placeHolderContactTitleEnglish',
+                          )}
+                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          size="large"
+                        />
+                      </Form.Item>
+                    </BilingualInput>
+                  </Form.Item>
+                  <Form.Item
+                    name="contactWebsiteUrl"
+                    className="subheading-wrap"
+                    label={t('dashboard.events.addEditEvent.otherInformation.contact.website')}
+                    initialValue={eventData?.contactPoint?.url?.uri}
+                    rules={[
+                      {
+                        type: 'url',
+                        message: t('dashboard.events.addEditEvent.validations.url'),
+                      },
+                    ]}>
+                    <StyledInput
+                      addonBefore="https://"
+                      autoComplete="off"
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="contactPhoneNumber"
+                    className="subheading-wrap"
+                    label={t('dashboard.events.addEditEvent.otherInformation.contact.phoneNumber')}
+                    initialValue={eventData?.contactPoint?.telephone}>
+                    <StyledInput
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderPhoneNumber')}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="contactEmail"
+                    className="subheading-wrap"
+                    label={t('dashboard.events.addEditEvent.otherInformation.contact.email')}
+                    initialValue={eventData?.contactPoint?.email}
+                    rules={[
+                      {
+                        type: 'email',
+                        message: t('login.validations.invalidEmail'),
+                      },
+                    ]}>
+                    <StyledInput
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderEmail')}
+                    />
+                  </Form.Item>
                 </Form.Item>
                 <Form.Item
                   name="eventLink"

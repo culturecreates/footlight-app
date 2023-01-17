@@ -34,6 +34,8 @@ function EventReadOnly() {
   const { user } = useSelector(getUserDetails);
   const [dateType, setDateType] = useState();
 
+  let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
+
   useEffect(() => {
     setDateType(
       dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
@@ -226,6 +228,53 @@ function EventReadOnly() {
               </Col>
             </Row>
           </Col>
+          {eventData?.locations?.length > 0 && (
+            <Col flex={'723px'} className="read-only-event-section-col">
+              <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                <Col flex={'423px'}>
+                  <div className="read-only-event-section-wrapper">
+                    <p className="read-only-event-content-title">{t('dashboard.events.addEditEvent.location.title')}</p>
+                    {initialVirtualLocation?.length > 0 && (
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.location.virtualLocation')}
+                      </p>
+                    )}
+
+                    {initialVirtualLocation[0]?.name.fr && (
+                      <>
+                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        <p className="read-only-event-content">{initialVirtualLocation[0]?.name.fr}</p>
+                      </>
+                    )}
+                    {initialVirtualLocation[0]?.name.en && (
+                      <>
+                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        <p className="read-only-event-content">{initialVirtualLocation[0]?.name.en}</p>
+                      </>
+                    )}
+
+                    {initialVirtualLocation[0]?.url?.uri && (
+                      <>
+                        <p className="read-only-event-content-sub-title-secondary">
+                          {t('dashboard.events.addEditEvent.location.onlineLink')}
+                        </p>
+                        <a
+                          href={eventData?.contactPoint?.url?.uri}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="url-links">
+                          {initialVirtualLocation[0]?.url?.uri}
+                        </a>
+                      </>
+                    )}
+                  </div>
+                </Col>
+                <Col flex="233px">
+                  <div style={{ width: '100%' }}></div>
+                </Col>
+              </Row>
+            </Col>
+          )}
           <Col flex={'723px'} className="read-only-event-section-col">
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               <Col flex={'423px'}>
@@ -257,6 +306,65 @@ function EventReadOnly() {
                       <ImageUpload imageUrl={eventData?.image?.original} imageReadOnly={true} />
                     </>
                   )}
+
+                  {eventData?.contactPoint && (
+                    <p className="read-only-event-content-sub-title-primary">
+                      {t('dashboard.events.addEditEvent.otherInformation.contact.title')}
+                    </p>
+                  )}
+                  {eventData?.contactPoint?.name?.fr && (
+                    <>
+                      <p className="read-only-event-content-sub-title-secondary">
+                        {t('dashboard.events.addEditEvent.otherInformation.contact.frenchContactTitle')}
+                      </p>
+                      <p className="read-only-event-content">{eventData?.contactPoint?.name?.fr}</p>
+                    </>
+                  )}
+                  {eventData?.contactPoint?.name?.en && (
+                    <>
+                      <p className="read-only-event-content-sub-title-secondary">
+                        {t('dashboard.events.addEditEvent.otherInformation.contact.englishcontactTitle')}
+                      </p>
+                      <p className="read-only-event-content">{eventData?.contactPoint?.name?.en}</p>
+                    </>
+                  )}
+                  {eventData?.contactPoint?.url?.uri && (
+                    <>
+                      <p className="read-only-event-content-sub-title-secondary">
+                        {t('dashboard.events.addEditEvent.otherInformation.contact.website')}
+                      </p>
+                      <p>
+                        <a
+                          href={eventData?.contactPoint?.url?.uri}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="url-links">
+                          {eventData?.contactPoint?.url?.uri}
+                        </a>
+                      </p>
+                    </>
+                  )}
+                  {eventData?.contactPoint?.telephone && (
+                    <>
+                      <p className="read-only-event-content-sub-title-secondary">
+                        {t('dashboard.events.addEditEvent.otherInformation.contact.phoneNumber')}
+                      </p>
+                      <p>
+                        <p className="url-links">{eventData?.contactPoint?.telephone}</p>
+                      </p>
+                    </>
+                  )}
+                  {eventData?.contactPoint?.email && (
+                    <>
+                      <p className="read-only-event-content-sub-title-secondary">
+                        {t('dashboard.events.addEditEvent.otherInformation.contact.email')}
+                      </p>
+                      <p>
+                        <p className="url-links">{eventData?.contactPoint?.email}</p>
+                      </p>
+                    </>
+                  )}
+
                   {eventData?.url && eventData?.url?.uri && (
                     <>
                       <p className="read-only-event-content-sub-title-primary">
@@ -292,10 +400,7 @@ function EventReadOnly() {
                             href={eventData?.facebookUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="url-links"
-                            style={{
-                              wordWrap: 'break-word',
-                            }}>
+                            className="url-links">
                             {eventData?.facebookUrl}
                           </a>
                         </p>
