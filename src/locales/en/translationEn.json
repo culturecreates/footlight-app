@@ -120,7 +120,21 @@
           "videoLink": "Video",
           "facebookLink": "Facebook event",
           "facebookLinkFooter": "Paste your Facebook event URL here.",
-          "placeHolderLinks": "Enter web address URL"
+          "placeHolderLinks": "Enter web address URL",
+          "contact": {
+            "title": "Contact",
+            "contactTitle": "Contact title",
+            "englishcontactTitle": "English contact title",
+            "frenchContactTitle": "French contact title",
+            "website": "Website",
+            "phoneNumber": "Phone number",
+            "email": "Email",
+            "placeHolderContactTitleFrench": "Enter French contact title",
+            "placeHolderContactTitleEnglish": "Enter English contact title",
+            "placeHolderWebsite": "Enter web address URL",
+            "placeHolderPhoneNumber": "Enter phone number",
+            "placeHolderEmail": "Enter email address"
+          }
         },
         "eventAccessibility": {
           "title": "Event accessibility",

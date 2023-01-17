@@ -52,7 +52,7 @@
 
 .add-edit-wrapper .add-event-section-wrapper {
   padding: 24px;
-  background-color: #ffffff; 
+  background-color: #ffffff;
 }
 
 .add-edit-wrapper .add-event-section-col {
@@ -66,4 +66,8 @@
   font-weight: 400;
   display: flex;
   justify-content: space-between;
+}
+
+.add-edit-wrapper .subheading-wrap .ant-form-item-label > label {
+  font-size: 12px;
 }
