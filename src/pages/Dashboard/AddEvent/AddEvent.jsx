@@ -68,6 +68,8 @@ function AddEvent() {
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
 
+  let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
+
   const dateTimeConverter = (date, time) => {
     let dateSelected = moment(date).format('DD/MM/YYYY');
     let timeSelected = moment(time).format('hh:mm:ss a');
@@ -114,6 +116,7 @@ function AddEvent() {
           contactPoint,
           accessibility = [],
           accessibilityNote,
+          locationId,
           image;
         let eventObj;
         if (dateType === dateTypes.SINGLE) {
@@ -140,6 +143,24 @@ function AddEvent() {
               entityId: audienceId,
             };
           });
+        }
+        if (values?.frenchVirtualLocation || values?.englishVirtualLocation || values?.virtualLocationOnlineLink) {
+          locationId = {
+            place: {
+              entityId: null,
+            },
+            virtualLocation: {
+              name: {
+                en: values?.englishVirtualLocation,
+                fr: values?.frenchVirtualLocation,
+              },
+              description: {},
+              dynamicFields: [],
+              url: {
+                uri: values?.virtualLocationOnlineLink,
+              },
+            },
+          };
         }
         if (
           values?.frenchContactTitle ||
@@ -205,6 +226,7 @@ function AddEvent() {
           ...(values?.facebookLink && { facebookUrl: urlProtocolCheck(values?.facebookLink) }),
           ...(values?.videoLink && { videoUrl: urlProtocolCheck(values?.videoLink) }),
           ...(contactPoint && { contactPoint }),
+          ...(locationId && { locationId }),
         };
         if (values?.dragger && values?.dragger[0]?.originFileObj) {
           new Compressor(values?.dragger[0].originFileObj, {
@@ -251,6 +273,7 @@ function AddEvent() {
         'eventType',
         'targetAudience',
         'dragger-wrap',
+        'location-form-wrapper',
       ])
       .then(() => {
         updateEventState({ id: eventId, calendarId })
@@ -467,7 +490,7 @@ function AddEvent() {
                 </Form.Item>
               </Form.Item>
             </CardEvent>
-            <CardEvent title={t('dashboard.events.addEditEvent.dates.dates')}>
+            <CardEvent title={t('dashboard.events.addEditEvent.dates.dates')} required={true}>
               <>
                 {!dateType ? (
                   <Row>
@@ -604,6 +627,63 @@ function AddEvent() {
                   })}
                 </Form.Item>
               )}
+            </CardEvent>
+            <CardEvent title={t('dashboard.events.addEditEvent.location.title')} required={true}>
+              <Form.Item
+                name="location-form-wrapper"
+                rules={[
+                  ({ getFieldValue }) => ({
+                    validator() {
+                      if (
+                        getFieldValue('frenchVirtualLocation') ||
+                        getFieldValue('englishVirtualLocation') ||
+                        getFieldValue('virtualLocationOnlineLink')
+                      ) {
+                        return Promise.resolve();
+                      } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.location')));
+                    },
+                  }),
+                ]}>
+                <Form.Item label={t('dashboard.events.addEditEvent.location.virtualLocation')}>
+                  <BilingualInput fieldData={initialVirtualLocation[0]?.name}>
+                    <Form.Item name="frenchVirtualLocation" initialValue={initialVirtualLocation[0]?.name?.fr}>
+                      <TextArea
+                        autoSize
+                        autoComplete="off"
+                        placeholder={t('dashboard.events.addEditEvent.location.placeHolderVirtualLocationFr')}
+                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                        size="large"
+                      />
+                    </Form.Item>
+                    <Form.Item name="englishVirtualLocation" initialValue={initialVirtualLocation[0]?.name?.en}>
+                      <TextArea
+                        autoSize
+                        autoComplete="off"
+                        placeholder={t('dashboard.events.addEditEvent.location.placeHolderVirtualLocationEn')}
+                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                        size="large"
+                      />
+                    </Form.Item>
+                  </BilingualInput>
+                </Form.Item>
+                <Form.Item
+                  name="virtualLocationOnlineLink"
+                  className="subheading-wrap"
+                  label={t('dashboard.events.addEditEvent.location.onlineLink')}
+                  initialValue={initialVirtualLocation[0]?.url?.uri}
+                  rules={[
+                    {
+                      type: 'url',
+                      message: t('dashboard.events.addEditEvent.validations.url'),
+                    },
+                  ]}>
+                  <StyledInput
+                    addonBefore="https://"
+                    autoComplete="off"
+                    placeholder={t('dashboard.events.addEditEvent.location.placeHolderOnlineLink')}
+                  />
+                </Form.Item>
+              </Form.Item>
             </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.otherInformation.title')}>
               <>
