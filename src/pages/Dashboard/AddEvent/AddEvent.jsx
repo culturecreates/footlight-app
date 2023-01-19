@@ -668,23 +668,11 @@ function AddEvent() {
                   initialValue={initialPlace && initialPlace[0]?.id}
                   label={t('dashboard.events.addEditEvent.location.title')}>
                   <SelectOption
-                    mode="multiple"
+                    allowClear
+                    style={{ height: 'auto' }}
                     placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
                     showSearch
-                    fieldNames={{ label: 'label', value: 'value', options: 'options' }}
                     options={placesOptions(allPlaces?.data, user)}
-                    onChange={(value, options) => {
-                      console.log(value, options);
-                      // update data only when select one item or clear action
-                      if (options?.length === 0 || options?.length === 1) {
-                        form.setFieldValue('locationPlace', value);
-                      }
-                    }}
-                    tagRender={(props) => {
-                      const { label } = props;
-
-                      return label;
-                    }}
                   />
                 </Form.Item>
                 <Form.Item label={t('dashboard.events.addEditEvent.location.virtualLocation')}>

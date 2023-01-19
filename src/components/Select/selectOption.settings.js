@@ -1,5 +1,6 @@
 import { bilingual } from '../../utils/bilingual';
 import SelectionItem from '../List/SelectionItem';
+import { EnvironmentOutlined } from '@ant-design/icons';
 
 export const taxonomyOptions = (data, user, mappedToField) => {
   let fieldData = data?.data?.filter((taxonomy) => taxonomy?.mappedToField === mappedToField);
@@ -25,7 +26,7 @@ export const placesOptions = (data, user) => {
     return {
       label: (
         <SelectionItem
-          icon="A"
+          icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
           name={bilingual({
             en: place?.name?.en,
             fr: place?.name?.fr,

@@ -4,6 +4,9 @@
   border-radius: 4px;
   padding: 8px;
 }
+.ant-select-show-search.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  height: auto;
+}
 .ant-select-selection-overflow {
   gap: 8px;
 }

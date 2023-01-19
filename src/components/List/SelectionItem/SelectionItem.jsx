@@ -5,7 +5,20 @@ function SelectionItem(props) {
   const { icon, name, description } = props;
   return (
     <List.Item style={{ width: '423px' }}>
-      <List.Item.Meta avatar={<Avatar>{icon}</Avatar>} title={<span>{name}</span>} description={description} />
+      <List.Item.Meta
+        avatar={
+          <Avatar
+            shape="square"
+            icon={icon}
+            style={{
+              backgroundColor: '#E3E8FF',
+              borderRadius: '4px',
+            }}
+          />
+        }
+        title={<span>{name}</span>}
+        description={description}
+      />
     </List.Item>
   );
 }
