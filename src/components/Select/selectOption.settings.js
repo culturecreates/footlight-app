@@ -44,3 +44,8 @@ export const placesOptions = (data, user) => {
   });
   return options;
 };
+
+export const filterPlaceOption = (inputValue, option) => {
+  if (option?.label?.props?.name?.toLowerCase()?.includes(inputValue?.toLowerCase())) return true;
+  else return false;
+};

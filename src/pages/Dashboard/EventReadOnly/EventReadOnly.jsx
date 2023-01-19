@@ -257,8 +257,10 @@ function EventReadOnly() {
                         />
                       </>
                     )}
+
                     {initialVirtualLocation?.length > 0 && (
                       <p className="read-only-event-content-sub-title-primary">
+                        <br />
                         {t('dashboard.events.addEditEvent.location.virtualLocation')}
                       </p>
                     )}

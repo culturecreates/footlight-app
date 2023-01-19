@@ -39,7 +39,7 @@ import StyledInput from '../../../components/Input/Common';
 import SelectOption from '../../../components/Select/SelectOption';
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { useGetAllPlacesQuery } from '../../../services/places';
-import { placesOptions } from '../../../components/Select/selectOption.settings';
+import { filterPlaceOption, placesOptions } from '../../../components/Select/selectOption.settings';
 
 const { TextArea } = Input;
 
@@ -673,6 +673,7 @@ function AddEvent() {
                     placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
                     showSearch
                     showArrow={false}
+                    filterOption={filterPlaceOption}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     options={placesOptions(allPlaces?.data, user)}
                   />

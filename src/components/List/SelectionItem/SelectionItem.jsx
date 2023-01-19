@@ -1,10 +1,11 @@
 import React from 'react';
+import './selectionItem.css';
 import { Avatar, List } from 'antd';
 
 function SelectionItem(props) {
   const { icon, name, description } = props;
   return (
-    <List.Item style={{ width: '423px', alignItems: 'center' }}>
+    <List.Item className="selection-item-wrapper">
       <List.Item.Meta
         style={{ alignItems: 'center' }}
         avatar={
@@ -17,8 +18,8 @@ function SelectionItem(props) {
             }}
           />
         }
-        title={<span>{name}</span>}
-        description={description}
+        title={<span className="selection-item-title">{name}</span>}
+        description={<span className="selection-item-subheading">{description}</span>}
       />
     </List.Item>
   );
