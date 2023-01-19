@@ -651,8 +651,10 @@ function AddEvent() {
                   }),
                 ]}>
                 <Form.Item label={t('dashboard.events.addEditEvent.location.virtualLocation')}>
-                  <BilingualInput fieldData={initialVirtualLocation[0]?.name}>
-                    <Form.Item name="frenchVirtualLocation" initialValue={initialVirtualLocation[0]?.name?.fr}>
+                  <BilingualInput fieldData={initialVirtualLocation && initialVirtualLocation[0]?.name}>
+                    <Form.Item
+                      name="frenchVirtualLocation"
+                      initialValue={initialVirtualLocation && initialVirtualLocation[0]?.name?.fr}>
                       <TextArea
                         autoSize
                         autoComplete="off"
@@ -661,7 +663,9 @@ function AddEvent() {
                         size="large"
                       />
                     </Form.Item>
-                    <Form.Item name="englishVirtualLocation" initialValue={initialVirtualLocation[0]?.name?.en}>
+                    <Form.Item
+                      name="englishVirtualLocation"
+                      initialValue={initialVirtualLocation && initialVirtualLocation[0]?.name?.en}>
                       <TextArea
                         autoSize
                         autoComplete="off"
@@ -676,7 +680,7 @@ function AddEvent() {
                   name="virtualLocationOnlineLink"
                   className="subheading-wrap"
                   label={t('dashboard.events.addEditEvent.location.onlineLink')}
-                  initialValue={initialVirtualLocation[0]?.url?.uri}
+                  initialValue={initialVirtualLocation && initialVirtualLocation[0]?.url?.uri}
                   rules={[
                     {
                       type: 'url',
