@@ -38,7 +38,11 @@
   color: #222732;
   margin-bottom: 24px;
 }
-
+.add-edit-wrapper .title-required:after {
+  margin-left: 4px;
+  content: '*';
+  color: #f43131;
+}
 .add-edit-wrapper .add-event-date-heading {
   font-weight: 400;
   font-size: 16px;
@@ -52,7 +56,7 @@
 
 .add-edit-wrapper .add-event-section-wrapper {
   padding: 24px;
-  background-color: #ffffff; 
+  background-color: #ffffff;
 }
 
 .add-edit-wrapper .add-event-section-col {
@@ -66,4 +70,8 @@
   font-weight: 400;
   display: flex;
   justify-content: space-between;
+}
+
+.add-edit-wrapper .subheading-wrap .ant-form-item-label > label {
+  font-size: 12px;
 }
