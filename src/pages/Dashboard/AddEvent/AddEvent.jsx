@@ -673,6 +673,7 @@ function AddEvent() {
                     placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
                     showSearch
                     showArrow={false}
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     options={placesOptions(allPlaces?.data, user)}
                   />
                 </Form.Item>

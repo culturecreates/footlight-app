@@ -4,8 +4,9 @@ import { Avatar, List } from 'antd';
 function SelectionItem(props) {
   const { icon, name, description } = props;
   return (
-    <List.Item style={{ width: '423px' }}>
+    <List.Item style={{ width: '423px', alignItems: 'center' }}>
       <List.Item.Meta
+        style={{ alignItems: 'center' }}
         avatar={
           <Avatar
             shape="square"
