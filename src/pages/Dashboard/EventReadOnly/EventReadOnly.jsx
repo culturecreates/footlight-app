@@ -234,26 +234,26 @@ function EventReadOnly() {
                 <Col flex={'423px'}>
                   <div className="read-only-event-section-wrapper">
                     <p className="read-only-event-content-title">{t('dashboard.events.addEditEvent.location.title')}</p>
-                    {initialVirtualLocation?.length > 0 && (
+                    {initialVirtualLocation[0] && initialVirtualLocation?.length > 0 && (
                       <p className="read-only-event-content-sub-title-primary">
                         {t('dashboard.events.addEditEvent.location.virtualLocation')}
                       </p>
                     )}
 
-                    {initialVirtualLocation[0]?.name.fr && (
+                    {initialVirtualLocation[0] && initialVirtualLocation[0]?.name.fr && (
                       <>
                         <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
                         <p className="read-only-event-content">{initialVirtualLocation[0]?.name.fr}</p>
                       </>
                     )}
-                    {initialVirtualLocation[0]?.name.en && (
+                    {initialVirtualLocation[0] && initialVirtualLocation[0]?.name.en && (
                       <>
                         <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
                         <p className="read-only-event-content">{initialVirtualLocation[0]?.name.en}</p>
                       </>
                     )}
 
-                    {initialVirtualLocation[0]?.url?.uri && (
+                    {initialVirtualLocation[0] && initialVirtualLocation[0]?.url?.uri && (
                       <>
                         <p className="read-only-event-content-sub-title-secondary">
                           {t('dashboard.events.addEditEvent.location.onlineLink')}
