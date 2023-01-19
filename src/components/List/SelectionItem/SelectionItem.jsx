@@ -3,9 +3,9 @@ import './selectionItem.css';
 import { Avatar, List } from 'antd';
 
 function SelectionItem(props) {
-  const { icon, name, description } = props;
+  const { icon, name, description, bordered } = props;
   return (
-    <List.Item className="selection-item-wrapper">
+    <List.Item className="selection-item-wrapper" style={{ border: bordered && '1px solid#607EFC' }}>
       <List.Item.Meta
         style={{ alignItems: 'center' }}
         avatar={
