@@ -249,9 +249,9 @@ function EventReadOnly() {
                           {t('dashboard.events.addEditEvent.location.title')}
                         </p>
                         <SelectOption
-                          mode="multiple"
                           disabled
                           bordered={false}
+                          showArrow={false}
                           defaultValue={initialPlace && initialPlace[0]?.id}
                           options={placesOptions(allPlaces?.data, user)}
                         />

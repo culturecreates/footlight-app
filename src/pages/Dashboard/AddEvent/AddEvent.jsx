@@ -672,6 +672,7 @@ function AddEvent() {
                     style={{ height: 'auto' }}
                     placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
                     showSearch
+                    showArrow={false}
                     options={placesOptions(allPlaces?.data, user)}
                   />
                 </Form.Item>
