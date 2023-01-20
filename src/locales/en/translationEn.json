@@ -152,7 +152,21 @@
           "placeHolderEventAccessibilityFrenchNote": "Add supplementary accessibility information.",
           "placeHolderEventAccessibilityEnglishNote": "Add supplementary accessibility information."
         },
-
+        "tickets": {
+          "title": "Tickets",
+          "free": "Free",
+          "paid": "Paid",
+          "buyTicketLink": "Buy tickets link",
+          "note": "Note",
+          "ticketType": "Ticket type",
+          "changeTicketType": "Change ticket type",
+          "price": "Price",
+          "description": "Description",
+          "enterType": "Enter Type",
+          "anotherTicketType": "Another ticket type",
+          "placeHolderNotes": "Add supplementary ticketing information",
+          "placeHolderLinks": "Enter web address URL"
+        },
         "status": "Status",
         "saveOptions": {
           "publish": "Publish",

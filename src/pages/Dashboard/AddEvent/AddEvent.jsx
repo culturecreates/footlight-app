@@ -38,6 +38,7 @@ import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSe
 import StyledInput from '../../../components/Input/Common';
 import SelectOption from '../../../components/Select/SelectOption';
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
+import { offerTypes } from '../../../constants/ticketOffers';
 
 const { TextArea } = Input;
 
@@ -66,6 +67,7 @@ function AddEvent() {
   const [addImage] = useAddImageMutation();
 
   const [dateType, setDateType] = useState();
+  const [ticketType, setTicketType] = useState();
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
 
@@ -1002,6 +1004,81 @@ function AddEvent() {
                     </Form.Item>
                   </BilingualInput>
                 </Form.Item>
+              </>
+            </CardEvent>
+            <CardEvent title={t('dashboard.events.addEditEvent.tickets.title')} required={true}>
+              <>
+                {(ticketType == offerTypes.FREE || !ticketType) && (
+                  <Row>
+                    <Col flex={'423px'}>
+                      <Form.Item name="ticketPickerWrapper">
+                        <div className="ticket-buttons">
+                          <DateAction
+                            style={{ width: '200px' }}
+                            label={t('dashboard.events.addEditEvent.tickets.free')}
+                            onClick={() => setTicketType(offerTypes.FREE)}
+                          />
+                          <DateAction
+                            style={{ width: '200px' }}
+                            label={t('dashboard.events.addEditEvent.tickets.paid')}
+                            onClick={() => setTicketType(offerTypes.PAYING)}
+                          />
+                        </div>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                )}
+                {ticketType == offerTypes.PAYING && (
+                  <Form.Item
+                    name="ticketLink"
+                    label={t('dashboard.events.addEditEvent.tickets.buyTicketLink')}
+                    initialValue={eventData?.facebookUrl}
+                    rules={[
+                      {
+                        type: 'url',
+                        message: t('dashboard.events.addEditEvent.validations.url'),
+                      },
+                    ]}>
+                    <StyledInput
+                      addonBefore="https://"
+                      autoComplete="off"
+                      placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderLinks')}
+                    />
+                  </Form.Item>
+                )}
+
+                {(ticketType == offerTypes.FREE || ticketType == offerTypes.PAYING) && (
+                  <Form.Item label={t('dashboard.events.addEditEvent.tickets.note')}>
+                    <BilingualInput>
+                      <Form.Item name="frenchTicketNote">
+                        <TextArea
+                          autoComplete="off"
+                          placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderNotes')}
+                          style={{
+                            borderRadius: '4px',
+                            border: '4px solid #E8E8E8',
+                            width: '423px',
+                            resize: 'vertical',
+                          }}
+                          size="large"
+                        />
+                      </Form.Item>
+                      <Form.Item name="englishTicketNote">
+                        <TextArea
+                          autoComplete="off"
+                          placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderNotes')}
+                          style={{
+                            borderRadius: '4px',
+                            border: '4px solid #E8E8E8',
+                            width: '423px',
+                            resize: 'vertical',
+                          }}
+                          size="large"
+                        />
+                      </Form.Item>
+                    </BilingualInput>
+                  </Form.Item>
+                )}
               </>
             </CardEvent>
           </Row>

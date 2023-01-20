@@ -151,6 +151,21 @@
           "placeHolderEventAccessibilityFrenchNote": "Ajouter des informations supplémentaires sur l'accessibilité",
           "placeHolderEventAccessibilityEnglishNote": "Ajouter des informations supplémentaires sur l'accessibilité"
         },
+        "tickets": {
+          "title": "Billets",
+          "free": "Gratuit",
+          "paid": "Payant",
+          "buyTicketLink": "Lien vers la billeterie",
+          "note": "Note",
+          "ticketType": "Type de bilets",
+          "changeTicketType": "Changer le type de billet",
+          "price": "Prix",
+          "description": "Description",
+          "enterType": "Entrez le Type",
+          "anotherTicketType": "Autre type de billet",
+          "placeHolderNotes": "Ajouter des informations supplémentaires sur la billeterie",
+          "placeHolderLinks": "Entrez l'adresse web URL"
+        },
         "status": "Statut",
         "saveOptions": {
           "publish": "Publier",
