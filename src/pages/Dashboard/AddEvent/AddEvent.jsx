@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
 import { Form, Row, Col, Input } from 'antd';
-import { SyncOutlined, InfoCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { SyncOutlined, InfoCircleOutlined, CloseCircleOutlined, CalendarOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -39,6 +39,8 @@ import StyledInput from '../../../components/Input/Common';
 import SelectOption from '../../../components/Select/SelectOption';
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { offerTypes } from '../../../constants/ticketOffers';
+import { ReactComponent as Money } from '../../../assets/icons/Money.svg';
+import { ReactComponent as MoneyFree } from '../../../assets/icons/Money-Free.svg';
 
 const { TextArea } = Input;
 
@@ -588,14 +590,20 @@ function AddEvent() {
                         ]}>
                         <div className="date-buttons">
                           <DateAction
+                            iconRender={<CalendarOutlined />}
                             label={t('dashboard.events.addEditEvent.dates.singleDate')}
                             onClick={() => setDateType(dateTypes.SINGLE)}
                           />
                           <DateAction
+                            iconRender={<CalendarOutlined />}
                             label={t('dashboard.events.addEditEvent.dates.dateRange')}
                             onClick={() => setDateType(dateTypes.RANGE)}
                           />
-                          <DateAction label={t('dashboard.events.addEditEvent.dates.multipleDates')} disabled={true} />
+                          <DateAction
+                            iconRender={<CalendarOutlined />}
+                            label={t('dashboard.events.addEditEvent.dates.multipleDates')}
+                            disabled={true}
+                          />
                         </div>
                       </Form.Item>
                     </Col>
@@ -1015,10 +1023,12 @@ function AddEvent() {
                         <div className="ticket-buttons">
                           <DateAction
                             style={{ width: '200px' }}
+                            iconRender={<Money />}
                             label={t('dashboard.events.addEditEvent.tickets.free')}
                             onClick={() => setTicketType(offerTypes.FREE)}
                           />
                           <DateAction
+                            iconRender={<MoneyFree />}
                             style={{ width: '200px' }}
                             label={t('dashboard.events.addEditEvent.tickets.paid')}
                             onClick={() => setTicketType(offerTypes.PAYING)}
