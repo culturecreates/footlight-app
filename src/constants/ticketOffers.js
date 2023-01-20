@@ -1,4 +1,4 @@
 export const offerTypes = {
-  FREE: 'Free',
-  PAYING: 'Paying',
+  FREE: 'FREE',
+  PAYING: 'PAYING',
 };

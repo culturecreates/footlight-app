@@ -123,6 +123,7 @@ function AddEvent() {
           accessibilityNote,
           keywords,
           locationId,
+          offerConfiguration,
           image;
         let eventObj;
         if (dateType === dateTypes.SINGLE) {
@@ -204,6 +205,22 @@ function AddEvent() {
         if (values?.keywords?.length > 0) {
           keywords = values?.keywords;
         }
+        if (ticketType) {
+          offerConfiguration = {
+            category: ticketType,
+            //Change name key to note when the change is made in the backend
+            name: {
+              en: values?.englishTicketNote,
+              fr: values?.frenchTicketNote,
+            },
+            priceCurrency: 'CAD',
+            ...(values?.ticketLinkurl && {
+              url: {
+                uri: values?.ticketLink,
+              },
+            }),
+          };
+        }
 
         eventObj = {
           name: {
@@ -237,6 +254,7 @@ function AddEvent() {
           ...(contactPoint && { contactPoint }),
           ...(locationId && { locationId }),
           ...(keywords && { keywords }),
+          ...(ticketType && { offerConfiguration }),
         };
         if (values?.dragger && values?.dragger[0]?.originFileObj) {
           new Compressor(values?.dragger[0].originFileObj, {
@@ -366,6 +384,7 @@ function AddEvent() {
     setDateType(
       dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
     );
+    setTicketType(eventData?.offerConfiguration?.category);
   }, [isLoading]);
 
   return (
@@ -1023,12 +1042,12 @@ function AddEvent() {
                         <div className="ticket-buttons">
                           <DateAction
                             style={{ width: '200px' }}
-                            iconRender={<Money />}
+                            iconRender={<MoneyFree />}
                             label={t('dashboard.events.addEditEvent.tickets.free')}
                             onClick={() => setTicketType(offerTypes.FREE)}
                           />
                           <DateAction
-                            iconRender={<MoneyFree />}
+                            iconRender={<Money />}
                             style={{ width: '200px' }}
                             label={t('dashboard.events.addEditEvent.tickets.paid')}
                             onClick={() => setTicketType(offerTypes.PAYING)}
@@ -1042,7 +1061,7 @@ function AddEvent() {
                   <Form.Item
                     name="ticketLink"
                     label={t('dashboard.events.addEditEvent.tickets.buyTicketLink')}
-                    initialValue={eventData?.facebookUrl}
+                    initialValue={eventData?.offerConfiguration?.url?.uri}
                     rules={[
                       {
                         type: 'url',
@@ -1059,8 +1078,8 @@ function AddEvent() {
 
                 {(ticketType == offerTypes.FREE || ticketType == offerTypes.PAYING) && (
                   <Form.Item label={t('dashboard.events.addEditEvent.tickets.note')}>
-                    <BilingualInput>
-                      <Form.Item name="frenchTicketNote">
+                    <BilingualInput fieldData={eventData?.offerConfiguration?.name}>
+                      <Form.Item name="frenchTicketNote" initialValue={eventData?.offerConfiguration?.name?.fr}>
                         <TextArea
                           autoComplete="off"
                           placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderNotes')}
@@ -1073,7 +1092,7 @@ function AddEvent() {
                           size="large"
                         />
                       </Form.Item>
-                      <Form.Item name="englishTicketNote">
+                      <Form.Item name="englishTicketNote" initialValue={eventData?.offerConfiguration?.name?.en}>
                         <TextArea
                           autoComplete="off"
                           placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderNotes')}
