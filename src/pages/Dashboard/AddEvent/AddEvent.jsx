@@ -113,7 +113,7 @@ function AddEvent() {
   };
   const saveAsDraftHandler = () => {
     form
-      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker', 'datePickerWrapper'])
+      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker', 'datePickerWrapper', 'locationPlace'])
       .then(() => {
         var values = form.getFieldsValue(true);
         var startDateTime,
@@ -160,7 +160,7 @@ function AddEvent() {
         ) {
           locationId = {
             place: {
-              entityId: values?.locationPlace[0],
+              entityId: values?.locationPlace,
             },
             virtualLocation: {
               name: {
