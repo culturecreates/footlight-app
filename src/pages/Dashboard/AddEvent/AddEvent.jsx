@@ -113,7 +113,7 @@ function AddEvent() {
   };
   const saveAsDraftHandler = () => {
     form
-      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker', 'datePickerWrapper', 'locationPlace'])
+      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker', 'datePickerWrapper'])
       .then(() => {
         var values = form.getFieldsValue(true);
         var startDateTime,
@@ -655,7 +655,8 @@ function AddEvent() {
                       if (
                         getFieldValue('frenchVirtualLocation') ||
                         getFieldValue('englishVirtualLocation') ||
-                        getFieldValue('virtualLocationOnlineLink')
+                        getFieldValue('virtualLocationOnlineLink') ||
+                        getFieldValue('locationPlace')
                       ) {
                         return Promise.resolve();
                       } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.location')));
