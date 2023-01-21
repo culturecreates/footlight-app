@@ -1,0 +1,20 @@
+.selection-item-wrapper {
+  width: 100%;
+  align-items: center;
+  /* background-color: #f9faff; */
+  border-radius: 4px;
+  padding: 8px;
+  margin: 8px 0px 8px 0px;
+}
+
+.selection-item-wrapper .selection-item-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: #222732;
+}
+
+.selection-item-wrapper .selection-item-subheading {
+  font-weight: 400;
+  font-size: 12px;
+  color: #646d7b;
+}

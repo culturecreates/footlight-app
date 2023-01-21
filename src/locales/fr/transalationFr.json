@@ -102,6 +102,7 @@
         },
         "location": {
           "title": "Endroit",
+          "placeHolderLocation": "Recherchez Lieux",
           "virtualLocation": "Emplacement virtuel",
           "placeHolderVirtualLocationEn": "Entrez le texte anglais à afficher",
           "placeHolderVirtualLocationFr": "Entrez le texte français à afficher",

@@ -103,6 +103,7 @@
         },
         "location": {
           "title": "Location",
+          "placeHolderLocation": "Search Places",
           "virtualLocation": "Virtual location",
           "placeHolderVirtualLocationEn": "Enter English text to display",
           "placeHolderVirtualLocationFr": "Enter French text to display",
