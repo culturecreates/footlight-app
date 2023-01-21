@@ -1041,7 +1041,7 @@ function AddEvent() {
                       <Form.Item name="ticketPickerWrapper">
                         <div className="ticket-buttons">
                           <DateAction
-                            style={{ width: '200px' }}
+                            style={{ width: '200px', backgroundColor: ticketType == offerTypes.FREE && '#EFF2FF' }}
                             iconRender={<MoneyFree />}
                             label={t('dashboard.events.addEditEvent.tickets.free')}
                             onClick={() => setTicketType(offerTypes.FREE)}
