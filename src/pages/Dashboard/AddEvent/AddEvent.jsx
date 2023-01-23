@@ -1,14 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
-import { Form, Row, Col, Input, Button } from 'antd';
-import {
-  SyncOutlined,
-  InfoCircleOutlined,
-  CloseCircleOutlined,
-  CalendarOutlined,
-  PlusOutlined,
-  DeleteOutlined,
-} from '@ant-design/icons';
+import { Form, Row, Col, Input } from 'antd';
+import { SyncOutlined, InfoCircleOutlined, CloseCircleOutlined, CalendarOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -48,6 +41,7 @@ import { urlProtocolCheck } from '../../../components/Input/Common/input.setting
 import { offerTypes } from '../../../constants/ticketOffers';
 import { ReactComponent as Money } from '../../../assets/icons/Money.svg';
 import { ReactComponent as MoneyFree } from '../../../assets/icons/Money-Free.svg';
+import TicketPrice from '../../../components/TicketPrice';
 
 const { TextArea } = Input;
 
@@ -1088,112 +1082,24 @@ function AddEvent() {
                     <BilingualInput>
                       <Form.List name="prices" initialValue={eventData?.offerConfiguration?.prices}>
                         {(fields, { add, remove }) => (
-                          <table className="edit-price-table">
-                            {fields.map(({ key, name, ...restField }) => (
-                              <tr key={key}>
-                                <td>
-                                  <Form.Item {...restField} name={[name, 'price']}>
-                                    <StyledInput addonAfter={t('dashboard.events.addEditEvent.tickets.CAD')} />
-                                  </Form.Item>
-                                </td>
-                                <td>
-                                  <Form.Item {...restField} name={[name, 'name', 'fr']}>
-                                    <StyledInput placeholder={t('dashboard.events.addEditEvent.tickets.enterType')} />
-                                  </Form.Item>
-                                </td>
-
-                                <td>
-                                  <DeleteOutlined onClick={() => remove(name)} style={{ color: '#1B3DE6' }} />
-                                </td>
-                              </tr>
-                            ))}
-                            <Form.Item>
-                              <Button
-                                type="text"
-                                size="small"
-                                style={{ color: '#1B3DE6', display: 'flex', gap: '8px' }}
-                                onClick={() => add()}
-                                icon={
-                                  <Button
-                                    shape="default"
-                                    size="small"
-                                    style={{
-                                      backgroundColor: '#EFF2FF',
-                                      borderRadius: '4px',
-                                      border: '0px',
-                                    }}>
-                                    <PlusOutlined style={{ color: '#1B3DE6' }} />
-                                  </Button>
-                                }>
-                                {t('dashboard.events.addEditEvent.tickets.anotherTicketType')}
-                              </Button>
-                            </Form.Item>
-                          </table>
+                          <TicketPrice
+                            add={add}
+                            remove={remove}
+                            fields={fields}
+                            firstFieldName={'price'}
+                            secondFieldName={('name', 'fr')}
+                          />
                         )}
                       </Form.List>
                       <Form.List name="prices" initialValue={eventData?.offerConfiguration?.prices}>
                         {(fields, { add, remove }) => (
-                          <table className="edit-price-table">
-                            <tr>
-                              <th>
-                                <p className="read-only-event-content-sub-title-primary">
-                                  {t('dashboard.events.addEditEvent.tickets.price')}
-                                </p>
-                              </th>
-                              <th>
-                                <p className="read-only-event-content-sub-title-primary">
-                                  {t('dashboard.events.addEditEvent.tickets.description')}
-                                </p>
-                              </th>
-                              <th></th>
-                            </tr>
-                            {fields.map(({ key, name, ...restField }) => (
-                              <tr key={key}>
-                                <td style={{ width: '25%' }}>
-                                  <Form.Item {...restField} name={[name, 'price']}>
-                                    <StyledInput
-                                      style={{ borderWidth: '0px' }}
-                                      addonAfter={t('dashboard.events.addEditEvent.tickets.CAD')}
-                                    />
-                                  </Form.Item>
-                                </td>
-                                <td>
-                                  <Form.Item {...restField} name={[name, 'name', 'en']}>
-                                    <StyledInput placeholder={t('dashboard.events.addEditEvent.tickets.enterType')} />
-                                  </Form.Item>
-                                </td>
-                                <td>
-                                  <Form.Item>
-                                    <DeleteOutlined
-                                      onClick={() => remove(name)}
-                                      style={{ color: '#1B3DE6', fontSize: '20px' }}
-                                    />
-                                  </Form.Item>
-                                </td>
-                              </tr>
-                            ))}
-                            <Form.Item>
-                              <Button
-                                type="text"
-                                size="small"
-                                style={{ color: '#1B3DE6', display: 'flex', gap: '8px' }}
-                                onClick={() => add()}
-                                icon={
-                                  <Button
-                                    shape="default"
-                                    size="small"
-                                    style={{
-                                      backgroundColor: '#EFF2FF',
-                                      borderRadius: '4px',
-                                      border: '0px',
-                                    }}>
-                                    <PlusOutlined style={{ color: '#1B3DE6' }} />
-                                  </Button>
-                                }>
-                                {t('dashboard.events.addEditEvent.tickets.anotherTicketType')}
-                              </Button>
-                            </Form.Item>
-                          </table>
+                          <TicketPrice
+                            add={add}
+                            remove={remove}
+                            fields={fields}
+                            firstFieldName={'price'}
+                            secondFieldName={('name', 'en')}
+                          />
                         )}
                       </Form.List>
                     </BilingualInput>
