@@ -7,7 +7,7 @@ import {
   CloseCircleOutlined,
   CalendarOutlined,
   PlusOutlined,
-  MinusCircleOutlined,
+  DeleteOutlined,
 } from '@ant-design/icons';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
@@ -1092,18 +1092,40 @@ function AddEvent() {
                             {fields.map(({ key, name, ...restField }) => (
                               <Input.Group compact key={key}>
                                 <Form.Item {...restField} name={[name, 'price']}>
-                                  <Input styleplaceholder="First Name" style={{ width: '50%' }} />
+                                  <StyledInput
+                                    style={{ width: '30%' }}
+                                    addonAfter={t('dashboard.events.addEditEvent.tickets.CAD')}
+                                  />
                                 </Form.Item>
                                 <Form.Item {...restField} name={[name, 'name', 'fr']}>
-                                  <Input placeholder="Last Name" style={{ width: '50%' }} />
+                                  <StyledInput
+                                    placeholder={t('dashboard.events.addEditEvent.tickets.enterType')}
+                                    style={{ width: '70%' }}
+                                  />
                                 </Form.Item>
 
-                                <MinusCircleOutlined onClick={() => remove(name)} />
+                                <DeleteOutlined onClick={() => remove(name)} style={{ color: '#1B3DE6' }} />
                               </Input.Group>
                             ))}
                             <Form.Item>
-                              <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-                                Add field
+                              <Button
+                                type="text"
+                                size="small"
+                                style={{ color: '#1B3DE6', display: 'flex', gap: '8px' }}
+                                onClick={() => add()}
+                                icon={
+                                  <Button
+                                    shape="default"
+                                    size="small"
+                                    style={{
+                                      backgroundColor: '#EFF2FF',
+                                      borderRadius: '4px',
+                                      border: '0px',
+                                    }}>
+                                    <PlusOutlined style={{ color: '#1B3DE6' }} />
+                                  </Button>
+                                }>
+                                {t('dashboard.events.addEditEvent.tickets.anotherTicketType')}
                               </Button>
                             </Form.Item>
                           </>
@@ -1115,18 +1137,40 @@ function AddEvent() {
                             {fields.map(({ key, name, ...restField }) => (
                               <Input.Group compact key={key}>
                                 <Form.Item {...restField} name={[name, 'price']}>
-                                  <Input styleplaceholder="First Name" style={{ width: '50%' }} />
+                                  <StyledInput
+                                    style={{ width: '30%' }}
+                                    addonAfter={t('dashboard.events.addEditEvent.tickets.CAD')}
+                                  />
                                 </Form.Item>
                                 <Form.Item {...restField} name={[name, 'name', 'en']}>
-                                  <Input placeholder="Last Name" style={{ width: '50%' }} />
+                                  <StyledInput
+                                    style={{ width: '70%' }}
+                                    placeholder={t('dashboard.events.addEditEvent.tickets.enterType')}
+                                  />
                                 </Form.Item>
 
-                                <MinusCircleOutlined onClick={() => remove(name)} />
+                                <DeleteOutlined onClick={() => remove(name)} style={{ color: '#1B3DE6' }} />
                               </Input.Group>
                             ))}
                             <Form.Item>
-                              <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-                                Add field
+                              <Button
+                                type="text"
+                                size="small"
+                                style={{ color: '#1B3DE6', display: 'flex', gap: '8px' }}
+                                onClick={() => add()}
+                                icon={
+                                  <Button
+                                    shape="default"
+                                    size="small"
+                                    style={{
+                                      backgroundColor: '#EFF2FF',
+                                      borderRadius: '4px',
+                                      border: '0px',
+                                    }}>
+                                    <PlusOutlined style={{ color: '#1B3DE6' }} />
+                                  </Button>
+                                }>
+                                {t('dashboard.events.addEditEvent.tickets.anotherTicketType')}
                               </Button>
                             </Form.Item>
                           </>
