@@ -525,7 +525,47 @@ function EventReadOnly() {
                           </p>
                         </>
                       )}
+                    {eventData?.offerConfiguration?.category === offerTypes.PAYING &&
+                      eventData?.offerConfiguration?.prices?.length > 0 && (
+                        <table className="ticket-price-table">
+                          <tr>
+                            <th>
+                              <p className="read-only-event-content-sub-title-primary">
+                                {t('dashboard.events.addEditEvent.tickets.price')}
+                              </p>
+                            </th>
+                            <th>
+                              <p className="read-only-event-content-sub-title-primary">
+                                {t('dashboard.events.addEditEvent.tickets.description')}
+                              </p>
+                            </th>
+                          </tr>
 
+                          {eventData?.offerConfiguration?.prices?.map((offer, key) => {
+                            return (
+                              <tr key={key}>
+                                <td>
+                                  <p className="read-only-event-content">
+                                    {offer?.price}&nbsp;
+                                    <span style={{ fontWeight: '400' }}>
+                                      {t('dashboard.events.addEditEvent.tickets.CAD')}
+                                    </span>
+                                  </p>
+                                </td>
+                                <td>
+                                  <p className="read-only-event-content">
+                                    {bilingual({
+                                      en: offer?.name?.en,
+                                      fr: offer?.name?.fr,
+                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    })}
+                                  </p>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </table>
+                      )}
                     {(eventData?.offerConfiguration?.name?.fr || eventData?.offerConfiguration?.name?.en) && (
                       <p className="read-only-event-content-sub-title-primary">
                         {t('dashboard.events.addEditEvent.tickets.note')}

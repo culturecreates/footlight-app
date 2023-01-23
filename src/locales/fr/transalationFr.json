@@ -164,7 +164,8 @@
           "enterType": "Entrez le Type",
           "anotherTicketType": "Autre type de billet",
           "placeHolderNotes": "Ajouter des informations supplémentaires sur la billeterie",
-          "placeHolderLinks": "Entrez l'adresse web URL"
+          "placeHolderLinks": "Entrez l'adresse web URL",
+          "CAD": "CAD $"
         },
         "status": "Statut",
         "saveOptions": {

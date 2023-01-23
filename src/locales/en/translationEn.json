@@ -165,7 +165,8 @@
           "enterType": "Enter Type",
           "anotherTicketType": "Another ticket type",
           "placeHolderNotes": "Add supplementary ticketing information",
-          "placeHolderLinks": "Enter web address URL"
+          "placeHolderLinks": "Enter web address URL",
+          "CAD": "CAD $"
         },
         "status": "Status",
         "saveOptions": {
