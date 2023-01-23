@@ -1,7 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
-import { Form, Row, Col, Input } from 'antd';
-import { SyncOutlined, InfoCircleOutlined, CloseCircleOutlined, CalendarOutlined } from '@ant-design/icons';
+import { Form, Row, Col, Input, Button } from 'antd';
+import {
+  SyncOutlined,
+  InfoCircleOutlined,
+  CloseCircleOutlined,
+  CalendarOutlined,
+  PlusOutlined,
+  MinusCircleOutlined,
+} from '@ant-design/icons';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -111,7 +118,7 @@ function AddEvent() {
   };
   const saveAsDraftHandler = () => {
     form
-      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker', 'datePickerWrapper'])
+      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker', 'datePickerWrapper', 'prices'])
       .then(() => {
         var values = form.getFieldsValue(true);
         var startDateTime,
@@ -213,8 +220,11 @@ function AddEvent() {
               en: values?.englishTicketNote,
               fr: values?.frenchTicketNote,
             },
+            ...(ticketType === offerTypes.PAYING && {
+              prices: values?.prices,
+            }),
             priceCurrency: 'CAD',
-            ...(values?.ticketLinkurl && {
+            ...(ticketType === offerTypes.PAYING && {
               url: {
                 uri: values?.ticketLink,
               },
@@ -1058,22 +1068,72 @@ function AddEvent() {
                   </Row>
                 )}
                 {ticketType == offerTypes.PAYING && (
-                  <Form.Item
-                    name="ticketLink"
-                    label={t('dashboard.events.addEditEvent.tickets.buyTicketLink')}
-                    initialValue={eventData?.offerConfiguration?.url?.uri}
-                    rules={[
-                      {
-                        type: 'url',
-                        message: t('dashboard.events.addEditEvent.validations.url'),
-                      },
-                    ]}>
-                    <StyledInput
-                      addonBefore="https://"
-                      autoComplete="off"
-                      placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderLinks')}
-                    />
-                  </Form.Item>
+                  <>
+                    <Form.Item
+                      name="ticketLink"
+                      label={t('dashboard.events.addEditEvent.tickets.buyTicketLink')}
+                      initialValue={eventData?.offerConfiguration?.url?.uri}
+                      rules={[
+                        {
+                          type: 'url',
+                          message: t('dashboard.events.addEditEvent.validations.url'),
+                        },
+                      ]}>
+                      <StyledInput
+                        addonBefore="https://"
+                        autoComplete="off"
+                        placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderLinks')}
+                      />
+                    </Form.Item>
+                    <BilingualInput fieldData={eventData?.accessibilityNote}>
+                      <Form.List name="prices" initialValue={eventData?.offerConfiguration?.prices}>
+                        {(fields, { add, remove }) => (
+                          <>
+                            {fields.map(({ key, name, ...restField }) => (
+                              <Input.Group compact key={key}>
+                                <Form.Item {...restField} name={[name, 'price']}>
+                                  <Input styleplaceholder="First Name" style={{ width: '50%' }} />
+                                </Form.Item>
+                                <Form.Item {...restField} name={[name, 'name', 'fr']}>
+                                  <Input placeholder="Last Name" style={{ width: '50%' }} />
+                                </Form.Item>
+
+                                <MinusCircleOutlined onClick={() => remove(name)} />
+                              </Input.Group>
+                            ))}
+                            <Form.Item>
+                              <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                                Add field
+                              </Button>
+                            </Form.Item>
+                          </>
+                        )}
+                      </Form.List>
+                      <Form.List name="prices" initialValue={eventData?.offerConfiguration?.prices}>
+                        {(fields, { add, remove }) => (
+                          <>
+                            {fields.map(({ key, name, ...restField }) => (
+                              <Input.Group compact key={key}>
+                                <Form.Item {...restField} name={[name, 'price']}>
+                                  <Input styleplaceholder="First Name" style={{ width: '50%' }} />
+                                </Form.Item>
+                                <Form.Item {...restField} name={[name, 'name', 'en']}>
+                                  <Input placeholder="Last Name" style={{ width: '50%' }} />
+                                </Form.Item>
+
+                                <MinusCircleOutlined onClick={() => remove(name)} />
+                              </Input.Group>
+                            ))}
+                            <Form.Item>
+                              <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                                Add field
+                              </Button>
+                            </Form.Item>
+                          </>
+                        )}
+                      </Form.List>
+                    </BilingualInput>
+                  </>
                 )}
 
                 {(ticketType == offerTypes.FREE || ticketType == offerTypes.PAYING) && (
