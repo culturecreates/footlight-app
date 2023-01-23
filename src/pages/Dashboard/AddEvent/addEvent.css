@@ -76,3 +76,15 @@
 .add-edit-wrapper .subheading-wrap .ant-form-item-label > label {
   font-size: 12px;
 }
+
+.add-edit-wrapper .edit-price-table {
+  width: 100%;
+  background-color: #e8e8e8;
+  border-radius: 0px 4px 4px 4px;
+}
+.add-edit-wrapper .edit-price-table td {
+  padding: 0px 8px 0px 8px;
+}
+.add-edit-wrapper .edit-price-table th {
+  padding: 8px;
+}

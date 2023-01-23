@@ -1088,24 +1088,24 @@ function AddEvent() {
                     <BilingualInput>
                       <Form.List name="prices" initialValue={eventData?.offerConfiguration?.prices}>
                         {(fields, { add, remove }) => (
-                          <>
+                          <table className="edit-price-table">
                             {fields.map(({ key, name, ...restField }) => (
-                              <Input.Group compact key={key}>
-                                <Form.Item {...restField} name={[name, 'price']}>
-                                  <StyledInput
-                                    style={{ width: '30%' }}
-                                    addonAfter={t('dashboard.events.addEditEvent.tickets.CAD')}
-                                  />
-                                </Form.Item>
-                                <Form.Item {...restField} name={[name, 'name', 'fr']}>
-                                  <StyledInput
-                                    placeholder={t('dashboard.events.addEditEvent.tickets.enterType')}
-                                    style={{ width: '70%' }}
-                                  />
-                                </Form.Item>
+                              <tr key={key}>
+                                <td>
+                                  <Form.Item {...restField} name={[name, 'price']}>
+                                    <StyledInput addonAfter={t('dashboard.events.addEditEvent.tickets.CAD')} />
+                                  </Form.Item>
+                                </td>
+                                <td>
+                                  <Form.Item {...restField} name={[name, 'name', 'fr']}>
+                                    <StyledInput placeholder={t('dashboard.events.addEditEvent.tickets.enterType')} />
+                                  </Form.Item>
+                                </td>
 
-                                <DeleteOutlined onClick={() => remove(name)} style={{ color: '#1B3DE6' }} />
-                              </Input.Group>
+                                <td>
+                                  <DeleteOutlined onClick={() => remove(name)} style={{ color: '#1B3DE6' }} />
+                                </td>
+                              </tr>
                             ))}
                             <Form.Item>
                               <Button
@@ -1128,29 +1128,49 @@ function AddEvent() {
                                 {t('dashboard.events.addEditEvent.tickets.anotherTicketType')}
                               </Button>
                             </Form.Item>
-                          </>
+                          </table>
                         )}
                       </Form.List>
                       <Form.List name="prices" initialValue={eventData?.offerConfiguration?.prices}>
                         {(fields, { add, remove }) => (
-                          <>
+                          <table className="edit-price-table">
+                            <tr>
+                              <th>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.events.addEditEvent.tickets.price')}
+                                </p>
+                              </th>
+                              <th>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.events.addEditEvent.tickets.description')}
+                                </p>
+                              </th>
+                              <th></th>
+                            </tr>
                             {fields.map(({ key, name, ...restField }) => (
-                              <Input.Group compact key={key}>
-                                <Form.Item {...restField} name={[name, 'price']}>
-                                  <StyledInput
-                                    style={{ width: '30%' }}
-                                    addonAfter={t('dashboard.events.addEditEvent.tickets.CAD')}
-                                  />
-                                </Form.Item>
-                                <Form.Item {...restField} name={[name, 'name', 'en']}>
-                                  <StyledInput
-                                    style={{ width: '70%' }}
-                                    placeholder={t('dashboard.events.addEditEvent.tickets.enterType')}
-                                  />
-                                </Form.Item>
-
-                                <DeleteOutlined onClick={() => remove(name)} style={{ color: '#1B3DE6' }} />
-                              </Input.Group>
+                              <tr key={key}>
+                                <td style={{ width: '25%' }}>
+                                  <Form.Item {...restField} name={[name, 'price']}>
+                                    <StyledInput
+                                      style={{ borderWidth: '0px' }}
+                                      addonAfter={t('dashboard.events.addEditEvent.tickets.CAD')}
+                                    />
+                                  </Form.Item>
+                                </td>
+                                <td>
+                                  <Form.Item {...restField} name={[name, 'name', 'en']}>
+                                    <StyledInput placeholder={t('dashboard.events.addEditEvent.tickets.enterType')} />
+                                  </Form.Item>
+                                </td>
+                                <td>
+                                  <Form.Item>
+                                    <DeleteOutlined
+                                      onClick={() => remove(name)}
+                                      style={{ color: '#1B3DE6', fontSize: '20px' }}
+                                    />
+                                  </Form.Item>
+                                </td>
+                              </tr>
                             ))}
                             <Form.Item>
                               <Button
@@ -1173,13 +1193,13 @@ function AddEvent() {
                                 {t('dashboard.events.addEditEvent.tickets.anotherTicketType')}
                               </Button>
                             </Form.Item>
-                          </>
+                          </table>
                         )}
                       </Form.List>
                     </BilingualInput>
                   </>
                 )}
-
+                <br />
                 {(ticketType == offerTypes.FREE || ticketType == offerTypes.PAYING) && (
                   <Form.Item label={t('dashboard.events.addEditEvent.tickets.note')}>
                     <BilingualInput fieldData={eventData?.offerConfiguration?.name}>
