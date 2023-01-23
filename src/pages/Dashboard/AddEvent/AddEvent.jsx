@@ -1085,7 +1085,7 @@ function AddEvent() {
                         placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderLinks')}
                       />
                     </Form.Item>
-                    <BilingualInput fieldData={eventData?.accessibilityNote}>
+                    <BilingualInput>
                       <Form.List name="prices" initialValue={eventData?.offerConfiguration?.prices}>
                         {(fields, { add, remove }) => (
                           <>
