@@ -38,7 +38,7 @@ import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSe
 import StyledInput from '../../../components/Input/Common';
 import SelectOption from '../../../components/Select/SelectOption';
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
-import { offerTypes } from '../../../constants/ticketOffers';
+import { offerTypeOptions, offerTypes } from '../../../constants/ticketOffers';
 import { ReactComponent as Money } from '../../../assets/icons/Money.svg';
 import { ReactComponent as MoneyFree } from '../../../assets/icons/Money-Free.svg';
 import TicketPrice from '../../../components/TicketPrice';
@@ -1242,6 +1242,29 @@ function AddEvent() {
                   </Form.Item>
                 )}
               </>
+              {ticketType && (
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.tickets.changeTicketType')}
+                  style={{ lineHeight: '2.5' }}>
+                  {offerTypeOptions.map((type) => {
+                    if (ticketType != type.type)
+                      return (
+                        <ChangeType
+                          key={type.type}
+                          primaryIcon={<SyncOutlined />}
+                          disabled={type.disabled}
+                          label={type.label}
+                          promptText={type.tooltip}
+                          secondaryIcon={<InfoCircleOutlined />}
+                          onClick={() => {
+                            setTicketType(type.type);
+                            form.resetFields(['prices', 'ticketLink']);
+                          }}
+                        />
+                      );
+                  })}
+                </Form.Item>
+              )}
             </CardEvent>
           </Row>
         </Form>
