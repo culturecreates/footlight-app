@@ -48,7 +48,8 @@
   font-size: 16px;
   color: #646d7b;
 }
-.add-edit-wrapper .date-buttons {
+.add-edit-wrapper .date-buttons,
+.add-edit-wrapper .ticket-buttons {
   display: flex;
   flex-direction: row;
   gap: 16px;
