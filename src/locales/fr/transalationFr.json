@@ -186,6 +186,11 @@
             "frenchShort": "La description française est trop courte.",
             "emptyImage": "Une image est requise. Les fichiers PNG et JPEG sont acceptés."
           },
+          "ticket": {
+            "emptyTicket": "L'événement nécessite des informations sur la billetterie.",
+            "emptyPaidTicket": "Cet événement nécessite un lien d'achat de billet ou un prix de billet.",
+            "invalidData": "Entrez un nombre."
+          },
           "url": "Entrez une URL valide."
         }
       },

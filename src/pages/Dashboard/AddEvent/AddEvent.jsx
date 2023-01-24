@@ -112,7 +112,7 @@ function AddEvent() {
   };
   const saveAsDraftHandler = () => {
     form
-      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker', 'datePickerWrapper', 'prices'])
+      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker', 'datePickerWrapper'])
       .then(() => {
         var values = form.getFieldsValue(true);
         var startDateTime,
@@ -220,7 +220,7 @@ function AddEvent() {
             priceCurrency: 'CAD',
             ...(ticketType === offerTypes.PAYING && {
               url: {
-                uri: values?.ticketLink,
+                uri: urlProtocolCheck(values?.ticketLink),
               },
             }),
           };
@@ -306,6 +306,9 @@ function AddEvent() {
         'targetAudience',
         'dragger-wrap',
         'location-form-wrapper',
+        'ticketPickerWrapper',
+        'prices',
+        'ticketLink',
       ])
       .then(() => {
         updateEventState({ id: eventId, calendarId })
@@ -1042,7 +1045,24 @@ function AddEvent() {
                 {(ticketType == offerTypes.FREE || !ticketType) && (
                   <Row>
                     <Col flex={'423px'}>
-                      <Form.Item name="ticketPickerWrapper">
+                      <Form.Item
+                        name="ticketPickerWrapper"
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator() {
+                              if (
+                                ticketType == offerTypes.FREE ||
+                                (ticketType == offerTypes.PAYING &&
+                                  (getFieldValue('ticketLink') || getFieldValue('prices')))
+                              ) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(
+                                  new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyTicket')),
+                                );
+                            },
+                          }),
+                        ]}>
                         <div className="ticket-buttons">
                           <DateAction
                             style={{ width: '200px', backgroundColor: ticketType == offerTypes.FREE && '#EFF2FF' }}
@@ -1072,6 +1092,22 @@ function AddEvent() {
                           type: 'url',
                           message: t('dashboard.events.addEditEvent.validations.url'),
                         },
+
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (
+                              (getFieldValue('prices') != undefined &&
+                                getFieldValue('prices')?.length > 0 &&
+                                getFieldValue('prices')[0] != undefined) ||
+                              value
+                            ) {
+                              return Promise.resolve();
+                            } else
+                              return Promise.reject(
+                                new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')),
+                              );
+                          },
+                        }),
                       ]}>
                       <StyledInput
                         addonBefore="https://"
@@ -1080,7 +1116,26 @@ function AddEvent() {
                       />
                     </Form.Item>
                     <BilingualInput>
-                      <Form.List name="prices" initialValue={eventData?.offerConfiguration?.prices}>
+                      <Form.List
+                        name="prices"
+                        initialValue={eventData?.offerConfiguration?.prices}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator() {
+                              if (
+                                (getFieldValue('prices') != undefined &&
+                                  getFieldValue('prices')?.length > 0 &&
+                                  getFieldValue('prices')[0] != undefined) ||
+                                getFieldValue('ticketLink')
+                              ) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(
+                                  new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')),
+                                );
+                            },
+                          }),
+                        ]}>
                         {(fields, { add, remove }) => (
                           <TicketPrice
                             add={add}
@@ -1091,7 +1146,26 @@ function AddEvent() {
                           />
                         )}
                       </Form.List>
-                      <Form.List name="prices" initialValue={eventData?.offerConfiguration?.prices}>
+                      <Form.List
+                        name="prices"
+                        initialValue={eventData?.offerConfiguration?.prices}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator() {
+                              if (
+                                (getFieldValue('prices') != undefined &&
+                                  getFieldValue('prices')?.length > 0 &&
+                                  getFieldValue('prices')[0] != undefined) ||
+                                getFieldValue('ticketLink')
+                              ) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(
+                                  new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')),
+                                );
+                            },
+                          }),
+                        ]}>
                         {(fields, { add, remove }) => (
                           <TicketPrice
                             add={add}

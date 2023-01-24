@@ -187,6 +187,11 @@
             "frenchShort": "French description is too short.",
             "emptyImage": "An image is required. PNG and JPEG files are supported."
           },
+          "ticket": {
+            "emptyTicket": "The event requires ticketing information.",
+            "emptyPaidTicket": "This event requires a buy ticket link or a ticket price.",
+            "invalidData": "Enter a number."
+          },
           "url": "Enter a valid url."
         }
       },
