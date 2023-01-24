@@ -42,6 +42,8 @@ import { offerTypes } from '../../../constants/ticketOffers';
 import { ReactComponent as Money } from '../../../assets/icons/Money.svg';
 import { ReactComponent as MoneyFree } from '../../../assets/icons/Money-Free.svg';
 import TicketPrice from '../../../components/TicketPrice';
+import { useGetAllPlacesQuery } from '../../../services/places';
+import { filterPlaceOption, placesOptions } from '../../../components/Select/selectOption.settings';
 
 const { TextArea } = Input;
 
@@ -65,6 +67,10 @@ function AddEvent() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
+  const { currentData: allPlaces, isLoading: placesLoading } = useGetAllPlacesQuery({
+    calendarId,
+    sessionId: timestampRef,
+  });
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
   const [addImage] = useAddImageMutation();
@@ -75,7 +81,7 @@ function AddEvent() {
   const reactQuillRefEn = useRef(null);
 
   let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
-
+  let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
   const dateTimeConverter = (date, time) => {
     let dateSelected = moment(date).format('DD/MM/YYYY');
     let timeSelected = moment(time).format('hh:mm:ss a');
@@ -152,10 +158,15 @@ function AddEvent() {
             };
           });
         }
-        if (values?.frenchVirtualLocation || values?.englishVirtualLocation || values?.virtualLocationOnlineLink) {
+        if (
+          values?.frenchVirtualLocation ||
+          values?.englishVirtualLocation ||
+          values?.virtualLocationOnlineLink ||
+          values?.locationPlace?.length > 0
+        ) {
           locationId = {
             place: {
-              entityId: null,
+              entityId: values?.locationPlace,
             },
             virtualLocation: {
               name: {
@@ -396,6 +407,7 @@ function AddEvent() {
 
   return (
     !isLoading &&
+    !placesLoading &&
     !taxonomyLoading && (
       <div>
         <Form form={form} layout="vertical" name="event">
@@ -679,13 +691,30 @@ function AddEvent() {
                       if (
                         getFieldValue('frenchVirtualLocation') ||
                         getFieldValue('englishVirtualLocation') ||
-                        getFieldValue('virtualLocationOnlineLink')
+                        getFieldValue('virtualLocationOnlineLink') ||
+                        getFieldValue('locationPlace')
                       ) {
                         return Promise.resolve();
                       } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.location')));
                     },
                   }),
                 ]}>
+                <Form.Item
+                  name="locationPlace"
+                  className="subheading-wrap"
+                  initialValue={initialPlace && initialPlace[0]?.id}
+                  label={t('dashboard.events.addEditEvent.location.title')}>
+                  <SelectOption
+                    allowClear
+                    style={{ height: 'auto' }}
+                    placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
+                    showSearch
+                    showArrow={false}
+                    filterOption={filterPlaceOption}
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    options={placesOptions(allPlaces?.data, user)}
+                  />
+                </Form.Item>
                 <Form.Item label={t('dashboard.events.addEditEvent.location.virtualLocation')}>
                   <BilingualInput fieldData={initialVirtualLocation && initialVirtualLocation[0]?.name}>
                     <Form.Item

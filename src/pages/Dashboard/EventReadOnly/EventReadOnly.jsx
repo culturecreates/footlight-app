@@ -21,6 +21,8 @@ import TreeSelectOption from '../../../components/TreeSelectOption';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import SelectOption from '../../../components/Select/SelectOption';
 import { offerTypes } from '../../../constants/ticketOffers';
+import { placesOptions } from '../../../components/Select/selectOption.settings';
+import { useGetAllPlacesQuery } from '../../../services/places';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -36,10 +38,15 @@ function EventReadOnly() {
     taxonomyClass: taxonomyClass.EVENT,
     includeConcepts: true,
   });
+  const { currentData: allPlaces, isLoading: placesLoading } = useGetAllPlacesQuery({
+    calendarId,
+    sessionId: timestampRef,
+  });
   const { user } = useSelector(getUserDetails);
   const [dateType, setDateType] = useState();
 
   let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
+  let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
 
   useEffect(() => {
     setDateType(
@@ -49,7 +56,8 @@ function EventReadOnly() {
 
   return (
     !isLoading &&
-    !taxonomyLoading && (
+    !taxonomyLoading &&
+    !placesLoading && (
       <div>
         <Row gutter={[32, 24]} className="read-only-wrapper">
           <Col span={24}>
@@ -239,8 +247,24 @@ function EventReadOnly() {
                 <Col flex={'423px'}>
                   <div className="read-only-event-section-wrapper">
                     <p className="read-only-event-content-title">{t('dashboard.events.addEditEvent.location.title')}</p>
+                    {initialPlace && initialPlace?.length > 0 && (
+                      <>
+                        <p className="read-only-event-content-sub-title-primary">
+                          {t('dashboard.events.addEditEvent.location.title')}
+                        </p>
+                        <SelectOption
+                          disabled
+                          bordered={false}
+                          showArrow={false}
+                          defaultValue={initialPlace && initialPlace[0]?.id}
+                          options={placesOptions(allPlaces?.data, user)}
+                        />
+                      </>
+                    )}
+
                     {initialVirtualLocation[0] && initialVirtualLocation?.length > 0 && (
                       <p className="read-only-event-content-sub-title-primary">
+                        <br />
                         {t('dashboard.events.addEditEvent.location.virtualLocation')}
                       </p>
                     )}
