@@ -90,6 +90,7 @@
           "startTime": "Heure de début",
           "endTime": "Heure de fin",
           "status": "Statut",
+          "changeDateType": "Modifier le type de date",
           "changeToSingleDate": "Changer en une date",
           "changeToDateRange": "Change to plage de dates",
           "changeToMultipleDate": "Changer en plusieurs dates",

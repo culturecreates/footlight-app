@@ -661,7 +661,9 @@ function AddEvent() {
               </>
 
               {dateType && (
-                <Form.Item label="Change date type" style={{ lineHeight: '2.5' }}>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.dates.changeDateType')}
+                  style={{ lineHeight: '2.5' }}>
                   {dateTypeOptions.map((type) => {
                     if (dateType != type.type)
                       return (

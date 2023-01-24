@@ -91,6 +91,7 @@
           "startTime": "Start time",
           "endTime": "End time",
           "status": "Status",
+          "changeDateType": "Change date type",
           "changeToSingleDate": "Change to single date",
           "changeToDateRange": "Change to date range",
           "changeToMultipleDate": "Change to multiple dates",
