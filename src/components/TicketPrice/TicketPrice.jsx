@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './ticketPrice.css';
 import { Form, Button } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
@@ -8,6 +8,14 @@ import StyledInput from '../Input/Common';
 function TicketPrice(props) {
   const { fields, add, remove, firstFieldName, secondFieldName } = props;
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (fields?.length < 1) {
+      add();
+      remove([1, 2, 3]);
+    }
+  }, []);
+
   return (
     <table className="edit-price-table">
       <thead>
