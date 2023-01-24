@@ -1244,7 +1244,7 @@ function AddEvent() {
                   </Form.Item>
                 )}
               </>
-              {ticketType && (
+              {ticketType && ticketType == offerTypes.PAYING && (
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.tickets.changeTicketType')}
                   style={{ lineHeight: '2.5' }}>
