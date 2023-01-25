@@ -118,7 +118,14 @@ function AddEvent() {
   };
   const saveAsDraftHandler = () => {
     form
-      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker', 'datePickerWrapper'])
+      .validateFields([
+        'french',
+        'english',
+        'datePicker',
+        'dateRangePicker',
+        'datePickerWrapper',
+        ...(eventData?.publishState === eventPublishState.PUBLISHED ? ['prices', 'ticketLink'] : []),
+      ])
       .then(() => {
         var values = form.getFieldsValue(true);
         var startDateTime,
@@ -225,15 +232,18 @@ function AddEvent() {
               en: values?.englishTicketNote,
               fr: values?.frenchTicketNote,
             },
-            ...(ticketType === offerTypes.PAYING && {
-              prices: values?.prices,
-            }),
+            ...(ticketType === offerTypes.PAYING &&
+              values?.prices?.length > 0 &&
+              values?.prices[0] && {
+                prices: values?.prices,
+              }),
             priceCurrency: 'CAD',
-            ...(ticketType === offerTypes.PAYING && {
-              url: {
-                uri: urlProtocolCheck(values?.ticketLink),
-              },
-            }),
+            ...(ticketType === offerTypes.PAYING &&
+              values?.ticketLink && {
+                url: {
+                  uri: urlProtocolCheck(values?.ticketLink),
+                },
+              }),
           };
         }
 
@@ -1129,7 +1139,8 @@ function AddEvent() {
                             if (
                               (getFieldValue('prices') != undefined &&
                                 getFieldValue('prices')?.length > 0 &&
-                                getFieldValue('prices')[0] != undefined) ||
+                                getFieldValue('prices')[0] != undefined &&
+                                getFieldValue('prices')[0].price != '') ||
                               value
                             ) {
                               return Promise.resolve();
@@ -1156,7 +1167,8 @@ function AddEvent() {
                               if (
                                 (getFieldValue('prices') != undefined &&
                                   getFieldValue('prices')?.length > 0 &&
-                                  getFieldValue('prices')[0] != undefined) ||
+                                  getFieldValue('prices')[0] != undefined &&
+                                  getFieldValue('prices')[0].price != '') ||
                                 getFieldValue('ticketLink')
                               ) {
                                 return Promise.resolve();
@@ -1186,7 +1198,8 @@ function AddEvent() {
                               if (
                                 (getFieldValue('prices') != undefined &&
                                   getFieldValue('prices')?.length > 0 &&
-                                  getFieldValue('prices')[0] != undefined) ||
+                                  getFieldValue('prices')[0] != undefined &&
+                                  getFieldValue('prices')[0].price != '') ||
                                 getFieldValue('ticketLink')
                               ) {
                                 return Promise.resolve();
