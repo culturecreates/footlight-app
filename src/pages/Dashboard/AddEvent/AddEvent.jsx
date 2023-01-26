@@ -882,6 +882,39 @@ function AddEvent() {
                   </Row>
                   <ImageUpload imageUrl={eventData?.image?.original} imageReadOnly={false} />
                 </Form.Item>
+                <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.organizer.title')}>
+                  <Row>
+                    <Col>
+                      <p className="add-event-date-heading">
+                        {t('dashboard.events.addEditEvent.otherInformation.organizer.subHeading')}
+                      </p>
+                    </Col>
+                  </Row>
+                  <Form.Item
+                    name="organzer"
+                    initialValue={eventData?.accessibility?.map((type) => {
+                      return type?.entityId;
+                    })}>
+                    <TreeSelectOption
+                      allowClear
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.placeholder')}
+                      treeDefaultExpandAll
+                      clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                      treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility')}
+                      tagRender={(props) => {
+                        const { label, closable, onClose } = props;
+                        return (
+                          <Tags
+                            closable={closable}
+                            onClose={onClose}
+                            closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                            {label}
+                          </Tags>
+                        );
+                      }}
+                    />
+                  </Form.Item>
+                </Form.Item>
                 <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.contact.title')}>
                   <Form.Item
                     label={t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}

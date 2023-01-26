@@ -126,6 +126,11 @@
             "dragAndDrop": "or drag and drop to upload",
             "browse": "Browse"
           },
+          "organizer": {
+            "title": "Organizer",
+            "subHeading": "Add an organizer for your event and assign a role.",
+            "searchPlaceholder": "Search Organizations and People"
+          },
           "eventLink": "Event link",
           "videoLink": "Video",
           "facebookLink": "Facebook event",

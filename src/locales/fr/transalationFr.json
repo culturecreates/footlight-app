@@ -125,6 +125,11 @@
             "dragAndDrop": "ou glisser pour télécharger",
             "browse": "Parcourir"
           },
+          "organizer": {
+            "title": "Organisateur",
+            "subHeading": "Add an organizer for your event and assign a role.",
+            "searchPlaceholder": "Recherchez des Organisations ou des Personnes"
+          },
           "eventLink": "Lien de l’événement",
           "videoLink": "Video",
           "facebookLink": "Lien vers l'événement Facebook",
