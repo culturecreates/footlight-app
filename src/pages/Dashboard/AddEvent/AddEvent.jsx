@@ -144,6 +144,8 @@ function AddEvent() {
         'datePickerWrapper',
         ...(eventData?.publishState === eventPublishState.PUBLISHED ? ['prices', 'ticketLink'] : []),
         'organizer',
+        'performer',
+        'supporter',
       ])
       .then(() => {
         var values = form.getFieldsValue(true);
@@ -158,6 +160,8 @@ function AddEvent() {
           locationId,
           offerConfiguration,
           organizers = [],
+          performers = [],
+          collaborators = [],
           image;
         let eventObj;
         if (dateType === dateTypes.SINGLE) {
@@ -275,6 +279,24 @@ function AddEvent() {
           });
         }
 
+        if (values?.performers) {
+          performers = values?.performers?.map((performerId) => {
+            return {
+              entityId: performerId,
+              type: taxonomyClass.ORGANIZATION,
+            };
+          });
+        }
+
+        if (values?.supporters) {
+          collaborators = values?.supporters?.map((supporterId) => {
+            return {
+              entityId: supporterId,
+              type: taxonomyClass.ORGANIZATION,
+            };
+          });
+        }
+
         eventObj = {
           name: {
             en: values?.english,
@@ -309,6 +331,8 @@ function AddEvent() {
           ...(keywords && { keywords }),
           ...(ticketType && { offerConfiguration }),
           ...(values?.organizers && { organizers }),
+          ...(values?.performers && { performers }),
+          ...(values?.supporters && { collaborators }),
         };
         if (values?.dragger && values?.dragger[0]?.originFileObj) {
           new Compressor(values?.dragger[0].originFileObj, {
@@ -991,6 +1015,7 @@ function AddEvent() {
                       </Form.Item>
                     </BilingualInput>
                   </Form.Item>
+
                   <Form.Item
                     name="contactWebsiteUrl"
                     className="subheading-wrap"
@@ -1030,6 +1055,94 @@ function AddEvent() {
                     ]}>
                     <StyledInput
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderEmail')}
+                    />
+                  </Form.Item>
+                </Form.Item>
+                <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.performer.title')}>
+                  <Row>
+                    <Col>
+                      <p className="add-event-date-heading">
+                        {t('dashboard.events.addEditEvent.otherInformation.performer.subHeading')}
+                      </p>
+                    </Col>
+                  </Row>
+                  <Form.Item
+                    name="performers"
+                    initialValue={eventData?.performer?.map((performer) => performer?.entityId)}>
+                    <TreeSelectOption
+                      filterTreeNode={false}
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.performer.searchPlaceholder')}
+                      onSearch={treeSearch}
+                      treeData={treeEntitiesOption(currentEntities ?? initialEntities, user)}
+                      tagRender={(props) => {
+                        const { value, closable, onClose } = props;
+                        let entity = (currentEntities ?? initialEntities)?.filter((entity) => entity?.id == value);
+                        return (
+                          entity &&
+                          entity[0] && (
+                            <SelectionItem
+                              icon={<Icon component={Organizations} style={{ color: '#607EFC' }} />}
+                              name={bilingual({
+                                en: entity[0]?.name?.en,
+                                fr: entity[0]?.name?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              })}
+                              description={bilingual({
+                                en: entity[0]?.disambiguatingDescription?.en,
+                                fr: entity[0]?.disambiguatingDescription?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              })}
+                              bordered
+                              closable={closable}
+                              onClose={onClose}
+                            />
+                          )
+                        );
+                      }}
+                    />
+                  </Form.Item>
+                </Form.Item>
+                <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.supporter.title')}>
+                  <Row>
+                    <Col>
+                      <p className="add-event-date-heading">
+                        {t('dashboard.events.addEditEvent.otherInformation.supporter.subHeading')}
+                      </p>
+                    </Col>
+                  </Row>
+                  <Form.Item
+                    name="supporters"
+                    initialValue={eventData?.collaborators?.map((collaborator) => collaborator?.entityId)}>
+                    <TreeSelectOption
+                      filterTreeNode={false}
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.supporter.searchPlaceholder')}
+                      onSearch={treeSearch}
+                      treeData={treeEntitiesOption(currentEntities ?? initialEntities, user)}
+                      tagRender={(props) => {
+                        const { value, closable, onClose } = props;
+                        let entity = initialEntities?.filter((entity) => entity?.id == value);
+                        return (
+                          entity &&
+                          entity[0] && (
+                            <SelectionItem
+                              icon={<Icon component={Organizations} style={{ color: '#607EFC' }} />}
+                              name={bilingual({
+                                en: entity[0]?.name?.en,
+                                fr: entity[0]?.name?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              })}
+                              description={bilingual({
+                                en: entity[0]?.disambiguatingDescription?.en,
+                                fr: entity[0]?.disambiguatingDescription?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              })}
+                              bordered
+                              closable={closable}
+                              onClose={onClose}
+                            />
+                          )
+                        );
+                      }}
                     />
                   </Form.Item>
                 </Form.Item>

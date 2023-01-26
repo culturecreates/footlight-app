@@ -131,6 +131,16 @@
             "subHeading": "Add an organizer for your event and assign a role.",
             "searchPlaceholder": "Search Organizations and People"
           },
+          "performer": {
+            "title": "Performing group/artist/event animator",
+            "subHeading": "Add a main performer for your event and assign a role.",
+            "searchPlaceholder": "Search Organizations and People"
+          },
+          "supporter": {
+            "title": "Supporter/Sponsor",
+            "subHeading": "Add a supporter for your event and assign a role.",
+            "searchPlaceholder": "Search Organizations and People"
+          },
           "eventLink": "Event link",
           "videoLink": "Video",
           "facebookLink": "Facebook event",
