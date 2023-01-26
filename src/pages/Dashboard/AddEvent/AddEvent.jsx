@@ -143,6 +143,7 @@ function AddEvent() {
         'dateRangePicker',
         'datePickerWrapper',
         ...(eventData?.publishState === eventPublishState.PUBLISHED ? ['prices', 'ticketLink'] : []),
+        'organizer',
       ])
       .then(() => {
         var values = form.getFieldsValue(true);
@@ -156,6 +157,7 @@ function AddEvent() {
           keywords,
           locationId,
           offerConfiguration,
+          organizers = [],
           image;
         let eventObj;
         if (dateType === dateTypes.SINGLE) {
@@ -245,7 +247,6 @@ function AddEvent() {
         if (ticketType) {
           offerConfiguration = {
             category: ticketType,
-            //Change name key to note when the change is made in the backend
             name: {
               en: values?.englishTicketNote,
               fr: values?.frenchTicketNote,
@@ -263,6 +264,15 @@ function AddEvent() {
                 },
               }),
           };
+        }
+
+        if (values?.organizers) {
+          organizers = values?.organizers?.map((organizerId) => {
+            return {
+              entityId: organizerId,
+              type: taxonomyClass.ORGANIZATION,
+            };
+          });
         }
 
         eventObj = {
@@ -298,6 +308,7 @@ function AddEvent() {
           ...(locationId && { locationId }),
           ...(keywords && { keywords }),
           ...(ticketType && { offerConfiguration }),
+          ...(values?.organizers && { organizers }),
         };
         if (values?.dragger && values?.dragger[0]?.originFileObj) {
           new Compressor(values?.dragger[0].originFileObj, {
@@ -320,7 +331,6 @@ function AddEvent() {
             },
           });
         } else {
-          //ToDo : Check with Backend whether to pass image object on removal
           if (values?.dragger && values?.length == 0) eventObj['image'] = null;
 
           addUpdateEventApiHandler(eventObj);
@@ -916,7 +926,9 @@ function AddEvent() {
                       </p>
                     </Col>
                   </Row>
-                  <Form.Item name="organizer">
+                  <Form.Item
+                    name="organizers"
+                    initialValue={eventData?.organizer?.map((organizer) => organizer?.entityId)}>
                     <TreeSelectOption
                       filterTreeNode={false}
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}

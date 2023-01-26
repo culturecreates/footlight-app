@@ -53,6 +53,7 @@ export const treeEntitiesOption = (data, user) => {
         />
       ),
       value: entity?.id,
+      type: entity?.type,
     };
   });
   return options;
