@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
 import { Form, Row, Col, Input } from 'antd';
-import { SyncOutlined, InfoCircleOutlined, CloseCircleOutlined, CalendarOutlined } from '@ant-design/icons';
+import Icon, { SyncOutlined, InfoCircleOutlined, CloseCircleOutlined, CalendarOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -34,7 +34,10 @@ import ImageUpload from '../../../components/ImageUpload';
 import Compressor from 'compressorjs';
 import { useAddImageMutation } from '../../../services/image';
 import TreeSelectOption from '../../../components/TreeSelectOption';
-import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
+import {
+  treeEntitiesOption,
+  treeTaxonomyOptions,
+} from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import StyledInput from '../../../components/Input/Common';
 import SelectOption from '../../../components/Select/SelectOption';
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
@@ -44,6 +47,11 @@ import { ReactComponent as MoneyFree } from '../../../assets/icons/Money-Free.sv
 import TicketPrice from '../../../components/TicketPrice';
 import { useGetAllPlacesQuery } from '../../../services/places';
 import { filterPlaceOption, placesOptions } from '../../../components/Select/selectOption.settings';
+import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
+import { entitiesClass } from '../../../constants/entitiesClass';
+import SelectionItem from '../../../components/List/SelectionItem';
+import { ReactComponent as Organizations } from '../../../assets/icons/organisations.svg';
+import { bilingual } from '../../../utils/bilingual';
 
 const { TextArea } = Input;
 
@@ -71,6 +79,16 @@ function AddEvent() {
     calendarId,
     sessionId: timestampRef,
   });
+  let query = new URLSearchParams();
+  query.append('classes', entitiesClass.organization);
+  query.append('classes', entitiesClass.person);
+  const { currentData: initialEntities, isLoading: initialEntityLoading } = useGetEntitiesQuery({
+    calendarId,
+    searchKey: '',
+    classes: decodeURIComponent(query.toString()),
+    sessionId: timestampRef,
+  });
+  const [getEntities, { currentData: currentEntities }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
   const [addImage] = useAddImageMutation();
@@ -408,6 +426,13 @@ function AddEvent() {
     else return roleCheckHandler();
   };
 
+  const treeSearch = (value) => {
+    let query = new URLSearchParams();
+    query.append('classes', entitiesClass.organization);
+    query.append('classes', entitiesClass.person);
+    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId });
+  };
+
   useEffect(() => {
     setDateType(
       dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
@@ -418,7 +443,8 @@ function AddEvent() {
   return (
     !isLoading &&
     !placesLoading &&
-    !taxonomyLoading && (
+    !taxonomyLoading &&
+    !initialEntityLoading && (
       <div>
         <Form form={form} layout="vertical" name="event">
           <Row gutter={[32, 24]} className="add-edit-wrapper">
@@ -890,26 +916,35 @@ function AddEvent() {
                       </p>
                     </Col>
                   </Row>
-                  <Form.Item
-                    name="organzer"
-                    initialValue={eventData?.accessibility?.map((type) => {
-                      return type?.entityId;
-                    })}>
+                  <Form.Item name="organizer">
                     <TreeSelectOption
-                      allowClear
-                      placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.placeholder')}
-                      treeDefaultExpandAll
-                      clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                      treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility')}
+                      filterTreeNode={false}
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
+                      onSearch={treeSearch}
+                      treeData={treeEntitiesOption(currentEntities ?? initialEntities, user)}
                       tagRender={(props) => {
-                        const { label, closable, onClose } = props;
+                        const { value, closable, onClose } = props;
+                        let entity = (currentEntities ?? initialEntities)?.filter((entity) => entity?.id == value);
                         return (
-                          <Tags
-                            closable={closable}
-                            onClose={onClose}
-                            closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                            {label}
-                          </Tags>
+                          entity &&
+                          entity[0] && (
+                            <SelectionItem
+                              icon={<Icon component={Organizations} style={{ color: '#607EFC' }} />}
+                              name={bilingual({
+                                en: entity[0]?.name?.en,
+                                fr: entity[0]?.name?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              })}
+                              description={bilingual({
+                                en: entity[0]?.disambiguatingDescription?.en,
+                                fr: entity[0]?.disambiguatingDescription?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              })}
+                              bordered
+                              closable={closable}
+                              onClose={onClose}
+                            />
+                          )
                         );
                       }}
                     />

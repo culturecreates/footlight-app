@@ -1,4 +1,7 @@
 import { bilingual } from '../../utils/bilingual';
+import SelectionItem from '../List/SelectionItem';
+import Icon from '@ant-design/icons';
+import { ReactComponent as Organizations } from '../../assets/icons/organisations.svg';
 
 export const treeTaxonomyOptions = (data, user, mappedToField) => {
   let fieldData = data?.data?.filter((taxonomy) => taxonomy?.mappedToField === mappedToField);
@@ -26,6 +29,30 @@ export const treeTaxonomyOptions = (data, user, mappedToField) => {
           };
         }),
       }),
+    };
+  });
+  return options;
+};
+
+export const treeEntitiesOption = (data, user) => {
+  let options = data?.map((entity) => {
+    return {
+      label: (
+        <SelectionItem
+          icon={<Icon component={Organizations} style={{ color: '#607EFC' }} />}
+          name={bilingual({
+            en: entity?.name?.en,
+            fr: entity?.name?.fr,
+            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+          })}
+          description={bilingual({
+            en: entity?.disambiguatingDescription?.en,
+            fr: entity?.disambiguatingDescription?.fr,
+            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+          })}
+        />
+      ),
+      value: entity?.id,
     };
   });
   return options;
