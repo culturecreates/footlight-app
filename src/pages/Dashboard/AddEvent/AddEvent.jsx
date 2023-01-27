@@ -1,7 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
 import { Form, Row, Col, Input } from 'antd';
-import Icon, { SyncOutlined, InfoCircleOutlined, CloseCircleOutlined, CalendarOutlined } from '@ant-design/icons';
+import Icon, {
+  SyncOutlined,
+  InfoCircleOutlined,
+  CloseCircleOutlined,
+  CalendarOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -971,7 +977,15 @@ function AddEvent() {
                           entity &&
                           entity[0] && (
                             <SelectionItem
-                              icon={<Icon component={Organizations} style={{ color: '#607EFC' }} />}
+                              icon={
+                                entity[0]?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
+                                  <Icon component={Organizations} style={{ color: '#607EFC' }} />
+                                ) : (
+                                  entity[0]?.type?.toUpperCase() == taxonomyClass.PERSON && (
+                                    <UserOutlined style={{ color: '#607EFC' }} />
+                                  )
+                                )
+                              }
                               name={bilingual({
                                 en: entity[0]?.name?.en,
                                 fr: entity[0]?.name?.fr,
@@ -1087,7 +1101,15 @@ function AddEvent() {
                           entity &&
                           entity[0] && (
                             <SelectionItem
-                              icon={<Icon component={Organizations} style={{ color: '#607EFC' }} />}
+                              icon={
+                                entity[0]?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
+                                  <Icon component={Organizations} style={{ color: '#607EFC' }} />
+                                ) : (
+                                  entity[0]?.type?.toUpperCase() == taxonomyClass.PERSON && (
+                                    <UserOutlined style={{ color: '#607EFC' }} />
+                                  )
+                                )
+                              }
                               name={bilingual({
                                 en: entity[0]?.name?.en,
                                 fr: entity[0]?.name?.fr,
@@ -1131,7 +1153,15 @@ function AddEvent() {
                           entity &&
                           entity[0] && (
                             <SelectionItem
-                              icon={<Icon component={Organizations} style={{ color: '#607EFC' }} />}
+                              icon={
+                                entity[0]?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
+                                  <Icon component={Organizations} style={{ color: '#607EFC' }} />
+                                ) : (
+                                  entity[0]?.type?.toUpperCase() == taxonomyClass.PERSON && (
+                                    <UserOutlined style={{ color: '#607EFC' }} />
+                                  )
+                                )
+                              }
                               name={bilingual({
                                 en: entity[0]?.name?.en,
                                 fr: entity[0]?.name?.fr,

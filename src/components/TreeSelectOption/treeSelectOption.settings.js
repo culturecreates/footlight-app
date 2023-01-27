@@ -1,7 +1,8 @@
 import { bilingual } from '../../utils/bilingual';
 import SelectionItem from '../List/SelectionItem';
-import Icon from '@ant-design/icons';
+import Icon, { UserOutlined } from '@ant-design/icons';
 import { ReactComponent as Organizations } from '../../assets/icons/organisations.svg';
+import { taxonomyClass } from '../../constants/taxonomyClass';
 
 export const treeTaxonomyOptions = (data, user, mappedToField) => {
   let fieldData = data?.data?.filter((taxonomy) => taxonomy?.mappedToField === mappedToField);
@@ -39,7 +40,13 @@ export const treeEntitiesOption = (data, user) => {
     return {
       label: (
         <SelectionItem
-          icon={<Icon component={Organizations} style={{ color: '#607EFC' }} />}
+          icon={
+            entity?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
+              <Icon component={Organizations} style={{ color: '#607EFC' }} />
+            ) : (
+              entity?.type?.toUpperCase() == taxonomyClass.PERSON && <UserOutlined style={{ color: '#607EFC' }} />
+            )
+          }
           name={bilingual({
             en: entity?.name?.en,
             fr: entity?.name?.fr,
