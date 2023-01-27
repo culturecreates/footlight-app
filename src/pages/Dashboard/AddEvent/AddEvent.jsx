@@ -266,33 +266,39 @@ function AddEvent() {
               }),
           };
         }
+        let selectedOrganizerPerformerSupporter = values?.organizers.concat(values?.performers, values?.supporters);
+        let filteredOrganizerPerformerSupporter = initialEntities.filter((entity) =>
+          selectedOrganizerPerformerSupporter.includes(entity?.id),
+        );
 
         if (values?.organizers) {
-          organizers = initialEntities.filter((entity) => values?.organizers.includes(entity?.id));
+          organizers = filteredOrganizerPerformerSupporter.filter((entity) => values?.organizers.includes(entity?.id));
           organizers = organizers?.map((organizer) => {
             return {
               entityId: organizer?.id,
-              type: organizer?.type,
+              type: organizer?.type?.toUpperCase(),
             };
           });
         }
 
         if (values?.performers) {
-          performers = initialEntities.filter((entity) => values?.performers.includes(entity?.id));
+          performers = filteredOrganizerPerformerSupporter.filter((entity) => values?.performers.includes(entity?.id));
           performers = performers?.map((performer) => {
             return {
               entityId: performer?.id,
-              type: performer?.type,
+              type: performer?.type?.toUpperCase(),
             };
           });
         }
 
         if (values?.supporters) {
-          collaborators = initialEntities.filter((entity) => values?.supporters.includes(entity?.id));
+          collaborators = filteredOrganizerPerformerSupporter.filter((entity) =>
+            values?.supporters.includes(entity?.id),
+          );
           collaborators = collaborators?.map((supporter) => {
             return {
               entityId: supporter?.id,
-              type: supporter?.type,
+              type: supporter?.type?.toUpperCase(),
             };
           });
         }
