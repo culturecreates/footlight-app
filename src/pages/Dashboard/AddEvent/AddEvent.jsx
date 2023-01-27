@@ -143,9 +143,6 @@ function AddEvent() {
         'dateRangePicker',
         'datePickerWrapper',
         ...(eventData?.publishState === eventPublishState.PUBLISHED ? ['prices', 'ticketLink'] : []),
-        'organizer',
-        'performer',
-        'supporter',
       ])
       .then(() => {
         var values = form.getFieldsValue(true);
@@ -271,28 +268,31 @@ function AddEvent() {
         }
 
         if (values?.organizers) {
-          organizers = values?.organizers?.map((organizerId) => {
+          organizers = initialEntities.filter((entity) => values?.organizers.includes(entity?.id));
+          organizers = organizers?.map((organizer) => {
             return {
-              entityId: organizerId,
-              type: taxonomyClass.ORGANIZATION,
+              entityId: organizer?.id,
+              type: organizer?.type,
             };
           });
         }
 
         if (values?.performers) {
-          performers = values?.performers?.map((performerId) => {
+          performers = initialEntities.filter((entity) => values?.performers.includes(entity?.id));
+          performers = performers?.map((performer) => {
             return {
-              entityId: performerId,
-              type: taxonomyClass.ORGANIZATION,
+              entityId: performer?.id,
+              type: performer?.type,
             };
           });
         }
 
         if (values?.supporters) {
-          collaborators = values?.supporters?.map((supporterId) => {
+          collaborators = initialEntities.filter((entity) => values?.supporters.includes(entity?.id));
+          collaborators = collaborators?.map((supporter) => {
             return {
-              entityId: supporterId,
-              type: taxonomyClass.ORGANIZATION,
+              entityId: supporter?.id,
+              type: supporter?.type,
             };
           });
         }
