@@ -89,228 +89,250 @@ function AddEvent() {
     return moment(dateTime).toISOString();
   };
   const addUpdateEventApiHandler = (eventObj) => {
-    if (!eventId || eventId === '') {
-      addEvent({
-        data: eventObj,
-        calendarId,
-      })
-        .unwrap()
-        .then(() => {
-          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+    var promise = new Promise(function (resolve, reject) {
+      if (!eventId || eventId === '') {
+        addEvent({
+          data: eventObj,
+          calendarId,
         })
-        .catch((errorInfo) => {
-          console.log(errorInfo);
-        });
-    } else {
-      updateEvent({
-        data: eventObj,
-        calendarId,
-        eventId,
-      })
-        .unwrap()
-        .then(() => {
-          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+          .unwrap()
+          .then(() => {
+            resolve();
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+          })
+          .catch((errorInfo) => {
+            reject();
+            console.log(errorInfo);
+          });
+      } else {
+        updateEvent({
+          data: eventObj,
+          calendarId,
+          eventId,
         })
+          .unwrap()
+          .then(() => {
+            resolve();
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+          })
+          .catch((error) => {
+            reject();
+            console.log(error);
+          });
+      }
+    });
+    return promise;
+  };
+  const saveAsDraftHandler = () => {
+    var promise = new Promise(function (resolve, reject) {
+      form
+        .validateFields([
+          'french',
+          'english',
+          'datePicker',
+          'dateRangePicker',
+          'datePickerWrapper',
+          ...(eventData?.publishState === eventPublishState.PUBLISHED ? ['prices', 'ticketLink'] : []),
+        ])
+        .then(() => {
+          var values = form.getFieldsValue(true);
+          var startDateTime,
+            endDateTime,
+            additionalType = [],
+            audience = [],
+            contactPoint,
+            accessibility = [],
+            accessibilityNote,
+            keywords,
+            locationId,
+            offerConfiguration,
+            image;
+          let eventObj;
+          if (dateType === dateTypes.SINGLE) {
+            if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
+            else startDateTime = moment(values?.datePicker).format('YYYY/MM/DD');
+            if (values?.endTime) endDateTime = dateTimeConverter(values?.datePicker, values?.endTime);
+          }
+          if (dateType === dateTypes.RANGE) {
+            if (values?.startTime) startDateTime = dateTimeConverter(values?.dateRangePicker[0], values?.startTime);
+            else startDateTime = moment(values?.dateRangePicker[0]).format('YYYY/MM/DD');
+            if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
+            else endDateTime = moment(values?.dateRangePicker[1]).format('YYYY/MM/DD');
+          }
+          if (values?.eventType) {
+            additionalType = values?.eventType?.map((eventTypeId) => {
+              return {
+                entityId: eventTypeId,
+              };
+            });
+          }
+          if (values?.targetAudience) {
+            audience = values?.targetAudience?.map((audienceId) => {
+              return {
+                entityId: audienceId,
+              };
+            });
+          }
+          if (
+            values?.frenchVirtualLocation ||
+            values?.englishVirtualLocation ||
+            values?.virtualLocationOnlineLink ||
+            values?.locationPlace?.length > 0
+          ) {
+            locationId = {
+              place: {
+                entityId: values?.locationPlace,
+              },
+              virtualLocation: {
+                name: {
+                  en: values?.englishVirtualLocation,
+                  fr: values?.frenchVirtualLocation,
+                },
+                description: {},
+                dynamicFields: [],
+                url: {
+                  uri: urlProtocolCheck(values?.virtualLocationOnlineLink),
+                },
+              },
+            };
+          }
+          if (
+            values?.frenchContactTitle ||
+            values?.englishContactTitle ||
+            values?.contactWebsiteUrl ||
+            values?.contactEmail ||
+            values?.contactPhoneNumber
+          ) {
+            contactPoint = {
+              name: {
+                en: values?.englishContactTitle,
+                fr: values?.frenchContactTitle,
+              },
+              url: {
+                uri: urlProtocolCheck(values?.contactWebsiteUrl),
+              },
+              email: values?.contactEmail,
+              telephone: values?.contactPhoneNumber,
+            };
+          }
+          if (values?.eventAccessibility) {
+            accessibility = values?.eventAccessibility?.map((accessibilityId) => {
+              return {
+                entityId: accessibilityId,
+              };
+            });
+          }
+
+          if (values?.englishAccessibilityNote || values?.frenchAccessibilityNote) {
+            accessibilityNote = {
+              ...(values?.englishAccessibilityNote && { en: values?.englishAccessibilityNote }),
+              ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote }),
+            };
+          }
+          if (values?.keywords?.length > 0) {
+            keywords = values?.keywords;
+          }
+          if (ticketType) {
+            offerConfiguration = {
+              category: ticketType,
+              //Change name key to note when the change is made in the backend
+              name: {
+                en: values?.englishTicketNote,
+                fr: values?.frenchTicketNote,
+              },
+              ...(ticketType === offerTypes.PAYING &&
+                values?.prices?.length > 0 &&
+                values?.prices[0] && {
+                  prices: values?.prices,
+                }),
+              priceCurrency: 'CAD',
+              ...(ticketType === offerTypes.PAYING &&
+                values?.ticketLink && {
+                  url: {
+                    uri: urlProtocolCheck(values?.ticketLink),
+                  },
+                }),
+            };
+          }
+
+          eventObj = {
+            name: {
+              en: values?.english,
+              fr: values?.french,
+            },
+            ...(values?.startTime && { startDateTime }),
+            ...(!values?.startTime && { startDate: startDateTime }),
+            ...(values?.endTime && { endDateTime }),
+            ...(!values?.endTime && { endDate: endDateTime }),
+            eventStatus: values?.eventStatus,
+            ...((values?.englishEditor || values?.frenchEditor) && {
+              description: {
+                en: values?.englishEditor,
+                fr: values?.frenchEditor,
+              },
+            }),
+            ...(values?.eventAccessibility && {
+              accessibility,
+            }),
+            ...(accessibilityNote && { accessibilityNote }),
+            additionalType,
+            audience,
+
+            url: {
+              uri: urlProtocolCheck(values?.eventLink),
+            },
+
+            ...(values?.facebookLink && { facebookUrl: urlProtocolCheck(values?.facebookLink) }),
+            ...(values?.videoLink && { videoUrl: urlProtocolCheck(values?.videoLink) }),
+            ...(contactPoint && { contactPoint }),
+            ...(locationId && { locationId }),
+            ...(keywords && { keywords }),
+            ...(ticketType && { offerConfiguration }),
+          };
+          if (values?.dragger && values?.dragger[0]?.originFileObj) {
+            new Compressor(values?.dragger[0].originFileObj, {
+              convertSize: 200000,
+              success: (compressedResult) => {
+                const formdata = new FormData();
+                formdata.append('files', values?.dragger[0].originFileObj);
+                formdata.append('files', new File([compressedResult], 'compressed' + compressedResult.name));
+                formdata &&
+                  addImage({ data: formdata, calendarId })
+                    .unwrap()
+                    .then((response) => {
+                      image = response?.data;
+                      eventObj['image'] = image;
+                      addUpdateEventApiHandler(eventObj)
+                        .then(() => resolve())
+                        .catch((error) => {
+                          reject();
+                          console.log(error);
+                        });
+                    })
+                    .catch((error) => {
+                      console.log(error);
+                    });
+              },
+            });
+          } else {
+            //ToDo : Check with Backend whether to pass image object on removal
+            if (values?.dragger && values?.length == 0) eventObj['image'] = null;
+
+            addUpdateEventApiHandler(eventObj)
+              .then(() => resolve())
+              .catch((error) => {
+                reject();
+                console.log(error);
+              });
+          }
+        })
+
         .catch((error) => {
           console.log(error);
         });
-    }
-  };
-  const saveAsDraftHandler = () => {
-    form
-      .validateFields([
-        'french',
-        'english',
-        'datePicker',
-        'dateRangePicker',
-        'datePickerWrapper',
-        ...(eventData?.publishState === eventPublishState.PUBLISHED ? ['prices', 'ticketLink'] : []),
-      ])
-      .then(() => {
-        var values = form.getFieldsValue(true);
-        var startDateTime,
-          endDateTime,
-          additionalType = [],
-          audience = [],
-          contactPoint,
-          accessibility = [],
-          accessibilityNote,
-          keywords,
-          locationId,
-          offerConfiguration,
-          image;
-        let eventObj;
-        if (dateType === dateTypes.SINGLE) {
-          if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
-          else startDateTime = moment(values?.datePicker).format('YYYY/MM/DD');
-          if (values?.endTime) endDateTime = dateTimeConverter(values?.datePicker, values?.endTime);
-        }
-        if (dateType === dateTypes.RANGE) {
-          if (values?.startTime) startDateTime = dateTimeConverter(values?.dateRangePicker[0], values?.startTime);
-          else startDateTime = moment(values?.dateRangePicker[0]).format('YYYY/MM/DD');
-          if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
-          else endDateTime = moment(values?.dateRangePicker[1]).format('YYYY/MM/DD');
-        }
-        if (values?.eventType) {
-          additionalType = values?.eventType?.map((eventTypeId) => {
-            return {
-              entityId: eventTypeId,
-            };
-          });
-        }
-        if (values?.targetAudience) {
-          audience = values?.targetAudience?.map((audienceId) => {
-            return {
-              entityId: audienceId,
-            };
-          });
-        }
-        if (
-          values?.frenchVirtualLocation ||
-          values?.englishVirtualLocation ||
-          values?.virtualLocationOnlineLink ||
-          values?.locationPlace?.length > 0
-        ) {
-          locationId = {
-            place: {
-              entityId: values?.locationPlace,
-            },
-            virtualLocation: {
-              name: {
-                en: values?.englishVirtualLocation,
-                fr: values?.frenchVirtualLocation,
-              },
-              description: {},
-              dynamicFields: [],
-              url: {
-                uri: urlProtocolCheck(values?.virtualLocationOnlineLink),
-              },
-            },
-          };
-        }
-        if (
-          values?.frenchContactTitle ||
-          values?.englishContactTitle ||
-          values?.contactWebsiteUrl ||
-          values?.contactEmail ||
-          values?.contactPhoneNumber
-        ) {
-          contactPoint = {
-            name: {
-              en: values?.englishContactTitle,
-              fr: values?.frenchContactTitle,
-            },
-            url: {
-              uri: urlProtocolCheck(values?.contactWebsiteUrl),
-            },
-            email: values?.contactEmail,
-            telephone: values?.contactPhoneNumber,
-          };
-        }
-        if (values?.eventAccessibility) {
-          accessibility = values?.eventAccessibility?.map((accessibilityId) => {
-            return {
-              entityId: accessibilityId,
-            };
-          });
-        }
+    });
 
-        if (values?.englishAccessibilityNote || values?.frenchAccessibilityNote) {
-          accessibilityNote = {
-            ...(values?.englishAccessibilityNote && { en: values?.englishAccessibilityNote }),
-            ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote }),
-          };
-        }
-        if (values?.keywords?.length > 0) {
-          keywords = values?.keywords;
-        }
-        if (ticketType) {
-          offerConfiguration = {
-            category: ticketType,
-            //Change name key to note when the change is made in the backend
-            name: {
-              en: values?.englishTicketNote,
-              fr: values?.frenchTicketNote,
-            },
-            ...(ticketType === offerTypes.PAYING &&
-              values?.prices?.length > 0 &&
-              values?.prices[0] && {
-                prices: values?.prices,
-              }),
-            priceCurrency: 'CAD',
-            ...(ticketType === offerTypes.PAYING &&
-              values?.ticketLink && {
-                url: {
-                  uri: urlProtocolCheck(values?.ticketLink),
-                },
-              }),
-          };
-        }
-
-        eventObj = {
-          name: {
-            en: values?.english,
-            fr: values?.french,
-          },
-          ...(values?.startTime && { startDateTime }),
-          ...(!values?.startTime && { startDate: startDateTime }),
-          ...(values?.endTime && { endDateTime }),
-          ...(!values?.endTime && { endDate: endDateTime }),
-          eventStatus: values?.eventStatus,
-          ...((values?.englishEditor || values?.frenchEditor) && {
-            description: {
-              en: values?.englishEditor,
-              fr: values?.frenchEditor,
-            },
-          }),
-          ...(values?.eventAccessibility && {
-            accessibility,
-          }),
-          ...(accessibilityNote && { accessibilityNote }),
-          additionalType,
-          audience,
-
-          url: {
-            uri: urlProtocolCheck(values?.eventLink),
-          },
-
-          ...(values?.facebookLink && { facebookUrl: urlProtocolCheck(values?.facebookLink) }),
-          ...(values?.videoLink && { videoUrl: urlProtocolCheck(values?.videoLink) }),
-          ...(contactPoint && { contactPoint }),
-          ...(locationId && { locationId }),
-          ...(keywords && { keywords }),
-          ...(ticketType && { offerConfiguration }),
-        };
-        if (values?.dragger && values?.dragger[0]?.originFileObj) {
-          new Compressor(values?.dragger[0].originFileObj, {
-            convertSize: 200000,
-            success: (compressedResult) => {
-              const formdata = new FormData();
-              formdata.append('files', values?.dragger[0].originFileObj);
-              formdata.append('files', new File([compressedResult], 'compressed' + compressedResult.name));
-              formdata &&
-                addImage({ data: formdata, calendarId })
-                  .unwrap()
-                  .then((response) => {
-                    image = response?.data;
-                    eventObj['image'] = image;
-                    addUpdateEventApiHandler(eventObj);
-                  })
-                  .catch((error) => {
-                    console.log(error);
-                  });
-            },
-          });
-        } else {
-          //ToDo : Check with Backend whether to pass image object on removal
-          if (values?.dragger && values?.length == 0) eventObj['image'] = null;
-
-          addUpdateEventApiHandler(eventObj);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    return promise;
   };
 
   const reviewPublishHandler = () => {
@@ -332,11 +354,15 @@ function AddEvent() {
         'ticketLink',
       ])
       .then(() => {
-        updateEventState({ id: eventId, calendarId })
-          .unwrap()
-          .then(() =>
-            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`).catch((error) => console.log(error)),
-          );
+        saveAsDraftHandler()
+          .then(() => {
+            updateEventState({ id: eventId, calendarId })
+              .unwrap()
+              .then(() =>
+                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`).catch((error) => console.log(error)),
+              );
+          })
+          .catch((error) => console.log(error));
       })
       .catch((error) => {
         console.log(error);
