@@ -91,6 +91,7 @@
           "startTime": "Start time",
           "endTime": "End time",
           "status": "Status",
+          "changeDateType": "Change date type",
           "changeToSingleDate": "Change to single date",
           "changeToDateRange": "Change to date range",
           "changeToMultipleDate": "Change to multiple dates",
@@ -103,6 +104,7 @@
         },
         "location": {
           "title": "Location",
+          "placeHolderLocation": "Search Places",
           "virtualLocation": "Virtual location",
           "placeHolderVirtualLocationEn": "Enter English text to display",
           "placeHolderVirtualLocationFr": "Enter French text to display",
@@ -152,7 +154,26 @@
           "placeHolderEventAccessibilityFrenchNote": "Add supplementary accessibility information.",
           "placeHolderEventAccessibilityEnglishNote": "Add supplementary accessibility information."
         },
-
+        "tickets": {
+          "title": "Tickets",
+          "free": "Free",
+          "paid": "Paid",
+          "buyTicketLink": "Buy tickets link",
+          "note": "Note",
+          "ticketType": "Ticket type",
+          "changeTicketType": "Change ticket type",
+          "changeToFree": "Change to Free",
+          "changeToPaid": "Change to Paid",
+          "changeToFreeTooltip": "Use when your event is free of charge.",
+          "changeToPaidTooltip": "Use when your event is paid.",
+          "price": "Price",
+          "description": "Description",
+          "enterType": "Enter Type",
+          "anotherTicketType": "Another ticket type",
+          "placeHolderNotes": "Add supplementary ticketing information",
+          "placeHolderLinks": "Enter web address URL",
+          "CAD": "CAD $"
+        },
         "status": "Status",
         "saveOptions": {
           "publish": "Publish",
@@ -171,6 +192,11 @@
             "englishShort": "English description is too short.",
             "frenchShort": "French description is too short.",
             "emptyImage": "An image is required. PNG and JPEG files are supported."
+          },
+          "ticket": {
+            "emptyTicket": "The event requires ticketing information.",
+            "emptyPaidTicket": "This event requires a buy ticket link or a ticket price.",
+            "invalidData": "Enter a number."
           },
           "url": "Enter a valid url."
         }

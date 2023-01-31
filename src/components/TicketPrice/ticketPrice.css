@@ -1,0 +1,17 @@
+.edit-price-table {
+  width: 100%;
+  background-color: #e8e8e8;
+  border-radius: 0px 4px 4px 4px;
+}
+.edit-price-table td {
+  padding: 0px 8px 0px 8px;
+}
+.edit-price-table th {
+  padding: 8px;
+}
+
+.edit-price-table .edit-price-title-primary {
+  font-weight: 700;
+  font-size: 12px;
+  color: #222732;
+}

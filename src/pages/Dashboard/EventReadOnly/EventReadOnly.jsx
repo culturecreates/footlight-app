@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Breadcrumb } from 'antd';
 import { LeftOutlined, CalendarOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -20,21 +20,33 @@ import ImageUpload from '../../../components/ImageUpload';
 import TreeSelectOption from '../../../components/TreeSelectOption';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import SelectOption from '../../../components/Select/SelectOption';
+import { offerTypes } from '../../../constants/ticketOffers';
+import { placesOptions } from '../../../components/Select/selectOption.settings';
+import { useGetAllPlacesQuery } from '../../../services/places';
 
 function EventReadOnly() {
   const { t } = useTranslation();
   const { calendarId, eventId } = useParams();
-  const { data: eventData, isLoading } = useGetEventQuery({ eventId, calendarId }, { skip: eventId ? false : true });
+  const timestampRef = useRef(Date.now()).current;
+  const { data: eventData, isLoading } = useGetEventQuery(
+    { eventId, calendarId, sessionId: timestampRef },
+    { skip: eventId ? false : true },
+  );
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
     taxonomyClass: taxonomyClass.EVENT,
     includeConcepts: true,
   });
+  const { currentData: allPlaces, isLoading: placesLoading } = useGetAllPlacesQuery({
+    calendarId,
+    sessionId: timestampRef,
+  });
   const { user } = useSelector(getUserDetails);
   const [dateType, setDateType] = useState();
 
   let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
+  let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
 
   useEffect(() => {
     setDateType(
@@ -44,7 +56,8 @@ function EventReadOnly() {
 
   return (
     !isLoading &&
-    !taxonomyLoading && (
+    !taxonomyLoading &&
+    !placesLoading && (
       <div>
         <Row gutter={[32, 24]} className="read-only-wrapper">
           <Col span={24}>
@@ -234,8 +247,24 @@ function EventReadOnly() {
                 <Col flex={'423px'}>
                   <div className="read-only-event-section-wrapper">
                     <p className="read-only-event-content-title">{t('dashboard.events.addEditEvent.location.title')}</p>
+                    {initialPlace && initialPlace?.length > 0 && (
+                      <>
+                        <p className="read-only-event-content-sub-title-primary">
+                          {t('dashboard.events.addEditEvent.location.title')}
+                        </p>
+                        <SelectOption
+                          disabled
+                          bordered={false}
+                          showArrow={false}
+                          defaultValue={initialPlace && initialPlace[0]?.id}
+                          options={placesOptions(allPlaces?.data, user)}
+                        />
+                      </>
+                    )}
+
                     {initialVirtualLocation[0] && initialVirtualLocation?.length > 0 && (
                       <p className="read-only-event-content-sub-title-primary">
+                        <br />
                         {t('dashboard.events.addEditEvent.location.virtualLocation')}
                       </p>
                     )}
@@ -477,6 +506,105 @@ function EventReadOnly() {
                       <>
                         <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
                         <p className="read-only-event-content">{eventData?.accessibilityNote?.en}</p>
+                      </>
+                    )}
+                  </div>
+                </Col>
+                <Col flex="233px">
+                  <div style={{ width: '100%' }}></div>
+                </Col>
+              </Row>
+            </Col>
+          )}
+          {eventData?.offerConfiguration && (
+            <Col flex={'723px'} className="read-only-event-section-col">
+              <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                <Col flex={'423px'}>
+                  <div className="read-only-event-section-wrapper">
+                    <p className="read-only-event-content-title">{t('dashboard.events.addEditEvent.tickets.title')}</p>
+                    {eventData?.offerConfiguration?.category === offerTypes.FREE && (
+                      <>
+                        <p className="read-only-event-content-sub-title-primary">
+                          {t('dashboard.events.addEditEvent.tickets.description')}
+                        </p>
+                        <p>
+                          <p className="read-only-event-content">{t('dashboard.events.addEditEvent.tickets.free')}</p>
+                        </p>
+                      </>
+                    )}
+                    {eventData?.offerConfiguration?.url?.uri &&
+                      eventData?.offerConfiguration?.category === offerTypes.PAYING && (
+                        <>
+                          <p className="read-only-event-content-sub-title-primary">
+                            {t('dashboard.events.addEditEvent.tickets.buyTicketLink')}
+                          </p>
+                          <p>
+                            <a
+                              href={eventData?.offerConfiguration?.url?.uri}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="url-links">
+                              {eventData?.offerConfiguration?.url?.uri}
+                            </a>
+                          </p>
+                        </>
+                      )}
+                    {eventData?.offerConfiguration?.category === offerTypes.PAYING &&
+                      eventData?.offerConfiguration?.prices?.length > 0 && (
+                        <table className="ticket-price-table">
+                          <tr>
+                            <th>
+                              <p className="read-only-event-content-sub-title-primary">
+                                {t('dashboard.events.addEditEvent.tickets.price')}
+                              </p>
+                            </th>
+                            <th>
+                              <p className="read-only-event-content-sub-title-primary">
+                                {t('dashboard.events.addEditEvent.tickets.description')}
+                              </p>
+                            </th>
+                          </tr>
+
+                          {eventData?.offerConfiguration?.prices?.map((offer, key) => {
+                            return (
+                              <tr key={key}>
+                                <td>
+                                  <p className="read-only-event-content">
+                                    {offer?.price}&nbsp;
+                                    <span style={{ fontWeight: '400' }}>
+                                      {t('dashboard.events.addEditEvent.tickets.CAD')}
+                                    </span>
+                                  </p>
+                                </td>
+                                <td>
+                                  <p className="read-only-event-content">
+                                    {bilingual({
+                                      en: offer?.name?.en,
+                                      fr: offer?.name?.fr,
+                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    })}
+                                  </p>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </table>
+                      )}
+                    {(eventData?.offerConfiguration?.name?.fr || eventData?.offerConfiguration?.name?.en) && (
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.tickets.note')}
+                      </p>
+                    )}
+                    {eventData?.offerConfiguration?.name?.fr && (
+                      <>
+                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        <p className="read-only-event-content">{eventData?.offerConfiguration?.name?.fr}</p>
+                      </>
+                    )}
+                    {eventData?.offerConfiguration?.name?.en && (
+                      <>
+                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        <p className="read-only-event-content">{eventData?.offerConfiguration?.name?.en}</p>
                       </>
                     )}
                   </div>

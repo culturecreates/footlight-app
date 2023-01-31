@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
 import { Form, Row, Col, Input } from 'antd';
-import { SyncOutlined, InfoCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { SyncOutlined, InfoCircleOutlined, CloseCircleOutlined, CalendarOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -38,6 +38,12 @@ import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSe
 import StyledInput from '../../../components/Input/Common';
 import SelectOption from '../../../components/Select/SelectOption';
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
+import { offerTypeOptions, offerTypes } from '../../../constants/ticketOffers';
+import { ReactComponent as Money } from '../../../assets/icons/Money.svg';
+import { ReactComponent as MoneyFree } from '../../../assets/icons/Money-Free.svg';
+import TicketPrice from '../../../components/TicketPrice';
+import { useGetAllPlacesQuery } from '../../../services/places';
+import { filterPlaceOption, placesOptions } from '../../../components/Select/selectOption.settings';
 
 const { TextArea } = Input;
 
@@ -61,16 +67,21 @@ function AddEvent() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
+  const { currentData: allPlaces, isLoading: placesLoading } = useGetAllPlacesQuery({
+    calendarId,
+    sessionId: timestampRef,
+  });
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
   const [addImage] = useAddImageMutation();
 
   const [dateType, setDateType] = useState();
+  const [ticketType, setTicketType] = useState();
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
 
   let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
-
+  let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
   const dateTimeConverter = (date, time) => {
     let dateSelected = moment(date).format('DD/MM/YYYY');
     let timeSelected = moment(time).format('hh:mm:ss a');
@@ -107,7 +118,14 @@ function AddEvent() {
   };
   const saveAsDraftHandler = () => {
     form
-      .validateFields(['french', 'english', 'datePicker', 'dateRangePicker', 'datePickerWrapper'])
+      .validateFields([
+        'french',
+        'english',
+        'datePicker',
+        'dateRangePicker',
+        'datePickerWrapper',
+        ...(eventData?.publishState === eventPublishState.PUBLISHED ? ['prices', 'ticketLink'] : []),
+      ])
       .then(() => {
         var values = form.getFieldsValue(true);
         var startDateTime,
@@ -119,6 +137,7 @@ function AddEvent() {
           accessibilityNote,
           keywords,
           locationId,
+          offerConfiguration,
           image;
         let eventObj;
         if (dateType === dateTypes.SINGLE) {
@@ -146,10 +165,15 @@ function AddEvent() {
             };
           });
         }
-        if (values?.frenchVirtualLocation || values?.englishVirtualLocation || values?.virtualLocationOnlineLink) {
+        if (
+          values?.frenchVirtualLocation ||
+          values?.englishVirtualLocation ||
+          values?.virtualLocationOnlineLink ||
+          values?.locationPlace?.length > 0
+        ) {
           locationId = {
             place: {
-              entityId: null,
+              entityId: values?.locationPlace,
             },
             virtualLocation: {
               name: {
@@ -200,6 +224,28 @@ function AddEvent() {
         if (values?.keywords?.length > 0) {
           keywords = values?.keywords;
         }
+        if (ticketType) {
+          offerConfiguration = {
+            category: ticketType,
+            //Change name key to note when the change is made in the backend
+            name: {
+              en: values?.englishTicketNote,
+              fr: values?.frenchTicketNote,
+            },
+            ...(ticketType === offerTypes.PAYING &&
+              values?.prices?.length > 0 &&
+              values?.prices[0] && {
+                prices: values?.prices,
+              }),
+            priceCurrency: 'CAD',
+            ...(ticketType === offerTypes.PAYING &&
+              values?.ticketLink && {
+                url: {
+                  uri: urlProtocolCheck(values?.ticketLink),
+                },
+              }),
+          };
+        }
 
         eventObj = {
           name: {
@@ -233,6 +279,7 @@ function AddEvent() {
           ...(contactPoint && { contactPoint }),
           ...(locationId && { locationId }),
           ...(keywords && { keywords }),
+          ...(ticketType && { offerConfiguration }),
         };
         if (values?.dragger && values?.dragger[0]?.originFileObj) {
           new Compressor(values?.dragger[0].originFileObj, {
@@ -280,6 +327,9 @@ function AddEvent() {
         'targetAudience',
         'dragger-wrap',
         'location-form-wrapper',
+        'ticketPickerWrapper',
+        'prices',
+        'ticketLink',
       ])
       .then(() => {
         updateEventState({ id: eventId, calendarId })
@@ -362,10 +412,12 @@ function AddEvent() {
     setDateType(
       dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
     );
+    setTicketType(eventData?.offerConfiguration?.category);
   }, [isLoading]);
 
   return (
     !isLoading &&
+    !placesLoading &&
     !taxonomyLoading && (
       <div>
         <Form form={form} layout="vertical" name="event">
@@ -586,14 +638,20 @@ function AddEvent() {
                         ]}>
                         <div className="date-buttons">
                           <DateAction
+                            iconRender={<CalendarOutlined />}
                             label={t('dashboard.events.addEditEvent.dates.singleDate')}
                             onClick={() => setDateType(dateTypes.SINGLE)}
                           />
                           <DateAction
+                            iconRender={<CalendarOutlined />}
                             label={t('dashboard.events.addEditEvent.dates.dateRange')}
                             onClick={() => setDateType(dateTypes.RANGE)}
                           />
-                          <DateAction label={t('dashboard.events.addEditEvent.dates.multipleDates')} disabled={true} />
+                          <DateAction
+                            iconRender={<CalendarOutlined />}
+                            label={t('dashboard.events.addEditEvent.dates.multipleDates')}
+                            disabled={true}
+                          />
                         </div>
                       </Form.Item>
                     </Col>
@@ -613,7 +671,9 @@ function AddEvent() {
               </>
 
               {dateType && (
-                <Form.Item label="Change date type" style={{ lineHeight: '2.5' }}>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.dates.changeDateType')}
+                  style={{ lineHeight: '2.5' }}>
                   {dateTypeOptions.map((type) => {
                     if (dateType != type.type)
                       return (
@@ -643,13 +703,30 @@ function AddEvent() {
                       if (
                         getFieldValue('frenchVirtualLocation') ||
                         getFieldValue('englishVirtualLocation') ||
-                        getFieldValue('virtualLocationOnlineLink')
+                        getFieldValue('virtualLocationOnlineLink') ||
+                        getFieldValue('locationPlace')
                       ) {
                         return Promise.resolve();
                       } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.location')));
                     },
                   }),
                 ]}>
+                <Form.Item
+                  name="locationPlace"
+                  className="subheading-wrap"
+                  initialValue={initialPlace && initialPlace[0]?.id}
+                  label={t('dashboard.events.addEditEvent.location.title')}>
+                  <SelectOption
+                    allowClear
+                    style={{ height: 'auto' }}
+                    placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
+                    showSearch
+                    showArrow={false}
+                    filterOption={filterPlaceOption}
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    options={placesOptions(allPlaces?.data, user)}
+                  />
+                </Form.Item>
                 <Form.Item label={t('dashboard.events.addEditEvent.location.virtualLocation')}>
                   <BilingualInput fieldData={initialVirtualLocation && initialVirtualLocation[0]?.name}>
                     <Form.Item
@@ -1003,6 +1080,206 @@ function AddEvent() {
                   </BilingualInput>
                 </Form.Item>
               </>
+            </CardEvent>
+            <CardEvent title={t('dashboard.events.addEditEvent.tickets.title')} required={true}>
+              <>
+                {(ticketType == offerTypes.FREE || !ticketType) && (
+                  <Row>
+                    <Col flex={'423px'}>
+                      <Form.Item
+                        name="ticketPickerWrapper"
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator() {
+                              if (
+                                ticketType == offerTypes.FREE ||
+                                (ticketType == offerTypes.PAYING &&
+                                  (getFieldValue('ticketLink') || getFieldValue('prices')))
+                              ) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(
+                                  new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyTicket')),
+                                );
+                            },
+                          }),
+                        ]}>
+                        <div className="ticket-buttons">
+                          <DateAction
+                            style={{ width: '200px', backgroundColor: ticketType == offerTypes.FREE && '#EFF2FF' }}
+                            iconRender={<MoneyFree />}
+                            label={t('dashboard.events.addEditEvent.tickets.free')}
+                            onClick={() => setTicketType(offerTypes.FREE)}
+                          />
+                          <DateAction
+                            iconRender={<Money />}
+                            style={{ width: '200px' }}
+                            label={t('dashboard.events.addEditEvent.tickets.paid')}
+                            onClick={() => setTicketType(offerTypes.PAYING)}
+                          />
+                        </div>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                )}
+                {ticketType == offerTypes.PAYING && (
+                  <>
+                    <Form.Item
+                      name="ticketLink"
+                      label={t('dashboard.events.addEditEvent.tickets.buyTicketLink')}
+                      initialValue={eventData?.offerConfiguration?.url?.uri}
+                      rules={[
+                        {
+                          type: 'url',
+                          message: t('dashboard.events.addEditEvent.validations.url'),
+                        },
+
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (
+                              (getFieldValue('prices') != undefined &&
+                                getFieldValue('prices')?.length > 0 &&
+                                getFieldValue('prices')[0] != undefined &&
+                                getFieldValue('prices')[0].price != '') ||
+                              value
+                            ) {
+                              return Promise.resolve();
+                            } else
+                              return Promise.reject(
+                                new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')),
+                              );
+                          },
+                        }),
+                      ]}>
+                      <StyledInput
+                        addonBefore="https://"
+                        autoComplete="off"
+                        placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderLinks')}
+                      />
+                    </Form.Item>
+                    <BilingualInput>
+                      <Form.List
+                        name="prices"
+                        initialValue={eventData?.offerConfiguration?.prices}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator() {
+                              if (
+                                (getFieldValue('prices') != undefined &&
+                                  getFieldValue('prices')?.length > 0 &&
+                                  getFieldValue('prices')[0] != undefined &&
+                                  getFieldValue('prices')[0].price != '') ||
+                                getFieldValue('ticketLink')
+                              ) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(
+                                  new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')),
+                                );
+                            },
+                          }),
+                        ]}>
+                        {(fields, { add, remove }) => (
+                          <TicketPrice
+                            add={add}
+                            remove={remove}
+                            fields={fields}
+                            firstFieldName={'price'}
+                            secondFieldName={('name', 'fr')}
+                          />
+                        )}
+                      </Form.List>
+                      <Form.List
+                        name="prices"
+                        initialValue={eventData?.offerConfiguration?.prices}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator() {
+                              if (
+                                (getFieldValue('prices') != undefined &&
+                                  getFieldValue('prices')?.length > 0 &&
+                                  getFieldValue('prices')[0] != undefined &&
+                                  getFieldValue('prices')[0].price != '') ||
+                                getFieldValue('ticketLink')
+                              ) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(
+                                  new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')),
+                                );
+                            },
+                          }),
+                        ]}>
+                        {(fields, { add, remove }) => (
+                          <TicketPrice
+                            add={add}
+                            remove={remove}
+                            fields={fields}
+                            firstFieldName={'price'}
+                            secondFieldName={('name', 'en')}
+                          />
+                        )}
+                      </Form.List>
+                    </BilingualInput>
+                  </>
+                )}
+                <br />
+                {(ticketType == offerTypes.FREE || ticketType == offerTypes.PAYING) && (
+                  <Form.Item label={t('dashboard.events.addEditEvent.tickets.note')}>
+                    <BilingualInput fieldData={eventData?.offerConfiguration?.name}>
+                      <Form.Item name="frenchTicketNote" initialValue={eventData?.offerConfiguration?.name?.fr}>
+                        <TextArea
+                          autoComplete="off"
+                          placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderNotes')}
+                          style={{
+                            borderRadius: '4px',
+                            border: '4px solid #E8E8E8',
+                            width: '423px',
+                            resize: 'vertical',
+                          }}
+                          size="large"
+                        />
+                      </Form.Item>
+                      <Form.Item name="englishTicketNote" initialValue={eventData?.offerConfiguration?.name?.en}>
+                        <TextArea
+                          autoComplete="off"
+                          placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderNotes')}
+                          style={{
+                            borderRadius: '4px',
+                            border: '4px solid #E8E8E8',
+                            width: '423px',
+                            resize: 'vertical',
+                          }}
+                          size="large"
+                        />
+                      </Form.Item>
+                    </BilingualInput>
+                  </Form.Item>
+                )}
+              </>
+              {ticketType && ticketType == offerTypes.PAYING && (
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.tickets.changeTicketType')}
+                  style={{ lineHeight: '2.5' }}>
+                  {offerTypeOptions.map((type) => {
+                    if (ticketType != type.type)
+                      return (
+                        <ChangeType
+                          key={type.type}
+                          primaryIcon={<SyncOutlined />}
+                          disabled={type.disabled}
+                          label={type.label}
+                          promptText={type.tooltip}
+                          secondaryIcon={<InfoCircleOutlined />}
+                          onClick={() => {
+                            setTicketType(type.type);
+                            form.resetFields(['prices', 'ticketLink']);
+                          }}
+                        />
+                      );
+                  })}
+                </Form.Item>
+              )}
             </CardEvent>
           </Row>
         </Form>

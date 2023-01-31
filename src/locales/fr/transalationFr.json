@@ -90,6 +90,7 @@
           "startTime": "Heure de début",
           "endTime": "Heure de fin",
           "status": "Statut",
+          "changeDateType": "Modifier le type de date",
           "changeToSingleDate": "Changer en une date",
           "changeToDateRange": "Change to plage de dates",
           "changeToMultipleDate": "Changer en plusieurs dates",
@@ -102,6 +103,7 @@
         },
         "location": {
           "title": "Endroit",
+          "placeHolderLocation": "Recherchez Lieux",
           "virtualLocation": "Emplacement virtuel",
           "placeHolderVirtualLocationEn": "Entrez le texte anglais à afficher",
           "placeHolderVirtualLocationFr": "Entrez le texte français à afficher",
@@ -151,6 +153,26 @@
           "placeHolderEventAccessibilityFrenchNote": "Ajouter des informations supplémentaires sur l'accessibilité",
           "placeHolderEventAccessibilityEnglishNote": "Ajouter des informations supplémentaires sur l'accessibilité"
         },
+        "tickets": {
+          "title": "Billets",
+          "free": "Gratuit",
+          "paid": "Payant",
+          "buyTicketLink": "Lien vers la billeterie",
+          "note": "Note",
+          "ticketType": "Type de bilets",
+          "changeTicketType": "Changer le type de billet",
+          "changeToFree": "Changer pour gratuit",
+          "changeToPaid": "Changer pour payant",
+          "changeToFreeTooltip": "À utiliser lorsque votre événement est gratuit.",
+          "changeToPaidTooltip": "Use when your event is paid.",
+          "price": "Prix",
+          "description": "Description",
+          "enterType": "Entrez le Type",
+          "anotherTicketType": "Autre type de billet",
+          "placeHolderNotes": "Ajouter des informations supplémentaires sur la billeterie",
+          "placeHolderLinks": "Entrez l'adresse web URL",
+          "CAD": "CAD $"
+        },
         "status": "Statut",
         "saveOptions": {
           "publish": "Publier",
@@ -169,6 +191,11 @@
             "englishShort": "La description en anglais est trop courte.",
             "frenchShort": "La description française est trop courte.",
             "emptyImage": "Une image est requise. Les fichiers PNG et JPEG sont acceptés."
+          },
+          "ticket": {
+            "emptyTicket": "L'événement nécessite des informations sur la billetterie.",
+            "emptyPaidTicket": "Cet événement nécessite un lien d'achat de billet ou un prix de billet.",
+            "invalidData": "Entrez un nombre."
           },
           "url": "Entrez une URL valide."
         }
