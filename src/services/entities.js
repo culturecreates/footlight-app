@@ -8,7 +8,7 @@ export const entitiesApi = createApi({
   endpoints: (builder) => ({
     getEntities: builder.query({
       query: ({ searchKey, classes, calendarId }) => ({
-        url: `entities?search-key=${searchKey}&${classes}`,
+        url: `entities?query=${searchKey}&${classes}`,
         method: 'GET',
 
         headers: {
