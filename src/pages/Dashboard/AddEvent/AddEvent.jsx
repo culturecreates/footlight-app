@@ -57,7 +57,6 @@ import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/
 import { entitiesClass } from '../../../constants/entitiesClass';
 import SelectionItem from '../../../components/List/SelectionItem';
 import { ReactComponent as Organizations } from '../../../assets/icons/organisations.svg';
-import { bilingual } from '../../../utils/bilingual';
 
 const { TextArea } = Input;
 
@@ -94,13 +93,17 @@ function AddEvent() {
     classes: decodeURIComponent(query.toString()),
     sessionId: timestampRef,
   });
-  const [getEntities, { currentData: currentEntities }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+  const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
   const [addImage] = useAddImageMutation();
 
   const [dateType, setDateType] = useState();
   const [ticketType, setTicketType] = useState();
+  const [organizersList, setOrganizersList] = useState([]);
+  const [performerList, setPerformerList] = useState([]);
+  const [supporterList, setSupporterList] = useState([]);
+
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
 
@@ -472,11 +475,40 @@ function AddEvent() {
     else return roleCheckHandler();
   };
 
-  const treeSearch = (value) => {
+  const treeSearch = (value, type) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.organization);
     query.append('classes', entitiesClass.person);
-    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId });
+    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
+      .unwrap()
+      .then((response) => {
+        if (type == 'organizers') {
+          let organizerSelectedValues = form.getFieldValue('organizers');
+          organizerSelectedValues = initialEntities.filter((entity) => organizerSelectedValues?.includes(entity?.id));
+          organizerSelectedValues = treeEntitiesOption(response.concat(organizerSelectedValues), user);
+          var uniqueOrganizers = organizerSelectedValues.filter(
+            (arr, index, self) => index === self.findIndex((t) => t.value === arr.value),
+          );
+          setOrganizersList(uniqueOrganizers);
+        } else if (type == 'performers') {
+          let performersSelectedValues = form.getFieldValue('performers');
+          performersSelectedValues = initialEntities.filter((entity) => performersSelectedValues?.includes(entity?.id));
+          performersSelectedValues = treeEntitiesOption(response.concat(performersSelectedValues), user);
+          var uniquePerformers = performersSelectedValues.filter(
+            (arr, index, self) => index === self.findIndex((t) => t.value === arr.value),
+          );
+          setPerformerList(uniquePerformers);
+        } else if (type == 'supporters') {
+          let supportersSelectedValues = form.getFieldValue('supporters');
+          supportersSelectedValues = initialEntities.filter((entity) => supportersSelectedValues?.includes(entity?.id));
+          supportersSelectedValues = treeEntitiesOption(response.concat(supportersSelectedValues), user);
+          var uniqueSupporters = supportersSelectedValues.filter(
+            (arr, index, self) => index === self.findIndex((t) => t.value === arr.value),
+          );
+          setSupporterList(uniqueSupporters);
+        }
+      })
+      .catch((error) => console.log(error));
   };
 
   useEffect(() => {
@@ -485,6 +517,12 @@ function AddEvent() {
     );
     setTicketType(eventData?.offerConfiguration?.category);
   }, [isLoading]);
+
+  useEffect(() => {
+    setOrganizersList(treeEntitiesOption(initialEntities, user));
+    setPerformerList(treeEntitiesOption(initialEntities, user));
+    setSupporterList(treeEntitiesOption(initialEntities, user));
+  }, [initialEntityLoading]);
 
   return (
     !isLoading &&
@@ -968,11 +1006,11 @@ function AddEvent() {
                     <TreeSelectOption
                       filterTreeNode={false}
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
-                      onSearch={treeSearch}
-                      treeData={treeEntitiesOption(currentEntities ?? initialEntities, user)}
+                      onSearch={(value) => treeSearch(value, 'organizers')}
+                      treeData={organizersList}
                       tagRender={(props) => {
                         const { value, closable, onClose } = props;
-                        let entity = (currentEntities ?? initialEntities)?.filter((entity) => entity?.id == value);
+                        let entity = organizersList?.filter((entity) => entity?.value == value);
                         return (
                           entity &&
                           entity[0] && (
@@ -986,16 +1024,8 @@ function AddEvent() {
                                   )
                                 )
                               }
-                              name={bilingual({
-                                en: entity[0]?.name?.en,
-                                fr: entity[0]?.name?.fr,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              })}
-                              description={bilingual({
-                                en: entity[0]?.disambiguatingDescription?.en,
-                                fr: entity[0]?.disambiguatingDescription?.fr,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              })}
+                              name={entity[0]?.name}
+                              description={entity[0]?.description}
                               bordered
                               closable={closable}
                               onClose={onClose}
@@ -1092,11 +1122,11 @@ function AddEvent() {
                     <TreeSelectOption
                       filterTreeNode={false}
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.performer.searchPlaceholder')}
-                      onSearch={treeSearch}
-                      treeData={treeEntitiesOption(currentEntities ?? initialEntities, user)}
+                      onSearch={(value) => treeSearch(value, 'performers')}
+                      treeData={performerList}
                       tagRender={(props) => {
                         const { value, closable, onClose } = props;
-                        let entity = (currentEntities ?? initialEntities)?.filter((entity) => entity?.id == value);
+                        let entity = performerList?.filter((entity) => entity?.value == value);
                         return (
                           entity &&
                           entity[0] && (
@@ -1110,16 +1140,8 @@ function AddEvent() {
                                   )
                                 )
                               }
-                              name={bilingual({
-                                en: entity[0]?.name?.en,
-                                fr: entity[0]?.name?.fr,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              })}
-                              description={bilingual({
-                                en: entity[0]?.disambiguatingDescription?.en,
-                                fr: entity[0]?.disambiguatingDescription?.fr,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              })}
+                              name={entity[0]?.name}
+                              description={entity[0]?.description}
                               bordered
                               closable={closable}
                               onClose={onClose}
@@ -1144,11 +1166,11 @@ function AddEvent() {
                     <TreeSelectOption
                       filterTreeNode={false}
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.supporter.searchPlaceholder')}
-                      onSearch={treeSearch}
-                      treeData={treeEntitiesOption(currentEntities ?? initialEntities, user)}
+                      onSearch={(value) => treeSearch(value, 'supporters')}
+                      treeData={supporterList}
                       tagRender={(props) => {
                         const { value, closable, onClose } = props;
-                        let entity = initialEntities?.filter((entity) => entity?.id == value);
+                        let entity = supporterList?.filter((entity) => entity?.value == value);
                         return (
                           entity &&
                           entity[0] && (
@@ -1162,16 +1184,8 @@ function AddEvent() {
                                   )
                                 )
                               }
-                              name={bilingual({
-                                en: entity[0]?.name?.en,
-                                fr: entity[0]?.name?.fr,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              })}
-                              description={bilingual({
-                                en: entity[0]?.disambiguatingDescription?.en,
-                                fr: entity[0]?.disambiguatingDescription?.fr,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              })}
+                              name={entity[0]?.name}
+                              description={entity[0]?.description}
                               bordered
                               closable={closable}
                               onClose={onClose}

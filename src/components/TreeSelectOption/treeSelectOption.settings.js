@@ -61,6 +61,16 @@ export const treeEntitiesOption = (data, user) => {
       ),
       value: entity?.id,
       type: entity?.type,
+      name: bilingual({
+        en: entity?.name?.en,
+        fr: entity?.name?.fr,
+        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+      }),
+      description: bilingual({
+        en: entity?.disambiguatingDescription?.en,
+        fr: entity?.disambiguatingDescription?.fr,
+        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+      }),
     };
   });
   return options;
