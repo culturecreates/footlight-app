@@ -1,11 +1,21 @@
 import React from 'react';
 import './selectionItem.css';
-import { Avatar, List } from 'antd';
+import { Avatar, List, Button } from 'antd';
+import { CloseCircleOutlined } from '@ant-design/icons';
 
 function SelectionItem(props) {
-  const { icon, name, description, bordered } = props;
+  const { icon, name, description, bordered, closable, onClose } = props;
   return (
-    <List.Item className="selection-item-wrapper" style={{ border: bordered && '1px solid#607EFC' }}>
+    <List.Item
+      className="selection-item-wrapper"
+      style={{ border: bordered && '1px solid#607EFC' }}
+      actions={[
+        closable && (
+          <Button type="text" key="list-loadmore-close" onClick={onClose}>
+            <CloseCircleOutlined style={{ color: '#1b3de6' }} />
+          </Button>
+        ),
+      ]}>
       <List.Item.Meta
         style={{ alignItems: 'center' }}
         avatar={

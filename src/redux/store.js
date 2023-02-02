@@ -12,6 +12,7 @@ import { calendarApi } from '../services/calendar';
 import { taxonomyApi } from '../services/taxonomy';
 import { imageApi } from '../services/image';
 import { placesApi } from '../services/places';
+import { entitiesApi } from '../services/entities';
 
 const persistConfig = {
   key: 'root',
@@ -25,6 +26,7 @@ const middlewares = [
   taxonomyApi.middleware,
   imageApi.middleware,
   placesApi.middleware,
+  entitiesApi.middleware,
 ];
 
 const appReducer = combineReducers({
@@ -38,6 +40,7 @@ const appReducer = combineReducers({
   [taxonomyApi.reducerPath]: taxonomyApi.reducer,
   [imageApi.reducerPath]: imageApi.reducer,
   [placesApi.reducerPath]: placesApi.reducer,
+  [entitiesApi.reducerPath]: entitiesApi.reducer,
 });
 
 const rootReducer = (state, action) => appReducer(state, action);
