@@ -42,6 +42,7 @@ function SearchableCheckbox(props) {
         }}
         open={open}
         trigger={['click']}
+        placement="bottom"
         getPopupContainer={(trigger) => trigger.parentNode}
         {...props}>
         <Typography.Link>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './events.css';
-import { Checkbox, Col, Row } from 'antd';
+import { Checkbox, Col, Row, Badge } from 'antd';
+import { CloseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import EventList from '../../../components/List/Events';
@@ -30,7 +31,6 @@ function Events() {
   });
   const [pageNumber, setPageNumber] = useState(searchParams.get('page') ?? 1);
   const [eventSearchQuery, setEventSearchQuery] = useState(searchParams.get('query') ?? '');
-  const [filterPopUp, setFilterPopUp] = useState();
   const [filter, setFilter] = useState({
     users: [],
     publication: [],
@@ -70,7 +70,6 @@ function Events() {
   };
 
   const onFilterChange = (values, filterType) => {
-    console.log(values, filterType);
     if (filterType === filterTypes.USERS)
       setFilter({
         ...filter,
@@ -94,9 +93,9 @@ function Events() {
                   <h4 className="events-heading">{t('dashboard.events.heading')}</h4>
                 </div>
               </Col>
+
               <Col>
                 <SearchableCheckbox
-                  open={filterPopUp === filterTypes.USERS ? true : false}
                   allowSearch={true}
                   overlayStyle={{ height: '304px', overflowY: 'scroll' }}
                   onFilterChange={(values) => onFilterChange(values, filterTypes.USERS)}
@@ -112,10 +111,13 @@ function Events() {
                       filtervalue: user?.firstName + user?.lastName,
                     };
                   })}>
-                  <Outlined label="Users" onClick={() => setFilterPopUp(filterTypes.USERS)} />
+                  <Outlined label="Users">
+                    {filter?.users?.length > 0 && (
+                      <Badge count={filter?.users?.length} showZero={false} color="#1B3DE6" />
+                    )}
+                  </Outlined>
                 </SearchableCheckbox>
                 <SearchableCheckbox
-                  open={filterPopUp === filterTypes.PUBLICATION ? true : false}
                   onFilterChange={(values) => onFilterChange(values, filterTypes.PUBLICATION)}
                   data={eventPublishStateOptions?.map((publication) => {
                     return {
@@ -128,8 +130,22 @@ function Events() {
                       filtervalue: publication.value,
                     };
                   })}>
-                  <Outlined label="Publication" onClick={() => setFilterPopUp(filterTypes.PUBLICATION)} />
+                  <Outlined label="Publication">
+                    {filter?.publication?.length > 0 && (
+                      <Badge count={filter?.publication?.length} showZero={false} color="#1B3DE6" />
+                    )}
+                  </Outlined>
                 </SearchableCheckbox>
+                <Outlined
+                  label={'Clear'}
+                  onClick={() =>
+                    setFilter({
+                      users: [],
+                      publication: [],
+                    })
+                  }>
+                  <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
+                </Outlined>
               </Col>
               <Col>
                 <AddEvent label={t('dashboard.events.addEvent')} onClick={addEventHandler} />
