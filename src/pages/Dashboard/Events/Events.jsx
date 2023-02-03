@@ -95,59 +95,6 @@ function Events() {
               </Col>
 
               <Col>
-                <SearchableCheckbox
-                  allowSearch={true}
-                  overlayStyle={{ height: '304px', overflowY: 'scroll' }}
-                  onFilterChange={(values) => onFilterChange(values, filterTypes.USERS)}
-                  data={allUsersData?.data?.active?.map((user) => {
-                    return {
-                      key: user?.id,
-                      label: (
-                        <Checkbox value={user.id} key={user.id}>
-                          {user?.firstName?.charAt(0)}
-                          {user?.lastName}
-                        </Checkbox>
-                      ),
-                      filtervalue: user?.firstName + user?.lastName,
-                    };
-                  })}>
-                  <Outlined label="Users">
-                    {filter?.users?.length > 0 && (
-                      <Badge count={filter?.users?.length} showZero={false} color="#1B3DE6" />
-                    )}
-                  </Outlined>
-                </SearchableCheckbox>
-                <SearchableCheckbox
-                  onFilterChange={(values) => onFilterChange(values, filterTypes.PUBLICATION)}
-                  data={eventPublishStateOptions?.map((publication) => {
-                    return {
-                      key: publication.key,
-                      label: (
-                        <Checkbox value={publication.value} key={publication.key}>
-                          {publication.title}
-                        </Checkbox>
-                      ),
-                      filtervalue: publication.value,
-                    };
-                  })}>
-                  <Outlined label="Publication">
-                    {filter?.publication?.length > 0 && (
-                      <Badge count={filter?.publication?.length} showZero={false} color="#1B3DE6" />
-                    )}
-                  </Outlined>
-                </SearchableCheckbox>
-                <Outlined
-                  label={'Clear'}
-                  onClick={() =>
-                    setFilter({
-                      users: [],
-                      publication: [],
-                    })
-                  }>
-                  <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
-                </Outlined>
-              </Col>
-              <Col>
                 <AddEvent label={t('dashboard.events.addEvent')} onClick={addEventHandler} />
               </Col>
             </Row>
@@ -161,6 +108,67 @@ function Events() {
                 allowClear={true}
                 onChange={onChangeHandler}
               />
+            </Col>
+            <Col span={16}>
+              <Row gutter={20}>
+                <Col>
+                  <SearchableCheckbox
+                    allowSearch={true}
+                    overlayStyle={{ height: '304px', overflowY: 'scroll' }}
+                    onFilterChange={(values) => onFilterChange(values, filterTypes.USERS)}
+                    data={allUsersData?.data?.active?.map((user) => {
+                      return {
+                        key: user?.id,
+                        label: (
+                          <Checkbox value={user.id} key={user.id}>
+                            {user?.firstName?.charAt(0)}
+                            {user?.lastName}
+                          </Checkbox>
+                        ),
+                        filtervalue: user?.firstName + user?.lastName,
+                      };
+                    })}>
+                    <Outlined label="Users" style={{ color: '#222732' }}>
+                      {filter?.users?.length > 0 && (
+                        <Badge count={filter?.users?.length} showZero={false} color="#1B3DE6" />
+                      )}
+                    </Outlined>
+                  </SearchableCheckbox>
+                </Col>
+                <Col>
+                  <SearchableCheckbox
+                    onFilterChange={(values) => onFilterChange(values, filterTypes.PUBLICATION)}
+                    data={eventPublishStateOptions?.map((publication) => {
+                      return {
+                        key: publication.key,
+                        label: (
+                          <Checkbox value={publication.value} key={publication.key}>
+                            {publication.title}
+                          </Checkbox>
+                        ),
+                        filtervalue: publication.value,
+                      };
+                    })}>
+                    <Outlined label="Publication">
+                      {filter?.publication?.length > 0 && (
+                        <Badge count={filter?.publication?.length} showZero={false} color="#1B3DE6" />
+                      )}
+                    </Outlined>
+                  </SearchableCheckbox>
+                </Col>
+                <Col>
+                  <Outlined
+                    label={'Clear'}
+                    onClick={() =>
+                      setFilter({
+                        users: [],
+                        publication: [],
+                      })
+                    }>
+                    <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
+                  </Outlined>
+                </Col>
+              </Row>
             </Col>
           </Row>
           <Row className="events-content">
