@@ -4,9 +4,8 @@ import { Dropdown, Space, Typography, Checkbox } from 'antd';
 import AuthenticationInput from '../../Input/Common/AuthenticationInput';
 
 function SearchableCheckbox(props) {
-  const { children, allowSearch, data, onFilterChange } = props;
+  const { children, allowSearch, data, onFilterChange, open } = props;
   const [searchKey, setSearchKey] = useState();
-
   let item = data ?? [];
   if (allowSearch && item)
     item = [
@@ -41,6 +40,7 @@ function SearchableCheckbox(props) {
           selectable: true,
           multiple: true,
         }}
+        open={open}
         trigger={['click']}
         getPopupContainer={(trigger) => trigger.parentNode}
         {...props}>

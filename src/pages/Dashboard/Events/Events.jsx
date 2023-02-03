@@ -30,8 +30,7 @@ function Events() {
   });
   const [pageNumber, setPageNumber] = useState(searchParams.get('page') ?? 1);
   const [eventSearchQuery, setEventSearchQuery] = useState(searchParams.get('query') ?? '');
-  const [openUsers, setOpenUsers] = useState(false);
-  const [openPublication, setOpenPublication] = useState(false);
+  const [filterPopUp, setFilterPopUp] = useState();
   const [filter, setFilter] = useState({
     users: [],
     publication: [],
@@ -84,6 +83,7 @@ function Events() {
       });
   };
   return (
+    !isLoading &&
     !allUsersLoading && (
       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
         <Col span={24}>
@@ -96,7 +96,7 @@ function Events() {
               </Col>
               <Col>
                 <SearchableCheckbox
-                  open={openUsers}
+                  open={filterPopUp === filterTypes.USERS ? true : false}
                   allowSearch={true}
                   overlayStyle={{ height: '304px', overflowY: 'scroll' }}
                   onFilterChange={(values) => onFilterChange(values, filterTypes.USERS)}
@@ -112,10 +112,10 @@ function Events() {
                       filtervalue: user?.firstName + user?.lastName,
                     };
                   })}>
-                  <Outlined label="Users" onClick={() => setOpenUsers(!openUsers)} />
+                  <Outlined label="Users" onClick={() => setFilterPopUp(filterTypes.USERS)} />
                 </SearchableCheckbox>
                 <SearchableCheckbox
-                  open={openPublication}
+                  open={filterPopUp === filterTypes.PUBLICATION ? true : false}
                   onFilterChange={(values) => onFilterChange(values, filterTypes.PUBLICATION)}
                   data={eventPublishStateOptions?.map((publication) => {
                     return {
@@ -128,7 +128,7 @@ function Events() {
                       filtervalue: publication.value,
                     };
                   })}>
-                  <Outlined label="Publication" onClick={() => setOpenPublication(!openPublication)} />
+                  <Outlined label="Publication" onClick={() => setFilterPopUp(filterTypes.PUBLICATION)} />
                 </SearchableCheckbox>
               </Col>
               <Col>
@@ -149,11 +149,7 @@ function Events() {
           </Row>
           <Row className="events-content">
             <Col flex="832px">
-              {!isLoading && eventsData ? (
-                <EventList data={eventsData} pageNumber={pageNumber} setPageNumber={setPageNumber} />
-              ) : (
-                ''
-              )}
+              {eventsData ? <EventList data={eventsData} pageNumber={pageNumber} setPageNumber={setPageNumber} /> : ''}
             </Col>
           </Row>
         </Col>
