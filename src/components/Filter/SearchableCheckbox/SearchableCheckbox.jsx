@@ -4,7 +4,7 @@ import { Dropdown, Space, Typography, Checkbox } from 'antd';
 import AuthenticationInput from '../../Input/Common/AuthenticationInput';
 
 function SearchableCheckbox(props) {
-  const { children, allowSearch, data } = props;
+  const { children, allowSearch, data, onFilterChange } = props;
   const [searchKey, setSearchKey] = useState();
 
   let item = data ?? [];
@@ -26,7 +26,7 @@ function SearchableCheckbox(props) {
           if (item.key == 'search') return true;
           if (searchKey == '' || !searchKey) {
             return true;
-          } else if (item.key.toLowerCase().includes(searchKey)) {
+          } else if (item.filtervalue?.toLowerCase().includes(searchKey)) {
             return true;
           } else return false;
         }),
@@ -34,7 +34,7 @@ function SearchableCheckbox(props) {
   }, [searchKey]);
 
   return (
-    <Checkbox.Group onChange={(checkedValues) => console.log(checkedValues)}>
+    <Checkbox.Group onChange={onFilterChange}>
       <Dropdown
         menu={{
           items: items,
