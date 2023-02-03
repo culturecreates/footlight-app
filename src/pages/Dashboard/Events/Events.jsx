@@ -8,6 +8,8 @@ import { useLazyGetEventsQuery } from '../../../services/events';
 import { useParams, useSearchParams, createSearchParams, useNavigate } from 'react-router-dom';
 import AddEvent from '../../../components/Button/AddEvent';
 import { PathName } from '../../../constants/pathName';
+import Outlined from '../../../components/Button/Outlined';
+import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
 
 function Events() {
   const { t } = useTranslation();
@@ -19,6 +21,7 @@ function Events() {
   const [getEvents, { currentData: eventsData, isLoading }] = useLazyGetEventsQuery();
   const [pageNumber, setPageNumber] = useState(searchParams.get('page') ?? 1);
   const [eventSearchQuery, setEventSearchQuery] = useState(searchParams.get('query') ?? '');
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     getEvents({ pageNumber, limit: 10, calendarId, query: eventSearchQuery, sessionId: timestampRef });
@@ -51,6 +54,14 @@ function Events() {
               <div className="events-heading-wrapper">
                 <h4 className="events-heading">{t('dashboard.events.heading')}</h4>
               </div>
+            </Col>
+            <Col>
+              <SearchableCheckbox open={open} allowSearch={true}>
+                <Outlined label="Users" onClick={() => setOpen(!open)} />
+              </SearchableCheckbox>
+              {/* <SearchableCheckbox open={open}>
+                <Outlined label="Publish" onClick={() => setOpen(!open)} />
+              </SearchableCheckbox> */}
             </Col>
             <Col>
               <AddEvent label={t('dashboard.events.addEvent')} onClick={addEventHandler} />
