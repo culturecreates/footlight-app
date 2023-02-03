@@ -4,27 +4,14 @@ import { Dropdown, Space, Typography, Checkbox } from 'antd';
 import AuthenticationInput from '../../Input/Common/AuthenticationInput';
 
 function SearchableCheckbox(props) {
-  const { children, allowSearch } = props;
+  const { children, allowSearch, data } = props;
   const [searchKey, setSearchKey] = useState();
 
-  let item = [
-    {
-      key: 'bbbb',
-      label: <Checkbox value="1">bbbb</Checkbox>,
-    },
-    {
-      key: 'cccc',
-      label: <Checkbox value="2">cccc</Checkbox>,
-    },
-    {
-      key: 'dddd',
-      label: <Checkbox value="3">dddd</Checkbox>,
-    },
-  ];
-  if (allowSearch)
+  let item = data ?? [];
+  if (allowSearch && item)
     item = [
       {
-        key: 'aaa',
+        key: 'search',
         label: <AuthenticationInput size="small" onChange={(e) => setSearchKey(e.target.value)} />,
       },
       ...item,
@@ -33,16 +20,17 @@ function SearchableCheckbox(props) {
   const [items, setItems] = useState(item);
 
   useEffect(() => {
-    setItems(
-      item?.filter((item) => {
-        if (item.key == 'aaa') return true;
-        if (searchKey == '' || !searchKey) {
-          return true;
-        } else if (item.key.toLowerCase().includes(searchKey)) {
-          return true;
-        } else return false;
-      }),
-    );
+    if (allowSearch)
+      setItems(
+        item?.filter((item) => {
+          if (item.key == 'search') return true;
+          if (searchKey == '' || !searchKey) {
+            return true;
+          } else if (item.key.toLowerCase().includes(searchKey)) {
+            return true;
+          } else return false;
+        }),
+      );
   }, [searchKey]);
 
   return (

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './events.css';
-import { Col, Row } from 'antd';
+import { Checkbox, Col, Row } from 'antd';
 import { useTranslation } from 'react-i18next';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import EventList from '../../../components/List/Events';
@@ -10,6 +10,7 @@ import AddEvent from '../../../components/Button/AddEvent';
 import { PathName } from '../../../constants/pathName';
 import Outlined from '../../../components/Button/Outlined';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
+import { eventPublishStateOptions } from '../../../constants/eventPublishState';
 
 function Events() {
   const { t } = useTranslation();
@@ -21,7 +22,8 @@ function Events() {
   const [getEvents, { currentData: eventsData, isLoading }] = useLazyGetEventsQuery();
   const [pageNumber, setPageNumber] = useState(searchParams.get('page') ?? 1);
   const [eventSearchQuery, setEventSearchQuery] = useState(searchParams.get('query') ?? '');
-  const [open, setOpen] = useState(false);
+  const [openUsers, setOpenUsers] = useState(false);
+  const [openPublication, setOpenPublication] = useState(false);
 
   useEffect(() => {
     getEvents({ pageNumber, limit: 10, calendarId, query: eventSearchQuery, sessionId: timestampRef });
@@ -56,12 +58,23 @@ function Events() {
               </div>
             </Col>
             <Col>
-              <SearchableCheckbox open={open} allowSearch={true}>
-                <Outlined label="Users" onClick={() => setOpen(!open)} />
+              <SearchableCheckbox open={openUsers} allowSearch={true}>
+                <Outlined label="Users" onClick={() => setOpenUsers(!openUsers)} />
               </SearchableCheckbox>
-              {/* <SearchableCheckbox open={open}>
-                <Outlined label="Publish" onClick={() => setOpen(!open)} />
-              </SearchableCheckbox> */}
+              <SearchableCheckbox
+                open={openPublication}
+                data={eventPublishStateOptions?.map((publication) => {
+                  return {
+                    key: publication.key,
+                    label: (
+                      <Checkbox value={publication.value} key={publication.key}>
+                        {publication.title}
+                      </Checkbox>
+                    ),
+                  };
+                })}>
+                <Outlined label="Publication" onClick={() => setOpenPublication(!openPublication)} />
+              </SearchableCheckbox>
             </Col>
             <Col>
               <AddEvent label={t('dashboard.events.addEvent')} onClick={addEventHandler} />
