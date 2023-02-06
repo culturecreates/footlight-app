@@ -6,7 +6,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 function SearchableCheckbox(props) {
-  const { children, allowSearch, data, onFilterChange, open } = props;
+  const { children, allowSearch, data, onFilterChange, open, value } = props;
   const { t } = useTranslation();
   const [searchKey, setSearchKey] = useState();
   let item = data ?? [];
@@ -27,7 +27,7 @@ function SearchableCheckbox(props) {
   }, [searchKey]);
 
   return (
-    <Checkbox.Group onChange={onFilterChange}>
+    <Checkbox.Group onChange={onFilterChange} value={value}>
       <Dropdown
         menu={{
           items: items,

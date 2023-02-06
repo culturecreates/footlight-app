@@ -137,7 +137,8 @@ function Events() {
                         ),
                         filtervalue: userDetail?.firstName + userDetail?.lastName,
                       };
-                    })}>
+                    })}
+                    value={filter?.users}>
                     <Button
                       size="large"
                       className="filter-buttons"
@@ -162,7 +163,8 @@ function Events() {
                         ),
                         filtervalue: publication.value,
                       };
-                    })}>
+                    })}
+                    value={filter?.publication}>
                     <Button
                       size="large"
                       className="filter-buttons"
@@ -180,12 +182,13 @@ function Events() {
                       size="large"
                       className="filter-buttons"
                       style={{ color: '#1B3DE6' }}
-                      onClick={() =>
+                      onClick={() => {
                         setFilter({
                           users: [],
                           publication: [],
-                        })
-                      }>
+                        });
+                        setPageNumber(1);
+                      }}>
                       {t('dashboard.events.filter.clear')}&nbsp;
                       <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
                     </Button>
