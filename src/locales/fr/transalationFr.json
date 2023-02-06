@@ -70,6 +70,17 @@
       "heading": "Calendrier des événements",
       "searchPlaceholder": "Rechercher un événement",
       "addEvent": "Événement",
+      "filter": {
+        "users": {
+          "label": "Users",
+          "placeholderSearch": "Rechercher un nom",
+          "myEvents": "Mes événements"
+        },
+        "publication": {
+          "label": "Publication"
+        },
+        "clear": "Clear"
+      },
       "addEditEvent": {
         "heading": { "newEvent": "Ajouter un événement", "editEvent": "Modifier un événement" },
         "language": {

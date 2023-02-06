@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './events.css';
-import { Checkbox, Col, Row, Badge } from 'antd';
+import { Checkbox, Col, Row, Badge, Divider, Button } from 'antd';
 import { CloseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
@@ -9,11 +9,12 @@ import { useLazyGetEventsQuery } from '../../../services/events';
 import { useParams, useSearchParams, createSearchParams, useNavigate } from 'react-router-dom';
 import AddEvent from '../../../components/Button/AddEvent';
 import { PathName } from '../../../constants/pathName';
-import Outlined from '../../../components/Button/Outlined';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
 import { eventPublishStateOptions } from '../../../constants/eventPublishState';
 import { useGetAllUsersQuery } from '../../../services/users';
 import { filterTypes } from '../../../constants/filterTypes';
+import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { useSelector } from 'react-redux';
 
 function Events() {
   const { t } = useTranslation();
@@ -21,6 +22,7 @@ function Events() {
   const navigate = useNavigate();
   let [searchParams, setSearchParams] = useSearchParams();
   const timestampRef = useRef(Date.now()).current;
+  const { user } = useSelector(getUserDetails);
 
   const [getEvents, { currentData: eventsData, isLoading }] = useLazyGetEventsQuery();
   const { currentData: allUsersData, isLoading: allUsersLoading } = useGetAllUsersQuery({
@@ -34,6 +36,10 @@ function Events() {
   const [filter, setFilter] = useState({
     users: [],
     publication: [],
+  });
+
+  let userFilterData = allUsersData?.data?.active?.slice()?.sort(function (x, y) {
+    return x?.id == user?.id ? -1 : y?.id == user?.id ? 1 : 0;
   });
 
   useEffect(() => {
@@ -114,25 +120,33 @@ function Events() {
                 <Col>
                   <SearchableCheckbox
                     allowSearch={true}
-                    overlayStyle={{ height: '304px', overflowY: 'scroll' }}
+                    overlayStyle={{ height: '304px' }}
                     onFilterChange={(values) => onFilterChange(values, filterTypes.USERS)}
-                    data={allUsersData?.data?.active?.map((user) => {
+                    data={userFilterData?.map((userDetail) => {
                       return {
-                        key: user?.id,
+                        key: userDetail?.id,
                         label: (
-                          <Checkbox value={user.id} key={user.id}>
-                            {user?.firstName?.charAt(0)}
-                            {user?.lastName}
-                          </Checkbox>
+                          <>
+                            <Checkbox value={userDetail.id} key={userDetail.id} style={{ marginLeft: '8px' }}>
+                              {user?.id == userDetail?.id
+                                ? t('dashboard.events.filter.users.myEvents')
+                                : userDetail?.firstName?.charAt(0) + userDetail?.lastName}
+                            </Checkbox>
+                            {user?.id == userDetail?.id && <Divider style={{ margin: 8 }} />}
+                          </>
                         ),
-                        filtervalue: user?.firstName + user?.lastName,
+                        filtervalue: userDetail?.firstName + userDetail?.lastName,
                       };
                     })}>
-                    <Outlined label="Users" style={{ color: '#222732' }}>
+                    <Button
+                      size="large"
+                      className="filter-buttons"
+                      style={{ borderColor: filter?.users?.length > 0 && '#607EFC' }}>
+                      {t('dashboard.events.filter.users.label')}&nbsp;
                       {filter?.users?.length > 0 && (
                         <Badge count={filter?.users?.length} showZero={false} color="#1B3DE6" />
                       )}
-                    </Outlined>
+                    </Button>
                   </SearchableCheckbox>
                 </Col>
                 <Col>
@@ -142,31 +156,40 @@ function Events() {
                       return {
                         key: publication.key,
                         label: (
-                          <Checkbox value={publication.value} key={publication.key}>
+                          <Checkbox value={publication.value} key={publication.key} style={{ marginLeft: '8px' }}>
                             {publication.title}
                           </Checkbox>
                         ),
                         filtervalue: publication.value,
                       };
                     })}>
-                    <Outlined label="Publication">
+                    <Button
+                      size="large"
+                      className="filter-buttons"
+                      style={{ borderColor: filter?.publication?.length > 0 && '#607EFC' }}>
+                      {t('dashboard.events.filter.publication.label')}&nbsp;
                       {filter?.publication?.length > 0 && (
                         <Badge count={filter?.publication?.length} showZero={false} color="#1B3DE6" />
                       )}
-                    </Outlined>
+                    </Button>
                   </SearchableCheckbox>
                 </Col>
                 <Col>
-                  <Outlined
-                    label={'Clear'}
-                    onClick={() =>
-                      setFilter({
-                        users: [],
-                        publication: [],
-                      })
-                    }>
-                    <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
-                  </Outlined>
+                  {(filter?.users?.length > 0 || filter?.publication?.length > 0) && (
+                    <Button
+                      size="large"
+                      className="filter-buttons"
+                      style={{ color: '#1B3DE6' }}
+                      onClick={() =>
+                        setFilter({
+                          users: [],
+                          publication: [],
+                        })
+                      }>
+                      {t('dashboard.events.filter.clear')}&nbsp;
+                      <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
+                    </Button>
+                  )}
                 </Col>
               </Row>
             </Col>
