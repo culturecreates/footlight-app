@@ -70,6 +70,17 @@
       "heading": "Event calendar",
       "searchPlaceholder": "Search an event",
       "addEvent": "Event",
+      "filter": {
+        "users": {
+          "label": "Users",
+          "placeholderSearch": "Search name",
+          "myEvents": "My Events"
+        },
+        "publication": {
+          "label": "Publication"
+        },
+        "clear": "Clear"
+      },
       "addEditEvent": {
         "heading": { "newEvent": "New Event", "editEvent": "Edit Event" },
         "language": {

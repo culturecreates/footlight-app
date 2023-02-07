@@ -4,6 +4,17 @@ export const usersApi = createApi({
   reducerPath: 'usersApi',
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
+    getAllUsers: builder.query({
+      query: ({ includeInactiveUsers, includeCalendarFilter, calendarId }) => {
+        return {
+          url: `users?includeInactiveUsers=${includeInactiveUsers}&includeCalendarFilter=${includeCalendarFilter}`,
+          method: 'GET',
+          headers: {
+            'calendar-id': calendarId,
+          },
+        };
+      },
+    }),
     getUserRoles: builder.query({
       query: () => `users/roles`,
     }),
@@ -33,4 +44,5 @@ export const usersApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetUserRolesQuery, useForgotPasswordMutation, useResetPasswordMutation } = usersApi;
+export const { useGetUserRolesQuery, useForgotPasswordMutation, useResetPasswordMutation, useGetAllUsersQuery } =
+  usersApi;

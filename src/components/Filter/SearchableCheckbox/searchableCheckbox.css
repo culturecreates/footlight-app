@@ -1,0 +1,20 @@
+.searchable-checkbox-dropdown-wrapper {
+  max-height: 304px;
+  min-width: 200px;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+  background-color: #ffffff;
+  padding: 8px;
+  filter: drop-shadow(0px 8px 32px rgba(0, 0, 0, 0.2));
+}
+
+.searchable-checkbox-dropdown-wrapper .searchable-checkbox-dropdown-content {
+  max-height: 250px;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+  row-gap: 8px;
+  overflow-y: scroll;
+  margin-top: 8px;
+}
