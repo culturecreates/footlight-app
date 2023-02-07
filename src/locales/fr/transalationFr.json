@@ -70,6 +70,17 @@
       "heading": "Calendrier des événements",
       "searchPlaceholder": "Rechercher un événement",
       "addEvent": "Événement",
+      "filter": {
+        "users": {
+          "label": "Users",
+          "placeholderSearch": "Rechercher un nom",
+          "myEvents": "Mes événements"
+        },
+        "publication": {
+          "label": "Publication"
+        },
+        "clear": "Clear"
+      },
       "addEditEvent": {
         "heading": { "newEvent": "Ajouter un événement", "editEvent": "Modifier un événement" },
         "language": {
@@ -124,6 +135,21 @@
             "subHeading": "Uniquement les fichiers .jpeg et .png sont acceptés.",
             "dragAndDrop": "ou glisser pour télécharger",
             "browse": "Parcourir"
+          },
+          "organizer": {
+            "title": "Organisateur",
+            "subHeading": "Add an organizer for your event and assign a role.",
+            "searchPlaceholder": "Recherchez des Organisations ou des Personnes"
+          },
+          "performer": {
+            "title": "Compagnie/groupe/artiste/animateur de l'événement",
+            "subHeading": "Add a main performer for your event and assign a role.",
+            "searchPlaceholder": "Search Organizations and People"
+          },
+          "supporter": {
+            "title": "Supporteur/Commanditaire",
+            "subHeading": "Add a supporter for your event and assign a role.",
+            "searchPlaceholder": "Search Organizations and People"
           },
           "eventLink": "Lien de l’événement",
           "videoLink": "Video",

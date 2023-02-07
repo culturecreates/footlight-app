@@ -1,10 +1,11 @@
 .selection-item-wrapper {
-  width: 100%;
+  width: 423px;
   align-items: center;
   /* background-color: #f9faff; */
   border-radius: 4px;
   padding: 8px;
   margin: 8px 0px 8px 0px;
+  min-height: 56px;
 }
 
 .selection-item-wrapper .selection-item-title {

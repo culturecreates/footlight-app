@@ -1,7 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
 import { Form, Row, Col, Input } from 'antd';
-import { SyncOutlined, InfoCircleOutlined, CloseCircleOutlined, CalendarOutlined } from '@ant-design/icons';
+import Icon, {
+  SyncOutlined,
+  InfoCircleOutlined,
+  CloseCircleOutlined,
+  CalendarOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -34,7 +40,10 @@ import ImageUpload from '../../../components/ImageUpload';
 import Compressor from 'compressorjs';
 import { useAddImageMutation } from '../../../services/image';
 import TreeSelectOption from '../../../components/TreeSelectOption';
-import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
+import {
+  treeEntitiesOption,
+  treeTaxonomyOptions,
+} from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import StyledInput from '../../../components/Input/Common';
 import SelectOption from '../../../components/Select/SelectOption';
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
@@ -44,6 +53,10 @@ import { ReactComponent as MoneyFree } from '../../../assets/icons/Money-Free.sv
 import TicketPrice from '../../../components/TicketPrice';
 import { useGetAllPlacesQuery } from '../../../services/places';
 import { filterPlaceOption, placesOptions } from '../../../components/Select/selectOption.settings';
+import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
+import { entitiesClass } from '../../../constants/entitiesClass';
+import SelectionItem from '../../../components/List/SelectionItem';
+import { ReactComponent as Organizations } from '../../../assets/icons/organisations.svg';
 
 const { TextArea } = Input;
 
@@ -71,12 +84,26 @@ function AddEvent() {
     calendarId,
     sessionId: timestampRef,
   });
+  let query = new URLSearchParams();
+  query.append('classes', entitiesClass.organization);
+  query.append('classes', entitiesClass.person);
+  const { currentData: initialEntities, isLoading: initialEntityLoading } = useGetEntitiesQuery({
+    calendarId,
+    searchKey: '',
+    classes: decodeURIComponent(query.toString()),
+    sessionId: timestampRef,
+  });
+  const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
   const [addImage] = useAddImageMutation();
 
   const [dateType, setDateType] = useState();
   const [ticketType, setTicketType] = useState();
+  const [organizersList, setOrganizersList] = useState([]);
+  const [performerList, setPerformerList] = useState([]);
+  const [supporterList, setSupporterList] = useState([]);
+
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
 
@@ -89,228 +116,297 @@ function AddEvent() {
     return moment(dateTime).toISOString();
   };
   const addUpdateEventApiHandler = (eventObj) => {
-    if (!eventId || eventId === '') {
-      addEvent({
-        data: eventObj,
-        calendarId,
-      })
-        .unwrap()
-        .then(() => {
-          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+    var promise = new Promise(function (resolve, reject) {
+      if (!eventId || eventId === '') {
+        addEvent({
+          data: eventObj,
+          calendarId,
         })
-        .catch((errorInfo) => {
-          console.log(errorInfo);
-        });
-    } else {
-      updateEvent({
-        data: eventObj,
-        calendarId,
-        eventId,
-      })
-        .unwrap()
-        .then(() => {
-          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+          .unwrap()
+          .then(() => {
+            resolve();
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+          })
+          .catch((errorInfo) => {
+            reject();
+            console.log(errorInfo);
+          });
+      } else {
+        updateEvent({
+          data: eventObj,
+          calendarId,
+          eventId,
         })
+          .unwrap()
+          .then(() => {
+            resolve();
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+          })
+          .catch((error) => {
+            reject();
+            console.log(error);
+          });
+      }
+    });
+    return promise;
+  };
+  const saveAsDraftHandler = () => {
+    var promise = new Promise(function (resolve, reject) {
+      form
+        .validateFields([
+          'french',
+          'english',
+          'datePicker',
+          'dateRangePicker',
+          'datePickerWrapper',
+          ...(eventData?.publishState === eventPublishState.PUBLISHED ? ['prices', 'ticketLink'] : []),
+        ])
+        .then(() => {
+          var values = form.getFieldsValue(true);
+          var startDateTime,
+            endDateTime,
+            additionalType = [],
+            audience = [],
+            contactPoint,
+            accessibility = [],
+            accessibilityNote,
+            keywords,
+            locationId,
+            offerConfiguration,
+            organizers = [],
+            performers = [],
+            collaborators = [],
+            image;
+          let eventObj;
+          if (dateType === dateTypes.SINGLE) {
+            if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
+            else startDateTime = moment(values?.datePicker).format('YYYY/MM/DD');
+            if (values?.endTime) endDateTime = dateTimeConverter(values?.datePicker, values?.endTime);
+          }
+          if (dateType === dateTypes.RANGE) {
+            if (values?.startTime) startDateTime = dateTimeConverter(values?.dateRangePicker[0], values?.startTime);
+            else startDateTime = moment(values?.dateRangePicker[0]).format('YYYY/MM/DD');
+            if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
+            else endDateTime = moment(values?.dateRangePicker[1]).format('YYYY/MM/DD');
+          }
+          if (values?.eventType) {
+            additionalType = values?.eventType?.map((eventTypeId) => {
+              return {
+                entityId: eventTypeId,
+              };
+            });
+          }
+          if (values?.targetAudience) {
+            audience = values?.targetAudience?.map((audienceId) => {
+              return {
+                entityId: audienceId,
+              };
+            });
+          }
+          if (
+            values?.frenchVirtualLocation ||
+            values?.englishVirtualLocation ||
+            values?.virtualLocationOnlineLink ||
+            values?.locationPlace?.length > 0
+          ) {
+            locationId = {
+              place: {
+                entityId: values?.locationPlace,
+              },
+              virtualLocation: {
+                name: {
+                  en: values?.englishVirtualLocation,
+                  fr: values?.frenchVirtualLocation,
+                },
+                description: {},
+                dynamicFields: [],
+                url: {
+                  uri: urlProtocolCheck(values?.virtualLocationOnlineLink),
+                },
+              },
+            };
+          }
+          if (
+            values?.frenchContactTitle ||
+            values?.englishContactTitle ||
+            values?.contactWebsiteUrl ||
+            values?.contactEmail ||
+            values?.contactPhoneNumber
+          ) {
+            contactPoint = {
+              name: {
+                en: values?.englishContactTitle,
+                fr: values?.frenchContactTitle,
+              },
+              url: {
+                uri: urlProtocolCheck(values?.contactWebsiteUrl),
+              },
+              email: values?.contactEmail,
+              telephone: values?.contactPhoneNumber,
+            };
+          }
+          if (values?.eventAccessibility) {
+            accessibility = values?.eventAccessibility?.map((accessibilityId) => {
+              return {
+                entityId: accessibilityId,
+              };
+            });
+          }
+
+          if (values?.englishAccessibilityNote || values?.frenchAccessibilityNote) {
+            accessibilityNote = {
+              ...(values?.englishAccessibilityNote && { en: values?.englishAccessibilityNote }),
+              ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote }),
+            };
+          }
+          if (values?.keywords?.length > 0) {
+            keywords = values?.keywords;
+          }
+          if (ticketType) {
+            offerConfiguration = {
+              category: ticketType,
+              //Change name key to note when the change is made in the backend
+              name: {
+                en: values?.englishTicketNote,
+                fr: values?.frenchTicketNote,
+              },
+              ...(ticketType === offerTypes.PAYING &&
+                values?.prices?.length > 0 &&
+                values?.prices[0] && {
+                  prices: values?.prices,
+                }),
+              priceCurrency: 'CAD',
+              ...(ticketType === offerTypes.PAYING &&
+                values?.ticketLink && {
+                  url: {
+                    uri: urlProtocolCheck(values?.ticketLink),
+                  },
+                }),
+            };
+          }
+
+          let selectedOrganizerPerformerSupporter = values?.organizers.concat(values?.performers, values?.supporters);
+          let filteredOrganizerPerformerSupporter = initialEntities.filter((entity) =>
+            selectedOrganizerPerformerSupporter.includes(entity?.id),
+          );
+
+          if (values?.organizers) {
+            organizers = filteredOrganizerPerformerSupporter.filter((entity) =>
+              values?.organizers.includes(entity?.id),
+            );
+            organizers = organizers?.map((organizer) => {
+              return {
+                entityId: organizer?.id,
+                type: organizer?.type?.toUpperCase(),
+              };
+            });
+          }
+
+          if (values?.performers) {
+            performers = filteredOrganizerPerformerSupporter.filter((entity) =>
+              values?.performers.includes(entity?.id),
+            );
+            performers = performers?.map((performer) => {
+              return {
+                entityId: performer?.id,
+                type: performer?.type?.toUpperCase(),
+              };
+            });
+          }
+
+          if (values?.supporters) {
+            collaborators = filteredOrganizerPerformerSupporter.filter((entity) =>
+              values?.supporters.includes(entity?.id),
+            );
+            collaborators = collaborators?.map((supporter) => {
+              return {
+                entityId: supporter?.id,
+                type: supporter?.type?.toUpperCase(),
+              };
+            });
+          }
+
+          eventObj = {
+            name: {
+              en: values?.english,
+              fr: values?.french,
+            },
+            ...(values?.startTime && { startDateTime }),
+            ...(!values?.startTime && { startDate: startDateTime }),
+            ...(values?.endTime && { endDateTime }),
+            ...(!values?.endTime && { endDate: endDateTime }),
+            eventStatus: values?.eventStatus,
+            ...((values?.englishEditor || values?.frenchEditor) && {
+              description: {
+                en: values?.englishEditor,
+                fr: values?.frenchEditor,
+              },
+            }),
+            ...(values?.eventAccessibility && {
+              accessibility,
+            }),
+            ...(accessibilityNote && { accessibilityNote }),
+            additionalType,
+            audience,
+
+            url: {
+              uri: urlProtocolCheck(values?.eventLink),
+            },
+
+            ...(values?.facebookLink && { facebookUrl: urlProtocolCheck(values?.facebookLink) }),
+            ...(values?.videoLink && { videoUrl: urlProtocolCheck(values?.videoLink) }),
+            ...(contactPoint && { contactPoint }),
+            ...(locationId && { locationId }),
+            ...(keywords && { keywords }),
+            ...(ticketType && { offerConfiguration }),
+            ...(values?.organizers && { organizers }),
+            ...(values?.performers && { performers }),
+            ...(values?.supporters && { collaborators }),
+          };
+          if (values?.dragger && values?.dragger[0]?.originFileObj) {
+            new Compressor(values?.dragger[0].originFileObj, {
+              convertSize: 200000,
+              success: (compressedResult) => {
+                const formdata = new FormData();
+                formdata.append('files', values?.dragger[0].originFileObj);
+                formdata.append('files', new File([compressedResult], 'compressed' + compressedResult.name));
+                formdata &&
+                  addImage({ data: formdata, calendarId })
+                    .unwrap()
+                    .then((response) => {
+                      image = response?.data;
+                      eventObj['image'] = image;
+                      addUpdateEventApiHandler(eventObj)
+                        .then(() => resolve())
+                        .catch((error) => {
+                          reject();
+                          console.log(error);
+                        });
+                    })
+                    .catch((error) => {
+                      console.log(error);
+                    });
+              },
+            });
+          } else {
+            //ToDo : Check with Backend whether to pass image object on removal
+            if (values?.dragger && values?.length == 0) eventObj['image'] = null;
+
+            addUpdateEventApiHandler(eventObj)
+              .then(() => resolve())
+              .catch((error) => {
+                reject();
+                console.log(error);
+              });
+          }
+        })
+
         .catch((error) => {
           console.log(error);
         });
-    }
-  };
-  const saveAsDraftHandler = () => {
-    form
-      .validateFields([
-        'french',
-        'english',
-        'datePicker',
-        'dateRangePicker',
-        'datePickerWrapper',
-        ...(eventData?.publishState === eventPublishState.PUBLISHED ? ['prices', 'ticketLink'] : []),
-      ])
-      .then(() => {
-        var values = form.getFieldsValue(true);
-        var startDateTime,
-          endDateTime,
-          additionalType = [],
-          audience = [],
-          contactPoint,
-          accessibility = [],
-          accessibilityNote,
-          keywords,
-          locationId,
-          offerConfiguration,
-          image;
-        let eventObj;
-        if (dateType === dateTypes.SINGLE) {
-          if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
-          else startDateTime = moment(values?.datePicker).format('YYYY/MM/DD');
-          if (values?.endTime) endDateTime = dateTimeConverter(values?.datePicker, values?.endTime);
-        }
-        if (dateType === dateTypes.RANGE) {
-          if (values?.startTime) startDateTime = dateTimeConverter(values?.dateRangePicker[0], values?.startTime);
-          else startDateTime = moment(values?.dateRangePicker[0]).format('YYYY/MM/DD');
-          if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
-          else endDateTime = moment(values?.dateRangePicker[1]).format('YYYY/MM/DD');
-        }
-        if (values?.eventType) {
-          additionalType = values?.eventType?.map((eventTypeId) => {
-            return {
-              entityId: eventTypeId,
-            };
-          });
-        }
-        if (values?.targetAudience) {
-          audience = values?.targetAudience?.map((audienceId) => {
-            return {
-              entityId: audienceId,
-            };
-          });
-        }
-        if (
-          values?.frenchVirtualLocation ||
-          values?.englishVirtualLocation ||
-          values?.virtualLocationOnlineLink ||
-          values?.locationPlace?.length > 0
-        ) {
-          locationId = {
-            place: {
-              entityId: values?.locationPlace,
-            },
-            virtualLocation: {
-              name: {
-                en: values?.englishVirtualLocation,
-                fr: values?.frenchVirtualLocation,
-              },
-              description: {},
-              dynamicFields: [],
-              url: {
-                uri: urlProtocolCheck(values?.virtualLocationOnlineLink),
-              },
-            },
-          };
-        }
-        if (
-          values?.frenchContactTitle ||
-          values?.englishContactTitle ||
-          values?.contactWebsiteUrl ||
-          values?.contactEmail ||
-          values?.contactPhoneNumber
-        ) {
-          contactPoint = {
-            name: {
-              en: values?.englishContactTitle,
-              fr: values?.frenchContactTitle,
-            },
-            url: {
-              uri: urlProtocolCheck(values?.contactWebsiteUrl),
-            },
-            email: values?.contactEmail,
-            telephone: values?.contactPhoneNumber,
-          };
-        }
-        if (values?.eventAccessibility) {
-          accessibility = values?.eventAccessibility?.map((accessibilityId) => {
-            return {
-              entityId: accessibilityId,
-            };
-          });
-        }
+    });
 
-        if (values?.englishAccessibilityNote || values?.frenchAccessibilityNote) {
-          accessibilityNote = {
-            ...(values?.englishAccessibilityNote && { en: values?.englishAccessibilityNote }),
-            ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote }),
-          };
-        }
-        if (values?.keywords?.length > 0) {
-          keywords = values?.keywords;
-        }
-        if (ticketType) {
-          offerConfiguration = {
-            category: ticketType,
-            //Change name key to note when the change is made in the backend
-            name: {
-              en: values?.englishTicketNote,
-              fr: values?.frenchTicketNote,
-            },
-            ...(ticketType === offerTypes.PAYING &&
-              values?.prices?.length > 0 &&
-              values?.prices[0] && {
-                prices: values?.prices,
-              }),
-            priceCurrency: 'CAD',
-            ...(ticketType === offerTypes.PAYING &&
-              values?.ticketLink && {
-                url: {
-                  uri: urlProtocolCheck(values?.ticketLink),
-                },
-              }),
-          };
-        }
-
-        eventObj = {
-          name: {
-            en: values?.english,
-            fr: values?.french,
-          },
-          ...(values?.startTime && { startDateTime }),
-          ...(!values?.startTime && { startDate: startDateTime }),
-          ...(values?.endTime && { endDateTime }),
-          ...(!values?.endTime && { endDate: endDateTime }),
-          eventStatus: values?.eventStatus,
-          ...((values?.englishEditor || values?.frenchEditor) && {
-            description: {
-              en: values?.englishEditor,
-              fr: values?.frenchEditor,
-            },
-          }),
-          ...(values?.eventAccessibility && {
-            accessibility,
-          }),
-          ...(accessibilityNote && { accessibilityNote }),
-          additionalType,
-          audience,
-
-          url: {
-            uri: urlProtocolCheck(values?.eventLink),
-          },
-
-          ...(values?.facebookLink && { facebookUrl: urlProtocolCheck(values?.facebookLink) }),
-          ...(values?.videoLink && { videoUrl: urlProtocolCheck(values?.videoLink) }),
-          ...(contactPoint && { contactPoint }),
-          ...(locationId && { locationId }),
-          ...(keywords && { keywords }),
-          ...(ticketType && { offerConfiguration }),
-        };
-        if (values?.dragger && values?.dragger[0]?.originFileObj) {
-          new Compressor(values?.dragger[0].originFileObj, {
-            convertSize: 200000,
-            success: (compressedResult) => {
-              const formdata = new FormData();
-              formdata.append('files', values?.dragger[0].originFileObj);
-              formdata.append('files', new File([compressedResult], 'compressed' + compressedResult.name));
-              formdata &&
-                addImage({ data: formdata, calendarId })
-                  .unwrap()
-                  .then((response) => {
-                    image = response?.data;
-                    eventObj['image'] = image;
-                    addUpdateEventApiHandler(eventObj);
-                  })
-                  .catch((error) => {
-                    console.log(error);
-                  });
-            },
-          });
-        } else {
-          //ToDo : Check with Backend whether to pass image object on removal
-          if (values?.dragger && values?.length == 0) eventObj['image'] = null;
-
-          addUpdateEventApiHandler(eventObj);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    return promise;
   };
 
   const reviewPublishHandler = () => {
@@ -332,11 +428,15 @@ function AddEvent() {
         'ticketLink',
       ])
       .then(() => {
-        updateEventState({ id: eventId, calendarId })
-          .unwrap()
-          .then(() =>
-            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`).catch((error) => console.log(error)),
-          );
+        saveAsDraftHandler()
+          .then(() => {
+            updateEventState({ id: eventId, calendarId })
+              .unwrap()
+              .then(() =>
+                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`).catch((error) => console.log(error)),
+              );
+          })
+          .catch((error) => console.log(error));
       })
       .catch((error) => {
         console.log(error);
@@ -408,6 +508,42 @@ function AddEvent() {
     else return roleCheckHandler();
   };
 
+  const treeSearch = (value, type) => {
+    let query = new URLSearchParams();
+    query.append('classes', entitiesClass.organization);
+    query.append('classes', entitiesClass.person);
+    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
+      .unwrap()
+      .then((response) => {
+        if (type == 'organizers') {
+          let organizerSelectedValues = form.getFieldValue('organizers');
+          organizerSelectedValues = initialEntities.filter((entity) => organizerSelectedValues?.includes(entity?.id));
+          organizerSelectedValues = treeEntitiesOption(response.concat(organizerSelectedValues), user);
+          var uniqueOrganizers = organizerSelectedValues.filter(
+            (arr, index, self) => index === self.findIndex((t) => t.value === arr.value),
+          );
+          setOrganizersList(uniqueOrganizers);
+        } else if (type == 'performers') {
+          let performersSelectedValues = form.getFieldValue('performers');
+          performersSelectedValues = initialEntities.filter((entity) => performersSelectedValues?.includes(entity?.id));
+          performersSelectedValues = treeEntitiesOption(response.concat(performersSelectedValues), user);
+          var uniquePerformers = performersSelectedValues.filter(
+            (arr, index, self) => index === self.findIndex((t) => t.value === arr.value),
+          );
+          setPerformerList(uniquePerformers);
+        } else if (type == 'supporters') {
+          let supportersSelectedValues = form.getFieldValue('supporters');
+          supportersSelectedValues = initialEntities.filter((entity) => supportersSelectedValues?.includes(entity?.id));
+          supportersSelectedValues = treeEntitiesOption(response.concat(supportersSelectedValues), user);
+          var uniqueSupporters = supportersSelectedValues.filter(
+            (arr, index, self) => index === self.findIndex((t) => t.value === arr.value),
+          );
+          setSupporterList(uniqueSupporters);
+        }
+      })
+      .catch((error) => console.log(error));
+  };
+
   useEffect(() => {
     setDateType(
       dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
@@ -415,10 +551,17 @@ function AddEvent() {
     setTicketType(eventData?.offerConfiguration?.category);
   }, [isLoading]);
 
+  useEffect(() => {
+    setOrganizersList(treeEntitiesOption(initialEntities, user));
+    setPerformerList(treeEntitiesOption(initialEntities, user));
+    setSupporterList(treeEntitiesOption(initialEntities, user));
+  }, [initialEntityLoading]);
+
   return (
     !isLoading &&
     !placesLoading &&
-    !taxonomyLoading && (
+    !taxonomyLoading &&
+    !initialEntityLoading && (
       <div>
         <Form form={form} layout="vertical" name="event">
           <Row gutter={[32, 24]} className="add-edit-wrapper">
@@ -882,6 +1025,50 @@ function AddEvent() {
                   </Row>
                   <ImageUpload imageUrl={eventData?.image?.original} imageReadOnly={false} />
                 </Form.Item>
+                <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.organizer.title')}>
+                  <Row>
+                    <Col>
+                      <p className="add-event-date-heading">
+                        {t('dashboard.events.addEditEvent.otherInformation.organizer.subHeading')}
+                      </p>
+                    </Col>
+                  </Row>
+                  <Form.Item
+                    name="organizers"
+                    initialValue={eventData?.organizer?.map((organizer) => organizer?.entityId)}>
+                    <TreeSelectOption
+                      filterTreeNode={false}
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
+                      onSearch={(value) => treeSearch(value, 'organizers')}
+                      treeData={organizersList}
+                      tagRender={(props) => {
+                        const { value, closable, onClose } = props;
+                        let entity = organizersList?.filter((entity) => entity?.value == value);
+                        return (
+                          entity &&
+                          entity[0] && (
+                            <SelectionItem
+                              icon={
+                                entity[0]?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
+                                  <Icon component={Organizations} style={{ color: '#607EFC' }} />
+                                ) : (
+                                  entity[0]?.type?.toUpperCase() == taxonomyClass.PERSON && (
+                                    <UserOutlined style={{ color: '#607EFC' }} />
+                                  )
+                                )
+                              }
+                              name={entity[0]?.name}
+                              description={entity[0]?.description}
+                              bordered
+                              closable={closable}
+                              onClose={onClose}
+                            />
+                          )
+                        );
+                      }}
+                    />
+                  </Form.Item>
+                </Form.Item>
                 <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.contact.title')}>
                   <Form.Item
                     label={t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}
@@ -911,6 +1098,7 @@ function AddEvent() {
                       </Form.Item>
                     </BilingualInput>
                   </Form.Item>
+
                   <Form.Item
                     name="contactWebsiteUrl"
                     className="subheading-wrap"
@@ -950,6 +1138,94 @@ function AddEvent() {
                     ]}>
                     <StyledInput
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderEmail')}
+                    />
+                  </Form.Item>
+                </Form.Item>
+                <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.performer.title')}>
+                  <Row>
+                    <Col>
+                      <p className="add-event-date-heading">
+                        {t('dashboard.events.addEditEvent.otherInformation.performer.subHeading')}
+                      </p>
+                    </Col>
+                  </Row>
+                  <Form.Item
+                    name="performers"
+                    initialValue={eventData?.performer?.map((performer) => performer?.entityId)}>
+                    <TreeSelectOption
+                      filterTreeNode={false}
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.performer.searchPlaceholder')}
+                      onSearch={(value) => treeSearch(value, 'performers')}
+                      treeData={performerList}
+                      tagRender={(props) => {
+                        const { value, closable, onClose } = props;
+                        let entity = performerList?.filter((entity) => entity?.value == value);
+                        return (
+                          entity &&
+                          entity[0] && (
+                            <SelectionItem
+                              icon={
+                                entity[0]?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
+                                  <Icon component={Organizations} style={{ color: '#607EFC' }} />
+                                ) : (
+                                  entity[0]?.type?.toUpperCase() == taxonomyClass.PERSON && (
+                                    <UserOutlined style={{ color: '#607EFC' }} />
+                                  )
+                                )
+                              }
+                              name={entity[0]?.name}
+                              description={entity[0]?.description}
+                              bordered
+                              closable={closable}
+                              onClose={onClose}
+                            />
+                          )
+                        );
+                      }}
+                    />
+                  </Form.Item>
+                </Form.Item>
+                <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.supporter.title')}>
+                  <Row>
+                    <Col>
+                      <p className="add-event-date-heading">
+                        {t('dashboard.events.addEditEvent.otherInformation.supporter.subHeading')}
+                      </p>
+                    </Col>
+                  </Row>
+                  <Form.Item
+                    name="supporters"
+                    initialValue={eventData?.collaborators?.map((collaborator) => collaborator?.entityId)}>
+                    <TreeSelectOption
+                      filterTreeNode={false}
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.supporter.searchPlaceholder')}
+                      onSearch={(value) => treeSearch(value, 'supporters')}
+                      treeData={supporterList}
+                      tagRender={(props) => {
+                        const { value, closable, onClose } = props;
+                        let entity = supporterList?.filter((entity) => entity?.value == value);
+                        return (
+                          entity &&
+                          entity[0] && (
+                            <SelectionItem
+                              icon={
+                                entity[0]?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
+                                  <Icon component={Organizations} style={{ color: '#607EFC' }} />
+                                ) : (
+                                  entity[0]?.type?.toUpperCase() == taxonomyClass.PERSON && (
+                                    <UserOutlined style={{ color: '#607EFC' }} />
+                                  )
+                                )
+                              }
+                              name={entity[0]?.name}
+                              description={entity[0]?.description}
+                              bordered
+                              closable={closable}
+                              onClose={onClose}
+                            />
+                          )
+                        );
+                      }}
                     />
                   </Form.Item>
                 </Form.Item>
