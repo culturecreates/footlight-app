@@ -107,6 +107,7 @@ function AddEvent() {
   const [organizersList, setOrganizersList] = useState([]);
   const [performerList, setPerformerList] = useState([]);
   const [supporterList, setSupporterList] = useState([]);
+  const [allPlacesList, setAllPlacesList] = useState([]);
   const [locationPlace, setLocationPlace] = useState();
 
   const reactQuillRefFr = useRef(null);
@@ -512,7 +513,16 @@ function AddEvent() {
       );
     else return roleCheckHandler();
   };
-
+  const placesSearch = (inputValue) => {
+    let query = new URLSearchParams();
+    query.append('classes', entitiesClass.place);
+    getEntities({ searchKey: inputValue, classes: decodeURIComponent(query.toString()), calendarId })
+      .unwrap()
+      .then((response) => {
+        setAllPlacesList(response);
+      })
+      .catch((error) => console.log(error));
+  };
   const treeSearch = (value, type) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.organization);
@@ -563,6 +573,9 @@ function AddEvent() {
     setSupporterList(treeEntitiesOption(initialEntities, user));
   }, [initialEntityLoading]);
 
+  useEffect(() => {
+    setAllPlacesList(allPlaces?.data);
+  }, [placesLoading]);
   return (
     !isLoading &&
     !placesLoading &&
@@ -866,7 +879,7 @@ function AddEvent() {
                   initialValue={initialPlace && initialPlace[0]?.id}
                   label={t('dashboard.events.addEditEvent.location.title')}>
                   <Searchable
-                    itemData={placesOptions(allPlaces?.data, user)}
+                    itemData={placesOptions(allPlacesList, user)}
                     onSearchClick={({ key }) => {
                       setLocationPlace(key);
                       form.setFieldValue('locationPlace', key);
@@ -874,6 +887,7 @@ function AddEvent() {
                     <EventsSearch
                       style={{ borderRadius: '4px' }}
                       placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
+                      onChange={(e) => placesSearch(e.target.value)}
                     />
                   </Searchable>
                   {allPlaces?.data?.map((place) => {
