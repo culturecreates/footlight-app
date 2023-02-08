@@ -40,6 +40,9 @@ export const placesOptions = (data, user) => {
         />
       ),
       value: place?.id,
+      name: place?.name,
+      description: place?.disambiguatingDescription,
+      key: place?.id,
     };
   });
   return options;

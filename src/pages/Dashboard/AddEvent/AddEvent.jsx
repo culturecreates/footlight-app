@@ -7,6 +7,7 @@ import Icon, {
   CloseCircleOutlined,
   CalendarOutlined,
   UserOutlined,
+  EnvironmentOutlined,
 } from '@ant-design/icons';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
@@ -52,11 +53,14 @@ import { ReactComponent as Money } from '../../../assets/icons/Money.svg';
 import { ReactComponent as MoneyFree } from '../../../assets/icons/Money-Free.svg';
 import TicketPrice from '../../../components/TicketPrice';
 import { useGetAllPlacesQuery } from '../../../services/places';
-import { filterPlaceOption, placesOptions } from '../../../components/Select/selectOption.settings';
+import { placesOptions } from '../../../components/Select/selectOption.settings';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import SelectionItem from '../../../components/List/SelectionItem';
 import { ReactComponent as Organizations } from '../../../assets/icons/organisations.svg';
+import Searchable from '../../../components/Dropdown/Searchable';
+import EventsSearch from '../../../components/Search/Events/EventsSearch';
+import { bilingual } from '../../../utils/bilingual';
 
 const { TextArea } = Input;
 
@@ -103,6 +107,7 @@ function AddEvent() {
   const [organizersList, setOrganizersList] = useState([]);
   const [performerList, setPerformerList] = useState([]);
   const [supporterList, setSupporterList] = useState([]);
+  const [locationPlace, setLocationPlace] = useState();
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -549,6 +554,7 @@ function AddEvent() {
       dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
     );
     setTicketType(eventData?.offerConfiguration?.category);
+    if (initialPlace) setLocationPlace(initialPlace[0]?.id);
   }, [isLoading]);
 
   useEffect(() => {
@@ -859,16 +865,41 @@ function AddEvent() {
                   className="subheading-wrap"
                   initialValue={initialPlace && initialPlace[0]?.id}
                   label={t('dashboard.events.addEditEvent.location.title')}>
-                  <SelectOption
-                    allowClear
-                    style={{ height: 'auto' }}
-                    placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
-                    showSearch
-                    showArrow={false}
-                    filterOption={filterPlaceOption}
-                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    options={placesOptions(allPlaces?.data, user)}
-                  />
+                  <Searchable
+                    itemData={placesOptions(allPlaces?.data, user)}
+                    onSearchClick={({ key }) => {
+                      setLocationPlace(key);
+                      form.setFieldValue('locationPlace', key);
+                    }}>
+                    <EventsSearch
+                      style={{ borderRadius: '4px' }}
+                      placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
+                    />
+                  </Searchable>
+                  {allPlaces?.data?.map((place) => {
+                    if (place?.id == locationPlace)
+                      return (
+                        <SelectionItem
+                          icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
+                          name={bilingual({
+                            en: place?.name?.en,
+                            fr: place?.name?.fr,
+                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                          })}
+                          description={bilingual({
+                            en: place?.disambiguatingDescription?.en,
+                            fr: place?.disambiguatingDescription?.fr,
+                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                          })}
+                          bordered
+                          closable
+                          onClose={() => {
+                            setLocationPlace();
+                            form.setFieldValue('locationPlace', undefined);
+                          }}
+                        />
+                      );
+                  })}
                 </Form.Item>
                 <Form.Item label={t('dashboard.events.addEditEvent.location.virtualLocation')}>
                   <BilingualInput fieldData={initialVirtualLocation && initialVirtualLocation[0]?.name}>
