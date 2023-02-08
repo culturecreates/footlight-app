@@ -18,6 +18,7 @@ function Searchable(props) {
         (() => <div className="searchable-dropdown-wrapper">{dropdownData?.map((item) => item.label)}</div>)
       }
       placement="bottom"
+      overlayClassName="search-overlay-menu-dropdown"
       getPopupContainer={(trigger) => trigger.parentNode}
       {...props}>
       <Typography.Link>{children}</Typography.Link>
