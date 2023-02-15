@@ -1082,7 +1082,7 @@ function AddEvent() {
                   <Form.Item
                     name="organizers"
                     initialValue={eventData?.organizer?.map((organizer) => organizer?.entityId)}>
-                    <TreeSelectOption
+                    {/* <TreeSelectOption
                       filterTreeNode={false}
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
                       onSearch={(value) => treeSearch(value, 'organizers')}
@@ -1112,7 +1112,7 @@ function AddEvent() {
                           )
                         );
                       }}
-                    />
+                    /> */}
 
                     <Popover
                       placement="bottom"
@@ -1130,7 +1130,7 @@ function AddEvent() {
                       ))}>
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
-                        placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
+                        placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
                         onChange={(e) => placesSearch(e.target.value)}
                       />
                     </Popover>
