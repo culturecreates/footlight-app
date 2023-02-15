@@ -1,13 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
 import { Form, Row, Col, Input, Popover } from 'antd';
-import {
-  SyncOutlined,
-  InfoCircleOutlined,
-  CloseCircleOutlined,
-  CalendarOutlined,
-  EnvironmentOutlined,
-} from '@ant-design/icons';
+import { SyncOutlined, InfoCircleOutlined, CloseCircleOutlined, CalendarOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -56,9 +50,7 @@ import { placesOptions } from '../../../components/Select/selectOption.settings'
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import SelectionItem from '../../../components/List/SelectionItem';
-import Searchable from '../../../components/Dropdown/Searchable';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
-import { bilingual } from '../../../utils/bilingual';
 
 const { TextArea } = Input;
 
@@ -167,6 +159,7 @@ function AddEvent() {
           'dateRangePicker',
           'datePickerWrapper',
           ...(eventData?.publishState === eventPublishState.PUBLISHED ? ['prices', 'ticketLink'] : []),
+          'locationPlace',
         ])
         .then(() => {
           var values = form.getFieldsValue(true);
@@ -506,7 +499,7 @@ function AddEvent() {
     getEntities({ searchKey: inputValue, classes: decodeURIComponent(query.toString()), calendarId })
       .unwrap()
       .then((response) => {
-        setAllPlacesList(response);
+        setAllPlacesList(placesOptions(response, user));
       })
       .catch((error) => console.log(error));
   };
@@ -538,12 +531,12 @@ function AddEvent() {
   }, [selectedSupporters]);
 
   useEffect(() => {
-    setDateType(
-      dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
-    );
-    setTicketType(eventData?.offerConfiguration?.category);
-    if (initialPlace) setLocationPlace(initialPlace[0]?.id);
     if (calendarId) {
+      setDateType(
+        dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
+      );
+      setTicketType(eventData?.offerConfiguration?.category);
+      if (initialPlace) setLocationPlace(placesOptions(initialPlace[0]));
       if (eventData?.organizer) {
         let initialOrganizers = eventData?.organizer?.map((organizer) => {
           return {
@@ -587,7 +580,7 @@ function AddEvent() {
   }, [initialEntityLoading]);
 
   useEffect(() => {
-    setAllPlacesList(allPlaces?.data);
+    setAllPlacesList(placesOptions(allPlaces?.data, user));
   }, [placesLoading]);
   return (
     !isLoading &&
@@ -891,43 +884,40 @@ function AddEvent() {
                   className="subheading-wrap"
                   initialValue={initialPlace && initialPlace[0]?.id}
                   label={t('dashboard.events.addEditEvent.location.title')}>
-                  <Searchable
-                    itemData={placesOptions(allPlacesList, user)}
-                    onSearchClick={({ key }) => {
-                      setLocationPlace(key);
-                      form.setFieldValue('locationPlace', key);
-                    }}>
+                  <Popover
+                    className="event-popover"
+                    placement="bottom"
+                    getPopupContainer={(trigger) => trigger.parentNode}
+                    trigger={['click']}
+                    content={allPlacesList?.map((place, index) => (
+                      <span
+                        key={index}
+                        onClick={() => {
+                          setLocationPlace(place);
+                          form.setFieldValue('locationPlace', place?.value);
+                        }}>
+                        {place?.label}
+                      </span>
+                    ))}>
                     <EventsSearch
                       style={{ borderRadius: '4px' }}
                       placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
                       onChange={(e) => placesSearch(e.target.value)}
                     />
-                  </Searchable>
-                  {allPlaces?.data?.map((place, index) => {
-                    if (place?.id == locationPlace)
-                      return (
-                        <SelectionItem
-                          key={index}
-                          icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
-                          name={bilingual({
-                            en: place?.name?.en,
-                            fr: place?.name?.fr,
-                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                          })}
-                          description={bilingual({
-                            en: place?.disambiguatingDescription?.en,
-                            fr: place?.disambiguatingDescription?.fr,
-                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                          })}
-                          bordered
-                          closable
-                          onClose={() => {
-                            setLocationPlace();
-                            form.setFieldValue('locationPlace', undefined);
-                          }}
-                        />
-                      );
-                  })}
+                  </Popover>
+                  {locationPlace && (
+                    <SelectionItem
+                      icon={locationPlace?.label?.props?.icon}
+                      name={locationPlace?.name}
+                      description={locationPlace?.description}
+                      bordered
+                      closable
+                      onClose={() => {
+                        setLocationPlace();
+                        form.setFieldValue('locationPlace', undefined);
+                      }}
+                    />
+                  )}
                 </Form.Item>
                 <Form.Item label={t('dashboard.events.addEditEvent.location.virtualLocation')}>
                   <BilingualInput fieldData={initialVirtualLocation && initialVirtualLocation[0]?.name}>

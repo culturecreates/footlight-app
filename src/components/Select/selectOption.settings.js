@@ -40,8 +40,16 @@ export const placesOptions = (data, user) => {
         />
       ),
       value: place?.id,
-      name: place?.name,
-      description: place?.disambiguatingDescription,
+      name: bilingual({
+        en: place?.name?.en,
+        fr: place?.name?.fr,
+        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+      }),
+      description: bilingual({
+        en: place?.disambiguatingDescription?.en,
+        fr: place?.disambiguatingDescription?.fr,
+        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+      }),
       key: place?.id,
     };
   });
