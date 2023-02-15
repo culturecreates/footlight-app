@@ -1065,7 +1065,9 @@ function AddEvent() {
                     name="organizers"
                     initialValue={eventData?.organizer?.map((organizer) => organizer?.entityId)}>
                     <Popover
+                      className="event-popover"
                       placement="bottom"
+                      getPopupContainer={(trigger) => trigger.parentNode}
                       trigger={['click']}
                       content={organizersList?.map((organizer) => (
                         <span
@@ -1193,6 +1195,7 @@ function AddEvent() {
                     <Popover
                       placement="bottom"
                       trigger={['click']}
+                      getPopupContainer={(trigger) => trigger.parentNode}
                       content={performerList?.map((performer) => (
                         <span
                           key={performer?.value}
@@ -1247,6 +1250,7 @@ function AddEvent() {
                     <Popover
                       placement="bottom"
                       trigger={['click']}
+                      getPopupContainer={(trigger) => trigger.parentNode}
                       content={supporterList?.map((supporter) => (
                         <span
                           key={supporter?.value}
