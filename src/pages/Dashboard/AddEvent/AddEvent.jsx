@@ -292,43 +292,29 @@ function AddEvent() {
             };
           }
 
-          let selectedOrganizerPerformerSupporter = values?.organizers.concat(values?.performers, values?.supporters);
-          let filteredOrganizerPerformerSupporter = initialEntities.filter((entity) =>
-            selectedOrganizerPerformerSupporter.includes(entity?.id),
-          );
-
           if (values?.organizers) {
-            organizers = filteredOrganizerPerformerSupporter.filter((entity) =>
-              values?.organizers.includes(entity?.id),
-            );
-            organizers = organizers?.map((organizer) => {
+            organizers = values?.organizers?.map((organizer) => {
               return {
-                entityId: organizer?.id,
-                type: organizer?.type?.toUpperCase(),
+                entityId: organizer?.value,
+                type: organizer?.type,
               };
             });
           }
 
           if (values?.performers) {
-            performers = filteredOrganizerPerformerSupporter.filter((entity) =>
-              values?.performers.includes(entity?.id),
-            );
-            performers = performers?.map((performer) => {
+            performers = values?.performers?.map((performer) => {
               return {
-                entityId: performer?.id,
-                type: performer?.type?.toUpperCase(),
+                entityId: performer?.value,
+                type: performer?.type,
               };
             });
           }
 
           if (values?.supporters) {
-            collaborators = filteredOrganizerPerformerSupporter.filter((entity) =>
-              values?.supporters.includes(entity?.id),
-            );
-            collaborators = collaborators?.map((supporter) => {
+            collaborators = values?.supporters?.map((supporter) => {
               return {
-                entityId: supporter?.id,
-                type: supporter?.type?.toUpperCase(),
+                entityId: supporter?.value,
+                type: supporter?.type,
               };
             });
           }
@@ -541,6 +527,15 @@ function AddEvent() {
       })
       .catch((error) => console.log(error));
   };
+  useEffect(() => {
+    if (selectedOrganizers) form.setFieldValue('organizers', selectedOrganizers);
+  }, [selectedOrganizers]);
+  useEffect(() => {
+    if (selectedPerformers) form.setFieldValue('performers', selectedPerformers);
+  }, [selectedPerformers]);
+  useEffect(() => {
+    if (selectedSupporters) form.setFieldValue('supporters', selectedSupporters);
+  }, [selectedSupporters]);
 
   useEffect(() => {
     setDateType(
@@ -548,6 +543,41 @@ function AddEvent() {
     );
     setTicketType(eventData?.offerConfiguration?.category);
     if (initialPlace) setLocationPlace(initialPlace[0]?.id);
+    if (calendarId) {
+      if (eventData?.organizer) {
+        let initialOrganizers = eventData?.organizer?.map((organizer) => {
+          return {
+            disambiguatingDescription: organizer?.entity?.disambiguatingDescription,
+            id: organizer?.entityId,
+            name: organizer?.entity?.name,
+            type: organizer?.type,
+          };
+        });
+        setSelectedOrganizers(treeEntitiesOption(initialOrganizers, user));
+      }
+      if (eventData?.performer) {
+        let initialPerformers = eventData?.performer?.map((performer) => {
+          return {
+            disambiguatingDescription: performer?.entity?.disambiguatingDescription,
+            id: performer?.entityId,
+            name: performer?.entity?.name,
+            type: performer?.type,
+          };
+        });
+        setSelectedPerformers(treeEntitiesOption(initialPerformers, user));
+      }
+      if (eventData?.collaborators) {
+        let initialSupporters = eventData?.collaborators?.map((supporter) => {
+          return {
+            disambiguatingDescription: supporter?.entity?.disambiguatingDescription,
+            id: supporter?.entityId,
+            name: supporter?.entity?.name,
+            type: supporter?.type,
+          };
+        });
+        setSelectedSupporters(treeEntitiesOption(initialSupporters, user));
+      }
+    }
   }, [isLoading]);
 
   useEffect(() => {
@@ -783,17 +813,17 @@ function AddEvent() {
                         ]}>
                         <div className="date-buttons">
                           <DateAction
-                            iconRender={<CalendarOutlined />}
+                            iconrender={<CalendarOutlined />}
                             label={t('dashboard.events.addEditEvent.dates.singleDate')}
                             onClick={() => setDateType(dateTypes.SINGLE)}
                           />
                           <DateAction
-                            iconRender={<CalendarOutlined />}
+                            iconrender={<CalendarOutlined />}
                             label={t('dashboard.events.addEditEvent.dates.dateRange')}
                             onClick={() => setDateType(dateTypes.RANGE)}
                           />
                           <DateAction
-                            iconRender={<CalendarOutlined />}
+                            iconrender={<CalendarOutlined />}
                             label={t('dashboard.events.addEditEvent.dates.multipleDates')}
                             disabled={true}
                           />
@@ -1061,21 +1091,17 @@ function AddEvent() {
                       </p>
                     </Col>
                   </Row>
-                  <Form.Item
-                    name="organizers"
-                    initialValue={eventData?.organizer?.map((organizer) => organizer?.entityId)}>
+                  <Form.Item name="organizers" initialValue={selectedOrganizers}>
                     <Popover
                       className="event-popover"
                       placement="bottom"
                       getPopupContainer={(trigger) => trigger.parentNode}
                       trigger={['click']}
-                      content={organizersList?.map((organizer) => (
+                      content={organizersList?.map((organizer, index) => (
                         <span
-                          key={organizer?.value}
+                          key={index}
                           onClick={() => {
                             setSelectedOrganizers([...selectedOrganizers, organizer]);
-                            //ToDo: Add selected values to the form.
-                            // form.setFieldValue('organizers', [...form.getFieldValue('organizers'), organizer]);
                           }}>
                           {organizer?.label}
                         </span>
@@ -1087,10 +1113,10 @@ function AddEvent() {
                       />
                     </Popover>
 
-                    {selectedOrganizers?.map((organizer) => {
+                    {selectedOrganizers?.map((organizer, index) => {
                       return (
                         <SelectionItem
-                          key={organizer?.value}
+                          key={index}
                           icon={organizer?.label?.props?.icon}
                           name={organizer?.name}
                           description={organizer?.description}
@@ -1102,7 +1128,6 @@ function AddEvent() {
                                 (selectedOrganizer) => selectedOrganizer?.value != organizer?.value,
                               ),
                             );
-                            // form.setFieldValue('organizers', selectedOrganizers);
                           }}
                         />
                       );
@@ -1189,20 +1214,16 @@ function AddEvent() {
                       </p>
                     </Col>
                   </Row>
-                  <Form.Item
-                    name="performers"
-                    initialValue={eventData?.performer?.map((performer) => performer?.entityId)}>
+                  <Form.Item name="performers" initialValue={selectedPerformers}>
                     <Popover
                       placement="bottom"
                       trigger={['click']}
                       getPopupContainer={(trigger) => trigger.parentNode}
-                      content={performerList?.map((performer) => (
+                      content={performerList?.map((performer, index) => (
                         <span
-                          key={performer?.value}
+                          key={index}
                           onClick={() => {
                             setSelectedPerformers([...selectedPerformers, performer]);
-                            //ToDo: Add selected values to the form.
-                            // form.setFieldValue('organizers', [...form.getFieldValue('organizers'), organizer]);
                           }}>
                           {performer?.label}
                         </span>
@@ -1214,22 +1235,21 @@ function AddEvent() {
                       />
                     </Popover>
 
-                    {selectedPerformers?.map((perfomer) => {
+                    {selectedPerformers?.map((performer, index) => {
                       return (
                         <SelectionItem
-                          key={perfomer?.value}
-                          icon={perfomer?.label?.props?.icon}
-                          name={perfomer?.name}
-                          description={perfomer?.description}
+                          key={index}
+                          icon={performer?.label?.props?.icon}
+                          name={performer?.name}
+                          description={performer?.description}
                           bordered
                           closable
                           onClose={() => {
                             setSelectedPerformers(
                               selectedPerformers?.filter(
-                                (selectedPerformer) => selectedPerformer?.value != perfomer?.value,
+                                (selectedPerformer) => selectedPerformer?.value != performer?.value,
                               ),
                             );
-                            // form.setFieldValue('organizers', selectedOrganizers);
                           }}
                         />
                       );
@@ -1244,20 +1264,16 @@ function AddEvent() {
                       </p>
                     </Col>
                   </Row>
-                  <Form.Item
-                    name="supporters"
-                    initialValue={eventData?.collaborators?.map((collaborator) => collaborator?.entityId)}>
+                  <Form.Item name="supporters" initialValue={selectedSupporters}>
                     <Popover
                       placement="bottom"
                       trigger={['click']}
                       getPopupContainer={(trigger) => trigger.parentNode}
-                      content={supporterList?.map((supporter) => (
+                      content={supporterList?.map((supporter, index) => (
                         <span
-                          key={supporter?.value}
+                          key={index}
                           onClick={() => {
                             setSelectedSupporters([...selectedSupporters, supporter]);
-                            //ToDo: Add selected values to the form.
-                            // form.setFieldValue('organizers', [...form.getFieldValue('organizers'), organizer]);
                           }}>
                           {supporter?.label}
                         </span>
@@ -1269,10 +1285,10 @@ function AddEvent() {
                       />
                     </Popover>
 
-                    {selectedSupporters?.map((supporter) => {
+                    {selectedSupporters?.map((supporter, index) => {
                       return (
                         <SelectionItem
-                          key={supporter?.value}
+                          key={index}
                           icon={supporter?.label?.props?.icon}
                           name={supporter?.name}
                           description={supporter?.description}
@@ -1284,7 +1300,6 @@ function AddEvent() {
                                 (selectedSupporter) => selectedSupporter?.value != supporter?.value,
                               ),
                             );
-                            // form.setFieldValue('organizers', selectedOrganizers);
                           }}
                         />
                       );
@@ -1445,12 +1460,12 @@ function AddEvent() {
                         <div className="ticket-buttons">
                           <DateAction
                             style={{ width: '200px', backgroundColor: ticketType == offerTypes.FREE && '#EFF2FF' }}
-                            iconRender={<MoneyFree />}
+                            iconrender={<MoneyFree />}
                             label={t('dashboard.events.addEditEvent.tickets.free')}
                             onClick={() => setTicketType(offerTypes.FREE)}
                           />
                           <DateAction
-                            iconRender={<Money />}
+                            iconrender={<Money />}
                             style={{ width: '200px' }}
                             label={t('dashboard.events.addEditEvent.tickets.paid')}
                             onClick={() => setTicketType(offerTypes.PAYING)}
