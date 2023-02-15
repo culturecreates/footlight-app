@@ -119,6 +119,35 @@ function Events() {
               <Row gutter={20}>
                 <Col>
                   <SearchableCheckbox
+                    onFilterChange={(values) => onFilterChange(values, filterTypes.PUBLICATION)}
+                    data={eventPublishStateOptions?.map((publication) => {
+                      return {
+                        key: publication.key,
+                        label: (
+                          <Checkbox value={publication.value} key={publication.key} style={{ marginLeft: '8px' }}>
+                            {publication.title}
+                          </Checkbox>
+                        ),
+                        filtervalue: publication.value,
+                      };
+                    })}
+                    value={filter?.publication}>
+                    <Button
+                      size="large"
+                      className="filter-buttons"
+                      style={{ borderColor: filter?.publication?.length > 0 && '#607EFC' }}>
+                      {t('dashboard.events.filter.publication.label')}
+                      {filter?.publication?.length > 0 && (
+                        <>
+                          &nbsp;
+                          <Badge count={filter?.publication?.length} showZero={false} color="#1B3DE6" />
+                        </>
+                      )}
+                    </Button>
+                  </SearchableCheckbox>
+                </Col>
+                <Col>
+                  <SearchableCheckbox
                     allowSearch={true}
                     overlayStyle={{ height: '304px' }}
                     onFilterChange={(values) => onFilterChange(values, filterTypes.USERS)}
@@ -143,39 +172,16 @@ function Events() {
                       size="large"
                       className="filter-buttons"
                       style={{ borderColor: filter?.users?.length > 0 && '#607EFC' }}>
-                      {t('dashboard.events.filter.users.label')}&nbsp;
+                      {t('dashboard.events.filter.users.label')}
                       {filter?.users?.length > 0 && (
-                        <Badge count={filter?.users?.length} showZero={false} color="#1B3DE6" />
+                        <>
+                          &nbsp; <Badge count={filter?.users?.length} showZero={false} color="#1B3DE6" />
+                        </>
                       )}
                     </Button>
                   </SearchableCheckbox>
                 </Col>
-                <Col>
-                  <SearchableCheckbox
-                    onFilterChange={(values) => onFilterChange(values, filterTypes.PUBLICATION)}
-                    data={eventPublishStateOptions?.map((publication) => {
-                      return {
-                        key: publication.key,
-                        label: (
-                          <Checkbox value={publication.value} key={publication.key} style={{ marginLeft: '8px' }}>
-                            {publication.title}
-                          </Checkbox>
-                        ),
-                        filtervalue: publication.value,
-                      };
-                    })}
-                    value={filter?.publication}>
-                    <Button
-                      size="large"
-                      className="filter-buttons"
-                      style={{ borderColor: filter?.publication?.length > 0 && '#607EFC' }}>
-                      {t('dashboard.events.filter.publication.label')}&nbsp;
-                      {filter?.publication?.length > 0 && (
-                        <Badge count={filter?.publication?.length} showZero={false} color="#1B3DE6" />
-                      )}
-                    </Button>
-                  </SearchableCheckbox>
-                </Col>
+
                 <Col>
                   {(filter?.users?.length > 0 || filter?.publication?.length > 0) && (
                     <Button
