@@ -110,6 +110,7 @@ function AddEvent() {
   const [allPlacesList, setAllPlacesList] = useState([]);
   const [locationPlace, setLocationPlace] = useState();
   const [selectedOrganizers, setSelectedOrganizers] = useState([]);
+  const [selectedPerformers, setSelectedPerformers] = useState([]);
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -1139,7 +1140,7 @@ function AddEvent() {
                       return (
                         <SelectionItem
                           key={organizer?.value}
-                          icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
+                          icon={organizer?.label?.props?.icon}
                           name={organizer?.name}
                           description={organizer?.description}
                           bordered
@@ -1240,7 +1241,7 @@ function AddEvent() {
                   <Form.Item
                     name="performers"
                     initialValue={eventData?.performer?.map((performer) => performer?.entityId)}>
-                    <TreeSelectOption
+                    {/* <TreeSelectOption
                       filterTreeNode={false}
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.performer.searchPlaceholder')}
                       onSearch={(value) => treeSearch(value, 'performers')}
@@ -1270,7 +1271,48 @@ function AddEvent() {
                           )
                         );
                       }}
-                    />
+                    /> */}
+                    <Popover
+                      placement="bottom"
+                      trigger={['click']}
+                      content={performerList?.map((performer) => (
+                        <span
+                          key={performer?.value}
+                          onClick={() => {
+                            setSelectedPerformers([...selectedPerformers, performer]);
+                            //ToDo: Add selected values to the form.
+                            // form.setFieldValue('organizers', [...form.getFieldValue('organizers'), organizer]);
+                          }}>
+                          {performer?.label}
+                        </span>
+                      ))}>
+                      <EventsSearch
+                        style={{ borderRadius: '4px' }}
+                        placeholder={t('dashboard.events.addEditEvent.otherInformation.performer.searchPlaceholder')}
+                        onChange={(e) => placesSearch(e.target.value)}
+                      />
+                    </Popover>
+
+                    {selectedPerformers?.map((perfomer) => {
+                      return (
+                        <SelectionItem
+                          key={perfomer?.value}
+                          icon={perfomer?.label?.props?.icon}
+                          name={perfomer?.name}
+                          description={perfomer?.description}
+                          bordered
+                          closable
+                          onClose={() => {
+                            setSelectedPerformers(
+                              selectedPerformers?.filter(
+                                (selectedPerformer) => selectedPerformer?.value != perfomer?.value,
+                              ),
+                            );
+                            // form.setFieldValue('organizers', selectedOrganizers);
+                          }}
+                        />
+                      );
+                    })}
                   </Form.Item>
                 </Form.Item>
                 <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.supporter.title')}>
