@@ -903,10 +903,11 @@ function AddEvent() {
                       onChange={(e) => placesSearch(e.target.value)}
                     />
                   </Searchable>
-                  {allPlaces?.data?.map((place) => {
+                  {allPlaces?.data?.map((place, index) => {
                     if (place?.id == locationPlace)
                       return (
                         <SelectionItem
+                          key={index}
                           icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
                           name={bilingual({
                             en: place?.name?.en,
