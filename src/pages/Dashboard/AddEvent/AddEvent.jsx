@@ -892,6 +892,7 @@ function AddEvent() {
                     content={allPlacesList?.map((place, index) => (
                       <span
                         key={index}
+                        className="event-popover-options"
                         onClick={() => {
                           setLocationPlace(place);
                           form.setFieldValue('locationPlace', place?.value);
@@ -1091,6 +1092,7 @@ function AddEvent() {
                       content={organizersList?.map((organizer, index) => (
                         <span
                           key={index}
+                          className="event-popover-options"
                           onClick={() => {
                             setSelectedOrganizers([...selectedOrganizers, organizer]);
                           }}>
@@ -1213,6 +1215,7 @@ function AddEvent() {
                       content={performerList?.map((performer, index) => (
                         <span
                           key={index}
+                          className="event-popover-options"
                           onClick={() => {
                             setSelectedPerformers([...selectedPerformers, performer]);
                           }}>
@@ -1263,6 +1266,7 @@ function AddEvent() {
                       content={supporterList?.map((supporter, index) => (
                         <span
                           key={index}
+                          className="event-popover-options"
                           onClick={() => {
                             setSelectedSupporters([...selectedSupporters, supporter]);
                           }}>

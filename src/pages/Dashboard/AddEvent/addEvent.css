@@ -84,3 +84,7 @@
   max-height: 350px;
   overflow-y: scroll;
 }
+
+.add-edit-wrapper .event-popover-options {
+  cursor: pointer;
+}
