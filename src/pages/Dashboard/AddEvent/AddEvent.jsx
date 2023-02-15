@@ -524,41 +524,23 @@ function AddEvent() {
       })
       .catch((error) => console.log(error));
   };
-  // const treeSearch = (value, type) => {
-  //   let query = new URLSearchParams();
-  //   query.append('classes', entitiesClass.organization);
-  //   query.append('classes', entitiesClass.person);
-  //   getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
-  //     .unwrap()
-  //     .then((response) => {
-  //       if (type == 'organizers') {
-  //         let organizerSelectedValues = form.getFieldValue('organizers');
-  //         organizerSelectedValues = initialEntities.filter((entity) => organizerSelectedValues?.includes(entity?.id));
-  //         organizerSelectedValues = treeEntitiesOption(response.concat(organizerSelectedValues), user);
-  //         var uniqueOrganizers = organizerSelectedValues.filter(
-  //           (arr, index, self) => index === self.findIndex((t) => t.value === arr.value),
-  //         );
-  //         setOrganizersList(uniqueOrganizers);
-  //       } else if (type == 'performers') {
-  //         let performersSelectedValues = form.getFieldValue('performers');
-  //         performersSelectedValues = initialEntities.filter((entity) => performersSelectedValues?.includes(entity?.id));
-  //         performersSelectedValues = treeEntitiesOption(response.concat(performersSelectedValues), user);
-  //         var uniquePerformers = performersSelectedValues.filter(
-  //           (arr, index, self) => index === self.findIndex((t) => t.value === arr.value),
-  //         );
-  //         setPerformerList(uniquePerformers);
-  //       } else if (type == 'supporters') {
-  //         let supportersSelectedValues = form.getFieldValue('supporters');
-  //         supportersSelectedValues = initialEntities.filter((entity) => supportersSelectedValues?.includes(entity?.id));
-  //         supportersSelectedValues = treeEntitiesOption(response.concat(supportersSelectedValues), user);
-  //         var uniqueSupporters = supportersSelectedValues.filter(
-  //           (arr, index, self) => index === self.findIndex((t) => t.value === arr.value),
-  //         );
-  //         setSupporterList(uniqueSupporters);
-  //       }
-  //     })
-  //     .catch((error) => console.log(error));
-  // };
+  const organizationPersonSearch = (value, type) => {
+    let query = new URLSearchParams();
+    query.append('classes', entitiesClass.organization);
+    query.append('classes', entitiesClass.person);
+    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
+      .unwrap()
+      .then((response) => {
+        if (type == 'organizers') {
+          setOrganizersList(treeEntitiesOption(response, user));
+        } else if (type == 'performers') {
+          setPerformerList(treeEntitiesOption(response, user));
+        } else if (type == 'supporters') {
+          setSupporterList(treeEntitiesOption(response, user));
+        }
+      })
+      .catch((error) => console.log(error));
+  };
 
   useEffect(() => {
     setDateType(
@@ -1082,38 +1064,6 @@ function AddEvent() {
                   <Form.Item
                     name="organizers"
                     initialValue={eventData?.organizer?.map((organizer) => organizer?.entityId)}>
-                    {/* <TreeSelectOption
-                      filterTreeNode={false}
-                      placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
-                      onSearch={(value) => treeSearch(value, 'organizers')}
-                      treeData={organizersList}
-                      tagRender={(props) => {
-                        const { value, closable, onClose } = props;
-                        let entity = organizersList?.filter((entity) => entity?.value == value);
-                        return (
-                          entity &&
-                          entity[0] && (
-                            <SelectionItem
-                              icon={
-                                entity[0]?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
-                                  <Icon component={Organizations} style={{ color: '#607EFC' }} />
-                                ) : (
-                                  entity[0]?.type?.toUpperCase() == taxonomyClass.PERSON && (
-                                    <UserOutlined style={{ color: '#607EFC' }} />
-                                  )
-                                )
-                              }
-                              name={entity[0]?.name}
-                              description={entity[0]?.description}
-                              bordered
-                              closable={closable}
-                              onClose={onClose}
-                            />
-                          )
-                        );
-                      }}
-                    /> */}
-
                     <Popover
                       placement="bottom"
                       trigger={['click']}
@@ -1131,7 +1081,7 @@ function AddEvent() {
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
-                        onChange={(e) => placesSearch(e.target.value)}
+                        onChange={(e) => organizationPersonSearch(e.target.value, 'organizers')}
                       />
                     </Popover>
 
@@ -1240,37 +1190,6 @@ function AddEvent() {
                   <Form.Item
                     name="performers"
                     initialValue={eventData?.performer?.map((performer) => performer?.entityId)}>
-                    {/* <TreeSelectOption
-                      filterTreeNode={false}
-                      placeholder={t('dashboard.events.addEditEvent.otherInformation.performer.searchPlaceholder')}
-                      onSearch={(value) => treeSearch(value, 'performers')}
-                      treeData={performerList}
-                      tagRender={(props) => {
-                        const { value, closable, onClose } = props;
-                        let entity = performerList?.filter((entity) => entity?.value == value);
-                        return (
-                          entity &&
-                          entity[0] && (
-                            <SelectionItem
-                              icon={
-                                entity[0]?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
-                                  <Icon component={Organizations} style={{ color: '#607EFC' }} />
-                                ) : (
-                                  entity[0]?.type?.toUpperCase() == taxonomyClass.PERSON && (
-                                    <UserOutlined style={{ color: '#607EFC' }} />
-                                  )
-                                )
-                              }
-                              name={entity[0]?.name}
-                              description={entity[0]?.description}
-                              bordered
-                              closable={closable}
-                              onClose={onClose}
-                            />
-                          )
-                        );
-                      }}
-                    /> */}
                     <Popover
                       placement="bottom"
                       trigger={['click']}
@@ -1288,7 +1207,7 @@ function AddEvent() {
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.performer.searchPlaceholder')}
-                        onChange={(e) => placesSearch(e.target.value)}
+                        onChange={(e) => organizationPersonSearch(e.target.value, 'performers')}
                       />
                     </Popover>
 
@@ -1325,37 +1244,6 @@ function AddEvent() {
                   <Form.Item
                     name="supporters"
                     initialValue={eventData?.collaborators?.map((collaborator) => collaborator?.entityId)}>
-                    {/* <TreeSelectOption
-                      filterTreeNode={false}
-                      placeholder={t('dashboard.events.addEditEvent.otherInformation.supporter.searchPlaceholder')}
-                      onSearch={(value) => treeSearch(value, 'supporters')}
-                      treeData={supporterList}
-                      tagRender={(props) => {
-                        const { value, closable, onClose } = props;
-                        let entity = supporterList?.filter((entity) => entity?.value == value);
-                        return (
-                          entity &&
-                          entity[0] && (
-                            <SelectionItem
-                              icon={
-                                entity[0]?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
-                                  <Icon component={Organizations} style={{ color: '#607EFC' }} />
-                                ) : (
-                                  entity[0]?.type?.toUpperCase() == taxonomyClass.PERSON && (
-                                    <UserOutlined style={{ color: '#607EFC' }} />
-                                  )
-                                )
-                              }
-                              name={entity[0]?.name}
-                              description={entity[0]?.description}
-                              bordered
-                              closable={closable}
-                              onClose={onClose}
-                            />
-                          )
-                        );
-                      }}
-                    /> */}
                     <Popover
                       placement="bottom"
                       trigger={['click']}
@@ -1373,7 +1261,7 @@ function AddEvent() {
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.supporter.searchPlaceholder')}
-                        onChange={(e) => placesSearch(e.target.value)}
+                        onChange={(e) => organizationPersonSearch(e.target.value, 'supporters')}
                       />
                     </Popover>
 
