@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
 import { Form, Row, Col, Input, Popover } from 'antd';
-import Icon, {
+import {
   SyncOutlined,
   InfoCircleOutlined,
   CloseCircleOutlined,
   CalendarOutlined,
-  UserOutlined,
   EnvironmentOutlined,
 } from '@ant-design/icons';
 import moment from 'moment';
@@ -57,7 +56,6 @@ import { placesOptions } from '../../../components/Select/selectOption.settings'
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import SelectionItem from '../../../components/List/SelectionItem';
-import { ReactComponent as Organizations } from '../../../assets/icons/organisations.svg';
 import Searchable from '../../../components/Dropdown/Searchable';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import { bilingual } from '../../../utils/bilingual';
@@ -111,6 +109,7 @@ function AddEvent() {
   const [locationPlace, setLocationPlace] = useState();
   const [selectedOrganizers, setSelectedOrganizers] = useState([]);
   const [selectedPerformers, setSelectedPerformers] = useState([]);
+  const [selectedSupporters, setSelectedSupporters] = useState([]);
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -525,41 +524,41 @@ function AddEvent() {
       })
       .catch((error) => console.log(error));
   };
-  const treeSearch = (value, type) => {
-    let query = new URLSearchParams();
-    query.append('classes', entitiesClass.organization);
-    query.append('classes', entitiesClass.person);
-    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
-      .unwrap()
-      .then((response) => {
-        if (type == 'organizers') {
-          let organizerSelectedValues = form.getFieldValue('organizers');
-          organizerSelectedValues = initialEntities.filter((entity) => organizerSelectedValues?.includes(entity?.id));
-          organizerSelectedValues = treeEntitiesOption(response.concat(organizerSelectedValues), user);
-          var uniqueOrganizers = organizerSelectedValues.filter(
-            (arr, index, self) => index === self.findIndex((t) => t.value === arr.value),
-          );
-          setOrganizersList(uniqueOrganizers);
-        } else if (type == 'performers') {
-          let performersSelectedValues = form.getFieldValue('performers');
-          performersSelectedValues = initialEntities.filter((entity) => performersSelectedValues?.includes(entity?.id));
-          performersSelectedValues = treeEntitiesOption(response.concat(performersSelectedValues), user);
-          var uniquePerformers = performersSelectedValues.filter(
-            (arr, index, self) => index === self.findIndex((t) => t.value === arr.value),
-          );
-          setPerformerList(uniquePerformers);
-        } else if (type == 'supporters') {
-          let supportersSelectedValues = form.getFieldValue('supporters');
-          supportersSelectedValues = initialEntities.filter((entity) => supportersSelectedValues?.includes(entity?.id));
-          supportersSelectedValues = treeEntitiesOption(response.concat(supportersSelectedValues), user);
-          var uniqueSupporters = supportersSelectedValues.filter(
-            (arr, index, self) => index === self.findIndex((t) => t.value === arr.value),
-          );
-          setSupporterList(uniqueSupporters);
-        }
-      })
-      .catch((error) => console.log(error));
-  };
+  // const treeSearch = (value, type) => {
+  //   let query = new URLSearchParams();
+  //   query.append('classes', entitiesClass.organization);
+  //   query.append('classes', entitiesClass.person);
+  //   getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
+  //     .unwrap()
+  //     .then((response) => {
+  //       if (type == 'organizers') {
+  //         let organizerSelectedValues = form.getFieldValue('organizers');
+  //         organizerSelectedValues = initialEntities.filter((entity) => organizerSelectedValues?.includes(entity?.id));
+  //         organizerSelectedValues = treeEntitiesOption(response.concat(organizerSelectedValues), user);
+  //         var uniqueOrganizers = organizerSelectedValues.filter(
+  //           (arr, index, self) => index === self.findIndex((t) => t.value === arr.value),
+  //         );
+  //         setOrganizersList(uniqueOrganizers);
+  //       } else if (type == 'performers') {
+  //         let performersSelectedValues = form.getFieldValue('performers');
+  //         performersSelectedValues = initialEntities.filter((entity) => performersSelectedValues?.includes(entity?.id));
+  //         performersSelectedValues = treeEntitiesOption(response.concat(performersSelectedValues), user);
+  //         var uniquePerformers = performersSelectedValues.filter(
+  //           (arr, index, self) => index === self.findIndex((t) => t.value === arr.value),
+  //         );
+  //         setPerformerList(uniquePerformers);
+  //       } else if (type == 'supporters') {
+  //         let supportersSelectedValues = form.getFieldValue('supporters');
+  //         supportersSelectedValues = initialEntities.filter((entity) => supportersSelectedValues?.includes(entity?.id));
+  //         supportersSelectedValues = treeEntitiesOption(response.concat(supportersSelectedValues), user);
+  //         var uniqueSupporters = supportersSelectedValues.filter(
+  //           (arr, index, self) => index === self.findIndex((t) => t.value === arr.value),
+  //         );
+  //         setSupporterList(uniqueSupporters);
+  //       }
+  //     })
+  //     .catch((error) => console.log(error));
+  // };
 
   useEffect(() => {
     setDateType(
@@ -1326,7 +1325,7 @@ function AddEvent() {
                   <Form.Item
                     name="supporters"
                     initialValue={eventData?.collaborators?.map((collaborator) => collaborator?.entityId)}>
-                    <TreeSelectOption
+                    {/* <TreeSelectOption
                       filterTreeNode={false}
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.supporter.searchPlaceholder')}
                       onSearch={(value) => treeSearch(value, 'supporters')}
@@ -1356,7 +1355,48 @@ function AddEvent() {
                           )
                         );
                       }}
-                    />
+                    /> */}
+                    <Popover
+                      placement="bottom"
+                      trigger={['click']}
+                      content={supporterList?.map((supporter) => (
+                        <span
+                          key={supporter?.value}
+                          onClick={() => {
+                            setSelectedSupporters([...selectedSupporters, supporter]);
+                            //ToDo: Add selected values to the form.
+                            // form.setFieldValue('organizers', [...form.getFieldValue('organizers'), organizer]);
+                          }}>
+                          {supporter?.label}
+                        </span>
+                      ))}>
+                      <EventsSearch
+                        style={{ borderRadius: '4px' }}
+                        placeholder={t('dashboard.events.addEditEvent.otherInformation.supporter.searchPlaceholder')}
+                        onChange={(e) => placesSearch(e.target.value)}
+                      />
+                    </Popover>
+
+                    {selectedSupporters?.map((supporter) => {
+                      return (
+                        <SelectionItem
+                          key={supporter?.value}
+                          icon={supporter?.label?.props?.icon}
+                          name={supporter?.name}
+                          description={supporter?.description}
+                          bordered
+                          closable
+                          onClose={() => {
+                            setSelectedSupporters(
+                              selectedSupporters?.filter(
+                                (selectedSupporter) => selectedSupporter?.value != supporter?.value,
+                              ),
+                            );
+                            // form.setFieldValue('organizers', selectedOrganizers);
+                          }}
+                        />
+                      );
+                    })}
                   </Form.Item>
                 </Form.Item>
                 <Form.Item
