@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
-import { Form, Row, Col, Input } from 'antd';
+import { Form, Row, Col, Input, Popover } from 'antd';
 import Icon, {
   SyncOutlined,
   InfoCircleOutlined,
@@ -109,6 +109,7 @@ function AddEvent() {
   const [supporterList, setSupporterList] = useState([]);
   const [allPlacesList, setAllPlacesList] = useState([]);
   const [locationPlace, setLocationPlace] = useState();
+  const [selectedOrganizers, setSelectedOrganizers] = useState([]);
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -1112,6 +1113,48 @@ function AddEvent() {
                         );
                       }}
                     />
+
+                    <Popover
+                      placement="bottom"
+                      trigger={['click']}
+                      content={organizersList?.map((organizer) => (
+                        <span
+                          key={organizer?.value}
+                          onClick={() => {
+                            setSelectedOrganizers([...selectedOrganizers, organizer]);
+                            //ToDo: Add selected values to the form.
+                            // form.setFieldValue('organizers', [...form.getFieldValue('organizers'), organizer]);
+                          }}>
+                          {organizer?.label}
+                        </span>
+                      ))}>
+                      <EventsSearch
+                        style={{ borderRadius: '4px' }}
+                        placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
+                        onChange={(e) => placesSearch(e.target.value)}
+                      />
+                    </Popover>
+
+                    {selectedOrganizers?.map((organizer) => {
+                      return (
+                        <SelectionItem
+                          key={organizer?.value}
+                          icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
+                          name={organizer?.name}
+                          description={organizer?.description}
+                          bordered
+                          closable
+                          onClose={() => {
+                            setSelectedOrganizers(
+                              selectedOrganizers?.filter(
+                                (selectedOrganizer) => selectedOrganizer?.value != organizer?.value,
+                              ),
+                            );
+                            // form.setFieldValue('organizers', selectedOrganizers);
+                          }}
+                        />
+                      );
+                    })}
                   </Form.Item>
                 </Form.Item>
                 <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.contact.title')}>
