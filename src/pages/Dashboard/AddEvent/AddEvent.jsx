@@ -209,16 +209,16 @@ function AddEvent() {
               };
             });
           }
-          if (
-            values?.frenchVirtualLocation ||
-            values?.englishVirtualLocation ||
-            values?.virtualLocationOnlineLink ||
-            values?.locationPlace?.length > 0
-          ) {
+          if (values?.locationPlace || values?.locationPlace?.length > 0) {
             locationId = {
               place: {
                 entityId: values?.locationPlace,
               },
+            };
+          }
+          if (values?.frenchVirtualLocation || values?.englishVirtualLocation || values?.virtualLocationOnlineLink) {
+            locationId = {
+              ...locationId,
               virtualLocation: {
                 name: {
                   en: values?.englishVirtualLocation,
@@ -291,14 +291,14 @@ function AddEvent() {
             };
           }
 
-          let selectedOrganizerPerformerSupporter = values?.organizers.concat(values?.performers, values?.supporters);
-          let filteredOrganizerPerformerSupporter = initialEntities.filter((entity) =>
-            selectedOrganizerPerformerSupporter.includes(entity?.id),
+          let selectedOrganizerPerformerSupporter = values?.organizers?.concat(values?.performers, values?.supporters);
+          let filteredOrganizerPerformerSupporter = initialEntities?.filter((entity) =>
+            selectedOrganizerPerformerSupporter?.includes(entity?.id),
           );
 
           if (values?.organizers) {
-            organizers = filteredOrganizerPerformerSupporter.filter((entity) =>
-              values?.organizers.includes(entity?.id),
+            organizers = filteredOrganizerPerformerSupporter?.filter((entity) =>
+              values?.organizers?.includes(entity?.id),
             );
             organizers = organizers?.map((organizer) => {
               return {
@@ -309,8 +309,8 @@ function AddEvent() {
           }
 
           if (values?.performers) {
-            performers = filteredOrganizerPerformerSupporter.filter((entity) =>
-              values?.performers.includes(entity?.id),
+            performers = filteredOrganizerPerformerSupporter?.filter((entity) =>
+              values?.performers?.includes(entity?.id),
             );
             performers = performers?.map((performer) => {
               return {
@@ -321,8 +321,8 @@ function AddEvent() {
           }
 
           if (values?.supporters) {
-            collaborators = filteredOrganizerPerformerSupporter.filter((entity) =>
-              values?.supporters.includes(entity?.id),
+            collaborators = filteredOrganizerPerformerSupporter?.filter((entity) =>
+              values?.supporters?.includes(entity?.id),
             );
             collaborators = collaborators?.map((supporter) => {
               return {
