@@ -151,22 +151,25 @@ function Events() {
                     allowSearch={true}
                     overlayStyle={{ height: '304px' }}
                     onFilterChange={(values) => onFilterChange(values, filterTypes.USERS)}
-                    data={userFilterData?.map((userDetail) => {
-                      return {
-                        key: userDetail?.id,
-                        label: (
-                          <>
-                            <Checkbox value={userDetail.id} key={userDetail.id} style={{ marginLeft: '8px' }}>
-                              {user?.id == userDetail?.id
-                                ? t('dashboard.events.filter.users.myEvents')
-                                : userDetail?.firstName?.charAt(0) + userDetail?.lastName}
-                            </Checkbox>
-                            {user?.id == userDetail?.id && <Divider style={{ margin: 8 }} />}
-                          </>
-                        ),
-                        filtervalue: userDetail?.firstName + userDetail?.lastName,
-                      };
-                    })}
+                    data={userFilterData
+                      ?.sort((a, b) => a?.firstName?.toLowerCase()?.localeCompare(b?.firstName?.toLowerCase()))
+                      ?.map((userDetail) => {
+                        return {
+                          key: userDetail?.id,
+                          label: (
+                            <>
+                              <Checkbox value={userDetail.id} key={userDetail.id} style={{ marginLeft: '8px' }}>
+                                {user?.id == userDetail?.id
+                                  ? t('dashboard.events.filter.users.myEvents')
+                                  : userDetail?.firstName?.charAt(0)?.toLowerCase() +
+                                    userDetail?.lastName?.toLowerCase()}
+                              </Checkbox>
+                              {user?.id == userDetail?.id && <Divider style={{ margin: 8 }} />}
+                            </>
+                          ),
+                          filtervalue: userDetail?.firstName + userDetail?.lastName,
+                        };
+                      })}
                     value={filter?.users}>
                     <Button
                       size="large"
