@@ -16,3 +16,23 @@ body,
 body {
   font-family: 'Roboto', sans-serif;
 }
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.005);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #cfd7ff;
+  border-radius: 34px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #1b3de6;
+}

@@ -1,14 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
-import { Form, Row, Col, Input } from 'antd';
-import Icon, {
-  SyncOutlined,
-  InfoCircleOutlined,
-  CloseCircleOutlined,
-  CalendarOutlined,
-  UserOutlined,
-  EnvironmentOutlined,
-} from '@ant-design/icons';
+import { Form, Row, Col, Input, Popover } from 'antd';
+import { SyncOutlined, InfoCircleOutlined, CloseCircleOutlined, CalendarOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -57,10 +50,7 @@ import { placesOptions } from '../../../components/Select/selectOption.settings'
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import SelectionItem from '../../../components/List/SelectionItem';
-import { ReactComponent as Organizations } from '../../../assets/icons/organisations.svg';
-import Searchable from '../../../components/Dropdown/Searchable';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
-import { bilingual } from '../../../utils/bilingual';
 
 const { TextArea } = Input;
 
@@ -109,6 +99,9 @@ function AddEvent() {
   const [supporterList, setSupporterList] = useState([]);
   const [allPlacesList, setAllPlacesList] = useState([]);
   const [locationPlace, setLocationPlace] = useState();
+  const [selectedOrganizers, setSelectedOrganizers] = useState([]);
+  const [selectedPerformers, setSelectedPerformers] = useState([]);
+  const [selectedSupporters, setSelectedSupporters] = useState([]);
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -166,6 +159,7 @@ function AddEvent() {
           'dateRangePicker',
           'datePickerWrapper',
           ...(eventData?.publishState === eventPublishState.PUBLISHED ? ['prices', 'ticketLink'] : []),
+          'locationPlace',
         ])
         .then(() => {
           var values = form.getFieldsValue(true);
@@ -291,43 +285,29 @@ function AddEvent() {
             };
           }
 
-          let selectedOrganizerPerformerSupporter = values?.organizers.concat(values?.performers, values?.supporters);
-          let filteredOrganizerPerformerSupporter = initialEntities.filter((entity) =>
-            selectedOrganizerPerformerSupporter.includes(entity?.id),
-          );
-
           if (values?.organizers) {
-            organizers = filteredOrganizerPerformerSupporter.filter((entity) =>
-              values?.organizers.includes(entity?.id),
-            );
-            organizers = organizers?.map((organizer) => {
+            organizers = values?.organizers?.map((organizer) => {
               return {
-                entityId: organizer?.id,
-                type: organizer?.type?.toUpperCase(),
+                entityId: organizer?.value,
+                type: organizer?.type,
               };
             });
           }
 
           if (values?.performers) {
-            performers = filteredOrganizerPerformerSupporter.filter((entity) =>
-              values?.performers.includes(entity?.id),
-            );
-            performers = performers?.map((performer) => {
+            performers = values?.performers?.map((performer) => {
               return {
-                entityId: performer?.id,
-                type: performer?.type?.toUpperCase(),
+                entityId: performer?.value,
+                type: performer?.type,
               };
             });
           }
 
           if (values?.supporters) {
-            collaborators = filteredOrganizerPerformerSupporter.filter((entity) =>
-              values?.supporters.includes(entity?.id),
-            );
-            collaborators = collaborators?.map((supporter) => {
+            collaborators = values?.supporters?.map((supporter) => {
               return {
-                entityId: supporter?.id,
-                type: supporter?.type?.toUpperCase(),
+                entityId: supporter?.value,
+                type: supporter?.type,
               };
             });
           }
@@ -519,11 +499,11 @@ function AddEvent() {
     getEntities({ searchKey: inputValue, classes: decodeURIComponent(query.toString()), calendarId })
       .unwrap()
       .then((response) => {
-        setAllPlacesList(response);
+        setAllPlacesList(placesOptions(response, user));
       })
       .catch((error) => console.log(error));
   };
-  const treeSearch = (value, type) => {
+  const organizationPersonSearch = (value, type) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.organization);
     query.append('classes', entitiesClass.person);
@@ -531,40 +511,66 @@ function AddEvent() {
       .unwrap()
       .then((response) => {
         if (type == 'organizers') {
-          let organizerSelectedValues = form.getFieldValue('organizers');
-          organizerSelectedValues = initialEntities.filter((entity) => organizerSelectedValues?.includes(entity?.id));
-          organizerSelectedValues = treeEntitiesOption(response.concat(organizerSelectedValues), user);
-          var uniqueOrganizers = organizerSelectedValues.filter(
-            (arr, index, self) => index === self.findIndex((t) => t.value === arr.value),
-          );
-          setOrganizersList(uniqueOrganizers);
+          setOrganizersList(treeEntitiesOption(response, user));
         } else if (type == 'performers') {
-          let performersSelectedValues = form.getFieldValue('performers');
-          performersSelectedValues = initialEntities.filter((entity) => performersSelectedValues?.includes(entity?.id));
-          performersSelectedValues = treeEntitiesOption(response.concat(performersSelectedValues), user);
-          var uniquePerformers = performersSelectedValues.filter(
-            (arr, index, self) => index === self.findIndex((t) => t.value === arr.value),
-          );
-          setPerformerList(uniquePerformers);
+          setPerformerList(treeEntitiesOption(response, user));
         } else if (type == 'supporters') {
-          let supportersSelectedValues = form.getFieldValue('supporters');
-          supportersSelectedValues = initialEntities.filter((entity) => supportersSelectedValues?.includes(entity?.id));
-          supportersSelectedValues = treeEntitiesOption(response.concat(supportersSelectedValues), user);
-          var uniqueSupporters = supportersSelectedValues.filter(
-            (arr, index, self) => index === self.findIndex((t) => t.value === arr.value),
-          );
-          setSupporterList(uniqueSupporters);
+          setSupporterList(treeEntitiesOption(response, user));
         }
       })
       .catch((error) => console.log(error));
   };
+  useEffect(() => {
+    if (selectedOrganizers) form.setFieldValue('organizers', selectedOrganizers);
+  }, [selectedOrganizers]);
+  useEffect(() => {
+    if (selectedPerformers) form.setFieldValue('performers', selectedPerformers);
+  }, [selectedPerformers]);
+  useEffect(() => {
+    if (selectedSupporters) form.setFieldValue('supporters', selectedSupporters);
+  }, [selectedSupporters]);
 
   useEffect(() => {
-    setDateType(
-      dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
-    );
-    setTicketType(eventData?.offerConfiguration?.category);
-    if (initialPlace) setLocationPlace(initialPlace[0]?.id);
+    if (calendarId) {
+      setDateType(
+        dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
+      );
+      setTicketType(eventData?.offerConfiguration?.category);
+      if (initialPlace) setLocationPlace(placesOptions(initialPlace[0]));
+      if (eventData?.organizer) {
+        let initialOrganizers = eventData?.organizer?.map((organizer) => {
+          return {
+            disambiguatingDescription: organizer?.entity?.disambiguatingDescription,
+            id: organizer?.entityId,
+            name: organizer?.entity?.name,
+            type: organizer?.type,
+          };
+        });
+        setSelectedOrganizers(treeEntitiesOption(initialOrganizers, user));
+      }
+      if (eventData?.performer) {
+        let initialPerformers = eventData?.performer?.map((performer) => {
+          return {
+            disambiguatingDescription: performer?.entity?.disambiguatingDescription,
+            id: performer?.entityId,
+            name: performer?.entity?.name,
+            type: performer?.type,
+          };
+        });
+        setSelectedPerformers(treeEntitiesOption(initialPerformers, user));
+      }
+      if (eventData?.collaborators) {
+        let initialSupporters = eventData?.collaborators?.map((supporter) => {
+          return {
+            disambiguatingDescription: supporter?.entity?.disambiguatingDescription,
+            id: supporter?.entityId,
+            name: supporter?.entity?.name,
+            type: supporter?.type,
+          };
+        });
+        setSelectedSupporters(treeEntitiesOption(initialSupporters, user));
+      }
+    }
   }, [isLoading]);
 
   useEffect(() => {
@@ -574,7 +580,7 @@ function AddEvent() {
   }, [initialEntityLoading]);
 
   useEffect(() => {
-    setAllPlacesList(allPlaces?.data);
+    setAllPlacesList(placesOptions(allPlaces?.data, user));
   }, [placesLoading]);
   return (
     !isLoading &&
@@ -800,17 +806,17 @@ function AddEvent() {
                         ]}>
                         <div className="date-buttons">
                           <DateAction
-                            iconRender={<CalendarOutlined />}
+                            iconrender={<CalendarOutlined />}
                             label={t('dashboard.events.addEditEvent.dates.singleDate')}
                             onClick={() => setDateType(dateTypes.SINGLE)}
                           />
                           <DateAction
-                            iconRender={<CalendarOutlined />}
+                            iconrender={<CalendarOutlined />}
                             label={t('dashboard.events.addEditEvent.dates.dateRange')}
                             onClick={() => setDateType(dateTypes.RANGE)}
                           />
                           <DateAction
-                            iconRender={<CalendarOutlined />}
+                            iconrender={<CalendarOutlined />}
                             label={t('dashboard.events.addEditEvent.dates.multipleDates')}
                             disabled={true}
                           />
@@ -878,42 +884,41 @@ function AddEvent() {
                   className="subheading-wrap"
                   initialValue={initialPlace && initialPlace[0]?.id}
                   label={t('dashboard.events.addEditEvent.location.title')}>
-                  <Searchable
-                    itemData={placesOptions(allPlacesList, user)}
-                    onSearchClick={({ key }) => {
-                      setLocationPlace(key);
-                      form.setFieldValue('locationPlace', key);
-                    }}>
+                  <Popover
+                    className="event-popover"
+                    placement="bottom"
+                    getPopupContainer={(trigger) => trigger.parentNode}
+                    trigger={['click']}
+                    content={allPlacesList?.map((place, index) => (
+                      <span
+                        key={index}
+                        className="event-popover-options"
+                        onClick={() => {
+                          setLocationPlace(place);
+                          form.setFieldValue('locationPlace', place?.value);
+                        }}>
+                        {place?.label}
+                      </span>
+                    ))}>
                     <EventsSearch
                       style={{ borderRadius: '4px' }}
                       placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
                       onChange={(e) => placesSearch(e.target.value)}
                     />
-                  </Searchable>
-                  {allPlaces?.data?.map((place) => {
-                    if (place?.id == locationPlace)
-                      return (
-                        <SelectionItem
-                          icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
-                          name={bilingual({
-                            en: place?.name?.en,
-                            fr: place?.name?.fr,
-                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                          })}
-                          description={bilingual({
-                            en: place?.disambiguatingDescription?.en,
-                            fr: place?.disambiguatingDescription?.fr,
-                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                          })}
-                          bordered
-                          closable
-                          onClose={() => {
-                            setLocationPlace();
-                            form.setFieldValue('locationPlace', undefined);
-                          }}
-                        />
-                      );
-                  })}
+                  </Popover>
+                  {locationPlace && (
+                    <SelectionItem
+                      icon={locationPlace?.label?.props?.icon}
+                      name={locationPlace?.name}
+                      description={locationPlace?.description}
+                      bordered
+                      closable
+                      onClose={() => {
+                        setLocationPlace();
+                        form.setFieldValue('locationPlace', undefined);
+                      }}
+                    />
+                  )}
                 </Form.Item>
                 <Form.Item label={t('dashboard.events.addEditEvent.location.virtualLocation')}>
                   <BilingualInput fieldData={initialVirtualLocation && initialVirtualLocation[0]?.name}>
@@ -1078,40 +1083,48 @@ function AddEvent() {
                       </p>
                     </Col>
                   </Row>
-                  <Form.Item
-                    name="organizers"
-                    initialValue={eventData?.organizer?.map((organizer) => organizer?.entityId)}>
-                    <TreeSelectOption
-                      filterTreeNode={false}
-                      placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
-                      onSearch={(value) => treeSearch(value, 'organizers')}
-                      treeData={organizersList}
-                      tagRender={(props) => {
-                        const { value, closable, onClose } = props;
-                        let entity = organizersList?.filter((entity) => entity?.value == value);
-                        return (
-                          entity &&
-                          entity[0] && (
-                            <SelectionItem
-                              icon={
-                                entity[0]?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
-                                  <Icon component={Organizations} style={{ color: '#607EFC' }} />
-                                ) : (
-                                  entity[0]?.type?.toUpperCase() == taxonomyClass.PERSON && (
-                                    <UserOutlined style={{ color: '#607EFC' }} />
-                                  )
-                                )
-                              }
-                              name={entity[0]?.name}
-                              description={entity[0]?.description}
-                              bordered
-                              closable={closable}
-                              onClose={onClose}
-                            />
-                          )
-                        );
-                      }}
-                    />
+                  <Form.Item name="organizers" initialValue={selectedOrganizers}>
+                    <Popover
+                      className="event-popover"
+                      placement="bottom"
+                      getPopupContainer={(trigger) => trigger.parentNode}
+                      trigger={['click']}
+                      content={organizersList?.map((organizer, index) => (
+                        <span
+                          key={index}
+                          className="event-popover-options"
+                          onClick={() => {
+                            setSelectedOrganizers([...selectedOrganizers, organizer]);
+                          }}>
+                          {organizer?.label}
+                        </span>
+                      ))}>
+                      <EventsSearch
+                        style={{ borderRadius: '4px' }}
+                        placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
+                        onChange={(e) => organizationPersonSearch(e.target.value, 'organizers')}
+                      />
+                    </Popover>
+
+                    {selectedOrganizers?.map((organizer, index) => {
+                      return (
+                        <SelectionItem
+                          key={index}
+                          icon={organizer?.label?.props?.icon}
+                          name={organizer?.name}
+                          description={organizer?.description}
+                          bordered
+                          closable
+                          onClose={() => {
+                            setSelectedOrganizers(
+                              selectedOrganizers?.filter(
+                                (selectedOrganizer) => selectedOrganizer?.value != organizer?.value,
+                              ),
+                            );
+                          }}
+                        />
+                      );
+                    })}
                   </Form.Item>
                 </Form.Item>
                 <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.contact.title')}>
@@ -1194,40 +1207,47 @@ function AddEvent() {
                       </p>
                     </Col>
                   </Row>
-                  <Form.Item
-                    name="performers"
-                    initialValue={eventData?.performer?.map((performer) => performer?.entityId)}>
-                    <TreeSelectOption
-                      filterTreeNode={false}
-                      placeholder={t('dashboard.events.addEditEvent.otherInformation.performer.searchPlaceholder')}
-                      onSearch={(value) => treeSearch(value, 'performers')}
-                      treeData={performerList}
-                      tagRender={(props) => {
-                        const { value, closable, onClose } = props;
-                        let entity = performerList?.filter((entity) => entity?.value == value);
-                        return (
-                          entity &&
-                          entity[0] && (
-                            <SelectionItem
-                              icon={
-                                entity[0]?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
-                                  <Icon component={Organizations} style={{ color: '#607EFC' }} />
-                                ) : (
-                                  entity[0]?.type?.toUpperCase() == taxonomyClass.PERSON && (
-                                    <UserOutlined style={{ color: '#607EFC' }} />
-                                  )
-                                )
-                              }
-                              name={entity[0]?.name}
-                              description={entity[0]?.description}
-                              bordered
-                              closable={closable}
-                              onClose={onClose}
-                            />
-                          )
-                        );
-                      }}
-                    />
+                  <Form.Item name="performers" initialValue={selectedPerformers}>
+                    <Popover
+                      placement="bottom"
+                      trigger={['click']}
+                      getPopupContainer={(trigger) => trigger.parentNode}
+                      content={performerList?.map((performer, index) => (
+                        <span
+                          key={index}
+                          className="event-popover-options"
+                          onClick={() => {
+                            setSelectedPerformers([...selectedPerformers, performer]);
+                          }}>
+                          {performer?.label}
+                        </span>
+                      ))}>
+                      <EventsSearch
+                        style={{ borderRadius: '4px' }}
+                        placeholder={t('dashboard.events.addEditEvent.otherInformation.performer.searchPlaceholder')}
+                        onChange={(e) => organizationPersonSearch(e.target.value, 'performers')}
+                      />
+                    </Popover>
+
+                    {selectedPerformers?.map((performer, index) => {
+                      return (
+                        <SelectionItem
+                          key={index}
+                          icon={performer?.label?.props?.icon}
+                          name={performer?.name}
+                          description={performer?.description}
+                          bordered
+                          closable
+                          onClose={() => {
+                            setSelectedPerformers(
+                              selectedPerformers?.filter(
+                                (selectedPerformer) => selectedPerformer?.value != performer?.value,
+                              ),
+                            );
+                          }}
+                        />
+                      );
+                    })}
                   </Form.Item>
                 </Form.Item>
                 <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.supporter.title')}>
@@ -1238,40 +1258,47 @@ function AddEvent() {
                       </p>
                     </Col>
                   </Row>
-                  <Form.Item
-                    name="supporters"
-                    initialValue={eventData?.collaborators?.map((collaborator) => collaborator?.entityId)}>
-                    <TreeSelectOption
-                      filterTreeNode={false}
-                      placeholder={t('dashboard.events.addEditEvent.otherInformation.supporter.searchPlaceholder')}
-                      onSearch={(value) => treeSearch(value, 'supporters')}
-                      treeData={supporterList}
-                      tagRender={(props) => {
-                        const { value, closable, onClose } = props;
-                        let entity = supporterList?.filter((entity) => entity?.value == value);
-                        return (
-                          entity &&
-                          entity[0] && (
-                            <SelectionItem
-                              icon={
-                                entity[0]?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
-                                  <Icon component={Organizations} style={{ color: '#607EFC' }} />
-                                ) : (
-                                  entity[0]?.type?.toUpperCase() == taxonomyClass.PERSON && (
-                                    <UserOutlined style={{ color: '#607EFC' }} />
-                                  )
-                                )
-                              }
-                              name={entity[0]?.name}
-                              description={entity[0]?.description}
-                              bordered
-                              closable={closable}
-                              onClose={onClose}
-                            />
-                          )
-                        );
-                      }}
-                    />
+                  <Form.Item name="supporters" initialValue={selectedSupporters}>
+                    <Popover
+                      placement="bottom"
+                      trigger={['click']}
+                      getPopupContainer={(trigger) => trigger.parentNode}
+                      content={supporterList?.map((supporter, index) => (
+                        <span
+                          key={index}
+                          className="event-popover-options"
+                          onClick={() => {
+                            setSelectedSupporters([...selectedSupporters, supporter]);
+                          }}>
+                          {supporter?.label}
+                        </span>
+                      ))}>
+                      <EventsSearch
+                        style={{ borderRadius: '4px' }}
+                        placeholder={t('dashboard.events.addEditEvent.otherInformation.supporter.searchPlaceholder')}
+                        onChange={(e) => organizationPersonSearch(e.target.value, 'supporters')}
+                      />
+                    </Popover>
+
+                    {selectedSupporters?.map((supporter, index) => {
+                      return (
+                        <SelectionItem
+                          key={index}
+                          icon={supporter?.label?.props?.icon}
+                          name={supporter?.name}
+                          description={supporter?.description}
+                          bordered
+                          closable
+                          onClose={() => {
+                            setSelectedSupporters(
+                              selectedSupporters?.filter(
+                                (selectedSupporter) => selectedSupporter?.value != supporter?.value,
+                              ),
+                            );
+                          }}
+                        />
+                      );
+                    })}
                   </Form.Item>
                 </Form.Item>
                 <Form.Item
@@ -1428,12 +1455,12 @@ function AddEvent() {
                         <div className="ticket-buttons">
                           <DateAction
                             style={{ width: '200px', backgroundColor: ticketType == offerTypes.FREE && '#EFF2FF' }}
-                            iconRender={<MoneyFree />}
+                            iconrender={<MoneyFree />}
                             label={t('dashboard.events.addEditEvent.tickets.free')}
                             onClick={() => setTicketType(offerTypes.FREE)}
                           />
                           <DateAction
-                            iconRender={<Money />}
+                            iconrender={<Money />}
                             style={{ width: '200px' }}
                             label={t('dashboard.events.addEditEvent.tickets.paid')}
                             onClick={() => setTicketType(offerTypes.PAYING)}
