@@ -48,7 +48,8 @@ const rootReducer = (state, action) => appReducer(state, action);
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
   reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }).concat(middlewares),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ serializableCheck: false, immutableCheck: false }).concat(middlewares),
 });
 
 export const persistor = persistStore(store);

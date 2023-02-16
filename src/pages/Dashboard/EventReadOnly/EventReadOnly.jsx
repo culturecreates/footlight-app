@@ -118,13 +118,14 @@ function EventReadOnly() {
             </Row>
           </Col>
           <Col flex="723px">
-            {eventPublishStateOptions?.map((state) => {
+            {eventPublishStateOptions?.map((state, index) => {
               if (
                 (state?.value === eventPublishState?.PENDING_REVIEW || state?.value === eventPublishState?.PUBLISHED) &&
                 eventData?.publishState === state?.value
               )
                 return (
                   <Alert
+                    key={index}
                     message={state.infoText}
                     type="info"
                     showIcon
