@@ -1,0 +1,22 @@
+.alert-wrapper {
+  border-radius: 4px;
+  min-height: 58px;
+  border: 0px;
+}
+
+.alert-wrapper .ant-alert-content .ant-alert-message {
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.alert-information,
+.alert-information .ant-alert-content .ant-alert-message {
+  background: #dbf3fd;
+  color: #1572bb;
+}
+
+.alert-warning,
+.alert-warning   .ant-alert-content .ant-alert-message {
+  background: #fff7cc;
+  color: #b59800;
+}
