@@ -159,7 +159,6 @@ function AddEvent() {
           'dateRangePicker',
           'datePickerWrapper',
           ...(eventData?.publishState === eventPublishState.PUBLISHED ? ['prices', 'ticketLink'] : []),
-          'locationPlace',
         ])
         .then(() => {
           var values = form.getFieldsValue(true);
@@ -536,7 +535,7 @@ function AddEvent() {
         dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
       );
       setTicketType(eventData?.offerConfiguration?.category);
-      if (initialPlace) setLocationPlace(placesOptions(initialPlace[0]));
+      if (initialPlace) setLocationPlace(placesOptions(initialPlace)[0]);
       if (eventData?.organizer) {
         let initialOrganizers = eventData?.organizer?.map((organizer) => {
           return {
