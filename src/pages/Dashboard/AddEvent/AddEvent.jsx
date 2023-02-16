@@ -535,7 +535,7 @@ function AddEvent() {
         dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
       );
       setTicketType(eventData?.offerConfiguration?.category);
-      if (initialPlace) setLocationPlace(placesOptions(initialPlace)[0]);
+      if (initialPlace && initialPlace?.length > 0) setLocationPlace(placesOptions(initialPlace)[0]);
       if (eventData?.organizer) {
         let initialOrganizers = eventData?.organizer?.map((organizer) => {
           return {
