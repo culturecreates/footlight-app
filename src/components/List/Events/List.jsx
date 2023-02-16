@@ -132,7 +132,7 @@ function Lists(props) {
           />
           <List.Item.Meta
             className="event-status-list-item"
-            onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId)}
+            onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId, eventItem?.publishState)}
             title={<EventStatus label={eventItem?.publishState} />}
             description={
               <div className="event-list-status">
