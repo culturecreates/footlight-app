@@ -76,3 +76,15 @@
 .add-edit-wrapper .subheading-wrap .ant-form-item-label > label {
   font-size: 12px;
 }
+
+.add-edit-wrapper .ant-popover-inner {
+  filter: drop-shadow(0px 8px 32px rgba(0, 0, 0, 0.2));
+}
+.add-edit-wrapper .ant-popover-inner-content {
+  max-height: 350px;
+  overflow-y: scroll;
+}
+
+.add-edit-wrapper .event-popover-options {
+  cursor: pointer;
+}
