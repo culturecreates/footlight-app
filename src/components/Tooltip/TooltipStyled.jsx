@@ -15,6 +15,7 @@ function TooltipStyled(props) {
         borderRadius: '4px',
         boxShadow: '0px 8px 32px rgba(0, 0, 0, 0.2)',
       }}
+      getPopupContainer={(trigger) => trigger.parentNode}
       overlayClassName="tooltip-wrapper">
       {props?.children}
     </Tooltip>
