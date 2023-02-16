@@ -1,5 +1,5 @@
 .searchable-checkbox-dropdown-wrapper {
-  max-height: 304px;
+  max-height: 315px;
   min-width: 200px;
   display: grid;
   grid-template-columns: 1fr;
@@ -17,4 +17,5 @@
   row-gap: 8px;
   overflow-y: scroll;
   margin-top: 8px;
+  overflow-x: hidden;
 }
