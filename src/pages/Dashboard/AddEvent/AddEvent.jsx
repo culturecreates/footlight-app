@@ -51,6 +51,7 @@ import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/
 import { entitiesClass } from '../../../constants/entitiesClass';
 import SelectionItem from '../../../components/List/SelectionItem';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
+import { routinghandler } from '../../../utils/roleRoutingHandler';
 
 const { TextArea } = Input;
 
@@ -530,45 +531,53 @@ function AddEvent() {
   }, [selectedSupporters]);
 
   useEffect(() => {
-    if (calendarId) {
-      setDateType(
-        dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
-      );
-      setTicketType(eventData?.offerConfiguration?.category);
-      if (initialPlace && initialPlace?.length > 0) setLocationPlace(placesOptions(initialPlace)[0]);
-      if (eventData?.organizer) {
-        let initialOrganizers = eventData?.organizer?.map((organizer) => {
-          return {
-            disambiguatingDescription: organizer?.entity?.disambiguatingDescription,
-            id: organizer?.entityId,
-            name: organizer?.entity?.name,
-            type: organizer?.type,
-          };
-        });
-        setSelectedOrganizers(treeEntitiesOption(initialOrganizers, user));
-      }
-      if (eventData?.performer) {
-        let initialPerformers = eventData?.performer?.map((performer) => {
-          return {
-            disambiguatingDescription: performer?.entity?.disambiguatingDescription,
-            id: performer?.entityId,
-            name: performer?.entity?.name,
-            type: performer?.type,
-          };
-        });
-        setSelectedPerformers(treeEntitiesOption(initialPerformers, user));
-      }
-      if (eventData?.collaborators) {
-        let initialSupporters = eventData?.collaborators?.map((supporter) => {
-          return {
-            disambiguatingDescription: supporter?.entity?.disambiguatingDescription,
-            id: supporter?.entityId,
-            name: supporter?.entity?.name,
-            type: supporter?.type,
-          };
-        });
-        setSelectedSupporters(treeEntitiesOption(initialSupporters, user));
-      }
+    if (calendarId && eventData) {
+      if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState)) {
+        setDateType(
+          dateTimeTypeHandler(
+            eventData?.startDate,
+            eventData?.startDateTime,
+            eventData?.endDate,
+            eventData?.endDateTime,
+          ),
+        );
+        setTicketType(eventData?.offerConfiguration?.category);
+        if (initialPlace && initialPlace?.length > 0) setLocationPlace(placesOptions(initialPlace)[0]);
+        if (eventData?.organizer) {
+          let initialOrganizers = eventData?.organizer?.map((organizer) => {
+            return {
+              disambiguatingDescription: organizer?.entity?.disambiguatingDescription,
+              id: organizer?.entityId,
+              name: organizer?.entity?.name,
+              type: organizer?.type,
+            };
+          });
+          setSelectedOrganizers(treeEntitiesOption(initialOrganizers, user));
+        }
+        if (eventData?.performer) {
+          let initialPerformers = eventData?.performer?.map((performer) => {
+            return {
+              disambiguatingDescription: performer?.entity?.disambiguatingDescription,
+              id: performer?.entityId,
+              name: performer?.entity?.name,
+              type: performer?.type,
+            };
+          });
+          setSelectedPerformers(treeEntitiesOption(initialPerformers, user));
+        }
+        if (eventData?.collaborators) {
+          let initialSupporters = eventData?.collaborators?.map((supporter) => {
+            return {
+              disambiguatingDescription: supporter?.entity?.disambiguatingDescription,
+              id: supporter?.entityId,
+              name: supporter?.entity?.name,
+              type: supporter?.type,
+            };
+          });
+          setSelectedSupporters(treeEntitiesOption(initialSupporters, user));
+        }
+      } else
+        window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
     }
   }, [isLoading]);
 
