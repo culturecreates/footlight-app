@@ -202,16 +202,16 @@ function AddEvent() {
               };
             });
           }
-          if (
-            values?.frenchVirtualLocation ||
-            values?.englishVirtualLocation ||
-            values?.virtualLocationOnlineLink ||
-            values?.locationPlace?.length > 0
-          ) {
+          if (values?.locationPlace || values?.locationPlace?.length > 0) {
             locationId = {
               place: {
                 entityId: values?.locationPlace,
               },
+            };
+          }
+          if (values?.frenchVirtualLocation || values?.englishVirtualLocation || values?.virtualLocationOnlineLink) {
+            locationId = {
+              ...locationId,
               virtualLocation: {
                 name: {
                   en: values?.englishVirtualLocation,
