@@ -160,7 +160,7 @@ function Events() {
                         key: userDetail?.id,
                         label: (
                           <>
-                            <Checkbox value={userDetail.id} key={userDetail.id} style={{ marginLeft: '8px' }}>
+                            <Checkbox value={userDetail?.id} key={userDetail?.id} style={{ marginLeft: '8px' }}>
                               {user?.id == userDetail?.id
                                 ? t('dashboard.events.filter.users.myEvents')
                                 : userDetail?.firstName?.charAt(0)?.toLowerCase() + userDetail?.lastName?.toLowerCase()}
