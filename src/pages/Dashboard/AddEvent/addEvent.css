@@ -88,3 +88,7 @@
 .add-edit-wrapper .event-popover-options {
   cursor: pointer;
 }
+
+.add-edit-wrapper .event-popover-options:hover {
+  background: #eff2ff;
+}

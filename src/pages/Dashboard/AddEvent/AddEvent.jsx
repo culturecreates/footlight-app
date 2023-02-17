@@ -889,7 +889,7 @@ function AddEvent() {
                     getPopupContainer={(trigger) => trigger.parentNode}
                     trigger={['click']}
                     content={allPlacesList?.map((place, index) => (
-                      <span
+                      <div
                         key={index}
                         className="event-popover-options"
                         onClick={() => {
@@ -897,7 +897,7 @@ function AddEvent() {
                           form.setFieldValue('locationPlace', place?.value);
                         }}>
                         {place?.label}
-                      </span>
+                      </div>
                     ))}>
                     <EventsSearch
                       style={{ borderRadius: '4px' }}
@@ -1089,14 +1089,14 @@ function AddEvent() {
                       getPopupContainer={(trigger) => trigger.parentNode}
                       trigger={['click']}
                       content={organizersList?.map((organizer, index) => (
-                        <span
+                        <div
                           key={index}
                           className="event-popover-options"
                           onClick={() => {
                             setSelectedOrganizers([...selectedOrganizers, organizer]);
                           }}>
                           {organizer?.label}
-                        </span>
+                        </div>
                       ))}>
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
@@ -1212,14 +1212,14 @@ function AddEvent() {
                       trigger={['click']}
                       getPopupContainer={(trigger) => trigger.parentNode}
                       content={performerList?.map((performer, index) => (
-                        <span
+                        <div
                           key={index}
                           className="event-popover-options"
                           onClick={() => {
                             setSelectedPerformers([...selectedPerformers, performer]);
                           }}>
                           {performer?.label}
-                        </span>
+                        </div>
                       ))}>
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
@@ -1263,14 +1263,14 @@ function AddEvent() {
                       trigger={['click']}
                       getPopupContainer={(trigger) => trigger.parentNode}
                       content={supporterList?.map((supporter, index) => (
-                        <span
+                        <div
                           key={index}
                           className="event-popover-options"
                           onClick={() => {
                             setSelectedSupporters([...selectedSupporters, supporter]);
                           }}>
                           {supporter?.label}
-                        </span>
+                        </div>
                       ))}>
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
