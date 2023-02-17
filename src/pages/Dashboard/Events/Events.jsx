@@ -168,7 +168,7 @@ function Events() {
                             {user?.id == userDetail?.id && <Divider style={{ margin: 8 }} />}
                           </>
                         ),
-                        filtervalue: userDetail?.firstName + userDetail?.lastName,
+                        filtervalue: userDetail?.firstName?.charAt(0)?.toLowerCase() + userDetail?.lastName,
                       };
                     })}
                     value={filter?.users}>
