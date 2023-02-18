@@ -81,6 +81,12 @@
         },
         "clear": "Clear"
       },
+      "readOnlyEvent": {
+        "notification": {
+          "underReview": "This event is under review.",
+          "underPublished": "This event has been published. If you would like to make a change, please contact the calendar admin."
+        }
+      },
       "addEditEvent": {
         "heading": { "newEvent": "New Event", "editEvent": "Edit Event" },
         "language": {

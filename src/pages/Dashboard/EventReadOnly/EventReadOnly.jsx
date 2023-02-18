@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Breadcrumb } from 'antd';
-import Icon, { LeftOutlined, CalendarOutlined, UserOutlined } from '@ant-design/icons';
+import Icon, { LeftOutlined, CalendarOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import './eventReadOnly.css';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +30,8 @@ import { entitiesClass } from '../../../constants/entitiesClass';
 import { useGetEntitiesQuery } from '../../../services/entities';
 import SelectionItem from '../../../components/List/SelectionItem';
 import { ReactComponent as Organizations } from '../../../assets/icons/organisations.svg';
+import Alert from '../../../components/Alert';
+import { eventPublishState, eventPublishStateOptions } from '../../../constants/eventPublishState';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -99,6 +101,7 @@ function EventReadOnly() {
               </Col>
             </Row>
           </Col>
+
           <Col span={24}>
             <Row>
               <Col>
@@ -113,6 +116,24 @@ function EventReadOnly() {
                 </div>
               </Col>
             </Row>
+          </Col>
+          <Col flex="723px">
+            {eventPublishStateOptions?.map((state, index) => {
+              if (
+                (state?.value === eventPublishState?.PENDING_REVIEW || state?.value === eventPublishState?.PUBLISHED) &&
+                eventData?.publishState === state?.value
+              )
+                return (
+                  <Alert
+                    key={index}
+                    message={state.infoText}
+                    type="info"
+                    showIcon
+                    icon={<InfoCircleOutlined />}
+                    additionalClassName="alert-information"
+                  />
+                );
+            })}
           </Col>
           <Col flex={'723px'} className="read-only-event-section-col">
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>

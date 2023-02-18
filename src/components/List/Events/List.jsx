@@ -31,8 +31,9 @@ function Lists(props) {
   const { user } = useSelector(getUserDetails);
   const totalCount = data?.totalCount;
 
-  const listItemHandler = (id, creatorId) => {
-    if (routinghandler(user, calendarId, creatorId)) navigate(`${location.pathname}${PathName.AddEvent}/${id}`);
+  const listItemHandler = (id, creatorId, publishState) => {
+    if (routinghandler(user, calendarId, creatorId, publishState))
+      navigate(`${location.pathname}${PathName.AddEvent}/${id}`);
     else navigate(`${location.pathname}/${id}`);
   };
   return (
@@ -79,7 +80,7 @@ function Lists(props) {
           ]}>
           <List.Item.Meta
             className="event-list-item-meta"
-            onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId)}
+            onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId, eventItem?.publishState)}
             avatar={<img src={eventItem?.image?.original} className="event-list-image" />}
             title={
               <div className="event-list-title">
@@ -131,7 +132,7 @@ function Lists(props) {
           />
           <List.Item.Meta
             className="event-status-list-item"
-            onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId)}
+            onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId, eventItem?.publishState)}
             title={<EventStatus label={eventItem?.publishState} />}
             description={
               <div className="event-list-status">

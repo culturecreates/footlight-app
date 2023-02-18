@@ -81,6 +81,12 @@
         },
         "clear": "Clear"
       },
+      "readOnlyEvent": {
+        "notification": {
+          "underReview": "Cet événement est en train d'être valider.",
+          "underPublished": "Cet événement a été publié. Si vous voulez faire des changements, veuillez contacter l'administrateur du calendrier."
+        }
+      },
       "addEditEvent": {
         "heading": { "newEvent": "Ajouter un événement", "editEvent": "Modifier un événement" },
         "language": {
