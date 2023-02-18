@@ -37,6 +37,7 @@ function Events() {
     users: [],
     publication: [],
   });
+  const [selectedUsers, setSelectedUsers] = useState({});
 
   let userFilterData = allUsersData?.data?.active?.slice()?.sort(function (x, y) {
     return x?.id == user?.id ? -1 : y?.id == user?.id ? 1 : 0;
@@ -78,14 +79,21 @@ function Events() {
   const onChangeHandler = (event) => {
     if (event.target.value === '') setEventSearchQuery('');
   };
+  const onCheckboxChange = (e) => {
+    let currentUsersFilter = selectedUsers;
+    Object.assign(currentUsersFilter, { [e?.target?.value]: e?.target?.checked });
+    setSelectedUsers(currentUsersFilter);
+    let filteredUsers = Object.keys(currentUsersFilter).filter(function (key) {
+      return currentUsersFilter[key];
+    });
+    setFilter({
+      ...filter,
+      users: filteredUsers,
+    });
+  };
 
   const onFilterChange = (values, filterType) => {
-    if (filterType === filterTypes.USERS)
-      setFilter({
-        ...filter,
-        users: values,
-      });
-    else if (filterType === filterTypes.PUBLICATION)
+    if (filterType === filterTypes.PUBLICATION)
       setFilter({
         ...filter,
         publication: values,
@@ -154,13 +162,16 @@ function Events() {
                   <SearchableCheckbox
                     allowSearch={true}
                     overlayStyle={{ height: '304px' }}
-                    onFilterChange={(values) => onFilterChange(values, filterTypes.USERS)}
                     data={userFilterData?.map((userDetail) => {
                       return {
                         key: userDetail?.id,
                         label: (
                           <>
-                            <Checkbox value={userDetail?.id} key={userDetail?.id} style={{ marginLeft: '8px' }}>
+                            <Checkbox
+                              value={userDetail?.id}
+                              key={userDetail?.id}
+                              style={{ marginLeft: '8px' }}
+                              onChange={(e) => onCheckboxChange(e)}>
                               {user?.id == userDetail?.id
                                 ? t('dashboard.events.filter.users.myEvents')
                                 : userDetail?.firstName?.charAt(0)?.toLowerCase() + userDetail?.lastName?.toLowerCase()}
@@ -197,6 +208,7 @@ function Events() {
                           users: [],
                           publication: [],
                         });
+                        setSelectedUsers({});
                         setPageNumber(1);
                       }}>
                       {t('dashboard.events.filter.clear')}&nbsp;
