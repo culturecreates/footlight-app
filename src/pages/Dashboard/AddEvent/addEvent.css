@@ -85,6 +85,9 @@
   overflow-y: scroll;
 }
 
+.add-edit-wrapper .event-popover{
+  width: 100%;
+}
 .add-edit-wrapper .event-popover-options {
   cursor: pointer;
 }

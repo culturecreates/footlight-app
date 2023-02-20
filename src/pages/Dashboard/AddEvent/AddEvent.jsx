@@ -893,8 +893,8 @@ function AddEvent() {
                   initialValue={initialPlace && initialPlace[0]?.id}
                   label={t('dashboard.events.addEditEvent.location.title')}>
                   <Popover
-                    className="event-popover"
-                    placement="bottom"
+                    overlayClassName="event-popover"
+                    placement="bottomLeft"
                     getPopupContainer={(trigger) => trigger.parentNode}
                     trigger={['click']}
                     content={allPlacesList?.map((place, index) => (
@@ -919,6 +919,7 @@ function AddEvent() {
                       icon={locationPlace?.label?.props?.icon}
                       name={locationPlace?.name}
                       description={locationPlace?.description}
+                      itemWidth="100%"
                       bordered
                       closable
                       onClose={() => {
@@ -1093,8 +1094,8 @@ function AddEvent() {
                   </Row>
                   <Form.Item name="organizers" initialValue={selectedOrganizers}>
                     <Popover
-                      className="event-popover"
-                      placement="bottom"
+                      overlayClassName="event-popover"
+                      placement="bottomLeft"
                       getPopupContainer={(trigger) => trigger.parentNode}
                       trigger={['click']}
                       content={organizersList?.map((organizer, index) => (
@@ -1123,6 +1124,7 @@ function AddEvent() {
                           description={organizer?.description}
                           bordered
                           closable
+                          itemWidth="100%"
                           onClose={() => {
                             setSelectedOrganizers(
                               selectedOrganizers?.filter((selectedOrganizer, indexValue) => indexValue != index),
@@ -1215,7 +1217,8 @@ function AddEvent() {
                   </Row>
                   <Form.Item name="performers" initialValue={selectedPerformers}>
                     <Popover
-                      placement="bottom"
+                      overlayClassName="event-popover"
+                      placement="bottomLeft"
                       trigger={['click']}
                       getPopupContainer={(trigger) => trigger.parentNode}
                       content={performerList?.map((performer, index) => (
@@ -1244,6 +1247,7 @@ function AddEvent() {
                           description={performer?.description}
                           bordered
                           closable
+                          itemWidth="100%"
                           onClose={() => {
                             setSelectedPerformers(
                               selectedPerformers?.filter((selectedPerformer, indexValue) => indexValue != index),
@@ -1264,7 +1268,8 @@ function AddEvent() {
                   </Row>
                   <Form.Item name="supporters" initialValue={selectedSupporters}>
                     <Popover
-                      placement="bottom"
+                      overlayClassName="event-popover"
+                      placement="bottomLeft"
                       trigger={['click']}
                       getPopupContainer={(trigger) => trigger.parentNode}
                       content={supporterList?.map((supporter, index) => (
@@ -1292,6 +1297,7 @@ function AddEvent() {
                           name={supporter?.name}
                           description={supporter?.description}
                           bordered
+                          itemWidth="100%"
                           closable
                           onClose={() => {
                             setSelectedSupporters(

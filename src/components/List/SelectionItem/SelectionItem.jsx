@@ -4,11 +4,11 @@ import { Avatar, List, Button } from 'antd';
 import { CloseCircleOutlined } from '@ant-design/icons';
 
 function SelectionItem(props) {
-  const { icon, name, description, bordered, closable, onClose } = props;
+  const { icon, name, description, bordered, closable, onClose, itemWidth } = props;
   return (
     <List.Item
       className="selection-item-wrapper"
-      style={{ border: bordered && '1px solid#607EFC' }}
+      style={{ border: bordered && '1px solid#607EFC', width: itemWidth && itemWidth }}
       actions={[
         closable && (
           <Button type="text" key="list-loadmore-close" onClick={onClose}>

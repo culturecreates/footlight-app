@@ -42,6 +42,7 @@ export const treeEntitiesOption = (data, user) => {
     return {
       label: (
         <SelectionItem
+          itemWidth="100%"
           icon={
             entity?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
               <Icon component={Organizations} style={{ color: '#607EFC' }} />
