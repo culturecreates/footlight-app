@@ -1125,9 +1125,7 @@ function AddEvent() {
                           closable
                           onClose={() => {
                             setSelectedOrganizers(
-                              selectedOrganizers?.filter(
-                                (selectedOrganizer) => selectedOrganizer?.value != organizer?.value,
-                              ),
+                              selectedOrganizers?.filter((selectedOrganizer, indexValue) => indexValue != index),
                             );
                           }}
                         />
@@ -1248,9 +1246,7 @@ function AddEvent() {
                           closable
                           onClose={() => {
                             setSelectedPerformers(
-                              selectedPerformers?.filter(
-                                (selectedPerformer) => selectedPerformer?.value != performer?.value,
-                              ),
+                              selectedPerformers?.filter((selectedPerformer, indexValue) => indexValue != index),
                             );
                           }}
                         />
@@ -1299,9 +1295,7 @@ function AddEvent() {
                           closable
                           onClose={() => {
                             setSelectedSupporters(
-                              selectedSupporters?.filter(
-                                (selectedSupporter) => selectedSupporter?.value != supporter?.value,
-                              ),
+                              selectedSupporters?.filter((selectedSupporter, indexValue) => indexValue != index),
                             );
                           }}
                         />
