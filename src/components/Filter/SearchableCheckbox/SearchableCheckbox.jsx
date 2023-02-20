@@ -41,7 +41,7 @@ function SearchableCheckbox(props) {
             {allowSearch && (
               <AuthenticationInput
                 size="small"
-                placeHolder={t('dashboard.events.filter.users.placeholderSearch')}
+                placeholder={t('dashboard.events.filter.users.placeholderSearch')}
                 onChange={(e) => setSearchKey(e.target.value)}
                 prefix={<SearchOutlined />}
               />
