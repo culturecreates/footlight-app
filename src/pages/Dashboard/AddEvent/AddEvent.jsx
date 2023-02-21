@@ -911,7 +911,9 @@ function AddEvent() {
                         allPlacesList?.map((place, index) => (
                           <div
                             key={index}
-                            className="event-popover-options"
+                            className={`event-popover-options ${
+                              locationPlace?.value == place?.value ? 'event-popover-options-active' : null
+                            }`}
                             onClick={() => {
                               setLocationPlace(place);
                               form.setFieldValue('locationPlace', place?.value);

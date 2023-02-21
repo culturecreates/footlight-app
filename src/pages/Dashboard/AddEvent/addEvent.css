@@ -85,13 +85,14 @@
   overflow-y: scroll;
 }
 
-.add-edit-wrapper .event-popover{
+.add-edit-wrapper .event-popover {
   width: 100%;
 }
 .add-edit-wrapper .event-popover-options {
   cursor: pointer;
 }
 
-.add-edit-wrapper .event-popover-options:hover {
+.add-edit-wrapper .event-popover-options:hover,
+.add-edit-wrapper .event-popover-options-active {
   background: #eff2ff;
 }
