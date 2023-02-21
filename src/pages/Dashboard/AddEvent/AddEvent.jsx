@@ -104,6 +104,12 @@ function AddEvent() {
   const [selectedOrganizers, setSelectedOrganizers] = useState([]);
   const [selectedPerformers, setSelectedPerformers] = useState([]);
   const [selectedSupporters, setSelectedSupporters] = useState([]);
+  const [isPopoverOpen, setIsPopoverOpen] = useState({
+    locationPlace: false,
+    organizer: false,
+    performer: false,
+    supporter: false,
+  });
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -894,6 +900,8 @@ function AddEvent() {
                   initialValue={initialPlace && initialPlace[0]?.id}
                   label={t('dashboard.events.addEditEvent.location.title')}>
                   <Popover
+                    open={isPopoverOpen.locationPlace}
+                    onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open })}
                     overlayClassName="event-popover"
                     placement="bottom"
                     getPopupContainer={(trigger) => trigger.parentNode}
@@ -907,6 +915,10 @@ function AddEvent() {
                             onClick={() => {
                               setLocationPlace(place);
                               form.setFieldValue('locationPlace', place?.value);
+                              setIsPopoverOpen({
+                                ...isPopoverOpen,
+                                locationPlace: false,
+                              });
                             }}>
                             {place?.label}
                           </div>
@@ -918,7 +930,11 @@ function AddEvent() {
                     <EventsSearch
                       style={{ borderRadius: '4px' }}
                       placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
-                      onChange={(e) => placesSearch(e.target.value)}
+                      onChange={(e) => {
+                        placesSearch(e.target.value);
+                        setIsPopoverOpen({ ...isPopoverOpen, locationPlace: true });
+                      }}
+                      onClick={() => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: true })}
                     />
                   </Popover>
                   {locationPlace && (
@@ -1101,6 +1117,8 @@ function AddEvent() {
                   </Row>
                   <Form.Item name="organizers" initialValue={selectedOrganizers}>
                     <Popover
+                      open={isPopoverOpen.organizer}
+                      onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, organizer: open })}
                       overlayClassName="event-popover"
                       placement="bottom"
                       getPopupContainer={(trigger) => trigger.parentNode}
@@ -1124,7 +1142,11 @@ function AddEvent() {
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
-                        onChange={(e) => organizationPersonSearch(e.target.value, 'organizers')}
+                        onChange={(e) => {
+                          organizationPersonSearch(e.target.value, 'organizers');
+                          setIsPopoverOpen({ ...isPopoverOpen, organizer: true });
+                        }}
+                        onClick={() => setIsPopoverOpen({ ...isPopoverOpen, organizer: true })}
                       />
                     </Popover>
 
@@ -1230,6 +1252,8 @@ function AddEvent() {
                   </Row>
                   <Form.Item name="performers" initialValue={selectedPerformers}>
                     <Popover
+                      open={isPopoverOpen.performer}
+                      onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, performer: open })}
                       overlayClassName="event-popover"
                       placement="bottom"
                       trigger={['click']}
@@ -1253,7 +1277,11 @@ function AddEvent() {
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.performer.searchPlaceholder')}
-                        onChange={(e) => organizationPersonSearch(e.target.value, 'performers')}
+                        onChange={(e) => {
+                          organizationPersonSearch(e.target.value, 'performers');
+                          setIsPopoverOpen({ ...isPopoverOpen, performer: true });
+                        }}
+                        onClick={() => setIsPopoverOpen({ ...isPopoverOpen, performer: true })}
                       />
                     </Popover>
 
@@ -1287,6 +1315,8 @@ function AddEvent() {
                   </Row>
                   <Form.Item name="supporters" initialValue={selectedSupporters}>
                     <Popover
+                      open={isPopoverOpen.supporter}
+                      onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, supporter: open })}
                       overlayClassName="event-popover"
                       placement="bottom"
                       trigger={['click']}
@@ -1310,7 +1340,11 @@ function AddEvent() {
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.supporter.searchPlaceholder')}
-                        onChange={(e) => organizationPersonSearch(e.target.value, 'supporters')}
+                        onChange={(e) => {
+                          organizationPersonSearch(e.target.value, 'supporters');
+                          setIsPopoverOpen({ ...isPopoverOpen, supporter: true });
+                        }}
+                        onClick={() => setIsPopoverOpen({ ...isPopoverOpen, supporter: true })}
                       />
                     </Popover>
 
