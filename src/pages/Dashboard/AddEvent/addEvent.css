@@ -87,6 +87,12 @@
 
 .add-edit-wrapper .event-popover {
   width: 100%;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.add-edit-wrapper .event-popover .ant-popover-arrow {
+  display: none;
 }
 .add-edit-wrapper .event-popover-options {
   cursor: pointer;
