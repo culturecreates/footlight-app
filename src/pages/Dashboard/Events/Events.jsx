@@ -80,7 +80,7 @@ function Events() {
     if (event.target.value === '') setEventSearchQuery('');
   };
   const onCheckboxChange = (e) => {
-    let currentUsersFilter = selectedUsers;
+    let currentUsersFilter = selectedUsers ?? {};
     Object.assign(currentUsersFilter, { [e?.target?.value]: e?.target?.checked });
     setSelectedUsers(currentUsersFilter);
     let filteredUsers = Object.keys(currentUsersFilter).filter(function (key) {
@@ -208,7 +208,11 @@ function Events() {
                           users: [],
                           publication: [],
                         });
-                        setSelectedUsers({});
+                        let usersToClear = selectedUsers;
+                        Object.keys(usersToClear)?.forEach(function (key) {
+                          usersToClear[key] = false;
+                        });
+                        setSelectedUsers(Object.assign({}, usersToClear));
                         setPageNumber(1);
                       }}>
                       {t('dashboard.events.filter.clear')}&nbsp;
