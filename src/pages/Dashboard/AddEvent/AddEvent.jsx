@@ -894,7 +894,7 @@ function AddEvent() {
                   label={t('dashboard.events.addEditEvent.location.title')}>
                   <Popover
                     overlayClassName="event-popover"
-                    placement="bottomLeft"
+                    placement="bottom"
                     getPopupContainer={(trigger) => trigger.parentNode}
                     trigger={['click']}
                     content={allPlacesList?.map((place, index) => (
@@ -1095,7 +1095,7 @@ function AddEvent() {
                   <Form.Item name="organizers" initialValue={selectedOrganizers}>
                     <Popover
                       overlayClassName="event-popover"
-                      placement="bottomLeft"
+                      placement="bottom"
                       getPopupContainer={(trigger) => trigger.parentNode}
                       trigger={['click']}
                       content={organizersList?.map((organizer, index) => (
@@ -1218,7 +1218,7 @@ function AddEvent() {
                   <Form.Item name="performers" initialValue={selectedPerformers}>
                     <Popover
                       overlayClassName="event-popover"
-                      placement="bottomLeft"
+                      placement="bottom"
                       trigger={['click']}
                       getPopupContainer={(trigger) => trigger.parentNode}
                       content={performerList?.map((performer, index) => (
@@ -1269,7 +1269,7 @@ function AddEvent() {
                   <Form.Item name="supporters" initialValue={selectedSupporters}>
                     <Popover
                       overlayClassName="event-popover"
-                      placement="bottomLeft"
+                      placement="bottom"
                       trigger={['click']}
                       getPopupContainer={(trigger) => trigger.parentNode}
                       content={supporterList?.map((supporter, index) => (
