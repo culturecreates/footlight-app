@@ -52,6 +52,7 @@ import { entitiesClass } from '../../../constants/entitiesClass';
 import SelectionItem from '../../../components/List/SelectionItem';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
+import NoContent from '../../../components/NoContent';
 
 const { TextArea } = Input;
 
@@ -897,17 +898,23 @@ function AddEvent() {
                     placement="bottom"
                     getPopupContainer={(trigger) => trigger.parentNode}
                     trigger={['click']}
-                    content={allPlacesList?.map((place, index) => (
-                      <div
-                        key={index}
-                        className="event-popover-options"
-                        onClick={() => {
-                          setLocationPlace(place);
-                          form.setFieldValue('locationPlace', place?.value);
-                        }}>
-                        {place?.label}
-                      </div>
-                    ))}>
+                    content={
+                      allPlacesList?.length > 0 ? (
+                        allPlacesList?.map((place, index) => (
+                          <div
+                            key={index}
+                            className="event-popover-options"
+                            onClick={() => {
+                              setLocationPlace(place);
+                              form.setFieldValue('locationPlace', place?.value);
+                            }}>
+                            {place?.label}
+                          </div>
+                        ))
+                      ) : (
+                        <NoContent />
+                      )
+                    }>
                     <EventsSearch
                       style={{ borderRadius: '4px' }}
                       placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
@@ -1098,16 +1105,22 @@ function AddEvent() {
                       placement="bottom"
                       getPopupContainer={(trigger) => trigger.parentNode}
                       trigger={['click']}
-                      content={organizersList?.map((organizer, index) => (
-                        <div
-                          key={index}
-                          className="event-popover-options"
-                          onClick={() => {
-                            setSelectedOrganizers([...selectedOrganizers, organizer]);
-                          }}>
-                          {organizer?.label}
-                        </div>
-                      ))}>
+                      content={
+                        organizersList?.length > 0 ? (
+                          organizersList?.map((organizer, index) => (
+                            <div
+                              key={index}
+                              className="event-popover-options"
+                              onClick={() => {
+                                setSelectedOrganizers([...selectedOrganizers, organizer]);
+                              }}>
+                              {organizer?.label}
+                            </div>
+                          ))
+                        ) : (
+                          <NoContent />
+                        )
+                      }>
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
@@ -1221,16 +1234,22 @@ function AddEvent() {
                       placement="bottom"
                       trigger={['click']}
                       getPopupContainer={(trigger) => trigger.parentNode}
-                      content={performerList?.map((performer, index) => (
-                        <div
-                          key={index}
-                          className="event-popover-options"
-                          onClick={() => {
-                            setSelectedPerformers([...selectedPerformers, performer]);
-                          }}>
-                          {performer?.label}
-                        </div>
-                      ))}>
+                      content={
+                        performerList?.length > 0 ? (
+                          performerList?.map((performer, index) => (
+                            <div
+                              key={index}
+                              className="event-popover-options"
+                              onClick={() => {
+                                setSelectedPerformers([...selectedPerformers, performer]);
+                              }}>
+                              {performer?.label}
+                            </div>
+                          ))
+                        ) : (
+                          <NoContent />
+                        )
+                      }>
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.performer.searchPlaceholder')}
@@ -1272,16 +1291,22 @@ function AddEvent() {
                       placement="bottom"
                       trigger={['click']}
                       getPopupContainer={(trigger) => trigger.parentNode}
-                      content={supporterList?.map((supporter, index) => (
-                        <div
-                          key={index}
-                          className="event-popover-options"
-                          onClick={() => {
-                            setSelectedSupporters([...selectedSupporters, supporter]);
-                          }}>
-                          {supporter?.label}
-                        </div>
-                      ))}>
+                      content={
+                        supporterList?.length > 0 ? (
+                          supporterList?.map((supporter, index) => (
+                            <div
+                              key={index}
+                              className="event-popover-options"
+                              onClick={() => {
+                                setSelectedSupporters([...selectedSupporters, supporter]);
+                              }}>
+                              {supporter?.label}
+                            </div>
+                          ))
+                        ) : (
+                          <NoContent />
+                        )
+                      }>
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.supporter.searchPlaceholder')}
