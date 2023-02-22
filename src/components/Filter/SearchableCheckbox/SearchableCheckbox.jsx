@@ -4,6 +4,7 @@ import { Dropdown, Space, Typography, Checkbox } from 'antd';
 import AuthenticationInput from '../../Input/Common/AuthenticationInput';
 import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import NoContent from '../../NoContent/NoContent';
 
 function SearchableCheckbox(props) {
   const { children, allowSearch, data, onFilterChange, open, value } = props;
@@ -46,7 +47,9 @@ function SearchableCheckbox(props) {
                 prefix={<SearchOutlined />}
               />
             )}
-            <div className="searchable-checkbox-dropdown-content">{items?.map((item) => item.label)}</div>
+            <div className="searchable-checkbox-dropdown-content">
+              {items?.length > 0 ? items?.map((item) => item.label) : <NoContent />}
+            </div>
           </div>
         )}
         placement="bottom"
