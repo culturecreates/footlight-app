@@ -52,7 +52,7 @@ import { entitiesClass } from '../../../constants/entitiesClass';
 import SelectionItem from '../../../components/List/SelectionItem';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
-
+import NoContent from '../../../components/NoContent/NoContent';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -103,6 +103,12 @@ function AddEvent() {
   const [selectedOrganizers, setSelectedOrganizers] = useState([]);
   const [selectedPerformers, setSelectedPerformers] = useState([]);
   const [selectedSupporters, setSelectedSupporters] = useState([]);
+  const [isPopoverOpen, setIsPopoverOpen] = useState({
+    locationPlace: false,
+    organizer: false,
+    performer: false,
+    supporter: false,
+  });
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -677,6 +683,7 @@ function AddEvent() {
                   <TreeSelectOption
                     allowClear
                     treeDefaultExpandAll
+                    notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType')}
                     tagRender={(props) => {
@@ -707,6 +714,7 @@ function AddEvent() {
                   <TreeSelectOption
                     allowClear
                     treeDefaultExpandAll
+                    notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience')}
                     tagRender={(props) => {
@@ -893,25 +901,44 @@ function AddEvent() {
                   initialValue={initialPlace && initialPlace[0]?.id}
                   label={t('dashboard.events.addEditEvent.location.title')}>
                   <Popover
-                    className="event-popover"
+                    open={isPopoverOpen.locationPlace}
+                    onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open })}
+                    overlayClassName="event-popover"
                     placement="bottom"
+                    autoAdjustOverflow={false}
                     getPopupContainer={(trigger) => trigger.parentNode}
                     trigger={['click']}
-                    content={allPlacesList?.map((place, index) => (
-                      <span
-                        key={index}
-                        className="event-popover-options"
-                        onClick={() => {
-                          setLocationPlace(place);
-                          form.setFieldValue('locationPlace', place?.value);
-                        }}>
-                        {place?.label}
-                      </span>
-                    ))}>
+                    content={
+                      allPlacesList?.length > 0 ? (
+                        allPlacesList?.map((place, index) => (
+                          <div
+                            key={index}
+                            className={`event-popover-options ${
+                              locationPlace?.value == place?.value ? 'event-popover-options-active' : null
+                            }`}
+                            onClick={() => {
+                              setLocationPlace(place);
+                              form.setFieldValue('locationPlace', place?.value);
+                              setIsPopoverOpen({
+                                ...isPopoverOpen,
+                                locationPlace: false,
+                              });
+                            }}>
+                            {place?.label}
+                          </div>
+                        ))
+                      ) : (
+                        <NoContent />
+                      )
+                    }>
                     <EventsSearch
                       style={{ borderRadius: '4px' }}
                       placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
-                      onChange={(e) => placesSearch(e.target.value)}
+                      onChange={(e) => {
+                        placesSearch(e.target.value);
+                        setIsPopoverOpen({ ...isPopoverOpen, locationPlace: true });
+                      }}
+                      onClick={() => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: true })}
                     />
                   </Popover>
                   {locationPlace && (
@@ -919,6 +946,7 @@ function AddEvent() {
                       icon={locationPlace?.label?.props?.icon}
                       name={locationPlace?.name}
                       description={locationPlace?.description}
+                      itemWidth="100%"
                       bordered
                       closable
                       onClose={() => {
@@ -1093,24 +1121,41 @@ function AddEvent() {
                   </Row>
                   <Form.Item name="organizers" initialValue={selectedOrganizers}>
                     <Popover
-                      className="event-popover"
+                      open={isPopoverOpen.organizer}
+                      onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, organizer: open })}
+                      overlayClassName="event-popover"
                       placement="bottom"
+                      autoAdjustOverflow={false}
                       getPopupContainer={(trigger) => trigger.parentNode}
                       trigger={['click']}
-                      content={organizersList?.map((organizer, index) => (
-                        <span
-                          key={index}
-                          className="event-popover-options"
-                          onClick={() => {
-                            setSelectedOrganizers([...selectedOrganizers, organizer]);
-                          }}>
-                          {organizer?.label}
-                        </span>
-                      ))}>
+                      content={
+                        organizersList?.length > 0 ? (
+                          organizersList?.map((organizer, index) => (
+                            <div
+                              key={index}
+                              className="event-popover-options"
+                              onClick={() => {
+                                setSelectedOrganizers([...selectedOrganizers, organizer]);
+                                setIsPopoverOpen({
+                                  ...isPopoverOpen,
+                                  organizer: false,
+                                });
+                              }}>
+                              {organizer?.label}
+                            </div>
+                          ))
+                        ) : (
+                          <NoContent />
+                        )
+                      }>
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
-                        onChange={(e) => organizationPersonSearch(e.target.value, 'organizers')}
+                        onChange={(e) => {
+                          organizationPersonSearch(e.target.value, 'organizers');
+                          setIsPopoverOpen({ ...isPopoverOpen, organizer: true });
+                        }}
+                        onClick={() => setIsPopoverOpen({ ...isPopoverOpen, organizer: true })}
                       />
                     </Popover>
 
@@ -1123,11 +1168,10 @@ function AddEvent() {
                           description={organizer?.description}
                           bordered
                           closable
+                          itemWidth="100%"
                           onClose={() => {
                             setSelectedOrganizers(
-                              selectedOrganizers?.filter(
-                                (selectedOrganizer) => selectedOrganizer?.value != organizer?.value,
-                              ),
+                              selectedOrganizers?.filter((selectedOrganizer, indexValue) => indexValue != index),
                             );
                           }}
                         />
@@ -1217,23 +1261,41 @@ function AddEvent() {
                   </Row>
                   <Form.Item name="performers" initialValue={selectedPerformers}>
                     <Popover
+                      open={isPopoverOpen.performer}
+                      onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, performer: open })}
+                      overlayClassName="event-popover"
                       placement="bottom"
+                      autoAdjustOverflow={false}
                       trigger={['click']}
                       getPopupContainer={(trigger) => trigger.parentNode}
-                      content={performerList?.map((performer, index) => (
-                        <span
-                          key={index}
-                          className="event-popover-options"
-                          onClick={() => {
-                            setSelectedPerformers([...selectedPerformers, performer]);
-                          }}>
-                          {performer?.label}
-                        </span>
-                      ))}>
+                      content={
+                        performerList?.length > 0 ? (
+                          performerList?.map((performer, index) => (
+                            <div
+                              key={index}
+                              className="event-popover-options"
+                              onClick={() => {
+                                setSelectedPerformers([...selectedPerformers, performer]);
+                                setIsPopoverOpen({
+                                  ...isPopoverOpen,
+                                  performer: false,
+                                });
+                              }}>
+                              {performer?.label}
+                            </div>
+                          ))
+                        ) : (
+                          <NoContent />
+                        )
+                      }>
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.performer.searchPlaceholder')}
-                        onChange={(e) => organizationPersonSearch(e.target.value, 'performers')}
+                        onChange={(e) => {
+                          organizationPersonSearch(e.target.value, 'performers');
+                          setIsPopoverOpen({ ...isPopoverOpen, performer: true });
+                        }}
+                        onClick={() => setIsPopoverOpen({ ...isPopoverOpen, performer: true })}
                       />
                     </Popover>
 
@@ -1246,11 +1308,10 @@ function AddEvent() {
                           description={performer?.description}
                           bordered
                           closable
+                          itemWidth="100%"
                           onClose={() => {
                             setSelectedPerformers(
-                              selectedPerformers?.filter(
-                                (selectedPerformer) => selectedPerformer?.value != performer?.value,
-                              ),
+                              selectedPerformers?.filter((selectedPerformer, indexValue) => indexValue != index),
                             );
                           }}
                         />
@@ -1268,23 +1329,41 @@ function AddEvent() {
                   </Row>
                   <Form.Item name="supporters" initialValue={selectedSupporters}>
                     <Popover
+                      open={isPopoverOpen.supporter}
+                      onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, supporter: open })}
+                      overlayClassName="event-popover"
                       placement="bottom"
+                      autoAdjustOverflow={false}
                       trigger={['click']}
                       getPopupContainer={(trigger) => trigger.parentNode}
-                      content={supporterList?.map((supporter, index) => (
-                        <span
-                          key={index}
-                          className="event-popover-options"
-                          onClick={() => {
-                            setSelectedSupporters([...selectedSupporters, supporter]);
-                          }}>
-                          {supporter?.label}
-                        </span>
-                      ))}>
+                      content={
+                        supporterList?.length > 0 ? (
+                          supporterList?.map((supporter, index) => (
+                            <div
+                              key={index}
+                              className="event-popover-options"
+                              onClick={() => {
+                                setSelectedSupporters([...selectedSupporters, supporter]);
+                                setIsPopoverOpen({
+                                  ...isPopoverOpen,
+                                  supporter: false,
+                                });
+                              }}>
+                              {supporter?.label}
+                            </div>
+                          ))
+                        ) : (
+                          <NoContent />
+                        )
+                      }>
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.supporter.searchPlaceholder')}
-                        onChange={(e) => organizationPersonSearch(e.target.value, 'supporters')}
+                        onChange={(e) => {
+                          organizationPersonSearch(e.target.value, 'supporters');
+                          setIsPopoverOpen({ ...isPopoverOpen, supporter: true });
+                        }}
+                        onClick={() => setIsPopoverOpen({ ...isPopoverOpen, supporter: true })}
                       />
                     </Popover>
 
@@ -1296,12 +1375,11 @@ function AddEvent() {
                           name={supporter?.name}
                           description={supporter?.description}
                           bordered
+                          itemWidth="100%"
                           closable
                           onClose={() => {
                             setSelectedSupporters(
-                              selectedSupporters?.filter(
-                                (selectedSupporter) => selectedSupporter?.value != supporter?.value,
-                              ),
+                              selectedSupporters?.filter((selectedSupporter, indexValue) => indexValue != index),
                             );
                           }}
                         />
@@ -1396,6 +1474,7 @@ function AddEvent() {
                   <TreeSelectOption
                     allowClear
                     treeDefaultExpandAll
+                    notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility')}
                     tagRender={(props) => {
