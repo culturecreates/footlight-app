@@ -34,9 +34,10 @@ function Events() {
   const [pageNumber, setPageNumber] = useState(searchParams.get('page') ?? 1);
   const [eventSearchQuery, setEventSearchQuery] = useState(searchParams.get('query') ?? '');
   const [filter, setFilter] = useState({
-    users: [],
     publication: [],
   });
+  const [userFilter, setUserFilter] = useState([]);
+
   const [selectedUsers, setSelectedUsers] = useState({});
 
   let userFilterData = allUsersData?.data?.active?.slice()?.sort(function (x, y) {
@@ -49,7 +50,7 @@ function Events() {
   userFilterData = [user].concat(userFilterData);
   useEffect(() => {
     let query = new URLSearchParams();
-    filter?.users?.forEach((user) => query.append('user', user));
+    userFilter?.forEach((user) => query.append('user', user));
     filter?.publication?.forEach((state) => query.append('publish-state', state));
     getEvents({
       pageNumber,
@@ -63,7 +64,7 @@ function Events() {
     else {
       setSearchParams(createSearchParams({ page: pageNumber, query: eventSearchQuery }));
     }
-  }, [calendarId, pageNumber, eventSearchQuery, filter]);
+  }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter]);
 
   useEffect(() => {
     if (calendarId) setPageNumber(1);
@@ -86,10 +87,7 @@ function Events() {
     let filteredUsers = Object.keys(currentUsersFilter).filter(function (key) {
       return currentUsersFilter[key];
     });
-    setFilter({
-      ...filter,
-      users: filteredUsers,
-    });
+    setUserFilter(filteredUsers);
     setPageNumber(1);
   };
 
@@ -184,15 +182,15 @@ function Events() {
                         filtervalue: userDetail?.firstName?.charAt(0)?.toLowerCase() + userDetail?.lastName,
                       };
                     })}
-                    value={filter?.users}>
+                    value={userFilter}>
                     <Button
                       size="large"
                       className="filter-buttons"
-                      style={{ borderColor: filter?.users?.length > 0 && '#607EFC' }}>
+                      style={{ borderColor: userFilter?.length > 0 && '#607EFC' }}>
                       {t('dashboard.events.filter.users.label')}
-                      {filter?.users?.length > 0 && (
+                      {userFilter?.length > 0 && (
                         <>
-                          &nbsp; <Badge count={filter?.users?.length} showZero={false} color="#1B3DE6" />
+                          &nbsp; <Badge count={userFilter?.length} showZero={false} color="#1B3DE6" />
                         </>
                       )}
                     </Button>
@@ -200,16 +198,16 @@ function Events() {
                 </Col>
 
                 <Col>
-                  {(filter?.users?.length > 0 || filter?.publication?.length > 0) && (
+                  {(userFilter.length > 0 || filter?.publication?.length > 0) && (
                     <Button
                       size="large"
                       className="filter-buttons"
                       style={{ color: '#1B3DE6' }}
                       onClick={() => {
                         setFilter({
-                          users: [],
                           publication: [],
                         });
+                        setUserFilter([]);
                         let usersToClear = selectedUsers;
                         Object.keys(usersToClear)?.forEach(function (key) {
                           usersToClear[key] = false;
