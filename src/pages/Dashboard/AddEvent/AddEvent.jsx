@@ -1136,6 +1136,10 @@ function AddEvent() {
                               className="event-popover-options"
                               onClick={() => {
                                 setSelectedOrganizers([...selectedOrganizers, organizer]);
+                                setIsPopoverOpen({
+                                  ...isPopoverOpen,
+                                  organizer: false,
+                                });
                               }}>
                               {organizer?.label}
                             </div>
@@ -1272,6 +1276,10 @@ function AddEvent() {
                               className="event-popover-options"
                               onClick={() => {
                                 setSelectedPerformers([...selectedPerformers, performer]);
+                                setIsPopoverOpen({
+                                  ...isPopoverOpen,
+                                  performer: false,
+                                });
                               }}>
                               {performer?.label}
                             </div>
@@ -1336,6 +1344,10 @@ function AddEvent() {
                               className="event-popover-options"
                               onClick={() => {
                                 setSelectedSupporters([...selectedSupporters, supporter]);
+                                setIsPopoverOpen({
+                                  ...isPopoverOpen,
+                                  supporter: false,
+                                });
                               }}>
                               {supporter?.label}
                             </div>
