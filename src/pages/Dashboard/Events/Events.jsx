@@ -90,6 +90,7 @@ function Events() {
       ...filter,
       users: filteredUsers,
     });
+    setPageNumber(1);
   };
 
   const onFilterChange = (values, filterType) => {
@@ -98,6 +99,7 @@ function Events() {
         ...filter,
         publication: values,
       });
+    setPageNumber(1);
   };
   return (
     !isLoading &&
