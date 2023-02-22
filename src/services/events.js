@@ -56,7 +56,6 @@ export const eventsApi = createApi({
         },
         body: data,
       }),
-      invalidatesTags: ['Events'],
     }),
     updateEvent: builder.mutation({
       query: ({ data, calendarId, eventId }) => ({
@@ -67,7 +66,6 @@ export const eventsApi = createApi({
         },
         body: data,
       }),
-      invalidatesTags: ['Event', 'Events'],
     }),
   }),
 });
