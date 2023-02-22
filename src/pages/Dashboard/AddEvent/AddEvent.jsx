@@ -683,6 +683,7 @@ function AddEvent() {
                   <TreeSelectOption
                     allowClear
                     treeDefaultExpandAll
+                    notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType')}
                     tagRender={(props) => {
@@ -713,6 +714,7 @@ function AddEvent() {
                   <TreeSelectOption
                     allowClear
                     treeDefaultExpandAll
+                    notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience')}
                     tagRender={(props) => {
@@ -1460,6 +1462,7 @@ function AddEvent() {
                   <TreeSelectOption
                     allowClear
                     treeDefaultExpandAll
+                    notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility')}
                     tagRender={(props) => {
