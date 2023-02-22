@@ -186,7 +186,7 @@ function Events() {
                     <Button
                       size="large"
                       className="filter-buttons"
-                      style={{ borderColor: filter?.users?.length > 0 && '#607EFC' }}>
+                      style={{ borderColor: userFilter?.length > 0 && '#607EFC' }}>
                       {t('dashboard.events.filter.users.label')}
                       {userFilter?.length > 0 && (
                         <>
