@@ -52,8 +52,7 @@ import { entitiesClass } from '../../../constants/entitiesClass';
 import SelectionItem from '../../../components/List/SelectionItem';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
-import NoContent from '../../../components/NoContent';
-
+import NoContent from '../../../components/NoContent/NoContent';
 const { TextArea } = Input;
 
 function AddEvent() {
