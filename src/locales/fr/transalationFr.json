@@ -261,7 +261,7 @@
   "common": {
     "tabEnglish": "Anglais",
     "tabFrench": "Français",
-    "noneFound": "None Found",
+    "noneFound": "Non trouvé",
     "server": {
       "status": {
         "503": {

@@ -156,7 +156,8 @@ function AddEvent() {
     });
     return promise;
   };
-  const saveAsDraftHandler = () => {
+  const saveAsDraftHandler = (event) => {
+    event.preventDefault();
     var promise = new Promise(function (resolve, reject) {
       form
         .validateFields([
@@ -401,7 +402,8 @@ function AddEvent() {
     return promise;
   };
 
-  const reviewPublishHandler = () => {
+  const reviewPublishHandler = (event) => {
+    event.preventDefault();
     form
       .validateFields([
         'french',
@@ -455,7 +457,6 @@ function AddEvent() {
           </Form.Item>
           <Form.Item>
             <PrimaryButton
-              htmlType="submit"
               label={t('dashboard.events.addEditEvent.saveOptions.publish')}
               onClick={reviewPublishHandler}
             />
@@ -471,7 +472,6 @@ function AddEvent() {
 
           <Form.Item>
             <PrimaryButton
-              htmlType="submit"
               label={t('dashboard.events.addEditEvent.saveOptions.sendToReview')}
               onClick={reviewPublishHandler}
             />
@@ -489,11 +489,7 @@ function AddEvent() {
             </PublishState>
           </Form.Item>
           <Form.Item>
-            <PrimaryButton
-              htmlType="submit"
-              label={t('dashboard.events.addEditEvent.saveOptions.save')}
-              onClick={saveAsDraftHandler}
-            />
+            <PrimaryButton label={t('dashboard.events.addEditEvent.saveOptions.save')} onClick={saveAsDraftHandler} />
           </Form.Item>
         </>
       );
