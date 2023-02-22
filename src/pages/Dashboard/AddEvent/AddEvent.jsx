@@ -903,6 +903,7 @@ function AddEvent() {
                     onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open })}
                     overlayClassName="event-popover"
                     placement="bottom"
+                    autoAdjustOverflow={false}
                     getPopupContainer={(trigger) => trigger.parentNode}
                     trigger={['click']}
                     content={
@@ -1122,6 +1123,7 @@ function AddEvent() {
                       onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, organizer: open })}
                       overlayClassName="event-popover"
                       placement="bottom"
+                      autoAdjustOverflow={false}
                       getPopupContainer={(trigger) => trigger.parentNode}
                       trigger={['click']}
                       content={
@@ -1257,6 +1259,7 @@ function AddEvent() {
                       onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, performer: open })}
                       overlayClassName="event-popover"
                       placement="bottom"
+                      autoAdjustOverflow={false}
                       trigger={['click']}
                       getPopupContainer={(trigger) => trigger.parentNode}
                       content={
@@ -1320,6 +1323,7 @@ function AddEvent() {
                       onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, supporter: open })}
                       overlayClassName="event-popover"
                       placement="bottom"
+                      autoAdjustOverflow={false}
                       trigger={['click']}
                       getPopupContainer={(trigger) => trigger.parentNode}
                       content={
