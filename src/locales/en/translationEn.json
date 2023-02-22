@@ -230,7 +230,10 @@
             "emptyPaidTicket": "This event requires a buy ticket link or a ticket price.",
             "invalidData": "Enter a number."
           },
-          "url": "Enter a valid url."
+          "url": "Enter a valid url.",
+          "errorPublishing": "This event needs more information before it can be published.",
+          "errorReview": "This event needs more information before it can be sent for review.",
+          "errorDraft": "This event needs more information before it can be saved as draft."
         }
       },
       "publishOptions": {

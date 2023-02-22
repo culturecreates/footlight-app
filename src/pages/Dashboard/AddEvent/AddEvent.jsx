@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
-import { Form, Row, Col, Input, Popover } from 'antd';
+import { Form, Row, Col, Input, Popover, notification } from 'antd';
 import { SyncOutlined, InfoCircleOutlined, CloseCircleOutlined, CalendarOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
@@ -375,9 +375,7 @@ function AddEvent() {
               },
             });
           } else {
-            //ToDo : Check with Backend whether to pass image object on removal
             if (values?.dragger && values?.length == 0) eventObj['image'] = null;
-
             addUpdateEventApiHandler(eventObj)
               .then(() => resolve())
               .catch((error) => {
@@ -386,9 +384,12 @@ function AddEvent() {
               });
           }
         })
-
         .catch((error) => {
           console.log(error);
+          notification.warning({
+            description: t('dashboard.events.addEditEvent.validations.errorDraft'),
+            placement: 'top',
+          });
         });
     });
 
@@ -426,6 +427,16 @@ function AddEvent() {
       })
       .catch((error) => {
         console.log(error);
+        const calendar = user?.roles.filter((calendar) => {
+          return calendar.calendarId === calendarId;
+        });
+        notification.warning({
+          description:
+            calendar[0]?.role === userRoles.GUEST
+              ? t('dashboard.events.addEditEvent.validations.errorReview')
+              : t('dashboard.events.addEditEvent.validations.errorPublishing'),
+          placement: 'top',
+        });
       });
   };
 

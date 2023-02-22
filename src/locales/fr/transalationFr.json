@@ -229,7 +229,10 @@
             "emptyPaidTicket": "Cet événement nécessite un lien d'achat de billet ou un prix de billet.",
             "invalidData": "Entrez un nombre."
           },
-          "url": "Entrez une URL valide."
+          "url": "Entrez une URL valide.",
+          "errorPublishing": "Cet événement a besoin de plus d'informations avant d'être publié.",
+          "errorReview": "Cet événement a besoin de plus d'informations avant d'être envoyé pour validation.",
+          "errorDraft": "Cet événement a besoin de plus d'informations avant d'être enregistré comme brouillon."
         }
       },
 
