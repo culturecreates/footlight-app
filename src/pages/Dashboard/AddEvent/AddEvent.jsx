@@ -29,7 +29,7 @@ import Select from '../../../components/Select';
 import { eventStatus, eventStatusOptions } from '../../../constants/eventStatus';
 import TimePickerStyled from '../../../components/TimePicker/TimePicker';
 import DateRangePicker from '../../../components/DateRangePicker';
-import { dateTypeOptions, dateTypes } from '../../../constants/dateTypes';
+import { dateFrequencyOptions, dateTypeOptions, dateTypes } from '../../../constants/dateTypes';
 import ChangeType from '../../../components/ChangeType';
 import CardEvent from '../../../components/Card/Common/Event';
 import Tags from '../../../components/Tags/Common/Tags';
@@ -838,6 +838,17 @@ function AddEvent() {
                           label={t('dashboard.events.addEditEvent.dates.endTime')}
                           initialValue={eventData?.endDateTime ? moment(eventData?.endDateTime) : undefined}>
                           <TimePickerStyled />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col flex={'423px'}>
+                        <Form.Item
+                          name="eventFrequency"
+                          label={t('dashboard.events.addEditEvent.dates.frequency')}
+                          // initialValue={eventData?.eventStatus ?? eventStatus.EventScheduled}
+                        >
+                          <Select options={dateFrequencyOptions} />
                         </Form.Item>
                       </Col>
                     </Row>

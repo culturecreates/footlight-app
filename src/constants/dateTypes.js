@@ -26,3 +26,22 @@ export const dateTypeOptions = [
     tooltip: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.multipleDatesTooltip')}</Translation>,
   },
 ];
+
+export const dateFrequencyOptions = [
+  {
+    value: 'Daily',
+    label: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.daily')}</Translation>,
+  },
+  {
+    value: 'Weekly',
+    label: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.weekly')}</Translation>,
+  },
+  {
+    value: 'Monthly',
+    label: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.monthly')}</Translation>,
+  },
+  {
+    value: 'Custom',
+    label: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.custom')}</Translation>,
+  },
+];

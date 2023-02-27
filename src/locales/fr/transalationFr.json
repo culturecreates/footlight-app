@@ -116,7 +116,12 @@
           "dateRangeTooltip": "À utiliser lorsque votre événement s'étend sur plusieurs dates, comme une exposition d'art.",
           "eventCancelled": "Annulé",
           "eventPostponed": "Reporté",
-          "eventScheduled": "Programmé"
+          "eventScheduled": "Programmé",
+          "frequency": "Fréquence",
+          "daily": "Tous les jours",
+          "weekly": "Toutes les semaines",
+          "monthly": "Tous les mois",
+          "custom": "Personnalisé"
         },
         "location": {
           "title": "Endroit",

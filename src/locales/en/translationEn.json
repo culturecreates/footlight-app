@@ -117,7 +117,12 @@
           "dateRangeTooltip": "Use when your event spans multiple dates such as an art exhibition.",
           "eventCancelled": "Cancelled",
           "eventPostponed": "Postponed",
-          "eventScheduled": "Scheduled"
+          "eventScheduled": "Scheduled",
+          "frequency": "Frequency",
+          "daily": "Daily",
+          "weekly": "Weekly",
+          "monthly": "Monthly",
+          "custom": "Custom"
         },
         "location": {
           "title": "Location",
