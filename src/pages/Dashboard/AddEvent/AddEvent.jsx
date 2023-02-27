@@ -1,7 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
-import { Form, Row, Col, Input, Popover } from 'antd';
-import { SyncOutlined, InfoCircleOutlined, CloseCircleOutlined, CalendarOutlined } from '@ant-design/icons';
+import { Form, Row, Col, Input, Popover, message, Button } from 'antd';
+import {
+  SyncOutlined,
+  InfoCircleOutlined,
+  CloseCircleOutlined,
+  CalendarOutlined,
+  ExclamationCircleOutlined,
+} from '@ant-design/icons';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -382,9 +388,7 @@ function AddEvent() {
               },
             });
           } else {
-            //ToDo : Check with Backend whether to pass image object on removal
             if (values?.dragger && values?.length == 0) eventObj['image'] = null;
-
             addUpdateEventApiHandler(eventObj)
               .then(() => resolve())
               .catch((error) => {
@@ -393,9 +397,24 @@ function AddEvent() {
               });
           }
         })
-
         .catch((error) => {
           console.log(error);
+          message.warning({
+            duration: 10,
+            maxCount: 1,
+            key: 'event-save-as-warning',
+            content: (
+              <>
+                {t('dashboard.events.addEditEvent.validations.errorDraft')} &nbsp;
+                <Button
+                  type="text"
+                  icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                  onClick={() => message.destroy('event-save-as-warning')}
+                />
+              </>
+            ),
+            icon: <ExclamationCircleOutlined />,
+          });
         });
     });
 
@@ -434,6 +453,29 @@ function AddEvent() {
       })
       .catch((error) => {
         console.log(error);
+        const calendar = user?.roles.filter((calendar) => {
+          return calendar.calendarId === calendarId;
+        });
+
+        message.warning({
+          duration: 10,
+          maxCount: 1,
+          key: 'event-review-publish-warning',
+          content: (
+            <>
+              {calendar[0]?.role === userRoles.GUEST
+                ? t('dashboard.events.addEditEvent.validations.errorReview')
+                : t('dashboard.events.addEditEvent.validations.errorPublishing')}
+              &nbsp;
+              <Button
+                type="text"
+                icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                onClick={() => message.destroy('event-review-publish-warning')}
+              />
+            </>
+          ),
+          icon: <ExclamationCircleOutlined />,
+        });
       });
   };
 
