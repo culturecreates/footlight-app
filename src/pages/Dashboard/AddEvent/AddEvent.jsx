@@ -821,6 +821,30 @@ function AddEvent() {
                             <DateRangePicker style={{ width: '423px' }} />
                           </Form.Item>
                         )}
+                        {dateType === dateTypes.MULTIPLE && (
+                          <>
+                            <Form.Item
+                              // name="dateRangePicker"
+                              label={t('dashboard.events.addEditEvent.dates.multipleDates')}
+                              initialValue={
+                                dateTimeTypeHandler(
+                                  eventData?.startDate,
+                                  eventData?.startDateTime,
+                                  eventData?.endDate,
+                                  eventData?.endDateTime,
+                                ) === dateTypes.RANGE && [
+                                  moment(eventData?.startDate ?? eventData?.startDateTime),
+                                  moment(eventData?.endDate ?? eventData?.endDateTime),
+                                ]
+                              }
+                              rules={[
+                                { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
+                              ]}>
+                              <DateRangePicker style={{ width: '423px' }} />
+                              {console.log(moment.localeData('fr').weekdaysShort())}
+                            </Form.Item>
+                          </>
+                        )}
                       </Col>
                     </Row>
                     <Row justify="space-between">
@@ -849,6 +873,23 @@ function AddEvent() {
                           // initialValue={eventData?.eventStatus ?? eventStatus.EventScheduled}
                         >
                           <Select options={dateFrequencyOptions} />
+                        </Form.Item>
+                        <Form.Item name="eventFrequency" label={t('dashboard.events.addEditEvent.dates.days')}>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            {moment
+                              .localeData('fr')
+                              .weekdaysShort()
+                              ?.map((day, index) => (
+                                <Button
+                                  key={index}
+                                  className="recurring-day-buttons"
+                                  onClick={(e) => console.log(e)}
+                                  // style={{ borderColor: '#607EFC' }}
+                                >
+                                  {day}
+                                </Button>
+                              ))}
+                          </div>
                         </Form.Item>
                       </Col>
                     </Row>
@@ -883,7 +924,7 @@ function AddEvent() {
                           <DateAction
                             iconrender={<CalendarOutlined />}
                             label={t('dashboard.events.addEditEvent.dates.multipleDates')}
-                            disabled={true}
+                            onClick={() => setDateType(dateTypes.MULTIPLE)}
                           />
                         </div>
                       </Form.Item>

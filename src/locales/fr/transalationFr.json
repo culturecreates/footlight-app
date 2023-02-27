@@ -121,7 +121,8 @@
           "daily": "Tous les jours",
           "weekly": "Toutes les semaines",
           "monthly": "Tous les mois",
-          "custom": "Personnalisé"
+          "custom": "Personnalisé",
+          "days": "Jours"
         },
         "location": {
           "title": "Endroit",

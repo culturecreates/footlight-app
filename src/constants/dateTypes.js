@@ -21,7 +21,7 @@ export const dateTypeOptions = [
   },
   {
     type: dateTypes.MULTIPLE,
-    disabled: true,
+    disabled: false,
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.changeToMultipleDate')}</Translation>,
     tooltip: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.multipleDatesTooltip')}</Translation>,
   },

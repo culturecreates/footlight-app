@@ -122,7 +122,8 @@
           "daily": "Daily",
           "weekly": "Weekly",
           "monthly": "Monthly",
-          "custom": "Custom"
+          "custom": "Custom",
+          "days": "Days"
         },
         "location": {
           "title": "Location",
