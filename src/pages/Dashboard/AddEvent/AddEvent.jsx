@@ -1,7 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
-import { Form, Row, Col, Input, Popover, notification } from 'antd';
-import { SyncOutlined, InfoCircleOutlined, CloseCircleOutlined, CalendarOutlined } from '@ant-design/icons';
+import { Form, Row, Col, Input, Popover, message, Button } from 'antd';
+import {
+  SyncOutlined,
+  InfoCircleOutlined,
+  CloseCircleOutlined,
+  CalendarOutlined,
+  ExclamationCircleOutlined,
+} from '@ant-design/icons';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -386,9 +392,21 @@ function AddEvent() {
         })
         .catch((error) => {
           console.log(error);
-          notification.warning({
-            description: t('dashboard.events.addEditEvent.validations.errorDraft'),
-            placement: 'top',
+          message.warning({
+            duration: 10,
+            maxCount: 1,
+            key: 'event-save-as-warning',
+            content: (
+              <>
+                {t('dashboard.events.addEditEvent.validations.errorDraft')} &nbsp;
+                <Button
+                  type="text"
+                  icon={<CloseCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.85)' }} />}
+                  onClick={() => message.destroy('event-save-as-warning')}
+                />
+              </>
+            ),
+            icon: <ExclamationCircleOutlined />,
           });
         });
     });
@@ -430,12 +448,25 @@ function AddEvent() {
         const calendar = user?.roles.filter((calendar) => {
           return calendar.calendarId === calendarId;
         });
-        notification.warning({
-          description:
-            calendar[0]?.role === userRoles.GUEST
-              ? t('dashboard.events.addEditEvent.validations.errorReview')
-              : t('dashboard.events.addEditEvent.validations.errorPublishing'),
-          placement: 'top',
+
+        message.warning({
+          duration: 100,
+          maxCount: 1,
+          key: 'event-review-publish-warning',
+          content: (
+            <>
+              {calendar[0]?.role === userRoles.GUEST
+                ? t('dashboard.events.addEditEvent.validations.errorReview')
+                : t('dashboard.events.addEditEvent.validations.errorPublishing')}
+              &nbsp;
+              <Button
+                type="text"
+                icon={<CloseCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.85)' }} />}
+                onClick={() => message.destroy('event-review-publish-warning')}
+              />
+            </>
+          ),
+          icon: <ExclamationCircleOutlined />,
         });
       });
   };
