@@ -401,7 +401,7 @@ function AddEvent() {
                 {t('dashboard.events.addEditEvent.validations.errorDraft')} &nbsp;
                 <Button
                   type="text"
-                  icon={<CloseCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.85)' }} />}
+                  icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
                   onClick={() => message.destroy('event-save-as-warning')}
                 />
               </>
@@ -450,7 +450,7 @@ function AddEvent() {
         });
 
         message.warning({
-          duration: 100,
+          duration: 10,
           maxCount: 1,
           key: 'event-review-publish-warning',
           content: (
@@ -461,7 +461,7 @@ function AddEvent() {
               &nbsp;
               <Button
                 type="text"
-                icon={<CloseCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.85)' }} />}
+                icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
                 onClick={() => message.destroy('event-review-publish-warning')}
               />
             </>
