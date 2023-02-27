@@ -163,7 +163,7 @@ function AddEvent() {
     return promise;
   };
   const saveAsDraftHandler = (event) => {
-    event.preventDefault();
+    event?.preventDefault();
     var promise = new Promise(function (resolve, reject) {
       form
         .validateFields([
@@ -422,7 +422,7 @@ function AddEvent() {
   };
 
   const reviewPublishHandler = (event) => {
-    event.preventDefault();
+    event?.preventDefault();
     form
       .validateFields([
         'french',
@@ -441,7 +441,7 @@ function AddEvent() {
         'ticketLink',
       ])
       .then(() => {
-        saveAsDraftHandler()
+        saveAsDraftHandler(event)
           .then(() => {
             updateEventState({ id: eventId, calendarId })
               .unwrap()
@@ -495,12 +495,15 @@ function AddEvent() {
       return (
         <>
           <Form.Item>
-            <Outlined label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')} onClick={saveAsDraftHandler} />
+            <Outlined
+              label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
+              onClick={(e) => saveAsDraftHandler(e)}
+            />
           </Form.Item>
           <Form.Item>
             <PrimaryButton
               label={t('dashboard.events.addEditEvent.saveOptions.publish')}
-              onClick={reviewPublishHandler}
+              onClick={(e) => reviewPublishHandler(e)}
             />
           </Form.Item>
         </>
@@ -509,13 +512,16 @@ function AddEvent() {
       return (
         <>
           <Form.Item>
-            <Outlined label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')} onClick={saveAsDraftHandler} />
+            <Outlined
+              label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
+              onClick={(e) => saveAsDraftHandler(e)}
+            />
           </Form.Item>
 
           <Form.Item>
             <PrimaryButton
               label={t('dashboard.events.addEditEvent.saveOptions.sendToReview')}
-              onClick={reviewPublishHandler}
+              onClick={(e) => reviewPublishHandler(e)}
             />
           </Form.Item>
         </>
@@ -531,7 +537,10 @@ function AddEvent() {
             </PublishState>
           </Form.Item>
           <Form.Item>
-            <PrimaryButton label={t('dashboard.events.addEditEvent.saveOptions.save')} onClick={saveAsDraftHandler} />
+            <PrimaryButton
+              label={t('dashboard.events.addEditEvent.saveOptions.save')}
+              onClick={(e) => saveAsDraftHandler(e)}
+            />
           </Form.Item>
         </>
       );
