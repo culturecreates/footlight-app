@@ -1,0 +1,14 @@
+.searchable-dropdown-wrapper {
+  filter: drop-shadow(0px 8px 32px rgba(0, 0, 0, 0.2));
+  background: #ffffff;
+  padding: 8px;
+  max-height: 300px;
+  overflow-y: scroll;
+}
+
+.search-overlay-menu-dropdown {
+  filter: drop-shadow(0px 8px 32px rgba(0, 0, 0, 0.2));
+  padding: 8px;
+  max-height: 300px;
+  overflow-y: scroll;
+}

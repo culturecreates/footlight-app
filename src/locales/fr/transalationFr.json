@@ -72,7 +72,7 @@
       "addEvent": "Événement",
       "filter": {
         "users": {
-          "label": "Users",
+          "label": "Utilisateurs",
           "placeholderSearch": "Rechercher un nom",
           "myEvents": "Mes événements"
         },
@@ -80,6 +80,12 @@
           "label": "Publication"
         },
         "clear": "Clear"
+      },
+      "readOnlyEvent": {
+        "notification": {
+          "underReview": "Cet événement est en train d'être valider.",
+          "underPublished": "Cet événement a été publié. Si vous voulez faire des changements, veuillez contacter l'administrateur du calendrier."
+        }
       },
       "addEditEvent": {
         "heading": { "newEvent": "Ajouter un événement", "editEvent": "Modifier un événement" },
@@ -223,7 +229,10 @@
             "emptyPaidTicket": "Cet événement nécessite un lien d'achat de billet ou un prix de billet.",
             "invalidData": "Entrez un nombre."
           },
-          "url": "Entrez une URL valide."
+          "url": "Entrez une URL valide.",
+          "errorPublishing": "Cet événement a besoin de plus d'informations avant d'être publié.",
+          "errorReview": "Cet événement a besoin de plus d'informations avant d'être envoyé pour validation.",
+          "errorDraft": "Cet événement a besoin de plus d'informations avant d'être enregistré."
         }
       },
 
@@ -255,6 +264,7 @@
   "common": {
     "tabEnglish": "Anglais",
     "tabFrench": "Français",
+    "noneFound": "Non trouvé",
     "server": {
       "status": {
         "503": {

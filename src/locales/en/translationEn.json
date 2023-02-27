@@ -81,6 +81,12 @@
         },
         "clear": "Clear"
       },
+      "readOnlyEvent": {
+        "notification": {
+          "underReview": "This event is under review.",
+          "underPublished": "This event has been published. If you would like to make a change, please contact the calendar admin."
+        }
+      },
       "addEditEvent": {
         "heading": { "newEvent": "New Event", "editEvent": "Edit Event" },
         "language": {
@@ -224,7 +230,10 @@
             "emptyPaidTicket": "This event requires a buy ticket link or a ticket price.",
             "invalidData": "Enter a number."
           },
-          "url": "Enter a valid url."
+          "url": "Enter a valid url.",
+          "errorPublishing": "This event needs more information before it can be published.",
+          "errorReview": "This event needs more information before it can be sent for review.",
+          "errorDraft": "This event needs more information before it can be saved."
         }
       },
       "publishOptions": {
@@ -255,6 +264,7 @@
   "common": {
     "tabEnglish": "English",
     "tabFrench": "French",
+    "noneFound": "None Found",
     "server": {
       "status": {
         "503": {

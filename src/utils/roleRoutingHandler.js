@@ -9,8 +9,8 @@ export const routinghandler = (user, calendarId, creatorId, publishState = '') =
   switch (calendar[0]?.role) {
     case userRoles.GUEST:
       if (user?.id === creatorId) {
-        if (eventPublishState.PUBLISHED === publishState) return false;
-        else return true;
+        if (eventPublishState.DRAFT === publishState) return true;
+        else return false;
       } else return false;
     case userRoles.CONTRIBUTOR:
       if (user?.id === creatorId) return true;

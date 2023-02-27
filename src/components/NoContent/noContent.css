@@ -1,0 +1,22 @@
+.no-content-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 96px;
+  flex-direction: column;
+  gap: 8px;
+}
+.no-content-wrapper .no-content-icon {
+  height: 32px;
+  width: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-color: #eff2ff;
+}
+
+.no-content-wrapper .no-content-text {
+  font-size: 16px;
+  color: #646d7b;
+}

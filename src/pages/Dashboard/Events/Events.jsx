@@ -34,17 +34,23 @@ function Events() {
   const [pageNumber, setPageNumber] = useState(searchParams.get('page') ?? 1);
   const [eventSearchQuery, setEventSearchQuery] = useState(searchParams.get('query') ?? '');
   const [filter, setFilter] = useState({
-    users: [],
     publication: [],
   });
+  const [userFilter, setUserFilter] = useState([]);
+
+  const [selectedUsers, setSelectedUsers] = useState({});
 
   let userFilterData = allUsersData?.data?.active?.slice()?.sort(function (x, y) {
     return x?.id == user?.id ? -1 : y?.id == user?.id ? 1 : 0;
   });
 
+  userFilterData = userFilterData
+    ?.slice(1)
+    ?.sort((a, b) => a?.firstName?.toLowerCase()?.localeCompare(b?.firstName?.toLowerCase()));
+  userFilterData = [user].concat(userFilterData);
   useEffect(() => {
     let query = new URLSearchParams();
-    filter?.users?.forEach((user) => query.append('user', user));
+    userFilter?.forEach((user) => query.append('user', user));
     filter?.publication?.forEach((state) => query.append('publish-state', state));
     getEvents({
       pageNumber,
@@ -58,7 +64,7 @@ function Events() {
     else {
       setSearchParams(createSearchParams({ page: pageNumber, query: eventSearchQuery }));
     }
-  }, [calendarId, pageNumber, eventSearchQuery, filter]);
+  }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter]);
 
   useEffect(() => {
     if (calendarId) setPageNumber(1);
@@ -74,18 +80,24 @@ function Events() {
   const onChangeHandler = (event) => {
     if (event.target.value === '') setEventSearchQuery('');
   };
+  const onCheckboxChange = (e) => {
+    let currentUsersFilter = selectedUsers ?? {};
+    Object.assign(currentUsersFilter, { [e?.target?.value]: e?.target?.checked });
+    setSelectedUsers(currentUsersFilter);
+    let filteredUsers = Object.keys(currentUsersFilter).filter(function (key) {
+      return currentUsersFilter[key];
+    });
+    setUserFilter(filteredUsers);
+    setPageNumber(1);
+  };
 
   const onFilterChange = (values, filterType) => {
-    if (filterType === filterTypes.USERS)
-      setFilter({
-        ...filter,
-        users: values,
-      });
-    else if (filterType === filterTypes.PUBLICATION)
+    if (filterType === filterTypes.PUBLICATION)
       setFilter({
         ...filter,
         publication: values,
       });
+    setPageNumber(1);
   };
   return (
     !isLoading &&
@@ -119,39 +131,6 @@ function Events() {
               <Row gutter={20}>
                 <Col>
                   <SearchableCheckbox
-                    allowSearch={true}
-                    overlayStyle={{ height: '304px' }}
-                    onFilterChange={(values) => onFilterChange(values, filterTypes.USERS)}
-                    data={userFilterData?.map((userDetail) => {
-                      return {
-                        key: userDetail?.id,
-                        label: (
-                          <>
-                            <Checkbox value={userDetail.id} key={userDetail.id} style={{ marginLeft: '8px' }}>
-                              {user?.id == userDetail?.id
-                                ? t('dashboard.events.filter.users.myEvents')
-                                : userDetail?.firstName?.charAt(0) + userDetail?.lastName}
-                            </Checkbox>
-                            {user?.id == userDetail?.id && <Divider style={{ margin: 8 }} />}
-                          </>
-                        ),
-                        filtervalue: userDetail?.firstName + userDetail?.lastName,
-                      };
-                    })}
-                    value={filter?.users}>
-                    <Button
-                      size="large"
-                      className="filter-buttons"
-                      style={{ borderColor: filter?.users?.length > 0 && '#607EFC' }}>
-                      {t('dashboard.events.filter.users.label')}&nbsp;
-                      {filter?.users?.length > 0 && (
-                        <Badge count={filter?.users?.length} showZero={false} color="#1B3DE6" />
-                      )}
-                    </Button>
-                  </SearchableCheckbox>
-                </Col>
-                <Col>
-                  <SearchableCheckbox
                     onFilterChange={(values) => onFilterChange(values, filterTypes.PUBLICATION)}
                     data={eventPublishStateOptions?.map((publication) => {
                       return {
@@ -169,24 +148,71 @@ function Events() {
                       size="large"
                       className="filter-buttons"
                       style={{ borderColor: filter?.publication?.length > 0 && '#607EFC' }}>
-                      {t('dashboard.events.filter.publication.label')}&nbsp;
+                      {t('dashboard.events.filter.publication.label')}
                       {filter?.publication?.length > 0 && (
-                        <Badge count={filter?.publication?.length} showZero={false} color="#1B3DE6" />
+                        <>
+                          &nbsp;
+                          <Badge count={filter?.publication?.length} showZero={false} color="#1B3DE6" />
+                        </>
                       )}
                     </Button>
                   </SearchableCheckbox>
                 </Col>
                 <Col>
-                  {(filter?.users?.length > 0 || filter?.publication?.length > 0) && (
+                  <SearchableCheckbox
+                    allowSearch={true}
+                    overlayStyle={{ height: '304px' }}
+                    data={userFilterData?.map((userDetail) => {
+                      return {
+                        key: userDetail?.id,
+                        label: (
+                          <>
+                            <Checkbox
+                              value={userDetail?.id}
+                              key={userDetail?.id}
+                              style={{ marginLeft: '8px' }}
+                              onChange={(e) => onCheckboxChange(e)}>
+                              {user?.id == userDetail?.id
+                                ? t('dashboard.events.filter.users.myEvents')
+                                : userDetail?.firstName?.charAt(0)?.toLowerCase() + userDetail?.lastName?.toLowerCase()}
+                            </Checkbox>
+                            {user?.id == userDetail?.id && <Divider style={{ margin: 8 }} />}
+                          </>
+                        ),
+                        filtervalue: userDetail?.firstName?.charAt(0)?.toLowerCase() + userDetail?.lastName,
+                      };
+                    })}
+                    value={userFilter}>
+                    <Button
+                      size="large"
+                      className="filter-buttons"
+                      style={{ borderColor: userFilter?.length > 0 && '#607EFC' }}>
+                      {t('dashboard.events.filter.users.label')}
+                      {userFilter?.length > 0 && (
+                        <>
+                          &nbsp; <Badge count={userFilter?.length} showZero={false} color="#1B3DE6" />
+                        </>
+                      )}
+                    </Button>
+                  </SearchableCheckbox>
+                </Col>
+
+                <Col>
+                  {(userFilter.length > 0 || filter?.publication?.length > 0) && (
                     <Button
                       size="large"
                       className="filter-buttons"
                       style={{ color: '#1B3DE6' }}
                       onClick={() => {
                         setFilter({
-                          users: [],
                           publication: [],
                         });
+                        setUserFilter([]);
+                        let usersToClear = selectedUsers;
+                        Object.keys(usersToClear)?.forEach(function (key) {
+                          usersToClear[key] = false;
+                        });
+                        setSelectedUsers(Object.assign({}, usersToClear));
                         setPageNumber(1);
                       }}>
                       {t('dashboard.events.filter.clear')}&nbsp;

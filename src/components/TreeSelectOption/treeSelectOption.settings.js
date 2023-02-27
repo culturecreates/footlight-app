@@ -10,28 +10,30 @@ export const treeTaxonomyOptions = (data, user, mappedToField) => {
     return field?.concept;
   });
 
-  let options = concepts[0]?.map((concept) => {
-    return {
-      title: bilingual({
-        en: concept?.name?.en,
-        fr: concept?.name?.fr,
-        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-      }),
-      value: concept?.id,
-      ...(concept?.children && {
-        children: concept?.children?.map((child) => {
-          return {
-            title: bilingual({
-              en: child?.name?.en,
-              fr: child?.name?.fr,
-              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-            }),
-            value: child?.id,
-          };
+  let options =
+    concepts &&
+    concepts[0]?.map((concept) => {
+      return {
+        title: bilingual({
+          en: concept?.name?.en,
+          fr: concept?.name?.fr,
+          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
         }),
-      }),
-    };
-  });
+        value: concept?.id,
+        ...(concept?.children && {
+          children: concept?.children?.map((child) => {
+            return {
+              title: bilingual({
+                en: child?.name?.en,
+                fr: child?.name?.fr,
+                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+              }),
+              value: child?.id,
+            };
+          }),
+        }),
+      };
+    });
   return options;
 };
 
@@ -40,6 +42,7 @@ export const treeEntitiesOption = (data, user) => {
     return {
       label: (
         <SelectionItem
+          itemWidth="100%"
           icon={
             entity?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
               <Icon component={Organizations} style={{ color: '#607EFC' }} />
@@ -47,30 +50,44 @@ export const treeEntitiesOption = (data, user) => {
               entity?.type?.toUpperCase() == taxonomyClass.PERSON && <UserOutlined style={{ color: '#607EFC' }} />
             )
           }
-          name={bilingual({
-            en: entity?.name?.en,
-            fr: entity?.name?.fr,
-            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-          })}
-          description={bilingual({
-            en: entity?.disambiguatingDescription?.en,
-            fr: entity?.disambiguatingDescription?.fr,
-            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-          })}
+          name={
+            (entity?.name || entity?.name?.en || entity?.name?.fr) &&
+            bilingual({
+              en: entity?.name?.en,
+              fr: entity?.name?.fr,
+              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+            })
+          }
+          description={
+            (entity?.disambiguatingDescription ||
+              entity?.disambiguatingDescription?.en ||
+              entity?.disambiguatingDescription?.en) &&
+            bilingual({
+              en: entity?.disambiguatingDescription?.en,
+              fr: entity?.disambiguatingDescription?.fr,
+              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+            })
+          }
         />
       ),
       value: entity?.id,
       type: entity?.type,
-      name: bilingual({
-        en: entity?.name?.en,
-        fr: entity?.name?.fr,
-        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-      }),
-      description: bilingual({
-        en: entity?.disambiguatingDescription?.en,
-        fr: entity?.disambiguatingDescription?.fr,
-        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-      }),
+      name:
+        (entity?.name || entity?.name?.en || entity?.name?.fr) &&
+        bilingual({
+          en: entity?.name?.en,
+          fr: entity?.name?.fr,
+          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+        }),
+      description:
+        (entity?.disambiguatingDescription ||
+          entity?.disambiguatingDescription?.en ||
+          entity?.disambiguatingDescription?.en) &&
+        bilingual({
+          en: entity?.disambiguatingDescription?.en,
+          fr: entity?.disambiguatingDescription?.fr,
+          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+        }),
     };
   });
   return options;

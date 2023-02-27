@@ -26,6 +26,7 @@ export const placesOptions = (data, user) => {
     return {
       label: (
         <SelectionItem
+          itemWidth="100%"
           icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
           name={bilingual({
             en: place?.name?.en,
@@ -40,6 +41,17 @@ export const placesOptions = (data, user) => {
         />
       ),
       value: place?.id,
+      name: bilingual({
+        en: place?.name?.en,
+        fr: place?.name?.fr,
+        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+      }),
+      description: bilingual({
+        en: place?.disambiguatingDescription?.en,
+        fr: place?.disambiguatingDescription?.fr,
+        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+      }),
+      key: place?.id,
     };
   });
   return options;
