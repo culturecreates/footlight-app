@@ -6,6 +6,7 @@ import {
   InfoCircleOutlined,
   CloseCircleOutlined,
   CalendarOutlined,
+  ControlOutlined,
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import moment from 'moment';
@@ -899,6 +900,11 @@ function AddEvent() {
                                 </Button>
                               ))}
                           </div>
+                        </Form.Item>
+                        <Form.Item>
+                          <Button type="text" icon={<ControlOutlined />}>
+                            Customize
+                          </Button>
                         </Form.Item>
                       </Col>
                     </Row>
