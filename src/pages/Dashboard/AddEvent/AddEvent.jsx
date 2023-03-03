@@ -590,7 +590,7 @@ function AddEvent() {
 
   useEffect(() => {
     if (calendarId && eventData) {
-      if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState)) {
+      if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState) || duplicateId) {
         setDateType(
           dateTimeTypeHandler(
             eventData?.startDate,
