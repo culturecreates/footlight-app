@@ -679,7 +679,9 @@ function AddEvent() {
                 <BilingualInput fieldData={eventData?.name}>
                   <Form.Item
                     name="french"
-                    initialValue={eventData?.name?.fr}
+                    initialValue={
+                      duplicateId ? eventData?.name?.fr && 'Copie de ' + eventData?.name?.fr : eventData?.name?.fr
+                    }
                     dependencies={['english']}
                     rules={[
                       ({ getFieldValue }) => ({
@@ -700,7 +702,9 @@ function AddEvent() {
                   </Form.Item>
                   <Form.Item
                     name="english"
-                    initialValue={eventData?.name?.en}
+                    initialValue={
+                      duplicateId ? eventData?.name?.en && 'Copy of ' + eventData?.name?.en : eventData?.name?.en
+                    }
                     dependencies={['french']}
                     rules={[
                       ({ getFieldValue }) => ({
