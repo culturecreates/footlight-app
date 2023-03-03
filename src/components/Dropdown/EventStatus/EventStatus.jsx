@@ -55,6 +55,11 @@ function EventStatusOptions({ children, publishState, creator, eventId }) {
     <ProtectedComponents creator={creator}>
       <Dropdown
         className="calendar-dropdown-wrapper"
+        overlayClassName="event-dropdown-popup"
+        overlayStyle={{
+          minWidth: '150px',
+        }}
+        getPopupContainer={(trigger) => trigger.parentNode}
         menu={{
           items,
           onClick,

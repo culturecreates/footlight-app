@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import './list.css';
-import { List, Grid } from 'antd';
+import { List, Grid, Dropdown } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
 import EventStatus from '../../Tags/Events';
 import EventNumber from '../../Tags/EventNumber';
@@ -17,6 +17,7 @@ import Username from '../../Username/index';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 import { dateTypes } from '../../../constants/dateTypes';
+import { userRoles } from '../../../constants/userRoles';
 
 const { useBreakpoint } = Grid;
 
@@ -30,6 +31,10 @@ function Lists(props) {
   const lang = i18n.language;
   const { user } = useSelector(getUserDetails);
   const totalCount = data?.totalCount;
+
+  const calendar = user?.roles.filter((calendar) => {
+    return calendar.calendarId === calendarId;
+  });
 
   const listItemHandler = (id, creatorId, publishState) => {
     if (routinghandler(user, calendarId, creatorId, publishState))
@@ -64,6 +69,31 @@ function Lists(props) {
                 <MoreOutlined className="event-list-more-icon" key={index} />
               </span>
             </EventStatusOptions>,
+
+            calendar[0]?.role === userRoles.GUEST && (
+              <Dropdown
+                className="calendar-dropdown-wrapper"
+                overlayStyle={{
+                  minWidth: '150px',
+                }}
+                getPopupContainer={(trigger) => trigger.parentNode}
+                menu={{
+                  items: [
+                    {
+                      key: '0',
+                      label: t('dashboard.events.publishOptions.duplicateEvent'),
+                    },
+                  ],
+                  onClick: ({ key }) => {
+                    if (key === '0') navigate(`${location.pathname}${PathName.AddEvent}?duplicateId=${eventItem?.id}`);
+                  },
+                }}
+                trigger={['click']}>
+                <span>
+                  <MoreOutlined className="event-list-more-icon" key={index} />
+                </span>
+              </Dropdown>
+            ),
           ]}
           extra={[
             <span key={index} className="event-list-options-responsive">
