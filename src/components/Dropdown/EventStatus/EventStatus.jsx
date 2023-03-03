@@ -7,11 +7,13 @@ import './eventStatus.css';
 import ProtectedComponents from '../../../layout/ProtectedComponents';
 import { eventPublishState } from '../../../constants/eventPublishState';
 import { useDeleteEventMutation, useUpdateEventStateMutation } from '../../../services/events';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { PathName } from '../../../constants/pathName';
 const { confirm } = Modal;
 function EventStatusOptions({ children, publishState, creator, eventId }) {
   const { t } = useTranslation();
   const { calendarId } = useParams();
+  const navigate = useNavigate();
   const [updateEventState] = useUpdateEventStateMutation();
   const [deleteEvent] = useDeleteEventMutation();
   const items = eventPublishOptions.map((item) => {
@@ -47,6 +49,7 @@ function EventStatusOptions({ children, publishState, creator, eventId }) {
   const onClick = ({ key }) => {
     if (key == '2') showDeleteConfirm();
     else if (key === '0' || key === '1') updateEventState({ id: eventId, calendarId: calendarId });
+    else if (key === '3') navigate(`${location.pathname}${PathName.AddEvent}?duplicateId=${eventId}`);
   };
   return (
     <ProtectedComponents creator={creator}>
