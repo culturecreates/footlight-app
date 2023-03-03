@@ -20,16 +20,24 @@ function EventStatusOptions({ children, publishState, creator, eventId }) {
     if (publishState == eventPublishState.PUBLISHED) {
       if (item.key != '0')
         return {
-          key: item.key,
-          label: item.label,
+          key: item?.key,
+          label: item?.label,
+          type: item?.type,
         };
     } else {
       if (publishState == eventPublishState.DRAFT || publishState === eventPublishState.PENDING_REVIEW)
         if (item.key != '1')
           return {
-            key: item.key,
-            label: item.label,
+            key: item?.key,
+            label: item?.label,
+            type: item?.type,
           };
+      if (item?.type === 'divider')
+        return {
+          key: item?.key,
+          label: item?.label,
+          type: item?.type,
+        };
     }
   });
   const showDeleteConfirm = () => {

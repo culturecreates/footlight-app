@@ -9,7 +9,9 @@ export const eventPublishOptions = [
     label: <Translation>{(t) => t('dashboard.events.publishOptions.unpublishEvent')}</Translation>,
     key: '1',
   },
-
+  {
+    type: 'divider',
+  },
   {
     label: <Translation>{(t) => t('dashboard.events.publishOptions.duplicateEvent')}</Translation>,
     key: '3',
