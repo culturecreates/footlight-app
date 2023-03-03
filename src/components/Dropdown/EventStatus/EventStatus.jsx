@@ -19,14 +19,14 @@ function EventStatusOptions({ children, publishState, creator, eventId }) {
       if (item.key != '0')
         return {
           key: item.key,
-          label: t(item.label),
+          label: item.label,
         };
     } else {
       if (publishState == eventPublishState.DRAFT || publishState === eventPublishState.PENDING_REVIEW)
         if (item.key != '1')
           return {
             key: item.key,
-            label: t(item.label),
+            label: item.label,
           };
     }
   });

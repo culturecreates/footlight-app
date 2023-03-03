@@ -1,15 +1,21 @@
+import { Translation } from 'react-i18next';
+
 export const eventPublishOptions = [
   {
-    label: 'dashboard.events.publishOptions.publishEvent',
+    label: <Translation>{(t) => t('dashboard.events.publishOptions.publishEvent')}</Translation>,
     key: '0',
   },
   {
-    label: 'dashboard.events.publishOptions.unpublishEvent',
+    label: <Translation>{(t) => t('dashboard.events.publishOptions.unpublishEvent')}</Translation>,
     key: '1',
   },
 
   {
-    label: 'dashboard.events.publishOptions.deleteEvent',
+    label: <Translation>{(t) => t('dashboard.events.publishOptions.duplicateEvent')}</Translation>,
+    key: '3',
+  },
+  {
+    label: <Translation>{(t) => t('dashboard.events.publishOptions.deleteEvent')}</Translation>,
     key: '2',
   },
 ];
