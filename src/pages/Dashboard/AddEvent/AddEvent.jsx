@@ -10,7 +10,7 @@ import {
 } from '@ant-design/icons';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useGetEventQuery, useUpdateEventStateMutation } from '../../../services/events';
 import { PathName } from '../../../constants/pathName';
 import Outlined from '../../../components/Button/Outlined';
@@ -67,13 +67,18 @@ function AddEvent() {
   const [addEvent] = useAddEventMutation();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId, eventId } = useParams();
+  let [searchParams] = useSearchParams();
+  let duplicateId = searchParams.get('duplicateId');
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
   const {
     currentData: eventData,
     isError,
     isLoading,
-  } = useGetEventQuery({ eventId, calendarId, sessionId: timestampRef }, { skip: eventId ? false : true });
+  } = useGetEventQuery(
+    { eventId: eventId ?? duplicateId, calendarId, sessionId: timestampRef },
+    { skip: eventId || duplicateId ? false : true },
+  );
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
