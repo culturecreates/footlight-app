@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
-import { Form, Row, Col, Input, Popover, message, Button, Modal, Calendar, Space } from 'antd';
+import { Form, Row, Col, Input, Popover, message, Button, Modal, Space } from 'antd';
 import {
   SyncOutlined,
   InfoCircleOutlined,
@@ -11,6 +11,7 @@ import {
   MinusCircleOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
+import Calendar from 'rc-year-calendar';
 import moment from 'moment';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -915,7 +916,7 @@ function AddEvent() {
                             onCancel={() => setIsModalOpen(false)}>
                             <div>
                               <div>
-                                <Calendar fullscreen={false} />
+                                <Calendar />
                               </div>
                               <div>
                                 <Form.List name="users">
