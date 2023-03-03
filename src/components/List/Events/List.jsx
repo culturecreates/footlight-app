@@ -17,6 +17,7 @@ import Username from '../../Username/index';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 import { dateTypes } from '../../../constants/dateTypes';
+import { eventStatus } from '../../../constants/eventStatus';
 
 const { useBreakpoint } = Grid;
 
@@ -106,6 +107,10 @@ function Lists(props) {
                   <EventNumber label={eventItem?.subEventDetails?.upcomingSubEventCount} />
                 ) : (
                   <></>
+                )}
+                {(eventItem?.eventStatus === eventStatus.EventPostponed ||
+                  eventItem?.eventStatus === eventStatus.EventCancelled) && (
+                  <EventStatus label={eventItem?.eventStatus} />
                 )}
               </div>
             }
