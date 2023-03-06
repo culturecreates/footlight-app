@@ -9,6 +9,7 @@ import {
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import moment from 'moment';
+import i18n from 'i18next';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGetEventQuery, useUpdateEventStateMutation } from '../../../services/events';
@@ -840,6 +841,7 @@ function AddEvent() {
                           initialValue={eventData?.startDateTime ? moment(eventData?.startDateTime) : undefined}>
                           <TimePickerStyled
                             placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                            use12Hours={i18n?.language === 'en' ? true : false}
                           />
                         </Form.Item>
                       </Col>
@@ -850,6 +852,7 @@ function AddEvent() {
                           initialValue={eventData?.endDateTime ? moment(eventData?.endDateTime) : undefined}>
                           <TimePickerStyled
                             placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                            use12Hours={i18n?.language === 'en' ? true : false}
                           />
                         </Form.Item>
                       </Col>
