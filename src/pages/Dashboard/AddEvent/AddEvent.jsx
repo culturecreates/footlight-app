@@ -842,6 +842,7 @@ function AddEvent() {
                           <TimePickerStyled
                             placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                             use12Hours={i18n?.language === 'en' ? true : false}
+                            format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
                           />
                         </Form.Item>
                       </Col>
@@ -853,6 +854,7 @@ function AddEvent() {
                           <TimePickerStyled
                             placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                             use12Hours={i18n?.language === 'en' ? true : false}
+                            format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
                           />
                         </Form.Item>
                       </Col>
