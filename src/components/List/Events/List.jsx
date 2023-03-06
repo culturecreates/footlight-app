@@ -124,18 +124,15 @@ function Lists(props) {
                   })}
                 </span>
                 <span className="event-list-description-place">
-                  {eventItem?.location?.map((place, index) => {
-                    return (
-                      <>
-                        {bilingual({
-                          en: place?.name?.en,
-                          fr: place?.name?.fr,
-                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                        })}
-                        {index >= 0 && index <= eventItem?.location?.length - 2 && <>&nbsp;|&nbsp;</>}
-                      </>
-                    );
-                  })}
+                  {eventItem?.location
+                    ?.map((place) => {
+                      return bilingual({
+                        en: place?.name?.en,
+                        fr: place?.name?.fr,
+                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      });
+                    })
+                    .join(' | ')}
                 </span>
               </div>
             }
