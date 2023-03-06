@@ -107,6 +107,7 @@
           "multipleDates": "Multiple dates",
           "startTime": "Start time",
           "endTime": "End time",
+          "timeFormatPlaceholder": "hh:mm",
           "status": "Status",
           "changeDateType": "Change date type",
           "changeToSingleDate": "Change to single date",

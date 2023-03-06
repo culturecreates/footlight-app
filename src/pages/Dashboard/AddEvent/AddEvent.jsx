@@ -838,7 +838,9 @@ function AddEvent() {
                           name="startTime"
                           label={t('dashboard.events.addEditEvent.dates.startTime')}
                           initialValue={eventData?.startDateTime ? moment(eventData?.startDateTime) : undefined}>
-                          <TimePickerStyled />
+                          <TimePickerStyled
+                            placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                          />
                         </Form.Item>
                       </Col>
                       <Col flex={'203.5px'}>
@@ -846,7 +848,9 @@ function AddEvent() {
                           name="endTime"
                           label={t('dashboard.events.addEditEvent.dates.endTime')}
                           initialValue={eventData?.endDateTime ? moment(eventData?.endDateTime) : undefined}>
-                          <TimePickerStyled />
+                          <TimePickerStyled
+                            placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
