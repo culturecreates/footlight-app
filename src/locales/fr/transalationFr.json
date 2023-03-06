@@ -144,18 +144,18 @@
           },
           "organizer": {
             "title": "Organisateur",
-            "subHeading": "Add an organizer for your event and assign a role.",
+            "subHeading": "Ajoutez un organisateur pour votre événement.",
             "searchPlaceholder": "Recherchez des Organisations ou des Personnes"
           },
           "performer": {
             "title": "Compagnie/groupe/artiste/animateur de l'événement",
-            "subHeading": "Add a main performer for your event and assign a role.",
-            "searchPlaceholder": "Search Organizations and People"
+            "subHeading": "Ajoutez un interprète principal pour votre événement.",
+            "searchPlaceholder": "Recherchez des Organisations ou des Personnes"
           },
           "supporter": {
             "title": "Supporteur/Commanditaire",
-            "subHeading": "Add a supporter for your event and assign a role.",
-            "searchPlaceholder": "Search Organizations and People"
+            "subHeading": "Ajoutez le commanditaire ou l'organisme qui soutient l'événement.",
+            "searchPlaceholder": "Recherchez des Organisations ou des Personnes"
           },
           "eventLink": "Lien de l’événement",
           "videoLink": "Video",
