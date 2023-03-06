@@ -1132,6 +1132,7 @@ function AddEvent() {
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.image.title')}
                   name="dragger-wrap"
+                  required
                   initialValue={eventData?.image && eventData?.image?.original}
                   rules={[
                     ({ getFieldValue }) => ({
