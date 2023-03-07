@@ -190,9 +190,11 @@ function Events() {
                         onClick={onSortOrderChange}
                         icon={
                           filter?.order === 'ASC' ? (
-                            <SortAscendingOutlined style={{ color: '#1B3DE6' }} />
+                            <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
                           ) : (
-                            filter?.order === 'DES' && <SortDescendingOutlined style={{ color: '#1B3DE6' }} />
+                            filter?.order === 'DES' && (
+                              <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
+                            )
                           )
                         }
                         size={'large'}
