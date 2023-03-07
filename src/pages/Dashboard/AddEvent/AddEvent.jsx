@@ -117,8 +117,7 @@ function AddEvent() {
     supporter: false,
   });
   const [showDialog, setShowDialog] = useState(false);
-  let confirm = usePrompt('hai', showDialog);
-  console.log(confirm);
+  usePrompt(t('common.unsavedChanges'), showDialog);
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
 
