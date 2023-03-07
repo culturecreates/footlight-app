@@ -59,6 +59,7 @@ import SelectionItem from '../../../components/List/SelectionItem';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import NoContent from '../../../components/NoContent/NoContent';
+import { usePrompt } from '../../../hooks/usePrompt';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -115,7 +116,9 @@ function AddEvent() {
     performer: false,
     supporter: false,
   });
-
+  const [showDialog, setShowDialog] = useState(false);
+  let confirm = usePrompt('hai', showDialog);
+  console.log(confirm);
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
 
@@ -643,13 +646,17 @@ function AddEvent() {
   useEffect(() => {
     setAllPlacesList(placesOptions(allPlaces?.data, user));
   }, [placesLoading]);
+
+  const changeHandler = () => {
+    setShowDialog(true);
+  };
   return (
     !isLoading &&
     !placesLoading &&
     !taxonomyLoading &&
     !initialEntityLoading && (
       <div>
-        <Form form={form} layout="vertical" name="event">
+        <Form form={form} layout="vertical" name="event" onValuesChange={changeHandler}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
               <Row justify="space-between">
