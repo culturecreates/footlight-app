@@ -37,8 +37,8 @@ function Events() {
   const [eventSearchQuery, setEventSearchQuery] = useState(searchParams.get('query') ?? '');
   const [filter, setFilter] = useState({
     publication: [],
-    sort: sortByOptions[0]?.key,
-    order: 'ASC',
+    sort: searchParams.get('sortBy') ?? sortByOptions[0]?.key,
+    order: searchParams.get('order') ?? 'ASC',
   });
   const [userFilter, setUserFilter] = useState([]);
 
@@ -65,9 +65,12 @@ function Events() {
       filterkeys: decodeURIComponent(query.toString()),
       sessionId: timestampRef,
     });
-    if (!eventSearchQuery || eventSearchQuery === '') setSearchParams(createSearchParams({ page: pageNumber }));
+    if (!eventSearchQuery || eventSearchQuery === '')
+      setSearchParams(createSearchParams({ page: pageNumber, order: filter?.order, sortBy: filter?.sort }));
     else {
-      setSearchParams(createSearchParams({ page: pageNumber, query: eventSearchQuery }));
+      setSearchParams(
+        createSearchParams({ page: pageNumber, query: eventSearchQuery, order: filter?.order, sortBy: filter?.sort }),
+      );
     }
   }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter]);
 
