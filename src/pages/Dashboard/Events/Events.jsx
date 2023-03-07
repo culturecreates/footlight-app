@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './events.css';
-import { Checkbox, Col, Row, Badge, Divider, Button } from 'antd';
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { Checkbox, Col, Row, Badge, Divider, Button, Dropdown, Space } from 'antd';
+import { CloseCircleOutlined, DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import EventList from '../../../components/List/Events';
@@ -15,6 +15,7 @@ import { useGetAllUsersQuery } from '../../../services/users';
 import { filterTypes } from '../../../constants/filterTypes';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
+import { sortByOptions } from '../../../constants/sortByOptions';
 
 function Events() {
   const { t } = useTranslation();
@@ -35,6 +36,8 @@ function Events() {
   const [eventSearchQuery, setEventSearchQuery] = useState(searchParams.get('query') ?? '');
   const [filter, setFilter] = useState({
     publication: [],
+    sort: sortByOptions[0]?.key,
+    order: 'ASC',
   });
   const [userFilter, setUserFilter] = useState([]);
 
@@ -52,6 +55,7 @@ function Events() {
     let query = new URLSearchParams();
     userFilter?.forEach((user) => query.append('user', user));
     filter?.publication?.forEach((state) => query.append('publish-state', state));
+    query.append('order', `${filter?.order}(${filter?.sort})`);
     getEvents({
       pageNumber,
       limit: 10,
@@ -99,6 +103,14 @@ function Events() {
       });
     setPageNumber(1);
   };
+
+  const onSortSelect = ({ selectedKeys }) => {
+    setFilter({
+      ...filter,
+      sort: selectedKeys[0],
+    });
+    setPageNumber(1);
+  };
   return (
     !isLoading &&
     !allUsersLoading && (
@@ -129,6 +141,28 @@ function Events() {
             </Col>
             <Col span={16}>
               <Row gutter={20}>
+                <Col style={{ display: 'flex', alignItems: 'center', fontWeight: '700', fontSize: '16px' }}>
+                  <span>{t('dashboard.events.filter.sort.sortBy')}</span>
+                </Col>
+                <Col>
+                  <Dropdown
+                    menu={{
+                      items: sortByOptions,
+                      selectable: true,
+                      defaultSelectedKeys: [`name`],
+                      onSelect: onSortSelect,
+                    }}
+                    trigger={['click']}>
+                    <Button size="large" className="filter-sort-button">
+                      <Space>
+                        {sortByOptions?.map((sortBy) => {
+                          if (sortBy?.key === filter?.sort) return sortBy?.label;
+                        })}
+                        <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
+                      </Space>
+                    </Button>
+                  </Dropdown>
+                </Col>
                 <Col>
                   <SearchableCheckbox
                     onFilterChange={(values) => onFilterChange(values, filterTypes.PUBLICATION)}

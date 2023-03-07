@@ -80,7 +80,7 @@
           "label": "Publication"
         },
         "sort": {
-          "sortby": "Sort by",
+          "sortBy": "Sort by",
           "name": "Name",
           "createdDate": "Created Date",
           "eventDate": "Event date"

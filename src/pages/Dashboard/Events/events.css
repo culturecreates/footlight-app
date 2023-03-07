@@ -21,6 +21,15 @@
   font-size: 16px;
 }
 
+.events-wrapper .filter-sort-button {
+  background-color: #f9faff;
+  border: 1px solid #b6c1c9;
+  border-radius: 4px;
+  color: #222732;
+  font-weight: 400;
+  font-size: 16px;
+}
+
 @media only screen and (max-width: 428px) {
   .events-wrapper .events-heading-wrapper .events-heading {
     font-size: 24px;
