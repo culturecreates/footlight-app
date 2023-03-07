@@ -166,6 +166,7 @@ function AddEvent() {
   };
   const saveAsDraftHandler = (event) => {
     event?.preventDefault();
+    setShowDialog(false);
     var promise = new Promise(function (resolve, reject) {
       form
         .validateFields([
