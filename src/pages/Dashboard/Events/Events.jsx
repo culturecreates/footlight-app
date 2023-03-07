@@ -3,6 +3,7 @@ import './events.css';
 import { Checkbox, Col, Row, Badge, Divider, Button, Dropdown, Space } from 'antd';
 import { CloseCircleOutlined, DownOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import EventList from '../../../components/List/Events';
 import { useLazyGetEventsQuery } from '../../../services/events';
@@ -55,7 +56,7 @@ function Events() {
     let query = new URLSearchParams();
     userFilter?.forEach((user) => query.append('user', user));
     filter?.publication?.forEach((state) => query.append('publish-state', state));
-    query.append('order', `${filter?.order}(${filter?.sort})`);
+    query.append('order', `${filter?.order}(${filter?.sort}.${i18n.language})`);
     getEvents({
       pageNumber,
       limit: 10,
