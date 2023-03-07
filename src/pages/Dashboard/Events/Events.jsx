@@ -155,72 +155,80 @@ function Events() {
             </Col>
             <Col span={16}>
               <Row gutter={20}>
-                <Col style={{ display: 'flex', alignItems: 'center', fontWeight: '700', fontSize: '16px' }}>
-                  <span>{t('dashboard.events.filter.sort.sortBy')}</span>
-                </Col>
-                <Col>
-                  <Dropdown
-                    menu={{
-                      items: sortByOptions,
-                      selectable: true,
-                      defaultSelectedKeys: [`name`],
-                      onSelect: onSortSelect,
-                    }}
-                    trigger={['click']}>
-                    <Button size="large" className="filter-sort-button">
-                      <Space>
-                        {sortByOptions?.map((sortBy) => {
-                          if (sortBy?.key === filter?.sort) return sortBy?.label;
-                        })}
-                        <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
-                      </Space>
-                    </Button>
-                  </Dropdown>
-                </Col>
-                <Col>
-                  <Button
-                    className="filter-sort-button"
-                    style={{ borderColor: filter?.order && '#1B3DE6' }}
-                    onClick={onSortOrderChange}
-                    icon={
-                      filter?.order === 'ASC' ? (
-                        <SortAscendingOutlined style={{ color: '#1B3DE6' }} />
-                      ) : (
-                        filter?.order === 'DES' && <SortDescendingOutlined style={{ color: '#1B3DE6' }} />
-                      )
-                    }
-                    size={'large'}
-                  />
-                </Col>
-                <Col>
-                  <SearchableCheckbox
-                    onFilterChange={(values) => onFilterChange(values, filterTypes.PUBLICATION)}
-                    data={eventPublishStateOptions?.map((publication) => {
-                      return {
-                        key: publication.key,
-                        label: (
-                          <Checkbox value={publication.value} key={publication.key} style={{ marginLeft: '8px' }}>
-                            {publication.title}
-                          </Checkbox>
-                        ),
-                        filtervalue: publication.value,
-                      };
-                    })}
-                    value={filter?.publication}>
-                    <Button
-                      size="large"
-                      className="filter-buttons"
-                      style={{ borderColor: filter?.publication?.length > 0 && '#607EFC' }}>
-                      {t('dashboard.events.filter.publication.label')}
-                      {filter?.publication?.length > 0 && (
-                        <>
-                          &nbsp;
-                          <Badge count={filter?.publication?.length} showZero={false} color="#1B3DE6" />
-                        </>
-                      )}
-                    </Button>
-                  </SearchableCheckbox>
-                </Col>
+                <Space>
+                  <Col>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <span style={{ fontSize: '16px', fontWeight: 700 }}>
+                        {t('dashboard.events.filter.sort.sortBy')}
+                      </span>
+
+                      <Dropdown
+                        overlayClassName="filter-sort-dropdown-wrapper"
+                        overlayStyle={{ minWidth: '200px' }}
+                        getPopupContainer={(trigger) => trigger.parentNode}
+                        menu={{
+                          items: sortByOptions,
+                          selectable: true,
+                          defaultSelectedKeys: [`name`],
+                          onSelect: onSortSelect,
+                        }}
+                        trigger={['click']}>
+                        <Button size="large" className="filter-sort-button">
+                          <Space>
+                            {sortByOptions?.map((sortBy) => {
+                              if (sortBy?.key === filter?.sort) return sortBy?.label;
+                            })}
+                            <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
+                          </Space>
+                        </Button>
+                      </Dropdown>
+
+                      <Button
+                        className="filter-sort-button"
+                        style={{ borderColor: filter?.order && '#1B3DE6' }}
+                        onClick={onSortOrderChange}
+                        icon={
+                          filter?.order === 'ASC' ? (
+                            <SortAscendingOutlined style={{ color: '#1B3DE6' }} />
+                          ) : (
+                            filter?.order === 'DES' && <SortDescendingOutlined style={{ color: '#1B3DE6' }} />
+                          )
+                        }
+                        size={'large'}
+                      />
+                    </div>
+                  </Col>
+
+                  <Col>
+                    <SearchableCheckbox
+                      onFilterChange={(values) => onFilterChange(values, filterTypes.PUBLICATION)}
+                      data={eventPublishStateOptions?.map((publication) => {
+                        return {
+                          key: publication.key,
+                          label: (
+                            <Checkbox value={publication.value} key={publication.key} style={{ marginLeft: '8px' }}>
+                              {publication.title}
+                            </Checkbox>
+                          ),
+                          filtervalue: publication.value,
+                        };
+                      })}
+                      value={filter?.publication}>
+                      <Button
+                        size="large"
+                        className="filter-buttons"
+                        style={{ borderColor: filter?.publication?.length > 0 && '#607EFC' }}>
+                        {t('dashboard.events.filter.publication.label')}
+                        {filter?.publication?.length > 0 && (
+                          <>
+                            &nbsp;
+                            <Badge count={filter?.publication?.length} showZero={false} color="#1B3DE6" />
+                          </>
+                        )}
+                      </Button>
+                    </SearchableCheckbox>
+                  </Col>
+                </Space>
                 <Col>
                   <SearchableCheckbox
                     allowSearch={true}
