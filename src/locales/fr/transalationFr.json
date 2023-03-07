@@ -79,6 +79,12 @@
         "publication": {
           "label": "Publication"
         },
+        "sort": {
+          "sortby": "Trier par",
+          "name": "Nom",
+          "createdDate": "Date de création",
+          "eventDate": "Date d’événement"
+        },
         "clear": "Clear"
       },
       "readOnlyEvent": {

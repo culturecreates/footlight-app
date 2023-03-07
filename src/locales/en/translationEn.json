@@ -79,6 +79,12 @@
         "publication": {
           "label": "Publication"
         },
+        "sort": {
+          "sortby": "Sort by",
+          "name": "Name",
+          "createdDate": "Created Date",
+          "eventDate": "Event date"
+        },
         "clear": "Clear"
       },
       "readOnlyEvent": {
