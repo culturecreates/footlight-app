@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './events.css';
 import { Checkbox, Col, Row, Badge, Divider, Button, Dropdown, Space } from 'antd';
-import { CloseCircleOutlined, DownOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, DownOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import EventList from '../../../components/List/Events';
@@ -111,6 +111,20 @@ function Events() {
     });
     setPageNumber(1);
   };
+
+  const onSortOrderChange = () => {
+    if (filter?.order == 'ASC')
+      setFilter({
+        ...filter,
+        order: 'DES',
+      });
+    else if (filter?.order == 'DES')
+      setFilter({
+        ...filter,
+        order: 'ASC',
+      });
+    setPageNumber(1);
+  };
   return (
     !isLoading &&
     !allUsersLoading && (
@@ -162,6 +176,21 @@ function Events() {
                       </Space>
                     </Button>
                   </Dropdown>
+                </Col>
+                <Col>
+                  <Button
+                    className="filter-sort-button"
+                    style={{ borderColor: filter?.order && '#1B3DE6' }}
+                    onClick={onSortOrderChange}
+                    icon={
+                      filter?.order === 'ASC' ? (
+                        <SortAscendingOutlined style={{ color: '#1B3DE6' }} />
+                      ) : (
+                        filter?.order === 'DES' && <SortDescendingOutlined style={{ color: '#1B3DE6' }} />
+                      )
+                    }
+                    size={'large'}
+                  />
                 </Col>
                 <Col>
                   <SearchableCheckbox
