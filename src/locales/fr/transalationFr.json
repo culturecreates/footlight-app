@@ -173,6 +173,7 @@
           "facebookLinkTooltip": "Ajoutez le lien vers une page d'événement sur Facebook.",
           "placeHolderLinks": "Entrez l'adresse web URL",
           "keywords": "Mots clés",
+          "keywordsTooltip": "Ajoutez des mots-clés supplémentaires pour l'événement. Sélectionnez d'abord les types d'événements pertinents.",
           "placeHolderKeywords": "Entrez des mots clés supplémentaires",
           "contact": {
             "title": "Contact",

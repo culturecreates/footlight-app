@@ -277,7 +277,7 @@ function AddEvent() {
               ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote }),
             };
           }
-          if (values?.keywords?.length > 0) {
+          if (values?.keywords?.length) {
             keywords = values?.keywords;
           }
           if (ticketType) {
@@ -656,7 +656,8 @@ function AddEvent() {
         if (eventData?.url?.uri) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.eventLink);
         if (eventData?.videoUrl) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.videoLink);
         if (eventData?.facebookUrl)
-          initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.facebookLink);
+          initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.facebookLinkWrap);
+        if (eventData?.keywords) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
         setAddedFields(initialAddedFields);
       } else
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
@@ -1553,29 +1554,34 @@ function AddEvent() {
                   />
                 </Form.Item>
                 <Form.Item
-                  name={otherInformationFieldNames.facebookLink}
                   style={{
-                    display: !addedFields?.includes(otherInformationFieldNames.facebookLink) && 'none',
-                  }}
-                  label={t('dashboard.events.addEditEvent.otherInformation.facebookLink')}
-                  initialValue={eventData?.facebookUrl}
-                  rules={[
-                    {
-                      type: 'url',
-                      message: t('dashboard.events.addEditEvent.validations.url'),
-                    },
-                  ]}>
-                  <StyledInput
-                    addonBefore="https://"
-                    autoComplete="off"
-                    placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
-                  />
+                    display: !addedFields?.includes(otherInformationFieldNames.facebookLinkWrap) && 'none',
+                  }}>
+                  <Form.Item
+                    name="facebookLink"
+                    label={t('dashboard.events.addEditEvent.otherInformation.facebookLink')}
+                    initialValue={eventData?.facebookUrl}
+                    rules={[
+                      {
+                        type: 'url',
+                        message: t('dashboard.events.addEditEvent.validations.url'),
+                      },
+                    ]}>
+                    <StyledInput
+                      addonBefore="https://"
+                      autoComplete="off"
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
+                    />
+                  </Form.Item>
+                  <p className="add-event-date-heading">
+                    {t('dashboard.events.addEditEvent.otherInformation.facebookLinkFooter')}
+                  </p>
                 </Form.Item>
-                <p className="add-event-date-heading">
-                  {t('dashboard.events.addEditEvent.otherInformation.facebookLinkFooter')}
-                </p>
                 <Form.Item
-                  name="keywords"
+                  name={otherInformationFieldNames.keywords}
+                  style={{
+                    display: !addedFields?.includes(otherInformationFieldNames.facebookLinkWrap) && 'none',
+                  }}
                   label={t('dashboard.events.addEditEvent.otherInformation.keywords')}
                   initialValue={eventData?.keywords}>
                   <SelectOption
