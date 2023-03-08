@@ -60,6 +60,7 @@ import SelectionItem from '../../../components/List/SelectionItem';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import NoContent from '../../../components/NoContent/NoContent';
+import { usePrompt } from '../../../hooks/usePrompt';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -116,7 +117,8 @@ function AddEvent() {
     performer: false,
     supporter: false,
   });
-
+  const [showDialog, setShowDialog] = useState(false);
+  usePrompt(t('common.unsavedChanges'), showDialog);
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
 
@@ -165,6 +167,7 @@ function AddEvent() {
   };
   const saveAsDraftHandler = (event) => {
     event?.preventDefault();
+    setShowDialog(false);
     var promise = new Promise(function (resolve, reject) {
       form
         .validateFields([
@@ -528,6 +531,7 @@ function AddEvent() {
         </>
       );
   };
+
   const ButtonDisplayHandler = () => {
     if (eventId && eventData?.publishState === eventPublishState.PUBLISHED)
       return (
@@ -547,6 +551,7 @@ function AddEvent() {
       );
     else return roleCheckHandler();
   };
+
   const placesSearch = (inputValue) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
@@ -557,6 +562,7 @@ function AddEvent() {
       })
       .catch((error) => console.log(error));
   };
+
   const organizationPersonSearch = (value, type) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.organization);
@@ -574,12 +580,19 @@ function AddEvent() {
       })
       .catch((error) => console.log(error));
   };
+
+  const onValuesChangHandler = () => {
+    setShowDialog(true);
+  };
+
   useEffect(() => {
     if (selectedOrganizers) form.setFieldValue('organizers', selectedOrganizers);
   }, [selectedOrganizers]);
+
   useEffect(() => {
     if (selectedPerformers) form.setFieldValue('performers', selectedPerformers);
   }, [selectedPerformers]);
+
   useEffect(() => {
     if (selectedSupporters) form.setFieldValue('supporters', selectedSupporters);
   }, [selectedSupporters]);
@@ -644,13 +657,14 @@ function AddEvent() {
   useEffect(() => {
     setAllPlacesList(placesOptions(allPlaces?.data, user));
   }, [placesLoading]);
+
   return (
     !isLoading &&
     !placesLoading &&
     !taxonomyLoading &&
     !initialEntityLoading && (
       <div>
-        <Form form={form} layout="vertical" name="event">
+        <Form form={form} layout="vertical" name="event" onValuesChange={onValuesChangHandler}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
               <Row justify="space-between">
