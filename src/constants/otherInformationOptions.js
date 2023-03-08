@@ -2,6 +2,7 @@ import { Translation } from 'react-i18next';
 export const otherInformationFieldNames = {
   contact: 'contact',
   performerWrap: 'performerWrap',
+  supporterWrap: 'supporterWrap',
 };
 export const otherInformationOptions = [
   {
@@ -20,6 +21,15 @@ export const otherInformationOptions = [
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.performer.title')}</Translation>,
     tooltip: (
       <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.performer.performerTooltip')}</Translation>
+    ),
+  },
+  {
+    type: 'supporter',
+    fieldNames: otherInformationFieldNames.supporterWrap,
+    disabled: false,
+    label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.supporter.title')}</Translation>,
+    tooltip: (
+      <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.supporter.supporterTooltip')}</Translation>
     ),
   },
 ];

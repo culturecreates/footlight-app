@@ -161,7 +161,8 @@
           "supporter": {
             "title": "Supporter/Sponsor",
             "subHeading": "Add the organization supporting or sponsoring this event.",
-            "searchPlaceholder": "Search Organizations and People"
+            "searchPlaceholder": "Search Organizations and People",
+            "supporterTooltip": "Add the organization supporting or sponsoring this event. Organization logo will be required."
           },
           "eventLink": "Event link",
           "videoLink": "Video",

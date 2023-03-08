@@ -651,6 +651,7 @@ function AddEvent() {
             };
           });
           setSelectedSupporters(treeEntitiesOption(initialSupporters, user));
+          initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.supporterWrap);
         }
         setAddedFields(initialAddedFields);
       } else
@@ -1436,7 +1437,12 @@ function AddEvent() {
                     })}
                   </Form.Item>
                 </Form.Item>
-                <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.supporter.title')}>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.otherInformation.supporter.title')}
+                  name={otherInformationFieldNames.supporterWrap}
+                  style={{
+                    display: !addedFields?.includes(otherInformationFieldNames.supporterWrap) && 'none',
+                  }}>
                   <Row>
                     <Col>
                       <p className="add-event-date-heading">

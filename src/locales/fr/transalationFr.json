@@ -160,7 +160,8 @@
           "supporter": {
             "title": "Supporteur/Commanditaire",
             "subHeading": "Ajoutez le commanditaire ou l'organisme qui soutient l'événement.",
-            "searchPlaceholder": "Recherchez des Organisations ou des Personnes"
+            "searchPlaceholder": "Recherchez des Organisations ou des Personnes",
+            "supporterTooltip": "Ajoutez le commanditaire ou l'organisme qui soutient l'événement. Un logo d'organisation sera requis."
           },
           "eventLink": "Lien de l’événement",
           "videoLink": "Video",
