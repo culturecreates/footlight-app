@@ -61,7 +61,7 @@ import SelectionItem from '../../../components/List/SelectionItem';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import NoContent from '../../../components/NoContent/NoContent';
-import { locationTypeOptions } from '../../../constants/locationTypeOptions';
+import { locationType, locationTypeOptions, virtualLocationFieldNames } from '../../../constants/locationTypeOptions';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -589,6 +589,7 @@ function AddEvent() {
 
   useEffect(() => {
     if (calendarId && eventData) {
+      let initialAddedFields = [];
       if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState)) {
         setDateType(
           dateTimeTypeHandler(
@@ -600,6 +601,9 @@ function AddEvent() {
         );
         setTicketType(eventData?.offerConfiguration?.category);
         if (initialPlace && initialPlace?.length > 0) setLocationPlace(placesOptions(initialPlace)[0]);
+        if (eventData?.locations?.filter((location) => location?.isVirtualLocation == true)?.length > 0)
+          initialAddedFields = initialAddedFields?.concat(locationType?.fieldNames);
+
         if (eventData?.organizer) {
           let initialOrganizers = eventData?.organizer?.map((organizer) => {
             return {
@@ -633,6 +637,7 @@ function AddEvent() {
           });
           setSelectedSupporters(treeEntitiesOption(initialSupporters, user));
         }
+        setAddedFields(initialAddedFields);
       } else
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
     }
@@ -1017,8 +1022,8 @@ function AddEvent() {
                 </Form.Item>
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.location.virtualLocation')}
-                  name="virtualLocationName"
-                  style={{ display: !addedFields?.includes('virtualLocationName') && 'none' }}>
+                  name={virtualLocationFieldNames.virtualLocationName}
+                  style={{ display: !addedFields?.includes(virtualLocationFieldNames.virtualLocationName) && 'none' }}>
                   <BilingualInput fieldData={initialVirtualLocation && initialVirtualLocation[0]?.name}>
                     <Form.Item
                       name="frenchVirtualLocation"
@@ -1045,8 +1050,10 @@ function AddEvent() {
                   </BilingualInput>
                 </Form.Item>
                 <Form.Item
-                  name="virtualLocationOnlineLink"
-                  style={{ display: !addedFields?.includes('virtualLocationOnlineLink') && 'none' }}
+                  name={virtualLocationFieldNames.virtualLocationOnlineLink}
+                  style={{
+                    display: !addedFields?.includes(virtualLocationFieldNames.virtualLocationOnlineLink) && 'none',
+                  }}
                   className="subheading-wrap"
                   label={t('dashboard.events.addEditEvent.location.onlineLink')}
                   initialValue={initialVirtualLocation && initialVirtualLocation[0]?.url?.uri}
@@ -1065,7 +1072,8 @@ function AddEvent() {
               </Form.Item>
 
               <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
-                {addedFields?.includes('virtualLocationOnlineLink') && addedFields?.includes('virtualLocationName') ? (
+                {addedFields?.includes(virtualLocationFieldNames.virtualLocationOnlineLink) &&
+                addedFields?.includes(virtualLocationFieldNames.virtualLocationName) ? (
                   <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
                 ) : (
                   locationTypeOptions.map((type) => {
