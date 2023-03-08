@@ -4,6 +4,7 @@ export const otherInformationFieldNames = {
   performerWrap: 'performerWrap',
   supporterWrap: 'supporterWrap',
   eventLink: 'eventLink',
+  videoLink: 'videoLink',
 };
 export const otherInformationOptions = [
   {
@@ -39,5 +40,12 @@ export const otherInformationOptions = [
     disabled: false,
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.eventLink')}</Translation>,
     tooltip: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.eventLinkTooltip')}</Translation>,
+  },
+  {
+    type: 'videoLink',
+    fieldNames: otherInformationFieldNames.videoLink,
+    disabled: false,
+    label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.videoLinks')}</Translation>,
+    tooltip: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.videoLinkTooltip')}</Translation>,
   },
 ];

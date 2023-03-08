@@ -654,6 +654,7 @@ function AddEvent() {
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.supporterWrap);
         }
         if (eventData?.url?.uri) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.eventLink);
+        if (eventData?.videoUrl) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.videoLink);
         setAddedFields(initialAddedFields);
       } else
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
@@ -1531,7 +1532,10 @@ function AddEvent() {
                   />
                 </Form.Item>
                 <Form.Item
-                  name="videoLink"
+                  name={otherInformationFieldNames.videoLink}
+                  style={{
+                    display: !addedFields?.includes(otherInformationFieldNames.videoLink) && 'none',
+                  }}
                   label={t('dashboard.events.addEditEvent.otherInformation.videoLink')}
                   initialValue={eventData?.videoUrl}
                   rules={[
