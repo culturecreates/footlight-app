@@ -62,6 +62,7 @@ import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import NoContent from '../../../components/NoContent/NoContent';
 import { locationType, locationTypeOptions, virtualLocationFieldNames } from '../../../constants/locationTypeOptions';
+import { otherInformationFieldNames, otherInformationOptions } from '../../../constants/otherInformationOptions';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -603,7 +604,14 @@ function AddEvent() {
         if (initialPlace && initialPlace?.length > 0) setLocationPlace(placesOptions(initialPlace)[0]);
         if (eventData?.locations?.filter((location) => location?.isVirtualLocation == true)?.length > 0)
           initialAddedFields = initialAddedFields?.concat(locationType?.fieldNames);
-
+        if (
+          eventData?.contactPoint?.email ||
+          eventData?.contactPoint?.telephone ||
+          eventData?.contactPoint?.url?.uri ||
+          eventData?.contactPoint?.name?.fr ||
+          eventData?.contactPoint?.name?.en
+        )
+          initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.contact);
         if (eventData?.organizer) {
           let initialOrganizers = eventData?.organizer?.map((organizer) => {
             return {
@@ -1275,7 +1283,12 @@ function AddEvent() {
                     })}
                   </Form.Item>
                 </Form.Item>
-                <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.contact.title')}>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.otherInformation.contact.title')}
+                  name={otherInformationFieldNames.contact}
+                  style={{
+                    display: !addedFields?.includes(otherInformationFieldNames.contact) && 'none',
+                  }}>
                   <Form.Item
                     label={t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}
                     className="subheading-wrap">
@@ -1558,6 +1571,30 @@ function AddEvent() {
                   />
                 </Form.Item>
               </>
+              <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
+                {addedFields?.includes(otherInformationFieldNames.contact) ? (
+                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                ) : (
+                  otherInformationOptions.map((type) => {
+                    if (!addedFields?.includes(type.fieldNames))
+                      return (
+                        <ChangeType
+                          key={type.type}
+                          primaryIcon={<PlusOutlined />}
+                          disabled={type.disabled}
+                          label={type.label}
+                          promptText={type.tooltip}
+                          secondaryIcon={<InfoCircleOutlined />}
+                          onClick={() => {
+                            let array = addedFields?.concat(type?.fieldNames);
+                            array = [...new Set(array)];
+                            setAddedFields(array);
+                          }}
+                        />
+                      );
+                  })
+                )}
+              </Form.Item>
             </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.eventAccessibility.title')}>
               <>

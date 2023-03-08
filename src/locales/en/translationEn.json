@@ -181,7 +181,8 @@
             "placeHolderContactTitleEnglish": "Enter English contact title",
             "placeHolderWebsite": "Enter web address URL",
             "placeHolderPhoneNumber": "Enter phone number",
-            "placeHolderEmail": "Enter email address"
+            "placeHolderEmail": "Enter email address",
+            "contactTooltip": "Add a contact for your event. You can create one or copy the contact information of the Organizer."
           }
         },
         "eventAccessibility": {
