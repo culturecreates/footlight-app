@@ -578,6 +578,12 @@ function AddEvent() {
       })
       .catch((error) => console.log(error));
   };
+
+  const addFieldsHandler = (fieldNames) => {
+    let array = addedFields?.concat(fieldNames);
+    array = [...new Set(array)];
+    setAddedFields(array);
+  };
   useEffect(() => {
     if (selectedOrganizers) form.setFieldValue('organizers', selectedOrganizers);
   }, [selectedOrganizers]);
@@ -1093,11 +1099,7 @@ function AddEvent() {
                         label={type.label}
                         promptText={type.tooltip}
                         secondaryIcon={<InfoCircleOutlined />}
-                        onClick={() => {
-                          let array = addedFields?.concat(type?.fieldNames);
-                          array = [...new Set(array)];
-                          setAddedFields(array);
-                        }}
+                        onClick={() => addFieldsHandler(type?.fieldNames)}
                       />
                     );
                   })
@@ -1585,11 +1587,7 @@ function AddEvent() {
                           label={type.label}
                           promptText={type.tooltip}
                           secondaryIcon={<InfoCircleOutlined />}
-                          onClick={() => {
-                            let array = addedFields?.concat(type?.fieldNames);
-                            array = [...new Set(array)];
-                            setAddedFields(array);
-                          }}
+                          onClick={() => addFieldsHandler(type?.fieldNames)}
                         />
                       );
                   })
