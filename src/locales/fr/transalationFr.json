@@ -89,6 +89,7 @@
       },
       "addEditEvent": {
         "heading": { "newEvent": "Ajouter un événement", "editEvent": "Modifier un événement" },
+        "addMoreDetails": "Ajouter plus de détails à votre événement",
         "language": {
           "title": "Titre de l'événement",
           "titleLabel": "English",
@@ -123,6 +124,7 @@
           "title": "Endroit",
           "placeHolderLocation": "Recherchez Lieux",
           "virtualLocation": "Emplacement virtuel",
+          "virtualLocationTooltip": "Ajoutez un lien vers un emplacement virtuel pour votre événement.",
           "placeHolderVirtualLocationEn": "Entrez le texte anglais à afficher",
           "placeHolderVirtualLocationFr": "Entrez le texte français à afficher",
           "onlineLink": "Lien pour l'événement en ligne",

@@ -89,6 +89,7 @@
       },
       "addEditEvent": {
         "heading": { "newEvent": "New Event", "editEvent": "Edit Event" },
+        "addMoreDetails": "Add more details to your event",
         "language": {
           "title": "Event title",
           "titleLabel": "English",
@@ -124,6 +125,7 @@
           "title": "Location",
           "placeHolderLocation": "Search Places",
           "virtualLocation": "Virtual location",
+          "virtualLocationTooltip": "Add a link for virtual location for your event.",
           "placeHolderVirtualLocationEn": "Enter English text to display",
           "placeHolderVirtualLocationFr": "Enter French text to display",
           "onlineLink": "Link for the online event",

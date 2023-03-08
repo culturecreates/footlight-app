@@ -7,6 +7,7 @@ import {
   CloseCircleOutlined,
   CalendarOutlined,
   ExclamationCircleOutlined,
+  PlusOutlined,
 } from '@ant-design/icons';
 import moment from 'moment';
 import i18n from 'i18next';
@@ -60,6 +61,7 @@ import SelectionItem from '../../../components/List/SelectionItem';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import NoContent from '../../../components/NoContent/NoContent';
+import { locationTypeOptions } from '../../../constants/locationTypeOptions';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -1056,6 +1058,26 @@ function AddEvent() {
                   />
                 </Form.Item>
               </Form.Item>
+              {dateType && (
+                <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
+                  {locationTypeOptions.map((type) => {
+                    return (
+                      <ChangeType
+                        key={type.type}
+                        primaryIcon={<PlusOutlined />}
+                        disabled={type.disabled}
+                        label={type.label}
+                        promptText={type.tooltip}
+                        secondaryIcon={<InfoCircleOutlined />}
+                        onClick={() => {
+                          setDateType(type.type);
+                          form.resetFields(['datePicker', 'dateRangePicker']);
+                        }}
+                      />
+                    );
+                  })}
+                </Form.Item>
+              )}
             </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.otherInformation.title')}>
               <>
