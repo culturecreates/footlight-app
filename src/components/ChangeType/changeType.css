@@ -1,3 +1,6 @@
+.change-type-wrapper {
+  max-width: 240px;
+}
 .change-type-wrapper .first-button {
   background: #eff2ff;
   border-radius: 4px;
@@ -15,10 +18,11 @@
   font-weight: 400;
   font-size: 16px;
   color: #1b3de6;
-  max-width: 151px;
+  max-width: 170px;
   height: auto;
   text-align: left;
   white-space: pre-line;
+  word-break: break-word;
 }
 .change-type-wrapper .second-button[disabled] {
   color: #646d7b;
