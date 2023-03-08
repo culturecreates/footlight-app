@@ -155,7 +155,8 @@
           "performer": {
             "title": "Performing group/artist/event animator",
             "subHeading": "Add a main performer for your event.",
-            "searchPlaceholder": "Search Organizations and People"
+            "searchPlaceholder": "Search Organizations and People",
+            "performerTooltip": "Add the performing group, performer, artist or event animator depending on event type."
           },
           "supporter": {
             "title": "Supporter/Sponsor",

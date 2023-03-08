@@ -154,7 +154,8 @@
           "performer": {
             "title": "Compagnie/groupe/artiste/animateur de l'événement",
             "subHeading": "Ajoutez un interprète principal pour votre événement.",
-            "searchPlaceholder": "Recherchez des Organisations ou des Personnes"
+            "searchPlaceholder": "Recherchez des Organisations ou des Personnes",
+            "performerTooltip": "Ajoutez groupe d'interprètes, interprète, artiste ou animateur en fonction du type d'événement."
           },
           "supporter": {
             "title": "Supporteur/Commanditaire",

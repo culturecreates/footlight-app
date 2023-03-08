@@ -639,6 +639,7 @@ function AddEvent() {
             };
           });
           setSelectedPerformers(treeEntitiesOption(initialPerformers, user));
+          initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.performerWrap);
         }
         if (eventData?.collaborators) {
           let initialSupporters = eventData?.collaborators?.map((supporter) => {
@@ -1362,7 +1363,12 @@ function AddEvent() {
                     />
                   </Form.Item>
                 </Form.Item>
-                <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.performer.title')}>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.otherInformation.performer.title')}
+                  name={otherInformationFieldNames.performerWrap}
+                  style={{
+                    display: !addedFields?.includes(otherInformationFieldNames.performerWrap) && 'none',
+                  }}>
                   <Row>
                     <Col>
                       <p className="add-event-date-heading">
