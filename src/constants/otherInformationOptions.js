@@ -5,6 +5,7 @@ export const otherInformationFieldNames = {
   supporterWrap: 'supporterWrap',
   eventLink: 'eventLink',
   videoLink: 'videoLink',
+  facebookLink: 'facebookLink',
 };
 export const otherInformationOptions = [
   {
@@ -47,5 +48,14 @@ export const otherInformationOptions = [
     disabled: false,
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.videoLinks')}</Translation>,
     tooltip: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.videoLinkTooltip')}</Translation>,
+  },
+  {
+    type: 'facebookLink',
+    fieldNames: otherInformationFieldNames.facebookLink,
+    disabled: false,
+    label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.facebookLink')}</Translation>,
+    tooltip: (
+      <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.facebookLinkTooltip')}</Translation>
+    ),
   },
 ];

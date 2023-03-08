@@ -171,6 +171,7 @@
           "videoLinkTooltip": "Add a video to your content. Youtube and Vimeo are supported.",
           "facebookLink": "Facebook event",
           "facebookLinkFooter": "Paste your Facebook event URL here.",
+          "facebookLinkTooltip":"Add a link to an event page on Facebook.",
           "placeHolderLinks": "Enter web address URL",
           "keywords": "Keywords",
           "placeHolderKeywords": "Enter additional keywords",

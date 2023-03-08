@@ -655,6 +655,8 @@ function AddEvent() {
         }
         if (eventData?.url?.uri) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.eventLink);
         if (eventData?.videoUrl) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.videoLink);
+        if (eventData?.facebookUrl)
+          initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.facebookLink);
         setAddedFields(initialAddedFields);
       } else
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
@@ -1551,7 +1553,10 @@ function AddEvent() {
                   />
                 </Form.Item>
                 <Form.Item
-                  name="facebookLink"
+                  name={otherInformationFieldNames.facebookLink}
+                  style={{
+                    display: !addedFields?.includes(otherInformationFieldNames.facebookLink) && 'none',
+                  }}
                   label={t('dashboard.events.addEditEvent.otherInformation.facebookLink')}
                   initialValue={eventData?.facebookUrl}
                   rules={[
