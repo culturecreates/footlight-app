@@ -63,6 +63,7 @@ import { routinghandler } from '../../../utils/roleRoutingHandler';
 import NoContent from '../../../components/NoContent/NoContent';
 import { locationType, locationTypeOptions, virtualLocationFieldNames } from '../../../constants/locationTypeOptions';
 import { otherInformationFieldNames, otherInformationOptions } from '../../../constants/otherInformationOptions';
+import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../../constants/eventAccessibilityOptions';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -658,6 +659,8 @@ function AddEvent() {
         if (eventData?.facebookUrl)
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.facebookLinkWrap);
         if (eventData?.keywords) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
+        if (eventData?.accessibilityNote?.en || eventData?.accessibilityNote?.fr)
+          initialAddedFields = initialAddedFields?.concat(eventAccessibilityFieldNames?.noteWrap);
         setAddedFields(initialAddedFields);
       } else
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
@@ -1605,7 +1608,13 @@ function AddEvent() {
                 </Form.Item>
               </>
               <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
-                {addedFields?.includes(otherInformationFieldNames.contact) ? (
+                {addedFields?.includes(otherInformationFieldNames.contact) &&
+                addedFields?.includes(otherInformationFieldNames.performerWrap) &&
+                addedFields?.includes(otherInformationFieldNames.supporterWrap) &&
+                addedFields?.includes(otherInformationFieldNames.eventLink) &&
+                addedFields?.includes(otherInformationFieldNames.videoLink) &&
+                addedFields?.includes(otherInformationFieldNames.facebookLinkWrap) &&
+                addedFields?.includes(otherInformationFieldNames.keywords) ? (
                   <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
                 ) : (
                   otherInformationOptions.map((type) => {
@@ -1652,7 +1661,12 @@ function AddEvent() {
                     }}
                   />
                 </Form.Item>
-                <Form.Item label={t('dashboard.events.addEditEvent.eventAccessibility.note')}>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.eventAccessibility.note')}
+                  name={eventAccessibilityFieldNames.noteWrap}
+                  style={{
+                    display: !addedFields?.includes(eventAccessibilityFieldNames.noteWrap) && 'none',
+                  }}>
                   <BilingualInput fieldData={eventData?.accessibilityNote}>
                     <Form.Item name="frenchAccessibilityNote" initialValue={eventData?.accessibilityNote?.fr}>
                       <TextArea
@@ -1677,6 +1691,26 @@ function AddEvent() {
                   </BilingualInput>
                 </Form.Item>
               </>
+              <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
+                {addedFields?.includes(eventAccessibilityFieldNames.noteWrap) ? (
+                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                ) : (
+                  eventAccessibilityOptions.map((type) => {
+                    if (!addedFields?.includes(type.fieldNames))
+                      return (
+                        <ChangeType
+                          key={type.type}
+                          primaryIcon={<PlusOutlined />}
+                          disabled={type.disabled}
+                          label={type.label}
+                          promptText={type.tooltip}
+                          secondaryIcon={<InfoCircleOutlined />}
+                          onClick={() => addFieldsHandler(type?.fieldNames)}
+                        />
+                      );
+                  })
+                )}
+              </Form.Item>
             </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.tickets.title')} required={true}>
               <>
