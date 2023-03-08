@@ -90,6 +90,7 @@
       "addEditEvent": {
         "heading": { "newEvent": "Ajouter un événement", "editEvent": "Modifier un événement" },
         "addMoreDetails": "Ajouter plus de détails à votre événement",
+        "allDone": "All done",
         "language": {
           "title": "Titre de l'événement",
           "titleLabel": "English",

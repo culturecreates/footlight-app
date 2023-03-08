@@ -1065,23 +1065,27 @@ function AddEvent() {
               </Form.Item>
 
               <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
-                {locationTypeOptions.map((type) => {
-                  return (
-                    <ChangeType
-                      key={type.type}
-                      primaryIcon={<PlusOutlined />}
-                      disabled={type.disabled}
-                      label={type.label}
-                      promptText={type.tooltip}
-                      secondaryIcon={<InfoCircleOutlined />}
-                      onClick={() => {
-                        let array = addedFields?.concat(type?.fieldNames);
-                        array = [...new Set(array)];
-                        setAddedFields(array);
-                      }}
-                    />
-                  );
-                })}
+                {addedFields?.includes('virtualLocationOnlineLink') && addedFields?.includes('virtualLocationName') ? (
+                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                ) : (
+                  locationTypeOptions.map((type) => {
+                    return (
+                      <ChangeType
+                        key={type.type}
+                        primaryIcon={<PlusOutlined />}
+                        disabled={type.disabled}
+                        label={type.label}
+                        promptText={type.tooltip}
+                        secondaryIcon={<InfoCircleOutlined />}
+                        onClick={() => {
+                          let array = addedFields?.concat(type?.fieldNames);
+                          array = [...new Set(array)];
+                          setAddedFields(array);
+                        }}
+                      />
+                    );
+                  })
+                )}
               </Form.Item>
             </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.otherInformation.title')}>
