@@ -8,8 +8,6 @@ function TimePickerStyled(props) {
       className="time-picker-wrapper"
       popupClassName="time-picker-dropdown"
       showNow={false}
-      format="h:mm a"
-      use12Hours
       size="large"
       suffixIcon={false}
       minuteStep={15}

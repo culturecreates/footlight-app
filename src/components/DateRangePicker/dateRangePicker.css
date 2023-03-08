@@ -39,3 +39,7 @@
   font-weight: 700;
   font-size: 16px;
 }
+
+.date-range-picker-calendar .ant-picker-date-panel .ant-picker-content th {
+  text-align: center;
+}

@@ -17,6 +17,7 @@ import Username from '../../Username/index';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 import { dateTypes } from '../../../constants/dateTypes';
+import { eventStatus } from '../../../constants/eventStatus';
 
 const { useBreakpoint } = Grid;
 
@@ -107,6 +108,10 @@ function Lists(props) {
                 ) : (
                   <></>
                 )}
+                {(eventItem?.eventStatus === eventStatus.EventPostponed ||
+                  eventItem?.eventStatus === eventStatus.EventCancelled) && (
+                  <EventStatus label={eventItem?.eventStatus} />
+                )}
               </div>
             }
             description={
@@ -119,13 +124,15 @@ function Lists(props) {
                   })}
                 </span>
                 <span className="event-list-description-place">
-                  {eventItem?.location?.map((place) => {
-                    return bilingual({
-                      en: place?.name?.en,
-                      fr: place?.name?.fr,
-                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                    });
-                  })}
+                  {eventItem?.location
+                    ?.map((place) => {
+                      return bilingual({
+                        en: place?.name?.en,
+                        fr: place?.name?.fr,
+                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      });
+                    })
+                    .join(' | ')}
                 </span>
               </div>
             }

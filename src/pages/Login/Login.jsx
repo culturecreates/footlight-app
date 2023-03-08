@@ -5,9 +5,9 @@ import './login.css';
 import LoginButton from '../../components/Button/Auth';
 import { useLoginMutation } from '../../services/login';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUserDetails } from '../../redux/reducer/userSlice';
+import { clearUser, getUserDetails } from '../../redux/reducer/userSlice';
 import { PathName } from '../../constants/pathName';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Auth from '../../layout/Auth';
 import LoginInput from '../../components/Input/Common';
@@ -20,6 +20,7 @@ const Login = () => {
   const [form] = Form.useForm();
   const [login, { error }] = useLoginMutation();
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const { accessToken } = useSelector(getUserDetails);
 
@@ -32,6 +33,9 @@ const Login = () => {
         i18n.changeLanguage(response?.user?.interfaceLanguage?.toLowerCase());
       });
   };
+  useEffect(() => {
+    if (location?.state?.previousPath === 'logout') dispatch(clearUser());
+  }, []);
 
   useEffect(() => {
     if (accessToken && accessToken != '') {

@@ -9,6 +9,7 @@ import {
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import moment from 'moment';
+import i18n from 'i18next';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGetEventQuery, useUpdateEventStateMutation } from '../../../services/events';
@@ -59,6 +60,7 @@ import SelectionItem from '../../../components/List/SelectionItem';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import NoContent from '../../../components/NoContent/NoContent';
+import { usePrompt } from '../../../hooks/usePrompt';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -115,7 +117,8 @@ function AddEvent() {
     performer: false,
     supporter: false,
   });
-
+  const [showDialog, setShowDialog] = useState(false);
+  usePrompt(t('common.unsavedChanges'), showDialog);
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
 
@@ -163,7 +166,8 @@ function AddEvent() {
     return promise;
   };
   const saveAsDraftHandler = (event) => {
-    event.preventDefault();
+    event?.preventDefault();
+    setShowDialog(false);
     var promise = new Promise(function (resolve, reject) {
       form
         .validateFields([
@@ -422,7 +426,7 @@ function AddEvent() {
   };
 
   const reviewPublishHandler = (event) => {
-    event.preventDefault();
+    event?.preventDefault();
     form
       .validateFields([
         'french',
@@ -441,7 +445,7 @@ function AddEvent() {
         'ticketLink',
       ])
       .then(() => {
-        saveAsDraftHandler()
+        saveAsDraftHandler(event)
           .then(() => {
             updateEventState({ id: eventId, calendarId })
               .unwrap()
@@ -495,12 +499,15 @@ function AddEvent() {
       return (
         <>
           <Form.Item>
-            <Outlined label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')} onClick={saveAsDraftHandler} />
+            <Outlined
+              label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
+              onClick={(e) => saveAsDraftHandler(e)}
+            />
           </Form.Item>
           <Form.Item>
             <PrimaryButton
               label={t('dashboard.events.addEditEvent.saveOptions.publish')}
-              onClick={reviewPublishHandler}
+              onClick={(e) => reviewPublishHandler(e)}
             />
           </Form.Item>
         </>
@@ -509,18 +516,22 @@ function AddEvent() {
       return (
         <>
           <Form.Item>
-            <Outlined label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')} onClick={saveAsDraftHandler} />
+            <Outlined
+              label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
+              onClick={(e) => saveAsDraftHandler(e)}
+            />
           </Form.Item>
 
           <Form.Item>
             <PrimaryButton
               label={t('dashboard.events.addEditEvent.saveOptions.sendToReview')}
-              onClick={reviewPublishHandler}
+              onClick={(e) => reviewPublishHandler(e)}
             />
           </Form.Item>
         </>
       );
   };
+
   const ButtonDisplayHandler = () => {
     if (eventId && eventData?.publishState === eventPublishState.PUBLISHED)
       return (
@@ -531,12 +542,16 @@ function AddEvent() {
             </PublishState>
           </Form.Item>
           <Form.Item>
-            <PrimaryButton label={t('dashboard.events.addEditEvent.saveOptions.save')} onClick={saveAsDraftHandler} />
+            <PrimaryButton
+              label={t('dashboard.events.addEditEvent.saveOptions.save')}
+              onClick={(e) => saveAsDraftHandler(e)}
+            />
           </Form.Item>
         </>
       );
     else return roleCheckHandler();
   };
+
   const placesSearch = (inputValue) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
@@ -547,6 +562,7 @@ function AddEvent() {
       })
       .catch((error) => console.log(error));
   };
+
   const organizationPersonSearch = (value, type) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.organization);
@@ -564,12 +580,19 @@ function AddEvent() {
       })
       .catch((error) => console.log(error));
   };
+
+  const onValuesChangHandler = () => {
+    setShowDialog(true);
+  };
+
   useEffect(() => {
     if (selectedOrganizers) form.setFieldValue('organizers', selectedOrganizers);
   }, [selectedOrganizers]);
+
   useEffect(() => {
     if (selectedPerformers) form.setFieldValue('performers', selectedPerformers);
   }, [selectedPerformers]);
+
   useEffect(() => {
     if (selectedSupporters) form.setFieldValue('supporters', selectedSupporters);
   }, [selectedSupporters]);
@@ -634,13 +657,14 @@ function AddEvent() {
   useEffect(() => {
     setAllPlacesList(placesOptions(allPlaces?.data, user));
   }, [placesLoading]);
+
   return (
     !isLoading &&
     !placesLoading &&
     !taxonomyLoading &&
     !initialEntityLoading && (
       <div>
-        <Form form={form} layout="vertical" name="event">
+        <Form form={form} layout="vertical" name="event" onValuesChange={onValuesChangHandler}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
               <Row justify="space-between">
@@ -829,7 +853,11 @@ function AddEvent() {
                           name="startTime"
                           label={t('dashboard.events.addEditEvent.dates.startTime')}
                           initialValue={eventData?.startDateTime ? moment(eventData?.startDateTime) : undefined}>
-                          <TimePickerStyled />
+                          <TimePickerStyled
+                            placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                            use12Hours={i18n?.language === 'en' ? true : false}
+                            format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                          />
                         </Form.Item>
                       </Col>
                       <Col flex={'203.5px'}>
@@ -837,7 +865,11 @@ function AddEvent() {
                           name="endTime"
                           label={t('dashboard.events.addEditEvent.dates.endTime')}
                           initialValue={eventData?.endDateTime ? moment(eventData?.endDateTime) : undefined}>
-                          <TimePickerStyled />
+                          <TimePickerStyled
+                            placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                            use12Hours={i18n?.language === 'en' ? true : false}
+                            format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -1123,6 +1155,7 @@ function AddEvent() {
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.image.title')}
                   name="dragger-wrap"
+                  required
                   initialValue={eventData?.image && eventData?.image?.original}
                   rules={[
                     ({ getFieldValue }) => ({

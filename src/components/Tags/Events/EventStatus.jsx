@@ -3,6 +3,7 @@ import { Tag } from 'antd';
 import './eventStatus.css';
 import { eventPublishState } from '../../../constants/eventPublishState';
 import { useTranslation } from 'react-i18next';
+import { eventStatus } from '../../../constants/eventStatus';
 
 function EventStatus(props) {
   const { t } = useTranslation();
@@ -12,8 +13,8 @@ function EventStatus(props) {
   const eventStatusHandler = () => {
     switch (props?.label) {
       case eventPublishState.PUBLISHED:
-        setBackgroundColor('#DBF3FD');
-        setFontColor('#1572BB');
+        setBackgroundColor('#DEF3D6');
+        setFontColor('#1D8221');
         setLabel(t('dashboard.events.publishState.published'));
         break;
       case eventPublishState.DRAFT:
@@ -25,6 +26,16 @@ function EventStatus(props) {
         setBackgroundColor('#FFF7CC');
         setFontColor('#B59800');
         setLabel(t('dashboard.events.publishState.pendingReview'));
+        break;
+      case eventStatus.EventPostponed:
+        setBackgroundColor('#EDAB01');
+        setFontColor('#FFFFFF');
+        setLabel(t('dashboard.events.addEditEvent.dates.eventPostponed'));
+        break;
+      case eventStatus.EventCancelled:
+        setBackgroundColor('#CE1111');
+        setFontColor('#FFFFFF');
+        setLabel(t('dashboard.events.addEditEvent.dates.eventCancelled'));
         break;
       default:
         break;
