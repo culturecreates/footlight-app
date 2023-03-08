@@ -653,6 +653,7 @@ function AddEvent() {
           setSelectedSupporters(treeEntitiesOption(initialSupporters, user));
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.supporterWrap);
         }
+        if (eventData?.url?.uri) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.eventLink);
         setAddedFields(initialAddedFields);
       } else
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
@@ -1511,7 +1512,10 @@ function AddEvent() {
                   </Form.Item>
                 </Form.Item>
                 <Form.Item
-                  name="eventLink"
+                  name={otherInformationFieldNames.eventLink}
+                  style={{
+                    display: !addedFields?.includes(otherInformationFieldNames.eventLink) && 'none',
+                  }}
                   label={t('dashboard.events.addEditEvent.otherInformation.eventLink')}
                   initialValue={eventData?.url?.uri}
                   rules={[

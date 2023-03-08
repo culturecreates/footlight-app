@@ -164,6 +164,7 @@
             "supporterTooltip": "Ajoutez le commanditaire ou l'organisme qui soutient l'événement. Un logo d'organisation sera requis."
           },
           "eventLink": "Lien de l’événement",
+          "eventLinkTooltip": "Ajoutez le lien vers la page de l'événement sur un site Web.",
           "videoLink": "Video",
           "facebookLink": "Lien vers l'événement Facebook",
           "facebookLinkFooter": "Collez l'URL de votre événement Facebook ici.",

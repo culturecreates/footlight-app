@@ -3,6 +3,7 @@ export const otherInformationFieldNames = {
   contact: 'contact',
   performerWrap: 'performerWrap',
   supporterWrap: 'supporterWrap',
+  eventLink: 'eventLink',
 };
 export const otherInformationOptions = [
   {
@@ -31,5 +32,12 @@ export const otherInformationOptions = [
     tooltip: (
       <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.supporter.supporterTooltip')}</Translation>
     ),
+  },
+  {
+    type: 'eventLink',
+    fieldNames: otherInformationFieldNames.eventLink,
+    disabled: false,
+    label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.eventLink')}</Translation>,
+    tooltip: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.eventLinkTooltip')}</Translation>,
   },
 ];

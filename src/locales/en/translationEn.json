@@ -165,6 +165,7 @@
             "supporterTooltip": "Add the organization supporting or sponsoring this event. Organization logo will be required."
           },
           "eventLink": "Event link",
+          "eventLinkTooltip": "Add a link to the event page on a website.",
           "videoLink": "Video",
           "facebookLink": "Facebook event",
           "facebookLinkFooter": "Paste your Facebook event URL here.",
