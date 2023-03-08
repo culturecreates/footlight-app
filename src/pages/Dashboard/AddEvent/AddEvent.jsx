@@ -118,6 +118,7 @@ function AddEvent() {
     performer: false,
     supporter: false,
   });
+  const [addedFields, setAddedFields] = useState([]);
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -1014,7 +1015,10 @@ function AddEvent() {
                     />
                   )}
                 </Form.Item>
-                <Form.Item label={t('dashboard.events.addEditEvent.location.virtualLocation')}>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.location.virtualLocation')}
+                  name="virtualLocationName"
+                  style={{ display: !addedFields?.includes('virtualLocationName') && 'none' }}>
                   <BilingualInput fieldData={initialVirtualLocation && initialVirtualLocation[0]?.name}>
                     <Form.Item
                       name="frenchVirtualLocation"
@@ -1042,6 +1046,7 @@ function AddEvent() {
                 </Form.Item>
                 <Form.Item
                   name="virtualLocationOnlineLink"
+                  style={{ display: !addedFields?.includes('virtualLocationOnlineLink') && 'none' }}
                   className="subheading-wrap"
                   label={t('dashboard.events.addEditEvent.location.onlineLink')}
                   initialValue={initialVirtualLocation && initialVirtualLocation[0]?.url?.uri}
@@ -1058,26 +1063,26 @@ function AddEvent() {
                   />
                 </Form.Item>
               </Form.Item>
-              {dateType && (
-                <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
-                  {locationTypeOptions.map((type) => {
-                    return (
-                      <ChangeType
-                        key={type.type}
-                        primaryIcon={<PlusOutlined />}
-                        disabled={type.disabled}
-                        label={type.label}
-                        promptText={type.tooltip}
-                        secondaryIcon={<InfoCircleOutlined />}
-                        onClick={() => {
-                          setDateType(type.type);
-                          form.resetFields(['datePicker', 'dateRangePicker']);
-                        }}
-                      />
-                    );
-                  })}
-                </Form.Item>
-              )}
+
+              <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
+                {locationTypeOptions.map((type) => {
+                  return (
+                    <ChangeType
+                      key={type.type}
+                      primaryIcon={<PlusOutlined />}
+                      disabled={type.disabled}
+                      label={type.label}
+                      promptText={type.tooltip}
+                      secondaryIcon={<InfoCircleOutlined />}
+                      onClick={() => {
+                        let array = addedFields?.concat(type?.fieldNames);
+                        array = [...new Set(array)];
+                        setAddedFields(array);
+                      }}
+                    />
+                  );
+                })}
+              </Form.Item>
             </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.otherInformation.title')}>
               <>
