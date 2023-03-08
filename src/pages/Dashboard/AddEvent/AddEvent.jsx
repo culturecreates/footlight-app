@@ -1020,7 +1020,7 @@ function AddEvent() {
                       )
                     }>
                     <EventsSearch
-                      style={{ borderRadius: '4px' }}
+                      style={{ borderRadius: '4px', width: '423px' }}
                       placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
                       onChange={(e) => {
                         placesSearch(e.target.value);
@@ -1645,6 +1645,7 @@ function AddEvent() {
                   <TreeSelectOption
                     allowClear
                     treeDefaultExpandAll
+                    style={{ width: '423px' }}
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility')}
