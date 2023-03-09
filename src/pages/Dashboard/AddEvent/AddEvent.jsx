@@ -195,6 +195,7 @@ function AddEvent() {
             organizers = [],
             performers = [],
             collaborators = [],
+            dynamicFields = [],
             image;
           let eventObj;
           if (dateType === dateTypes.SINGLE) {
@@ -331,6 +332,15 @@ function AddEvent() {
             });
           }
 
+          if (values?.dynamicFields) {
+            dynamicFields = Object.keys(values?.dynamicFields)?.map((dynamicField) => {
+              return {
+                taxonomyId: dynamicField,
+                conceptIds: values?.dynamicFields[dynamicField],
+              };
+            });
+          }
+
           eventObj = {
             name: {
               en: values?.english,
@@ -367,6 +377,7 @@ function AddEvent() {
             ...(values?.organizers && { organizers }),
             ...(values?.performers && { performers }),
             ...(values?.supporters && { collaborators }),
+            ...(values?.dynamicFields && { dynamicFields }),
           };
           if (values?.dragger && values?.dragger[0]?.originFileObj) {
             new Compressor(values?.dragger[0].originFileObj, {
@@ -803,7 +814,7 @@ function AddEvent() {
                     return (
                       <Form.Item
                         key={index}
-                        name={taxonomy?.id}
+                        name={['dynamicFields', taxonomy?.id]}
                         label={bilingual({
                           en: taxonomy?.name?.en,
                           fr: taxonomy?.name?.fr,
