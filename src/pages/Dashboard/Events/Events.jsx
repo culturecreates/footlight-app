@@ -294,6 +294,7 @@ function Events() {
                         onChange={(dates) => {
                           setFilter({ ...filter, dates: dates });
                         }}
+                        onOpenChange={(open) => setIsPopoverOpen(open)}
                         renderExtraFooter={() => (
                           <div className="date-range-picker-filter-footer">
                             <Button
