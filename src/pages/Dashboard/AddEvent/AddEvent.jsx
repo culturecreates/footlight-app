@@ -42,6 +42,7 @@ import Compressor from 'compressorjs';
 import { useAddImageMutation } from '../../../services/image';
 import TreeSelectOption from '../../../components/TreeSelectOption';
 import {
+  treeDynamicTaxonomyOptions,
   treeEntitiesOption,
   treeTaxonomyOptions,
 } from '../../../components/TreeSelectOption/treeSelectOption.settings';
@@ -61,6 +62,7 @@ import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import NoContent from '../../../components/NoContent/NoContent';
 import { usePrompt } from '../../../hooks/usePrompt';
+import { bilingual } from '../../../utils/bilingual';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -792,6 +794,44 @@ function AddEvent() {
                     }}
                   />
                 </Form.Item>
+                {allTaxonomyData?.data?.map((taxonomy, index) => {
+                  if (taxonomy?.isDynamicField) {
+                    let initialValues;
+                    eventData?.dynamicFields?.forEach((dynamicField) => {
+                      if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
+                    });
+                    return (
+                      <Form.Item
+                        key={index}
+                        name={taxonomy?.id}
+                        label={bilingual({
+                          en: taxonomy?.name?.en,
+                          fr: taxonomy?.name?.fr,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                        })}
+                        initialValue={initialValues}>
+                        <TreeSelectOption
+                          allowClear
+                          treeDefaultExpandAll
+                          notFoundContent={<NoContent />}
+                          clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                          treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user)}
+                          tagRender={(props) => {
+                            const { label, closable, onClose } = props;
+                            return (
+                              <Tags
+                                closable={closable}
+                                onClose={onClose}
+                                closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                                {label}
+                              </Tags>
+                            );
+                          }}
+                        />
+                      </Form.Item>
+                    );
+                  }
+                })}
               </Form.Item>
             </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.dates.dates')} required={true}>

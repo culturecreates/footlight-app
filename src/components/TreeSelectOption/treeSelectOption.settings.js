@@ -92,3 +92,31 @@ export const treeEntitiesOption = (data, user) => {
   });
   return options;
 };
+
+export const treeDynamicTaxonomyOptions = (concepts, user) => {
+  let options =
+    concepts &&
+    concepts?.map((concept) => {
+      return {
+        title: bilingual({
+          en: concept?.name?.en,
+          fr: concept?.name?.fr,
+          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+        }),
+        value: concept?.id,
+        ...(concept?.children && {
+          children: concept?.children?.map((child) => {
+            return {
+              title: bilingual({
+                en: child?.name?.en,
+                fr: child?.name?.fr,
+                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+              }),
+              value: child?.id,
+            };
+          }),
+        }),
+      };
+    });
+  return options;
+};
