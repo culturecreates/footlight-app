@@ -40,6 +40,19 @@
 .events-wrapper .filter-sort-dropdown-wrapper .ant-dropdown-menu-item-selected::after {
   content: '\2713';
 }
+
+.events-wrapper .ant-popover-inner {
+  filter: drop-shadow(0px 8px 32px rgba(0, 0, 0, 0.2));
+}
+
+.date-filter-popover {
+  padding-top: 0px;
+}
+
+.date-filter-popover .ant-popover-arrow {
+  display: none;
+}
+
 @media only screen and (max-width: 428px) {
   .events-wrapper .events-heading-wrapper .events-heading {
     font-size: 24px;

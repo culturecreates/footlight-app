@@ -85,6 +85,9 @@
           "createdDate": "Date de création",
           "eventDate": "Date d’événement"
         },
+        "dates": {
+          "dates": "Dates"
+        },
         "clear": "Clear"
       },
       "readOnlyEvent": {
