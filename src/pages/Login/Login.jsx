@@ -46,7 +46,6 @@ const Login = () => {
   return (
     <Auth>
       <div className="login-page-wrapper">
-        {' '}
         <h3 className="login-heading">{t('login.header')}</h3>
         <Form
           name="normal_login"
