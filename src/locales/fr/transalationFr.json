@@ -278,6 +278,9 @@
     "tabEnglish": "Anglais",
     "tabFrench": "Français",
     "noneFound": "Non trouvé",
+    "unsavedChanges": "Vous avez des modifications non sauvegardées. Etes-vous sûr de vouloir les jeter ?",
+    "keepEditing": "Poursuivre l'édition",
+    "discard": "Jeter",
     "server": {
       "status": {
         "503": {

@@ -278,6 +278,9 @@
     "tabEnglish": "English",
     "tabFrench": "French",
     "noneFound": "None Found",
+    "unsavedChanges": "You have unsaved changes. Are you sure you want to discard them?",
+    "keepEditing": "Keep editing",
+    "discard": "Discard",
     "server": {
       "status": {
         "503": {
