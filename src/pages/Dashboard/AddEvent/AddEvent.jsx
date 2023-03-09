@@ -7,6 +7,7 @@ import {
   CloseCircleOutlined,
   CalendarOutlined,
   ExclamationCircleOutlined,
+  PlusOutlined,
 } from '@ant-design/icons';
 import moment from 'moment';
 import i18n from 'i18next';
@@ -60,6 +61,9 @@ import SelectionItem from '../../../components/List/SelectionItem';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import NoContent from '../../../components/NoContent/NoContent';
+import { locationType, locationTypeOptions, virtualLocationFieldNames } from '../../../constants/locationTypeOptions';
+import { otherInformationFieldNames, otherInformationOptions } from '../../../constants/otherInformationOptions';
+import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../../constants/eventAccessibilityOptions';
 import { usePrompt } from '../../../hooks/usePrompt';
 const { TextArea } = Input;
 
@@ -117,8 +121,11 @@ function AddEvent() {
     performer: false,
     supporter: false,
   });
+  const [addedFields, setAddedFields] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
+
   usePrompt(t('common.unsavedChanges'), showDialog);
+
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
 
@@ -276,7 +283,7 @@ function AddEvent() {
               ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote }),
             };
           }
-          if (values?.keywords?.length > 0) {
+          if (values?.keywords?.length) {
             keywords = values?.keywords;
           }
           if (ticketType) {
@@ -581,6 +588,11 @@ function AddEvent() {
       .catch((error) => console.log(error));
   };
 
+  const addFieldsHandler = (fieldNames) => {
+    let array = addedFields?.concat(fieldNames);
+    array = [...new Set(array)];
+    setAddedFields(array);
+  };
   const onValuesChangHandler = () => {
     setShowDialog(true);
   };
@@ -599,6 +611,7 @@ function AddEvent() {
 
   useEffect(() => {
     if (calendarId && eventData) {
+      let initialAddedFields = [];
       if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState)) {
         setDateType(
           dateTimeTypeHandler(
@@ -610,6 +623,16 @@ function AddEvent() {
         );
         setTicketType(eventData?.offerConfiguration?.category);
         if (initialPlace && initialPlace?.length > 0) setLocationPlace(placesOptions(initialPlace)[0]);
+        if (eventData?.locations?.filter((location) => location?.isVirtualLocation == true)?.length > 0)
+          initialAddedFields = initialAddedFields?.concat(locationType?.fieldNames);
+        if (
+          eventData?.contactPoint?.email ||
+          eventData?.contactPoint?.telephone ||
+          eventData?.contactPoint?.url?.uri ||
+          eventData?.contactPoint?.name?.fr ||
+          eventData?.contactPoint?.name?.en
+        )
+          initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.contact);
         if (eventData?.organizer) {
           let initialOrganizers = eventData?.organizer?.map((organizer) => {
             return {
@@ -631,6 +654,7 @@ function AddEvent() {
             };
           });
           setSelectedPerformers(treeEntitiesOption(initialPerformers, user));
+          initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.performerWrap);
         }
         if (eventData?.collaborators) {
           let initialSupporters = eventData?.collaborators?.map((supporter) => {
@@ -642,7 +666,16 @@ function AddEvent() {
             };
           });
           setSelectedSupporters(treeEntitiesOption(initialSupporters, user));
+          initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.supporterWrap);
         }
+        if (eventData?.url?.uri) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.eventLink);
+        if (eventData?.videoUrl) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.videoLink);
+        if (eventData?.facebookUrl)
+          initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.facebookLinkWrap);
+        if (eventData?.keywords) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
+        if (eventData?.accessibilityNote?.en || eventData?.accessibilityNote?.fr)
+          initialAddedFields = initialAddedFields?.concat(eventAccessibilityFieldNames?.noteWrap);
+        setAddedFields(initialAddedFields);
       } else
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
     }
@@ -1002,7 +1035,7 @@ function AddEvent() {
                       )
                     }>
                     <EventsSearch
-                      style={{ borderRadius: '4px' }}
+                      style={{ borderRadius: '4px', width: '423px' }}
                       placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
                       onChange={(e) => {
                         placesSearch(e.target.value);
@@ -1026,7 +1059,10 @@ function AddEvent() {
                     />
                   )}
                 </Form.Item>
-                <Form.Item label={t('dashboard.events.addEditEvent.location.virtualLocation')}>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.location.virtualLocation')}
+                  name={virtualLocationFieldNames.virtualLocationName}
+                  style={{ display: !addedFields?.includes(virtualLocationFieldNames.virtualLocationName) && 'none' }}>
                   <BilingualInput fieldData={initialVirtualLocation && initialVirtualLocation[0]?.name}>
                     <Form.Item
                       name="frenchVirtualLocation"
@@ -1053,7 +1089,10 @@ function AddEvent() {
                   </BilingualInput>
                 </Form.Item>
                 <Form.Item
-                  name="virtualLocationOnlineLink"
+                  name={virtualLocationFieldNames.virtualLocationOnlineLink}
+                  style={{
+                    display: !addedFields?.includes(virtualLocationFieldNames.virtualLocationOnlineLink) && 'none',
+                  }}
                   className="subheading-wrap"
                   label={t('dashboard.events.addEditEvent.location.onlineLink')}
                   initialValue={initialVirtualLocation && initialVirtualLocation[0]?.url?.uri}
@@ -1069,6 +1108,27 @@ function AddEvent() {
                     placeholder={t('dashboard.events.addEditEvent.location.placeHolderOnlineLink')}
                   />
                 </Form.Item>
+              </Form.Item>
+
+              <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
+                {addedFields?.includes(virtualLocationFieldNames.virtualLocationOnlineLink) &&
+                addedFields?.includes(virtualLocationFieldNames.virtualLocationName) ? (
+                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                ) : (
+                  locationTypeOptions.map((type) => {
+                    return (
+                      <ChangeType
+                        key={type.type}
+                        primaryIcon={<PlusOutlined />}
+                        disabled={type.disabled}
+                        label={type.label}
+                        promptText={type.tooltip}
+                        secondaryIcon={<InfoCircleOutlined />}
+                        onClick={() => addFieldsHandler(type?.fieldNames)}
+                      />
+                    );
+                  })
+                )}
               </Form.Item>
             </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.otherInformation.title')}>
@@ -1250,7 +1310,12 @@ function AddEvent() {
                     })}
                   </Form.Item>
                 </Form.Item>
-                <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.contact.title')}>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.otherInformation.contact.title')}
+                  name={otherInformationFieldNames.contact}
+                  style={{
+                    display: !addedFields?.includes(otherInformationFieldNames.contact) && 'none',
+                  }}>
                   <Form.Item
                     label={t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}
                     className="subheading-wrap">
@@ -1322,7 +1387,12 @@ function AddEvent() {
                     />
                   </Form.Item>
                 </Form.Item>
-                <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.performer.title')}>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.otherInformation.performer.title')}
+                  name={otherInformationFieldNames.performerWrap}
+                  style={{
+                    display: !addedFields?.includes(otherInformationFieldNames.performerWrap) && 'none',
+                  }}>
                   <Row>
                     <Col>
                       <p className="add-event-date-heading">
@@ -1390,7 +1460,12 @@ function AddEvent() {
                     })}
                   </Form.Item>
                 </Form.Item>
-                <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.supporter.title')}>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.otherInformation.supporter.title')}
+                  name={otherInformationFieldNames.supporterWrap}
+                  style={{
+                    display: !addedFields?.includes(otherInformationFieldNames.supporterWrap) && 'none',
+                  }}>
                   <Row>
                     <Col>
                       <p className="add-event-date-heading">
@@ -1459,7 +1534,10 @@ function AddEvent() {
                   </Form.Item>
                 </Form.Item>
                 <Form.Item
-                  name="eventLink"
+                  name={otherInformationFieldNames.eventLink}
+                  style={{
+                    display: !addedFields?.includes(otherInformationFieldNames.eventLink) && 'none',
+                  }}
                   label={t('dashboard.events.addEditEvent.otherInformation.eventLink')}
                   initialValue={eventData?.url?.uri}
                   rules={[
@@ -1475,7 +1553,10 @@ function AddEvent() {
                   />
                 </Form.Item>
                 <Form.Item
-                  name="videoLink"
+                  name={otherInformationFieldNames.videoLink}
+                  style={{
+                    display: !addedFields?.includes(otherInformationFieldNames.videoLink) && 'none',
+                  }}
                   label={t('dashboard.events.addEditEvent.otherInformation.videoLink')}
                   initialValue={eventData?.videoUrl}
                   rules={[
@@ -1491,26 +1572,34 @@ function AddEvent() {
                   />
                 </Form.Item>
                 <Form.Item
-                  name="facebookLink"
-                  label={t('dashboard.events.addEditEvent.otherInformation.facebookLink')}
-                  initialValue={eventData?.facebookUrl}
-                  rules={[
-                    {
-                      type: 'url',
-                      message: t('dashboard.events.addEditEvent.validations.url'),
-                    },
-                  ]}>
-                  <StyledInput
-                    addonBefore="https://"
-                    autoComplete="off"
-                    placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
-                  />
+                  style={{
+                    display: !addedFields?.includes(otherInformationFieldNames.facebookLinkWrap) && 'none',
+                  }}>
+                  <Form.Item
+                    name="facebookLink"
+                    label={t('dashboard.events.addEditEvent.otherInformation.facebookLink')}
+                    initialValue={eventData?.facebookUrl}
+                    rules={[
+                      {
+                        type: 'url',
+                        message: t('dashboard.events.addEditEvent.validations.url'),
+                      },
+                    ]}>
+                    <StyledInput
+                      addonBefore="https://"
+                      autoComplete="off"
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
+                    />
+                  </Form.Item>
+                  <p className="add-event-date-heading">
+                    {t('dashboard.events.addEditEvent.otherInformation.facebookLinkFooter')}
+                  </p>
                 </Form.Item>
-                <p className="add-event-date-heading">
-                  {t('dashboard.events.addEditEvent.otherInformation.facebookLinkFooter')}
-                </p>
                 <Form.Item
-                  name="keywords"
+                  name={otherInformationFieldNames.keywords}
+                  style={{
+                    display: !addedFields?.includes(otherInformationFieldNames.facebookLinkWrap) && 'none',
+                  }}
                   label={t('dashboard.events.addEditEvent.otherInformation.keywords')}
                   initialValue={eventData?.keywords}>
                   <SelectOption
@@ -1533,6 +1622,32 @@ function AddEvent() {
                   />
                 </Form.Item>
               </>
+              <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
+                {addedFields?.includes(otherInformationFieldNames.contact) &&
+                addedFields?.includes(otherInformationFieldNames.performerWrap) &&
+                addedFields?.includes(otherInformationFieldNames.supporterWrap) &&
+                addedFields?.includes(otherInformationFieldNames.eventLink) &&
+                addedFields?.includes(otherInformationFieldNames.videoLink) &&
+                addedFields?.includes(otherInformationFieldNames.facebookLinkWrap) &&
+                addedFields?.includes(otherInformationFieldNames.keywords) ? (
+                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                ) : (
+                  otherInformationOptions.map((type) => {
+                    if (!addedFields?.includes(type.fieldNames))
+                      return (
+                        <ChangeType
+                          key={type.type}
+                          primaryIcon={<PlusOutlined />}
+                          disabled={type.disabled}
+                          label={type.label}
+                          promptText={type.tooltip}
+                          secondaryIcon={<InfoCircleOutlined />}
+                          onClick={() => addFieldsHandler(type?.fieldNames)}
+                        />
+                      );
+                  })
+                )}
+              </Form.Item>
             </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.eventAccessibility.title')}>
               <>
@@ -1545,6 +1660,7 @@ function AddEvent() {
                   <TreeSelectOption
                     allowClear
                     treeDefaultExpandAll
+                    style={{ width: '423px' }}
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility')}
@@ -1561,7 +1677,12 @@ function AddEvent() {
                     }}
                   />
                 </Form.Item>
-                <Form.Item label={t('dashboard.events.addEditEvent.eventAccessibility.note')}>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.eventAccessibility.note')}
+                  name={eventAccessibilityFieldNames.noteWrap}
+                  style={{
+                    display: !addedFields?.includes(eventAccessibilityFieldNames.noteWrap) && 'none',
+                  }}>
                   <BilingualInput fieldData={eventData?.accessibilityNote}>
                     <Form.Item name="frenchAccessibilityNote" initialValue={eventData?.accessibilityNote?.fr}>
                       <TextArea
@@ -1586,6 +1707,26 @@ function AddEvent() {
                   </BilingualInput>
                 </Form.Item>
               </>
+              <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
+                {addedFields?.includes(eventAccessibilityFieldNames.noteWrap) ? (
+                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                ) : (
+                  eventAccessibilityOptions.map((type) => {
+                    if (!addedFields?.includes(type.fieldNames))
+                      return (
+                        <ChangeType
+                          key={type.type}
+                          primaryIcon={<PlusOutlined />}
+                          disabled={type.disabled}
+                          label={type.label}
+                          promptText={type.tooltip}
+                          secondaryIcon={<InfoCircleOutlined />}
+                          onClick={() => addFieldsHandler(type?.fieldNames)}
+                        />
+                      );
+                  })
+                )}
+              </Form.Item>
             </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.tickets.title')} required={true}>
               <>
