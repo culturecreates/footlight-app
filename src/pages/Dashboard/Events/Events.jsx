@@ -289,7 +289,23 @@ function Events() {
                   <Popover
                     placement="bottom"
                     // getPopupContainer={(trigger) => trigger.parentNode}
-                    content={<DateRangePicker onChange={(dates) => setFilter({ ...filter, dates: dates })} />}
+                    content={
+                      <DateRangePicker
+                        onChange={(dates) => {
+                          setFilter({ ...filter, dates: dates });
+                        }}
+                        renderExtraFooter={() => (
+                          <div className="date-range-picker-filter-footer">
+                            <Button type="text" className="date-range-picker-filter-footer-label">
+                              {t('dashboard.events.filter.dates.allTime')}
+                            </Button>
+                            <Button type="text" className="date-range-picker-filter-footer-label">
+                              {t('dashboard.events.filter.dates.past')}
+                            </Button>
+                          </div>
+                        )}
+                      />
+                    }
                     trigger="click"
                     overlayClassName="date-filter-popover"
                     open={isPopoverOpen}

@@ -86,7 +86,9 @@
           "eventDate": "Event date"
         },
         "dates": {
-          "dates": "Dates"
+          "dates": "Dates",
+          "allTime": "All time",
+          "past": "Past"
         },
         "clear": "Clear"
       },
