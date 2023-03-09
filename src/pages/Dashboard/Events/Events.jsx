@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './events.css';
-import { Checkbox, Col, Row, Badge, Divider, Button } from 'antd';
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { Checkbox, Col, Row, Badge, Divider, Button, Dropdown, Space } from 'antd';
+import { CloseCircleOutlined, DownOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import EventList from '../../../components/List/Events';
 import { useLazyGetEventsQuery } from '../../../services/events';
@@ -15,6 +16,7 @@ import { useGetAllUsersQuery } from '../../../services/users';
 import { filterTypes } from '../../../constants/filterTypes';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
+import { sortByOptions } from '../../../constants/sortByOptions';
 
 function Events() {
   const { t } = useTranslation();
@@ -35,6 +37,8 @@ function Events() {
   const [eventSearchQuery, setEventSearchQuery] = useState(searchParams.get('query') ?? '');
   const [filter, setFilter] = useState({
     publication: [],
+    sort: searchParams.get('sortBy') ?? sortByOptions[0]?.key,
+    order: searchParams.get('order') ?? 'ASC',
   });
   const [userFilter, setUserFilter] = useState([]);
 
@@ -52,6 +56,7 @@ function Events() {
     let query = new URLSearchParams();
     userFilter?.forEach((user) => query.append('user', user));
     filter?.publication?.forEach((state) => query.append('publish-state', state));
+    query.append('order', `${filter?.order}(${filter?.sort}.${i18n.language})`);
     getEvents({
       pageNumber,
       limit: 10,
@@ -60,9 +65,12 @@ function Events() {
       filterkeys: decodeURIComponent(query.toString()),
       sessionId: timestampRef,
     });
-    if (!eventSearchQuery || eventSearchQuery === '') setSearchParams(createSearchParams({ page: pageNumber }));
+    if (!eventSearchQuery || eventSearchQuery === '')
+      setSearchParams(createSearchParams({ page: pageNumber, order: filter?.order, sortBy: filter?.sort }));
     else {
-      setSearchParams(createSearchParams({ page: pageNumber, query: eventSearchQuery }));
+      setSearchParams(
+        createSearchParams({ page: pageNumber, query: eventSearchQuery, order: filter?.order, sortBy: filter?.sort }),
+      );
     }
   }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter]);
 
@@ -99,6 +107,28 @@ function Events() {
       });
     setPageNumber(1);
   };
+
+  const onSortSelect = ({ selectedKeys }) => {
+    setFilter({
+      ...filter,
+      sort: selectedKeys[0],
+    });
+    setPageNumber(1);
+  };
+
+  const onSortOrderChange = () => {
+    if (filter?.order == 'ASC')
+      setFilter({
+        ...filter,
+        order: 'DES',
+      });
+    else if (filter?.order == 'DES')
+      setFilter({
+        ...filter,
+        order: 'ASC',
+      });
+    setPageNumber(1);
+  };
   return (
     !isLoading &&
     !allUsersLoading && (
@@ -129,35 +159,82 @@ function Events() {
             </Col>
             <Col span={16}>
               <Row gutter={20}>
-                <Col>
-                  <SearchableCheckbox
-                    onFilterChange={(values) => onFilterChange(values, filterTypes.PUBLICATION)}
-                    data={eventPublishStateOptions?.map((publication) => {
-                      return {
-                        key: publication.key,
-                        label: (
-                          <Checkbox value={publication.value} key={publication.key} style={{ marginLeft: '8px' }}>
-                            {publication.title}
-                          </Checkbox>
-                        ),
-                        filtervalue: publication.value,
-                      };
-                    })}
-                    value={filter?.publication}>
-                    <Button
-                      size="large"
-                      className="filter-buttons"
-                      style={{ borderColor: filter?.publication?.length > 0 && '#607EFC' }}>
-                      {t('dashboard.events.filter.publication.label')}
-                      {filter?.publication?.length > 0 && (
-                        <>
-                          &nbsp;
-                          <Badge count={filter?.publication?.length} showZero={false} color="#1B3DE6" />
-                        </>
-                      )}
-                    </Button>
-                  </SearchableCheckbox>
-                </Col>
+                <Space>
+                  <Col>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <span style={{ fontSize: '16px', fontWeight: 700 }}>
+                        {t('dashboard.events.filter.sort.sortBy')}
+                      </span>
+
+                      <Dropdown
+                        overlayClassName="filter-sort-dropdown-wrapper"
+                        overlayStyle={{ minWidth: '200px' }}
+                        getPopupContainer={(trigger) => trigger.parentNode}
+                        menu={{
+                          items: sortByOptions,
+                          selectable: true,
+                          defaultSelectedKeys: [`name`],
+                          onSelect: onSortSelect,
+                        }}
+                        trigger={['click']}>
+                        <Button size="large" className="filter-sort-button">
+                          <Space>
+                            {sortByOptions?.map((sortBy) => {
+                              if (sortBy?.key === filter?.sort) return sortBy?.label;
+                            })}
+                            <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
+                          </Space>
+                        </Button>
+                      </Dropdown>
+
+                      <Button
+                        className="filter-sort-button"
+                        style={{ borderColor: filter?.order && '#1B3DE6' }}
+                        onClick={onSortOrderChange}
+                        icon={
+                          filter?.order === 'ASC' ? (
+                            <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
+                          ) : (
+                            filter?.order === 'DES' && (
+                              <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
+                            )
+                          )
+                        }
+                        size={'large'}
+                      />
+                    </div>
+                  </Col>
+
+                  <Col>
+                    <SearchableCheckbox
+                      onFilterChange={(values) => onFilterChange(values, filterTypes.PUBLICATION)}
+                      data={eventPublishStateOptions?.map((publication) => {
+                        return {
+                          key: publication.key,
+                          label: (
+                            <Checkbox value={publication.value} key={publication.key} style={{ marginLeft: '8px' }}>
+                              {publication.title}
+                            </Checkbox>
+                          ),
+                          filtervalue: publication.value,
+                        };
+                      })}
+                      value={filter?.publication}>
+                      <Button
+                        size="large"
+                        className="filter-buttons"
+                        style={{ borderColor: filter?.publication?.length > 0 && '#607EFC' }}>
+                        {t('dashboard.events.filter.publication.label')}
+                        {filter?.publication?.length > 0 && (
+                          <>
+                            &nbsp;
+                            <Badge count={filter?.publication?.length} showZero={false} color="#1B3DE6" />
+                          </>
+                        )}
+                      </Button>
+                    </SearchableCheckbox>
+                  </Col>
+                </Space>
                 <Col>
                   <SearchableCheckbox
                     allowSearch={true}
