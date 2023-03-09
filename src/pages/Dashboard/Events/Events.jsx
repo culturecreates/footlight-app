@@ -62,8 +62,8 @@ function Events() {
     filter?.publication?.forEach((state) => query.append('publish-state', state));
     query.append('order', `${filter?.order}(${filter?.sort}.${i18n.language})`);
     if (filter?.dates?.length == 2) {
-      query.append('start-date-range', moment(filter?.dates[0]).format('YYYY-MM-DD'));
-      query.append('end-date-range', moment(filter?.dates[1]).format('YYYY-MM-DD'));
+      query.append('start-date-range', filter?.dates[0] ? moment(filter?.dates[0]).format('YYYY-MM-DD') : null);
+      query.append('end-date-range', filter?.dates[1] ? moment(filter?.dates[1]).format('YYYY-MM-DD') : null);
     }
     getEvents({
       pageNumber,
@@ -296,10 +296,16 @@ function Events() {
                         }}
                         renderExtraFooter={() => (
                           <div className="date-range-picker-filter-footer">
-                            <Button type="text" className="date-range-picker-filter-footer-label">
+                            <Button
+                              type="text"
+                              className="date-range-picker-filter-footer-label"
+                              onClick={() => setFilter({ ...filter, dates: [null, null] })}>
                               {t('dashboard.events.filter.dates.allTime')}
                             </Button>
-                            <Button type="text" className="date-range-picker-filter-footer-label">
+                            <Button
+                              type="text"
+                              className="date-range-picker-filter-footer-label"
+                              onClick={() => setFilter({ ...filter, dates: [null, moment().subtract(1, 'days')] })}>
                               {t('dashboard.events.filter.dates.past')}
                             </Button>
                           </div>
@@ -324,7 +330,7 @@ function Events() {
                   </Popover>
                 </Col>
                 <Col>
-                  {(userFilter.length > 0 || filter?.publication?.length > 0) && (
+                  {(userFilter.length > 0 || filter?.publication?.length > 0 || filter?.dates?.length > 0) && (
                     <Button
                       size="large"
                       className="filter-buttons"
@@ -332,6 +338,9 @@ function Events() {
                       onClick={() => {
                         setFilter({
                           publication: [],
+                          sort: sortByOptions[0]?.key,
+                          order: 'ASC',
+                          dates: [],
                         });
                         setUserFilter([]);
                         let usersToClear = selectedUsers;
