@@ -291,6 +291,7 @@ function Events() {
                     // getPopupContainer={(trigger) => trigger.parentNode}
                     content={
                       <DateRangePicker
+                        value={filter?.dates}
                         onChange={(dates) => {
                           setFilter({ ...filter, dates: dates });
                         }}
