@@ -159,7 +159,7 @@ function Events() {
               </Col>
             </Row>
           </Col>
-          <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+          <Row gutter={[20, 20]}>
             <Col xs={24} sm={24} md={12} lg={10} xl={8}>
               <EventsSearch
                 placeholder={t('dashboard.events.searchPlaceholder')}
@@ -169,54 +169,51 @@ function Events() {
                 onChange={onChangeHandler}
               />
             </Col>
-            <Col span={16}>
+            <Col>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <span style={{ fontSize: '16px', fontWeight: 700 }}>{t('dashboard.events.filter.sort.sortBy')}</span>
+
+                <Dropdown
+                  overlayClassName="filter-sort-dropdown-wrapper"
+                  overlayStyle={{ minWidth: '200px' }}
+                  getPopupContainer={(trigger) => trigger.parentNode}
+                  menu={{
+                    items: sortByOptions,
+                    selectable: true,
+                    defaultSelectedKeys: [`name`],
+                    onSelect: onSortSelect,
+                  }}
+                  trigger={['click']}>
+                  <Button size="large" className="filter-sort-button">
+                    <Space>
+                      {sortByOptions?.map((sortBy) => {
+                        if (sortBy?.key === filter?.sort) return sortBy?.label;
+                      })}
+                      <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
+                    </Space>
+                  </Button>
+                </Dropdown>
+
+                <Button
+                  className="filter-sort-button"
+                  style={{ borderColor: filter?.order && '#1B3DE6' }}
+                  onClick={onSortOrderChange}
+                  icon={
+                    filter?.order === 'ASC' ? (
+                      <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
+                    ) : (
+                      filter?.order === 'DES' && (
+                        <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
+                      )
+                    )
+                  }
+                  size={'large'}
+                />
+              </div>
+            </Col>
+            <Col>
               <Row gutter={20}>
                 <Space>
-                  <Col>
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                      <span style={{ fontSize: '16px', fontWeight: 700 }}>
-                        {t('dashboard.events.filter.sort.sortBy')}
-                      </span>
-
-                      <Dropdown
-                        overlayClassName="filter-sort-dropdown-wrapper"
-                        overlayStyle={{ minWidth: '200px' }}
-                        getPopupContainer={(trigger) => trigger.parentNode}
-                        menu={{
-                          items: sortByOptions,
-                          selectable: true,
-                          defaultSelectedKeys: [`name`],
-                          onSelect: onSortSelect,
-                        }}
-                        trigger={['click']}>
-                        <Button size="large" className="filter-sort-button">
-                          <Space>
-                            {sortByOptions?.map((sortBy) => {
-                              if (sortBy?.key === filter?.sort) return sortBy?.label;
-                            })}
-                            <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
-                          </Space>
-                        </Button>
-                      </Dropdown>
-
-                      <Button
-                        className="filter-sort-button"
-                        style={{ borderColor: filter?.order && '#1B3DE6' }}
-                        onClick={onSortOrderChange}
-                        icon={
-                          filter?.order === 'ASC' ? (
-                            <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
-                          ) : (
-                            filter?.order === 'DES' && (
-                              <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
-                            )
-                          )
-                        }
-                        size={'large'}
-                      />
-                    </div>
-                  </Col>
-
                   <Col>
                     <SearchableCheckbox
                       onFilterChange={(values) => onFilterChange(values, filterTypes.PUBLICATION)}
