@@ -90,7 +90,7 @@
       "addEditEvent": {
         "heading": { "newEvent": "Ajouter un événement", "editEvent": "Modifier un événement" },
         "addMoreDetails": "Ajouter plus de détails à votre événement",
-        "allDone": "All done",
+        "allDone": "Terminé",
         "language": {
           "title": "Titre de l'événement",
           "titleLabel": "English",
@@ -154,8 +154,7 @@
           "performer": {
             "title": "Compagnie/groupe/artiste/animateur de l'événement",
             "subHeading": "Ajoutez un interprète principal pour votre événement.",
-            "searchPlaceholder": "Recherchez des Organisations ou des Personnes",
-            "performerTooltip": "Ajoutez groupe d'interprètes, interprète, artiste ou animateur en fonction du type d'événement."
+            "searchPlaceholder": "Recherchez des Organisations ou des Personnes"
           },
           "supporter": {
             "title": "Supporteur/Commanditaire",
