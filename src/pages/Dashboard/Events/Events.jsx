@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './events.css';
-import { Checkbox, Col, Row, Badge, Divider, Button, Dropdown, Space } from 'antd';
+import { Checkbox, Col, Row, Badge, Divider, Button, Dropdown, Space, Popover } from 'antd';
 import { CloseCircleOutlined, DownOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
@@ -17,6 +17,8 @@ import { filterTypes } from '../../../constants/filterTypes';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
 import { sortByOptions } from '../../../constants/sortByOptions';
+import DateRangePicker from '../../../components/DateRangePicker';
+import moment from 'moment';
 
 function Events() {
   const { t } = useTranslation();
@@ -39,9 +41,10 @@ function Events() {
     publication: [],
     sort: searchParams.get('sortBy') ?? sortByOptions[0]?.key,
     order: searchParams.get('order') ?? 'ASC',
+    dates: [],
   });
   const [userFilter, setUserFilter] = useState([]);
-
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState({});
 
   let userFilterData = allUsersData?.data?.active?.slice()?.sort(function (x, y) {
@@ -53,10 +56,15 @@ function Events() {
     ?.sort((a, b) => a?.firstName?.toLowerCase()?.localeCompare(b?.firstName?.toLowerCase()));
   userFilterData = [user].concat(userFilterData);
   useEffect(() => {
+    console.log(filter);
     let query = new URLSearchParams();
     userFilter?.forEach((user) => query.append('user', user));
     filter?.publication?.forEach((state) => query.append('publish-state', state));
     query.append('order', `${filter?.order}(${filter?.sort}.${i18n.language})`);
+    if (filter?.dates?.length == 2) {
+      query.append('start-date-range', filter?.dates[0] ? moment(filter?.dates[0]).format('YYYY-MM-DD') : null);
+      query.append('end-date-range', filter?.dates[1] ? moment(filter?.dates[1]).format('YYYY-MM-DD') : null);
+    }
     getEvents({
       pageNumber,
       limit: 10,
@@ -128,6 +136,10 @@ function Events() {
         order: 'ASC',
       });
     setPageNumber(1);
+  };
+
+  const handlePopoverOpenChange = (newOpen) => {
+    setIsPopoverOpen(newOpen);
   };
   return (
     !isLoading &&
@@ -273,9 +285,54 @@ function Events() {
                     </Button>
                   </SearchableCheckbox>
                 </Col>
-
                 <Col>
-                  {(userFilter.length > 0 || filter?.publication?.length > 0) && (
+                  <Popover
+                    placement="bottom"
+                    // getPopupContainer={(trigger) => trigger.parentNode}
+                    content={
+                      <DateRangePicker
+                        value={filter?.dates}
+                        onChange={(dates) => {
+                          setFilter({ ...filter, dates: dates });
+                        }}
+                        onOpenChange={(open) => setIsPopoverOpen(open)}
+                        renderExtraFooter={() => (
+                          <div className="date-range-picker-filter-footer">
+                            <Button
+                              type="text"
+                              className="date-range-picker-filter-footer-label"
+                              onClick={() => setFilter({ ...filter, dates: [null, null] })}>
+                              {t('dashboard.events.filter.dates.allTime')}
+                            </Button>
+                            <Button
+                              type="text"
+                              className="date-range-picker-filter-footer-label"
+                              onClick={() => setFilter({ ...filter, dates: [null, moment().subtract(1, 'days')] })}>
+                              {t('dashboard.events.filter.dates.past')}
+                            </Button>
+                          </div>
+                        )}
+                      />
+                    }
+                    trigger="click"
+                    overlayClassName="date-filter-popover"
+                    open={isPopoverOpen}
+                    onOpenChange={handlePopoverOpenChange}>
+                    <Button
+                      size="large"
+                      className="filter-buttons"
+                      style={{ borderColor: filter?.dates?.length > 0 > 0 && '#607EFC' }}>
+                      {t('dashboard.events.filter.dates.dates')}
+                      {filter?.dates?.length > 0 && (
+                        <>
+                          &nbsp; <Badge color="#1B3DE6" />
+                        </>
+                      )}
+                    </Button>
+                  </Popover>
+                </Col>
+                <Col>
+                  {(userFilter.length > 0 || filter?.publication?.length > 0 || filter?.dates?.length > 0) && (
                     <Button
                       size="large"
                       className="filter-buttons"
@@ -283,6 +340,9 @@ function Events() {
                       onClick={() => {
                         setFilter({
                           publication: [],
+                          sort: sortByOptions[0]?.key,
+                          order: 'ASC',
+                          dates: [],
                         });
                         setUserFilter([]);
                         let usersToClear = selectedUsers;

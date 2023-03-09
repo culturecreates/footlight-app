@@ -85,6 +85,11 @@
           "createdDate": "Date de création",
           "eventDate": "Date d’événement"
         },
+        "dates": {
+          "dates": "Dates",
+          "allTime": "Toutes les dates",
+          "past": "Passé"
+        },
         "clear": "Clear"
       },
       "readOnlyEvent": {
