@@ -43,6 +43,7 @@ import Compressor from 'compressorjs';
 import { useAddImageMutation } from '../../../services/image';
 import TreeSelectOption from '../../../components/TreeSelectOption';
 import {
+  treeDynamicTaxonomyOptions,
   treeEntitiesOption,
   treeTaxonomyOptions,
 } from '../../../components/TreeSelectOption/treeSelectOption.settings';
@@ -65,6 +66,7 @@ import { locationType, locationTypeOptions, virtualLocationFieldNames } from '..
 import { otherInformationFieldNames, otherInformationOptions } from '../../../constants/otherInformationOptions';
 import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../../constants/eventAccessibilityOptions';
 import { usePrompt } from '../../../hooks/usePrompt';
+import { bilingual } from '../../../utils/bilingual';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -201,6 +203,7 @@ function AddEvent() {
             organizers = [],
             performers = [],
             collaborators = [],
+            dynamicFields = [],
             image;
           let eventObj;
           if (dateType === dateTypes.SINGLE) {
@@ -337,6 +340,15 @@ function AddEvent() {
             });
           }
 
+          if (values?.dynamicFields) {
+            dynamicFields = Object.keys(values?.dynamicFields)?.map((dynamicField) => {
+              return {
+                taxonomyId: dynamicField,
+                conceptIds: values?.dynamicFields[dynamicField],
+              };
+            });
+          }
+
           eventObj = {
             name: {
               en: values?.english,
@@ -373,6 +385,7 @@ function AddEvent() {
             ...(values?.organizers && { organizers }),
             ...(values?.performers && { performers }),
             ...(values?.supporters && { collaborators }),
+            ...(values?.dynamicFields && { dynamicFields }),
           };
           if (values?.dragger && values?.dragger[0]?.originFileObj) {
             new Compressor(values?.dragger[0].originFileObj, {
@@ -508,6 +521,7 @@ function AddEvent() {
         <>
           <Form.Item>
             <Outlined
+              size="large"
               label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
               onClick={(e) => saveAsDraftHandler(e)}
             />
@@ -525,6 +539,7 @@ function AddEvent() {
         <>
           <Form.Item>
             <Outlined
+              size="large"
               label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
               onClick={(e) => saveAsDraftHandler(e)}
             />
@@ -833,6 +848,44 @@ function AddEvent() {
                     }}
                   />
                 </Form.Item>
+                {allTaxonomyData?.data?.map((taxonomy, index) => {
+                  if (taxonomy?.isDynamicField) {
+                    let initialValues;
+                    eventData?.dynamicFields?.forEach((dynamicField) => {
+                      if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
+                    });
+                    return (
+                      <Form.Item
+                        key={index}
+                        name={['dynamicFields', taxonomy?.id]}
+                        label={bilingual({
+                          en: taxonomy?.name?.en,
+                          fr: taxonomy?.name?.fr,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                        })}
+                        initialValue={initialValues}>
+                        <TreeSelectOption
+                          allowClear
+                          treeDefaultExpandAll
+                          notFoundContent={<NoContent />}
+                          clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                          treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user)}
+                          tagRender={(props) => {
+                            const { label, closable, onClose } = props;
+                            return (
+                              <Tags
+                                closable={closable}
+                                onClose={onClose}
+                                closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                                {label}
+                              </Tags>
+                            );
+                          }}
+                        />
+                      </Form.Item>
+                    );
+                  }
+                })}
               </Form.Item>
             </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.dates.dates')} required={true}>
@@ -1151,6 +1204,7 @@ function AddEvent() {
                       initialValue={eventData?.description?.fr}
                       dependencies={['englishEditor']}
                       currentReactQuillRef={reactQuillRefFr}
+                      editorLanguage={'fr'}
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.description.frenchPlaceholder')}
                       rules={[
                         () => ({
@@ -1188,6 +1242,7 @@ function AddEvent() {
                       initialValue={eventData?.description?.en}
                       dependencies={['frenchEditor']}
                       currentReactQuillRef={reactQuillRefEn}
+                      editorLanguage={'en'}
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.description.englishPlaceholder')}
                       rules={[
                         () => ({

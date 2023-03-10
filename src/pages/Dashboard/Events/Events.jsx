@@ -56,7 +56,6 @@ function Events() {
     ?.sort((a, b) => a?.firstName?.toLowerCase()?.localeCompare(b?.firstName?.toLowerCase()));
   userFilterData = [user].concat(userFilterData);
   useEffect(() => {
-    console.log(filter);
     let query = new URLSearchParams();
     userFilter?.forEach((user) => query.append('user', user));
     filter?.publication?.forEach((state) => query.append('publish-state', state));

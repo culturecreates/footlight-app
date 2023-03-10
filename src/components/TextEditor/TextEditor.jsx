@@ -5,8 +5,17 @@ import './textEditor.css';
 import 'react-quill/dist/quill.snow.css';
 import { useTranslation } from 'react-i18next';
 import { pluralize } from '../../utils/pluralise';
+import OutlinedButton from '../Button/Outlined';
 function TextEditor(props) {
-  const { formName, initialValue, dependencies, rules, currentReactQuillRef, placeholder } = props;
+  const { formName, initialValue, dependencies, rules, currentReactQuillRef, placeholder, editorLanguage } = props;
+  let translateTo;
+
+  if (editorLanguage == 'en') {
+    translateTo = 'fr';
+  } else {
+    translateTo = 'en';
+  }
+
   const { t } = useTranslation();
   const [wordCount, setWordCount] = useState(
     currentReactQuillRef?.current?.unprivilegedEditor?.getText().split(' ').length,
@@ -48,6 +57,18 @@ function TextEditor(props) {
         <p>{t('dashboard.events.addEditEvent.otherInformation.description.footerTitle')}</p>
         <p>{pluralize(wordCount, t('dashboard.events.addEditEvent.otherInformation.description.word'))}</p>
       </div>
+      <OutlinedButton
+        label={t('dashboard.events.addEditEvent.otherInformation.description.translate')}
+        size="middle"
+        disabled={wordCount > 1 ? false : true}
+        onClick={() => {
+          window.open(
+            `${
+              process.env.REACT_APP_DEEPL_URL
+            }${editorLanguage}/${translateTo}/${currentReactQuillRef?.current?.unprivilegedEditor?.getText()}`,
+          );
+        }}
+      />
     </>
   );
 }

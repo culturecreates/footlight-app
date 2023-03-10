@@ -150,7 +150,8 @@
             "footerTitle": "A minimum of 50 words is required.",
             "word": "word",
             "frenchPlaceholder": "Enter French description",
-            "englishPlaceholder": "Enter English description"
+            "englishPlaceholder": "Enter English description",
+            "translate": "Translate"
           },
           "image": {
             "title": "Image",
