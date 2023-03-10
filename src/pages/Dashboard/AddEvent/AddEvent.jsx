@@ -1598,7 +1598,7 @@ function AddEvent() {
                 <Form.Item
                   name={otherInformationFieldNames.keywords}
                   style={{
-                    display: !addedFields?.includes(otherInformationFieldNames.facebookLinkWrap) && 'none',
+                    display: !addedFields?.includes(otherInformationFieldNames.keywords) && 'none',
                   }}
                   label={t('dashboard.events.addEditEvent.otherInformation.keywords')}
                   initialValue={eventData?.keywords}>
