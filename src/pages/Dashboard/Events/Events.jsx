@@ -159,7 +159,7 @@ function Events() {
               </Col>
             </Row>
           </Col>
-          <Row gutter={[20, 20]}>
+          <Row gutter={[20, 10]}>
             <Col xs={24} sm={24} md={12} lg={10} xl={8}>
               <EventsSearch
                 placeholder={t('dashboard.events.searchPlaceholder')}
