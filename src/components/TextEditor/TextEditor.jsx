@@ -58,7 +58,7 @@ function TextEditor(props) {
         <p>{pluralize(wordCount, t('dashboard.events.addEditEvent.otherInformation.description.word'))}</p>
       </div>
       <OutlinedButton
-        label={'Translate'}
+        label={t('dashboard.events.addEditEvent.otherInformation.description.translate')}
         size="middle"
         disabled={wordCount > 1 ? false : true}
         onClick={() => {
