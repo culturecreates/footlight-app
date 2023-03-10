@@ -587,6 +587,12 @@ function AddEvent() {
       })
       .catch((error) => console.log(error));
   };
+  useEffect(() => {
+    if (addedFields?.length > 0) {
+      const element = document.getElementsByClassName(addedFields.at(-1));
+      element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }, [addedFields]);
 
   const addFieldsHandler = (fieldNames) => {
     let array = addedFields?.concat(fieldNames);
@@ -1062,6 +1068,7 @@ function AddEvent() {
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.location.virtualLocation')}
                   name={virtualLocationFieldNames.virtualLocationName}
+                  className={virtualLocationFieldNames.virtualLocationName}
                   style={{ display: !addedFields?.includes(virtualLocationFieldNames.virtualLocationName) && 'none' }}>
                   <BilingualInput fieldData={initialVirtualLocation && initialVirtualLocation[0]?.name}>
                     <Form.Item
@@ -1093,7 +1100,7 @@ function AddEvent() {
                   style={{
                     display: !addedFields?.includes(virtualLocationFieldNames.virtualLocationOnlineLink) && 'none',
                   }}
-                  className="subheading-wrap"
+                  className={`subheading-wrap ${virtualLocationFieldNames.virtualLocationOnlineLink}`}
                   label={t('dashboard.events.addEditEvent.location.onlineLink')}
                   initialValue={initialVirtualLocation && initialVirtualLocation[0]?.url?.uri}
                   rules={[
@@ -1312,6 +1319,7 @@ function AddEvent() {
                 </Form.Item>
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.contact.title')}
+                  className={otherInformationFieldNames.contact}
                   name={otherInformationFieldNames.contact}
                   style={{
                     display: !addedFields?.includes(otherInformationFieldNames.contact) && 'none',
@@ -1390,6 +1398,7 @@ function AddEvent() {
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.performer.title')}
                   name={otherInformationFieldNames.performerWrap}
+                  className={otherInformationFieldNames.performerWrap}
                   style={{
                     display: !addedFields?.includes(otherInformationFieldNames.performerWrap) && 'none',
                   }}>
@@ -1463,6 +1472,7 @@ function AddEvent() {
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.supporter.title')}
                   name={otherInformationFieldNames.supporterWrap}
+                  className={otherInformationFieldNames.supporterWrap}
                   style={{
                     display: !addedFields?.includes(otherInformationFieldNames.supporterWrap) && 'none',
                   }}>
@@ -1535,6 +1545,7 @@ function AddEvent() {
                 </Form.Item>
                 <Form.Item
                   name={otherInformationFieldNames.eventLink}
+                  className={otherInformationFieldNames.eventLink}
                   style={{
                     display: !addedFields?.includes(otherInformationFieldNames.eventLink) && 'none',
                   }}
@@ -1554,6 +1565,7 @@ function AddEvent() {
                 </Form.Item>
                 <Form.Item
                   name={otherInformationFieldNames.videoLink}
+                  className={otherInformationFieldNames.videoLink}
                   style={{
                     display: !addedFields?.includes(otherInformationFieldNames.videoLink) && 'none',
                   }}
@@ -1572,6 +1584,8 @@ function AddEvent() {
                   />
                 </Form.Item>
                 <Form.Item
+                  name={otherInformationFieldNames.facebookLinkWrap}
+                  className={otherInformationFieldNames.facebookLinkWrap}
                   style={{
                     display: !addedFields?.includes(otherInformationFieldNames.facebookLinkWrap) && 'none',
                   }}>
@@ -1597,6 +1611,7 @@ function AddEvent() {
                 </Form.Item>
                 <Form.Item
                   name={otherInformationFieldNames.keywords}
+                  className={otherInformationFieldNames.keywords}
                   style={{
                     display: !addedFields?.includes(otherInformationFieldNames.keywords) && 'none',
                   }}
@@ -1653,6 +1668,7 @@ function AddEvent() {
               <>
                 <Form.Item
                   name="eventAccessibility"
+                  className="eventAccessibility"
                   label={t('dashboard.events.addEditEvent.eventAccessibility.title')}
                   initialValue={eventData?.accessibility?.map((type) => {
                     return type?.entityId;
@@ -1680,6 +1696,7 @@ function AddEvent() {
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.eventAccessibility.note')}
                   name={eventAccessibilityFieldNames.noteWrap}
+                  className={eventAccessibilityFieldNames.noteWrap}
                   style={{
                     display: !addedFields?.includes(eventAccessibilityFieldNames.noteWrap) && 'none',
                   }}>
