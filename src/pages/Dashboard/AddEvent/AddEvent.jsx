@@ -1193,6 +1193,7 @@ function AddEvent() {
                       initialValue={eventData?.description?.fr}
                       dependencies={['englishEditor']}
                       currentReactQuillRef={reactQuillRefFr}
+                      editorLanguage={'fr'}
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.description.frenchPlaceholder')}
                       rules={[
                         () => ({
@@ -1230,6 +1231,7 @@ function AddEvent() {
                       initialValue={eventData?.description?.en}
                       dependencies={['frenchEditor']}
                       currentReactQuillRef={reactQuillRefEn}
+                      editorLanguage={'en'}
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.description.englishPlaceholder')}
                       rules={[
                         () => ({
