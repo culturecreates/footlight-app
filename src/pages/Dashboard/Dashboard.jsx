@@ -20,11 +20,14 @@ function Dashboard() {
   const dispatch = useDispatch();
   const location = useLocation();
   const timestampRef = useRef(Date.now()).current;
+  const { accessToken, user } = useSelector(getUserDetails);
   const [getCalendar, { currentData: currentCalendarData }] = useLazyGetCalendarQuery();
-  const { currentData: allCalendarsData, isLoading } = useGetAllCalendarsQuery({ sessionId: timestampRef });
+  const { currentData: allCalendarsData, isLoading } = useGetAllCalendarsQuery(
+    { sessionId: timestampRef },
+    { skip: accessToken ? false : true },
+  );
 
   let { calendarId } = useParams();
-  const { accessToken, user } = useSelector(getUserDetails);
 
   useEffect(() => {
     if (!accessToken && accessToken === '') navigate(PathName.Login);
@@ -36,7 +39,7 @@ function Dashboard() {
   }, [accessToken]);
 
   useEffect(() => {
-    if (calendarId) {
+    if (calendarId && accessToken) {
       getCalendar({ id: calendarId });
       dispatch(setSelectedCalendar(String(calendarId)));
     } else if (!isLoading && allCalendarsData?.data)
