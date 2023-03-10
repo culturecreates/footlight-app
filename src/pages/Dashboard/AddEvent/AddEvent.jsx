@@ -520,6 +520,7 @@ function AddEvent() {
         <>
           <Form.Item>
             <Outlined
+              size="large"
               label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
               onClick={(e) => saveAsDraftHandler(e)}
             />
@@ -537,6 +538,7 @@ function AddEvent() {
         <>
           <Form.Item>
             <Outlined
+              size="large"
               label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
               onClick={(e) => saveAsDraftHandler(e)}
             />

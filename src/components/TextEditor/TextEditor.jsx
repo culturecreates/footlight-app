@@ -1,10 +1,11 @@
-import { Button, Form } from 'antd';
+import { Form } from 'antd';
 import React, { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 import './textEditor.css';
 import 'react-quill/dist/quill.snow.css';
 import { useTranslation } from 'react-i18next';
 import { pluralize } from '../../utils/pluralise';
+import OutlinedButton from '../Button/Outlined';
 function TextEditor(props) {
   const { formName, initialValue, dependencies, rules, currentReactQuillRef, placeholder, editorLanguage } = props;
   let translateTo;
@@ -56,7 +57,9 @@ function TextEditor(props) {
         <p>{t('dashboard.events.addEditEvent.otherInformation.description.footerTitle')}</p>
         <p>{pluralize(wordCount, t('dashboard.events.addEditEvent.otherInformation.description.word'))}</p>
       </div>
-      <Button
+      <OutlinedButton
+        label={'Translate'}
+        size="middle"
         disabled={wordCount > 1 ? false : true}
         onClick={() => {
           window.open(
@@ -64,9 +67,8 @@ function TextEditor(props) {
               process.env.REACT_APP_DEEPL_URL
             }${editorLanguage}/${translateTo}/${currentReactQuillRef?.current?.unprivilegedEditor?.getText()}`,
           );
-        }}>
-        Translate
-      </Button>
+        }}
+      />
     </>
   );
 }
