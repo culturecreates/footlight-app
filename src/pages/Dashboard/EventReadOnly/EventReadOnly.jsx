@@ -19,6 +19,7 @@ import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 import ImageUpload from '../../../components/ImageUpload';
 import TreeSelectOption from '../../../components/TreeSelectOption';
 import {
+  treeDynamicTaxonomyOptions,
   treeEntitiesOption,
   treeTaxonomyOptions,
 } from '../../../components/TreeSelectOption/treeSelectOption.settings';
@@ -199,6 +200,43 @@ function EventReadOnly() {
                       />
                     </>
                   )}
+                  {allTaxonomyData?.data?.map((taxonomy, index) => {
+                    if (taxonomy?.isDynamicField) {
+                      let initialValues,
+                        initialTaxonomy = [];
+                      eventData?.dynamicFields?.forEach((dynamicField) => {
+                        if (taxonomy?.id === dynamicField?.taxonomyId) {
+                          initialValues = dynamicField?.conceptIds;
+                          initialTaxonomy.push(taxonomy?.id);
+                        }
+                      });
+                      if (initialTaxonomy?.includes(taxonomy?.id) && initialValues?.length > 0)
+                        return (
+                          <>
+                            <p className="read-only-event-content-sub-title-primary">
+                              {bilingual({
+                                en: taxonomy?.name?.en,
+                                fr: taxonomy?.name?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              })}
+                            </p>
+                            <TreeSelectOption
+                              key={index}
+                              style={{ marginBottom: '1rem' }}
+                              bordered={false}
+                              open={false}
+                              disabled
+                              defaultValue={initialValues}
+                              treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user)}
+                              tagRender={(props) => {
+                                const { label } = props;
+                                return <Tags>{label}</Tags>;
+                              }}
+                            />
+                          </>
+                        );
+                    }
+                  })}
                 </div>
               </Col>
               <Col flex="233px">
