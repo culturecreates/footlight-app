@@ -123,6 +123,7 @@ function AddEvent() {
   });
   const [addedFields, setAddedFields] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
+  const [scrollToSelectedField, setSrollToSelectedField] = useState();
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -589,7 +590,7 @@ function AddEvent() {
   };
   useEffect(() => {
     if (addedFields?.length > 0) {
-      const element = document.getElementsByClassName(addedFields.at(-1));
+      const element = document.getElementsByClassName(scrollToSelectedField);
       element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
     }
   }, [addedFields]);
@@ -598,6 +599,7 @@ function AddEvent() {
     let array = addedFields?.concat(fieldNames);
     array = [...new Set(array)];
     setAddedFields(array);
+    setSrollToSelectedField(array?.at(-1));
   };
   const onValuesChangHandler = () => {
     setShowDialog(true);
