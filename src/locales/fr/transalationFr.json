@@ -100,6 +100,8 @@
       },
       "addEditEvent": {
         "heading": { "newEvent": "Ajouter un événement", "editEvent": "Modifier un événement" },
+        "addMoreDetails": "Ajouter plus de détails à votre événement",
+        "allDone": "Terminé",
         "language": {
           "title": "Titre de l'événement",
           "titleLabel": "English",
@@ -134,6 +136,7 @@
           "title": "Endroit",
           "placeHolderLocation": "Recherchez Lieux",
           "virtualLocation": "Emplacement virtuel",
+          "virtualLocationTooltip": "Ajoutez un lien vers un emplacement virtuel pour votre événement.",
           "placeHolderVirtualLocationEn": "Entrez le texte anglais à afficher",
           "placeHolderVirtualLocationFr": "Entrez le texte français à afficher",
           "onlineLink": "Lien pour l'événement en ligne",
@@ -167,14 +170,20 @@
           "supporter": {
             "title": "Supporteur/Commanditaire",
             "subHeading": "Ajoutez le commanditaire ou l'organisme qui soutient l'événement.",
-            "searchPlaceholder": "Recherchez des Organisations ou des Personnes"
+            "searchPlaceholder": "Recherchez des Organisations ou des Personnes",
+            "supporterTooltip": "Ajoutez le commanditaire ou l'organisme qui soutient l'événement. Un logo d'organisation sera requis."
           },
           "eventLink": "Lien de l’événement",
-          "videoLink": "Video",
+          "eventLinkTooltip": "Ajoutez le lien vers la page de l'événement sur un site Web.",
+          "videoLink": "Vidéo",
+          "videoLinks": "Vidéo",
+          "videoLinkTooltip": "Ajoutez une vidéo à votre contenu. Youtube et Vimeo sont acceptés.",
           "facebookLink": "Lien vers l'événement Facebook",
           "facebookLinkFooter": "Collez l'URL de votre événement Facebook ici.",
+          "facebookLinkTooltip": "Ajoutez le lien vers une page d'événement sur Facebook.",
           "placeHolderLinks": "Entrez l'adresse web URL",
           "keywords": "Mots clés",
+          "keywordsTooltip": "Ajoutez des mots-clés supplémentaires pour l'événement. Sélectionnez d'abord les types d'événements pertinents.",
           "placeHolderKeywords": "Entrez des mots clés supplémentaires",
           "contact": {
             "title": "Contact",
@@ -188,14 +197,16 @@
             "placeHolderContactTitleEnglish": "Entrez le titre du contact anglais",
             "placeHolderWebsite": "Entrez l'adresse web URL",
             "placeHolderPhoneNumber": "Entrez le numéro de téléphone",
-            "placeHolderEmail": "Entrez l’adresse courriel"
+            "placeHolderEmail": "Entrez l’adresse courriel",
+            "contactTooltip": "Ajoutez un contact pour votre événement. Vous pouvez en créer un ou copier les coordonnées de l'Organisateur."
           }
         },
         "eventAccessibility": {
           "title": "Accessibilité de l’événement",
           "note": "Note",
           "placeHolderEventAccessibilityFrenchNote": "Ajouter des informations supplémentaires sur l'accessibilité",
-          "placeHolderEventAccessibilityEnglishNote": "Ajouter des informations supplémentaires sur l'accessibilité"
+          "placeHolderEventAccessibilityEnglishNote": "Ajouter des informations supplémentaires sur l'accessibilité",
+          "noteTooltip": "Fournir plus de détails sur les options d'accessibilité sélectionnées, telles que les dates."
         },
         "tickets": {
           "title": "Billets",
