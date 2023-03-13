@@ -392,8 +392,8 @@ function AddEvent() {
             ...(values?.supporters && { collaborators }),
             ...(values?.dynamicFields && { dynamicFields }),
           };
-          if (values?.dragger && values?.dragger[0]?.originFileObj) {
-            new Compressor(values?.dragger[0].originFileObj, {
+          if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
+            new Compressor(values?.dragger[0]?.originFileObj, {
               convertSize: 200000,
               success: (compressedResult) => {
                 const formdata = new FormData();
@@ -418,7 +418,22 @@ function AddEvent() {
               },
             });
           } else {
-            if (values?.dragger && values?.length == 0) eventObj['image'] = null;
+            if (values?.draggerWrap) {
+              if (values?.dragger && values?.dragger?.length == 0) eventObj['image'] = null;
+              else
+                eventObj['image'] = {
+                  large: {
+                    entityId: eventData?.image?.large?.entityId,
+                  },
+                  original: {
+                    entityId: eventData?.image?.original?.entityId,
+                  },
+                  thumbnail: {
+                    entityId: eventData?.image?.thumbnail?.entityId,
+                  },
+                };
+            }
+
             addUpdateEventApiHandler(eventObj)
               .then(() => resolve())
               .catch((error) => {
@@ -464,7 +479,7 @@ function AddEvent() {
         'frenchEditor',
         'eventType',
         'targetAudience',
-        'dragger-wrap',
+        'draggerWrap',
         'location-form-wrapper',
         'ticketPickerWrapper',
         'prices',
@@ -1287,7 +1302,7 @@ function AddEvent() {
                 </Form.Item>
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.image.title')}
-                  name="dragger-wrap"
+                  name="draggerWrap"
                   required
                   initialValue={eventData?.image && eventData?.image?.original?.uri}
                   rules={[
