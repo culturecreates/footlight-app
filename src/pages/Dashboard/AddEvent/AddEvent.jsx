@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
-import { Form, Row, Col, Input, Popover, message, Button, Modal, Space } from 'antd';
+import { Form, Row, Col, Input, Popover, message, Button } from 'antd';
 import {
   SyncOutlined,
   InfoCircleOutlined,
@@ -8,10 +8,10 @@ import {
   CalendarOutlined,
   ControlOutlined,
   ExclamationCircleOutlined,
-  MinusCircleOutlined,
+  // MinusCircleOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
-import Calendar from 'rc-year-calendar';
+// import Calendar from 'rc-year-calendar';
 import moment from 'moment';
 import i18n from 'i18next';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
@@ -70,6 +70,8 @@ import { otherInformationFieldNames, otherInformationOptions } from '../../../co
 import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../../constants/eventAccessibilityOptions';
 import { usePrompt } from '../../../hooks/usePrompt';
 import { bilingual } from '../../../utils/bilingual';
+import CustomModal from '../../../components/Modal/Common/CustomModal';
+import TextButton from '../../../components/Button/Text';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -963,7 +965,6 @@ function AddEvent() {
                                 { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
                               ]}>
                               <DateRangePicker style={{ width: '423px' }} />
-                              {console.log(moment.localeData('fr').weekdaysShort())}
                             </Form.Item>
                           </>
                         )}
@@ -1007,7 +1008,7 @@ function AddEvent() {
                         <Form.Item name="eventFrequency" label={t('dashboard.events.addEditEvent.dates.days')}>
                           <div style={{ display: 'flex', gap: '8px' }}>
                             {moment
-                              .localeData('fr')
+                              .localeData(i18n?.language)
                               .weekdaysShort()
                               ?.map((day, index) => (
                                 <Button
@@ -1022,10 +1023,13 @@ function AddEvent() {
                           </div>
                         </Form.Item>
                         <Form.Item>
+                          {/* <Button type="text" icon={<ControlOutlined />} onClick={() => setIsModalOpen(true)}>
+                            Customize
+                          </Button> */}
                           <Button type="text" icon={<ControlOutlined />} onClick={() => setIsModalOpen(true)}>
                             Customize
                           </Button>
-                          <Modal
+                          {/* <Modal
                             title="Basic Modal"
                             open={isModalOpen}
                             onOk={() => setIsModalOpen(false)}
@@ -1065,7 +1069,17 @@ function AddEvent() {
                                 </Form.List>
                               </div>
                             </div>
-                          </Modal>
+                          </Modal> */}
+                          <CustomModal
+                            open={isModalOpen}
+                            footer={[
+                              <TextButton key="cancel" size="large" label={'Cancel'} />,
+                              <PrimaryButton key="add-dates" label={'Add dates'} />,
+                            ]}>
+                            <p>Some contents...</p>
+                            <p>Some contents...</p>
+                            <p>Some contents...</p>
+                          </CustomModal>
                         </Form.Item>
                       </Col>
                     </Row>
