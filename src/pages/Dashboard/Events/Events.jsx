@@ -56,7 +56,10 @@ function Events() {
     let query = new URLSearchParams();
     userFilter?.forEach((user) => query.append('user', user));
     filter?.publication?.forEach((state) => query.append('publish-state', state));
-    query.append('order', `${filter?.order}(${filter?.sort}.${i18n.language})`);
+    query.append(
+      'order',
+      `${filter?.order}(${filter?.sort}${filter?.sort === sortByOptions[0]?.key ? '.' + i18n.language : ''})`,
+    );
     getEvents({
       pageNumber,
       limit: 10,
@@ -120,9 +123,9 @@ function Events() {
     if (filter?.order == 'ASC')
       setFilter({
         ...filter,
-        order: 'DES',
+        order: 'DESC',
       });
-    else if (filter?.order == 'DES')
+    else if (filter?.order == 'DESC')
       setFilter({
         ...filter,
         order: 'ASC',
@@ -173,7 +176,7 @@ function Events() {
                         menu={{
                           items: sortByOptions,
                           selectable: true,
-                          defaultSelectedKeys: [`name`],
+                          defaultSelectedKeys: [filter?.sort],
                           onSelect: onSortSelect,
                         }}
                         trigger={['click']}>
@@ -195,7 +198,7 @@ function Events() {
                           filter?.order === 'ASC' ? (
                             <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
                           ) : (
-                            filter?.order === 'DES' && (
+                            filter?.order === 'DESC' && (
                               <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
                             )
                           )
