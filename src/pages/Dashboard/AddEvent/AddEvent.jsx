@@ -1289,14 +1289,14 @@ function AddEvent() {
                   label={t('dashboard.events.addEditEvent.otherInformation.image.title')}
                   name="dragger-wrap"
                   required
-                  initialValue={eventData?.image && eventData?.image?.original}
+                  initialValue={eventData?.image && eventData?.image?.original?.uri}
                   rules={[
                     ({ getFieldValue }) => ({
                       validator() {
                         if (
                           (getFieldValue('dragger') != undefined && getFieldValue('dragger')?.length > 0) ||
-                          (eventData?.image?.original && !getFieldValue('dragger')) ||
-                          (eventData?.image?.original && getFieldValue('dragger')?.length > 0)
+                          (eventData?.image?.original?.uri && !getFieldValue('dragger')) ||
+                          (eventData?.image?.original?.uri && getFieldValue('dragger')?.length > 0)
                         ) {
                           return Promise.resolve();
                         } else
@@ -1313,7 +1313,7 @@ function AddEvent() {
                       </p>
                     </Col>
                   </Row>
-                  <ImageUpload imageUrl={eventData?.image?.original} imageReadOnly={false} />
+                  <ImageUpload imageUrl={eventData?.image?.original?.uri} imageReadOnly={false} />
                 </Form.Item>
                 <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.organizer.title')}>
                   <Row>
