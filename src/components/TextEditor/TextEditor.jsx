@@ -38,6 +38,15 @@ function TextEditor(props) {
     setWordCount(currentReactQuillRef?.current?.unprivilegedEditor?.getText().split(' ').length);
   };
 
+  const translateHandler = () => {
+    let encodedUrl = encodeURIComponent(currentReactQuillRef?.current?.unprivilegedEditor?.getText());
+    //Note: Replace "/" with "\/"
+    encodedUrl = encodedUrl?.replace(/%2F/g, '\\/');
+    //Note: Replace "|" with "\|"
+    encodedUrl = encodedUrl?.replace(/%7C/g, '\\|');
+    window.open(`${process.env.REACT_APP_DEEPL_URL}${editorLanguage}/${translateTo}/${encodedUrl}`);
+  };
+
   useEffect(() => {
     setWordCount(currentReactQuillRef?.current?.unprivilegedEditor?.getText().split(' ').length);
   }, [currentReactQuillRef?.current?.unprivilegedEditor?.getText().split(' ').length]);
@@ -61,13 +70,7 @@ function TextEditor(props) {
         label={t('dashboard.events.addEditEvent.otherInformation.description.translate')}
         size="middle"
         disabled={wordCount > 1 ? false : true}
-        onClick={() => {
-          window.open(
-            `${
-              process.env.REACT_APP_DEEPL_URL
-            }${editorLanguage}/${translateTo}/${currentReactQuillRef?.current?.unprivilegedEditor?.getText()}`,
-          );
-        }}
+        onClick={translateHandler}
       />
     </>
   );
