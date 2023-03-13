@@ -40,7 +40,7 @@ function Events() {
   const [filter, setFilter] = useState({
     publication: [],
     sort: searchParams.get('sortBy') ?? sortByOptions[0]?.key,
-    order: searchParams.get('order') ?? 'ASC',
+    order: searchParams.get('order') ?? 'asc',
     dates: [],
   });
   const [userFilter, setUserFilter] = useState([]);
@@ -57,9 +57,16 @@ function Events() {
   userFilterData = [user].concat(userFilterData);
   useEffect(() => {
     let query = new URLSearchParams();
+    let sortQuery = new URLSearchParams();
     userFilter?.forEach((user) => query.append('user', user));
     filter?.publication?.forEach((state) => query.append('publish-state', state));
-    query.append('order', `${filter?.order}(${filter?.sort}.${i18n.language})`);
+    sortQuery.append(
+      'sort',
+      encodeURIComponent(
+        `${filter?.order}(${filter?.sort}${filter?.sort === sortByOptions[0]?.key ? '.' + i18n.language : ''})`,
+      ),
+    );
+
     if (filter?.dates?.length == 2) {
       query.append('start-date-range', filter?.dates[0] ? moment(filter?.dates[0]).format('YYYY-MM-DD') : null);
       query.append('end-date-range', filter?.dates[1] ? moment(filter?.dates[1]).format('YYYY-MM-DD') : null);
@@ -70,6 +77,7 @@ function Events() {
       calendarId,
       query: eventSearchQuery,
       filterkeys: decodeURIComponent(query.toString()),
+      sort: sortQuery,
       sessionId: timestampRef,
     });
     if (!eventSearchQuery || eventSearchQuery === '')
@@ -124,15 +132,15 @@ function Events() {
   };
 
   const onSortOrderChange = () => {
-    if (filter?.order == 'ASC')
+    if (filter?.order == 'asc')
       setFilter({
         ...filter,
-        order: 'DES',
+        order: 'desc',
       });
-    else if (filter?.order == 'DES')
+    else if (filter?.order == 'desc')
       setFilter({
         ...filter,
-        order: 'ASC',
+        order: 'asc',
       });
     setPageNumber(1);
   };
@@ -179,7 +187,7 @@ function Events() {
                   menu={{
                     items: sortByOptions,
                     selectable: true,
-                    defaultSelectedKeys: [`name`],
+                    defaultSelectedKeys: [filter?.sort],
                     onSelect: onSortSelect,
                   }}
                   trigger={['click']}>
@@ -198,10 +206,10 @@ function Events() {
                   style={{ borderColor: filter?.order && '#1B3DE6' }}
                   onClick={onSortOrderChange}
                   icon={
-                    filter?.order === 'ASC' ? (
+                    filter?.order === 'asc' ? (
                       <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
                     ) : (
-                      filter?.order === 'DES' && (
+                      filter?.order === 'desc' && (
                         <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
                       )
                     )
@@ -210,6 +218,7 @@ function Events() {
                 />
               </div>
             </Col>
+
             <Col>
               <Row gutter={20}>
                 <Space>

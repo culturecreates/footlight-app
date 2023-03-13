@@ -7,7 +7,7 @@ export const sortByOptions = [
   },
   {
     label: <Translation>{(t) => t('dashboard.events.filter.sort.createdDate')}</Translation>,
-    key: 'createdDate',
+    key: 'metadata.createdAt',
   },
   {
     label: <Translation>{(t) => t('dashboard.events.filter.sort.eventDate')}</Translation>,
