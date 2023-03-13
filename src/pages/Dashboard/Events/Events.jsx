@@ -16,7 +16,7 @@ import { useGetAllUsersQuery } from '../../../services/users';
 import { filterTypes } from '../../../constants/filterTypes';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
-import { sortByOptions } from '../../../constants/sortByOptions';
+import { sortByOptions, sortOrder } from '../../../constants/sortByOptions';
 import DateRangePicker from '../../../components/DateRangePicker';
 import moment from 'moment';
 
@@ -40,7 +40,7 @@ function Events() {
   const [filter, setFilter] = useState({
     publication: [],
     sort: searchParams.get('sortBy') ?? sortByOptions[2]?.key,
-    order: searchParams.get('order') ?? 'asc',
+    order: searchParams.get('order') ?? sortOrder?.ASC,
     dates: [],
   });
   const [userFilter, setUserFilter] = useState([]);
@@ -127,21 +127,21 @@ function Events() {
     setFilter({
       ...filter,
       sort: selectedKeys[0],
-      order: 'asc',
+      order: sortOrder?.ASC,
     });
     setPageNumber(1);
   };
 
   const onSortOrderChange = () => {
-    if (filter?.order == 'asc')
+    if (filter?.order == sortOrder?.ASC)
       setFilter({
         ...filter,
-        order: 'desc',
+        order: sortOrder?.DESC,
       });
-    else if (filter?.order == 'desc')
+    else if (filter?.order == sortOrder?.DESC)
       setFilter({
         ...filter,
-        order: 'asc',
+        order: sortOrder?.ASC,
       });
     setPageNumber(1);
   };
@@ -207,10 +207,10 @@ function Events() {
                   style={{ borderColor: filter?.order && '#1B3DE6' }}
                   onClick={onSortOrderChange}
                   icon={
-                    filter?.order === 'asc' ? (
+                    filter?.order === sortOrder?.ASC ? (
                       <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
                     ) : (
-                      filter?.order === 'desc' && (
+                      filter?.order === sortOrder?.DESC && (
                         <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
                       )
                     )
@@ -338,7 +338,11 @@ function Events() {
                   </Popover>
                 </Col>
                 <Col>
-                  {(userFilter.length > 0 || filter?.publication?.length > 0 || filter?.dates?.length > 0) && (
+                  {(userFilter.length > 0 ||
+                    filter?.publication?.length > 0 ||
+                    filter?.dates?.length > 0 ||
+                    filter?.order === sortOrder?.DESC ||
+                    filter?.sort != sortByOptions[2]?.key) && (
                     <Button
                       size="large"
                       className="filter-buttons"
@@ -346,8 +350,8 @@ function Events() {
                       onClick={() => {
                         setFilter({
                           publication: [],
-                          sort: sortByOptions[0]?.key,
-                          order: 'ASC',
+                          sort: sortByOptions[2]?.key,
+                          order: sortOrder?.ASC,
                           dates: [],
                         });
                         setUserFilter([]);
