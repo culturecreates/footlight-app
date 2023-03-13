@@ -4,6 +4,21 @@ import Icon, { UserOutlined } from '@ant-design/icons';
 import { ReactComponent as Organizations } from '../../assets/icons/organisations.svg';
 import { taxonomyClass } from '../../constants/taxonomyClass';
 
+const handleMultilevelTreeSelect = (children, user) => {
+  return children?.map((child) => {
+    return {
+      title: bilingual({
+        en: child?.name?.en,
+        fr: child?.name?.fr,
+        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+      }),
+      value: child?.id,
+      ...(child?.children && {
+        children: handleMultilevelTreeSelect(child?.children),
+      }),
+    };
+  });
+};
 export const treeTaxonomyOptions = (data, user, mappedToField) => {
   let fieldData = data?.data?.filter((taxonomy) => taxonomy?.mappedToField === mappedToField);
   let concepts = fieldData?.map((field) => {
@@ -21,16 +36,7 @@ export const treeTaxonomyOptions = (data, user, mappedToField) => {
         }),
         value: concept?.id,
         ...(concept?.children && {
-          children: concept?.children?.map((child) => {
-            return {
-              title: bilingual({
-                en: child?.name?.en,
-                fr: child?.name?.fr,
-                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-              }),
-              value: child?.id,
-            };
-          }),
+          children: handleMultilevelTreeSelect(concept?.children, user),
         }),
       };
     });
@@ -90,5 +96,24 @@ export const treeEntitiesOption = (data, user) => {
         }),
     };
   });
+  return options;
+};
+
+export const treeDynamicTaxonomyOptions = (concepts, user) => {
+  let options =
+    concepts &&
+    concepts?.map((concept) => {
+      return {
+        title: bilingual({
+          en: concept?.name?.en,
+          fr: concept?.name?.fr,
+          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+        }),
+        value: concept?.id,
+        ...(concept?.children && {
+          children: handleMultilevelTreeSelect(concept?.children, user),
+        }),
+      };
+    });
   return options;
 };

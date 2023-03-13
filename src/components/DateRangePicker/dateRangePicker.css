@@ -43,3 +43,8 @@
 .date-range-picker-calendar .ant-picker-date-panel .ant-picker-content th {
   text-align: center;
 }
+
+.date-range-picker-calendar .ant-picker-panel-container .ant-picker-panels {
+  border-top: 1px solid #b6c1c9;
+  border-bottom: 1px solid #b6c1c9;
+}

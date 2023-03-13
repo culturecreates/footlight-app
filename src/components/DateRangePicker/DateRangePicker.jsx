@@ -3,6 +3,7 @@ import './dateRangePicker.css';
 import { DatePicker } from 'antd';
 import { RightOutlined } from '@ant-design/icons';
 import i18n from 'i18next';
+import 'moment/locale/fr-ca';
 import frLocale from 'antd/es/date-picker/locale/fr_CA';
 import enLocale from 'antd/es/date-picker/locale/en_US';
 
