@@ -18,7 +18,7 @@ function Event(props) {
             {props?.children[0] ?? props?.children}
           </div>
         </Col>
-        <Col flex={'233px'}>
+        <Col flex={'253px'}>
           <div style={{ width: '100%', marginTop: '35%' }}>{props?.children[1]}</div>
         </Col>
       </Row>

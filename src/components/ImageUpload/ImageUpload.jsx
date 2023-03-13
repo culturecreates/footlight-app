@@ -61,7 +61,7 @@ function ImageUpload(props) {
           justifyContent: 'flex-end',
           gap: '8px',
         }}>
-        <Outlined label={t('dashboard.events.addEditEvent.otherInformation.image.browse')} />
+        <Outlined size="large" label={t('dashboard.events.addEditEvent.otherInformation.image.browse')} />
         <span style={{ color: '#646D7B', fontWeight: '400', fontSize: '16px' }}>
           {t('dashboard.events.addEditEvent.otherInformation.image.dragAndDrop')}
         </span>
