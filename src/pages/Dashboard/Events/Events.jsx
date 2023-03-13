@@ -57,12 +57,16 @@ function Events() {
   userFilterData = [user].concat(userFilterData);
   useEffect(() => {
     let query = new URLSearchParams();
+    let sortQuery = new URLSearchParams();
     userFilter?.forEach((user) => query.append('user', user));
     filter?.publication?.forEach((state) => query.append('publish-state', state));
-    query.append(
-      'order',
-      `${filter?.order}(${filter?.sort}${filter?.sort === sortByOptions[0]?.key ? '.' + i18n.language : ''})`,
+    sortQuery.append(
+      'sort',
+      encodeURIComponent(
+        `${filter?.order}(${filter?.sort}${filter?.sort === sortByOptions[0]?.key ? '.' + i18n.language : ''})`,
+      ),
     );
+
     if (filter?.dates?.length == 2) {
       query.append('start-date-range', filter?.dates[0] ? moment(filter?.dates[0]).format('YYYY-MM-DD') : null);
       query.append('end-date-range', filter?.dates[1] ? moment(filter?.dates[1]).format('YYYY-MM-DD') : null);
@@ -73,6 +77,7 @@ function Events() {
       calendarId,
       query: eventSearchQuery,
       filterkeys: decodeURIComponent(query.toString()),
+      sort: sortQuery,
       sessionId: timestampRef,
     });
     if (!eventSearchQuery || eventSearchQuery === '')
