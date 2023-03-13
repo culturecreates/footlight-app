@@ -14,7 +14,7 @@ function ChangeType(props) {
         className="first-button"
         onClick={onClick}
       />
-      <Button type="text" disabled={disabled} size="small" className="second-button" onClick={onClick}>
+      <Button type="text" disabled={disabled} className="second-button" onClick={onClick}>
         {label}
       </Button>
       <TooltipStyled title={promptText}>

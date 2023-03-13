@@ -1,13 +1,12 @@
 import React from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import './list.css';
-import { List, Grid } from 'antd';
+import { List, Grid, Dropdown } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
 import EventStatus from '../../Tags/Events';
 import EventNumber from '../../Tags/EventNumber';
 import EventStatusOptions from '../../Dropdown/EventStatus/EventStatus';
 import { useTranslation } from 'react-i18next';
-import FormatDate from '../../Date/FormatDate';
 import { bilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -17,7 +16,9 @@ import Username from '../../Username/index';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 import { dateTypes } from '../../../constants/dateTypes';
+import { userRoles } from '../../../constants/userRoles';
 import { eventStatus } from '../../../constants/eventStatus';
+import moment from 'moment';
 
 const { useBreakpoint } = Grid;
 
@@ -31,6 +32,10 @@ function Lists(props) {
   const lang = i18n.language;
   const { user } = useSelector(getUserDetails);
   const totalCount = data?.totalCount;
+
+  const calendar = user?.roles.filter((calendar) => {
+    return calendar.calendarId === calendarId;
+  });
 
   const listItemHandler = (id, creatorId, publishState) => {
     if (routinghandler(user, calendarId, creatorId, publishState))
@@ -55,6 +60,7 @@ function Lists(props) {
       renderItem={(eventItem, index) => (
         <List.Item
           className="event-list-item-wrapper"
+          key={index}
           actions={[
             <EventStatusOptions
               key={index}
@@ -65,6 +71,31 @@ function Lists(props) {
                 <MoreOutlined className="event-list-more-icon" key={index} />
               </span>
             </EventStatusOptions>,
+
+            calendar[0]?.role === userRoles.GUEST && (
+              <Dropdown
+                className="calendar-dropdown-wrapper"
+                overlayStyle={{
+                  minWidth: '150px',
+                }}
+                getPopupContainer={(trigger) => trigger.parentNode}
+                menu={{
+                  items: [
+                    {
+                      key: '0',
+                      label: t('dashboard.events.publishOptions.duplicateEvent'),
+                    },
+                  ],
+                  onClick: ({ key }) => {
+                    if (key === '0') navigate(`${location.pathname}${PathName.AddEvent}?duplicateId=${eventItem?.id}`);
+                  },
+                }}
+                trigger={['click']}>
+                <span>
+                  <MoreOutlined className="event-list-more-icon" key={index} />
+                </span>
+              </Dropdown>
+            ),
           ]}
           extra={[
             <span key={index} className="event-list-options-responsive">
@@ -82,13 +113,16 @@ function Lists(props) {
           <List.Item.Meta
             className="event-list-item-meta"
             onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId, eventItem?.publishState)}
-            avatar={<img src={eventItem?.image?.original} className="event-list-image" />}
+            avatar={<img src={eventItem?.image?.original?.uri} className="event-list-image" />}
             title={
               <div className="event-list-title">
                 <span className="event-list-title-heading">
-                  {(eventItem?.startDate || eventItem?.startDateTime) && (
-                    <FormatDate date={eventItem?.startDate ?? eventItem?.startDateTime} lang={lang} />
-                  )}
+                  {(eventItem?.startDate || eventItem?.startDateTime) &&
+                    moment(eventItem?.startDate ?? eventItem?.startDateTime)
+                      .locale(lang)
+                      .format('DD-MMM-YYYY')
+                      ?.toUpperCase()}
+
                   {dateTimeTypeHandler(
                     eventItem?.startDate,
                     eventItem?.startDateTime,
@@ -97,7 +131,10 @@ function Lists(props) {
                   ) === dateTypes.RANGE && (
                     <>
                       &nbsp;{t('dashboard.events.list.to')}&nbsp;
-                      <FormatDate date={eventItem?.endDate ?? eventItem?.endDateTime} lang={lang} />
+                      {moment(eventItem?.endDate ?? eventItem?.endDateTime)
+                        .locale(lang)
+                        .format('DD-MMM-YYYY')
+                        ?.toUpperCase()}
                     </>
                   )}
                 </span>
@@ -150,7 +187,7 @@ function Lists(props) {
                 {eventItem?.modifier?.firstName && eventItem?.modifier?.lastName ? (
                   <span className="event-list-status-updated-by">
                     {t('dashboard.events.list.updatedBy')}&nbsp;
-                    <FormatDate date={eventItem?.modifier?.date} lang={lang} />
+                    {moment(eventItem?.modifier?.date).locale(lang).format('DD-MMM-YYYY')?.toUpperCase()}
                     &nbsp;
                     {t('dashboard.events.list.by')}&nbsp;
                     <Username firstName={eventItem?.modifier?.firstName} lastName={eventItem?.modifier?.lastName} />

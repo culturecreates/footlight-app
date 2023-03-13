@@ -6,8 +6,8 @@ export const eventsApi = createApi({
   tagTypes: ['Events', 'Event'],
   endpoints: (builder) => ({
     getEvents: builder.query({
-      query: ({ pageNumber = 1, limit, calendarId, query = '', filterkeys }) => ({
-        url: `events?page=${pageNumber}&limit=${limit}&query=${query}&${filterkeys}`,
+      query: ({ pageNumber = 1, limit, calendarId, query = '', filterkeys, sort }) => ({
+        url: `events?page=${pageNumber}&limit=${limit}&query=${query}&${sort}&${filterkeys}`,
         method: 'GET',
         headers: {
           'calendar-id': calendarId,

@@ -9,7 +9,7 @@ function EventsSearch(props) {
       {...props}
       className="events-search"
       bordered={true}
-      prefix={<SearchOutlined className="events-search-icon" />}
+      prefix={<SearchOutlined className="events-search-icon" style={{ color: props?.defaultValue && '#1B3DE6' }} />}
     />
   );
 }

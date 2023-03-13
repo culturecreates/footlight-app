@@ -20,7 +20,7 @@ function PublishState({ children, eventId }) {
   ];
 
   const onClick = ({ key }) => {
-    if (key === '0' || key === '1') updateEventState({ id: eventId, calendarId: calendarId });
+    if (key === '1') updateEventState({ id: eventId, calendarId: calendarId });
   };
 
   return (
