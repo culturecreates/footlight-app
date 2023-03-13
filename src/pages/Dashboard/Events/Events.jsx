@@ -127,6 +127,7 @@ function Events() {
     setFilter({
       ...filter,
       sort: selectedKeys[0],
+      order: 'asc',
     });
     setPageNumber(1);
   };
