@@ -79,6 +79,17 @@
         "publication": {
           "label": "Publication"
         },
+        "sort": {
+          "sortBy": "Sort by",
+          "name": "Name",
+          "createdDate": "Created Date",
+          "eventDate": "Event date"
+        },
+        "dates": {
+          "dates": "Dates",
+          "allTime": "All time",
+          "past": "Past"
+        },
         "clear": "Clear"
       },
       "readOnlyEvent": {
@@ -89,6 +100,8 @@
       },
       "addEditEvent": {
         "heading": { "newEvent": "New Event", "editEvent": "Edit Event" },
+        "addMoreDetails": "Add more details to your event",
+        "allDone": "All done",
         "language": {
           "title": "Event title",
           "titleLabel": "English",
@@ -107,6 +120,7 @@
           "multipleDates": "Multiple dates",
           "startTime": "Start time",
           "endTime": "End time",
+          "timeFormatPlaceholder": "hh:mm",
           "status": "Status",
           "changeDateType": "Change date type",
           "changeToSingleDate": "Change to single date",
@@ -129,6 +143,7 @@
           "title": "Location",
           "placeHolderLocation": "Search Places",
           "virtualLocation": "Virtual location",
+          "virtualLocationTooltip": "Add a link for virtual location for your event.",
           "placeHolderVirtualLocationEn": "Enter English text to display",
           "placeHolderVirtualLocationFr": "Enter French text to display",
           "onlineLink": "Link for the online event",
@@ -141,7 +156,8 @@
             "footerTitle": "A minimum of 50 words is required.",
             "word": "word",
             "frenchPlaceholder": "Enter French description",
-            "englishPlaceholder": "Enter English description"
+            "englishPlaceholder": "Enter English description",
+            "translate": "Translate"
           },
           "image": {
             "title": "Image",
@@ -151,25 +167,32 @@
           },
           "organizer": {
             "title": "Organizer",
-            "subHeading": "Add an organizer for your event and assign a role.",
+            "subHeading": "Add an organizer for your event.",
             "searchPlaceholder": "Search Organizations and People"
           },
           "performer": {
             "title": "Performing group/artist/event animator",
-            "subHeading": "Add a main performer for your event and assign a role.",
-            "searchPlaceholder": "Search Organizations and People"
+            "subHeading": "Add a main performer for your event.",
+            "searchPlaceholder": "Search Organizations and People",
+            "performerTooltip": "Add the performing group, performer, artist or event animator depending on event type."
           },
           "supporter": {
             "title": "Supporter/Sponsor",
-            "subHeading": "Add a supporter for your event and assign a role.",
-            "searchPlaceholder": "Search Organizations and People"
+            "subHeading": "Add the organization supporting or sponsoring this event.",
+            "searchPlaceholder": "Search Organizations and People",
+            "supporterTooltip": "Add the organization supporting or sponsoring this event. Organization logo will be required."
           },
           "eventLink": "Event link",
+          "eventLinkTooltip": "Add a link to the event page on a website.",
           "videoLink": "Video",
+          "videoLinks": "Video link",
+          "videoLinkTooltip": "Add a video to your content. Youtube and Vimeo are supported.",
           "facebookLink": "Facebook event",
           "facebookLinkFooter": "Paste your Facebook event URL here.",
+          "facebookLinkTooltip": "Add a link to an event page on Facebook.",
           "placeHolderLinks": "Enter web address URL",
           "keywords": "Keywords",
+          "keywordsTooltip": "Add extra keywords for the event. Select relevant event types first.",
           "placeHolderKeywords": "Enter additional keywords",
           "contact": {
             "title": "Contact",
@@ -183,14 +206,16 @@
             "placeHolderContactTitleEnglish": "Enter English contact title",
             "placeHolderWebsite": "Enter web address URL",
             "placeHolderPhoneNumber": "Enter phone number",
-            "placeHolderEmail": "Enter email address"
+            "placeHolderEmail": "Enter email address",
+            "contactTooltip": "Add a contact for your event. You can create one or copy the contact information of the Organizer."
           }
         },
         "eventAccessibility": {
           "title": "Event accessibility",
           "note": "Note",
           "placeHolderEventAccessibilityFrenchNote": "Add supplementary accessibility information.",
-          "placeHolderEventAccessibilityEnglishNote": "Add supplementary accessibility information."
+          "placeHolderEventAccessibilityEnglishNote": "Add supplementary accessibility information.",
+          "noteTooltip": "Provide more detail about selected accessiblity options, such as date information."
         },
         "tickets": {
           "title": "Tickets",
@@ -271,6 +296,9 @@
     "tabEnglish": "English",
     "tabFrench": "French",
     "noneFound": "None Found",
+    "unsavedChanges": "You have unsaved changes. Are you sure you want to discard them?",
+    "keepEditing": "Keep editing",
+    "discard": "Discard",
     "server": {
       "status": {
         "503": {

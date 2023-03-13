@@ -39,3 +39,7 @@
 .date-picker-calendar .ant-picker-header button {
   color: #222732;
 }
+
+.date-picker-calendar .ant-picker-date-panel .ant-picker-content th {
+  text-align: center;
+}

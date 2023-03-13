@@ -24,7 +24,11 @@ function NavigationBar() {
         <h6 className="logo-name">Footlight</h6>
       </div>
       <div>
-        <OutlinedButton label={t('login.changeLanguageTo')} onClick={() => changeLanguageHandler(i18n.language)} />
+        <OutlinedButton
+          size="large"
+          label={t('login.changeLanguageTo')}
+          onClick={() => changeLanguageHandler(i18n.language)}
+        />
       </div>
     </div>
   );
