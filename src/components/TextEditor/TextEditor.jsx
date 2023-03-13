@@ -39,12 +39,13 @@ function TextEditor(props) {
   };
 
   const translateHandler = () => {
-    let encodedUrl = encodeURIComponent(currentReactQuillRef?.current?.unprivilegedEditor?.getText());
-    //Note: Replace "/" with "\/"
-    encodedUrl = encodedUrl?.replace(/%2F/g, '\\/');
-    //Note: Replace "|" with "\|"
-    encodedUrl = encodedUrl?.replace(/%7C/g, '\\|');
-    window.open(`${process.env.REACT_APP_DEEPL_URL}${editorLanguage}/${translateTo}/${encodedUrl}`);
+    let newString = currentReactQuillRef?.current?.unprivilegedEditor?.getText();
+    //Note: Replace "/" with "\/"// //Note: Replace "/" with "\/"
+    newString = newString?.replace(/\//g, '\\/');
+    // //Note: Replace "|" with "\|"
+    newString = newString?.replace(/\|/g, '\\|');
+    newString = encodeURIComponent(newString);
+    window.open(`${process.env.REACT_APP_DEEPL_URL}${editorLanguage}/${translateTo}/${newString}`);
   };
 
   useEffect(() => {
