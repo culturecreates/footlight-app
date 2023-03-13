@@ -263,7 +263,9 @@
       "publishOptions": {
         "publishEvent": "Publier l'événement",
         "unpublishEvent": "Dépublier l'événement",
-        "deleteEvent": "Supprimer l'événement"
+        "deleteEvent": "Supprimer l'événement",
+        "duplicateEvent": "Dupliquer l’événement"
+
       },
       "publishState": {
         "published": "Publié",

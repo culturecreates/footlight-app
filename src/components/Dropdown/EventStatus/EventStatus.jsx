@@ -7,27 +7,37 @@ import './eventStatus.css';
 import ProtectedComponents from '../../../layout/ProtectedComponents';
 import { eventPublishState } from '../../../constants/eventPublishState';
 import { useDeleteEventMutation, useUpdateEventStateMutation } from '../../../services/events';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { PathName } from '../../../constants/pathName';
 const { confirm } = Modal;
 function EventStatusOptions({ children, publishState, creator, eventId }) {
   const { t } = useTranslation();
   const { calendarId } = useParams();
+  const navigate = useNavigate();
   const [updateEventState] = useUpdateEventStateMutation();
   const [deleteEvent] = useDeleteEventMutation();
   const items = eventPublishOptions.map((item) => {
     if (publishState == eventPublishState.PUBLISHED) {
       if (item.key != '0')
         return {
-          key: item.key,
-          label: t(item.label),
+          key: item?.key,
+          label: item?.label,
+          type: item?.type,
         };
     } else {
       if (publishState == eventPublishState.DRAFT || publishState === eventPublishState.PENDING_REVIEW)
         if (item.key != '1')
           return {
-            key: item.key,
-            label: t(item.label),
+            key: item?.key,
+            label: item?.label,
+            type: item?.type,
           };
+      if (item?.type === 'divider')
+        return {
+          key: item?.key,
+          label: item?.label,
+          type: item?.type,
+        };
     }
   });
   const showDeleteConfirm = () => {
@@ -47,11 +57,17 @@ function EventStatusOptions({ children, publishState, creator, eventId }) {
   const onClick = ({ key }) => {
     if (key == '2') showDeleteConfirm();
     else if (key === '0' || key === '1') updateEventState({ id: eventId, calendarId: calendarId });
+    else if (key === '3') navigate(`${location.pathname}${PathName.AddEvent}?duplicateId=${eventId}`);
   };
   return (
     <ProtectedComponents creator={creator}>
       <Dropdown
         className="calendar-dropdown-wrapper"
+        overlayClassName="event-dropdown-popup"
+        overlayStyle={{
+          minWidth: '150px',
+        }}
+        getPopupContainer={(trigger) => trigger.parentNode}
         menu={{
           items,
           onClick,
