@@ -39,7 +39,7 @@ function Events() {
   const [eventSearchQuery, setEventSearchQuery] = useState(searchParams.get('query') ?? '');
   const [filter, setFilter] = useState({
     publication: [],
-    sort: searchParams.get('sortBy') ?? sortByOptions[0]?.key,
+    sort: searchParams.get('sortBy') ?? sortByOptions[2]?.key,
     order: searchParams.get('order') ?? 'asc',
     dates: [],
   });
