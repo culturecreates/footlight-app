@@ -38,7 +38,7 @@ function Events() {
   const [filter, setFilter] = useState({
     publication: [],
     sort: searchParams.get('sortBy') ?? sortByOptions[0]?.key,
-    order: searchParams.get('order') ?? 'ASC',
+    order: searchParams.get('order') ?? 'asc',
   });
   const [userFilter, setUserFilter] = useState([]);
 
@@ -120,15 +120,15 @@ function Events() {
   };
 
   const onSortOrderChange = () => {
-    if (filter?.order == 'ASC')
+    if (filter?.order == 'asc')
       setFilter({
         ...filter,
-        order: 'DESC',
+        order: 'desc',
       });
-    else if (filter?.order == 'DESC')
+    else if (filter?.order == 'desc')
       setFilter({
         ...filter,
-        order: 'ASC',
+        order: 'asc',
       });
     setPageNumber(1);
   };
@@ -195,10 +195,10 @@ function Events() {
                         style={{ borderColor: filter?.order && '#1B3DE6' }}
                         onClick={onSortOrderChange}
                         icon={
-                          filter?.order === 'ASC' ? (
+                          filter?.order === 'asc' ? (
                             <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
                           ) : (
-                            filter?.order === 'DESC' && (
+                            filter?.order === 'desc' && (
                               <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
                             )
                           )
