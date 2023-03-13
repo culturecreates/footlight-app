@@ -15,7 +15,7 @@ import {
 import moment from 'moment';
 import i18n from 'i18next';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useGetEventQuery, useUpdateEventStateMutation } from '../../../services/events';
 import { PathName } from '../../../constants/pathName';
 import Outlined from '../../../components/Button/Outlined';
@@ -80,13 +80,18 @@ function AddEvent() {
   const [addEvent] = useAddEventMutation();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId, eventId } = useParams();
+  let [searchParams] = useSearchParams();
+  let duplicateId = searchParams.get('duplicateId');
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
   const {
     currentData: eventData,
     isError,
     isLoading,
-  } = useGetEventQuery({ eventId, calendarId, sessionId: timestampRef }, { skip: eventId ? false : true });
+  } = useGetEventQuery(
+    { eventId: eventId ?? duplicateId, calendarId, sessionId: timestampRef },
+    { skip: eventId || duplicateId ? false : true },
+  );
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
@@ -393,8 +398,8 @@ function AddEvent() {
             ...(values?.supporters && { collaborators }),
             ...(values?.dynamicFields && { dynamicFields }),
           };
-          if (values?.dragger && values?.dragger[0]?.originFileObj) {
-            new Compressor(values?.dragger[0].originFileObj, {
+          if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
+            new Compressor(values?.dragger[0]?.originFileObj, {
               convertSize: 200000,
               success: (compressedResult) => {
                 const formdata = new FormData();
@@ -419,7 +424,22 @@ function AddEvent() {
               },
             });
           } else {
-            if (values?.dragger && values?.length == 0) eventObj['image'] = null;
+            if (values?.draggerWrap) {
+              if (values?.dragger && values?.dragger?.length == 0) eventObj['image'] = null;
+              else
+                eventObj['image'] = {
+                  large: {
+                    entityId: eventData?.image?.large?.entityId,
+                  },
+                  original: {
+                    entityId: eventData?.image?.original?.entityId,
+                  },
+                  thumbnail: {
+                    entityId: eventData?.image?.thumbnail?.entityId,
+                  },
+                };
+            }
+
             addUpdateEventApiHandler(eventObj)
               .then(() => resolve())
               .catch((error) => {
@@ -465,7 +485,7 @@ function AddEvent() {
         'frenchEditor',
         'eventType',
         'targetAudience',
-        'dragger-wrap',
+        'draggerWrap',
         'location-form-wrapper',
         'ticketPickerWrapper',
         'prices',
@@ -641,7 +661,7 @@ function AddEvent() {
   useEffect(() => {
     if (calendarId && eventData) {
       let initialAddedFields = [];
-      if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState)) {
+      if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState) || duplicateId) {
         setDateType(
           dateTimeTypeHandler(
             eventData?.startDate,
@@ -751,7 +771,9 @@ function AddEvent() {
                 <BilingualInput fieldData={eventData?.name}>
                   <Form.Item
                     name="french"
-                    initialValue={eventData?.name?.fr}
+                    initialValue={
+                      duplicateId ? eventData?.name?.fr && 'Copie de ' + eventData?.name?.fr : eventData?.name?.fr
+                    }
                     dependencies={['english']}
                     rules={[
                       ({ getFieldValue }) => ({
@@ -772,7 +794,9 @@ function AddEvent() {
                   </Form.Item>
                   <Form.Item
                     name="english"
-                    initialValue={eventData?.name?.en}
+                    initialValue={
+                      duplicateId ? eventData?.name?.en && 'Copy of ' + eventData?.name?.en : eventData?.name?.en
+                    }
                     dependencies={['french']}
                     rules={[
                       ({ getFieldValue }) => ({
@@ -1394,16 +1418,16 @@ function AddEvent() {
                 </Form.Item>
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.image.title')}
-                  name="dragger-wrap"
+                  name="draggerWrap"
                   required
-                  initialValue={eventData?.image && eventData?.image?.original}
+                  initialValue={eventData?.image && eventData?.image?.original?.uri}
                   rules={[
                     ({ getFieldValue }) => ({
                       validator() {
                         if (
                           (getFieldValue('dragger') != undefined && getFieldValue('dragger')?.length > 0) ||
-                          (eventData?.image?.original && !getFieldValue('dragger')) ||
-                          (eventData?.image?.original && getFieldValue('dragger')?.length > 0)
+                          (eventData?.image?.original?.uri && !getFieldValue('dragger')) ||
+                          (eventData?.image?.original?.uri && getFieldValue('dragger')?.length > 0)
                         ) {
                           return Promise.resolve();
                         } else
@@ -1420,7 +1444,7 @@ function AddEvent() {
                       </p>
                     </Col>
                   </Row>
-                  <ImageUpload imageUrl={eventData?.image?.original} imageReadOnly={false} />
+                  <ImageUpload imageUrl={eventData?.image?.original?.uri} imageReadOnly={false} />
                 </Form.Item>
                 <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.organizer.title')}>
                   <Row>

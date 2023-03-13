@@ -270,7 +270,8 @@
       "publishOptions": {
         "publishEvent": "Publish event",
         "unpublishEvent": "Unpublish event",
-        "deleteEvent": "Delete event"
+        "deleteEvent": "Delete event",
+        "duplicateEvent": "Duplicate Event"
       },
       "publishState": {
         "published": "Published",
