@@ -140,7 +140,16 @@
           "days": "Days",
           "editDates": "Edit dates",
           "cancel": "Cancel",
-          "addDates": "Add dates"
+          "addDates": "Add dates",
+          "weekDays": {
+            "sunday": "Sun",
+            "monday": "Mon",
+            "tuesday": "Tue",
+            "wednesday": "Wed",
+            "thursday": "Thu",
+            "friday": "Fri",
+            "saturday": "Sat"
+          }
         },
         "location": {
           "title": "Location",

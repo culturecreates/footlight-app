@@ -34,7 +34,7 @@ import Select from '../../../components/Select';
 import { eventStatus, eventStatusOptions } from '../../../constants/eventStatus';
 import TimePickerStyled from '../../../components/TimePicker/TimePicker';
 import DateRangePicker from '../../../components/DateRangePicker';
-import { dateFrequencyOptions, dateTypeOptions, dateTypes } from '../../../constants/dateTypes';
+import { dateFrequencyOptions, dateTypeOptions, dateTypes, weekDays } from '../../../constants/dateTypes';
 import ChangeType from '../../../components/ChangeType';
 import CardEvent from '../../../components/Card/Common/Event';
 import Tags from '../../../components/Tags/Common/Tags';
@@ -137,6 +137,7 @@ function AddEvent() {
   const [addedFields, setAddedFields] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
   const [scrollToSelectedField, setSrollToSelectedField] = useState();
+  const [selectedWeekDays, setSelectedWeekDays] = useState([]);
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -646,6 +647,13 @@ function AddEvent() {
     setShowDialog(true);
   };
 
+  const weekDaySelectHandler = (day) => {
+    if (selectedWeekDays?.includes(day)) {
+      setSelectedWeekDays((currentWeekDays) => currentWeekDays?.filter((currentDay) => day != currentDay));
+    } else setSelectedWeekDays([...selectedWeekDays, day]);
+    form.setFieldValue('weekDays', selectedWeekDays);
+  };
+
   useEffect(() => {
     if (selectedOrganizers) form.setFieldValue('organizers', selectedOrganizers);
   }, [selectedOrganizers]);
@@ -1018,25 +1026,20 @@ function AddEvent() {
                         >
                           <Select options={dateFrequencyOptions} />
                         </Form.Item>
-                        {form.getFieldValue('eventFrequency') === dateFrequencyOptions[1]?.value && (
-                          <Form.Item name="eventFrequency" label={t('dashboard.events.addEditEvent.dates.days')}>
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                              {moment
-                                .localeData(i18n?.language)
-                                .weekdaysShort()
-                                ?.map((day, index) => (
-                                  <Button
-                                    key={index}
-                                    className="recurring-day-buttons"
-                                    onClick={(e) => console.log(e)}
-                                    // style={{ borderColor: '#607EFC' }}
-                                  >
-                                    {day}
-                                  </Button>
-                                ))}
-                            </div>
-                          </Form.Item>
-                        )}
+
+                        <Form.Item name="weekDays" label={t('dashboard.events.addEditEvent.dates.days')}>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            {weekDays.map((day, index) => (
+                              <Button
+                                key={index}
+                                className="recurring-day-buttons"
+                                style={{ borderColor: selectedWeekDays?.includes(day?.value) && '#607EFC' }}
+                                onClick={() => weekDaySelectHandler(day?.value)}>
+                                {day.name}
+                              </Button>
+                            ))}
+                          </div>
+                        </Form.Item>
 
                         <Form.Item>
                           {/* <Button type="text" icon={<ControlOutlined />} onClick={() => setIsModalOpen(true)}>

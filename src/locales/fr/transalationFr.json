@@ -139,7 +139,16 @@
           "days": "Jours",
           "editDates": "Éditer les dates",
           "cancel": "Annuler",
-          "addDates": "Ajouter les dates"
+          "addDates": "Ajouter les dates",
+          "weekDays": {
+            "sunday": "Lun",
+            "monday": "Mar",
+            "tuesday": "Mer",
+            "wednesday": "Jeu",
+            "thursday": "Ven",
+            "friday": "Sam",
+            "saturday": "Dim"
+          }
         },
         "location": {
           "title": "Endroit",

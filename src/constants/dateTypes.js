@@ -45,3 +45,34 @@ export const dateFrequencyOptions = [
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.custom')}</Translation>,
   },
 ];
+
+export const weekDays = [
+  {
+    name: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.weekDays.monday')}</Translation>,
+    value: 'Monday',
+  },
+  {
+    name: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.weekDays.tuesday')}</Translation>,
+    value: 'Tuesday',
+  },
+  {
+    name: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.weekDays.wednesday')}</Translation>,
+    value: 'Wednesday',
+  },
+  {
+    name: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.weekDays.thursday')}</Translation>,
+    value: 'Thursday',
+  },
+  {
+    name: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.weekDays.friday')}</Translation>,
+    value: 'Friday',
+  },
+  {
+    name: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.weekDays.saturday')}</Translation>,
+    value: 'saturday',
+  },
+  {
+    name: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.weekDays.sunday')}</Translation>,
+    value: 'sunday',
+  },
+];
