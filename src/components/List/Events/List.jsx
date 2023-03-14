@@ -56,6 +56,7 @@ function Lists(props) {
         hideOnSinglePage: true,
         total: totalCount,
         current: Number(pageNumber),
+        showSizeChanger: false,
       }}
       renderItem={(eventItem, index) => (
         <List.Item

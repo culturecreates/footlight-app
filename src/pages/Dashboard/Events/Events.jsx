@@ -46,6 +46,7 @@ function Events() {
   const [userFilter, setUserFilter] = useState([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState({});
+  const [selectedDates, setSelectedDates] = useState([]);
 
   let userFilterData = allUsersData?.data?.active?.slice()?.sort(function (x, y) {
     return x?.id == user?.id ? -1 : y?.id == user?.id ? 1 : 0;
@@ -68,8 +69,22 @@ function Events() {
     );
 
     if (filter?.dates?.length == 2) {
-      query.append('start-date-range', filter?.dates[0] ? moment(filter?.dates[0]).format('YYYY-MM-DD') : null);
-      query.append('end-date-range', filter?.dates[1] ? moment(filter?.dates[1]).format('YYYY-MM-DD') : null);
+      query.append(
+        'start-date-range',
+        filter?.dates[0]
+          ? filter?.dates[0] === 'any'
+            ? filter?.dates[0]
+            : moment(filter?.dates[0])?.format('YYYY-MM-DD')
+          : null,
+      );
+      query.append(
+        'end-date-range',
+        filter?.dates[1]
+          ? filter?.dates[1] === 'any'
+            ? filter?.dates[1]
+            : moment(filter?.dates[1])?.format('YYYY-MM-DD')
+          : null,
+      );
     }
     getEvents({
       pageNumber,
@@ -297,8 +312,9 @@ function Events() {
                     // getPopupContainer={(trigger) => trigger.parentNode}
                     content={
                       <DateRangePicker
-                        value={filter?.dates}
+                        value={selectedDates}
                         onChange={(dates) => {
+                          setSelectedDates(dates);
                           setFilter({ ...filter, dates: dates });
                         }}
                         onOpenChange={(open) => setIsPopoverOpen(open)}
@@ -306,14 +322,30 @@ function Events() {
                           <div className="date-range-picker-filter-footer">
                             <Button
                               type="text"
-                              className="date-range-picker-filter-footer-label"
-                              onClick={() => setFilter({ ...filter, dates: [null, null] })}>
+                              className={`date-range-picker-filter-footer-label ${
+                                filter?.dates?.length == 2 &&
+                                filter?.dates[0] === 'any' &&
+                                filter?.dates[1] === 'any' &&
+                                'date-range-picker-filter-footer-button-selected'
+                              }`}
+                              onClick={() => {
+                                setSelectedDates([]);
+                                setFilter({ ...filter, dates: ['any', 'any'] });
+                              }}>
                               {t('dashboard.events.filter.dates.allTime')}
                             </Button>
                             <Button
                               type="text"
-                              className="date-range-picker-filter-footer-label"
-                              onClick={() => setFilter({ ...filter, dates: [null, moment().subtract(1, 'days')] })}>
+                              className={`date-range-picker-filter-footer-label ${
+                                filter?.dates?.length == 2 &&
+                                filter?.dates[0] === 'any' &&
+                                filter?.dates[1] !== 'any' &&
+                                'date-range-picker-filter-footer-button-selected'
+                              }`}
+                              onClick={() => {
+                                setSelectedDates([]);
+                                setFilter({ ...filter, dates: ['any', moment().subtract(1, 'days')] });
+                              }}>
                               {t('dashboard.events.filter.dates.past')}
                             </Button>
                           </div>

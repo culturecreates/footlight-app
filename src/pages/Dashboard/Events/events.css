@@ -66,6 +66,10 @@
   color: #1b3de6;
 }
 
+.date-filter-popover .date-range-picker-filter-footer-button-selected {
+  background-color: #eff2ff;
+}
+
 @media only screen and (max-width: 428px) {
   .events-wrapper .events-heading-wrapper .events-heading {
     font-size: 24px;
