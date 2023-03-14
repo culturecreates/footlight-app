@@ -72,6 +72,7 @@ import { usePrompt } from '../../../hooks/usePrompt';
 import { bilingual } from '../../../utils/bilingual';
 import CustomModal from '../../../components/Modal/Common/CustomModal';
 import TextButton from '../../../components/Button/Text';
+import MultipleDatePicker from '../../../components/MultipleDatePicker';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -1111,9 +1112,7 @@ function AddEvent() {
                                 onClick={() => setIsModalOpen(false)}
                               />,
                             ]}>
-                            <p>Some contents...</p>
-                            <p>Some contents...</p>
-                            <p>Some contents...</p>
+                            <MultipleDatePicker />
                           </CustomModal>
                         </Form.Item>
                       </Col>
