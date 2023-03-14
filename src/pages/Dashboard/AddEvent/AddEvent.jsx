@@ -974,17 +974,6 @@ function AddEvent() {
                             <Form.Item
                               // name="dateRangePicker"
                               label={t('dashboard.events.addEditEvent.dates.multipleDates')}
-                              initialValue={
-                                dateTimeTypeHandler(
-                                  eventData?.startDate,
-                                  eventData?.startDateTime,
-                                  eventData?.endDate,
-                                  eventData?.endDateTime,
-                                ) === dateTypes.RANGE && [
-                                  moment(eventData?.startDate ?? eventData?.startDateTime),
-                                  moment(eventData?.endDate ?? eventData?.endDateTime),
-                                ]
-                              }
                               rules={[
                                 { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
                               ]}>
@@ -1029,30 +1018,37 @@ function AddEvent() {
                         >
                           <Select options={dateFrequencyOptions} />
                         </Form.Item>
-                        <Form.Item name="eventFrequency" label={t('dashboard.events.addEditEvent.dates.days')}>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            {moment
-                              .localeData(i18n?.language)
-                              .weekdaysShort()
-                              ?.map((day, index) => (
-                                <Button
-                                  key={index}
-                                  className="recurring-day-buttons"
-                                  onClick={(e) => console.log(e)}
-                                  // style={{ borderColor: '#607EFC' }}
-                                >
-                                  {day}
-                                </Button>
-                              ))}
-                          </div>
-                        </Form.Item>
+                        {form.getFieldValue('eventFrequency') === dateFrequencyOptions[1]?.value && (
+                          <Form.Item name="eventFrequency" label={t('dashboard.events.addEditEvent.dates.days')}>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              {moment
+                                .localeData(i18n?.language)
+                                .weekdaysShort()
+                                ?.map((day, index) => (
+                                  <Button
+                                    key={index}
+                                    className="recurring-day-buttons"
+                                    onClick={(e) => console.log(e)}
+                                    // style={{ borderColor: '#607EFC' }}
+                                  >
+                                    {day}
+                                  </Button>
+                                ))}
+                            </div>
+                          </Form.Item>
+                        )}
+
                         <Form.Item>
                           {/* <Button type="text" icon={<ControlOutlined />} onClick={() => setIsModalOpen(true)}>
                             Customize
                           </Button> */}
-                          <Button type="text" icon={<ControlOutlined />} onClick={() => setIsModalOpen(true)}>
-                            Customize
-                          </Button>
+
+                          <TextButton
+                            size="large"
+                            icon={<ControlOutlined />}
+                            onClick={() => setIsModalOpen(true)}
+                            label={t('dashboard.events.addEditEvent.dates.editDates')}
+                          />
                           {/* <Modal
                             title="Basic Modal"
                             open={isModalOpen}
@@ -1097,8 +1093,17 @@ function AddEvent() {
                           <CustomModal
                             open={isModalOpen}
                             footer={[
-                              <TextButton key="cancel" size="large" label={'Cancel'} />,
-                              <PrimaryButton key="add-dates" label={'Add dates'} />,
+                              <TextButton
+                                key="cancel"
+                                size="large"
+                                label={t('dashboard.events.addEditEvent.dates.cancel')}
+                                onClick={() => setIsModalOpen(false)}
+                              />,
+                              <PrimaryButton
+                                key="add-dates"
+                                label={t('dashboard.events.addEditEvent.dates.addDates')}
+                                onClick={() => setIsModalOpen(false)}
+                              />,
                             ]}>
                             <p>Some contents...</p>
                             <p>Some contents...</p>

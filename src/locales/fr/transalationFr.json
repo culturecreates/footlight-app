@@ -136,7 +136,10 @@
           "weekly": "Toutes les semaines",
           "monthly": "Tous les mois",
           "custom": "Personnalisé",
-          "days": "Jours"
+          "days": "Jours",
+          "editDates": "Éditer les dates",
+          "cancel": "Annuler",
+          "addDates": "Ajouter les dates"
         },
         "location": {
           "title": "Endroit",
@@ -271,7 +274,6 @@
         "unpublishEvent": "Dépublier l'événement",
         "deleteEvent": "Supprimer l'événement",
         "duplicateEvent": "Dupliquer l’événement"
-
       },
       "publishState": {
         "published": "Publié",

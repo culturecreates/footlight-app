@@ -137,7 +137,10 @@
           "weekly": "Weekly",
           "monthly": "Monthly",
           "custom": "Custom",
-          "days": "Days"
+          "days": "Days",
+          "editDates": "Edit dates",
+          "cancel": "Cancel",
+          "addDates": "Add dates"
         },
         "location": {
           "title": "Location",
