@@ -138,6 +138,7 @@ function AddEvent() {
   const [showDialog, setShowDialog] = useState(false);
   const [scrollToSelectedField, setSrollToSelectedField] = useState();
   const [selectedWeekDays, setSelectedWeekDays] = useState([]);
+  const [selectedEventFrequency, setSelectedEventFrequency] = useState();
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -1024,10 +1025,16 @@ function AddEvent() {
                           label={t('dashboard.events.addEditEvent.dates.frequency')}
                           // initialValue={eventData?.eventStatus ?? eventStatus.EventScheduled}
                         >
-                          <Select options={dateFrequencyOptions} />
+                          <Select
+                            options={dateFrequencyOptions}
+                            onSelect={(value) => setSelectedEventFrequency(value)}
+                          />
                         </Form.Item>
 
-                        <Form.Item name="weekDays" label={t('dashboard.events.addEditEvent.dates.days')}>
+                        <Form.Item
+                          name="weekDays"
+                          label={t('dashboard.events.addEditEvent.dates.days')}
+                          hidden={selectedEventFrequency === dateFrequencyOptions[1].value ? false : true}>
                           <div style={{ display: 'flex', gap: '8px' }}>
                             {weekDays.map((day, index) => (
                               <Button
@@ -1042,10 +1049,6 @@ function AddEvent() {
                         </Form.Item>
 
                         <Form.Item>
-                          {/* <Button type="text" icon={<ControlOutlined />} onClick={() => setIsModalOpen(true)}>
-                            Customize
-                          </Button> */}
-
                           <TextButton
                             size="large"
                             icon={<ControlOutlined />}
