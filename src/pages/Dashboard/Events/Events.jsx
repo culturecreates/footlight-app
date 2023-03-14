@@ -85,6 +85,9 @@ function Events() {
             : moment(filter?.dates[1])?.format('YYYY-MM-DD')
           : null,
       );
+    } else {
+      query.append('start-date-range', '');
+      query.append('end-date-range', '');
     }
     getEvents({
       pageNumber,
@@ -389,6 +392,7 @@ function Events() {
                           dates: [],
                         });
                         setUserFilter([]);
+                        setSelectedDates([]);
                         let usersToClear = selectedUsers;
                         Object.keys(usersToClear)?.forEach(function (key) {
                           usersToClear[key] = false;
