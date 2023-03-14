@@ -309,7 +309,7 @@ function Events() {
                 <Col>
                   <Popover
                     placement="bottom"
-                    // getPopupContainer={(trigger) => trigger.parentNode}
+                    getPopupContainer={(trigger) => trigger.parentNode}
                     content={
                       <DateRangePicker
                         value={selectedDates}
@@ -331,6 +331,7 @@ function Events() {
                               onClick={() => {
                                 setSelectedDates([]);
                                 setFilter({ ...filter, dates: ['any', 'any'] });
+                                setIsPopoverOpen(false);
                               }}>
                               {t('dashboard.events.filter.dates.allTime')}
                             </Button>
@@ -345,6 +346,7 @@ function Events() {
                               onClick={() => {
                                 setSelectedDates([]);
                                 setFilter({ ...filter, dates: ['any', moment().subtract(1, 'days')] });
+                                setIsPopoverOpen(false);
                               }}>
                               {t('dashboard.events.filter.dates.past')}
                             </Button>

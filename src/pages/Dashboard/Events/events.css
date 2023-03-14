@@ -48,6 +48,9 @@
 .date-filter-popover {
   padding-top: 0px;
 }
+.date-filter-popover .ant-popover-content {
+  min-width: 340px;
+}
 
 .date-filter-popover .ant-popover-arrow {
   display: none;
