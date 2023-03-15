@@ -14,3 +14,8 @@ export const sortByOptions = [
     key: 'startDateTime',
   },
 ];
+
+export const sortOrder = {
+  ASC: 'asc',
+  DESC: 'desc',
+};
