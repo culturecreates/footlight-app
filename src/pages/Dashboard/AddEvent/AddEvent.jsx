@@ -414,6 +414,23 @@ function AddEvent() {
                     })
                     .catch((error) => {
                       console.log(error);
+                      message.warning({
+                        duration: 10,
+                        maxCount: 1,
+                        key: 'event-image-save-warning',
+                        content: (
+                          <>
+                            {t('dashboard.events.addEditEvent.validations.errorImage')}
+                            &nbsp;
+                            <Button
+                              type="text"
+                              icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                              onClick={() => message.destroy('event-image-save-warning')}
+                            />
+                          </>
+                        ),
+                        icon: <ExclamationCircleOutlined />,
+                      });
                     });
               },
             });
