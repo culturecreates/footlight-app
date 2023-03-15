@@ -220,6 +220,7 @@ function AddEvent() {
             performers = [],
             collaborators = [],
             dynamicFields = [],
+            recurringEvent,
             image;
           let eventObj;
           if (dateType === dateTypes.SINGLE) {
@@ -232,6 +233,32 @@ function AddEvent() {
             else startDateTime = moment(values?.dateRangePicker[0]).format('YYYY/MM/DD');
             if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
             else endDateTime = moment(values?.dateRangePicker[1]).format('YYYY/MM/DD');
+          }
+          if (dateType === dateTypes.MULTIPLE) {
+            const recurEvent = {
+              frequency: values.frequency,
+              startDate:
+                form.getFieldsValue().frequency !== 'CUSTOM'
+                  ? moment(values.startDateRecur[0]).format('YYYY-MM-DD')
+                  : undefined,
+              endDate:
+                form.getFieldsValue().frequency !== 'CUSTOM'
+                  ? moment(values.startDateRecur[1]).format('YYYY-MM-DD')
+                  : undefined,
+              startTime:
+                form.getFieldsValue().frequency !== 'CUSTOM'
+                  ? values.startTimeRecur
+                    ? moment(values.startTimeRecur).format('HH:mm')
+                    : undefined
+                  : undefined,
+              endTime:
+                form.getFieldsValue().frequency !== 'CUSTOM' && values.endTimeRecur
+                  ? moment(values.endTimeRecur).format('HH:mm')
+                  : undefined,
+              weekDays: values.frequency === 'WEEKLY' ? values.daysOfWeek : undefined,
+              customDates: form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
+            };
+            recurringEvent = recurEvent;
           }
           if (values?.eventType) {
             additionalType = values?.eventType?.map((eventTypeId) => {
@@ -402,6 +429,7 @@ function AddEvent() {
             ...(values?.performers && { performers }),
             ...(values?.supporters && { collaborators }),
             ...(values?.dynamicFields && { dynamicFields }),
+            ...(dateTypes.MULTIPLE && { recurringEvent }),
           };
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
             new Compressor(values?.dragger[0]?.originFileObj, {
@@ -672,14 +700,17 @@ function AddEvent() {
 
   useEffect(() => {
     if (calendarId && eventData) {
-      let initialAddedFields = [];
+      let initialAddedFields = [],
+        isRecurring = false;
       if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState) || duplicateId) {
+        if (eventData?.recurringEvent && Object.keys(eventData?.recurringEvent)?.length > 0) isRecurring = true;
         setDateType(
           dateTimeTypeHandler(
             eventData?.startDate,
             eventData?.startDateTime,
             eventData?.endDate,
             eventData?.endDateTime,
+            isRecurring,
           ),
         );
         setTicketType(eventData?.offerConfiguration?.category);
