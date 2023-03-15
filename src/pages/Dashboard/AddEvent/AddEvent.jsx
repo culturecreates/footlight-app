@@ -793,7 +793,14 @@ function AddEvent() {
     !taxonomyLoading &&
     !initialEntityLoading && (
       <div>
-        <Form form={form} layout="vertical" name="event" onValuesChange={onValuesChangHandler}>
+        <Form
+          form={form}
+          layout="vertical"
+          name="event"
+          onValuesChange={onValuesChangHandler}
+          onFieldsChange={() => {
+            setFormValue(form.getFieldsValue(true));
+          }}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
               <Row justify="space-between">
