@@ -34,7 +34,7 @@ import Select from '../../../components/Select';
 import { eventStatus, eventStatusOptions } from '../../../constants/eventStatus';
 import TimePickerStyled from '../../../components/TimePicker/TimePicker';
 import DateRangePicker from '../../../components/DateRangePicker';
-import { dateFrequencyOptions, dateTypeOptions, dateTypes, weekDays } from '../../../constants/dateTypes';
+import { dateFrequencyOptions, dateTypeOptions, dateTypes, daysOfWeek } from '../../../constants/dateTypes';
 import ChangeType from '../../../components/ChangeType';
 import CardEvent from '../../../components/Card/Common/Event';
 import Tags from '../../../components/Tags/Common/Tags';
@@ -73,6 +73,7 @@ import { bilingual } from '../../../utils/bilingual';
 import CustomModal from '../../../components/Modal/Common/CustomModal';
 import TextButton from '../../../components/Button/Text';
 import MultipleDatePicker from '../../../components/MultipleDatePicker';
+import RecurringEvents from '../../../components/RecurringEvents';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -140,6 +141,7 @@ function AddEvent() {
   const [scrollToSelectedField, setSrollToSelectedField] = useState();
   const [selectedWeekDays, setSelectedWeekDays] = useState([]);
   const [selectedEventFrequency, setSelectedEventFrequency] = useState();
+  const [formValue, setFormValue] = useState();
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -735,6 +737,41 @@ function AddEvent() {
         if (eventData?.accessibilityNote?.en || eventData?.accessibilityNote?.fr)
           initialAddedFields = initialAddedFields?.concat(eventAccessibilityFieldNames?.noteWrap);
         setAddedFields(initialAddedFields);
+        if (eventData?.recurringEvent) {
+          form.setFieldsValue({
+            frequency: eventData?.recurringEvent?.frequency,
+            startDateRecur: [
+              moment(
+                moment(
+                  eventData?.recurringEvent?.startDate ? eventData?.recurringEvent?.startDate : eventData?.startDate,
+                  'YYYY-MM-DD',
+                ).format('DD-MM-YYYY'),
+                'DD-MM-YYYY',
+              ),
+              moment(
+                moment(
+                  eventData?.recurringEvent?.endDate ? eventData?.recurringEvent?.endDate : eventData?.endDate,
+                  'YYYY-MM-DD',
+                ).format('DD-MM-YYYY'),
+                'DD-MM-YYYY',
+              ),
+            ],
+            startTimeRecur: eventData?.recurringEvent?.startTime
+              ? moment(eventData?.recurringEvent?.startTime, 'HH:mm')
+              : undefined,
+            endTimeRecur: eventData?.recurringEvent?.endTime
+              ? moment(eventData?.recurringEvent?.endTime, 'HH:mm')
+              : undefined,
+            customDates: eventData?.recurringEvent?.customDates,
+            daysOfWeek: eventData?.recurringEvent?.weekDays,
+          });
+          const obj = {
+            startTimeRecur: eventData?.recurringEvent?.startTime
+              ? moment(eventData?.recurringEvent?.startTime, 'HH:mm')
+              : undefined,
+          };
+          setFormValue(obj);
+        }
       } else
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
     }
@@ -1037,7 +1074,7 @@ function AddEvent() {
                           label={t('dashboard.events.addEditEvent.dates.days')}
                           hidden={selectedEventFrequency === dateFrequencyOptions[1].value ? false : true}>
                           <div style={{ display: 'flex', gap: '8px' }}>
-                            {weekDays.map((day, index) => (
+                            {daysOfWeek.map((day, index) => (
                               <Button
                                 key={index}
                                 className="recurring-day-buttons"
@@ -1049,6 +1086,13 @@ function AddEvent() {
                           </div>
                         </Form.Item>
 
+                        <RecurringEvents
+                          currentLang={i18n.language}
+                          formFields={formValue}
+                          numberOfDaysEvent={eventData?.subEvents?.length}
+                          form={form}
+                          eventDetails={eventData}
+                        />
                         <Form.Item>
                           <TextButton
                             size="large"

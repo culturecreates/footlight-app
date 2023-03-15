@@ -1,0 +1,108 @@
+.customize-div{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.customize{
+    color: #0740d3;
+    cursor: pointer;
+}
+.recurring-card{
+    margin-bottom: 15px;
+}
+.time-zone-select.ant-select{
+    min-width: 120px;
+    color: #0740d3;
+    max-width: 225px;
+}
+.time-zone-select.ant-select .ant-select-arrow{
+    color: #0740d3;
+}
+.time-zone-select.ant-select-single:not(.ant-select-customize-input) .ant-select-selector{
+  padding: 0px 11px 0px 0px;
+}
+.timezone-item{
+    margin: 0;
+    margin-bottom: 20px;
+}
+.recurring-modal.ant-modal{
+    width: 850px !important;
+    max-height: 475px;
+}
+.recurring-modal .calendar{
+    padding: 1px;
+    width: 350px;
+    height: 375px;
+    /* overflow: auto; */
+}
+.recurring-modal .calendar .months-container .month-container{
+    height: 230px;
+}
+.recurring-modal .calendar table{
+    width: 85%;
+}
+.custom-time-layout{
+    display: flex;
+    justify-content: space-between;
+}
+.custom-date-column{
+    padding: 20px;
+    height: 375px;
+    overflow: auto;
+}
+.custom-no-of-date{
+    font-size: 16px;
+    font-weight: 600;
+}
+.recurring-modal .ant-divider-horizontal{
+    margin: 10px 0px;
+}
+.crud-icons .anticon{
+    font-size: 18px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+.add-time-btn{
+    font-size: 15px;
+    font-weight: 600;
+    color: #0206f3;
+    text-align: center;
+    margin: 15px;
+}
+.deleted-text{
+    text-decoration-line: line-through;
+    color: #b7b3b3;
+}
+.anticon.close-time{
+    font-size: 12px;
+    cursor: pointer;
+}
+.add-time-items .ant-btn{
+    margin: 0px 10px;
+    height: 33px;
+    padding: 1.4px 15px;
+}
+.add-time-items{
+    margin: 0px;
+}
+.check-time .ant-checkbox+span{
+    font-weight: 600;
+}
+.copycheck.ant-checkbox-group{
+    display: flex;
+    flex-direction: column;
+}
+.replace-txt,
+.copycheck.ant-checkbox-group label{
+    margin: 10px 0px;
+    color: #000;
+    font-size: 15px;
+    font-weight: 600;
+}
+.select-all-check{
+    color: blue;
+    font-weight: 700;
+}
+/* .recurring-time-picker .ant-picker-footer{
+    display: none;
+} */

@@ -46,7 +46,7 @@ export const dateFrequencyOptions = [
   },
 ];
 
-export const weekDays = [
+export const daysOfWeek = [
   {
     name: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.weekDays.monday')}</Translation>,
     value: 'Monday',
