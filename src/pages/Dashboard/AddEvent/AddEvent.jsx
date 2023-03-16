@@ -6,7 +6,6 @@ import {
   InfoCircleOutlined,
   CloseCircleOutlined,
   CalendarOutlined,
-  ControlOutlined,
   ExclamationCircleOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
@@ -32,7 +31,7 @@ import Select from '../../../components/Select';
 import { eventStatus, eventStatusOptions } from '../../../constants/eventStatus';
 import TimePickerStyled from '../../../components/TimePicker/TimePicker';
 import DateRangePicker from '../../../components/DateRangePicker';
-import { dateFrequencyOptions, dateTypeOptions, dateTypes, daysOfWeek } from '../../../constants/dateTypes';
+import { dateTypeOptions, dateTypes } from '../../../constants/dateTypes';
 import ChangeType from '../../../components/ChangeType';
 import CardEvent from '../../../components/Card/Common/Event';
 import Tags from '../../../components/Tags/Common/Tags';
@@ -137,8 +136,6 @@ function AddEvent() {
   const [addedFields, setAddedFields] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
   const [scrollToSelectedField, setSrollToSelectedField] = useState();
-  const [selectedWeekDays, setSelectedWeekDays] = useState([]);
-  const [selectedEventFrequency, setSelectedEventFrequency] = useState();
   const [formValue, setFormValue] = useState();
 
   usePrompt(t('common.unsavedChanges'), showDialog);
@@ -677,13 +674,6 @@ function AddEvent() {
     setShowDialog(true);
   };
 
-  const weekDaySelectHandler = (day) => {
-    if (selectedWeekDays?.includes(day)) {
-      setSelectedWeekDays((currentWeekDays) => currentWeekDays?.filter((currentDay) => day != currentDay));
-    } else setSelectedWeekDays([...selectedWeekDays, day]);
-    form.setFieldValue('weekDays', selectedWeekDays);
-  };
-
   useEffect(() => {
     if (selectedOrganizers) form.setFieldValue('organizers', selectedOrganizers);
   }, [selectedOrganizers]);
@@ -1018,124 +1008,122 @@ function AddEvent() {
                     <Row>
                       <Col flex={'423px'}>
                         {dateType === dateTypes.SINGLE && (
-                          <Form.Item
-                            name="datePicker"
-                            label={t('dashboard.events.addEditEvent.dates.date')}
-                            initialValue={
-                              dateTimeTypeHandler(
-                                eventData?.startDate,
-                                eventData?.startDateTime,
-                                eventData?.endDate,
-                                eventData?.endDateTime,
-                              ) === dateTypes.SINGLE && moment(eventData?.startDate ?? eventData?.startDateTime)
-                            }
-                            rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
-                            <DatePickerStyled style={{ width: '423px' }} />
-                          </Form.Item>
-                        )}
-                        {dateType === dateTypes.RANGE && (
-                          <Form.Item
-                            name="dateRangePicker"
-                            label={t('dashboard.events.addEditEvent.dates.dateRange')}
-                            initialValue={
-                              dateTimeTypeHandler(
-                                eventData?.startDate,
-                                eventData?.startDateTime,
-                                eventData?.endDate,
-                                eventData?.endDateTime,
-                              ) === dateTypes.RANGE && [
-                                moment(eventData?.startDate ?? eventData?.startDateTime),
-                                moment(eventData?.endDate ?? eventData?.endDateTime),
-                              ]
-                            }
-                            rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
-                            <DateRangePicker style={{ width: '423px' }} />
-                          </Form.Item>
-                        )}
-                        {dateType === dateTypes.MULTIPLE && (
                           <>
                             <Form.Item
-                              // name="dateRangePicker"
-                              label={t('dashboard.events.addEditEvent.dates.multipleDates')}
+                              name="datePicker"
+                              label={t('dashboard.events.addEditEvent.dates.date')}
+                              initialValue={
+                                dateTimeTypeHandler(
+                                  eventData?.startDate,
+                                  eventData?.startDateTime,
+                                  eventData?.endDate,
+                                  eventData?.endDateTime,
+                                ) === dateTypes.SINGLE && moment(eventData?.startDate ?? eventData?.startDateTime)
+                              }
+                              rules={[
+                                { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
+                              ]}>
+                              <DatePickerStyled style={{ width: '423px' }} />
+                            </Form.Item>
+                            <Row justify="space-between">
+                              <Col flex={'203.5px'}>
+                                <Form.Item
+                                  name="startTime"
+                                  label={t('dashboard.events.addEditEvent.dates.startTime')}
+                                  initialValue={
+                                    eventData?.startDateTime ? moment(eventData?.startDateTime) : undefined
+                                  }>
+                                  <TimePickerStyled
+                                    placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                                    use12Hours={i18n?.language === 'en' ? true : false}
+                                    format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                                  />
+                                </Form.Item>
+                              </Col>
+                              <Col flex={'203.5px'}>
+                                <Form.Item
+                                  name="endTime"
+                                  label={t('dashboard.events.addEditEvent.dates.endTime')}
+                                  initialValue={eventData?.endDateTime ? moment(eventData?.endDateTime) : undefined}>
+                                  <TimePickerStyled
+                                    placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                                    use12Hours={i18n?.language === 'en' ? true : false}
+                                    format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                                  />
+                                </Form.Item>
+                              </Col>
+                            </Row>
+                          </>
+                        )}
+                        {dateType === dateTypes.RANGE && (
+                          <>
+                            {' '}
+                            <Form.Item
+                              name="dateRangePicker"
+                              label={t('dashboard.events.addEditEvent.dates.dateRange')}
+                              initialValue={
+                                dateTimeTypeHandler(
+                                  eventData?.startDate,
+                                  eventData?.startDateTime,
+                                  eventData?.endDate,
+                                  eventData?.endDateTime,
+                                ) === dateTypes.RANGE && [
+                                  moment(eventData?.startDate ?? eventData?.startDateTime),
+                                  moment(eventData?.endDate ?? eventData?.endDateTime),
+                                ]
+                              }
                               rules={[
                                 { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
                               ]}>
                               <DateRangePicker style={{ width: '423px' }} />
                             </Form.Item>
+                            <Row justify="space-between">
+                              <Col flex={'203.5px'}>
+                                <Form.Item
+                                  name="startTime"
+                                  label={t('dashboard.events.addEditEvent.dates.startTime')}
+                                  initialValue={
+                                    eventData?.startDateTime ? moment(eventData?.startDateTime) : undefined
+                                  }>
+                                  <TimePickerStyled
+                                    placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                                    use12Hours={i18n?.language === 'en' ? true : false}
+                                    format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                                  />
+                                </Form.Item>
+                              </Col>
+                              <Col flex={'203.5px'}>
+                                <Form.Item
+                                  name="endTime"
+                                  label={t('dashboard.events.addEditEvent.dates.endTime')}
+                                  initialValue={eventData?.endDateTime ? moment(eventData?.endDateTime) : undefined}>
+                                  <TimePickerStyled
+                                    placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                                    use12Hours={i18n?.language === 'en' ? true : false}
+                                    format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                                  />
+                                </Form.Item>
+                              </Col>
+                            </Row>
+                          </>
+                        )}
+                        {dateType === dateTypes.MULTIPLE && (
+                          <>
+                            <RecurringEvents
+                              currentLang={i18n.language}
+                              formFields={formValue}
+                              numberOfDaysEvent={eventData?.subEvents?.length}
+                              form={form}
+                              eventDetails={eventData}
+                            />
                           </>
                         )}
                       </Col>
                     </Row>
-                    <Row justify="space-between">
-                      <Col flex={'203.5px'}>
-                        <Form.Item
-                          name="startTime"
-                          label={t('dashboard.events.addEditEvent.dates.startTime')}
-                          initialValue={eventData?.startDateTime ? moment(eventData?.startDateTime) : undefined}>
-                          <TimePickerStyled
-                            placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
-                            use12Hours={i18n?.language === 'en' ? true : false}
-                            format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col flex={'203.5px'}>
-                        <Form.Item
-                          name="endTime"
-                          label={t('dashboard.events.addEditEvent.dates.endTime')}
-                          initialValue={eventData?.endDateTime ? moment(eventData?.endDateTime) : undefined}>
-                          <TimePickerStyled
-                            placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
-                            use12Hours={i18n?.language === 'en' ? true : false}
-                            format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
+
                     <Row>
                       <Col flex={'423px'}>
-                        <Form.Item
-                          name="eventFrequency"
-                          label={t('dashboard.events.addEditEvent.dates.frequency')}
-                          // initialValue={eventData?.eventStatus ?? eventStatus.EventScheduled}
-                        >
-                          <Select
-                            options={dateFrequencyOptions}
-                            onSelect={(value) => setSelectedEventFrequency(value)}
-                          />
-                        </Form.Item>
-
-                        <Form.Item
-                          name="weekDays"
-                          label={t('dashboard.events.addEditEvent.dates.days')}
-                          hidden={selectedEventFrequency === dateFrequencyOptions[1].value ? false : true}>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            {daysOfWeek.map((day, index) => (
-                              <Button
-                                key={index}
-                                className="recurring-day-buttons"
-                                style={{ borderColor: selectedWeekDays?.includes(day?.value) && '#607EFC' }}
-                                onClick={() => weekDaySelectHandler(day?.value)}>
-                                {day.name}
-                              </Button>
-                            ))}
-                          </div>
-                        </Form.Item>
-
-                        <RecurringEvents
-                          currentLang={i18n.language}
-                          formFields={formValue}
-                          numberOfDaysEvent={eventData?.subEvents?.length}
-                          form={form}
-                          eventDetails={eventData}
-                        />
                         <Form.Item>
-                          <TextButton
-                            size="large"
-                            icon={<ControlOutlined />}
-                            onClick={() => setIsModalOpen(true)}
-                            label={t('dashboard.events.addEditEvent.dates.editDates')}
-                          />
                           {/* <Modal
                             title="Basic Modal"
                             open={isModalOpen}
