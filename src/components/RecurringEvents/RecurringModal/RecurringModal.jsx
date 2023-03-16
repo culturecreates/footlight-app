@@ -1,4 +1,4 @@
-import { Button, Col, Divider, Row, TimePicker, Form, Checkbox, Empty } from 'antd';
+import { Button, Col, Divider, Row, Form, Checkbox, Empty } from 'antd';
 import React, { useEffect, useState } from 'react';
 import Calendar from 'rc-year-calendar';
 import uniqid from 'uniqid';
@@ -18,6 +18,8 @@ import CustomModal from '../../Modal/Common/CustomModal';
 import TextButton from '../../Button/Text';
 import PrimaryButton from '../../Button/Primary';
 import Tags from '../../Tags/Common/Tags';
+import TimePickerStyled from '../../TimePicker/TimePicker';
+import i18n from 'i18next';
 
 const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCustomDates, customDates }) => {
   const [dateSource, setDataSource] = useState([]);
@@ -251,17 +253,11 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
           />
         </Col>
         <Col flex="auto" className="custom-date-column">
-          <div className="custom-time-layout">
-            <div className="custom-no-of-date">{dateSource.length} dates</div>
-            <div>{dateSource.filter((item) => item.time).length} times</div>
-          </div>
-          <Divider />
           <div>
             {dateSource.map((item) => (
               <div key={item.id}>
                 <div className="custom-time-layout">
                   <div className={item.isDeleted ? 'deleted-text custom-no-of-date' : 'custom-no-of-date'}>
-                    {/* { moment(item.startDate).tz("Canada/Eastern").format("dddd")} */}
                     {moment(item.startDate).format('dddd DD MMM YYYY')}
                   </div>
                   <div className="crud-icons">
@@ -296,18 +292,26 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                     </div>
                   ))}
                 {!item.isDeleted && selectedDateId !== item.id && (
-                  <div className="add-time-btn">
-                    <span
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        setShowAddTime(true);
-                        setSelectedDateId(item.id);
-                      }}>
-                      <PlusOutlined />
-                      Add Time
-                    </span>
-                  </div>
+                  //   <div className="add-time-btn">
+                  //     <span
+                  //       style={{ cursor: 'pointer' }}
+                  //       onClick={() => {
+                  //         setShowAddTime(true);
+                  //         setSelectedDateId(item.id);
+                  //       }}>
+                  //       {t('dashboard.events.addEditEvent.dates.modal.addTime')}
+                  //     </span>
+                  //   </div>
+                  <TextButton
+                    icon={<PlusOutlined style={{ color: '#1B3DE6' }} />}
+                    label={t('dashboard.events.addEditEvent.dates.modal.addTime')}
+                    onClick={() => {
+                      setShowAddTime(true);
+                      setSelectedDateId(item.id);
+                    }}
+                  />
                 )}
+
                 {!item.isDeleted && showAddTime && selectedDateId === item.id && (
                   <Form
                     form={form}
@@ -315,7 +319,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                     className="update-status-form"
                     data-testid="status-update-form"
                     onFinish={handleSubmit}>
-                    <div className="flex-align" style={{ marginTop: '15px' }}>
+                    {/* <div className="flex-align" style={{ marginTop: '15px' }}>
                       <div className="date-div">
                         <div className="update-select-title">{t('StartTime', { lng: currentLang })}</div>
                         <Form.Item
@@ -350,7 +354,33 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                           />
                         </Form.Item>
                       </div>
-                    </div>
+                    </div> */}
+                    <Row justify="space-between">
+                      <Col flex={'203.5px'}>
+                        <Form.Item
+                          name="startTimeCustom"
+                          //   className="status-comment-item"
+                          label={t('dashboard.events.addEditEvent.dates.startTime')}>
+                          <TimePickerStyled
+                            placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                            use12Hours={i18n?.language === 'en' ? true : false}
+                            format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col flex={'203.5px'}>
+                        <Form.Item
+                          name="endTimeCustom"
+                          //   className="status-comment-item"
+                          label={t('dashboard.events.addEditEvent.dates.endTime')}>
+                          <TimePickerStyled
+                            placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                            use12Hours={i18n?.language === 'en' ? true : false}
+                            format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                          />
+                        </Form.Item>
+                      </Col>
+                    </Row>
                     <div className="flex-align">
                       <Checkbox onChange={onChangeCheckbox} className="check-time" checked={updateAllTime}>
                         Add this time to all dates
