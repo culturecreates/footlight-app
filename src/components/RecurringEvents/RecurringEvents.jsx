@@ -1,4 +1,4 @@
-import { Card, DatePicker, Form, Select, TimePicker } from 'antd';
+import { Card, Form, Select, TimePicker } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
@@ -7,9 +7,9 @@ import './recurringEvents.css';
 import RecurringModal from './RecurringModal/index';
 import { EditOutlined } from '@ant-design/icons';
 import uniqid from 'uniqid';
+import DateRangePicker from '../DateRangePicker';
 
 const { Option } = Select;
-const { RangePicker } = DatePicker;
 const RecurringEvents = function ({ currentLang = 'fr', formFields, numberOfDaysEvent = 0, form, eventDetails }) {
   // const [startDisable, setStartDisable] = useState(
   //   moment().format("YYYY-MM-DD")
@@ -327,35 +327,9 @@ const RecurringEvents = function ({ currentLang = 'fr', formFields, numberOfDays
                 name="startDateRecur"
                 className="status-comment-item"
                 rules={[{ required: true, message: 'Start date required' }]}>
-                {/* <DatePicker
-              onChange={onChangeStart}
-              format="MM-DD-YYYY"
-              // disabledDate={disabledDate}
-              disabledDate={(d) => !d || d.isBefore(endDisable)}
-            /> */}
-                <RangePicker
-                  // defaultValue={[moment('2015/01/01', dateFormat), moment('2015/01/01', dateFormat)]}
-                  format="MM-DD-YYYY"
-                  disabledDate={(d) => !d || d.isSameOrBefore(endDisable)}
-                />
+                <DateRangePicker style={{ width: '423px' }} disabledDate={(d) => !d || d.isSameOrBefore(endDisable)} />
               </Form.Item>
             </div>
-            {/* <div className="date-div"> */}
-            {/* <div className="update-select-title">
-            {t("EndDate", { lng: currentLang })}
-          </div>
-          <Form.Item
-            name="endDateRecur"
-            className="status-comment-item"
-            rules={[{ required: true, message: "End date required" }]}
-          >
-            <DatePicker
-              format="MM-DD-YYYY"
-              onChange={onChangeEnd}
-              disabledDate={(d) => !d || d.isSameOrBefore(startDisable)}
-            />
-          </Form.Item>
-        </div> */}
           </div>
           <div className="flex-align">
             <div className="date-div">
