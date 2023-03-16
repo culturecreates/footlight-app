@@ -3,10 +3,16 @@ import { useEffect, useState } from 'react';
 import moment from 'moment';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import '../recurringEvents.css';
+import CustomModal from '../../Modal/Common/CustomModal';
+import { useTranslation } from 'react-i18next';
+import TextButton from '../../Button/Text';
+import PrimaryButton from '../../Button/Primary';
+import i18next from 'i18next';
 
 const { confirm } = Modal;
 
 const CopyTimeModal = ({ isModalVisible, setIsModalVisible, recurringEvents, copyTime, updateTime }) => {
+  const { t } = useTranslation();
   const [checkOptions, setCheckOptions] = useState([]);
   const [selectedCheckbox, setSelectedCheckbox] = useState([]);
   const [checkAll, setCheckAll] = useState(false);
@@ -36,7 +42,7 @@ const CopyTimeModal = ({ isModalVisible, setIsModalVisible, recurringEvents, cop
           .filter((item) => item.id !== copyTime.id)
           .map((item) => {
             const obj = {
-              label: moment(item.startDate).format('dddd DD MMM YYYY'),
+              label: moment(item.startDate).locale(i18next.language).format('dddd DD MMM YYYY'),
               value: item.id,
             };
             return obj;
@@ -64,26 +70,45 @@ const CopyTimeModal = ({ isModalVisible, setIsModalVisible, recurringEvents, cop
     });
   };
   return (
-    <Modal
-      title="Duplicate Times"
+    <CustomModal
+      title={
+        <div className="custom-modal-title-wrapper">
+          <span className="custom-modal-title-heading">
+            {t('dashboard.events.addEditEvent.dates.modal.titleHeading')}
+          </span>
+        </div>
+      }
       open={isModalVisible}
-      onOk={showConfirm}
-      onCancel={handleCancel}
-      className="copy-modal"
-      okText="Done">
+      footer={[
+        <TextButton
+          key="cancel"
+          size="large"
+          label={t('dashboard.events.addEditEvent.dates.cancel')}
+          onClick={handleCancel}
+        />,
+        <PrimaryButton
+          key="add-dates"
+          label={t('dashboard.events.addEditEvent.dates.addDates')}
+          onClick={showConfirm}
+        />,
+      ]}
+      className="copy-modal">
       {copyTime &&
         copyTime.time &&
         copyTime.time.map((customTime, index) => (
           <div className="replace-txt" key={index}>
-            {customTime.startTime && customTime.startTime} - {customTime.endTime && customTime.endTime}{' '}
+            {customTime.startTime && customTime.startTime + '-'}
+            {customTime.endTime && customTime.endTime}
           </div>
         ))}
       <div className="replace-txt">Replace existing times on the following dates:</div>
-      <Checkbox.Group className="copycheck" options={checkOptions} onChange={onChange} value={selectedCheckbox} />
+      <div>
+        <Checkbox.Group className="copycheck" options={checkOptions} onChange={onChange} value={selectedCheckbox} />
+      </div>
       <Checkbox onChange={onCheckAllChange} checked={checkAll} className="select-all-check">
         {checkAll ? 'Unselect All' : 'Select All'}
       </Checkbox>
-    </Modal>
+    </CustomModal>
   );
 };
 export default CopyTimeModal;

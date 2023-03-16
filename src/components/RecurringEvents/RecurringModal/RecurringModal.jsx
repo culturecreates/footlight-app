@@ -198,8 +198,6 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
         </div>
       }
       open={isModalVisible}
-      onOk={handleOk}
-      onCancel={handleCancel}
       className="recurring-modal"
       width={800}
       footer={[
