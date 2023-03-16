@@ -1115,6 +1115,7 @@ function AddEvent() {
                               numberOfDaysEvent={eventData?.subEvents?.length}
                               form={form}
                               eventDetails={eventData}
+                              setFormFields={setFormValue}
                             />
                           </>
                         )}

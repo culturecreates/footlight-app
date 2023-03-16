@@ -131,7 +131,7 @@ const RecurringEvents = function ({
   const getNumberOfWeekDays = async (start, end, daysofweek) => {
     let date = [];
 
-    daysofweek.map((item) => date.push(getDaysBetweenDates(start, end, item)));
+    daysofweek?.map((item) => date.push(getDaysBetweenDates(start, end, item)));
     setNumberofDates([].concat.apply([], date).length);
     const custom = [].concat.apply([], date).map((item) => {
       const obj = {
@@ -391,7 +391,6 @@ const RecurringEvents = function ({
           options={dateFrequencyOptions}
           defaultValue={dateFrequencyOptions[0]?.value}
           key="updateDropdownKey"
-          className="search-select"
           optionFilterProp="children"
           onChange={handleChange}
         />
@@ -415,7 +414,7 @@ const RecurringEvents = function ({
         </div>
       </Form.Item>
       <div className="customize-div">
-        {nummberofDates !== 0 && <div> {nummberofDates + ' Dates'}</div>}
+        {/* {nummberofDates !== 0 && <div> {nummberofDates + ' Dates'}</div>} */}
 
         {formFields?.startDateRecur?.length == 2 && (
           <TextButton
@@ -432,6 +431,7 @@ const RecurringEvents = function ({
         currentLang={currentLang}
         setCustomDates={onCustomize}
         customDates={customDates}
+        nummberofDates={nummberofDates}
       />
     </>
   );

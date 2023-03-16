@@ -72,6 +72,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
     let name = d.getMonth();
     const el1 = document.querySelector(`[data-month-id="${name}"]`);
     if (el1) el1.scrollIntoView();
+    console.log(customDates);
     setDataSource(customDates);
   }, [isModalVisible]);
 
@@ -359,7 +360,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                       </div>
                     </div> */}
                     <Row justify="space-between">
-                      <Col flex={'203.5px'}>
+                      <Col flex={'190px'}>
                         <Form.Item
                           name="startTimeCustom"
                           //   className="status-comment-item"
@@ -376,7 +377,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                           />
                         </Form.Item>
                       </Col>
-                      <Col flex={'203.5px'}>
+                      <Col flex={'190px'}>
                         <Form.Item
                           name="endTimeCustom"
                           //   className="status-comment-item"
