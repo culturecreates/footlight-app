@@ -5,11 +5,12 @@ import { useEffect, useState } from 'react';
 import { daysOfWeek } from '../../constants/dateTypes';
 import './recurringEvents.css';
 import RecurringModal from './RecurringModal/index';
-import { EditOutlined } from '@ant-design/icons';
+import { ControlOutlined } from '@ant-design/icons';
 import uniqid from 'uniqid';
 import DateRangePicker from '../DateRangePicker';
 import TimePickerStyled from '../TimePicker/TimePicker';
 import i18n from 'i18next';
+import TextButton from '../Button/Text';
 
 const { Option } = Select;
 const RecurringEvents = function ({ currentLang = 'fr', formFields, numberOfDaysEvent = 0, form, eventDetails }) {
@@ -368,10 +369,12 @@ const RecurringEvents = function ({ currentLang = 'fr', formFields, numberOfDays
       <div className="customize-div">
         {nummberofDates !== 0 && <div> {nummberofDates + ' Dates'}</div>}
 
-        <div onClick={() => openCustomize()} className="customize">
-          <EditOutlined />
-          Customize
-        </div>
+        <TextButton
+          size="large"
+          icon={<ControlOutlined />}
+          onClick={() => openCustomize()}
+          label={t('dashboard.events.addEditEvent.dates.editDates')}
+        />
       </div>
       <RecurringModal
         isModalVisible={isModalVisible}
