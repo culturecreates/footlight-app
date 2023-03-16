@@ -154,7 +154,8 @@
             "titleHeading": "Select date(s) for your event",
             "startTime": "Start time",
             "endTime": "End time",
-            "addTime": "Add another time"
+            "addTime": "Add another time",
+            "add": "Add"
           }
         },
         "location": {

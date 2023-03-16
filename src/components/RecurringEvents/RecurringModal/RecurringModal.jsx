@@ -1,4 +1,4 @@
-import { Button, Col, Divider, Row, Form, Checkbox, Empty } from 'antd';
+import { Col, Divider, Row, Form, Checkbox, Empty } from 'antd';
 import React, { useEffect, useState } from 'react';
 import Calendar from 'rc-year-calendar';
 import uniqid from 'uniqid';
@@ -368,6 +368,11 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                             placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                             use12Hours={i18n?.language === 'en' ? true : false}
                             format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                            onSelect={(value) => {
+                              form.setFieldsValue({
+                                startTimeCustom: value,
+                              });
+                            }}
                           />
                         </Form.Item>
                       </Col>
@@ -380,6 +385,11 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                             placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                             use12Hours={i18n?.language === 'en' ? true : false}
                             format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                            onSelect={(value) => {
+                              form.setFieldsValue({
+                                endTimeCustom: value,
+                              });
+                            }}
                           />
                         </Form.Item>
                       </Col>
@@ -390,7 +400,23 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                       </Checkbox>
                       <div>
                         <Form.Item className="add-time-items">
-                          <Button
+                          <TextButton
+                            key="cancel"
+                            size="large"
+                            label={t('dashboard.events.addEditEvent.dates.cancel')}
+                            onClick={() => {
+                              form.resetFields();
+                              setShowAddTime(false);
+                            }}
+                          />
+                          <PrimaryButton
+                            key="add-time"
+                            htmlType="submit"
+                            size="large"
+                            label={t('dashboard.events.addEditEvent.dates.modal.add')}
+                            onClick={handleOk}
+                          />
+                          {/* <Button
                             size="large"
                             onClick={() => {
                               form.resetFields();
@@ -400,7 +426,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                           </Button>
                           <Button type="primary" htmlType="submit" size="large">
                             Add
-                          </Button>
+                          </Button> */}
                         </Form.Item>
                       </div>
                     </div>
