@@ -1,4 +1,4 @@
-import { Card, Form, Select, Row, Col } from 'antd';
+import { Card, Form, Select, Row, Col, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
@@ -12,13 +12,20 @@ import TimePickerStyled from '../TimePicker/TimePicker';
 import i18n from 'i18next';
 import TextButton from '../Button/Text';
 
-const { Option } = Select;
-const RecurringEvents = function ({ currentLang = 'fr', formFields, numberOfDaysEvent = 0, form, eventDetails }) {
+const RecurringEvents = function ({
+  currentLang = 'fr',
+  formFields,
+  numberOfDaysEvent = 0,
+  form,
+  eventDetails,
+  setFormFields,
+}) {
   const endDisable = moment().format('YYYY-MM-DD');
   const [nummberofDates, setNumberofDates] = useState(numberOfDaysEvent);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [customDates, setCustomDates] = useState([]);
   const [isCustom, setIsCustom] = useState(false);
+  const [selectedWeekDays, setSelectedWeekDays] = useState([]);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -229,7 +236,21 @@ const RecurringEvents = function ({ currentLang = 'fr', formFields, numberOfDays
     const minutes = [];
     return minutes;
   };
-
+  const weekDaySelectHandler = (day) => {
+    let selectedWeekDaysArray = selectedWeekDays;
+    if (selectedWeekDays?.includes(day)) {
+      selectedWeekDaysArray = selectedWeekDays?.filter((currentDay) => day != currentDay);
+      setSelectedWeekDays(selectedWeekDaysArray);
+    } else {
+      selectedWeekDaysArray = [...selectedWeekDays, day];
+      setSelectedWeekDays(selectedWeekDaysArray);
+    }
+    form.setFieldValue('daysOfWeek', selectedWeekDaysArray);
+    setFormFields({
+      ...formFields,
+      daysOfWeek: selectedWeekDaysArray,
+    });
+  };
   return (
     <>
       {/* <Form.Item
@@ -286,10 +307,10 @@ const RecurringEvents = function ({ currentLang = 'fr', formFields, numberOfDays
       )}
       {!isCustom && (
         <>
-          {formFields && formFields?.frequency === 'WEEKLY' && (
+          {formFields && formFields?.frequency === dateFrequencyOptions[1].value && (
             <>
-              <div className="update-select-title">{t('Days Of Week', { lng: currentLang })}</div>
-              <Form.Item
+              {/* <div className="update-select-title">{t('Days Of Week', { lng: currentLang })}</div> */}
+              {/* <Form.Item
                 name="daysOfWeek"
                 className="status-comment-item"
                 rules={[{ required: true, message: 'Start date required' }]}>
@@ -310,6 +331,24 @@ const RecurringEvents = function ({ currentLang = 'fr', formFields, numberOfDays
                     </Option>
                   ))}
                 </Select>
+              </Form.Item> */}
+              <Form.Item
+                name="daysOfWeek"
+                label={t('dashboard.events.addEditEvent.dates.days')}
+                hidden={formFields?.frequency === dateFrequencyOptions[1].value ? false : true}>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  {daysOfWeek.map((day, index) => {
+                    return (
+                      <Button
+                        key={index}
+                        className="recurring-day-buttons"
+                        style={{ borderColor: selectedWeekDays?.includes(day?.value) && '#607EFC' }}
+                        onClick={() => weekDaySelectHandler(day?.value)}>
+                        {day.name}
+                      </Button>
+                    );
+                  })}
+                </div>
               </Form.Item>
             </>
           )}
