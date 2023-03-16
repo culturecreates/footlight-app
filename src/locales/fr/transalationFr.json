@@ -301,7 +301,7 @@
           "description": "Le serveur ne répond pas. Veuillez réessayer plus tard."
         },
         "FETCH_ERROR": {
-          "message": "La connexion Internet semble être hors ligne."
+          "message": "Impossible de compléter la requête."
         },
         "403": {
           "message": "Non autorisé"

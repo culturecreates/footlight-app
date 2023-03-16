@@ -302,7 +302,7 @@
           "description": "The server is not responding. Please try again later."
         },
         "FETCH_ERROR": {
-          "message": "The Internet connection appears to be offline."
+          "message": "Unable to complete the request."
         },
         "403": {
           "message": "Not Authorized"
