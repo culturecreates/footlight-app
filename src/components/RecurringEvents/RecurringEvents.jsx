@@ -1,4 +1,4 @@
-import { Card, Form, Select, TimePicker } from 'antd';
+import { Card, Form, Select, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
@@ -8,26 +8,18 @@ import RecurringModal from './RecurringModal/index';
 import { EditOutlined } from '@ant-design/icons';
 import uniqid from 'uniqid';
 import DateRangePicker from '../DateRangePicker';
+import TimePickerStyled from '../TimePicker/TimePicker';
+import i18n from 'i18next';
 
 const { Option } = Select;
 const RecurringEvents = function ({ currentLang = 'fr', formFields, numberOfDaysEvent = 0, form, eventDetails }) {
-  // const [startDisable, setStartDisable] = useState(
-  //   moment().format("YYYY-MM-DD")
-  // );
   const endDisable = moment().format('YYYY-MM-DD');
-  // const [endDisable, setEndDisable] = useState(moment().format("YYYY-MM-DD"));
   const [nummberofDates, setNumberofDates] = useState(numberOfDaysEvent);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [customDates, setCustomDates] = useState([]);
   const [isCustom, setIsCustom] = useState(false);
   const { t } = useTranslation();
 
-  // const onChangeStart = (date, dateString) => {
-  //   setStartDisable(moment(dateString, "MM-DD-YYYY"));
-  // };
-  // const onChangeEnd = (date, dateString) => {
-  //   // setEndDisable(moment(dateString, "MM-DD-YYYY"));
-  // };
   useEffect(() => {
     if (eventDetails) {
       if (formFields?.frequency === 'CUSTOM' || eventDetails.recurringEvent?.frequency === 'CUSTOM') setIsCustom(true);
@@ -234,12 +226,6 @@ const RecurringEvents = function ({ currentLang = 'fr', formFields, numberOfDays
 
   const disabledMinutes = () => {
     const minutes = [];
-    // const currentMinute = moment().minute();
-    // if (selectedHour === moment().hour()) {
-    //   for (let i = currentMinute + 1; i <= 60; i++) {
-    //     minutes.push(i);
-    //   }
-    // }
     return minutes;
   };
 
@@ -320,19 +306,17 @@ const RecurringEvents = function ({ currentLang = 'fr', formFields, numberOfDays
           )}
           <div className="flex-align">
             <div className="date-div">
-              <div className="update-select-title">
-                {t('StartDate', { lng: currentLang })} - {t('EndDate', { lng: currentLang })}
-              </div>
               <Form.Item
                 name="startDateRecur"
                 className="status-comment-item"
-                rules={[{ required: true, message: 'Start date required' }]}>
+                label={t('dashboard.events.addEditEvent.dates.multipleDates')}
+                rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
                 <DateRangePicker style={{ width: '423px' }} disabledDate={(d) => !d || d.isSameOrBefore(endDisable)} />
               </Form.Item>
             </div>
           </div>
           <div className="flex-align">
-            <div className="date-div">
+            {/* <div className="date-div">
               <div className="update-select-title">{t('StartTime', { lng: currentLang })}</div>
               <Form.Item
                 name="startTimeRecur"
@@ -349,7 +333,35 @@ const RecurringEvents = function ({ currentLang = 'fr', formFields, numberOfDays
                 rules={[{ required: false, message: 'End time required' }]}>
                 <TimePicker format="HH:mm" disabledHours={disabledHours} disabledMinutes={disabledMinutes} />
               </Form.Item>
-            </div>
+            </div> */}
+            <Row justify="space-between">
+              <Col flex={'203.5px'}>
+                <Form.Item
+                  name="startTimeRecur"
+                  className="status-comment-item"
+                  label={t('dashboard.events.addEditEvent.dates.startTime')}>
+                  <TimePickerStyled
+                    placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                    use12Hours={i18n?.language === 'en' ? true : false}
+                    format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                  />
+                </Form.Item>
+              </Col>
+              <Col flex={'203.5px'}>
+                <Form.Item
+                  name="endTimeRecur"
+                  className="status-comment-item"
+                  label={t('dashboard.events.addEditEvent.dates.endTime')}>
+                  <TimePickerStyled
+                    placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                    use12Hours={i18n?.language === 'en' ? true : false}
+                    format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                    disabledHours={disabledHours}
+                    disabledMinutes={disabledMinutes}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
           </div>
         </>
       )}

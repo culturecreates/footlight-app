@@ -8,10 +8,8 @@ import {
   CalendarOutlined,
   ControlOutlined,
   ExclamationCircleOutlined,
-  // MinusCircleOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
-// import Calendar from 'rc-year-calendar';
 import moment from 'moment';
 import i18n from 'i18next';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
