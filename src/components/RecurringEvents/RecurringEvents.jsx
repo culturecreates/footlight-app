@@ -382,24 +382,6 @@ const RecurringEvents = function ({
                   ))}
                 </Select>
               </Form.Item> */}
-              <Form.Item
-                name="daysOfWeek"
-                label={t('dashboard.events.addEditEvent.dates.days')}
-                hidden={formFields?.frequency === dateFrequencyOptions[1].value ? false : true}>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  {daysOfWeek.map((day, index) => {
-                    return (
-                      <Button
-                        key={index}
-                        className="recurring-day-buttons"
-                        style={{ borderColor: selectedWeekDays?.includes(day?.value) && '#607EFC' }}
-                        onClick={() => weekDaySelectHandler(day?.value)}>
-                        {day.name}
-                      </Button>
-                    );
-                  })}
-                </div>
-              </Form.Item>
             </>
           )}
         </>
@@ -414,15 +396,35 @@ const RecurringEvents = function ({
           onChange={handleChange}
         />
       </Form.Item>
+      <Form.Item
+        name="daysOfWeek"
+        label={t('dashboard.events.addEditEvent.dates.days')}
+        hidden={formFields?.frequency === dateFrequencyOptions[1].value ? false : true}>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          {daysOfWeek.map((day, index) => {
+            return (
+              <Button
+                key={index}
+                className="recurring-day-buttons"
+                style={{ borderColor: selectedWeekDays?.includes(day?.value) && '#607EFC' }}
+                onClick={() => weekDaySelectHandler(day?.value)}>
+                {day.name}
+              </Button>
+            );
+          })}
+        </div>
+      </Form.Item>
       <div className="customize-div">
         {nummberofDates !== 0 && <div> {nummberofDates + ' Dates'}</div>}
 
-        <TextButton
-          size="large"
-          icon={<ControlOutlined />}
-          onClick={() => openCustomize()}
-          label={t('dashboard.events.addEditEvent.dates.editDates')}
-        />
+        {formFields?.startDateRecur?.length == 2 && (
+          <TextButton
+            size="large"
+            icon={<ControlOutlined />}
+            onClick={() => openCustomize()}
+            label={t('dashboard.events.addEditEvent.dates.editDates')}
+          />
+        )}
       </div>
       <RecurringModal
         isModalVisible={isModalVisible}
