@@ -110,7 +110,7 @@ function AddEvent() {
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
-  const [addImage] = useAddImageMutation();
+  const [addImage, { error: isAddImageError }] = useAddImageMutation();
 
   const [dateType, setDateType] = useState();
   const [ticketType, setTicketType] = useState();
@@ -130,7 +130,7 @@ function AddEvent() {
   });
   const [addedFields, setAddedFields] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
-  const [scrollToSelectedField, setSrollToSelectedField] = useState();
+  const [scrollToSelectedField, setScrollToSelectedField] = useState();
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -414,23 +414,8 @@ function AddEvent() {
                     })
                     .catch((error) => {
                       console.log(error);
-                      message.warning({
-                        duration: 10,
-                        maxCount: 1,
-                        key: 'event-image-save-warning',
-                        content: (
-                          <>
-                            {t('dashboard.events.addEditEvent.validations.errorImage')}
-                            &nbsp;
-                            <Button
-                              type="text"
-                              icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                              onClick={() => message.destroy('event-image-save-warning')}
-                            />
-                          </>
-                        ),
-                        icon: <ExclamationCircleOutlined />,
-                      });
+                      const element = document.getElementsByClassName('draggerWrap');
+                      element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
                     });
               },
             });
@@ -651,7 +636,7 @@ function AddEvent() {
     let array = addedFields?.concat(fieldNames);
     array = [...new Set(array)];
     setAddedFields(array);
-    setSrollToSelectedField(array?.at(-1));
+    setScrollToSelectedField(array?.at(-1));
   };
   const onValuesChangHandler = () => {
     setShowDialog(true);
@@ -1320,8 +1305,13 @@ function AddEvent() {
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.image.title')}
                   name="draggerWrap"
+                  className="draggerWrap"
                   required
                   initialValue={eventData?.image && eventData?.image?.original?.uri}
+                  {...(isAddImageError && {
+                    help: t('dashboard.events.addEditEvent.validations.errorImage'),
+                    validateStatus: 'error',
+                  })}
                   rules={[
                     ({ getFieldValue }) => ({
                       validator() {
