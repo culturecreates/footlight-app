@@ -231,7 +231,7 @@ const RecurringEvents = function ({ currentLang = 'fr', formFields, numberOfDays
   };
 
   return (
-    <Card className="recurring-card">
+    <>
       {/* <Form.Item
         name="frequency"
         className="status-comment-item"
@@ -391,7 +391,7 @@ const RecurringEvents = function ({ currentLang = 'fr', formFields, numberOfDays
         setCustomDates={onCustomize}
         customDates={customDates}
       />
-    </Card>
+    </>
   );
 };
 export default RecurringEvents;
