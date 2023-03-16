@@ -29,19 +29,15 @@ export const dateTypeOptions = [
 
 export const dateFrequencyOptions = [
   {
-    value: 'Daily',
+    value: 'DAILY',
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.daily')}</Translation>,
   },
   {
-    value: 'Weekly',
+    value: 'WEEKLY',
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.weekly')}</Translation>,
   },
   {
-    value: 'Monthly',
-    label: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.monthly')}</Translation>,
-  },
-  {
-    value: 'Custom',
+    value: 'CUSTOM',
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.custom')}</Translation>,
   },
 ];

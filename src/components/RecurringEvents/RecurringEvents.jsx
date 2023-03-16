@@ -2,7 +2,7 @@ import { Card, Form, Select, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
-import { daysOfWeek } from '../../constants/dateTypes';
+import { dateFrequencyOptions, daysOfWeek } from '../../constants/dateTypes';
 import './recurringEvents.css';
 import RecurringModal from './RecurringModal/index';
 import { ControlOutlined } from '@ant-design/icons';
@@ -232,9 +232,7 @@ const RecurringEvents = function ({ currentLang = 'fr', formFields, numberOfDays
 
   return (
     <Card className="recurring-card">
-      <div className="update-select-title">{t('Frequency', { lng: currentLang })}</div>
-
-      <Form.Item
+      {/* <Form.Item
         name="frequency"
         className="status-comment-item"
         rules={[{ required: true, message: 'Start date required' }]}>
@@ -250,6 +248,16 @@ const RecurringEvents = function ({ currentLang = 'fr', formFields, numberOfDays
           <Option value="WEEKLY">Weekly</Option>
           <Option value="CUSTOM">Custom</Option>
         </Select>
+      </Form.Item> */}
+      <Form.Item name="frequency" label={t('dashboard.events.addEditEvent.dates.frequency')}>
+        <Select
+          options={dateFrequencyOptions}
+          defaultValue={dateFrequencyOptions[0]?.value}
+          key="updateDropdownKey"
+          className="search-select"
+          optionFilterProp="children"
+          onChange={handleChange}
+        />
       </Form.Item>
       {isCustom && (
         <>
