@@ -13,7 +13,7 @@ import i18n from 'i18next';
 import TextButton from '../Button/Text';
 
 const RecurringEvents = function ({
-  currentLang = 'fr',
+  currentLang,
   formFields,
   numberOfDaysEvent = 0,
   form,

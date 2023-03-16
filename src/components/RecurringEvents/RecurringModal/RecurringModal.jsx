@@ -32,7 +32,9 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
   const [selectedCopyTime, setSelectedCopyTime] = useState();
   const { t } = useTranslation();
   const [form] = Form.useForm();
-
+  const iconcolor = {
+    color: '#1B3DE6',
+  };
   const handleSubmit = (values) => {
     const obj = {
       startTime: moment(values.startTimeCustom).format('hh:mm a'),
@@ -213,7 +215,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
           <Calendar
             className="recurring-cal"
             style={{ width: '300px' }}
-            language="fr"
+            language={i18n.language}
             minDate={new Date()}
             enableRangeSelection={true}
             //  onRangeSelected={e =>selectDate(e) }
@@ -258,22 +260,23 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
               <div key={item.id}>
                 <div className="custom-time-layout">
                   <div className={item.isDeleted ? 'deleted-text custom-no-of-date' : 'custom-no-of-date'}>
-                    {moment(item.startDate).format('dddd DD MMM YYYY')}
+                    {moment(item.startDate).locale(i18n.language).format('MMMM DD, YYYY')}
                   </div>
                   <div className="crud-icons">
                     {item.isDeleted ? (
-                      <UndoOutlined onClick={() => redoEvent(item)} />
+                      <UndoOutlined onClick={() => redoEvent(item)} style={iconcolor} />
                     ) : (
                       <CopyOutlined
                         onClick={() => {
                           if (item.time && item.time.length > 0) copyEvents(item);
                         }}
+                        style={iconcolor}
                       />
                     )}
                     {item.isDeleted ? (
-                      <DeleteFilled onClick={() => deleteEventPermenent(item)} />
+                      <DeleteFilled onClick={() => deleteEventPermenent(item)} style={iconcolor} />
                     ) : (
-                      <DeleteOutlined onClick={() => deleteEvent(item)} />
+                      <DeleteOutlined onClick={() => deleteEvent(item)} style={iconcolor} />
                     )}
                   </div>
                 </div>
