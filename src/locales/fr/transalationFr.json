@@ -148,6 +148,12 @@
             "thursday": "Ven",
             "friday": "Sam",
             "saturday": "Dim"
+          },
+          "modal": {
+            "titleHeading": "Sélectionnez la/les dates de l’événement",
+            "startTime": "Heure de début",
+            "endTime": "Heure de fin",
+            "addTime": "Ajouter une heure"
           }
         },
         "location": {

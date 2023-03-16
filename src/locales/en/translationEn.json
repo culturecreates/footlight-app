@@ -149,6 +149,12 @@
             "thursday": "Thu",
             "friday": "Fri",
             "saturday": "Sat"
+          },
+          "modal": {
+            "titleHeading": "Select date(s) for your event",
+            "startTime": "Start time",
+            "endTime": "End time",
+            "addTime": "Add another time"
           }
         },
         "location": {

@@ -1,4 +1,4 @@
-import { Button, Col, Divider, Modal, Row, TimePicker, Form, Checkbox, Empty } from 'antd';
+import { Button, Col, Divider, Row, TimePicker, Form, Checkbox, Empty } from 'antd';
 import React, { useEffect, useState } from 'react';
 import Calendar from 'rc-year-calendar';
 import uniqid from 'uniqid';
@@ -14,6 +14,10 @@ import {
 import { useTranslation } from 'react-i18next';
 import CopyTimeModal from '../CopyTimeModal/index';
 import '../recurringEvents.css';
+import CustomModal from '../../Modal/Common/CustomModal';
+import TextButton from '../../Button/Text';
+import PrimaryButton from '../../Button/Primary';
+import Tags from '../../Tags/Common/Tags';
 
 const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCustomDates, customDates }) => {
   const [dateSource, setDataSource] = useState([]);
@@ -174,17 +178,39 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
     return date;
   };
   return (
-    <Modal
-      title="Custom Recurring Events"
+    <CustomModal
+      title={
+        <div className="custom-modal-title-wrapper">
+          <span className="custom-modal-title-heading">
+            {t('dashboard.events.addEditEvent.dates.modal.titleHeading')}
+          </span>
+          <div className="custom-modal-title-right-contents">
+            <span className="custom-modal-title-heading">Select dates for your event</span>
+            <Tags style={{ color: '#1572BB', borderRadius: '4px' }} color={'#DBF3FD'}>
+              {dateSource?.length} {t('dashboard.events.addEditEvent.dates.dates')}
+            </Tags>
+          </div>
+        </div>
+      }
       open={isModalVisible}
       onOk={handleOk}
       onCancel={handleCancel}
       className="recurring-modal"
-      okText="Done">
+      width={800}
+      footer={[
+        <TextButton
+          key="cancel"
+          size="large"
+          label={t('dashboard.events.addEditEvent.dates.cancel')}
+          onClick={handleCancel}
+        />,
+        <PrimaryButton key="add-dates" label={t('dashboard.events.addEditEvent.dates.addDates')} onClick={handleOk} />,
+      ]}>
       <Row>
         <Col>
           <Calendar
             className="recurring-cal"
+            style={{ width: '300px' }}
             language="fr"
             minDate={new Date()}
             enableRangeSelection={true}
@@ -362,7 +388,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
         copyTime={selectedCopyTime}
         updateTime={setDataSource}
       />
-    </Modal>
+    </CustomModal>
   );
 };
 
