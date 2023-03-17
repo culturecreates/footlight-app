@@ -20,6 +20,7 @@ import PrimaryButton from '../../Button/Primary';
 import Tags from '../../Tags/Common/Tags';
 import TimePickerStyled from '../../TimePicker/TimePicker';
 import i18n from 'i18next';
+// import MultipleDatePicker from '../../MultipleDatePicker';
 
 const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCustomDates, customDates }) => {
   const [dateSource, setDataSource] = useState([]);
@@ -193,6 +194,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
   };
   return (
     <CustomModal
+      maskClosable
       closable={false}
       title={
         <div className="custom-modal-title-wrapper">
@@ -226,52 +228,59 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
           onClick={handleCancel}
         />,
         <PrimaryButton key="add-dates" label={t('dashboard.events.addEditEvent.dates.addDates')} onClick={handleOk} />,
-      ]}>
+      ]}
+      bodyStyle={{ padding: '0px' }}>
       <Row>
-        <Col>
-          <Calendar
-            className="recurring-cal"
-            style={{ width: '300px' }}
-            language={i18n.language}
-            minDate={new Date()}
-            enableRangeSelection={true}
-            //  onRangeSelected={e =>selectDate(e) }
-            onRangeSelected={async (e) => {
-              const dateLength = await getNumberOfDays(e.startDate, e.endDate);
+        <Col style={{ padding: '24px' }}>
+          {/* <MultipleDatePicker /> */}
+          {isModalVisible && (
+            <Calendar
+              className="recurring-cal"
+              style={{ width: '300px', display: 'none' }}
+              language={i18n.language}
+              minDate={new Date()}
+              enableRangeSelection={true}
+              //  onRangeSelected={e =>selectDate(e) }
+              onRangeSelected={async (e) => {
+                const dateLength = await getNumberOfDays(e.startDate, e.endDate);
 
-              if (dateLength && dateLength.length > 1) {
-                const dateArray = dateLength.map((item) => {
-                  const date = moment(item, 'DD/MM/YYYY');
+                if (dateLength && dateLength.length > 1) {
+                  const dateArray = dateLength.map((item) => {
+                    const date = moment(item, 'DD/MM/YYYY');
 
+                    const obj = {
+                      id: uniqid(),
+                      name: 'test name',
+                      location: 'test Location',
+                      startDate: new Date(date.format('YYYY,M,D')),
+                      endDate: new Date(date.format('YYYY,M,D')),
+                      initDate: moment(date).format('YYYY-MM-DD'),
+                      isDeleted: false,
+                    };
+                    return obj;
+                  });
+                  setDateArrayCal(dateArray);
+                } else {
                   const obj = {
                     id: uniqid(),
                     name: 'test name',
                     location: 'test Location',
-                    startDate: new Date(date.format('YYYY,M,D')),
-                    endDate: new Date(date.format('YYYY,M,D')),
-                    initDate: moment(date).format('YYYY-MM-DD'),
+                    startDate: e.startDate,
+                    endDate: e.endDate,
+                    initDate: moment(e.startDate).format('YYYY-MM-DD'),
                     isDeleted: false,
                   };
-                  return obj;
-                });
-                setDateArrayCal(dateArray);
-              } else {
-                const obj = {
-                  id: uniqid(),
-                  name: 'test name',
-                  location: 'test Location',
-                  startDate: e.startDate,
-                  endDate: e.endDate,
-                  initDate: moment(e.startDate).format('YYYY-MM-DD'),
-                  isDeleted: false,
-                };
-                setTest(obj);
-              }
-            }}
-            dataSource={dateSource.filter((item) => !item.isDeleted)}
-          />
+                  setTest(obj);
+                }
+              }}
+              dataSource={dateSource.filter((item) => !item.isDeleted)}
+            />
+          )}
         </Col>
-        <Col flex="auto" className="custom-date-column">
+        <Col>
+          <Divider type="vertical" style={{ height: '100%' }} />
+        </Col>
+        <Col flex="auto" className="custom-date-column" style={{ padding: '24px' }}>
           <div>
             {dateSource.map((item) => (
               <div key={item.id}>
