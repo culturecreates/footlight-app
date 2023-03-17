@@ -60,8 +60,9 @@ const CopyTimeModal = ({ isModalVisible, setIsModalVisible, recurringEvents, cop
     confirm({
       title: 'Are you sure?',
       icon: <ExclamationCircleOutlined />,
-      content: ' This action cannot be undone.',
-
+      content: t('dashboard.events.addEditEvent.dates.modal.addTimeToAllDatesWarning'),
+      okText: 'Ok',
+      cancelText: t('dashboard.events.addEditEvent.dates.cancel'),
       onOk() {
         handleOk();
       },

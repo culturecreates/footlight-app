@@ -297,17 +297,22 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                   </div>
                 </div>
 
-                {!item.isDeleted &&
-                  item.time &&
-                  item.time.map((customTime, index) => (
+                {!item?.isDeleted &&
+                  item?.time &&
+                  item?.time?.map((customTime, index) => (
                     <div className="custom-time-layout" style={{ margin: '9px' }} key={index}>
                       <div>
-                        {customTime.startTime && customTime.startTime} {customTime.endTime ? ' - ' : ''}
-                        {customTime.endTime && customTime.endTime}{' '}
+                        {customTime?.startTime && customTime?.startTime} {customTime?.endTime ? ' - ' : ''}
+                        {customTime?.endTime && customTime?.endTime}{' '}
                       </div>
-                      <div>
-                        <CloseOutlined className="close-time" onClick={() => deleteTime(item, customTime.startTime)} />{' '}
-                      </div>
+                      {(customTime?.startTime || customTime?.startTime) && (
+                        <div>
+                          <CloseOutlined
+                            className="close-time"
+                            onClick={() => deleteTime(item, customTime.startTime)}
+                          />
+                        </div>
+                      )}
                     </div>
                   ))}
                 {!item.isDeleted && selectedDateId !== item.id && (
@@ -430,7 +435,6 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                             htmlType="submit"
                             size="large"
                             label={t('dashboard.events.addEditEvent.dates.modal.add')}
-                            onClick={handleOk}
                           />
                           {/* <Button
                             size="large"

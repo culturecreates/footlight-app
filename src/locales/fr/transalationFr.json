@@ -155,7 +155,8 @@
             "endTime": "Heure de fin",
             "addTime": "Ajouter une heure",
             "add": "Ajouter",
-            "addTimeToAllDates": "Ajouter l'heure à toutes les dates"
+            "addTimeToAllDates": "Ajouter l'heure à toutes les dates",
+            "addTimeToAllDatesWarning": "Vous êtes sûr de vous ? Cette action ne peut être annulée."
           }
         },
         "location": {
