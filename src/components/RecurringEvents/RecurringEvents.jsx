@@ -252,7 +252,7 @@ const RecurringEvents = function ({
     });
   };
   return (
-    <>
+    <div className="recurring-events-wrapper">
       {/* <Form.Item
         name="frequency"
         className="status-comment-item"
@@ -387,13 +387,16 @@ const RecurringEvents = function ({
         </>
       )}
       <Form.Item name="frequency" label={t('dashboard.events.addEditEvent.dates.frequency')}>
-        <Select
-          options={dateFrequencyOptions}
-          defaultValue={dateFrequencyOptions[0]?.value}
-          key="updateDropdownKey"
-          optionFilterProp="children"
-          onChange={handleChange}
-        />
+        <div className="frequency-selector">
+          <Select
+            style={{ height: '40px' }}
+            options={dateFrequencyOptions}
+            defaultValue={dateFrequencyOptions[0]?.value}
+            key="updateDropdownKey"
+            optionFilterProp="children"
+            onChange={handleChange}
+          />
+        </div>
       </Form.Item>
       <Form.Item
         name="daysOfWeek"
@@ -433,7 +436,7 @@ const RecurringEvents = function ({
         customDates={customDates}
         nummberofDates={nummberofDates}
       />
-    </>
+    </div>
   );
 };
 export default RecurringEvents;
