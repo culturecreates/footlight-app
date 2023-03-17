@@ -54,14 +54,14 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
       setDataSource(
         dateSource.map((item) => ({
           ...item,
-          time: item.time ? [...item.time, obj].sort((a, b) => a.startTime.localeCompare(b.startTime)) : [obj],
+          time: item.time ? [...item.time, obj]?.sort((a, b) => a?.startTime?.localeCompare(b?.startTime)) : [obj],
         })),
       );
     } else
       setDataSource(
         dateSource.map((item) => {
           if (selectedDateId === item.id) {
-            if (item.time) item.time = [...item.time, obj].sort((a, b) => a.start.localeCompare(b.start));
+            if (item.time) item.time = [...item.time, obj]?.sort((a, b) => a?.start?.localeCompare(b?.start));
             else item.time = [obj];
           }
           return item;
