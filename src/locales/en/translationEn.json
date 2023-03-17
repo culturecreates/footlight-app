@@ -155,7 +155,8 @@
             "startTime": "Start time",
             "endTime": "End time",
             "addTime": "Add another time",
-            "add": "Add"
+            "add": "Add",
+            "addTimeToAllDates": "Add time to all dates"
           }
         },
         "location": {

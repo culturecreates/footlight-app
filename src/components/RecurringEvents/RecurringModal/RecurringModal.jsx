@@ -412,7 +412,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                     </Row>
                     <div className="flex-align">
                       <Checkbox onChange={onChangeCheckbox} className="check-time" checked={updateAllTime}>
-                        Add this time to all dates
+                        {t('dashboard.events.addEditEvent.dates.modal.addTimeToAllDates')}
                       </Checkbox>
                       <div>
                         <Form.Item className="add-time-items">
