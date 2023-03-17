@@ -274,9 +274,23 @@ const RecurringEvents = function ({
 
       {isCustom && (
         <>
-          <div style={{ maxHeight: '300px', width: '423px', maxWidth: '423px', overflowY: 'scroll' }}>
+          <div
+            style={{
+              maxHeight: '300px',
+              width: '423px',
+              maxWidth: '423px',
+              overflowY: 'scroll',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+            }}>
             {customDates.map((item, index) => (
-              <Card key={index}>
+              <Card
+                key={index}
+                bodyStyle={{
+                  borderRadius: '8px',
+                  border: '1px solid #B6C1C9',
+                }}>
                 <div className="custom-no-of-date">
                   {moment(item.startDate).locale(i18n.language).format('MMMM DD, YYYY')}
                 </div>
