@@ -404,7 +404,10 @@ const RecurringEvents = function ({
         </>
       )}
       <div className="frequency-selector">
-        <Form.Item name="frequency" label={t('dashboard.events.addEditEvent.dates.frequency')}>
+        <Form.Item
+          name="frequency"
+          label={t('dashboard.events.addEditEvent.dates.frequency')}
+          initialValue={formFields?.frequency ?? dateFrequencyOptions[0]?.value}>
           <Select
             style={{ height: '40px' }}
             options={dateFrequencyOptions}

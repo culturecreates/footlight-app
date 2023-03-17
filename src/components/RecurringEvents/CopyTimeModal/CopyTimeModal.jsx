@@ -72,6 +72,7 @@ const CopyTimeModal = ({ isModalVisible, setIsModalVisible, recurringEvents, cop
   };
   return (
     <CustomModal
+      closable={false}
       title={
         <div className="custom-modal-title-wrapper">
           <span className="custom-modal-title-heading">
