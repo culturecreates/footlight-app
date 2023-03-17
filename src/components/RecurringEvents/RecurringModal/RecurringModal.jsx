@@ -30,10 +30,17 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
   const [copyModal, setCopyModal] = useState(false);
   const [selectedDateId, setSelectedDateId] = useState('-100');
   const [selectedCopyTime, setSelectedCopyTime] = useState();
+  const [sortedDates, setSortedDates] = useState([]);
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const iconcolor = {
     color: '#1B3DE6',
+  };
+  const handleDateSort = (array) => {
+    const sortedArray = array?.sort(
+      (a, b) => new moment(a?.startDate).format('YYYYMMDD') - new moment(b?.startDate).format('YYYYMMDD'),
+    );
+    return sortedArray;
   };
   const handleSubmit = (values) => {
     const obj = {
@@ -66,13 +73,15 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
 
     setUpdateAllTime(false);
   };
+  useEffect(() => {
+    setSortedDates(handleDateSort(dateSource));
+  }, [dateSource]);
 
   useEffect(() => {
     const d = new Date();
     let name = d.getMonth();
     const el1 = document.querySelector(`[data-month-id="${name}"]`);
     if (el1) el1.scrollIntoView();
-    console.log(customDates);
     setDataSource(customDates);
   }, [isModalVisible]);
 
@@ -190,7 +199,15 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
             {t('dashboard.events.addEditEvent.dates.modal.titleHeading')}
           </span>
           <div className="custom-modal-title-right-contents">
-            <span className="custom-modal-title-heading">Select dates for your event</span>
+            <span className="custom-modal-title-heading">
+              {sortedDates?.length > 0 &&
+                moment(sortedDates[0]?.initDate).locale(i18n.language).format('MMMM DD, YYYY')}
+              {sortedDates?.length > 1 &&
+                '-' +
+                  moment(sortedDates[sortedDates?.length - 1]?.initDate)
+                    .locale(i18n.language)
+                    .format('MMMM DD, YYYY')}
+            </span>
             <Tags style={{ color: '#1572BB', borderRadius: '4px' }} color={'#DBF3FD'}>
               {dateSource?.length} {t('dashboard.events.addEditEvent.dates.dates')}
             </Tags>
