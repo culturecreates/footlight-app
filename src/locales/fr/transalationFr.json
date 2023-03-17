@@ -156,7 +156,13 @@
             "addTime": "Ajouter une heure",
             "add": "Ajouter",
             "addTimeToAllDates": "Ajouter l'heure à toutes les dates",
-            "addTimeToAllDatesWarning": "Vous êtes sûr de vous ? Cette action ne peut être annulée."
+            "addTimeToAllDatesWarning": "Vous êtes sûr de vous ? Cette action ne peut être annulée.",
+            "duplicateTimes": "Dupliquer les heures",
+            "replaceTimeonFolllowingDates": "Remplacer les heures aux dates suivantes : ",
+            "selectAll": "Sélectionner tout",
+            "unselectAll": "tout déselectionner",
+            "cancel": "Annuler",
+            "apply": "Appliquer"
           }
         },
         "location": {

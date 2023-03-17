@@ -157,7 +157,13 @@
             "addTime": "Add another time",
             "add": "Add",
             "addTimeToAllDates": "Add time to all dates",
-            "addTimeToAllDatesWarning": "Are you sure? This action cannot be undone."
+            "addTimeToAllDatesWarning": "Are you sure? This action cannot be undone.",
+            "duplicateTimes": "Duplicate times",
+            "replaceTimeonFolllowingDates": "Replace the times on the following dates : ",
+            "selectAll": "Select all",
+            "unselectAll": "Unselect all",
+            "cancel": "Cancel",
+            "apply": "Apply"
           }
         },
         "location": {
