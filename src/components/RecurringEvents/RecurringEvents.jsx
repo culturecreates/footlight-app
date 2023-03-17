@@ -109,6 +109,7 @@ const RecurringEvents = function ({
     }
   };
   useEffect(() => {
+    console.log(formFields);
     if (formFields && formFields?.startDateRecur) {
       if (formFields?.frequency === 'DAILY') {
         getNumberOfDays(formFields?.startDateRecur[0], formFields?.startDateRecur[1]);
@@ -273,10 +274,12 @@ const RecurringEvents = function ({
 
       {isCustom && (
         <>
-          <div>
+          <div style={{ maxHeight: '300px', width: '423px', maxWidth: '423px', overflowY: 'scroll' }}>
             {customDates.map((item, index) => (
               <Card key={index}>
-                <div className="custom-no-of-date">{moment(item.startDate).format('dddd DD MMM YYYY')}</div>
+                <div className="custom-no-of-date">
+                  {moment(item.startDate).locale(i18n.language).format('MMMM DD, YYYY')}
+                </div>
 
                 {item?.time &&
                   item?.time?.map((customTime, index) => (
@@ -386,8 +389,8 @@ const RecurringEvents = function ({
           )}
         </>
       )}
-      <Form.Item name="frequency" label={t('dashboard.events.addEditEvent.dates.frequency')}>
-        <div className="frequency-selector">
+      <div className="frequency-selector">
+        <Form.Item name="frequency" label={t('dashboard.events.addEditEvent.dates.frequency')}>
           <Select
             style={{ height: '40px' }}
             options={dateFrequencyOptions}
@@ -396,8 +399,8 @@ const RecurringEvents = function ({
             optionFilterProp="children"
             onChange={handleChange}
           />
-        </div>
-      </Form.Item>
+        </Form.Item>
+      </div>
       <Form.Item
         name="daysOfWeek"
         label={t('dashboard.events.addEditEvent.dates.days')}
