@@ -280,7 +280,6 @@ const RecurringEvents = function ({
               width: '423px',
               maxWidth: '423px',
             }}>
-            {console.log(customDates)}
             {customDates && customDates?.length != 0 && (
               <Form.Item label={t('dashboard.events.addEditEvent.dates.multipleDates')}>
                 <DateRangePicker

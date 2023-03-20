@@ -1058,7 +1058,6 @@ function AddEvent() {
                         )}
                         {dateType === dateTypes.RANGE && (
                           <>
-                            {' '}
                             <Form.Item
                               name="dateRangePicker"
                               label={t('dashboard.events.addEditEvent.dates.dateRange')}
