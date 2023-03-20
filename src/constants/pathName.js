@@ -10,5 +10,6 @@ export const PathName = {
   Settings: '/settings',
   AddEvent: '/add-event',
   CreateAccount: '/join',
+  User: '/user',
   NotFound: '/*',
 };

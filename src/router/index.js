@@ -50,6 +50,10 @@ export const router = createBrowserRouter([
           },
         ],
       },
+      {
+        path: `:calendarId${PathName.User}/:userId`,
+        element: <div>hai</div>,
+      },
 
       {
         path: `:calendarId${PathName.Places}`,

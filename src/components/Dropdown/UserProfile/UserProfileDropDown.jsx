@@ -6,13 +6,13 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { userNameItems } from '../../../constants/userNameItems';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 // import { useDispatch } from 'react-redux';
 
 const UserProfileDropDown = () => {
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
+  let { calendarId } = useParams();
   const { user } = useSelector(getUserDetails);
 
   const { t } = useTranslation();
@@ -26,8 +26,8 @@ const UserProfileDropDown = () => {
   });
 
   const onClick = ({ key }) => {
+    if (key == 1) navigate(`${PathName.Dashboard}/${calendarId}${PathName.User}/${user?.id}`);
     if (key == 2) {
-      // dispatch(clearUser());
       navigate(PathName.Login, { state: { previousPath: 'logout' } });
     }
   };
