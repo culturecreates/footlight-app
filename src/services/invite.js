@@ -11,6 +11,7 @@ export const inviteApi = createApi({
           method: 'GET',
         };
       },
+      transformResponse: (response) => response.data,
     }),
 
     acceptInvite: builder.mutation({

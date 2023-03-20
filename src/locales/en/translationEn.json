@@ -57,7 +57,7 @@
   "createAccount": {
     "createYourAccount": "Create your account",
     "firstName": "First name",
-    "secondName": "Second name",
+    "lastName": "Last name",
     "email": "Email",
     "newPassword": "New Password",
     "confirmNewPassword": "Confirm new password",

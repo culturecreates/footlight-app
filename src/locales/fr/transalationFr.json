@@ -57,7 +57,7 @@
   "createAccount": {
     "createYourAccount": "Créez votre compte",
     "firstName": "Prenom",
-    "secondName": "Nom",
+    "lastName": "Nom",
     "email": "Courriel",
     "newPassword": "Nouveau mot de passe",
     "confirmNewPassword": "Confirmer votre nouveau mot de passe",
