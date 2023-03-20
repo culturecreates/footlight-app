@@ -34,15 +34,17 @@ function CreateAccount() {
     acceptInvite({
       id: invitationId,
       password: values.confirmNewPassword,
-    }).then((response) => {
-      if (response?.data?.statusCode == 202) {
-        // notification.info({
-        //   description: t('resetPassword.successNotification'),
-        //   placement: 'top',
-        // });
-        navigate(PathName.Login);
-      }
-    });
+    })
+      .unwrap()
+      .then((response) => {
+        if (response?.data?.statusCode == 202) {
+          // notification.info({
+          //   description: t('resetPassword.successNotification'),
+          //   placement: 'top',
+          // });
+          navigate(PathName.Login);
+        }
+      });
   };
 
   if (inviteUserError) {
