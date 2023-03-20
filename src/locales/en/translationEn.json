@@ -54,6 +54,16 @@
     "successNotification": "Success! Your password has been reset.",
     "failure": "The reset information is incorrect or has expired."
   },
+  "createAccount": {
+    "createYourAccount": "Create your account",
+    "firstName": "First name",
+    "secondName": "Second name",
+    "email": "Email",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm new password",
+    "acceptInvitation": "Accept invitation",
+    "passwordPlaceHolder": "Enter your password"
+  },
   "dashboard": {
     "topNavigation": {
       "userProfile": "User Profile",

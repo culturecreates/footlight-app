@@ -8,6 +8,7 @@ import Events from '../pages/Dashboard/Events';
 import AddEvent from '../pages/Dashboard/AddEvent';
 import { ReactComponent as NotFound } from '../../src/assets/images/illustatus.svg';
 import EventReadOnly from '../pages/Dashboard/EventReadOnly';
+import CreateAccount from '../pages/CreateAccount/CreateAccount';
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ export const router = createBrowserRouter([
   {
     path: PathName.ResetPassword,
     element: <ResetPassword />,
+  },
+  {
+    path: PathName.CreateAccount,
+    element: <CreateAccount />,
   },
   {
     path: PathName.Dashboard,

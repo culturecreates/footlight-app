@@ -54,6 +54,16 @@
     "successNotification": "Succès! Votre mot de passe a été réinitialisé.",
     "failure": "Les informations de réinitialisation sont incorrectes ou ont expiré."
   },
+  "createAccount": {
+    "createYourAccount": "Créez votre compte",
+    "firstName": "Prenom",
+    "secondName": "Nom",
+    "email": "Courriel",
+    "newPassword": "Nouveau mot de passe",
+    "confirmNewPassword": "Confirmer votre nouveau mot de passe",
+    "acceptInvitation": "Acceptez l'invitation",
+    "passwordPlaceHolder": "Entrez votre mot de passe"
+  },
   "dashboard": {
     "topNavigation": {
       "userProfile": "Profil",
