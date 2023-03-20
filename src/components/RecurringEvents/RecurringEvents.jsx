@@ -44,6 +44,7 @@ const RecurringEvents = function ({
             endDate: new Date(moment(item.startDate).format('YYYY/M/D')),
             initDate: item.startDate,
             isDeleted: false,
+            color: '#607EFC',
             time: item.customTimes
               ? item.customTimes
                   .sort((a, b) => a?.startTime?.localeCompare(b?.startTime))
@@ -72,6 +73,7 @@ const RecurringEvents = function ({
             initDate: moment(item.startDate).format('YYYY-MM-DD'),
             isDeleted: false,
             time: [],
+            color: '#607EFC',
           };
           return obj;
         });
@@ -143,6 +145,7 @@ const RecurringEvents = function ({
         endDate: item,
         initDate: moment(item).format('YYYY-MM-DD'),
         isDeleted: false,
+        color: '#607EFC',
       };
       return obj;
     });
@@ -171,6 +174,7 @@ const RecurringEvents = function ({
         initDate: moment(date).format('YYYY-MM-DD'),
         isDeleted: false,
         time: [],
+        color: '#607EFC',
       };
       return obj;
     });
