@@ -1,15 +1,14 @@
 import React, { useRef } from 'react';
-import { Form, notification } from 'antd';
+import { Form } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import './createAccount.css';
 import LoginButton from '../../components/Button/Auth';
 import { PathName } from '../../constants/pathName';
-import { useResetPasswordMutation } from '../../services/users';
 import Auth from '../../layout/Auth';
 import PasswordInput from '../../components/Input/Password';
-import { useGetInviteDetailsQuery } from '../../services/invite';
+import { useAcceptInviteMutation, useGetInviteDetailsQuery } from '../../services/invite';
 
 function CreateAccount() {
   const { t } = useTranslation();
@@ -18,7 +17,7 @@ function CreateAccount() {
   const timestampRef = useRef(Date.now()).current;
   let [searchParams] = useSearchParams();
 
-  const [resetPassword] = useResetPasswordMutation();
+  const [acceptInvite] = useAcceptInviteMutation();
 
   let invitationId = searchParams.get('invitationId');
 
@@ -32,16 +31,15 @@ function CreateAccount() {
   });
 
   const onFinish = (values) => {
-    resetPassword({
-      email: values.email,
-      newPassword: values.confirmNewPassword,
-      oneTimePassword: values.oneTimePassword,
+    acceptInvite({
+      password: values.confirmNewPassword,
     }).then((response) => {
+      console.log(response);
       if (response?.data?.statusCode == 202) {
-        notification.info({
-          description: t('resetPassword.successNotification'),
-          placement: 'top',
-        });
+        // notification.info({
+        //   description: t('resetPassword.successNotification'),
+        //   placement: 'top',
+        // });
         navigate(PathName.Login);
       }
     });
