@@ -291,7 +291,8 @@
           "url": "Enter a valid url.",
           "errorPublishing": "This event needs more information before it can be published.",
           "errorReview": "This event needs more information before it can be sent for review.",
-          "errorDraft": "This event needs more information before it can be saved."
+          "errorDraft": "This event needs more information before it can be saved.",
+          "errorImage": "This image cannot be saved. Adjust the image or try a different one."
         }
       },
       "publishOptions": {
@@ -334,7 +335,7 @@
           "description": "The server is not responding. Please try again later."
         },
         "FETCH_ERROR": {
-          "message": "The Internet connection appears to be offline."
+          "message": "Unable to complete the request."
         },
         "403": {
           "message": "Not Authorized"
