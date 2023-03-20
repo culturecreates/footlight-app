@@ -1,4 +1,4 @@
-import { Card, Form, Select, Row, Col, Button } from 'antd';
+import { Form, Select, Row, Col, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
@@ -276,15 +276,22 @@ const RecurringEvents = function ({
         <>
           <div
             style={{
-              maxHeight: '300px',
               width: '423px',
               maxWidth: '423px',
-              overflowY: 'scroll',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
             }}>
-            {customDates.map((item, index) => (
+            {console.log(customDates)}
+            {customDates && customDates?.length != 0 && (
+              <Form.Item label={t('dashboard.events.addEditEvent.dates.multipleDates')}>
+                <DateRangePicker
+                  style={{ width: '100%' }}
+                  open={false}
+                  value={[moment(customDates[0]?.startDate), moment(customDates[customDates?.length - 1]?.startDate)]}
+                  allowClear={false}
+                  inputReadOnly
+                />
+              </Form.Item>
+            )}
+            {/* {customDates?.map((item, index) => (
               <Card
                 key={index}
                 bodyStyle={{
@@ -303,7 +310,7 @@ const RecurringEvents = function ({
                     </div>
                   ))}
               </Card>
-            ))}
+            ))} */}
           </div>
           <Form.Item
             name="customDates"
@@ -439,7 +446,7 @@ const RecurringEvents = function ({
       <div className="customize-div">
         {/* {nummberofDates !== 0 && <div> {nummberofDates + ' Dates'}</div>} */}
 
-        {formFields?.startDateRecur?.length == 2 && (
+        {(formFields?.startDateRecur?.length == 2 || isCustom) && (
           <TextButton
             size="large"
             icon={<ControlOutlined />}

@@ -390,7 +390,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                       </div>
                     </div> */}
                     <Row justify="space-between">
-                      <Col flex={'190px'}>
+                      <Col flex={'165px'}>
                         <Form.Item
                           name="startTimeCustom"
                           //   className="status-comment-item"
@@ -407,7 +407,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                           />
                         </Form.Item>
                       </Col>
-                      <Col flex={'190px'}>
+                      <Col flex={'165px'}>
                         <Form.Item
                           name="endTimeCustom"
                           //   className="status-comment-item"

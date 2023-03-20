@@ -331,7 +331,6 @@ function AddEvent() {
           if (ticketType) {
             offerConfiguration = {
               category: ticketType,
-              //Change name key to note when the change is made in the backend
               name: {
                 en: values?.englishTicketNote,
                 fr: values?.frenchTicketNote,
