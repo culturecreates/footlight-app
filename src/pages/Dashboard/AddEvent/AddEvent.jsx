@@ -9,7 +9,7 @@ import {
   ExclamationCircleOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import i18n from 'i18next';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -140,8 +140,8 @@ function AddEvent() {
   let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
   let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
   const dateTimeConverter = (date, time) => {
-    let dateSelected = moment(date).format('DD/MM/YYYY');
-    let timeSelected = moment(time).format('hh:mm:ss a');
+    let dateSelected = moment.tz(date, eventData.scheduleTimezone ?? 'Canada/Eastern').format('DD/MM/YYYY');
+    let timeSelected = moment.tz(time, eventData.scheduleTimezone ?? 'Canada/Eastern').format('hh:mm:ss a');
     let dateTime = moment(dateSelected + ' ' + timeSelected, 'DD/MM/YYYY HH:mm a');
     return moment(dateTime).toISOString();
   };
@@ -213,14 +213,23 @@ function AddEvent() {
           let eventObj;
           if (dateType === dateTypes.SINGLE) {
             if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
-            else startDateTime = moment(values?.datePicker).format('YYYY/MM/DD');
+            else
+              startDateTime = moment
+                .tz(values?.datePicker, eventData.scheduleTimezone ?? 'Canada/Eastern')
+                .format('YYYY/MM/DD');
             if (values?.endTime) endDateTime = dateTimeConverter(values?.datePicker, values?.endTime);
           }
           if (dateType === dateTypes.RANGE) {
             if (values?.startTime) startDateTime = dateTimeConverter(values?.dateRangePicker[0], values?.startTime);
-            else startDateTime = moment(values?.dateRangePicker[0]).format('YYYY/MM/DD');
+            else
+              startDateTime = moment
+                .tz(values?.dateRangePicker[0], eventData.scheduleTimezone ?? 'Canada/Eastern')
+                .format('YYYY/MM/DD');
             if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
-            else endDateTime = moment(values?.dateRangePicker[1]).format('YYYY/MM/DD');
+            else
+              endDateTime = moment
+                .tz(values?.dateRangePicker[1], eventData.scheduleTimezone ?? 'Canada/Eastern')
+                .format('YYYY/MM/DD');
           }
           if (values?.eventType) {
             additionalType = values?.eventType?.map((eventTypeId) => {
@@ -940,7 +949,11 @@ function AddEvent() {
                                 eventData?.startDateTime,
                                 eventData?.endDate,
                                 eventData?.endDateTime,
-                              ) === dateTypes.SINGLE && moment(eventData?.startDate ?? eventData?.startDateTime)
+                              ) === dateTypes.SINGLE &&
+                              moment.tz(
+                                eventData?.startDate ?? eventData?.startDateTime,
+                                eventData.scheduleTimezone ?? 'Canada/Eastern',
+                              )
                             }
                             rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
                             <DatePickerStyled style={{ width: '423px' }} />
@@ -957,8 +970,14 @@ function AddEvent() {
                                 eventData?.endDate,
                                 eventData?.endDateTime,
                               ) === dateTypes.RANGE && [
-                                moment(eventData?.startDate ?? eventData?.startDateTime),
-                                moment(eventData?.endDate ?? eventData?.endDateTime),
+                                moment.tz(
+                                  eventData?.startDate ?? eventData?.startDateTime,
+                                  eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                ),
+                                moment.tz(
+                                  eventData?.endDate ?? eventData?.endDateTime,
+                                  eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                ),
                               ]
                             }
                             rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
@@ -972,7 +991,11 @@ function AddEvent() {
                         <Form.Item
                           name="startTime"
                           label={t('dashboard.events.addEditEvent.dates.startTime')}
-                          initialValue={eventData?.startDateTime ? moment(eventData?.startDateTime) : undefined}>
+                          initialValue={
+                            eventData?.startDateTime
+                              ? moment.tz(eventData?.startDateTime, eventData.scheduleTimezone ?? 'Canada/Eastern')
+                              : undefined
+                          }>
                           <TimePickerStyled
                             placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                             use12Hours={i18n?.language === 'en' ? true : false}
@@ -984,7 +1007,11 @@ function AddEvent() {
                         <Form.Item
                           name="endTime"
                           label={t('dashboard.events.addEditEvent.dates.endTime')}
-                          initialValue={eventData?.endDateTime ? moment(eventData?.endDateTime) : undefined}>
+                          initialValue={
+                            eventData?.endDateTime
+                              ? moment.tz(eventData?.endDateTime, eventData.scheduleTimezone ?? 'Canada/Eastern')
+                              : undefined
+                          }>
                           <TimePickerStyled
                             placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                             use12Hours={i18n?.language === 'en' ? true : false}
