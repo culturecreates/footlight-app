@@ -20,7 +20,6 @@ import PrimaryButton from '../../Button/Primary';
 import Tags from '../../Tags/Common/Tags';
 import TimePickerStyled from '../../TimePicker/TimePicker';
 import i18n from 'i18next';
-// import MultipleDatePicker from '../../MultipleDatePicker';
 
 const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCustomDates, customDates }) => {
   const [dateSource, setDataSource] = useState([]);
@@ -96,22 +95,6 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
     setDataSource([]);
     setIsModalVisible(false);
   };
-
-  // const selectDate = (e) => {
-  //   console.log(e);
-  //   const eventObj = {
-  //     id: uniqid(),
-  //     name: "test name",
-  //     location: "test Location",
-  //     startDate: new Date(
-  //       moment(e.startDate.toLocaleDateString()).format("YYYY,M,D")
-  //     ),
-  //     endDate: new Date(
-  //       moment(e.endDate.toLocaleDateString()).format("YYYY,M,DD")
-  //     ),
-  //   };
-  //   setDataSource([...dateSource, eventObj]);
-  // };
 
   useEffect(() => {
     if (test) {
@@ -329,16 +312,6 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                     </div>
                   ))}
                 {!item.isDeleted && selectedDateId !== item.id && (
-                  //   <div className="add-time-btn">
-                  //     <span
-                  //       style={{ cursor: 'pointer' }}
-                  //       onClick={() => {
-                  //         setShowAddTime(true);
-                  //         setSelectedDateId(item.id);
-                  //       }}>
-                  //       {t('dashboard.events.addEditEvent.dates.modal.addTime')}
-                  //     </span>
-                  //   </div>
                   <TextButton
                     icon={<PlusOutlined style={{ color: '#1B3DE6' }} />}
                     label={t('dashboard.events.addEditEvent.dates.modal.addTime')}
@@ -356,42 +329,6 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                     className="update-status-form"
                     data-testid="status-update-form"
                     onFinish={handleSubmit}>
-                    {/* <div className="flex-align" style={{ marginTop: '15px' }}>
-                      <div className="date-div">
-                        <div className="update-select-title">{t('StartTime', { lng: currentLang })}</div>
-                        <Form.Item
-                          name="startTimeCustom"
-                          className="status-comment-item"
-                          rules={[{ required: true, message: 'Start time required' }]}>
-                          <TimePicker
-                            format="HH:mm"
-                            popupClassName="recurring-time-picker"
-                            // onSelect={(value) => {
-                            //   form.setFieldsValue({
-                            //     startTimeCustom: value,
-                            //   });
-                            // }}
-                          />
-                        </Form.Item>
-                      </div>
-                      <div className="date-div">
-                        <div className="update-select-title ">{t('EndTime', { lng: currentLang })}</div>
-                        <Form.Item
-                          name="endTimeCustom"
-                          className="status-comment-item"
-                          rules={[{ required: false, message: 'End time required' }]}>
-                          <TimePicker
-                            format="HH:mm"
-                            popupClassName="recurring-time-picker"
-                            // onSelect={(value) => {
-                            //   form.setFieldsValue({
-                            //     endTimeCustom: value,
-                            //   });
-                            // }}
-                          />
-                        </Form.Item>
-                      </div>
-                    </div> */}
                     <Row justify="space-between">
                       <Col flex={'165px'}>
                         <Form.Item
@@ -449,17 +386,6 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                             size="large"
                             label={t('dashboard.events.addEditEvent.dates.modal.add')}
                           />
-                          {/* <Button
-                            size="large"
-                            onClick={() => {
-                              form.resetFields();
-                              setShowAddTime(false);
-                            }}>
-                            Cancel
-                          </Button>
-                          <Button type="primary" htmlType="submit" size="large">
-                            Add
-                          </Button> */}
                         </Form.Item>
                       </div>
                     </div>

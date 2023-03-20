@@ -67,9 +67,6 @@ import { otherInformationFieldNames, otherInformationOptions } from '../../../co
 import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../../constants/eventAccessibilityOptions';
 import { usePrompt } from '../../../hooks/usePrompt';
 import { bilingual } from '../../../utils/bilingual';
-import CustomModal from '../../../components/Modal/Common/CustomModal';
-import TextButton from '../../../components/Button/Text';
-import MultipleDatePicker from '../../../components/MultipleDatePicker';
 import RecurringEvents from '../../../components/RecurringEvents';
 const { TextArea } = Input;
 
@@ -132,7 +129,6 @@ function AddEvent() {
     performer: false,
     supporter: false,
   });
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [addedFields, setAddedFields] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
   const [scrollToSelectedField, setScrollToSelectedField] = useState();
@@ -674,6 +670,16 @@ function AddEvent() {
   const onValuesChangHandler = () => {
     setShowDialog(true);
   };
+  var enumerateDaysBetweenDates = (startDate, endDate) => {
+    var now = startDate.clone(),
+      dates = [];
+
+    while (now.isSameOrBefore(endDate)) {
+      dates.push(now.format('M/D/YYYY'));
+      now.add(1, 'days');
+    }
+    return dates;
+  };
 
   useEffect(() => {
     if (selectedOrganizers) form.setFieldValue('organizers', selectedOrganizers);
@@ -1075,7 +1081,25 @@ function AddEvent() {
                               rules={[
                                 { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
                               ]}>
-                              <DateRangePicker style={{ width: '423px' }} />
+                              <DateRangePicker
+                                style={{ width: '423px' }}
+                                suffixIcon={
+                                  formValue?.dateRangePicker?.length == 2 && (
+                                    <Tags
+                                      style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }}
+                                      color={'#DBF3FD'}>
+                                      {
+                                        enumerateDaysBetweenDates(
+                                          formValue?.dateRangePicker[0],
+                                          formValue?.dateRangePicker[1],
+                                        )?.length
+                                      }
+                                      &nbsp;
+                                      {t('dashboard.events.addEditEvent.dates.dates')}
+                                    </Tags>
+                                  )
+                                }
+                              />
                             </Form.Item>
                             <Row justify="space-between">
                               <Col flex={'203.5px'}>
@@ -1119,71 +1143,6 @@ function AddEvent() {
                             />
                           </>
                         )}
-                      </Col>
-                    </Row>
-
-                    <Row>
-                      <Col flex={'423px'}>
-                        <Form.Item>
-                          {/* <Modal
-                            title="Basic Modal"
-                            open={isModalOpen}
-                            onOk={() => setIsModalOpen(false)}
-                            onCancel={() => setIsModalOpen(false)}>
-                            <div>
-                              <div>
-                                <Calendar />
-                              </div>
-                              <div>
-                                <Form.List name="users">
-                                  {(fields, { add, remove }) => (
-                                    <>
-                                      {fields.map(({ key, name, ...restField }) => (
-                                        <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
-                                          <Form.Item
-                                            {...restField}
-                                            name={[name, 'first']}
-                                            rules={[{ required: true, message: 'Missing first name' }]}>
-                                            <Input placeholder="First Name" />
-                                          </Form.Item>
-                                          <Form.Item
-                                            {...restField}
-                                            name={[name, 'last']}
-                                            rules={[{ required: true, message: 'Missing last name' }]}>
-                                            <Input placeholder="Last Name" />
-                                          </Form.Item>
-                                          <MinusCircleOutlined onClick={() => remove(name)} />
-                                        </Space>
-                                      ))}
-                                      <Form.Item>
-                                        <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-                                          Add field
-                                        </Button>
-                                      </Form.Item>
-                                    </>
-                                  )}
-                                </Form.List>
-                              </div>
-                            </div>
-                          </Modal> */}
-                          <CustomModal
-                            open={isModalOpen}
-                            footer={[
-                              <TextButton
-                                key="cancel"
-                                size="large"
-                                label={t('dashboard.events.addEditEvent.dates.cancel')}
-                                onClick={() => setIsModalOpen(false)}
-                              />,
-                              <PrimaryButton
-                                key="add-dates"
-                                label={t('dashboard.events.addEditEvent.dates.addDates')}
-                                onClick={() => setIsModalOpen(false)}
-                              />,
-                            ]}>
-                            <MultipleDatePicker />
-                          </CustomModal>
-                        </Form.Item>
                       </Col>
                     </Row>
                   </>
