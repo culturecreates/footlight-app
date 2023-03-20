@@ -8,8 +8,7 @@ import frLocale from 'antd/es/date-picker/locale/fr_CA';
 import enLocale from 'antd/es/date-picker/locale/en_US';
 const MultipleDatePicker = () => {
   const [selectedDate, setSelectedDate] = useState([]);
-  const onPanelChange = (value, mode) => {
-  };
+
   const onValueChange = (date) => {
     const newDate = moment(date).startOf('day').valueOf();
     if (selectedDate.includes(newDate)) {
@@ -105,7 +104,6 @@ const MultipleDatePicker = () => {
             </div>
           );
         }}
-        onPanelChange={onPanelChange}
         dateFullCellRender={dateRender}
         onSelect={onValueChange}
       />
