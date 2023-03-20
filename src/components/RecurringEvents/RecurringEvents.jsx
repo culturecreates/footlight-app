@@ -11,6 +11,7 @@ import DateRangePicker from '../DateRangePicker';
 import TimePickerStyled from '../TimePicker/TimePicker';
 import i18n from 'i18next';
 import TextButton from '../Button/Text';
+import Tags from '../Tags/Common/Tags';
 
 const RecurringEvents = function ({
   currentLang,
@@ -288,6 +289,13 @@ const RecurringEvents = function ({
                   value={[moment(customDates[0]?.startDate), moment(customDates[customDates?.length - 1]?.startDate)]}
                   allowClear={false}
                   inputReadOnly
+                  suffixIcon={
+                    nummberofDates > 0 && (
+                      <Tags style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }} color={'#DBF3FD'}>
+                        {nummberofDates} {t('dashboard.events.addEditEvent.dates.dates')}
+                      </Tags>
+                    )
+                  }
                 />
               </Form.Item>
             )}
@@ -327,9 +335,19 @@ const RecurringEvents = function ({
               <Form.Item
                 name="startDateRecur"
                 className="status-comment-item"
-                label={t('dashboard.events.addEditEvent.dates.multipleDates')}
+                label={t('dashboard.events.addEditEvent.dates.dates')}
                 rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
-                <DateRangePicker style={{ width: '423px' }} disabledDate={(d) => !d || d.isSameOrBefore(endDisable)} />
+                <DateRangePicker
+                  style={{ width: '423px' }}
+                  disabledDate={(d) => !d || d.isSameOrBefore(endDisable)}
+                  suffixIcon={
+                    nummberofDates > 0 && (
+                      <Tags style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }} color={'#DBF3FD'}>
+                        {nummberofDates} {t('dashboard.events.addEditEvent.dates.dates')}
+                      </Tags>
+                    )
+                  }
+                />
               </Form.Item>
             </div>
           </div>
