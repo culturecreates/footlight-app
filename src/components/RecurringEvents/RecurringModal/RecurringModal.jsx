@@ -49,6 +49,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
       endTime: values.endTimeCustom && moment(values.endTimeCustom).format('hh:mm a'),
       start: moment(values.startTimeCustom).format('HH:mm'),
       end: values.endTimeCustom && moment(values.endTimeCustom).format('HH:mm'),
+      color: '#607EFC',
     };
 
     if (updateAllTime) {
@@ -236,7 +237,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
           {isModalVisible && (
             <Calendar
               className="recurring-cal"
-              style={{ width: '300px', display: 'none' }}
+              style="border"
               language={i18n.language}
               minDate={new Date()}
               enableRangeSelection={true}
@@ -256,6 +257,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                       endDate: new Date(date.format('YYYY,M,D')),
                       initDate: moment(date).format('YYYY-MM-DD'),
                       isDeleted: false,
+                      color: '#607EFC',
                     };
                     return obj;
                   });
@@ -269,6 +271,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                     endDate: e.endDate,
                     initDate: moment(e.startDate).format('YYYY-MM-DD'),
                     isDeleted: false,
+                    color: '#607EFC',
                   };
                   setTest(obj);
                 }
