@@ -58,7 +58,7 @@ function CreateAccount() {
           <Form.Item
             className="create-account-form-item"
             name="newPassword"
-            label={t('resetPassword.newPassword')}
+            label={t('createAccount.newPassword')}
             labelAlign="left"
             rules={[
               {
@@ -74,7 +74,7 @@ function CreateAccount() {
           <Form.Item
             className="create-account-form-item"
             name="confirmNewPassword"
-            label={t('resetPassword.confirmNewPassword')}
+            label={t('createAccount.confirmNewPassword')}
             labelAlign="left"
             rules={[
               {
@@ -90,13 +90,13 @@ function CreateAccount() {
               }),
             ]}>
             <PasswordInput
-              placeholder={t('resetPassword.passwordPlaceHolder')}
+              placeholder={t('createAccount.passwordPlaceHolder')}
               iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
             />
           </Form.Item>
 
           <Form.Item className="create-account-reset-my-password">
-            <LoginButton label={t('resetPassword.resetPassword')} htmlType="htmlType" />
+            <LoginButton label={t('createAccount.acceptInvitation')} htmlType="htmlType" />
           </Form.Item>
         </Form>
       </div>
