@@ -15,11 +15,11 @@ export const inviteApi = createApi({
     }),
 
     acceptInvite: builder.mutation({
-      query: ({ id, body }) => {
+      query: ({ id, password }) => {
         return {
           url: `invite/${id}/accept`,
           method: 'POST',
-          body,
+          body: { password },
         };
       },
     }),

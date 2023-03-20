@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Form } from 'antd';
+import { Form, notification } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -32,9 +32,9 @@ function CreateAccount() {
 
   const onFinish = (values) => {
     acceptInvite({
+      id: invitationId,
       password: values.confirmNewPassword,
     }).then((response) => {
-      console.log(response);
       if (response?.data?.statusCode == 202) {
         // notification.info({
         //   description: t('resetPassword.successNotification'),
@@ -45,7 +45,13 @@ function CreateAccount() {
     });
   };
 
-  if (inviteUserError) navigate('/');
+  if (inviteUserError) {
+    notification.info({
+      description: inviteUserError?.data?.message,
+      placement: 'top',
+    });
+    navigate('/');
+  }
 
   return (
     !inviteUserLoading && (
