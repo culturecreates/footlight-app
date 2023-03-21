@@ -37,23 +37,26 @@ function CreateAccount() {
     })
       .unwrap()
       .then((response) => {
-        if (response?.data?.statusCode == 202) {
-          // notification.info({
-          //   description: t('resetPassword.successNotification'),
-          //   placement: 'top',
-          // });
+        console.log(response);
+        if (response?.statusCode == 202) {
+          notification.success({
+            description: t('createAccount.successNotification'),
+            placement: 'top',
+          });
           navigate(PathName.Login);
         }
+      })
+      .catch((error) => {
+        console.log(error);
+        notification.error({
+          description: t('createAccount.errorNotification'),
+          placement: 'top',
+        });
+        navigate(PathName.Login);
       });
   };
 
-  if (inviteUserError) {
-    notification.info({
-      description: inviteUserError?.data?.message,
-      placement: 'top',
-    });
-    navigate('/');
-  }
+  if (inviteUserError) navigate(PathName.Login);
 
   return (
     !inviteUserLoading && (

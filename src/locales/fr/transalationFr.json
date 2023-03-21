@@ -62,7 +62,9 @@
     "newPassword": "Nouveau mot de passe",
     "confirmNewPassword": "Confirmer votre nouveau mot de passe",
     "acceptInvitation": "Acceptez l'invitation",
-    "passwordPlaceHolder": "Entrez votre mot de passe"
+    "passwordPlaceHolder": "Entrez votre mot de passe",
+    "successNotification": " Succès ! Votre compte a été créé.",
+    "errorNotification": "Un problème s'est produit. Veuillez réessayer ou contacter support@culturecreates.com."
   },
   "dashboard": {
     "topNavigation": {

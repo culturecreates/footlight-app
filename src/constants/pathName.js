@@ -9,6 +9,6 @@ export const PathName = {
   Taxonomies: '/taxonomies',
   Settings: '/settings',
   AddEvent: '/add-event',
-  CreateAccount: '/join',
+  AcceptInvitation: '/accept-invitation',
   NotFound: '/*',
 };

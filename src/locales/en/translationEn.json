@@ -62,7 +62,9 @@
     "newPassword": "New Password",
     "confirmNewPassword": "Confirm new password",
     "acceptInvitation": "Accept invitation",
-    "passwordPlaceHolder": "Enter your password"
+    "passwordPlaceHolder": "Enter your password",
+    "successNotification": "Success! Your account has been created.",
+    "errorNotification":"Something went wrong. Please try again or contact support@culturecreates.com."
   },
   "dashboard": {
     "topNavigation": {
