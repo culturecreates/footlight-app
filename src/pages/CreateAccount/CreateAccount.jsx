@@ -23,7 +23,7 @@ function CreateAccount() {
 
   const {
     currentData: inviteUserData,
-    success: inviteUserSuccess,
+    isSuccess: inviteUserSuccess,
     error: inviteUserError,
   } = useGetInviteDetailsQuery(
     {
