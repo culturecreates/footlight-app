@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Form, notification } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -23,12 +23,15 @@ function CreateAccount() {
 
   const {
     currentData: inviteUserData,
-    isLoading: inviteUserLoading,
+    success: inviteUserSuccess,
     error: inviteUserError,
-  } = useGetInviteDetailsQuery({
-    id: invitationId,
-    sessionId: timestampRef,
-  });
+  } = useGetInviteDetailsQuery(
+    {
+      id: invitationId,
+      sessionId: timestampRef,
+    },
+    { skip: location.pathname.includes('join') ? false : true },
+  );
 
   const onFinish = (values) => {
     acceptInvite({
@@ -37,26 +40,51 @@ function CreateAccount() {
     })
       .unwrap()
       .then((response) => {
-        if (response?.data?.statusCode == 202) {
-          // notification.info({
-          //   description: t('resetPassword.successNotification'),
-          //   placement: 'top',
-          // });
+        if (response?.statusCode == 202) {
+          notification.success({
+            description: t('createAccount.successNotification'),
+            placement: 'top',
+          });
           navigate(PathName.Login);
         }
+      })
+      .catch((error) => {
+        console.log(error);
+        notification.error({
+          description: t('createAccount.errorNotification'),
+          placement: 'top',
+        });
+        navigate(PathName.Login);
       });
   };
+  useEffect(() => {
+    if (invitationId)
+      if (location.pathname.includes('accept')) {
+        acceptInvite({
+          id: invitationId,
+        })
+          .unwrap()
+          .then((response) => {
+            if (response?.statusCode == 202) {
+              navigate(PathName.Login);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+            notification.error({
+              description: t('createAccount.errorNotification'),
+              placement: 'top',
+            });
+            navigate(PathName.Login);
+          });
+      }
+  }, []);
 
-  if (inviteUserError) {
-    notification.info({
-      description: inviteUserError?.data?.message,
-      placement: 'top',
-    });
-    navigate('/');
-  }
+  if (inviteUserError) navigate(PathName.Login);
 
   return (
-    !inviteUserLoading && (
+    location.pathname.includes('join') &&
+    inviteUserSuccess && (
       <Auth>
         <div className="create-account-page-wrapper">
           <h3 className="create-account-heading">{t('createAccount.createYourAccount')}</h3>

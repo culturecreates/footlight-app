@@ -26,7 +26,11 @@ export const router = createBrowserRouter([
     element: <ResetPassword />,
   },
   {
-    path: PathName.CreateAccount,
+    path: PathName.AcceptInvitation,
+    element: <CreateAccount />,
+  },
+  {
+    path: PathName.Join,
     element: <CreateAccount />,
   },
   {
