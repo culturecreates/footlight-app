@@ -23,7 +23,7 @@ function CreateAccount() {
 
   const {
     currentData: inviteUserData,
-    isLoading: inviteUserLoading,
+    success: inviteUserSuccess,
     error: inviteUserError,
   } = useGetInviteDetailsQuery(
     {
@@ -83,7 +83,8 @@ function CreateAccount() {
   if (inviteUserError) navigate(PathName.Login);
 
   return (
-    !inviteUserLoading && (
+    location.pathname.includes('join') &&
+    inviteUserSuccess && (
       <Auth>
         <div className="create-account-page-wrapper">
           <h3 className="create-account-heading">{t('createAccount.createYourAccount')}</h3>
