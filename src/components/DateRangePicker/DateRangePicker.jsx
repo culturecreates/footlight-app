@@ -17,7 +17,7 @@ function DateRangePicker(props) {
       format="DD/MM/YYYY"
       locale={i18n?.language === 'en' ? enLocale : i18n?.language === 'fr' && frLocale}
       getPopupContainer={(trigger) => trigger.parentNode}
-      placeholder={i18n?.language === 'en' ? ['MM/DD/YYYY', 'MM/DD/YYYY'] : ['JJ/MM/AAAA', 'JJ/MM/AAAA']}
+      placeholder={i18n?.language === 'en' ? ['DD/MM/YYYY', 'DD/MM/YYYY'] : ['JJ/MM/AAAA', 'JJ/MM/AAAA']}
       separator={<RightOutlined style={{ color: '#646D7B' }} />}
       {...props}
     />

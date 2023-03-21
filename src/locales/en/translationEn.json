@@ -131,7 +131,40 @@
           "dateRangeTooltip": "Use when your event spans multiple dates such as an art exhibition.",
           "eventCancelled": "Cancelled",
           "eventPostponed": "Postponed",
-          "eventScheduled": "Scheduled"
+          "eventScheduled": "Scheduled",
+          "frequency": "Frequency",
+          "daily": "Daily",
+          "weekly": "Weekly",
+          "monthly": "Monthly",
+          "custom": "Custom",
+          "days": "Days",
+          "editDates": "Edit dates",
+          "cancel": "Cancel",
+          "addDates": "Add dates",
+          "weekDays": {
+            "sunday": "Sun",
+            "monday": "Mon",
+            "tuesday": "Tue",
+            "wednesday": "Wed",
+            "thursday": "Thu",
+            "friday": "Fri",
+            "saturday": "Sat"
+          },
+          "modal": {
+            "titleHeading": "Select date(s) for your event",
+            "startTime": "Start time",
+            "endTime": "End time",
+            "addTime": "Add another time",
+            "add": "Add",
+            "addTimeToAllDates": "Add time to all dates",
+            "addTimeToAllDatesWarning": "Are you sure? This action cannot be undone.",
+            "duplicateTimes": "Duplicate times",
+            "replaceTimeonFolllowingDates": "Replace the times on the following dates : ",
+            "selectAll": "Select all",
+            "unselectAll": "Unselect all",
+            "cancel": "Cancel",
+            "apply": "Apply"
+          }
         },
         "location": {
           "title": "Location",

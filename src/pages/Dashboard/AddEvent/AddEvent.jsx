@@ -67,6 +67,7 @@ import { otherInformationFieldNames, otherInformationOptions } from '../../../co
 import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../../constants/eventAccessibilityOptions';
 import { usePrompt } from '../../../hooks/usePrompt';
 import { bilingual } from '../../../utils/bilingual';
+import RecurringEvents from '../../../components/RecurringEvents';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -131,6 +132,7 @@ function AddEvent() {
   const [addedFields, setAddedFields] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
   const [scrollToSelectedField, setScrollToSelectedField] = useState();
+  const [formValue, setFormValue] = useState();
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -209,6 +211,7 @@ function AddEvent() {
             performers = [],
             collaborators = [],
             dynamicFields = [],
+            recurringEvent,
             image;
           let eventObj;
           if (dateType === dateTypes.SINGLE) {
@@ -230,6 +233,32 @@ function AddEvent() {
               endDateTime = moment
                 .tz(values?.dateRangePicker[1], eventData.scheduleTimezone ?? 'Canada/Eastern')
                 .format('YYYY/MM/DD');
+          }
+          if (dateType === dateTypes.MULTIPLE) {
+            const recurEvent = {
+              frequency: values.frequency,
+              startDate:
+                form.getFieldsValue().frequency !== 'CUSTOM'
+                  ? moment(values.startDateRecur[0]).format('YYYY-MM-DD')
+                  : undefined,
+              endDate:
+                form.getFieldsValue().frequency !== 'CUSTOM'
+                  ? moment(values.startDateRecur[1]).format('YYYY-MM-DD')
+                  : undefined,
+              startTime:
+                form.getFieldsValue().frequency !== 'CUSTOM'
+                  ? values.startTimeRecur
+                    ? moment(values.startTimeRecur).format('HH:mm')
+                    : undefined
+                  : undefined,
+              endTime:
+                form.getFieldsValue().frequency !== 'CUSTOM' && values.endTimeRecur
+                  ? moment(values.endTimeRecur).format('HH:mm')
+                  : undefined,
+              weekDays: values.frequency === 'WEEKLY' ? values.daysOfWeek : undefined,
+              customDates: form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
+            };
+            recurringEvent = recurEvent;
           }
           if (values?.eventType) {
             additionalType = values?.eventType?.map((eventTypeId) => {
@@ -307,7 +336,6 @@ function AddEvent() {
           if (ticketType) {
             offerConfiguration = {
               category: ticketType,
-              //Change name key to note when the change is made in the backend
               name: {
                 en: values?.englishTicketNote,
                 fr: values?.frenchTicketNote,
@@ -400,6 +428,7 @@ function AddEvent() {
             ...(values?.performers && { performers }),
             ...(values?.supporters && { collaborators }),
             ...(values?.dynamicFields && { dynamicFields }),
+            ...(dateTypes.MULTIPLE && { recurringEvent }),
           };
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
             new Compressor(values?.dragger[0]?.originFileObj, {
@@ -650,6 +679,16 @@ function AddEvent() {
   const onValuesChangHandler = () => {
     setShowDialog(true);
   };
+  var enumerateDaysBetweenDates = (startDate, endDate) => {
+    var now = startDate.clone(),
+      dates = [];
+
+    while (now.isSameOrBefore(endDate)) {
+      dates.push(now.format('M/D/YYYY'));
+      now.add(1, 'days');
+    }
+    return dates;
+  };
 
   useEffect(() => {
     if (selectedOrganizers) form.setFieldValue('organizers', selectedOrganizers);
@@ -665,14 +704,17 @@ function AddEvent() {
 
   useEffect(() => {
     if (calendarId && eventData) {
-      let initialAddedFields = [];
+      let initialAddedFields = [],
+        isRecurring = false;
       if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState) || duplicateId) {
+        if (eventData?.recurringEvent && Object.keys(eventData?.recurringEvent)?.length > 0) isRecurring = true;
         setDateType(
           dateTimeTypeHandler(
             eventData?.startDate,
             eventData?.startDateTime,
             eventData?.endDate,
             eventData?.endDateTime,
+            isRecurring,
           ),
         );
         setTicketType(eventData?.offerConfiguration?.category);
@@ -730,6 +772,41 @@ function AddEvent() {
         if (eventData?.accessibilityNote?.en || eventData?.accessibilityNote?.fr)
           initialAddedFields = initialAddedFields?.concat(eventAccessibilityFieldNames?.noteWrap);
         setAddedFields(initialAddedFields);
+        if (eventData?.recurringEvent) {
+          form.setFieldsValue({
+            frequency: eventData?.recurringEvent?.frequency,
+            startDateRecur: [
+              moment(
+                moment(
+                  eventData?.recurringEvent?.startDate ? eventData?.recurringEvent?.startDate : eventData?.startDate,
+                  'YYYY-MM-DD',
+                ).format('DD-MM-YYYY'),
+                'DD-MM-YYYY',
+              ),
+              moment(
+                moment(
+                  eventData?.recurringEvent?.endDate ? eventData?.recurringEvent?.endDate : eventData?.endDate,
+                  'YYYY-MM-DD',
+                ).format('DD-MM-YYYY'),
+                'DD-MM-YYYY',
+              ),
+            ],
+            startTimeRecur: eventData?.recurringEvent?.startTime
+              ? moment(eventData?.recurringEvent?.startTime, 'HH:mm')
+              : undefined,
+            endTimeRecur: eventData?.recurringEvent?.endTime
+              ? moment(eventData?.recurringEvent?.endTime, 'HH:mm')
+              : undefined,
+            customDates: eventData?.recurringEvent?.customDates,
+            daysOfWeek: eventData?.recurringEvent?.weekDays,
+          });
+          const obj = {
+            startTimeRecur: eventData?.recurringEvent?.startTime
+              ? moment(eventData?.recurringEvent?.startTime, 'HH:mm')
+              : undefined,
+          };
+          setFormValue(obj);
+        }
       } else
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
     }
@@ -751,7 +828,14 @@ function AddEvent() {
     !taxonomyLoading &&
     !initialEntityLoading && (
       <div>
-        <Form form={form} layout="vertical" name="event" onValuesChange={onValuesChangHandler}>
+        <Form
+          form={form}
+          layout="vertical"
+          name="event"
+          onValuesChange={onValuesChangHandler}
+          onFieldsChange={() => {
+            setFormValue(form.getFieldsValue(true));
+          }}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
               <Row justify="space-between">
@@ -940,84 +1024,168 @@ function AddEvent() {
                     <Row>
                       <Col flex={'423px'}>
                         {dateType === dateTypes.SINGLE && (
-                          <Form.Item
-                            name="datePicker"
-                            label={t('dashboard.events.addEditEvent.dates.date')}
-                            initialValue={
-                              dateTimeTypeHandler(
-                                eventData?.startDate,
-                                eventData?.startDateTime,
-                                eventData?.endDate,
-                                eventData?.endDateTime,
-                              ) === dateTypes.SINGLE &&
-                              moment.tz(
-                                eventData?.startDate ?? eventData?.startDateTime,
-                                eventData.scheduleTimezone ?? 'Canada/Eastern',
-                              )
-                            }
-                            rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
-                            <DatePickerStyled style={{ width: '423px' }} />
-                          </Form.Item>
-                        )}
-                        {dateType === dateTypes.RANGE && (
-                          <Form.Item
-                            name="dateRangePicker"
-                            label={t('dashboard.events.addEditEvent.dates.dateRange')}
-                            initialValue={
-                              dateTimeTypeHandler(
-                                eventData?.startDate,
-                                eventData?.startDateTime,
-                                eventData?.endDate,
-                                eventData?.endDateTime,
-                              ) === dateTypes.RANGE && [
+                          <>
+                            <Form.Item
+                              name="datePicker"
+                              label={t('dashboard.events.addEditEvent.dates.date')}
+                              initialValue={
+                                dateTimeTypeHandler(
+                                  eventData?.startDate,
+                                  eventData?.startDateTime,
+                                  eventData?.endDate,
+                                  eventData?.endDateTime,
+                                ) === dateTypes.SINGLE &&
                                 moment.tz(
                                   eventData?.startDate ?? eventData?.startDateTime,
-                                  eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                                ),
-                                moment.tz(
-                                  eventData?.endDate ?? eventData?.endDateTime,
-                                  eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                                ),
-                              ]
-                            }
-                            rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
-                            <DateRangePicker style={{ width: '423px' }} />
-                          </Form.Item>
+                                  eventData.scheduleTimezone ?? 'Canada/Eastern',
+                                )
+                              }
+                              rules={[
+                                { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
+                              ]}>
+                              <DatePickerStyled style={{ width: '423px' }} />
+                            </Form.Item>
+                            <Row justify="space-between">
+                              <Col flex={'203.5px'}>
+                                <Form.Item
+                                  name="startTime"
+                                  label={t('dashboard.events.addEditEvent.dates.startTime')}
+                                  initialValue={
+                                    eventData?.startDateTime
+                                      ? moment.tz(
+                                          eventData?.startDateTime,
+                                          eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                        )
+                                      : undefined
+                                  }>
+                                  <TimePickerStyled
+                                    placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                                    use12Hours={i18n?.language === 'en' ? true : false}
+                                    format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                                  />
+                                </Form.Item>
+                              </Col>
+                              <Col flex={'203.5px'}>
+                                <Form.Item
+                                  name="endTime"
+                                  label={t('dashboard.events.addEditEvent.dates.endTime')}
+                                  initialValue={
+                                    eventData?.endDateTime
+                                      ? moment.tz(
+                                          eventData?.endDateTime,
+                                          eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                        )
+                                      : undefined
+                                  }>
+                                  <TimePickerStyled
+                                    placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                                    use12Hours={i18n?.language === 'en' ? true : false}
+                                    format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                                  />
+                                </Form.Item>
+                              </Col>
+                            </Row>
+                          </>
                         )}
-                      </Col>
-                    </Row>
-                    <Row justify="space-between">
-                      <Col flex={'203.5px'}>
-                        <Form.Item
-                          name="startTime"
-                          label={t('dashboard.events.addEditEvent.dates.startTime')}
-                          initialValue={
-                            eventData?.startDateTime
-                              ? moment.tz(eventData?.startDateTime, eventData.scheduleTimezone ?? 'Canada/Eastern')
-                              : undefined
-                          }>
-                          <TimePickerStyled
-                            placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
-                            use12Hours={i18n?.language === 'en' ? true : false}
-                            format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col flex={'203.5px'}>
-                        <Form.Item
-                          name="endTime"
-                          label={t('dashboard.events.addEditEvent.dates.endTime')}
-                          initialValue={
-                            eventData?.endDateTime
-                              ? moment.tz(eventData?.endDateTime, eventData.scheduleTimezone ?? 'Canada/Eastern')
-                              : undefined
-                          }>
-                          <TimePickerStyled
-                            placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
-                            use12Hours={i18n?.language === 'en' ? true : false}
-                            format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
-                          />
-                        </Form.Item>
+                        {dateType === dateTypes.RANGE && (
+                          <>
+                            <Form.Item
+                              name="dateRangePicker"
+                              label={t('dashboard.events.addEditEvent.dates.dateRange')}
+                              initialValue={
+                                dateTimeTypeHandler(
+                                  eventData?.startDate,
+                                  eventData?.startDateTime,
+                                  eventData?.endDate,
+                                  eventData?.endDateTime,
+                                ) === dateTypes.RANGE && [
+                                  moment.tz(
+                                    eventData?.startDate ?? eventData?.startDateTime,
+                                    eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                  ),
+                                  moment.tz(
+                                    eventData?.endDate ?? eventData?.endDateTime,
+                                    eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                  ),
+                                ]
+                              }
+                              rules={[
+                                { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
+                              ]}>
+                              <DateRangePicker
+                                style={{ width: '423px' }}
+                                suffixIcon={
+                                  formValue?.dateRangePicker?.length == 2 && (
+                                    <Tags
+                                      style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }}
+                                      color={'#DBF3FD'}>
+                                      {
+                                        enumerateDaysBetweenDates(
+                                          formValue?.dateRangePicker[0],
+                                          formValue?.dateRangePicker[1],
+                                        )?.length
+                                      }
+                                      &nbsp;
+                                      {t('dashboard.events.addEditEvent.dates.dates')}
+                                    </Tags>
+                                  )
+                                }
+                              />
+                            </Form.Item>
+                            <Row justify="space-between">
+                              <Col flex={'203.5px'}>
+                                <Form.Item
+                                  name="startTime"
+                                  label={t('dashboard.events.addEditEvent.dates.startTime')}
+                                  initialValue={
+                                    eventData?.startDateTime
+                                      ? moment.tz(
+                                          eventData?.startDateTime,
+                                          eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                        )
+                                      : undefined
+                                  }>
+                                  <TimePickerStyled
+                                    placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                                    use12Hours={i18n?.language === 'en' ? true : false}
+                                    format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                                  />
+                                </Form.Item>
+                              </Col>
+                              <Col flex={'203.5px'}>
+                                <Form.Item
+                                  name="endTime"
+                                  label={t('dashboard.events.addEditEvent.dates.endTime')}
+                                  initialValue={
+                                    eventData?.endDateTime
+                                      ? moment.tz(
+                                          eventData?.endDateTime,
+                                          eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                        )
+                                      : undefined
+                                  }>
+                                  <TimePickerStyled
+                                    placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                                    use12Hours={i18n?.language === 'en' ? true : false}
+                                    format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                                  />
+                                </Form.Item>
+                              </Col>
+                            </Row>
+                          </>
+                        )}
+                        {dateType === dateTypes.MULTIPLE && (
+                          <>
+                            <RecurringEvents
+                              currentLang={i18n.language}
+                              formFields={formValue}
+                              numberOfDaysEvent={eventData?.subEvents?.length}
+                              form={form}
+                              eventDetails={eventData}
+                              setFormFields={setFormValue}
+                            />
+                          </>
+                        )}
                       </Col>
                     </Row>
                   </>
@@ -1051,7 +1219,7 @@ function AddEvent() {
                           <DateAction
                             iconrender={<CalendarOutlined />}
                             label={t('dashboard.events.addEditEvent.dates.multipleDates')}
-                            disabled={true}
+                            onClick={() => setDateType(dateTypes.MULTIPLE)}
                           />
                         </div>
                       </Form.Item>
