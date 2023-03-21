@@ -66,6 +66,10 @@ function CreateAccount() {
           .unwrap()
           .then((response) => {
             if (response?.statusCode == 202) {
+              notification.success({
+                description: t('createAccount.acceptInvitationSuccess'),
+                placement: 'top',
+              });
               navigate(PathName.Login);
             }
           })

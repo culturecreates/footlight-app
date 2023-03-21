@@ -64,7 +64,8 @@
     "acceptInvitation": "Accept invitation",
     "passwordPlaceHolder": "Enter your password",
     "successNotification": "Success! Your account has been created.",
-    "errorNotification":"Something went wrong. Please try again or contact support@culturecreates.com."
+    "errorNotification": "Something went wrong. Please try again or contact support@culturecreates.com.",
+    "acceptInvitationSuccess": "Success! Invitation accepted."
   },
   "dashboard": {
     "topNavigation": {
