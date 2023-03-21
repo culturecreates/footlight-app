@@ -9,6 +9,7 @@ import AddEvent from '../pages/Dashboard/AddEvent';
 import { ReactComponent as NotFound } from '../../src/assets/images/illustatus.svg';
 import EventReadOnly from '../pages/Dashboard/EventReadOnly';
 import CreateAccount from '../pages/CreateAccount/CreateAccount';
+import Users from '../pages/Dashboard/Users';
 
 export const router = createBrowserRouter([
   {
@@ -51,8 +52,8 @@ export const router = createBrowserRouter([
         ],
       },
       {
-        path: `:calendarId${PathName.User}/:userId`,
-        element: <div>hai</div>,
+        path: `:calendarId${PathName.Profile}/:userId`,
+        element: <Users />,
       },
 
       {

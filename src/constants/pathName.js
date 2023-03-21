@@ -11,5 +11,6 @@ export const PathName = {
   AddEvent: '/add-event',
   CreateAccount: '/join',
   User: '/user',
+  Profile: '/profile',
   NotFound: '/*',
 };
