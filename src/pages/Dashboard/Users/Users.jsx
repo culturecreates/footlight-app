@@ -27,6 +27,35 @@ function Users() {
   });
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const handleModalCancel = () => {
+    form?.setFieldsValue({
+      oldPassword: undefined,
+      newPassword: undefined,
+      confirmNewPassword: undefined,
+    });
+    setIsModalVisible(false);
+  };
+  const handlePasswordSave = () => {
+    form
+      .validateFields(['oldPassword', 'newPassword', 'confirmNewPassword'])
+      .then((values) => {
+        console.log(values);
+        setIsModalVisible(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const handleSave = () => {
+    form
+      .validateFields(['firstName', 'lastName', 'email', 'interfaceLanguage'])
+      .then((values) => {
+        console.log(values);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   return (
     currentUserSuccess && (
       <div className="user-edit-wrapper">
@@ -41,7 +70,7 @@ function Users() {
               <Col>
                 <div className="add-event-button-wrap">
                   <Form.Item>
-                    <PrimaryButton label={t('dashboard.events.addEditEvent.saveOptions.save')} />
+                    <PrimaryButton label={t('dashboard.events.addEditEvent.saveOptions.save')} onClick={handleSave} />
                   </Form.Item>
                 </div>
               </Col>
@@ -108,12 +137,12 @@ function Users() {
               </Form.Item>
 
               <Form.Item
-                name="eventStatus"
+                name="interfaceLanguage"
                 label={t('dashboard.events.addEditEvent.dates.status')}
                 initialValue={currentUserData?.interfaceLanguage?.toUpperCase()}>
                 <Select options={locale} />
               </Form.Item>
-              <Form.Item name="button" label={t('dashboard.events.addEditEvent.dates.status')}>
+              <Form.Item name="button">
                 <OutlinedButton
                   label={t('dashboard.events.addEditEvent.otherInformation.description.translate')}
                   size="large"
@@ -130,19 +159,20 @@ function Users() {
                   </div>
                 }
                 open={isModalVisible}
-                onCancel={() => setIsModalVisible(false)}
-                width={800}
+                onCancel={handleModalCancel}
+                width={500}
+                centered
                 footer={[
                   <TextButton
                     key="cancel"
                     size="large"
                     label={t('dashboard.events.addEditEvent.dates.cancel')}
-                    onClick={() => setIsModalVisible(false)}
+                    onClick={handleModalCancel}
                   />,
                   <PrimaryButton
                     key="add-dates"
                     label={t('dashboard.events.addEditEvent.dates.addDates')}
-                    onClick={() => setIsModalVisible(false)}
+                    onClick={handlePasswordSave}
                   />,
                 ]}
                 bodyStyle={{ padding: '0px' }}>
@@ -150,7 +180,7 @@ function Users() {
                   <Col>
                     <Form.Item
                       className="reset-password-form-item"
-                      name="newPassword"
+                      name="oldPassword"
                       label={t('resetPassword.newPassword')}
                       labelAlign="left"
                       rules={[
