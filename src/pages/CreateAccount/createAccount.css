@@ -1,0 +1,93 @@
+.create-account-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: auto;
+  gap: 32px;
+  position: relative;
+}
+
+.create-account-heading {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 48px;
+  line-height: 120%;
+  margin-bottom: 0;
+  max-width: 438px;
+}
+
+.create-account-subheading {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: #222732;
+  flex: none;
+  flex-grow: 0;
+  margin-bottom: 0;
+}
+
+.create-account-form {
+  max-width: 438px;
+  gap: 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+.create-account-form .create-account-form-item {
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  color: #222732;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  margin-bottom: 0;
+}
+
+.create-account-form .create-account-reset-my-password {
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #1b3de6;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  margin-bottom: 0;
+}
+
+.create-account-form .create-account-resend-code {
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #1b3de6;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.create-account-reset-my-password .ant-row {
+  width: 100%;
+}
+.create-account-page-wrapper .create-account-read-only-content {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  color: #222732;
+}
