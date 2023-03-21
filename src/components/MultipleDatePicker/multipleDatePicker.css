@@ -1,0 +1,8 @@
+.site-calendar-customize-header-wrapper .ant-picker-calendar {
+  width: 256px;
+  height: 256px;
+}
+
+.site-calendar-customize-header-wrapper .ant-picker-calendar .ant-picker-content > thead > tr > th {
+  text-align: center;
+}

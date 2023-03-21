@@ -140,7 +140,40 @@
           "dateRangeTooltip": "À utiliser lorsque votre événement s'étend sur plusieurs dates, comme une exposition d'art.",
           "eventCancelled": "Annulé",
           "eventPostponed": "Reporté",
-          "eventScheduled": "Programmé"
+          "eventScheduled": "Programmé",
+          "frequency": "Fréquence",
+          "daily": "Tous les jours",
+          "weekly": "Toutes les semaines",
+          "monthly": "Tous les mois",
+          "custom": "Personnalisé",
+          "days": "Jours",
+          "editDates": "Éditer les dates",
+          "cancel": "Annuler",
+          "addDates": "Ajouter les dates",
+          "weekDays": {
+            "sunday": "Lun",
+            "monday": "Mar",
+            "tuesday": "Mer",
+            "wednesday": "Jeu",
+            "thursday": "Ven",
+            "friday": "Sam",
+            "saturday": "Dim"
+          },
+          "modal": {
+            "titleHeading": "Sélectionnez la/les dates de l’événement",
+            "startTime": "Heure de début",
+            "endTime": "Heure de fin",
+            "addTime": "Ajouter une heure",
+            "add": "Ajouter",
+            "addTimeToAllDates": "Ajouter l'heure à toutes les dates",
+            "addTimeToAllDatesWarning": "Vous êtes sûr de vous ? Cette action ne peut être annulée.",
+            "duplicateTimes": "Dupliquer les heures",
+            "replaceTimeonFolllowingDates": "Remplacer les heures aux dates suivantes : ",
+            "selectAll": "Sélectionner tout",
+            "unselectAll": "tout déselectionner",
+            "cancel": "Annuler",
+            "apply": "Appliquer"
+          }
         },
         "location": {
           "title": "Endroit",

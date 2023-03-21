@@ -4,7 +4,7 @@ import { Tag } from 'antd';
 
 function Tags(props) {
   return (
-    <Tag {...props} color={'#EFF2FF'} className="tags-wrapper">
+    <Tag {...props} color={props?.color ?? '#EFF2FF'} className="tags-wrapper">
       {props.children}
     </Tag>
   );
