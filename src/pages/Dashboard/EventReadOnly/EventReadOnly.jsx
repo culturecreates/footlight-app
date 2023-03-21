@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Breadcrumb } from 'antd';
 import Icon, { LeftOutlined, CalendarOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import './eventReadOnly.css';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
@@ -256,7 +256,12 @@ function EventReadOnly() {
                       </p>
                       <p className="read-only-event-content-date">
                         <CalendarOutlined style={{ fontSize: '24px', color: '#1B3DE6', marginRight: '9px' }} />
-                        {moment(eventData?.startDateTime ?? eventData?.startDate).format('MM/DD/YYYY')}
+                        {moment
+                          .tz(
+                            eventData?.startDateTime ?? eventData?.startDate,
+                            eventData.scheduleTimezone ?? 'Canada/Eastern',
+                          )
+                          .format('MM/DD/YYYY')}
                       </p>
                     </>
                   )}
@@ -269,8 +274,14 @@ function EventReadOnly() {
                         <CalendarOutlined style={{ fontSize: '24px', color: '#1B3DE6', marginRight: '9px' }} />
                         <DateRangePicker
                           defaultValue={[
-                            moment(eventData?.startDate ?? eventData?.startDateTime),
-                            moment(eventData?.endDate ?? eventData?.endDateTime),
+                            moment.tz(
+                              eventData?.startDate ?? eventData?.startDateTime,
+                              eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                            ),
+                            moment.tz(
+                              eventData?.endDate ?? eventData?.endDateTime,
+                              eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                            ),
                           ]}
                           suffixIcon={false}
                           bordered={false}
@@ -288,7 +299,11 @@ function EventReadOnly() {
                         <p className="read-only-event-content-sub-title-primary">
                           {t('dashboard.events.addEditEvent.dates.startTime')}
                         </p>
-                        <p className="read-only-event-content">{moment(eventData?.startDateTime).format('h:mm a')}</p>
+                        <p className="read-only-event-content">
+                          {moment
+                            .tz(eventData?.startDateTime, eventData.scheduleTimezone ?? 'Canada/Eastern')
+                            .format('h:mm a')}
+                        </p>
                       </Col>
                     )}
                     {eventData?.endDateTime && (
@@ -296,7 +311,11 @@ function EventReadOnly() {
                         <p className="read-only-event-content-sub-title-primary">
                           {t('dashboard.events.addEditEvent.dates.endTime')}
                         </p>
-                        <p className="read-only-event-content">{moment(eventData?.endDateTime).format('h:mm a')}</p>
+                        <p className="read-only-event-content">
+                          {moment
+                            .tz(eventData?.endDateTime, eventData.scheduleTimezone ?? 'Canada/Eastern')
+                            .format('h:mm a')}
+                        </p>
                       </Col>
                     )}
                   </Row>
