@@ -29,6 +29,10 @@ export const router = createBrowserRouter([
     element: <CreateAccount />,
   },
   {
+    path: PathName.Join,
+    element: <CreateAccount />,
+  },
+  {
     path: PathName.Dashboard,
     element: <Dashboard />,
     children: [

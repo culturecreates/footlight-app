@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Form, notification } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -25,10 +25,13 @@ function CreateAccount() {
     currentData: inviteUserData,
     isLoading: inviteUserLoading,
     error: inviteUserError,
-  } = useGetInviteDetailsQuery({
-    id: invitationId,
-    sessionId: timestampRef,
-  });
+  } = useGetInviteDetailsQuery(
+    {
+      id: invitationId,
+      sessionId: timestampRef,
+    },
+    { skip: location.pathname.includes('join') ? false : true },
+  );
 
   const onFinish = (values) => {
     acceptInvite({
@@ -37,7 +40,6 @@ function CreateAccount() {
     })
       .unwrap()
       .then((response) => {
-        console.log(response);
         if (response?.statusCode == 202) {
           notification.success({
             description: t('createAccount.successNotification'),
@@ -55,6 +57,28 @@ function CreateAccount() {
         navigate(PathName.Login);
       });
   };
+  useEffect(() => {
+    if (invitationId)
+      if (location.pathname.includes('accept')) {
+        acceptInvite({
+          id: invitationId,
+        })
+          .unwrap()
+          .then((response) => {
+            if (response?.statusCode == 202) {
+              navigate(PathName.Login);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+            notification.error({
+              description: t('createAccount.errorNotification'),
+              placement: 'top',
+            });
+            navigate(PathName.Login);
+          });
+      }
+  }, []);
 
   if (inviteUserError) navigate(PathName.Login);
 

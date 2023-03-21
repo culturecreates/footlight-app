@@ -19,7 +19,7 @@ export const inviteApi = createApi({
         return {
           url: `invite/${id}/accept`,
           method: 'POST',
-          body: { password },
+          body: { ...(password && { password }) },
         };
       },
     }),
