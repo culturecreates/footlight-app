@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './users.css';
 import { Form, Row, Col, Select } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
@@ -8,13 +8,17 @@ import LoginInput from '../../../components/Input/Common';
 import PasswordInput from '../../../components/Input/Password';
 import PrimaryButton from '../../../components/Button/Primary';
 import OutlinedButton from '../../../components/Button/Outlined';
+import TextButton from '../../../components/Button/Text';
 import StyledInput from '../../../components/Input/Common';
 import { eventStatusOptions } from '../../../constants/eventStatus';
+import CustomModal from '../../../components/Modal/Common/CustomModal';
 
 function Users() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const location = useLocation();
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
   return (
     <div className="user-edit-wrapper">
       <Row>
@@ -92,45 +96,6 @@ function Users() {
               />
             </Form.Item>
 
-            <Form.Item
-              className="reset-password-form-item"
-              name="newPassword"
-              label={t('resetPassword.newPassword')}
-              labelAlign="left"
-              rules={[
-                {
-                  required: true,
-                  message: t('resetPassword.validations.emptyPassword'),
-                },
-              ]}>
-              <PasswordInput
-                placeholder={t('resetPassword.passwordPlaceHolder')}
-                iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-              />
-            </Form.Item>
-            <Form.Item
-              className="reset-password-form-item"
-              name="confirmNewPassword"
-              label={t('resetPassword.confirmNewPassword')}
-              labelAlign="left"
-              rules={[
-                {
-                  required: true,
-                  message: t('resetPassword.validations.emptyPassword'),
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue('newPassword') === value) {
-                      return Promise.resolve();
-                    } else return Promise.reject(new Error(t('resetPassword.validations.passwordMatch')));
-                  },
-                }),
-              ]}>
-              <PasswordInput
-                placeholder={t('resetPassword.passwordPlaceHolder')}
-                iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-              />
-            </Form.Item>
             <Form.Item name="eventStatus" label={t('dashboard.events.addEditEvent.dates.status')}>
               <Select options={eventStatusOptions} />
             </Form.Item>
@@ -138,8 +103,95 @@ function Users() {
               <OutlinedButton
                 label={t('dashboard.events.addEditEvent.otherInformation.description.translate')}
                 size="large"
+                onClick={() => setIsModalVisible(true)}
               />
             </Form.Item>
+            <CustomModal
+              maskClosable
+              title={
+                <div className="custom-modal-title-wrapper">
+                  <span className="custom-modal-title-heading">
+                    {t('dashboard.events.addEditEvent.dates.modal.titleHeading')}
+                  </span>
+                </div>
+              }
+              open={isModalVisible}
+              onCancel={() => setIsModalVisible(false)}
+              width={800}
+              footer={[
+                <TextButton
+                  key="cancel"
+                  size="large"
+                  label={t('dashboard.events.addEditEvent.dates.cancel')}
+                  onClick={() => setIsModalVisible(false)}
+                />,
+                <PrimaryButton
+                  key="add-dates"
+                  label={t('dashboard.events.addEditEvent.dates.addDates')}
+                  onClick={() => setIsModalVisible(false)}
+                />,
+              ]}
+              bodyStyle={{ padding: '0px' }}>
+              <Row>
+                <Col>
+                  <Form.Item
+                    className="reset-password-form-item"
+                    name="newPassword"
+                    label={t('resetPassword.newPassword')}
+                    labelAlign="left"
+                    rules={[
+                      {
+                        required: true,
+                        message: t('resetPassword.validations.emptyPassword'),
+                      },
+                    ]}>
+                    <PasswordInput
+                      placeholder={t('resetPassword.passwordPlaceHolder')}
+                      iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    className="reset-password-form-item"
+                    name="newPassword"
+                    label={t('resetPassword.newPassword')}
+                    labelAlign="left"
+                    rules={[
+                      {
+                        required: true,
+                        message: t('resetPassword.validations.emptyPassword'),
+                      },
+                    ]}>
+                    <PasswordInput
+                      placeholder={t('resetPassword.passwordPlaceHolder')}
+                      iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    className="reset-password-form-item"
+                    name="confirmNewPassword"
+                    label={t('resetPassword.confirmNewPassword')}
+                    labelAlign="left"
+                    rules={[
+                      {
+                        required: true,
+                        message: t('resetPassword.validations.emptyPassword'),
+                      },
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          if (!value || getFieldValue('newPassword') === value) {
+                            return Promise.resolve();
+                          } else return Promise.reject(new Error(t('resetPassword.validations.passwordMatch')));
+                        },
+                      }),
+                    ]}>
+                    <PasswordInput
+                      placeholder={t('resetPassword.passwordPlaceHolder')}
+                      iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </CustomModal>
           </Form>
         </Col>
       </Row>
