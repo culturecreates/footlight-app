@@ -26,7 +26,7 @@ const UserProfileDropDown = () => {
   });
 
   const onClick = ({ key }) => {
-    if (key == 1) navigate(`${PathName.Dashboard}/${calendarId}${PathName.User}/${user?.id}`);
+    if (key == 1) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Profile}/${user?.id}`);
     if (key == 2) {
       navigate(PathName.Login, { state: { previousPath: 'logout' } });
     }
