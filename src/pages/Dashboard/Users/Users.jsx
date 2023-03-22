@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './users.css';
-import { Form, Row, Col, Select } from 'antd';
-import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
+import { Form, Row, Col, Select, message, Button, notification } from 'antd';
+import { EyeInvisibleOutlined, EyeTwoTone, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import LoginInput from '../../../components/Input/Common';
 import PasswordInput from '../../../components/Input/Password';
 import PrimaryButton from '../../../components/Button/Primary';
@@ -16,12 +16,14 @@ import { locale } from '../../../constants/localeSupport';
 import { usePrompt } from '../../../hooks/usePrompt';
 import { useSelector, useDispatch } from 'react-redux';
 import { getUserDetails, setUser } from '../../../redux/reducer/userSlice';
+import { PathName } from '../../../constants/pathName';
 
 function Users() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const location = useLocation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId } = useParams();
   const { accessToken, expiredTime, refreshToken } = useSelector(getUserDetails);
@@ -76,6 +78,7 @@ function Users() {
       });
   };
   const handleSave = () => {
+    setShowDialog(false);
     form
       .validateFields(['firstName', 'lastName', 'email', 'interfaceLanguage'])
       .then((values) => {
@@ -97,9 +100,37 @@ function Users() {
         })
           .unwrap()
           .then((response) => {
-            if (response?.statusCode == 202) currentUserRefetch();
+            if (response?.statusCode == 202) {
+              currentUserRefetch();
+              notification.success({
+                description: t('resetPassword.successNotification'),
+                placement: 'top',
+                closeIcon: <></>,
+                maxCount: 1,
+                duration: 3,
+              });
+              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+            }
           })
-          .catch((error) => console.log(error));
+          .catch((error) => {
+            console.log(error);
+            message.warning({
+              duration: 10,
+              maxCount: 1,
+              key: 'udpate-user-warning',
+              content: (
+                <>
+                  {error?.data?.message} &nbsp;
+                  <Button
+                    type="text"
+                    icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                    onClick={() => message.destroy('udpate-user-warning')}
+                  />
+                </>
+              ),
+              icon: <ExclamationCircleOutlined />,
+            });
+          });
       })
       .catch((error) => {
         console.log(error);
