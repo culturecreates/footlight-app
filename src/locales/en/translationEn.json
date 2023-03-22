@@ -348,7 +348,11 @@
       "passwordPlaceHolder": "Enter password",
       "newPasswordPlaceholder": "Enter new password",
       "cancel": "Cancel",
-      "changePasswordButton": "Change password"
+      "changePasswordButton": "Change password",
+      "validations": {
+        "emptyFirstName": "Enter your first name",
+        "emptyLastName": "Enter your last name"
+      }
     }
   },
   "common": {

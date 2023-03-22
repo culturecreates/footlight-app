@@ -201,7 +201,13 @@ function Users() {
                 name="firstName"
                 className="subheading-wrap"
                 initialValue={currentUserData?.firstName}
-                label={t('dashboard.userProfile.firstName')}>
+                label={t('dashboard.userProfile.firstName')}
+                rules={[
+                  {
+                    required: true,
+                    message: t('dashboard.userProfile.validations.emptyFirstName'),
+                  },
+                ]}>
                 <StyledInput
                   placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderPhoneNumber')}
                 />
@@ -210,7 +216,13 @@ function Users() {
                 name="lastName"
                 className="subheading-wrap"
                 initialValue={currentUserData?.lastName}
-                label={t('dashboard.userProfile.lastName')}>
+                label={t('dashboard.userProfile.lastName')}
+                rules={[
+                  {
+                    required: true,
+                    message: t('dashboard.userProfile.validations.emptyLastName'),
+                  },
+                ]}>
                 <StyledInput
                   placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderPhoneNumber')}
                 />

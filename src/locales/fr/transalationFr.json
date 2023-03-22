@@ -347,7 +347,11 @@
       "passwordPlaceHolder": "Entrez votre mot de passe",
       "newPasswordPlaceholder": "Entrez nouveau mot de passe",
       "cancel": "Annuler",
-      "changePasswordButton": "Changer le mot de passe"
+      "changePasswordButton": "Changer le mot de passe",
+      "validations": {
+        "emptyFirstName": "Entrez votre prénom",
+        "emptyLasttName": "Entrez votre nom"
+      }
     }
   },
   "common": {
