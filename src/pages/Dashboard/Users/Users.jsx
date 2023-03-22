@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import './users.css';
 import { Form, Row, Col, Select, message, Button, notification } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
@@ -17,6 +17,7 @@ import { usePrompt } from '../../../hooks/usePrompt';
 import { useSelector, useDispatch } from 'react-redux';
 import { getUserDetails, setUser } from '../../../redux/reducer/userSlice';
 import { PathName } from '../../../constants/pathName';
+import i18n from 'i18next';
 
 function Users() {
   const { t } = useTranslation();
@@ -26,18 +27,17 @@ function Users() {
   const navigate = useNavigate();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId } = useParams();
-  const { accessToken, expiredTime, refreshToken } = useSelector(getUserDetails);
+  const { accessToken, expiredTime, refreshToken, user } = useSelector(getUserDetails);
 
   const {
     currentData: currentUserData,
     isSuccess: currentUserSuccess,
-    isFetching: currentUserFetching,
     refetch: currentUserRefetch,
   } = useGetCurrentUserQuery({
     sessionId: timestampRef,
     calendarId,
   });
-  const [updateCurrentUser, { isSuccess: updateCurrentUserSuccess }] = useUpdateCurrentUserMutation();
+  const [updateCurrentUser] = useUpdateCurrentUserMutation();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [password, setPassword] = useState({
@@ -109,6 +109,23 @@ function Users() {
                 maxCount: 1,
                 duration: 3,
               });
+              let userDetails = {
+                accessToken,
+                expiredTime,
+                refreshToken,
+                user: {
+                  id: user?.id,
+                  firstName: values?.firstName,
+                  lastName: values?.lastName,
+                  email: values?.email,
+                  profileImage: user?.profileImage,
+                  roles: user?.roles,
+                  isSuperAdmin: user?.isSuperAdmin,
+                  interfaceLanguage: values?.interfaceLanguage,
+                },
+              };
+              dispatch(setUser(userDetails));
+              i18n.changeLanguage(values?.interfaceLanguage?.toLowerCase());
               navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
             }
           })
@@ -140,13 +157,6 @@ function Users() {
   const onValuesChangHandler = () => {
     setShowDialog(true);
   };
-
-  useEffect(() => {
-    if (updateCurrentUserSuccess && currentUserSuccess && !currentUserFetching) {
-      let userDetails = { accessToken, expiredTime, refreshToken, user: currentUserData };
-      dispatch(setUser(userDetails));
-    }
-  }, [updateCurrentUserSuccess, currentUserSuccess, currentUserFetching]);
 
   return (
     currentUserSuccess && (
