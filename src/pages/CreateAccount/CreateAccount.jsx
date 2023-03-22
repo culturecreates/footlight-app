@@ -23,7 +23,7 @@ function CreateAccount() {
 
   const {
     currentData: inviteUserData,
-    success: inviteUserSuccess,
+    isSuccess: inviteUserSuccess,
     error: inviteUserError,
   } = useGetInviteDetailsQuery(
     {
@@ -66,6 +66,10 @@ function CreateAccount() {
           .unwrap()
           .then((response) => {
             if (response?.statusCode == 202) {
+              notification.success({
+                description: t('createAccount.acceptInvitationSuccess'),
+                placement: 'top',
+              });
               navigate(PathName.Login);
             }
           })
