@@ -13,6 +13,7 @@ import StyledInput from '../../../components/Input/Common';
 import CustomModal from '../../../components/Modal/Common/CustomModal';
 import { useGetCurrentUserQuery, useUpdateCurrentUserMutation } from '../../../services/users';
 import { locale } from '../../../constants/localeSupport';
+import { usePrompt } from '../../../hooks/usePrompt';
 
 function Users() {
   const { t } = useTranslation();
@@ -33,6 +34,10 @@ function Users() {
     newPassword: null,
     confirmNewPassword: null,
   });
+  const [showDialog, setShowDialog] = useState(false);
+
+  usePrompt(t('common.unsavedChanges'), showDialog);
+
   const handleModalCancel = () => {
     form?.setFieldsValue({
       oldPassword: null,
@@ -93,6 +98,10 @@ function Users() {
         console.log(error);
       });
   };
+
+  const onValuesChangHandler = () => {
+    setShowDialog(true);
+  };
   return (
     currentUserSuccess && (
       <div className="user-edit-wrapper">
@@ -106,9 +115,7 @@ function Users() {
               </Col>
               <Col>
                 <div className="add-event-button-wrap">
-                  <Form.Item>
-                    <PrimaryButton label={t('dashboard.events.addEditEvent.saveOptions.save')} onClick={handleSave} />
-                  </Form.Item>
+                  <PrimaryButton label={t('dashboard.events.addEditEvent.saveOptions.save')} onClick={handleSave} />
                 </div>
               </Col>
             </Row>
@@ -132,6 +139,7 @@ function Users() {
               requiredMark={false}
               scrollToFirstError={true}
               validateTrigger={'onBlur'}
+              onValuesChange={onValuesChangHandler}
               form={form}>
               <Form.Item
                 name="firstName"
