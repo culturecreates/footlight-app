@@ -27,11 +27,21 @@ function Users() {
   });
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [password, setPassword] = useState({
+    oldPassword: null,
+    newPassword: null,
+    confirmNewPassword: null,
+  });
   const handleModalCancel = () => {
     form?.setFieldsValue({
-      oldPassword: undefined,
-      newPassword: undefined,
-      confirmNewPassword: undefined,
+      oldPassword: null,
+      newPassword: null,
+      confirmNewPassword: null,
+    });
+    setPassword({
+      oldPassword: null,
+      newPassword: null,
+      confirmNewPassword: null,
     });
     setIsModalVisible(false);
   };
@@ -41,6 +51,11 @@ function Users() {
       .then((values) => {
         console.log(values);
         setIsModalVisible(false);
+        setPassword({
+          oldPassword: values?.oldPassword,
+          newPassword: values?.newPassword,
+          confirmNewPassword: values?.confirmNewPassword,
+        });
       })
       .catch((error) => {
         console.log(error);
@@ -51,6 +66,7 @@ function Users() {
       .validateFields(['firstName', 'lastName', 'email', 'interfaceLanguage'])
       .then((values) => {
         console.log(values);
+        console.log(password);
       })
       .catch((error) => {
         console.log(error);
