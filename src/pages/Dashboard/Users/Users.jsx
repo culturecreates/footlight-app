@@ -166,19 +166,19 @@ function Users() {
             <Row justify="space-between">
               <Col>
                 <div className="add-edit-event-heading">
-                  <h4>{t('dashboard.events.addEditEvent.heading.editEvent')}</h4>
+                  <h4>{t('dashboard.userProfile.userProfile')}</h4>
                 </div>
               </Col>
               <Col>
                 <div className="add-event-button-wrap">
-                  <PrimaryButton label={t('dashboard.events.addEditEvent.saveOptions.save')} onClick={handleSave} />
+                  <PrimaryButton label={t('dashboard.userProfile.save')} onClick={handleSave} />
                 </div>
               </Col>
             </Row>
             <Row>
               <Col>
                 <div className="add-edit-event-heading">
-                  <h4>{t('dashboard.events.addEditEvent.heading.editEvent')}</h4>
+                  <h4>{t('dashboard.userProfile.subHeading')}</h4>
                 </div>
               </Col>
             </Row>
@@ -201,7 +201,7 @@ function Users() {
                 name="firstName"
                 className="subheading-wrap"
                 initialValue={currentUserData?.firstName}
-                label={t('dashboard.events.addEditEvent.otherInformation.contact.phoneNumber')}>
+                label={t('dashboard.userProfile.firstName')}>
                 <StyledInput
                   placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderPhoneNumber')}
                 />
@@ -210,7 +210,7 @@ function Users() {
                 name="lastName"
                 className="subheading-wrap"
                 initialValue={currentUserData?.lastName}
-                label={t('dashboard.events.addEditEvent.otherInformation.contact.phoneNumber')}>
+                label={t('dashboard.userProfile.lastName')}>
                 <StyledInput
                   placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderPhoneNumber')}
                 />
@@ -218,7 +218,7 @@ function Users() {
               <Form.Item
                 className="user-edit-form-item"
                 name="email"
-                label={t('resetPassword.email')}
+                label={t('dashboard.userProfile.email')}
                 labelAlign="left"
                 initialValue={currentUserData?.email}
                 rules={[
@@ -239,13 +239,13 @@ function Users() {
 
               <Form.Item
                 name="interfaceLanguage"
-                label={t('dashboard.events.addEditEvent.dates.status')}
+                label={t('dashboard.userProfile.languagePreference')}
                 initialValue={currentUserData?.interfaceLanguage?.toUpperCase()}>
                 <Select options={locale} />
               </Form.Item>
               <Form.Item name="button">
                 <OutlinedButton
-                  label={t('dashboard.events.addEditEvent.otherInformation.description.translate')}
+                  label={t('dashboard.userProfile.changePassword')}
                   size="large"
                   onClick={() => setIsModalVisible(true)}
                 />
@@ -255,7 +255,7 @@ function Users() {
                 title={
                   <div className="custom-modal-title-wrapper">
                     <span className="custom-modal-title-heading">
-                      {t('dashboard.events.addEditEvent.dates.modal.titleHeading')}
+                      {t('dashboard.userProfile.changePasswordButton')}
                     </span>
                   </div>
                 }
@@ -267,12 +267,12 @@ function Users() {
                   <TextButton
                     key="cancel"
                     size="large"
-                    label={t('dashboard.events.addEditEvent.dates.cancel')}
+                    label={t('dashboard.userProfile.cancel')}
                     onClick={handleModalCancel}
                   />,
                   <PrimaryButton
                     key="add-dates"
-                    label={t('dashboard.events.addEditEvent.dates.addDates')}
+                    label={t('dashboard.userProfile.changePasswordButton')}
                     onClick={handlePasswordSave}
                   />,
                 ]}
@@ -282,7 +282,7 @@ function Users() {
                     <Form.Item
                       className="reset-password-form-item"
                       name="oldPassword"
-                      label={t('resetPassword.newPassword')}
+                      label={t('dashboard.userProfile.password')}
                       labelAlign="left"
                       rules={[
                         {
@@ -291,14 +291,14 @@ function Users() {
                         },
                       ]}>
                       <PasswordInput
-                        placeholder={t('resetPassword.passwordPlaceHolder')}
+                        placeholder={t('dashboard.userProfile.passwordPlaceHolder')}
                         iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                       />
                     </Form.Item>
                     <Form.Item
                       className="reset-password-form-item"
                       name="newPassword"
-                      label={t('resetPassword.newPassword')}
+                      label={t('dashboard.userProfile.newPassword')}
                       labelAlign="left"
                       rules={[
                         {
@@ -307,14 +307,14 @@ function Users() {
                         },
                       ]}>
                       <PasswordInput
-                        placeholder={t('resetPassword.passwordPlaceHolder')}
+                        placeholder={t('dashboard.userProfile.newPasswordPlaceholder')}
                         iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                       />
                     </Form.Item>
                     <Form.Item
                       className="reset-password-form-item"
                       name="confirmNewPassword"
-                      label={t('resetPassword.confirmNewPassword')}
+                      label={t('dashboard.userProfile.confirmNewPassword')}
                       labelAlign="left"
                       rules={[
                         {
@@ -330,7 +330,7 @@ function Users() {
                         }),
                       ]}>
                       <PasswordInput
-                        placeholder={t('resetPassword.passwordPlaceHolder')}
+                        placeholder={t('dashboard.userProfile.confirmNewPassword')}
                         iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                       />
                     </Form.Item>
