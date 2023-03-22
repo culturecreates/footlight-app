@@ -29,6 +29,18 @@ export const usersApi = createApi({
         };
       },
     }),
+    updateCurrentUser: builder.mutation({
+      query: ({ calendarId, body }) => {
+        return {
+          url: `users/current`,
+          method: 'PATCH',
+          headers: {
+            'calendar-id': calendarId,
+          },
+          body,
+        };
+      },
+    }),
     forgotPassword: builder.mutation({
       query: ({ email, language }) => {
         return {
@@ -61,4 +73,5 @@ export const {
   useResetPasswordMutation,
   useGetAllUsersQuery,
   useGetCurrentUserQuery,
+  useUpdateCurrentUserMutation,
 } = usersApi;

@@ -11,7 +11,7 @@ import OutlinedButton from '../../../components/Button/Outlined';
 import TextButton from '../../../components/Button/Text';
 import StyledInput from '../../../components/Input/Common';
 import CustomModal from '../../../components/Modal/Common/CustomModal';
-import { useGetCurrentUserQuery } from '../../../services/users';
+import { useGetCurrentUserQuery, useUpdateCurrentUserMutation } from '../../../services/users';
 import { locale } from '../../../constants/localeSupport';
 
 function Users() {
@@ -25,6 +25,7 @@ function Users() {
     sessionId: timestampRef,
     calendarId,
   });
+  const [updateCurrentUser] = useUpdateCurrentUserMutation();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [password, setPassword] = useState({
@@ -49,7 +50,6 @@ function Users() {
     form
       .validateFields(['oldPassword', 'newPassword', 'confirmNewPassword'])
       .then((values) => {
-        console.log(values);
         setIsModalVisible(false);
         setPassword({
           oldPassword: values?.oldPassword,
@@ -67,6 +67,27 @@ function Users() {
       .then((values) => {
         console.log(values);
         console.log(password);
+        updateCurrentUser({
+          calendarId,
+          body: {
+            firstName: values?.firstName,
+            lastName: values?.lastName,
+            email: values?.email,
+            interfaceLanguage: values?.interfaceLanguage,
+            ...(password?.oldPassword &&
+              password?.newPassword && {
+                modifyPassword: {
+                  currentPassword: password?.oldPassword,
+                  newPassword: password?.newPassword,
+                },
+              }),
+          },
+        })
+          .unwrap()
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((error) => console.log(error));
       })
       .catch((error) => {
         console.log(error);
