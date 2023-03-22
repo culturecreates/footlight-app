@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './users.css';
 import { Form, Row, Col, Select } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
@@ -14,19 +14,28 @@ import CustomModal from '../../../components/Modal/Common/CustomModal';
 import { useGetCurrentUserQuery, useUpdateCurrentUserMutation } from '../../../services/users';
 import { locale } from '../../../constants/localeSupport';
 import { usePrompt } from '../../../hooks/usePrompt';
+import { useSelector, useDispatch } from 'react-redux';
+import { getUserDetails, setUser } from '../../../redux/reducer/userSlice';
 
 function Users() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const location = useLocation();
+  const dispatch = useDispatch();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId } = useParams();
+  const { accessToken, expiredTime, refreshToken } = useSelector(getUserDetails);
 
-  const { currentData: currentUserData, isSuccess: currentUserSuccess } = useGetCurrentUserQuery({
+  const {
+    currentData: currentUserData,
+    isSuccess: currentUserSuccess,
+    isFetching: currentUserFetching,
+    refetch: currentUserRefetch,
+  } = useGetCurrentUserQuery({
     sessionId: timestampRef,
     calendarId,
   });
-  const [updateCurrentUser] = useUpdateCurrentUserMutation();
+  const [updateCurrentUser, { isSuccess: updateCurrentUserSuccess }] = useUpdateCurrentUserMutation();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [password, setPassword] = useState({
@@ -70,8 +79,6 @@ function Users() {
     form
       .validateFields(['firstName', 'lastName', 'email', 'interfaceLanguage'])
       .then((values) => {
-        console.log(values);
-        console.log(password);
         updateCurrentUser({
           calendarId,
           body: {
@@ -90,7 +97,7 @@ function Users() {
         })
           .unwrap()
           .then((response) => {
-            console.log(response);
+            if (response?.statusCode == 202) currentUserRefetch();
           })
           .catch((error) => console.log(error));
       })
@@ -102,6 +109,14 @@ function Users() {
   const onValuesChangHandler = () => {
     setShowDialog(true);
   };
+
+  useEffect(() => {
+    if (updateCurrentUserSuccess && currentUserSuccess && !currentUserFetching) {
+      let userDetails = { accessToken, expiredTime, refreshToken, user: currentUserData };
+      dispatch(setUser(userDetails));
+    }
+  }, [updateCurrentUserSuccess, currentUserSuccess, currentUserFetching]);
+
   return (
     currentUserSuccess && (
       <div className="user-edit-wrapper">
