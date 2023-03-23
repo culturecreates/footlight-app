@@ -18,6 +18,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getUserDetails, setUser } from '../../../redux/reducer/userSlice';
 import { PathName } from '../../../constants/pathName';
 import i18n from 'i18next';
+import CardEvent from '../../../components/Card/Common/Event';
 
 function Users() {
   const { t } = useTranslation();
@@ -160,7 +161,7 @@ function Users() {
 
   return (
     currentUserSuccess && (
-      <div className="user-edit-wrapper">
+      <div className="add-edit-wrapper">
         <Row>
           <Col span={24}>
             <Row justify="space-between">
@@ -175,15 +176,8 @@ function Users() {
                 </div>
               </Col>
             </Row>
-            <Row>
-              <Col>
-                <div className="add-edit-event-heading">
-                  <h4>{t('dashboard.userProfile.subHeading')}</h4>
-                </div>
-              </Col>
-            </Row>
           </Col>
-          <Col>
+          <CardEvent required={true}>
             <Form
               name="userEdit"
               className="user-edit-form"
@@ -197,9 +191,11 @@ function Users() {
               validateTrigger={'onBlur'}
               onValuesChange={onValuesChangHandler}
               form={form}>
+              <div>
+                <p>{t('dashboard.userProfile.subHeading')}</p>
+              </div>
               <Form.Item
                 name="firstName"
-                className="subheading-wrap"
                 initialValue={currentUserData?.firstName}
                 label={t('dashboard.userProfile.firstName')}
                 rules={[
@@ -214,7 +210,6 @@ function Users() {
               </Form.Item>
               <Form.Item
                 name="lastName"
-                className="subheading-wrap"
                 initialValue={currentUserData?.lastName}
                 label={t('dashboard.userProfile.lastName')}
                 rules={[
@@ -290,7 +285,7 @@ function Users() {
                 ]}
                 bodyStyle={{ padding: '0px' }}>
                 <Row>
-                  <Col>
+                  <Col span={24} style={{ padding: '32px' }}>
                     <Form.Item
                       className="reset-password-form-item"
                       name="oldPassword"
@@ -350,7 +345,7 @@ function Users() {
                 </Row>
               </CustomModal>
             </Form>
-          </Col>
+          </CardEvent>
         </Row>
       </div>
     )
