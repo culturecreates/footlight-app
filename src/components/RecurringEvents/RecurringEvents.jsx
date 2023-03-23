@@ -277,6 +277,21 @@ const RecurringEvents = function ({
           <Option value="CUSTOM">Custom</Option>
         </Select>
       </Form.Item> */}
+      <div className="frequency-selector">
+        <Form.Item
+          name="frequency"
+          label={t('dashboard.events.addEditEvent.dates.frequency')}
+          initialValue={formFields?.frequency ?? dateFrequencyOptions[0]?.value}>
+          <Select
+            style={{ height: '40px' }}
+            options={dateFrequencyOptions}
+            defaultValue={dateFrequencyOptions[0]?.value}
+            key="updateDropdownKey"
+            optionFilterProp="children"
+            onChange={handleChange}
+          />
+        </Form.Item>
+      </div>
 
       {isCustom && (
         <>
@@ -433,21 +448,7 @@ const RecurringEvents = function ({
           )}
         </>
       )}
-      <div className="frequency-selector">
-        <Form.Item
-          name="frequency"
-          label={t('dashboard.events.addEditEvent.dates.frequency')}
-          initialValue={formFields?.frequency ?? dateFrequencyOptions[0]?.value}>
-          <Select
-            style={{ height: '40px' }}
-            options={dateFrequencyOptions}
-            defaultValue={dateFrequencyOptions[0]?.value}
-            key="updateDropdownKey"
-            optionFilterProp="children"
-            onChange={handleChange}
-          />
-        </Form.Item>
-      </div>
+
       <Form.Item
         name="daysOfWeek"
         label={t('dashboard.events.addEditEvent.dates.days')}
