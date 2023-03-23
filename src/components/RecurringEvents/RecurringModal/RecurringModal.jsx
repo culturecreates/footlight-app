@@ -228,6 +228,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
               style="border"
               language={i18n.language}
               minDate={new Date()}
+              year={sortedDates?.length > 0 && moment(sortedDates[0]?.initDate).year()}
               enableRangeSelection={true}
               //  onRangeSelected={e =>selectDate(e) }
               onRangeSelected={async (e) => {
