@@ -380,6 +380,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                             onClick={() => {
                               form.resetFields();
                               setShowAddTime(false);
+                              setSelectedDateId(null);
                             }}
                           />
                           <PrimaryButton
