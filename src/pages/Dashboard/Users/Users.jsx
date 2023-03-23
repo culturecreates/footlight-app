@@ -342,7 +342,7 @@ function Users() {
                         }),
                       ]}>
                       <PasswordInput
-                        placeholder={t('dashboard.userProfile.confirmNewPassword')}
+                        placeholder={t('dashboard.userProfile.confirmNewPasswordPlaceHolder')}
                         iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                       />
                     </Form.Item>
