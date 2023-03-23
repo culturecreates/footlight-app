@@ -213,9 +213,9 @@ const RecurringEvents = function ({
     return result;
   }
 
-  const handleChange = (value) => {
-    if (value === 'CUSTOM') setIsModalVisible(true);
-  };
+  // const handleChange = (value) => {
+  //   if (value === 'CUSTOM') setIsModalVisible(true);
+  // };
 
   const openCustomize = () => {
     if (formFields && formFields?.frequency !== 'CUSTOM') {
@@ -293,7 +293,7 @@ const RecurringEvents = function ({
             defaultValue={dateFrequencyOptions[0]?.value}
             key="updateDropdownKey"
             optionFilterProp="children"
-            onChange={handleChange}
+            // onChange={handleChange}
           />
         </Form.Item>
       </div>
@@ -353,7 +353,7 @@ const RecurringEvents = function ({
           </Form.Item>
         </>
       )}
-      {!isCustom && (
+      {isCustom && (
         <>
           <div className="flex-align">
             <div className="date-div">
