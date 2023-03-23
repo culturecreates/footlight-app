@@ -327,6 +327,7 @@ const RecurringEvents = function ({
           <Form.Item
             name="customDates"
             className="status-comment-item"
+            hidden
             rules={[{ required: false, message: 'Start date required' }]}>
             <div></div>
           </Form.Item>
