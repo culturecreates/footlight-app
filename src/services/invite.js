@@ -26,4 +26,4 @@ export const inviteApi = createApi({
   }),
 });
 
-export const { useGetInviteDetailsQuery, useAcceptInviteMutation } = inviteApi;
+export const { useGetInviteDetailsQuery, useAcceptInviteMutation, useLazyGetInviteDetailsQuery } = inviteApi;

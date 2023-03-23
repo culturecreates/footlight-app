@@ -8,7 +8,8 @@ import LoginButton from '../../components/Button/Auth';
 import { PathName } from '../../constants/pathName';
 import Auth from '../../layout/Auth';
 import PasswordInput from '../../components/Input/Password';
-import { useAcceptInviteMutation, useGetInviteDetailsQuery } from '../../services/invite';
+import { useAcceptInviteMutation, useGetInviteDetailsQuery, useLazyGetInviteDetailsQuery } from '../../services/invite';
+import i18n from 'i18next';
 
 function CreateAccount() {
   const { t } = useTranslation();
@@ -32,6 +33,7 @@ function CreateAccount() {
     },
     { skip: location.pathname.includes('join') ? false : true },
   );
+  const [getInviteDetails] = useLazyGetInviteDetailsQuery();
 
   const onFinish = (values) => {
     acceptInvite({
@@ -58,30 +60,42 @@ function CreateAccount() {
       });
   };
   useEffect(() => {
-    if (invitationId)
-      if (location.pathname.includes('accept')) {
-        acceptInvite({
-          id: invitationId,
-        })
-          .unwrap()
-          .then((response) => {
-            if (response?.statusCode == 202) {
-              notification.success({
-                description: t('createAccount.acceptInvitationSuccess'),
-                placement: 'top',
+    if (invitationId) {
+      getInviteDetails({
+        id: invitationId,
+        sessionId: timestampRef,
+      })
+        .unwrap()
+        .then((response) => {
+          i18n.changeLanguage(response?.interfaceLanguage?.toLowerCase());
+          if (location.pathname.includes('accept')) {
+            acceptInvite({
+              id: invitationId,
+            })
+              .unwrap()
+              .then((response) => {
+                if (response?.statusCode == 202) {
+                  notification.success({
+                    description: t('createAccount.acceptInvitationSuccess'),
+                    placement: 'top',
+                  });
+                  navigate(PathName.Login);
+                }
+              })
+              .catch((error) => {
+                console.log(error);
               });
-              navigate(PathName.Login);
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-            notification.error({
-              description: t('createAccount.errorNotification'),
-              placement: 'top',
-            });
-            navigate(PathName.Login);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          notification.error({
+            description: t('createAccount.errorNotification'),
+            placement: 'top',
           });
-      }
+          navigate(PathName.Login);
+        });
+    }
   }, []);
 
   if (inviteUserError) navigate(PathName.Login);
