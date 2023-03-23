@@ -110,6 +110,11 @@ const RecurringEvents = function ({
         frequency: 'CUSTOM',
         customDates: custom,
       });
+      setFormFields({
+        ...formFields,
+        frequency: 'CUSTOM',
+        customDates: custom,
+      });
     }
   };
   useEffect(() => {
@@ -451,7 +456,6 @@ const RecurringEvents = function ({
           )}
         </>
       )}
-
       <Form.Item
         name="daysOfWeek"
         label={t('dashboard.events.addEditEvent.dates.days')}
