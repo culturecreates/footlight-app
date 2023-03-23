@@ -343,10 +343,11 @@
       "changePassword": "Change Password",
       "save": "Save",
       "password": "Password",
-      "newPassword": "New Password",
-      "confirmNewPassword": "Confirm new password",
       "passwordPlaceHolder": "Enter password",
+      "newPassword": "New Password",
       "newPasswordPlaceholder": "Enter new password",
+      "confirmNewPassword": "Confirm new password",
+      "confirmNewPasswordPlaceHolder": "Confirm new password",
       "cancel": "Cancel",
       "changePasswordButton": "Change password",
       "validations": {
