@@ -129,6 +129,7 @@ const RecurringEvents = function ({
       if (formFields?.frequency === 'CUSTOM') setIsCustom(true);
       else setIsCustom(false);
     }
+    if (formFields?.daysOfWeek) setSelectedWeekDays(formFields?.daysOfWeek);
   }, [formFields]);
 
   const getNumberOfWeekDays = async (start, end, daysofweek) => {

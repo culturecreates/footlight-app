@@ -804,6 +804,8 @@ function AddEvent() {
             startTimeRecur: eventData?.recurringEvent?.startTime
               ? moment(eventData?.recurringEvent?.startTime, 'HH:mm')
               : undefined,
+            frequency: eventData?.recurringEvent?.frequency,
+            daysOfWeek: eventData?.recurringEvent?.weekDays,
           };
           setFormValue(obj);
         }
