@@ -79,80 +79,84 @@ function Users() {
       });
   };
   const handleSave = () => {
-    setShowDialog(false);
-    form
-      .validateFields(['firstName', 'lastName', 'email', 'interfaceLanguage'])
-      .then((values) => {
-        updateCurrentUser({
-          calendarId,
-          body: {
-            firstName: values?.firstName,
-            lastName: values?.lastName,
-            email: values?.email,
-            interfaceLanguage: values?.interfaceLanguage,
-            ...(password?.oldPassword &&
-              password?.newPassword && {
-                modifyPassword: {
-                  currentPassword: password?.oldPassword,
-                  newPassword: password?.newPassword,
-                },
-              }),
-          },
-        })
-          .unwrap()
-          .then((response) => {
-            if (response?.statusCode == 202) {
-              currentUserRefetch();
-              notification.success({
-                description: t('resetPassword.successNotification'),
-                placement: 'top',
-                closeIcon: <></>,
-                maxCount: 1,
-                duration: 3,
-              });
-              let userDetails = {
-                accessToken,
-                expiredTime,
-                refreshToken,
-                user: {
-                  id: user?.id,
-                  firstName: values?.firstName,
-                  lastName: values?.lastName,
-                  email: values?.email,
-                  profileImage: user?.profileImage,
-                  roles: user?.roles,
-                  isSuperAdmin: user?.isSuperAdmin,
-                  interfaceLanguage: values?.interfaceLanguage,
-                },
-              };
-              dispatch(setUser(userDetails));
-              i18n.changeLanguage(values?.interfaceLanguage?.toLowerCase());
-              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
-            }
+    if (!showDialog) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+    else {
+      setShowDialog(false);
+      form
+        .validateFields(['firstName', 'lastName', 'email', 'interfaceLanguage'])
+        .then((values) => {
+          updateCurrentUser({
+            calendarId,
+            body: {
+              firstName: values?.firstName,
+              lastName: values?.lastName,
+              email: values?.email,
+              interfaceLanguage: values?.interfaceLanguage,
+              ...(password?.oldPassword &&
+                password?.newPassword && {
+                  modifyPassword: {
+                    currentPassword: password?.oldPassword,
+                    newPassword: password?.newPassword,
+                  },
+                }),
+            },
           })
-          .catch((error) => {
-            console.log(error);
-            message.warning({
-              duration: 10,
-              maxCount: 1,
-              key: 'udpate-user-warning',
-              content: (
-                <>
-                  {error?.data?.message} &nbsp;
-                  <Button
-                    type="text"
-                    icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                    onClick={() => message.destroy('udpate-user-warning')}
-                  />
-                </>
-              ),
-              icon: <ExclamationCircleOutlined />,
+            .unwrap()
+            .then((response) => {
+              if (response?.statusCode == 202) {
+                i18n.changeLanguage(values?.interfaceLanguage?.toLowerCase());
+                currentUserRefetch();
+                notification.success({
+                  description: t('resetPassword.successNotification'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+                let userDetails = {
+                  accessToken,
+                  expiredTime,
+                  refreshToken,
+                  user: {
+                    id: user?.id,
+                    firstName: values?.firstName,
+                    lastName: values?.lastName,
+                    email: values?.email,
+                    profileImage: user?.profileImage,
+                    roles: user?.roles,
+                    isSuperAdmin: user?.isSuperAdmin,
+                    interfaceLanguage: values?.interfaceLanguage,
+                  },
+                };
+                dispatch(setUser(userDetails));
+
+                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+              message.warning({
+                duration: 10,
+                maxCount: 1,
+                key: 'udpate-user-warning',
+                content: (
+                  <>
+                    {error?.data?.message} &nbsp;
+                    <Button
+                      type="text"
+                      icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                      onClick={() => message.destroy('udpate-user-warning')}
+                    />
+                  </>
+                ),
+                icon: <ExclamationCircleOutlined />,
+              });
             });
-          });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   };
 
   const onValuesChangHandler = () => {
