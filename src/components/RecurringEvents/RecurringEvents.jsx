@@ -455,7 +455,12 @@ const RecurringEvents = function ({
               <Button
                 key={index}
                 className="recurring-day-buttons"
-                style={{ borderColor: selectedWeekDays?.includes(day?.value) && '#607EFC' }}
+                style={{
+                  ...(selectedWeekDays?.includes(day?.value) && {
+                    borderColor: '#607EFC',
+                    backgroundColor: '#EFF2FF',
+                  }),
+                }}
                 onClick={() => weekDaySelectHandler(day?.value)}>
                 {day.name}
               </Button>
