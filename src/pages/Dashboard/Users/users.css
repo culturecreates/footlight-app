@@ -1,0 +1,73 @@
+.user-profile-wrapper .user-profile-heading h4 {
+  font-weight: 700;
+  font-size: 34px;
+  color: #222732;
+  font-family: 'Roboto';
+  font-style: normal;
+}
+
+.user-profile-wrapper .ant-form-item-label > label,
+.change-password-modal-body .ant-form-item-label > label {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  color: #222732;
+}
+
+.user-profile-wrapper
+  .ant-form-item-label
+  > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before,
+.change-password-modal-body
+  .ant-form-item-label
+  > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+  display: none;
+}
+
+.user-profile-wrapper
+  .ant-form-item-label
+  > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after,
+.change-password-modal-body
+  .ant-form-item-label
+  > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after {
+  display: inline-block;
+  margin-right: 4px;
+  color: #f43131;
+  font-size: 14px;
+  font-family: 'Roboto';
+  line-height: 1;
+  content: '*';
+}
+
+.user-profile-wrapper .user-profile-sub-heading {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: #646d7b;
+}
+
+.user-profile-wrapper .add-event-section-wrapper {
+  padding: 24px;
+  background-color: #ffffff;
+}
+
+.user-profile-wrapper .add-event-section-col {
+  background-color: #ffffff;
+  border-radius: 4px;
+}
+
+.user-profile-wrapper .change-password-modal-body {
+  padding: 32px;
+}
+
+.change-password-modal-body .user-profile-form-item .ant-form-item-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-profile-wrapper .interfaceLanguage-selector .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  padding: 0px 11px 0px 11px;
+  height: 40px;
+  align-items: center;
+}

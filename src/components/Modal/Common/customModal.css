@@ -5,7 +5,9 @@
 
 .custom-common-modal-container .ant-modal-content .ant-modal-header {
   border-radius: 8px 8px 0 0;
+  border-bottom: 1px solid #b6c1c9;
 }
 .custom-common-modal-container .ant-modal-content .ant-modal-footer {
   border-radius: 0 0 8px 8px;
+  border-top: 1px solid #b6c1c9;
 }

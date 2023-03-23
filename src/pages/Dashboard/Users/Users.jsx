@@ -165,12 +165,12 @@ function Users() {
 
   return (
     currentUserSuccess && (
-      <div className="add-edit-wrapper">
+      <div className="user-profile-wrapper">
         <Row>
           <Col span={24}>
             <Row justify="space-between">
               <Col>
-                <div className="add-edit-event-heading">
+                <div className="user-profile-heading">
                   <h4>{t('dashboard.userProfile.userProfile')}</h4>
                 </div>
               </Col>
@@ -195,7 +195,7 @@ function Users() {
               validateTrigger={'onBlur'}
               onValuesChange={onValuesChangHandler}
               form={form}>
-              <div>
+              <div className="user-profile-sub-heading">
                 <p>{t('dashboard.userProfile.subHeading')}</p>
               </div>
               <Form.Item
@@ -227,7 +227,6 @@ function Users() {
                 />
               </Form.Item>
               <Form.Item
-                className="user-edit-form-item"
                 name="email"
                 label={t('dashboard.userProfile.email')}
                 labelAlign="left"
@@ -247,13 +246,15 @@ function Users() {
                   disabled={location?.state?.email ? true : false}
                 />
               </Form.Item>
-
-              <Form.Item
-                name="interfaceLanguage"
-                label={t('dashboard.userProfile.languagePreference')}
-                initialValue={currentUserData?.interfaceLanguage?.toUpperCase()}>
-                <Select options={locale} />
-              </Form.Item>
+              <div className="interfaceLanguage-selector">
+                <Form.Item
+                  name="interfaceLanguage"
+                  label={t('dashboard.userProfile.languagePreference')}
+                  initialValue={currentUserData?.interfaceLanguage?.toUpperCase()}
+                  required>
+                  <Select options={locale} />
+                </Form.Item>
+              </div>
               <Form.Item name="button">
                 <OutlinedButton
                   label={t('dashboard.userProfile.changePassword')}
@@ -287,14 +288,14 @@ function Users() {
                     onClick={handlePasswordSave}
                   />,
                 ]}
-                bodyStyle={{ padding: '0px' }}>
+                bodyStyle={{ padding: '32px' }}>
                 <Row>
-                  <Col span={24} style={{ padding: '32px' }}>
+                  <Col span={24} className="change-password-modal-body">
                     <Form.Item
-                      className="reset-password-form-item"
                       name="oldPassword"
                       label={t('dashboard.userProfile.password')}
                       labelAlign="left"
+                      className="user-profile-form-item"
                       rules={[
                         {
                           required: true,
@@ -307,10 +308,10 @@ function Users() {
                       />
                     </Form.Item>
                     <Form.Item
-                      className="reset-password-form-item"
                       name="newPassword"
                       label={t('dashboard.userProfile.newPassword')}
                       labelAlign="left"
+                      className="user-profile-form-item"
                       rules={[
                         {
                           required: true,
@@ -323,10 +324,10 @@ function Users() {
                       />
                     </Form.Item>
                     <Form.Item
-                      className="reset-password-form-item"
                       name="confirmNewPassword"
                       label={t('dashboard.userProfile.confirmNewPassword')}
                       labelAlign="left"
+                      className="user-profile-form-item"
                       rules={[
                         {
                           required: true,
