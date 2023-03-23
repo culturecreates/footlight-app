@@ -33,6 +33,9 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
   const [sortedDates, setSortedDates] = useState([]);
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const startTimeCustomWatch = Form.useWatch('startTimeCustom', form);
+  const endTimeCustomWatch = Form.useWatch('endTimeCustom', form);
+
   const iconcolor = {
     color: '#1B3DE6',
   };
@@ -387,6 +390,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                             key="add-time"
                             htmlType="submit"
                             size="large"
+                            disabled={startTimeCustomWatch || endTimeCustomWatch ? false : true}
                             label={t('dashboard.events.addEditEvent.dates.modal.add')}
                           />
                         </Form.Item>
