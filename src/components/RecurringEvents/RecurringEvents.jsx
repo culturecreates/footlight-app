@@ -42,13 +42,14 @@ const RecurringEvents = function ({
             location: 'test Location',
             startDate: new Date(moment(item.startDate).format('YYYY/M/D')),
             endDate: new Date(moment(item.startDate).format('YYYY/M/D')),
-            initDate: item.startDate,
+            initDate: item?.startDate,
             isDeleted: false,
             color: '#607EFC',
-            time: item.customTimes
-              ? item.customTimes
-                  .sort((a, b) => a?.startTime?.localeCompare(b?.startTime))
-                  .map((customTime) => {
+            time: item?.customTimes
+              ? item?.customTimes
+                  ?.slice()
+                  ?.sort((a, b) => a?.startTime?.localeCompare(b?.startTime))
+                  ?.map((customTime) => {
                     const objTime = {
                       startTime: customTime.startTime && moment(customTime.startTime, 'hh:mm a').format('hh:mm a'),
                       endTime: customTime.endTime && moment(customTime.endTime, 'hh:mm a').format('hh:mm a'),
