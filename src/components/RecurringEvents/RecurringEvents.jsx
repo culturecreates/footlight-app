@@ -371,8 +371,9 @@ const RecurringEvents = function ({
               </Form.Item>
             </div>
           </div>
-          <div className="flex-align">
-            {/* <div className="date-div">
+          {!isCustom && (
+            <div className="flex-align">
+              {/* <div className="date-div">
               <div className="update-select-title">{t('StartTime', { lng: currentLang })}</div>
               <Form.Item
                 name="startTimeRecur"
@@ -390,35 +391,37 @@ const RecurringEvents = function ({
                 <TimePicker format="HH:mm" disabledHours={disabledHours} disabledMinutes={disabledMinutes} />
               </Form.Item>
             </div> */}
-            <Row justify="space-between">
-              <Col flex={'203.5px'}>
-                <Form.Item
-                  name="startTimeRecur"
-                  className="status-comment-item"
-                  label={t('dashboard.events.addEditEvent.dates.startTime')}>
-                  <TimePickerStyled
-                    placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
-                    use12Hours={i18n?.language === 'en' ? true : false}
-                    format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
-                  />
-                </Form.Item>
-              </Col>
-              <Col flex={'203.5px'}>
-                <Form.Item
-                  name="endTimeRecur"
-                  className="status-comment-item"
-                  label={t('dashboard.events.addEditEvent.dates.endTime')}>
-                  <TimePickerStyled
-                    placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
-                    use12Hours={i18n?.language === 'en' ? true : false}
-                    format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
-                    disabledHours={disabledHours}
-                    disabledMinutes={disabledMinutes}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-          </div>
+              <Row justify="space-between">
+                <Col flex={'203.5px'}>
+                  <Form.Item
+                    name="startTimeRecur"
+                    className="status-comment-item"
+                    label={t('dashboard.events.addEditEvent.dates.startTime')}>
+                    <TimePickerStyled
+                      placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                      use12Hours={i18n?.language === 'en' ? true : false}
+                      format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col flex={'203.5px'}>
+                  <Form.Item
+                    name="endTimeRecur"
+                    className="status-comment-item"
+                    label={t('dashboard.events.addEditEvent.dates.endTime')}>
+                    <TimePickerStyled
+                      placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                      use12Hours={i18n?.language === 'en' ? true : false}
+                      format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                      disabledHours={disabledHours}
+                      disabledMinutes={disabledMinutes}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </div>
+          )}
+
           {formFields && formFields?.frequency === dateFrequencyOptions[1].value && (
             <>
               {/* <div className="update-select-title">{t('Days Of Week', { lng: currentLang })}</div> */}
