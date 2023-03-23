@@ -75,14 +75,16 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
     setUpdateAllTime(false);
   };
   useEffect(() => {
-    setSortedDates(handleDateSort(dateSource));
+    const getMonthSorted = handleDateSort(dateSource);
+    setSortedDates(getMonthSorted);
+    let month = moment(getMonthSorted[0]?.initDate).format('MMMM');
+    month = moment().month(month).format('M');
+    month = month - 1;
+    const el1 = document.querySelector(`[data-month-id="${month}"]`);
+    if (el1) el1?.scrollIntoView();
   }, [dateSource]);
 
   useEffect(() => {
-    const d = new Date();
-    let name = d.getMonth();
-    const el1 = document.querySelector(`[data-month-id="${name}"]`);
-    if (el1) el1.scrollIntoView();
     setDataSource(customDates);
   }, [isModalVisible]);
 
