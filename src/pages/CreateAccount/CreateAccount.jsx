@@ -67,7 +67,7 @@ function CreateAccount() {
       })
         .unwrap()
         .then((response) => {
-          i18n.changeLanguage(response?.data?.interfaceLanguage);
+          i18n.changeLanguage(response?.interfaceLanguage?.toLowerCase());
           if (location.pathname.includes('accept')) {
             acceptInvite({
               id: invitationId,
@@ -99,7 +99,6 @@ function CreateAccount() {
   }, []);
 
   if (inviteUserError) navigate(PathName.Login);
-  if (inviteUserSuccess) i18n.changeLanguage(inviteUserData?.interfaceLanguage ?? 'en');
 
   return (
     location.pathname.includes('join') &&
