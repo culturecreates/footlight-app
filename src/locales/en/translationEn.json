@@ -154,6 +154,7 @@
           "editDates": "Edit",
           "cancel": "Cancel",
           "addDates": "Add",
+          "times": "times",
           "weekDays": {
             "sunday": "Sun",
             "monday": "Mon",

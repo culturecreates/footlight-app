@@ -25,6 +25,7 @@ const RecurringEvents = function ({
   const [nummberofDates, setNumberofDates] = useState(numberOfDaysEvent);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [customDates, setCustomDates] = useState([]);
+  const [numberOfTimes, setNumberOfTimes] = useState(0);
   const [isCustom, setIsCustom] = useState(false);
   const [selectedWeekDays, setSelectedWeekDays] = useState([]);
   const { t } = useTranslation();
@@ -137,6 +138,12 @@ const RecurringEvents = function ({
     }
     if (formFields?.daysOfWeek) setSelectedWeekDays(formFields?.daysOfWeek);
   }, [formFields]);
+
+  useEffect(() => {
+    let numTmes = 0;
+    customDates?.map((date) => (numTmes = numTmes + date?.time?.length));
+    setNumberOfTimes(numTmes);
+  }, [customDates]);
 
   const getNumberOfWeekDays = async (start, end, daysofweek) => {
     let date = [];
@@ -353,6 +360,29 @@ const RecurringEvents = function ({
           </Form.Item>
         </>
       )}
+      {isCustom && (
+        <div className="flex-align">
+          <div className="date-div">
+            <Form.Item
+              name="startDateRecur"
+              className="status-comment-item"
+              label={t('dashboard.events.addEditEvent.dates.dates')}
+              rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
+              <DateRangePicker
+                style={{ width: '423px' }}
+                disabledDate={(d) => !d || d.isSameOrBefore(endDisable)}
+                suffixIcon={
+                  nummberofDates > 0 && (
+                    <Tags style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }} color={'#DBF3FD'}>
+                      {nummberofDates} {t('dashboard.events.addEditEvent.dates.dates')}
+                    </Tags>
+                  )
+                }
+              />
+            </Form.Item>
+          </div>
+        </div>
+      )}
       {!isCustom && (
         <>
           <div className="flex-align">
@@ -369,6 +399,12 @@ const RecurringEvents = function ({
                     nummberofDates > 0 && (
                       <Tags style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }} color={'#DBF3FD'}>
                         {nummberofDates} {t('dashboard.events.addEditEvent.dates.dates')}
+                        &nbsp;
+                        {numberOfTimes > 0 && (
+                          <>
+                            ,&nbsp;{numberOfTimes}&nbsp;{t('dashboard.events.addEditEvent.dates.times')}
+                          </>
+                        )}
                       </Tags>
                     )
                   }
@@ -481,8 +517,7 @@ const RecurringEvents = function ({
       </Form.Item>
       <div className="customize-div">
         {/* {nummberofDates !== 0 && <div> {nummberofDates + ' Dates'}</div>} */}
-
-        {nummberofDates > 0 && (
+        {(nummberofDates || formFields?.startDateRecur?.length == 2) > 0 && (
           <TextButton
             size="large"
             icon={<ControlOutlined />}
