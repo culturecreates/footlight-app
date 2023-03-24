@@ -1929,7 +1929,11 @@ function AddEvent() {
                   />
                 </Form.Item>
                 <Form.Item
-                  name="inLanguage"
+                  name={otherInformationFieldNames.inLanguage}
+                  className={otherInformationFieldNames.inLanguage}
+                  style={{
+                    display: !addedFields?.includes(otherInformationFieldNames.inLanguage) && 'none',
+                  }}
                   label={t('dashboard.events.addEditEvent.otherInformation.eventLanguage')}
                   initialValue={eventData?.inLanguage?.map((audience) => {
                     return audience?.entityId;
@@ -1962,7 +1966,8 @@ function AddEvent() {
                 addedFields?.includes(otherInformationFieldNames.eventLink) &&
                 addedFields?.includes(otherInformationFieldNames.videoLink) &&
                 addedFields?.includes(otherInformationFieldNames.facebookLinkWrap) &&
-                addedFields?.includes(otherInformationFieldNames.keywords) ? (
+                addedFields?.includes(otherInformationFieldNames.keywords) &&
+                addedFields?.includes(otherInformationFieldNames.inLanguage) ? (
                   <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
                 ) : (
                   otherInformationOptions.map((type) => {
