@@ -28,6 +28,7 @@ const RecurringEvents = function ({
   const [numberOfTimes, setNumberOfTimes] = useState(0);
   const [isCustom, setIsCustom] = useState(false);
   const [selectedWeekDays, setSelectedWeekDays] = useState([]);
+  const [dateModified, setDateModified] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -87,6 +88,7 @@ const RecurringEvents = function ({
 
   const onCustomize = (customizedDate) => {
     setCustomDates(customizedDate);
+    setDateModified(true);
     if (customizedDate?.length > 0) {
       setIsCustom(true);
       setNumberofDates(customizedDate.length);
@@ -167,7 +169,7 @@ const RecurringEvents = function ({
       return obj;
     });
 
-    setCustomDates(custom);
+    if (!dateModified) setCustomDates(custom);
   };
 
   const getNumberOfDays = async (start, end) => {
@@ -195,7 +197,7 @@ const RecurringEvents = function ({
       return obj;
     });
 
-    setCustomDates(custom);
+    if (!dateModified) setCustomDates(custom);
   };
   function getDaysBetweenDates(start, end, dayName) {
     var result = [];
