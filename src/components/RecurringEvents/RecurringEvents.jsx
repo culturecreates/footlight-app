@@ -133,16 +133,19 @@ const RecurringEvents = function ({
       }
     }
     if (formFields?.frequency) {
-      if (formFields?.frequency === 'CUSTOM') setIsCustom(true);
-      else setIsCustom(false);
+      if (formFields.frequency === 'CUSTOM') {
+        if (formFields?.startDateRecur?.length >= 1)
+          getNumberOfDays(formFields?.startDateRecur[0], formFields?.startDateRecur[1]);
+        setIsCustom(true);
+      } else setIsCustom(false);
     }
     if (formFields?.daysOfWeek) setSelectedWeekDays(formFields?.daysOfWeek);
   }, [formFields]);
 
   useEffect(() => {
-    let numTmes = 0;
-    customDates?.map((date) => (numTmes = numTmes + date?.time?.length));
-    setNumberOfTimes(numTmes);
+    let numTimes = 0;
+    customDates?.map((date) => (numTimes = numTimes + date?.time?.length));
+    setNumberOfTimes(numTimes);
   }, [customDates]);
 
   const getNumberOfWeekDays = async (start, end, daysofweek) => {
