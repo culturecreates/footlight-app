@@ -1935,8 +1935,8 @@ function AddEvent() {
                     display: !addedFields?.includes(otherInformationFieldNames.inLanguage) && 'none',
                   }}
                   label={t('dashboard.events.addEditEvent.otherInformation.eventLanguage')}
-                  initialValue={eventData?.inLanguage?.map((audience) => {
-                    return audience?.entityId;
+                  initialValue={eventData?.inLanguage?.map((inLanguage) => {
+                    return inLanguage?.entityId;
                   })}>
                   <TreeSelectOption
                     allowClear
