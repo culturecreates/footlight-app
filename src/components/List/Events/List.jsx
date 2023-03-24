@@ -33,8 +33,8 @@ function Lists(props) {
   const { user } = useSelector(getUserDetails);
   const totalCount = data?.totalCount;
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
+  const calendar = user?.roles?.filter((calendar) => {
+    return calendar?.calendarId === calendarId;
   });
 
   const listItemHandler = (id, creatorId, publishState) => {

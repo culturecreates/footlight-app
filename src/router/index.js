@@ -9,6 +9,7 @@ import AddEvent from '../pages/Dashboard/AddEvent';
 import { ReactComponent as NotFound } from '../../src/assets/images/illustatus.svg';
 import EventReadOnly from '../pages/Dashboard/EventReadOnly';
 import CreateAccount from '../pages/CreateAccount/CreateAccount';
+import Users from '../pages/Dashboard/Users';
 
 export const router = createBrowserRouter([
   {
@@ -25,7 +26,11 @@ export const router = createBrowserRouter([
     element: <ResetPassword />,
   },
   {
-    path: PathName.CreateAccount,
+    path: PathName.AcceptInvitation,
+    element: <CreateAccount />,
+  },
+  {
+    path: PathName.Join,
     element: <CreateAccount />,
   },
   {
@@ -49,6 +54,10 @@ export const router = createBrowserRouter([
             element: <AddEvent />,
           },
         ],
+      },
+      {
+        path: `:calendarId${PathName.Profile}/:userId`,
+        element: <Users />,
       },
 
       {

@@ -57,12 +57,15 @@
   "createAccount": {
     "createYourAccount": "Créez votre compte",
     "firstName": "Prenom",
-    "secondName": "Nom",
+    "lastName": "Nom",
     "email": "Courriel",
     "newPassword": "Nouveau mot de passe",
     "confirmNewPassword": "Confirmer votre nouveau mot de passe",
     "acceptInvitation": "Acceptez l'invitation",
-    "passwordPlaceHolder": "Entrez votre mot de passe"
+    "passwordPlaceHolder": "Entrez votre mot de passe",
+    "successNotification": " Succès ! Votre compte a été créé.",
+    "errorNotification": "Un problème s'est produit. Veuillez réessayer ou contacter support@culturecreates.com.",
+    "acceptInvitationSuccess": "Success ! Invitation acceptée."
   },
   "dashboard": {
     "topNavigation": {
@@ -140,7 +143,40 @@
           "dateRangeTooltip": "À utiliser lorsque votre événement s'étend sur plusieurs dates, comme une exposition d'art.",
           "eventCancelled": "Annulé",
           "eventPostponed": "Reporté",
-          "eventScheduled": "Programmé"
+          "eventScheduled": "Programmé",
+          "frequency": "Fréquence",
+          "daily": "Tous les jours",
+          "weekly": "Toutes les semaines",
+          "monthly": "Tous les mois",
+          "custom": "Personnalisé",
+          "days": "Jours",
+          "editDates": "Éditer les dates",
+          "cancel": "Annuler",
+          "addDates": "Ajouter les dates",
+          "weekDays": {
+            "sunday": "Lun",
+            "monday": "Mar",
+            "tuesday": "Mer",
+            "wednesday": "Jeu",
+            "thursday": "Ven",
+            "friday": "Sam",
+            "saturday": "Dim"
+          },
+          "modal": {
+            "titleHeading": "Sélectionnez la/les dates de l’événement",
+            "startTime": "Heure de début",
+            "endTime": "Heure de fin",
+            "addTime": "Ajouter une heure",
+            "add": "Ajouter",
+            "addTimeToAllDates": "Ajouter l'heure à toutes les dates",
+            "addTimeToAllDatesWarning": "Vous êtes sûr de vous ? Cette action ne peut être annulée.",
+            "duplicateTimes": "Dupliquer les heures",
+            "replaceTimeonFolllowingDates": "Remplacer les heures aux dates suivantes : ",
+            "selectAll": "Sélectionner tout",
+            "unselectAll": "tout déselectionner",
+            "cancel": "Annuler",
+            "apply": "Appliquer"
+          }
         },
         "location": {
           "title": "Endroit",
@@ -294,6 +330,28 @@
         "description": "Êtes-vous sûr de vouloir supprimer définitivement cet événement ?",
         "ok": "OK",
         "cancel": "Annuler"
+      }
+    },
+    "userProfile": {
+      "userProfile": "Profil d’utilisateur",
+      "subHeading": "Éditer vos paramètres ici.",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Courriel",
+      "languagePreference": "Préférence de langue",
+      "changePassword": "Changer le mot de passe",
+      "save": "Sauvegarder",
+      "password": "Mot de passe",
+      "passwordPlaceHolder": "Entrez votre mot de passe",
+      "newPassword": "Nouveau mot de passe",
+      "newPasswordPlaceholder": "Entrez nouveau mot de passe",
+      "confirmNewPassword": "Confirmer votre nouveau mot de passe",
+      "confirmNewPasswordPlaceHolder": "Confirmer nouveau mot de passe",
+      "cancel": "Annuler",
+      "changePasswordButton": "Changer le mot de passe",
+      "validations": {
+        "emptyFirstName": "Entrez votre prénom",
+        "emptyLasttName": "Entrez votre nom"
       }
     }
   },
