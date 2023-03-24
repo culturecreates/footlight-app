@@ -87,7 +87,7 @@ const RecurringEvents = function ({
 
   const onCustomize = (customizedDate) => {
     setCustomDates(customizedDate);
-    if (customizedDate.length > 0) {
+    if (customizedDate?.length > 0) {
       setIsCustom(true);
       setNumberofDates(customizedDate.length);
       const custom = customizedDate
@@ -96,7 +96,7 @@ const RecurringEvents = function ({
           const obj = {
             startDate: moment(item.startDate).format('YYYY-MM-DD'),
             customTimes: item.time
-              ? item.time.map((customTime) => {
+              ? item?.time?.map((customTime) => {
                   const obj = {
                     startTime: customTime?.start,
                     endTime: customTime?.end && customTime.end,
@@ -177,8 +177,7 @@ const RecurringEvents = function ({
       date.push(m.format('DD/MM/YYYY'));
     }
 
-    setNumberofDates(date.length);
-
+    setNumberofDates(date?.length);
     const custom = date.map((item) => {
       const date = moment(item, 'DD/MM/YYYY');
 
@@ -315,7 +314,7 @@ const RecurringEvents = function ({
               width: '423px',
               maxWidth: '423px',
             }}>
-            {customDates && customDates?.length != 0 && (
+            {/* {customDates && customDates?.length != 0 && (
               <Form.Item label={t('dashboard.events.addEditEvent.dates.multipleDates')}>
                 <DateRangePicker
                   style={{ width: '100%' }}
@@ -338,7 +337,7 @@ const RecurringEvents = function ({
                   }
                 />
               </Form.Item>
-            )}
+            )} */}
             {/* {customDates?.map((item, index) => (
               <Card
                 key={index}
@@ -369,58 +368,36 @@ const RecurringEvents = function ({
           </Form.Item>
         </>
       )}
-      {isCustom && (
-        <div className="flex-align">
-          <div className="date-div">
-            <Form.Item
-              name="startDateRecur"
-              className="status-comment-item"
-              label={t('dashboard.events.addEditEvent.dates.dates')}
-              rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
-              <DateRangePicker
-                style={{ width: '423px' }}
-                disabledDate={(d) => !d || d.isSameOrBefore(endDisable)}
-                suffixIcon={
-                  nummberofDates > 0 && (
-                    <Tags style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }} color={'#DBF3FD'}>
-                      {nummberofDates} {t('dashboard.events.addEditEvent.dates.dates')}
-                    </Tags>
-                  )
-                }
-              />
-            </Form.Item>
-          </div>
+
+      <div className="flex-align">
+        <div className="date-div">
+          <Form.Item
+            name="startDateRecur"
+            className="status-comment-item"
+            label={t('dashboard.events.addEditEvent.dates.multipleDates')}
+            rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
+            <DateRangePicker
+              style={{ width: '423px' }}
+              disabledDate={(d) => !d || d.isSameOrBefore(endDisable)}
+              suffixIcon={
+                nummberofDates > 0 && (
+                  <Tags style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }} color={'#DBF3FD'}>
+                    {nummberofDates} {t('dashboard.events.addEditEvent.dates.dates')}
+                    &nbsp;
+                    {numberOfTimes > 0 && isCustom && (
+                      <>
+                        ,&nbsp;{numberOfTimes}&nbsp;{t('dashboard.events.addEditEvent.dates.times')}
+                      </>
+                    )}
+                  </Tags>
+                )
+              }
+            />
+          </Form.Item>
         </div>
-      )}
+      </div>
       {!isCustom && (
         <>
-          <div className="flex-align">
-            <div className="date-div">
-              <Form.Item
-                name="startDateRecur"
-                className="status-comment-item"
-                label={t('dashboard.events.addEditEvent.dates.dates')}
-                rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
-                <DateRangePicker
-                  style={{ width: '423px' }}
-                  disabledDate={(d) => !d || d.isSameOrBefore(endDisable)}
-                  suffixIcon={
-                    nummberofDates > 0 && (
-                      <Tags style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }} color={'#DBF3FD'}>
-                        {nummberofDates} {t('dashboard.events.addEditEvent.dates.dates')}
-                        &nbsp;
-                        {numberOfTimes > 0 && formFields?.frequency === 'CUSTOM' && (
-                          <>
-                            ,&nbsp;{numberOfTimes}&nbsp;{t('dashboard.events.addEditEvent.dates.times')}
-                          </>
-                        )}
-                      </Tags>
-                    )
-                  }
-                />
-              </Form.Item>
-            </div>
-          </div>
           {!isCustom && (
             <div className="flex-align">
               {/* <div className="date-div">
@@ -542,6 +519,8 @@ const RecurringEvents = function ({
         setCustomDates={onCustomize}
         customDates={customDates}
         nummberofDates={nummberofDates}
+        numberOfTimes={numberOfTimes}
+        isCustom={isCustom}
       />
     </div>
   );

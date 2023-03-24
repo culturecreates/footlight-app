@@ -21,7 +21,15 @@ import Tags from '../../Tags/Common/Tags';
 import TimePickerStyled from '../../TimePicker/TimePicker';
 import i18n from 'i18next';
 
-const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCustomDates, customDates }) => {
+const RecurringModal = ({
+  isModalVisible,
+  setIsModalVisible,
+  currentLang,
+  setCustomDates,
+  customDates,
+  numberOfTimes,
+  isCustom,
+}) => {
   const [dateSource, setDataSource] = useState([]);
   const [test, setTest] = useState();
   const [dateArrayCal, setDateArrayCal] = useState(null);
@@ -203,6 +211,11 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
             </span>
             <Tags style={{ color: '#1572BB', borderRadius: '4px' }} color={'#DBF3FD'}>
               {dateSource?.length} {t('dashboard.events.addEditEvent.dates.dates')}
+              {numberOfTimes > 0 && isCustom && (
+                <>
+                  ,&nbsp;{numberOfTimes}&nbsp;{t('dashboard.events.addEditEvent.dates.times')}
+                </>
+              )}
             </Tags>
           </div>
         </div>
