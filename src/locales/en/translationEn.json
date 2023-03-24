@@ -332,6 +332,28 @@
         "ok": "OK",
         "cancel": "Cancel"
       }
+    },
+    "userProfile": {
+      "userProfile": "User Profile",
+      "subHeading": "Edit your user settings here.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "languagePreference": "Language preference",
+      "changePassword": "Change Password",
+      "save": "Save",
+      "password": "Password",
+      "passwordPlaceHolder": "Enter password",
+      "newPassword": "New Password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmNewPassword": "Confirm new password",
+      "confirmNewPasswordPlaceHolder": "Confirm new password",
+      "cancel": "Cancel",
+      "changePasswordButton": "Change password",
+      "validations": {
+        "emptyFirstName": "Enter your first name",
+        "emptyLastName": "Enter your last name"
+      }
     }
   },
   "common": {

@@ -331,6 +331,28 @@
         "ok": "OK",
         "cancel": "Annuler"
       }
+    },
+    "userProfile": {
+      "userProfile": "Profil d’utilisateur",
+      "subHeading": "Éditer vos paramètres ici.",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Courriel",
+      "languagePreference": "Préférence de langue",
+      "changePassword": "Changer le mot de passe",
+      "save": "Sauvegarder",
+      "password": "Mot de passe",
+      "passwordPlaceHolder": "Entrez votre mot de passe",
+      "newPassword": "Nouveau mot de passe",
+      "newPasswordPlaceholder": "Entrez nouveau mot de passe",
+      "confirmNewPassword": "Confirmer votre nouveau mot de passe",
+      "confirmNewPasswordPlaceHolder": "Confirmer nouveau mot de passe",
+      "cancel": "Annuler",
+      "changePasswordButton": "Changer le mot de passe",
+      "validations": {
+        "emptyFirstName": "Entrez votre prénom",
+        "emptyLasttName": "Entrez votre nom"
+      }
     }
   },
   "common": {
