@@ -246,7 +246,9 @@
             "placeHolderPhoneNumber": "Entrez le numéro de téléphone",
             "placeHolderEmail": "Entrez l’adresse courriel",
             "contactTooltip": "Ajoutez un contact pour votre événement. Vous pouvez en créer un ou copier les coordonnées de l'Organisateur."
-          }
+          },
+          "eventLanguage": "Langue de l'événement",
+          "eventLanguagePlaceholder": "Sélectionnez la langue de l'événement"
         },
         "eventAccessibility": {
           "title": "Accessibilité de l’événement",

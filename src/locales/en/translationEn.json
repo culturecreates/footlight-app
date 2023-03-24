@@ -248,7 +248,9 @@
             "placeHolderPhoneNumber": "Enter phone number",
             "placeHolderEmail": "Enter email address",
             "contactTooltip": "Add a contact for your event. You can create one or copy the contact information of the Organizer."
-          }
+          },
+          "eventLanguage": "Event language",
+          "eventLanguagePlaceholder": "Select language of event"
         },
         "eventAccessibility": {
           "title": "Event accessibility",

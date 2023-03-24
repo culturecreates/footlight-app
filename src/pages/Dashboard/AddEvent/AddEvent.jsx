@@ -212,6 +212,7 @@ function AddEvent() {
             collaborators = [],
             dynamicFields = [],
             recurringEvent,
+            inLanguage = [],
             image;
           let eventObj;
           if (dateType === dateTypes.SINGLE) {
@@ -271,6 +272,13 @@ function AddEvent() {
             audience = values?.targetAudience?.map((audienceId) => {
               return {
                 entityId: audienceId,
+              };
+            });
+          }
+          if (values?.inLanguage) {
+            inLanguage = values?.inLanguage?.map((inLanguageId) => {
+              return {
+                entityId: inLanguageId,
               };
             });
           }
@@ -429,6 +437,7 @@ function AddEvent() {
             ...(values?.supporters && { collaborators }),
             ...(values?.dynamicFields && { dynamicFields }),
             ...(dateTypes.MULTIPLE && { recurringEvent }),
+            inLanguage,
           };
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
             new Compressor(values?.dragger[0]?.originFileObj, {
@@ -1908,6 +1917,32 @@ function AddEvent() {
                     open={false}
                     tagRender={(props) => {
                       const { label, closable, onClose } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="inLanguage"
+                  label={t('dashboard.events.addEditEvent.otherInformation.eventLanguage')}
+                  initialValue={eventData?.inLanguage?.map((audience) => {
+                    return audience?.entityId;
+                  })}>
+                  <TreeSelectOption
+                    allowClear
+                    treeDefaultExpandAll
+                    placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
+                    notFoundContent={<NoContent />}
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'inLanguage')}
+                    tagRender={(props) => {
+                      const { closable, onClose, label } = props;
                       return (
                         <Tags
                           closable={closable}
