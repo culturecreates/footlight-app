@@ -69,9 +69,9 @@ const RecurringEvents = function ({
             id: uniqid(),
             name: 'test name',
             location: 'test Location',
-            startDate: new Date(moment(item.startDate).format('YYYY,M,D')),
-            endDate: new Date(moment(item.startDate).format('YYYY,M,D')),
-            initDate: moment(item.startDate).format('YYYY-MM-DD'),
+            startDate: new Date(moment(item.startDate ?? item.startDateTime).format('YYYY,M,D')),
+            endDate: new Date(moment(item.startDate ?? item.startDateTime).format('YYYY,M,D')),
+            initDate: moment(item.startDate ?? item.startDateTime).format('YYYY-MM-DD'),
             isDeleted: false,
             time: [],
             color: '#607EFC',
@@ -353,7 +353,7 @@ const RecurringEvents = function ({
           </Form.Item>
         </>
       )}
-      {isCustom && (
+      {!isCustom && (
         <>
           <div className="flex-align">
             <div className="date-div">
@@ -482,7 +482,7 @@ const RecurringEvents = function ({
       <div className="customize-div">
         {/* {nummberofDates !== 0 && <div> {nummberofDates + ' Dates'}</div>} */}
 
-        {(formFields?.startDateRecur?.length == 2 || isCustom) && (
+        {nummberofDates > 0 && (
           <TextButton
             size="large"
             icon={<ControlOutlined />}

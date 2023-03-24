@@ -228,7 +228,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
               className="recurring-cal"
               style="border"
               language={i18n.language}
-              minDate={new Date()}
+              minDate={new Date(moment(sortedDates[0]?.initDate).subtract(1, 'days'))}
               year={sortedDates?.length > 0 && moment(sortedDates[0]?.initDate).year()}
               enableRangeSelection={true}
               //  onRangeSelected={e =>selectDate(e) }
