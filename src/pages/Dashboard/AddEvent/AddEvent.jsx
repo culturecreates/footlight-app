@@ -778,14 +778,18 @@ function AddEvent() {
             startDateRecur: [
               moment(
                 moment(
-                  eventData?.recurringEvent?.startDate ? eventData?.recurringEvent?.startDate : eventData?.startDate,
+                  eventData?.recurringEvent?.startDate
+                    ? eventData?.recurringEvent?.startDate
+                    : eventData?.startDate ?? eventData?.startDateTime,
                   'YYYY-MM-DD',
                 ).format('DD-MM-YYYY'),
                 'DD-MM-YYYY',
               ),
               moment(
                 moment(
-                  eventData?.recurringEvent?.endDate ? eventData?.recurringEvent?.endDate : eventData?.endDate,
+                  eventData?.recurringEvent?.endDate
+                    ? eventData?.recurringEvent?.endDate
+                    : eventData?.endDate ?? eventData?.endDateTime,
                   'YYYY-MM-DD',
                 ).format('DD-MM-YYYY'),
                 'DD-MM-YYYY',
@@ -804,6 +808,8 @@ function AddEvent() {
             startTimeRecur: eventData?.recurringEvent?.startTime
               ? moment(eventData?.recurringEvent?.startTime, 'HH:mm')
               : undefined,
+            frequency: eventData?.recurringEvent?.frequency,
+            daysOfWeek: eventData?.recurringEvent?.weekDays,
           };
           setFormValue(obj);
         }

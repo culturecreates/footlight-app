@@ -25,8 +25,10 @@ const RecurringEvents = function ({
   const [nummberofDates, setNumberofDates] = useState(numberOfDaysEvent);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [customDates, setCustomDates] = useState([]);
+  const [numberOfTimes, setNumberOfTimes] = useState(0);
   const [isCustom, setIsCustom] = useState(false);
   const [selectedWeekDays, setSelectedWeekDays] = useState([]);
+  const [dateModified, setDateModified] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -42,13 +44,14 @@ const RecurringEvents = function ({
             location: 'test Location',
             startDate: new Date(moment(item.startDate).format('YYYY/M/D')),
             endDate: new Date(moment(item.startDate).format('YYYY/M/D')),
-            initDate: item.startDate,
+            initDate: item?.startDate,
             isDeleted: false,
             color: '#607EFC',
-            time: item.customTimes
-              ? item.customTimes
-                  .sort((a, b) => a?.startTime?.localeCompare(b?.startTime))
-                  .map((customTime) => {
+            time: item?.customTimes
+              ? item?.customTimes
+                  ?.slice()
+                  ?.sort((a, b) => a?.startTime?.localeCompare(b?.startTime))
+                  ?.map((customTime) => {
                     const objTime = {
                       startTime: customTime.startTime && moment(customTime.startTime, 'hh:mm a').format('hh:mm a'),
                       endTime: customTime.endTime && moment(customTime.endTime, 'hh:mm a').format('hh:mm a'),
@@ -68,9 +71,9 @@ const RecurringEvents = function ({
             id: uniqid(),
             name: 'test name',
             location: 'test Location',
-            startDate: new Date(moment(item.startDate).format('YYYY,M,D')),
-            endDate: new Date(moment(item.startDate).format('YYYY,M,D')),
-            initDate: moment(item.startDate).format('YYYY-MM-DD'),
+            startDate: new Date(moment(item.startDate ?? item.startDateTime).format('YYYY,M,D')),
+            endDate: new Date(moment(item.startDate ?? item.startDateTime).format('YYYY,M,D')),
+            initDate: moment(item.startDate ?? item.startDateTime).format('YYYY-MM-DD'),
             isDeleted: false,
             time: [],
             color: '#607EFC',
@@ -85,7 +88,8 @@ const RecurringEvents = function ({
 
   const onCustomize = (customizedDate) => {
     setCustomDates(customizedDate);
-    if (customizedDate.length > 0) {
+    setDateModified(true);
+    if (customizedDate?.length > 0) {
       setIsCustom(true);
       setNumberofDates(customizedDate.length);
       const custom = customizedDate
@@ -94,7 +98,7 @@ const RecurringEvents = function ({
           const obj = {
             startDate: moment(item.startDate).format('YYYY-MM-DD'),
             customTimes: item.time
-              ? item.time.map((customTime) => {
+              ? item?.time?.map((customTime) => {
                   const obj = {
                     startTime: customTime?.start,
                     endTime: customTime?.end && customTime.end,
@@ -106,6 +110,11 @@ const RecurringEvents = function ({
           return obj;
         });
       form.setFieldsValue({
+        frequency: 'CUSTOM',
+        customDates: custom,
+      });
+      setFormFields({
+        ...formFields,
         frequency: 'CUSTOM',
         customDates: custom,
       });
@@ -126,10 +135,20 @@ const RecurringEvents = function ({
       }
     }
     if (formFields?.frequency) {
-      if (formFields?.frequency === 'CUSTOM') setIsCustom(true);
-      else setIsCustom(false);
+      if (formFields.frequency === 'CUSTOM') {
+        if (formFields?.startDateRecur?.length >= 1)
+          getNumberOfDays(formFields?.startDateRecur[0], formFields?.startDateRecur[1]);
+        setIsCustom(true);
+      } else setIsCustom(false);
     }
+    if (formFields?.daysOfWeek) setSelectedWeekDays(formFields?.daysOfWeek);
   }, [formFields]);
+
+  useEffect(() => {
+    let numTimes = 0;
+    customDates?.map((date) => (numTimes = numTimes + date?.time?.length));
+    setNumberOfTimes(numTimes);
+  }, [customDates]);
 
   const getNumberOfWeekDays = async (start, end, daysofweek) => {
     let date = [];
@@ -150,7 +169,7 @@ const RecurringEvents = function ({
       return obj;
     });
 
-    setCustomDates(custom);
+    if (!dateModified) setCustomDates(custom);
   };
 
   const getNumberOfDays = async (start, end) => {
@@ -160,8 +179,7 @@ const RecurringEvents = function ({
       date.push(m.format('DD/MM/YYYY'));
     }
 
-    setNumberofDates(date.length);
-
+    setNumberofDates(date?.length);
     const custom = date.map((item) => {
       const date = moment(item, 'DD/MM/YYYY');
 
@@ -179,7 +197,7 @@ const RecurringEvents = function ({
       return obj;
     });
 
-    setCustomDates(custom);
+    if (!dateModified) setCustomDates(custom);
   };
   function getDaysBetweenDates(start, end, dayName) {
     var result = [];
@@ -206,9 +224,9 @@ const RecurringEvents = function ({
     return result;
   }
 
-  const handleChange = (value) => {
-    if (value === 'CUSTOM') setIsModalVisible(true);
-  };
+  // const handleChange = (value) => {
+  //   if (value === 'CUSTOM') setIsModalVisible(true);
+  // };
 
   const openCustomize = () => {
     if (formFields && formFields?.frequency !== 'CUSTOM') {
@@ -275,6 +293,21 @@ const RecurringEvents = function ({
           <Option value="CUSTOM">Custom</Option>
         </Select>
       </Form.Item> */}
+      <div className="frequency-selector">
+        <Form.Item
+          name="frequency"
+          label={t('dashboard.events.addEditEvent.dates.frequency')}
+          initialValue={formFields?.frequency ?? dateFrequencyOptions[0]?.value}>
+          <Select
+            style={{ height: '40px' }}
+            options={dateFrequencyOptions}
+            defaultValue={dateFrequencyOptions[0]?.value}
+            key="updateDropdownKey"
+            optionFilterProp="children"
+            // onChange={handleChange}
+          />
+        </Form.Item>
+      </div>
 
       {isCustom && (
         <>
@@ -283,24 +316,30 @@ const RecurringEvents = function ({
               width: '423px',
               maxWidth: '423px',
             }}>
-            {customDates && customDates?.length != 0 && (
+            {/* {customDates && customDates?.length != 0 && (
               <Form.Item label={t('dashboard.events.addEditEvent.dates.multipleDates')}>
                 <DateRangePicker
                   style={{ width: '100%' }}
                   open={false}
                   value={[moment(customDates[0]?.startDate), moment(customDates[customDates?.length - 1]?.startDate)]}
                   allowClear={false}
-                  inputReadOnly
+                  // inputReadOnly
                   suffixIcon={
-                    nummberofDates > 0 && (
+                    customDates?.length > 0 && (
                       <Tags style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }} color={'#DBF3FD'}>
-                        {nummberofDates} {t('dashboard.events.addEditEvent.dates.dates')}
+                        {customDates?.length} {t('dashboard.events.addEditEvent.dates.dates')}
+                        &nbsp;
+                        {numberOfTimes > 0 && formFields?.frequency === 'CUSTOM' && (
+                          <>
+                            ,&nbsp;{numberOfTimes}&nbsp;{t('dashboard.events.addEditEvent.dates.times')}
+                          </>
+                        )}
                       </Tags>
                     )
                   }
                 />
               </Form.Item>
-            )}
+            )} */}
             {/* {customDates?.map((item, index) => (
               <Card
                 key={index}
@@ -325,36 +364,45 @@ const RecurringEvents = function ({
           <Form.Item
             name="customDates"
             className="status-comment-item"
+            hidden
             rules={[{ required: false, message: 'Start date required' }]}>
             <div></div>
           </Form.Item>
         </>
       )}
+
+      <div className="flex-align">
+        <div className="date-div">
+          <Form.Item
+            name="startDateRecur"
+            className="status-comment-item"
+            label={t('dashboard.events.addEditEvent.dates.multipleDates')}
+            rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
+            <DateRangePicker
+              style={{ width: '423px' }}
+              disabledDate={(d) => !d || d.isSameOrBefore(endDisable)}
+              suffixIcon={
+                nummberofDates > 0 && (
+                  <Tags style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }} color={'#DBF3FD'}>
+                    {nummberofDates} {t('dashboard.events.addEditEvent.dates.dates')}
+                    &nbsp;
+                    {numberOfTimes > 0 && isCustom && (
+                      <>
+                        ,&nbsp;{numberOfTimes}&nbsp;{t('dashboard.events.addEditEvent.dates.times')}
+                      </>
+                    )}
+                  </Tags>
+                )
+              }
+            />
+          </Form.Item>
+        </div>
+      </div>
       {!isCustom && (
         <>
-          <div className="flex-align">
-            <div className="date-div">
-              <Form.Item
-                name="startDateRecur"
-                className="status-comment-item"
-                label={t('dashboard.events.addEditEvent.dates.dates')}
-                rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
-                <DateRangePicker
-                  style={{ width: '423px' }}
-                  disabledDate={(d) => !d || d.isSameOrBefore(endDisable)}
-                  suffixIcon={
-                    nummberofDates > 0 && (
-                      <Tags style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }} color={'#DBF3FD'}>
-                        {nummberofDates} {t('dashboard.events.addEditEvent.dates.dates')}
-                      </Tags>
-                    )
-                  }
-                />
-              </Form.Item>
-            </div>
-          </div>
-          <div className="flex-align">
-            {/* <div className="date-div">
+          {!isCustom && (
+            <div className="flex-align">
+              {/* <div className="date-div">
               <div className="update-select-title">{t('StartTime', { lng: currentLang })}</div>
               <Form.Item
                 name="startTimeRecur"
@@ -372,35 +420,37 @@ const RecurringEvents = function ({
                 <TimePicker format="HH:mm" disabledHours={disabledHours} disabledMinutes={disabledMinutes} />
               </Form.Item>
             </div> */}
-            <Row justify="space-between">
-              <Col flex={'203.5px'}>
-                <Form.Item
-                  name="startTimeRecur"
-                  className="status-comment-item"
-                  label={t('dashboard.events.addEditEvent.dates.startTime')}>
-                  <TimePickerStyled
-                    placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
-                    use12Hours={i18n?.language === 'en' ? true : false}
-                    format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
-                  />
-                </Form.Item>
-              </Col>
-              <Col flex={'203.5px'}>
-                <Form.Item
-                  name="endTimeRecur"
-                  className="status-comment-item"
-                  label={t('dashboard.events.addEditEvent.dates.endTime')}>
-                  <TimePickerStyled
-                    placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
-                    use12Hours={i18n?.language === 'en' ? true : false}
-                    format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
-                    disabledHours={disabledHours}
-                    disabledMinutes={disabledMinutes}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-          </div>
+              <Row justify="space-between">
+                <Col flex={'203.5px'}>
+                  <Form.Item
+                    name="startTimeRecur"
+                    className="status-comment-item"
+                    label={t('dashboard.events.addEditEvent.dates.startTime')}>
+                    <TimePickerStyled
+                      placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                      use12Hours={i18n?.language === 'en' ? true : false}
+                      format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col flex={'203.5px'}>
+                  <Form.Item
+                    name="endTimeRecur"
+                    className="status-comment-item"
+                    label={t('dashboard.events.addEditEvent.dates.endTime')}>
+                    <TimePickerStyled
+                      placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
+                      use12Hours={i18n?.language === 'en' ? true : false}
+                      format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                      disabledHours={disabledHours}
+                      disabledMinutes={disabledMinutes}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </div>
+          )}
+
           {formFields && formFields?.frequency === dateFrequencyOptions[1].value && (
             <>
               {/* <div className="update-select-title">{t('Days Of Week', { lng: currentLang })}</div> */}
@@ -430,21 +480,6 @@ const RecurringEvents = function ({
           )}
         </>
       )}
-      <div className="frequency-selector">
-        <Form.Item
-          name="frequency"
-          label={t('dashboard.events.addEditEvent.dates.frequency')}
-          initialValue={formFields?.frequency ?? dateFrequencyOptions[0]?.value}>
-          <Select
-            style={{ height: '40px' }}
-            options={dateFrequencyOptions}
-            defaultValue={dateFrequencyOptions[0]?.value}
-            key="updateDropdownKey"
-            optionFilterProp="children"
-            onChange={handleChange}
-          />
-        </Form.Item>
-      </div>
       <Form.Item
         name="daysOfWeek"
         label={t('dashboard.events.addEditEvent.dates.days')}
@@ -455,7 +490,12 @@ const RecurringEvents = function ({
               <Button
                 key={index}
                 className="recurring-day-buttons"
-                style={{ borderColor: selectedWeekDays?.includes(day?.value) && '#607EFC' }}
+                style={{
+                  ...(selectedWeekDays?.includes(day?.value) && {
+                    borderColor: '#607EFC',
+                    backgroundColor: '#EFF2FF',
+                  }),
+                }}
                 onClick={() => weekDaySelectHandler(day?.value)}>
                 {day.name}
               </Button>
@@ -465,8 +505,7 @@ const RecurringEvents = function ({
       </Form.Item>
       <div className="customize-div">
         {/* {nummberofDates !== 0 && <div> {nummberofDates + ' Dates'}</div>} */}
-
-        {(formFields?.startDateRecur?.length == 2 || isCustom) && (
+        {(nummberofDates || formFields?.startDateRecur?.length == 2) > 0 && (
           <TextButton
             size="large"
             icon={<ControlOutlined />}
@@ -482,6 +521,8 @@ const RecurringEvents = function ({
         setCustomDates={onCustomize}
         customDates={customDates}
         nummberofDates={nummberofDates}
+        numberOfTimes={numberOfTimes}
+        isCustom={isCustom}
       />
     </div>
   );

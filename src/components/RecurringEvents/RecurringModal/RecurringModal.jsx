@@ -21,7 +21,15 @@ import Tags from '../../Tags/Common/Tags';
 import TimePickerStyled from '../../TimePicker/TimePicker';
 import i18n from 'i18next';
 
-const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCustomDates, customDates }) => {
+const RecurringModal = ({
+  isModalVisible,
+  setIsModalVisible,
+  currentLang,
+  setCustomDates,
+  customDates,
+  numberOfTimes,
+  isCustom,
+}) => {
   const [dateSource, setDataSource] = useState([]);
   const [test, setTest] = useState();
   const [dateArrayCal, setDateArrayCal] = useState(null);
@@ -33,6 +41,9 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
   const [sortedDates, setSortedDates] = useState([]);
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const startTimeCustomWatch = Form.useWatch('startTimeCustom', form);
+  const endTimeCustomWatch = Form.useWatch('endTimeCustom', form);
+
   const iconcolor = {
     color: '#1B3DE6',
   };
@@ -75,14 +86,16 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
     setUpdateAllTime(false);
   };
   useEffect(() => {
-    setSortedDates(handleDateSort(dateSource));
+    const getMonthSorted = handleDateSort(dateSource);
+    setSortedDates(getMonthSorted);
+    let month = moment(getMonthSorted[0]?.initDate).format('MMMM');
+    month = moment().month(month).format('M');
+    month = month - 1;
+    const el1 = document.querySelector(`[data-month-id="${month}"]`);
+    if (el1) el1?.scrollIntoView();
   }, [dateSource]);
 
   useEffect(() => {
-    const d = new Date();
-    let name = d.getMonth();
-    const el1 = document.querySelector(`[data-month-id="${name}"]`);
-    if (el1) el1.scrollIntoView();
     setDataSource(customDates);
   }, [isModalVisible]);
 
@@ -180,6 +193,7 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
     <CustomModal
       maskClosable
       closable={false}
+      onCancel={() => setIsModalVisible(false)}
       title={
         <div className="custom-modal-title-wrapper">
           <span className="custom-modal-title-heading">
@@ -197,6 +211,11 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
             </span>
             <Tags style={{ color: '#1572BB', borderRadius: '4px' }} color={'#DBF3FD'}>
               {dateSource?.length} {t('dashboard.events.addEditEvent.dates.dates')}
+              {numberOfTimes > 0 && isCustom && (
+                <>
+                  ,&nbsp;{numberOfTimes}&nbsp;{t('dashboard.events.addEditEvent.dates.times')}
+                </>
+              )}
             </Tags>
           </div>
         </div>
@@ -222,7 +241,8 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
               className="recurring-cal"
               style="border"
               language={i18n.language}
-              minDate={new Date()}
+              minDate={new Date(moment(sortedDates[0]?.initDate).subtract(1, 'days'))}
+              year={sortedDates?.length > 0 && moment(sortedDates[0]?.initDate).year()}
               enableRangeSelection={true}
               //  onRangeSelected={e =>selectDate(e) }
               onRangeSelected={async (e) => {
@@ -378,12 +398,14 @@ const RecurringModal = ({ isModalVisible, setIsModalVisible, currentLang, setCus
                             onClick={() => {
                               form.resetFields();
                               setShowAddTime(false);
+                              setSelectedDateId(null);
                             }}
                           />
                           <PrimaryButton
                             key="add-time"
                             htmlType="submit"
                             size="large"
+                            disabled={startTimeCustomWatch || endTimeCustomWatch ? false : true}
                             label={t('dashboard.events.addEditEvent.dates.modal.add')}
                           />
                         </Form.Item>

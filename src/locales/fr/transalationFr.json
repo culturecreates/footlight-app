@@ -150,9 +150,10 @@
           "monthly": "Tous les mois",
           "custom": "Personnalisé",
           "days": "Jours",
-          "editDates": "Éditer les dates",
+          "editDates": "Éditer",
           "cancel": "Annuler",
-          "addDates": "Ajouter les dates",
+          "addDates": "Ajouter",
+          "times": "times",
           "weekDays": {
             "sunday": "Lun",
             "monday": "Mar",

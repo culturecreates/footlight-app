@@ -151,9 +151,10 @@
           "monthly": "Monthly",
           "custom": "Custom",
           "days": "Days",
-          "editDates": "Edit dates",
+          "editDates": "Edit",
           "cancel": "Cancel",
-          "addDates": "Add dates",
+          "addDates": "Add",
+          "times": "times",
           "weekDays": {
             "sunday": "Sun",
             "monday": "Mon",
