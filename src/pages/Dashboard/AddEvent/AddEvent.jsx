@@ -212,6 +212,7 @@ function AddEvent() {
             collaborators = [],
             dynamicFields = [],
             recurringEvent,
+            inLanguage = [],
             image;
           let eventObj;
           if (dateType === dateTypes.SINGLE) {
@@ -271,6 +272,13 @@ function AddEvent() {
             audience = values?.targetAudience?.map((audienceId) => {
               return {
                 entityId: audienceId,
+              };
+            });
+          }
+          if (values?.inLanguage) {
+            inLanguage = values?.inLanguage?.map((inLanguageId) => {
+              return {
+                entityId: inLanguageId,
               };
             });
           }
@@ -429,6 +437,7 @@ function AddEvent() {
             ...(values?.supporters && { collaborators }),
             ...(values?.dynamicFields && { dynamicFields }),
             ...(dateTypes.MULTIPLE && { recurringEvent }),
+            inLanguage,
           };
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
             new Compressor(values?.dragger[0]?.originFileObj, {
@@ -771,6 +780,8 @@ function AddEvent() {
         if (eventData?.keywords) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
         if (eventData?.accessibilityNote?.en || eventData?.accessibilityNote?.fr)
           initialAddedFields = initialAddedFields?.concat(eventAccessibilityFieldNames?.noteWrap);
+        if (eventData?.inLanguage?.length > 0)
+          initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.inLanguage);
         setAddedFields(initialAddedFields);
         if (eventData?.recurringEvent) {
           form.setFieldsValue({
@@ -1925,6 +1936,36 @@ function AddEvent() {
                     }}
                   />
                 </Form.Item>
+                <Form.Item
+                  name={otherInformationFieldNames.inLanguage}
+                  className={otherInformationFieldNames.inLanguage}
+                  style={{
+                    display: !addedFields?.includes(otherInformationFieldNames.inLanguage) && 'none',
+                  }}
+                  label={t('dashboard.events.addEditEvent.otherInformation.eventLanguage')}
+                  initialValue={eventData?.inLanguage?.map((inLanguage) => {
+                    return inLanguage?.entityId;
+                  })}>
+                  <TreeSelectOption
+                    allowClear
+                    treeDefaultExpandAll
+                    placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
+                    notFoundContent={<NoContent />}
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'inLanguage')}
+                    tagRender={(props) => {
+                      const { closable, onClose, label } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                  />
+                </Form.Item>
               </>
               <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
                 {addedFields?.includes(otherInformationFieldNames.contact) &&
@@ -1933,7 +1974,8 @@ function AddEvent() {
                 addedFields?.includes(otherInformationFieldNames.eventLink) &&
                 addedFields?.includes(otherInformationFieldNames.videoLink) &&
                 addedFields?.includes(otherInformationFieldNames.facebookLinkWrap) &&
-                addedFields?.includes(otherInformationFieldNames.keywords) ? (
+                addedFields?.includes(otherInformationFieldNames.keywords) &&
+                addedFields?.includes(otherInformationFieldNames.inLanguage) ? (
                   <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
                 ) : (
                   otherInformationOptions.map((type) => {

@@ -688,6 +688,27 @@ function EventReadOnly() {
                       />
                     </>
                   )}
+                  {eventData?.inLanguage.length > 0 && (
+                    <>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.otherInformation.eventLanguage')}
+                      </p>
+                      <TreeSelectOption
+                        style={{ marginBottom: '1rem' }}
+                        bordered={false}
+                        open={false}
+                        disabled
+                        treeData={treeTaxonomyOptions(allTaxonomyData, user, 'inLanguage')}
+                        defaultValue={eventData?.inLanguage?.map((inLanguage) => {
+                          return inLanguage?.entityId;
+                        })}
+                        tagRender={(props) => {
+                          const { label } = props;
+                          return <Tags>{label}</Tags>;
+                        }}
+                      />
+                    </>
+                  )}
                 </div>
               </Col>
               <Col flex="233px">
