@@ -319,11 +319,17 @@ const RecurringEvents = function ({
                   open={false}
                   value={[moment(customDates[0]?.startDate), moment(customDates[customDates?.length - 1]?.startDate)]}
                   allowClear={false}
-                  inputReadOnly
+                  // inputReadOnly
                   suffixIcon={
-                    nummberofDates > 0 && (
+                    customDates?.length > 0 && (
                       <Tags style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }} color={'#DBF3FD'}>
-                        {nummberofDates} {t('dashboard.events.addEditEvent.dates.dates')}
+                        {customDates?.length} {t('dashboard.events.addEditEvent.dates.dates')}
+                        &nbsp;
+                        {numberOfTimes > 0 && formFields?.frequency === 'CUSTOM' && (
+                          <>
+                            ,&nbsp;{numberOfTimes}&nbsp;{t('dashboard.events.addEditEvent.dates.times')}
+                          </>
+                        )}
                       </Tags>
                     )
                   }
@@ -400,7 +406,7 @@ const RecurringEvents = function ({
                       <Tags style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }} color={'#DBF3FD'}>
                         {nummberofDates} {t('dashboard.events.addEditEvent.dates.dates')}
                         &nbsp;
-                        {numberOfTimes > 0 && (
+                        {numberOfTimes > 0 && formFields?.frequency === 'CUSTOM' && (
                           <>
                             ,&nbsp;{numberOfTimes}&nbsp;{t('dashboard.events.addEditEvent.dates.times')}
                           </>
