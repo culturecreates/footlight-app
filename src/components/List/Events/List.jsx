@@ -191,6 +191,13 @@ function Lists(props) {
               <div className="event-list-status">
                 <span className="event-list-status-created-by">
                   {t('dashboard.events.list.createdBy')}&nbsp;
+                  {moment
+                    .tz(eventItem?.creator?.date, eventItem?.scheduleTimezone ?? 'Canada/Eastern')
+                    .locale(lang)
+                    .format('DD-MMM-YYYY')
+                    ?.toUpperCase()}
+                  &nbsp;
+                  {t('dashboard.events.list.by')}&nbsp;
                   <Username firstName={eventItem?.creator?.firstName} lastName={eventItem?.creator?.lastName} />
                 </span>
                 {eventItem?.modifier?.firstName && eventItem?.modifier?.lastName ? (
