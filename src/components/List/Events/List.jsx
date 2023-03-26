@@ -18,7 +18,7 @@ import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 import { dateTypes } from '../../../constants/dateTypes';
 import { userRoles } from '../../../constants/userRoles';
 import { eventStatus } from '../../../constants/eventStatus';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 const { useBreakpoint } = Grid;
 
@@ -33,8 +33,8 @@ function Lists(props) {
   const { user } = useSelector(getUserDetails);
   const totalCount = data?.totalCount;
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
+  const calendar = user?.roles?.filter((calendar) => {
+    return calendar?.calendarId === calendarId;
   });
 
   const listItemHandler = (id, creatorId, publishState) => {
@@ -119,7 +119,11 @@ function Lists(props) {
               <div className="event-list-title">
                 <span className="event-list-title-heading">
                   {(eventItem?.startDate || eventItem?.startDateTime) &&
-                    moment(eventItem?.startDate ?? eventItem?.startDateTime)
+                    moment
+                      .tz(
+                        eventItem?.startDate ?? eventItem?.startDateTime,
+                        eventItem?.scheduleTimezone ?? 'Canada/Eastern',
+                      )
                       .locale(lang)
                       .format('DD-MMM-YYYY')
                       ?.toUpperCase()}
@@ -132,7 +136,11 @@ function Lists(props) {
                   ) === dateTypes.RANGE && (
                     <>
                       &nbsp;{t('dashboard.events.list.to')}&nbsp;
-                      {moment(eventItem?.endDate ?? eventItem?.endDateTime)
+                      {moment
+                        .tz(
+                          eventItem?.endDate ?? eventItem?.endDateTime,
+                          eventItem?.scheduleTimezone ?? 'Canada/Eastern',
+                        )
                         .locale(lang)
                         .format('DD-MMM-YYYY')
                         ?.toUpperCase()}
@@ -183,12 +191,23 @@ function Lists(props) {
               <div className="event-list-status">
                 <span className="event-list-status-created-by">
                   {t('dashboard.events.list.createdBy')}&nbsp;
+                  {moment
+                    .tz(eventItem?.creator?.date, eventItem?.scheduleTimezone ?? 'Canada/Eastern')
+                    .locale(lang)
+                    .format('DD-MMM-YYYY')
+                    ?.toUpperCase()}
+                  &nbsp;
+                  {t('dashboard.events.list.by')}&nbsp;
                   <Username firstName={eventItem?.creator?.firstName} lastName={eventItem?.creator?.lastName} />
                 </span>
                 {eventItem?.modifier?.firstName && eventItem?.modifier?.lastName ? (
                   <span className="event-list-status-updated-by">
                     {t('dashboard.events.list.updatedBy')}&nbsp;
-                    {moment(eventItem?.modifier?.date).locale(lang).format('DD-MMM-YYYY')?.toUpperCase()}
+                    {moment
+                      .tz(eventItem?.modifier?.date, eventItem?.scheduleTimezone ?? 'Canada/Eastern')
+                      .locale(lang)
+                      .format('DD-MMM-YYYY')
+                      ?.toUpperCase()}
                     &nbsp;
                     {t('dashboard.events.list.by')}&nbsp;
                     <Username firstName={eventItem?.modifier?.firstName} lastName={eventItem?.modifier?.lastName} />

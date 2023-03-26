@@ -18,6 +18,29 @@ export const usersApi = createApi({
     getUserRoles: builder.query({
       query: () => `users/roles`,
     }),
+    getCurrentUser: builder.query({
+      query: ({ calendarId }) => {
+        return {
+          url: `users/current`,
+          method: 'GET',
+          headers: {
+            'calendar-id': calendarId,
+          },
+        };
+      },
+    }),
+    updateCurrentUser: builder.mutation({
+      query: ({ calendarId, body }) => {
+        return {
+          url: `users/current`,
+          method: 'PATCH',
+          headers: {
+            'calendar-id': calendarId,
+          },
+          body,
+        };
+      },
+    }),
     forgotPassword: builder.mutation({
       query: ({ email, language }) => {
         return {
@@ -44,5 +67,11 @@ export const usersApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetUserRolesQuery, useForgotPasswordMutation, useResetPasswordMutation, useGetAllUsersQuery } =
-  usersApi;
+export const {
+  useGetUserRolesQuery,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
+  useGetAllUsersQuery,
+  useGetCurrentUserQuery,
+  useUpdateCurrentUserMutation,
+} = usersApi;

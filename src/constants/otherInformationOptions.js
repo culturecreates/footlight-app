@@ -7,6 +7,7 @@ export const otherInformationFieldNames = {
   videoLink: 'videoLink',
   facebookLinkWrap: 'facebookLinkWrap',
   keywords: 'keywords',
+  inLanguage: 'inLanguage',
 };
 export const otherInformationOptions = [
   {
@@ -65,5 +66,14 @@ export const otherInformationOptions = [
     disabled: false,
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.keywords')}</Translation>,
     tooltip: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.keywordsTooltip')}</Translation>,
+  },
+  {
+    type: 'inLanguage',
+    fieldNames: otherInformationFieldNames.inLanguage,
+    disabled: false,
+    label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.eventLanguage')}</Translation>,
+    tooltip: (
+      <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.eventLanguageTooltip')}</Translation>
+    ),
   },
 ];

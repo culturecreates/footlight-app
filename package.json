@@ -13,6 +13,8 @@
     "i18next": "^22.0.5",
     "js-cookie": "^3.0.1",
     "moment": "^2.29.4",
+    "rc-year-calendar": "^1.0.2",
+    "moment-timezone": "^0.5.41",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^12.0.0",
@@ -21,6 +23,7 @@
     "react-router-dom": "^6.4.3",
     "react-scripts": "5.0.1",
     "redux-persist": "^6.0.0",
+    "uniqid": "^5.4.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

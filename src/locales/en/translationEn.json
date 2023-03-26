@@ -54,6 +54,19 @@
     "successNotification": "Success! Your password has been reset.",
     "failure": "The reset information is incorrect or has expired."
   },
+  "createAccount": {
+    "createYourAccount": "Create your account",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm new password",
+    "acceptInvitation": "Accept invitation",
+    "passwordPlaceHolder": "Enter your password",
+    "successNotification": "Success! Your account has been created.",
+    "errorNotification": "Something went wrong. Please try again or contact support@culturecreates.com.",
+    "acceptInvitationSuccess": "Success! Invitation accepted."
+  },
   "dashboard": {
     "topNavigation": {
       "userProfile": "User Profile",
@@ -131,7 +144,41 @@
           "dateRangeTooltip": "Use when your event spans multiple dates such as an art exhibition.",
           "eventCancelled": "Cancelled",
           "eventPostponed": "Postponed",
-          "eventScheduled": "Scheduled"
+          "eventScheduled": "Scheduled",
+          "frequency": "Frequency",
+          "daily": "Daily",
+          "weekly": "Weekly",
+          "monthly": "Monthly",
+          "custom": "Custom",
+          "days": "Days",
+          "editDates": "Edit",
+          "cancel": "Cancel",
+          "addDates": "Add",
+          "times": "times",
+          "weekDays": {
+            "sunday": "Sun",
+            "monday": "Mon",
+            "tuesday": "Tue",
+            "wednesday": "Wed",
+            "thursday": "Thu",
+            "friday": "Fri",
+            "saturday": "Sat"
+          },
+          "modal": {
+            "titleHeading": "Select date(s) for your event",
+            "startTime": "Start time",
+            "endTime": "End time",
+            "addTime": "Add another time",
+            "add": "Add",
+            "addTimeToAllDates": "Add time to all dates",
+            "addTimeToAllDatesWarning": "Are you sure? This action cannot be undone.",
+            "duplicateTimes": "Duplicate times",
+            "replaceTimeonFolllowingDates": "Replace the times on the following dates : ",
+            "selectAll": "Select all",
+            "unselectAll": "Unselect all",
+            "cancel": "Cancel",
+            "apply": "Apply"
+          }
         },
         "location": {
           "title": "Location",
@@ -202,7 +249,10 @@
             "placeHolderPhoneNumber": "Enter phone number",
             "placeHolderEmail": "Enter email address",
             "contactTooltip": "Add a contact for your event. You can create one or copy the contact information of the Organizer."
-          }
+          },
+          "eventLanguage": "Event language",
+          "eventLanguagePlaceholder": "Select language of event",
+          "eventLanguageTooltip":"Select French, English or Bilingual."
         },
         "eventAccessibility": {
           "title": "Event accessibility",
@@ -258,7 +308,8 @@
           "url": "Enter a valid url.",
           "errorPublishing": "This event needs more information before it can be published.",
           "errorReview": "This event needs more information before it can be sent for review.",
-          "errorDraft": "This event needs more information before it can be saved."
+          "errorDraft": "This event needs more information before it can be saved.",
+          "errorImage": "This image cannot be saved. Adjust the image or try a different one."
         }
       },
       "publishOptions": {
@@ -273,7 +324,7 @@
         "pendingReview": "Pending Review"
       },
       "list": {
-        "createdBy": "Created by",
+        "createdBy": "Created",
         "updatedBy": "Updated",
         "by": "by",
         "to": "to",
@@ -284,6 +335,28 @@
         "description": "Are you sure you want to permanently delete this event?",
         "ok": "OK",
         "cancel": "Cancel"
+      }
+    },
+    "userProfile": {
+      "userProfile": "User Profile",
+      "subHeading": "Edit your user settings here.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "languagePreference": "Language preference",
+      "changePassword": "Change Password",
+      "save": "Save",
+      "password": "Password",
+      "passwordPlaceHolder": "Enter password",
+      "newPassword": "New Password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmNewPassword": "Confirm new password",
+      "confirmNewPasswordPlaceHolder": "Confirm new password",
+      "cancel": "Cancel",
+      "changePasswordButton": "Change password",
+      "validations": {
+        "emptyFirstName": "Enter your first name",
+        "emptyLastName": "Enter your last name"
       }
     }
   },
@@ -301,7 +374,7 @@
           "description": "The server is not responding. Please try again later."
         },
         "FETCH_ERROR": {
-          "message": "The Internet connection appears to be offline."
+          "message": "Unable to complete the request."
         },
         "403": {
           "message": "Not Authorized"
