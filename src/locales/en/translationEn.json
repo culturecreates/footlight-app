@@ -151,10 +151,9 @@
           "monthly": "Monthly",
           "custom": "Custom",
           "days": "Days",
-          "editDates": "Edit",
+          "editDates": "Edit dates",
           "cancel": "Cancel",
-          "addDates": "Add",
-          "times": "times",
+          "addDates": "Add dates",
           "weekDays": {
             "sunday": "Sun",
             "monday": "Mon",
@@ -249,7 +248,9 @@
             "placeHolderPhoneNumber": "Enter phone number",
             "placeHolderEmail": "Enter email address",
             "contactTooltip": "Add a contact for your event. You can create one or copy the contact information of the Organizer."
-          }
+          },
+          "eventLanguage": "Event language",
+          "eventLanguagePlaceholder": "Select language of event"
         },
         "eventAccessibility": {
           "title": "Event accessibility",

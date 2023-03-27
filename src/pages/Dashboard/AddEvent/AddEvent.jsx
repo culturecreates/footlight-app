@@ -212,6 +212,7 @@ function AddEvent() {
             collaborators = [],
             dynamicFields = [],
             recurringEvent,
+            inLanguage = [],
             image;
           let eventObj;
           if (dateType === dateTypes.SINGLE) {
@@ -271,6 +272,13 @@ function AddEvent() {
             audience = values?.targetAudience?.map((audienceId) => {
               return {
                 entityId: audienceId,
+              };
+            });
+          }
+          if (values?.inLanguage) {
+            inLanguage = values?.inLanguage?.map((inLanguageId) => {
+              return {
+                entityId: inLanguageId,
               };
             });
           }
@@ -429,6 +437,7 @@ function AddEvent() {
             ...(values?.supporters && { collaborators }),
             ...(values?.dynamicFields && { dynamicFields }),
             ...(dateTypes.MULTIPLE && { recurringEvent }),
+            inLanguage,
           };
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
             new Compressor(values?.dragger[0]?.originFileObj, {
@@ -778,18 +787,14 @@ function AddEvent() {
             startDateRecur: [
               moment(
                 moment(
-                  eventData?.recurringEvent?.startDate
-                    ? eventData?.recurringEvent?.startDate
-                    : eventData?.startDate ?? eventData?.startDateTime,
+                  eventData?.recurringEvent?.startDate ? eventData?.recurringEvent?.startDate : eventData?.startDate,
                   'YYYY-MM-DD',
                 ).format('DD-MM-YYYY'),
                 'DD-MM-YYYY',
               ),
               moment(
                 moment(
-                  eventData?.recurringEvent?.endDate
-                    ? eventData?.recurringEvent?.endDate
-                    : eventData?.endDate ?? eventData?.endDateTime,
+                  eventData?.recurringEvent?.endDate ? eventData?.recurringEvent?.endDate : eventData?.endDate,
                   'YYYY-MM-DD',
                 ).format('DD-MM-YYYY'),
                 'DD-MM-YYYY',
@@ -808,8 +813,6 @@ function AddEvent() {
             startTimeRecur: eventData?.recurringEvent?.startTime
               ? moment(eventData?.recurringEvent?.startTime, 'HH:mm')
               : undefined,
-            frequency: eventData?.recurringEvent?.frequency,
-            daysOfWeek: eventData?.recurringEvent?.weekDays,
           };
           setFormValue(obj);
         }
@@ -1925,6 +1928,36 @@ function AddEvent() {
                     }}
                   />
                 </Form.Item>
+                <Form.Item
+                  name={otherInformationFieldNames.inLanguage}
+                  className={otherInformationFieldNames.inLanguage}
+                  style={{
+                    display: !addedFields?.includes(otherInformationFieldNames.inLanguage) && 'none',
+                  }}
+                  label={t('dashboard.events.addEditEvent.otherInformation.eventLanguage')}
+                  initialValue={eventData?.inLanguage?.map((inLanguage) => {
+                    return inLanguage?.entityId;
+                  })}>
+                  <TreeSelectOption
+                    allowClear
+                    treeDefaultExpandAll
+                    placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
+                    notFoundContent={<NoContent />}
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'inLanguage')}
+                    tagRender={(props) => {
+                      const { closable, onClose, label } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                  />
+                </Form.Item>
               </>
               <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
                 {addedFields?.includes(otherInformationFieldNames.contact) &&
@@ -1933,7 +1966,8 @@ function AddEvent() {
                 addedFields?.includes(otherInformationFieldNames.eventLink) &&
                 addedFields?.includes(otherInformationFieldNames.videoLink) &&
                 addedFields?.includes(otherInformationFieldNames.facebookLinkWrap) &&
-                addedFields?.includes(otherInformationFieldNames.keywords) ? (
+                addedFields?.includes(otherInformationFieldNames.keywords) &&
+                addedFields?.includes(otherInformationFieldNames.inLanguage) ? (
                   <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
                 ) : (
                   otherInformationOptions.map((type) => {
