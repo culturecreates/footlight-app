@@ -522,6 +522,7 @@ const RecurringEvents = function ({
         customDates={customDates}
         nummberofDates={nummberofDates}
         numberOfTimes={numberOfTimes}
+        setNumberOfTimes={setNumberOfTimes}
         isCustom={isCustom}
       />
     </div>

@@ -28,6 +28,7 @@ const RecurringModal = ({
   setCustomDates,
   customDates,
   numberOfTimes,
+  setNumberOfTimes,
   isCustom,
 }) => {
   const [dateSource, setDataSource] = useState([]);
@@ -86,13 +87,18 @@ const RecurringModal = ({
     setUpdateAllTime(false);
   };
   useEffect(() => {
-    const getMonthSorted = handleDateSort(dateSource);
+    const getMonthSorted = handleDateSort(dateSource?.filter((date) => !date?.isDeleted));
     setSortedDates(getMonthSorted);
     let month = moment(getMonthSorted[0]?.initDate).format('MMMM');
     month = moment().month(month).format('M');
     month = month - 1;
     const el1 = document.querySelector(`[data-month-id="${month}"]`);
     if (el1) el1?.scrollIntoView();
+    let numTimes = 0;
+    dateSource?.map((date) => {
+      if (!date?.isDeleted) numTimes = numTimes + (date?.time?.length ?? 0);
+    });
+    setNumberOfTimes(numTimes);
   }, [dateSource]);
 
   useEffect(() => {
@@ -210,7 +216,7 @@ const RecurringModal = ({
                     .format('MMMM DD, YYYY')}
             </span>
             <Tags style={{ color: '#1572BB', borderRadius: '4px' }} color={'#DBF3FD'}>
-              {dateSource?.length} {t('dashboard.events.addEditEvent.dates.dates')}
+              {sortedDates?.length} {t('dashboard.events.addEditEvent.dates.dates')}
               {numberOfTimes > 0 && isCustom && (
                 <>
                   ,&nbsp;{numberOfTimes}&nbsp;{t('dashboard.events.addEditEvent.dates.times')}
