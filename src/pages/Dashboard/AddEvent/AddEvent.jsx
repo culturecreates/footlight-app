@@ -155,8 +155,8 @@ function AddEvent() {
           calendarId,
         })
           .unwrap()
-          .then(() => {
-            resolve();
+          .then((response) => {
+            resolve(response?.id);
             navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
           })
           .catch((errorInfo) => {
@@ -453,7 +453,7 @@ function AddEvent() {
                       image = response?.data;
                       eventObj['image'] = image;
                       addUpdateEventApiHandler(eventObj)
-                        .then(() => resolve())
+                        .then((id) => resolve(id))
                         .catch((error) => {
                           reject();
                           console.log(error);
@@ -484,7 +484,7 @@ function AddEvent() {
             }
 
             addUpdateEventApiHandler(eventObj)
-              .then(() => resolve())
+              .then((id) => resolve(id))
               .catch((error) => {
                 reject();
                 console.log(error);
@@ -536,8 +536,8 @@ function AddEvent() {
       ])
       .then(() => {
         saveAsDraftHandler(event)
-          .then(() => {
-            updateEventState({ id: eventId, calendarId })
+          .then((id) => {
+            updateEventState({ id: eventId ?? id, calendarId })
               .unwrap()
               .then(() =>
                 navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`).catch((error) => console.log(error)),
