@@ -29,9 +29,9 @@ const UserProfileDropDown = () => {
         break;
       case 'help':
         if (i18n.language === 'en')
-          window.open('https://footlight.gitbook.io/footlight-cms-guide', '_blank', 'noopener,noreferrer');
+          window.open(`${process.env.REACT_APP_HELP_EN_URL}`, '_blank', 'noopener,noreferrer');
         else if (i18n.language === 'fr')
-          window.open('https://footlight.gitbook.io/guide-footlight-cms', '_blank', 'noopener,noreferrer');
+          window.open(`${process.env.REACT_APP_HELP_FR_URL}`, '_blank', 'noopener,noreferrer');
         break;
       case 'logOut':
         navigate(PathName.Login, { state: { previousPath: 'logout' } });
