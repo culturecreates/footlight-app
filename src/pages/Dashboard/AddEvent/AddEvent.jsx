@@ -780,6 +780,8 @@ function AddEvent() {
         if (eventData?.keywords) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
         if (eventData?.accessibilityNote?.en || eventData?.accessibilityNote?.fr)
           initialAddedFields = initialAddedFields?.concat(eventAccessibilityFieldNames?.noteWrap);
+        if (eventData?.inLanguage?.length > 0)
+          initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.inLanguage);
         setAddedFields(initialAddedFields);
         if (eventData?.recurringEvent) {
           form.setFieldsValue({
