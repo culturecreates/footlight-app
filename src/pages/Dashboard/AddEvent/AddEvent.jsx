@@ -147,7 +147,7 @@ function AddEvent() {
     let dateTime = moment(dateSelected + ' ' + timeSelected, 'DD/MM/YYYY HH:mm a');
     return moment(dateTime).toISOString();
   };
-  const addUpdateEventApiHandler = (eventObj) => {
+  const addUpdateEventApiHandler = (eventObj, toggle) => {
     var promise = new Promise(function (resolve, reject) {
       if (!eventId || eventId === '') {
         addEvent({
@@ -157,7 +157,7 @@ function AddEvent() {
           .unwrap()
           .then((response) => {
             resolve(response?.id);
-            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+            if (!toggle) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
           })
           .catch((errorInfo) => {
             reject();
@@ -172,7 +172,7 @@ function AddEvent() {
           .unwrap()
           .then(() => {
             resolve();
-            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+            if (!toggle) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
           })
           .catch((error) => {
             reject();
@@ -182,7 +182,7 @@ function AddEvent() {
     });
     return promise;
   };
-  const saveAsDraftHandler = (event) => {
+  const saveAsDraftHandler = (event, toggle = false) => {
     event?.preventDefault();
     setShowDialog(false);
     var promise = new Promise(function (resolve, reject) {
@@ -452,7 +452,7 @@ function AddEvent() {
                     .then((response) => {
                       image = response?.data;
                       eventObj['image'] = image;
-                      addUpdateEventApiHandler(eventObj)
+                      addUpdateEventApiHandler(eventObj, toggle)
                         .then((id) => resolve(id))
                         .catch((error) => {
                           reject();
@@ -483,7 +483,7 @@ function AddEvent() {
                 };
             }
 
-            addUpdateEventApiHandler(eventObj)
+            addUpdateEventApiHandler(eventObj, toggle)
               .then((id) => resolve(id))
               .catch((error) => {
                 reject();
@@ -535,7 +535,7 @@ function AddEvent() {
         'ticketLink',
       ])
       .then(() => {
-        saveAsDraftHandler(event)
+        saveAsDraftHandler(event, true)
           .then((id) => {
             updateEventState({ id: eventId ?? id, calendarId })
               .unwrap()
