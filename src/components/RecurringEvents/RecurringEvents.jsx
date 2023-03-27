@@ -377,7 +377,9 @@ const RecurringEvents = function ({
             name="startDateRecur"
             className="status-comment-item"
             label={t('dashboard.events.addEditEvent.dates.multipleDates')}
-            rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
+            rules={[
+              { required: isCustom ? false : true, message: t('dashboard.events.addEditEvent.validations.date') },
+            ]}>
             <DateRangePicker
               style={{ width: '423px' }}
               disabledDate={(d) => !d || d.isSameOrBefore(endDisable)}
@@ -398,6 +400,7 @@ const RecurringEvents = function ({
           </Form.Item>
         </div>
       </div>
+
       {!isCustom && (
         <>
           {!isCustom && (
@@ -505,7 +508,7 @@ const RecurringEvents = function ({
       </Form.Item>
       <div className="customize-div">
         {/* {nummberofDates !== 0 && <div> {nummberofDates + ' Dates'}</div>} */}
-        {(nummberofDates || formFields?.startDateRecur?.length == 2) > 0 && (
+        {(nummberofDates || formFields?.startDateRecur?.length == 2 || isCustom) > 0 && (
           <TextButton
             size="large"
             icon={<ControlOutlined />}
@@ -524,6 +527,8 @@ const RecurringEvents = function ({
         numberOfTimes={numberOfTimes}
         setNumberOfTimes={setNumberOfTimes}
         isCustom={isCustom}
+        parentForm={form}
+        parentSetFormState={setFormFields}
       />
     </div>
   );

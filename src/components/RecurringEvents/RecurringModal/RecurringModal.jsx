@@ -30,6 +30,8 @@ const RecurringModal = ({
   numberOfTimes,
   setNumberOfTimes,
   isCustom,
+  // parentForm,
+  // parentSetFormState,
 }) => {
   const [dateSource, setDataSource] = useState([]);
   const [test, setTest] = useState();
@@ -99,6 +101,18 @@ const RecurringModal = ({
       if (!date?.isDeleted) numTimes = numTimes + (date?.time?.length ?? 0);
     });
     setNumberOfTimes(numTimes);
+    // parentForm.setFieldsValue({
+    //   ['startDateRecur']: [
+    //     moment(getMonthSorted[0]?.initDate),
+    //     moment(getMonthSorted[getMonthSorted?.length - 1]?.initDate),
+    //   ],
+    // });
+    // parentSetFormState({
+    //   ['startDateRecur']: [
+    //     moment(getMonthSorted[0]?.initDate),
+    //     moment(getMonthSorted[getMonthSorted?.length - 1]?.initDate),
+    //   ],
+    // });
   }, [dateSource]);
 
   useEffect(() => {
@@ -247,8 +261,12 @@ const RecurringModal = ({
               className="recurring-cal"
               style="border"
               language={i18n.language}
-              minDate={new Date(moment(sortedDates[0]?.initDate).subtract(1, 'days'))}
-              year={sortedDates?.length > 0 && moment(sortedDates[0]?.initDate).year()}
+              minDate={
+                sortedDates[0]?.initDate
+                  ? new Date(moment(sortedDates[0]?.initDate).subtract(1, 'days'))
+                  : new Date(moment().subtract(1, 'days'))
+              }
+              year={sortedDates?.length > 0 ? moment(sortedDates[0]?.initDate).year() : moment().year()}
               enableRangeSelection={true}
               //  onRangeSelected={e =>selectDate(e) }
               onRangeSelected={async (e) => {
