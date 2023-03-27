@@ -70,7 +70,8 @@
   "dashboard": {
     "topNavigation": {
       "userProfile": "Profil",
-      "logOut": "Déconnexion"
+      "logOut": "Déconnexion",
+      "help": "Aide"
     },
     "sidebar": {
       "events": "Événements",

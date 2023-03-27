@@ -70,7 +70,8 @@
   "dashboard": {
     "topNavigation": {
       "userProfile": "User Profile",
-      "logOut": "Log out"
+      "logOut": "Log out",
+      "help":"Help"
     },
     "sidebar": {
       "events": "Events",
