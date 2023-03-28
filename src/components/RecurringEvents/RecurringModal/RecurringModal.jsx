@@ -46,6 +46,7 @@ const RecurringModal = ({
   const [selectedDateId, setSelectedDateId] = useState('-100');
   const [selectedCopyTime, setSelectedCopyTime] = useState();
   const [sortedDates, setSortedDates] = useState([]);
+  const [isCalendarRenderComplete, setIsCalendarRenderComplete] = useState(false);
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const startTimeCustomWatch = Form.useWatch('startTimeCustom', form);
@@ -125,6 +126,18 @@ const RecurringModal = ({
     setDataSource([]);
     setIsModalVisible(false);
   };
+  useEffect(() => {
+    if (isCalendarRenderComplete) {
+      let month;
+      const getMonthSorted = handleDateSort(dateSource?.filter((date) => !date?.isDeleted));
+      if (getMonthSorted?.length > 0) month = moment(getMonthSorted[0]?.initDate).format('MMMM');
+      else month = moment().format('MMMM');
+      month = moment().month(month).format('M');
+      month = month - 1;
+      const el1 = document.querySelector(`[data-month-id="${month}"]`);
+      if (el1) el1?.scrollIntoView({ block: 'center' });
+    }
+  }, [isCalendarRenderComplete]);
 
   useEffect(() => {
     if (test) {
@@ -297,12 +310,7 @@ const RecurringModal = ({
               }}
               dataSource={dateSource.filter((item) => !item.isDeleted)}
               onRenderEnd={() => {
-                const getMonthSorted = handleDateSort(dateSource?.filter((date) => !date?.isDeleted));
-                let month = moment(getMonthSorted[0]?.initDate).format('MMMM');
-                month = moment().month(month).format('M');
-                month = month - 1;
-                const el1 = document.querySelector(`[data-month-id="${month}"]`);
-                if (el1) el1?.scrollIntoView();
+                setIsCalendarRenderComplete(true);
               }}
             />
           )}
