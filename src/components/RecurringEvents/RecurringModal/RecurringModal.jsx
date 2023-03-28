@@ -20,6 +20,8 @@ import PrimaryButton from '../../Button/Primary';
 import Tags from '../../Tags/Common/Tags';
 import TimePickerStyled from '../../TimePicker/TimePicker';
 import i18n from 'i18next';
+import { subEventsCountHandler } from '../../../utils/subEventsCountHandler';
+import { pluralize } from '../../../utils/pluralise';
 
 const RecurringModal = ({
   isModalVisible,
@@ -27,11 +29,13 @@ const RecurringModal = ({
   currentLang,
   setCustomDates,
   customDates,
-  numberOfTimes,
+  // numberOfTimes,
   setNumberOfTimes,
-  isCustom,
+  // isCustom,
   // parentForm,
   // parentSetFormState,
+  subEventCount,
+  setSubEventCount,
 }) => {
   const [dateSource, setDataSource] = useState([]);
   const [test, setTest] = useState();
@@ -101,18 +105,7 @@ const RecurringModal = ({
       if (!date?.isDeleted) numTimes = numTimes + (date?.time?.length ?? 0);
     });
     setNumberOfTimes(numTimes);
-    // parentForm.setFieldsValue({
-    //   ['startDateRecur']: [
-    //     moment(getMonthSorted[0]?.initDate),
-    //     moment(getMonthSorted[getMonthSorted?.length - 1]?.initDate),
-    //   ],
-    // });
-    // parentSetFormState({
-    //   ['startDateRecur']: [
-    //     moment(getMonthSorted[0]?.initDate),
-    //     moment(getMonthSorted[getMonthSorted?.length - 1]?.initDate),
-    //   ],
-    // });
+    setSubEventCount(subEventsCountHandler(dateSource));
   }, [dateSource]);
 
   useEffect(() => {
@@ -230,12 +223,7 @@ const RecurringModal = ({
                     .format('MMMM DD, YYYY')}
             </span>
             <Tags style={{ color: '#1572BB', borderRadius: '4px' }} color={'#DBF3FD'}>
-              {sortedDates?.length} {t('dashboard.events.addEditEvent.dates.dates')}
-              {numberOfTimes > 0 && isCustom && (
-                <>
-                  ,&nbsp;{numberOfTimes}&nbsp;{t('dashboard.events.addEditEvent.dates.times')}
-                </>
-              )}
+              {pluralize(subEventCount, t('dashboard.events.list.event'))}
             </Tags>
           </div>
         </div>

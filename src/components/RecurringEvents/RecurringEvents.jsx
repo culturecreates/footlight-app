@@ -29,6 +29,7 @@ const RecurringEvents = function ({
   const [isCustom, setIsCustom] = useState(false);
   const [selectedWeekDays, setSelectedWeekDays] = useState([]);
   const [dateModified, setDateModified] = useState(false);
+  const [subEventCount, setSubEventCount] = useState(0);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -541,6 +542,8 @@ const RecurringEvents = function ({
         isCustom={isCustom}
         parentForm={form}
         parentSetFormState={setFormFields}
+        subEventCount={subEventCount}
+        setSubEventCount={setSubEventCount}
       />
     </div>
   );
