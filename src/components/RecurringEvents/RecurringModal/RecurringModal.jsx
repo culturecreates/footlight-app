@@ -95,11 +95,11 @@ const RecurringModal = ({
   useEffect(() => {
     const getMonthSorted = handleDateSort(dateSource?.filter((date) => !date?.isDeleted));
     setSortedDates(getMonthSorted);
-    let month = moment(getMonthSorted[0]?.initDate).format('MMMM');
-    month = moment().month(month).format('M');
-    month = month - 1;
-    const el1 = document.querySelector(`[data-month-id="${month}"]`);
-    if (el1) el1?.scrollIntoView();
+    // let month = moment(getMonthSorted[0]?.initDate).format('MMMM');
+    // month = moment().month(month).format('M');
+    // month = month - 1;
+    // const el1 = document.querySelector(`[data-month-id="${month}"]`);
+    // if (el1) el1?.scrollIntoView();
     let numTimes = 0;
     dateSource?.map((date) => {
       if (!date?.isDeleted) numTimes = numTimes + (date?.time?.length ?? 0);
@@ -296,6 +296,14 @@ const RecurringModal = ({
                 }
               }}
               dataSource={dateSource.filter((item) => !item.isDeleted)}
+              onRenderEnd={() => {
+                const getMonthSorted = handleDateSort(dateSource?.filter((date) => !date?.isDeleted));
+                let month = moment(getMonthSorted[0]?.initDate).format('MMMM');
+                month = moment().month(month).format('M');
+                month = month - 1;
+                const el1 = document.querySelector(`[data-month-id="${month}"]`);
+                if (el1) el1?.scrollIntoView();
+              }}
             />
           )}
         </Col>
