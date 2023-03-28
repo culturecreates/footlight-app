@@ -164,6 +164,10 @@ function AddEvent() {
             console.log(errorInfo);
           });
       } else {
+        eventObj = {
+          ...eventObj,
+          sameAs: eventData?.sameAs,
+        };
         updateEvent({
           data: eventObj,
           calendarId,
