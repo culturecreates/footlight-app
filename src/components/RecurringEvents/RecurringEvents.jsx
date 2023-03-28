@@ -126,8 +126,10 @@ const RecurringEvents = function ({
   useEffect(() => {
     if (formFields && formFields?.startDateRecur) {
       if (formFields?.frequency === 'DAILY') {
+        setDateModified(false);
         getNumberOfDays(formFields?.startDateRecur[0], formFields?.startDateRecur[1]);
       } else if (formFields?.frequency === 'WEEKLY') {
+        setDateModified(false);
         getNumberOfWeekDays(
           moment(new Date(formFields?.startDateRecur[0]), 'YYYY,MM,DD'),
           moment(new Date(formFields?.startDateRecur[1]), 'YYYY,MM,DD'),

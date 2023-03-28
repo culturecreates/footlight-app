@@ -111,6 +111,10 @@ const RecurringModal = ({
   useEffect(() => {
     setDataSource(customDates);
   }, [isModalVisible]);
+  useEffect(() => {
+    const el1 = document.getElementsByClassName(selectedDateId);
+    if (el1) el1[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, [selectedDateId]);
 
   const handleOk = () => {
     setCustomDates(dateSource);
@@ -402,7 +406,7 @@ const RecurringModal = ({
                         {t('dashboard.events.addEditEvent.dates.modal.addTimeToAllDates')}
                       </Checkbox>
                       <div>
-                        <Form.Item className="add-time-items">
+                        <Form.Item className={`add-time-items  ${selectedDateId}`}>
                           <TextButton
                             key="cancel"
                             size="large"
