@@ -12,6 +12,8 @@ import TimePickerStyled from '../TimePicker/TimePicker';
 import i18n from 'i18next';
 import TextButton from '../Button/Text';
 import Tags from '../Tags/Common/Tags';
+import { pluralize } from '../../utils/pluralise';
+import { subEventsCountHandler } from '../../utils/subEventsCountHandler';
 
 const RecurringEvents = function ({
   currentLang,
@@ -149,6 +151,7 @@ const RecurringEvents = function ({
     let numTimes = 0;
     customDates?.map((date) => (numTimes = numTimes + date?.time?.length));
     setNumberOfTimes(numTimes);
+    setSubEventCount(subEventsCountHandler(customDates));
   }, [customDates]);
 
   const getNumberOfWeekDays = async (start, end, daysofweek) => {
@@ -275,18 +278,7 @@ const RecurringEvents = function ({
       daysOfWeek: selectedWeekDaysArray,
     });
   };
-  // const subEventsCountHandler = (events) => {
-  //   var numberOfSubEvents = 0;
-  //   events?.map((event) => {
-  //     if (!event?.isDeleted) {
-  //       if (event?.time?.length > 0) numberOfSubEvents = numberOfSubEvents + event?.time?.length;
-  //       else if (event?.time?.length === 0 || !event?.time) {
-  //         numberOfSubEvents = numberOfSubEvents + 1;
-  //       }
-  //     }
-  //   });
-  //   return numberOfSubEvents;
-  // };
+
   return (
     <div className="recurring-events-wrapper">
       {/* <Form.Item
@@ -396,16 +388,13 @@ const RecurringEvents = function ({
             <DateRangePicker
               style={{ width: '423px' }}
               disabledDate={(d) => !d || d.isSameOrBefore(endDisable)}
+              disabled={
+                (isCustom || formFields?.frequency === 'CUSTOM') && formFields?.startDateRecur?.length == 2 && true
+              }
               suffixIcon={
-                nummberofDates > 0 && (
-                  <Tags style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }} color={'#DBF3FD'}>
-                    {nummberofDates} {t('dashboard.events.addEditEvent.dates.dates')}
-                    &nbsp;
-                    {numberOfTimes > 0 && isCustom && (
-                      <>
-                        ,&nbsp;{numberOfTimes}&nbsp;{t('dashboard.events.addEditEvent.dates.times')}
-                      </>
-                    )}
+                subEventCount > 0 && (
+                  <Tags style={{ color: '#1572BB', borderRadius: '4px' }} color={'#DBF3FD'}>
+                    {pluralize(subEventCount, t('dashboard.events.list.event'))}
                   </Tags>
                 )
               }
