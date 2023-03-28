@@ -70,7 +70,8 @@
   "dashboard": {
     "topNavigation": {
       "userProfile": "User Profile",
-      "logOut": "Log out"
+      "logOut": "Log out",
+      "help": "Help"
     },
     "sidebar": {
       "events": "Events",
@@ -165,7 +166,7 @@
             "saturday": "Sat"
           },
           "modal": {
-            "titleHeading": "Select date(s) for your event",
+            "titleHeading": "Select dates for your event",
             "startTime": "Start time",
             "endTime": "End time",
             "addTime": "Add another time",
@@ -252,7 +253,7 @@
           },
           "eventLanguage": "Event language",
           "eventLanguagePlaceholder": "Select language of event",
-          "eventLanguageTooltip":"Select French, English or Bilingual."
+          "eventLanguageTooltip": "Select French, English or Bilingual."
         },
         "eventAccessibility": {
           "title": "Event accessibility",
@@ -328,7 +329,7 @@
         "updatedBy": "Updated",
         "by": "by",
         "to": "to",
-        "event": "event"
+        "event": "occurence"
       },
       "deleteEvent": {
         "title": "Confirm Delete",

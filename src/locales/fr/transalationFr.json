@@ -70,7 +70,8 @@
   "dashboard": {
     "topNavigation": {
       "userProfile": "Profil",
-      "logOut": "Déconnexion"
+      "logOut": "Déconnexion",
+      "help": "Aide"
     },
     "sidebar": {
       "events": "Événements",
@@ -327,7 +328,7 @@
         "updatedBy": "Modifié le",
         "by": "par",
         "to": "au",
-        "event": "événement"
+        "event": "occurence"
       },
       "deleteEvent": {
         "title": "Confirmer la suppression",

@@ -5,30 +5,39 @@ import './UserProfileDropDown.css';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { userNameItems } from '../../../constants/userNameItems';
-import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
-// import { useDispatch } from 'react-redux';
+import i18n from 'i18next';
 
 const UserProfileDropDown = () => {
   const navigate = useNavigate();
   let { calendarId } = useParams();
   const { user } = useSelector(getUserDetails);
 
-  const { t } = useTranslation();
-  const items = userNameItems.map((item, index) => {
-    const key = String(index + 1);
+  const items = userNameItems.map((item) => {
     return {
-      key: key,
-      label: t(item.label),
+      key: item.key,
+      label: item.label,
       icon: item.icon,
     };
   });
 
   const onClick = ({ key }) => {
-    if (key == 1) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Profile}/${user?.id}`);
-    if (key == 2) {
-      navigate(PathName.Login, { state: { previousPath: 'logout' } });
+    switch (key) {
+      case 'userProfile':
+        navigate(`${PathName.Dashboard}/${calendarId}${PathName.Profile}/${user?.id}`);
+        break;
+      case 'help':
+        if (i18n.language === 'en')
+          window.open(`${process.env.REACT_APP_HELP_EN_URL}`, '_blank', 'noopener,noreferrer');
+        else if (i18n.language === 'fr')
+          window.open(`${process.env.REACT_APP_HELP_FR_URL}`, '_blank', 'noopener,noreferrer');
+        break;
+      case 'logOut':
+        navigate(PathName.Login, { state: { previousPath: 'logout' } });
+        break;
+      default:
+        break;
     }
   };
   return (

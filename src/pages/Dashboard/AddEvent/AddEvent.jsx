@@ -147,7 +147,7 @@ function AddEvent() {
     let dateTime = moment(dateSelected + ' ' + timeSelected, 'DD/MM/YYYY HH:mm a');
     return moment(dateTime).toISOString();
   };
-  const addUpdateEventApiHandler = (eventObj) => {
+  const addUpdateEventApiHandler = (eventObj, toggle) => {
     var promise = new Promise(function (resolve, reject) {
       if (!eventId || eventId === '') {
         addEvent({
@@ -155,15 +155,19 @@ function AddEvent() {
           calendarId,
         })
           .unwrap()
-          .then(() => {
-            resolve();
-            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+          .then((response) => {
+            resolve(response?.id);
+            if (!toggle) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
           })
           .catch((errorInfo) => {
             reject();
             console.log(errorInfo);
           });
       } else {
+        eventObj = {
+          ...eventObj,
+          sameAs: eventData?.sameAs,
+        };
         updateEvent({
           data: eventObj,
           calendarId,
@@ -172,7 +176,7 @@ function AddEvent() {
           .unwrap()
           .then(() => {
             resolve();
-            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+            if (!toggle) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
           })
           .catch((error) => {
             reject();
@@ -182,7 +186,7 @@ function AddEvent() {
     });
     return promise;
   };
-  const saveAsDraftHandler = (event) => {
+  const saveAsDraftHandler = (event, toggle = false) => {
     event?.preventDefault();
     setShowDialog(false);
     var promise = new Promise(function (resolve, reject) {
@@ -452,8 +456,8 @@ function AddEvent() {
                     .then((response) => {
                       image = response?.data;
                       eventObj['image'] = image;
-                      addUpdateEventApiHandler(eventObj)
-                        .then(() => resolve())
+                      addUpdateEventApiHandler(eventObj, toggle)
+                        .then((id) => resolve(id))
                         .catch((error) => {
                           reject();
                           console.log(error);
@@ -483,8 +487,8 @@ function AddEvent() {
                 };
             }
 
-            addUpdateEventApiHandler(eventObj)
-              .then(() => resolve())
+            addUpdateEventApiHandler(eventObj, toggle)
+              .then((id) => resolve(id))
               .catch((error) => {
                 reject();
                 console.log(error);
@@ -535,9 +539,9 @@ function AddEvent() {
         'ticketLink',
       ])
       .then(() => {
-        saveAsDraftHandler(event)
-          .then(() => {
-            updateEventState({ id: eventId, calendarId })
+        saveAsDraftHandler(event, true)
+          .then((id) => {
+            updateEventState({ id: eventId ?? id, calendarId })
               .unwrap()
               .then(() =>
                 navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`).catch((error) => console.log(error)),
