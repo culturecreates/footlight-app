@@ -328,7 +328,7 @@
         "updatedBy": "Modifié le",
         "by": "par",
         "to": "au",
-        "event": "événement"
+        "event": "occurence"
       },
       "deleteEvent": {
         "title": "Confirmer la suppression",
