@@ -251,7 +251,7 @@ const RecurringModal = ({
           {isModalVisible && (
             <Calendar
               className="recurring-cal"
-              style="border"
+              style="background"
               language={i18n.language}
               minDate={
                 sortedDates[0]?.initDate

@@ -115,13 +115,13 @@ const RecurringEvents = function ({
       form.setFieldsValue({
         frequency: 'CUSTOM',
         customDates: custom,
-        startDateRecur: [moment(custom[0]?.startDate), moment(custom[customizedDate?.length - 1]?.startDate)],
+        startDateRecur: [moment(custom[0]?.startDate), moment(custom[custom?.length - 1]?.startDate)],
       });
       setFormFields({
         ...formFields,
         frequency: 'CUSTOM',
         customDates: custom,
-        startDateRecur: [moment(custom[0]?.startDate), moment(custom[customizedDate?.length - 1]?.startDate)],
+        startDateRecur: [moment(custom[0]?.startDate), moment(custom[custom?.length - 1]?.startDate)],
       });
     }
   };
