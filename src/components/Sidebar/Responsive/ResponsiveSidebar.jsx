@@ -5,29 +5,28 @@ import { CloseOutlined } from '@ant-design/icons';
 import './index';
 import { userNameItems } from '../../../constants/userNameItems';
 import { sidebarItems } from '../../../constants/sidebarItems';
-import { useDispatch, useSelector } from 'react-redux';
-import { getUserDetails, clearUser } from '../../../redux/reducer/userSlice';
+import { useSelector } from 'react-redux';
+import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import { useTranslation } from 'react-i18next';
 import CalendarList from '../../Dropdown/Calendar';
 import { bilingual } from '../../../utils/bilingual';
+import i18n from 'i18next';
 
 function ResponsiveSidebar(props) {
   const { allCalendarsData, currentCalendarData, onClose, open } = props;
   const { t } = useTranslation();
   let { calendarId } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { user } = useSelector(getUserDetails);
 
   const [calendarItem, setCalendarItem] = useState([]);
 
-  const items = userNameItems.map((item, index) => {
-    const key = String(index + 1);
+  const items = userNameItems.map((item) => {
     return {
-      key: key,
-      label: t(item.label),
+      key: item.key,
+      label: item.label,
       icon: item.icon,
     };
   });
@@ -65,9 +64,19 @@ function ResponsiveSidebar(props) {
     navigate(`${PathName.Dashboard}/${calendarId}${item.props.path}`);
   };
   const logoutHandler = ({ key }) => {
-    if (key == 2) {
-      dispatch(clearUser());
-      navigate(PathName.Login);
+    switch (key) {
+      case 'userProfile':
+        navigate(`${PathName.Dashboard}/${calendarId}${PathName.Profile}/${user?.id}`);
+        break;
+      case 'help':
+        if (i18n.language === 'en') window.open('https://footlight.gitbook.io/footlight-cms-guide', '_blank');
+        else if (i18n.language === 'fr') window.open('https://footlight.gitbook.io/guide-footlight-cms', '_blank');
+        break;
+      case 'logOut':
+        navigate(PathName.Login, { state: { previousPath: 'logout' } });
+        break;
+      default:
+        break;
     }
   };
   useEffect(() => {
