@@ -20,6 +20,8 @@ import PrimaryButton from '../../Button/Primary';
 import Tags from '../../Tags/Common/Tags';
 import TimePickerStyled from '../../TimePicker/TimePicker';
 import i18n from 'i18next';
+import { subEventsCountHandler } from '../../../utils/subEventsCountHandler';
+import { pluralize } from '../../../utils/pluralise';
 
 const RecurringModal = ({
   isModalVisible,
@@ -27,8 +29,13 @@ const RecurringModal = ({
   currentLang,
   setCustomDates,
   customDates,
-  numberOfTimes,
-  isCustom,
+  // numberOfTimes,
+  setNumberOfTimes,
+  // isCustom,
+  // parentForm,
+  // parentSetFormState,
+  subEventCount,
+  setSubEventCount,
 }) => {
   const [dateSource, setDataSource] = useState([]);
   const [test, setTest] = useState();
@@ -86,18 +93,28 @@ const RecurringModal = ({
     setUpdateAllTime(false);
   };
   useEffect(() => {
-    const getMonthSorted = handleDateSort(dateSource);
+    const getMonthSorted = handleDateSort(dateSource?.filter((date) => !date?.isDeleted));
     setSortedDates(getMonthSorted);
     let month = moment(getMonthSorted[0]?.initDate).format('MMMM');
     month = moment().month(month).format('M');
     month = month - 1;
     const el1 = document.querySelector(`[data-month-id="${month}"]`);
     if (el1) el1?.scrollIntoView();
+    let numTimes = 0;
+    dateSource?.map((date) => {
+      if (!date?.isDeleted) numTimes = numTimes + (date?.time?.length ?? 0);
+    });
+    setNumberOfTimes(numTimes);
+    setSubEventCount(subEventsCountHandler(dateSource));
   }, [dateSource]);
 
   useEffect(() => {
     setDataSource(customDates);
   }, [isModalVisible]);
+  useEffect(() => {
+    const el1 = document.getElementsByClassName(selectedDateId);
+    if (el1) el1[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, [selectedDateId]);
 
   const handleOk = () => {
     setCustomDates(dateSource);
@@ -210,12 +227,7 @@ const RecurringModal = ({
                     .format('MMMM DD, YYYY')}
             </span>
             <Tags style={{ color: '#1572BB', borderRadius: '4px' }} color={'#DBF3FD'}>
-              {dateSource?.length} {t('dashboard.events.addEditEvent.dates.dates')}
-              {numberOfTimes > 0 && isCustom && (
-                <>
-                  ,&nbsp;{numberOfTimes}&nbsp;{t('dashboard.events.addEditEvent.dates.times')}
-                </>
-              )}
+              {pluralize(subEventCount, t('dashboard.events.list.event'))}
             </Tags>
           </div>
         </div>
@@ -241,8 +253,12 @@ const RecurringModal = ({
               className="recurring-cal"
               style="border"
               language={i18n.language}
-              minDate={new Date(moment(sortedDates[0]?.initDate).subtract(1, 'days'))}
-              year={sortedDates?.length > 0 && moment(sortedDates[0]?.initDate).year()}
+              minDate={
+                sortedDates[0]?.initDate
+                  ? new Date(moment(sortedDates[0]?.initDate).subtract(1, 'days'))
+                  : new Date(moment().subtract(1, 'days'))
+              }
+              year={sortedDates?.length > 0 ? moment(sortedDates[0]?.initDate).year() : moment().year()}
               enableRangeSelection={true}
               //  onRangeSelected={e =>selectDate(e) }
               onRangeSelected={async (e) => {
@@ -390,7 +406,7 @@ const RecurringModal = ({
                         {t('dashboard.events.addEditEvent.dates.modal.addTimeToAllDates')}
                       </Checkbox>
                       <div>
-                        <Form.Item className="add-time-items">
+                        <Form.Item className={`add-time-items  ${selectedDateId}`}>
                           <TextButton
                             key="cancel"
                             size="large"

@@ -12,6 +12,8 @@ import TimePickerStyled from '../TimePicker/TimePicker';
 import i18n from 'i18next';
 import TextButton from '../Button/Text';
 import Tags from '../Tags/Common/Tags';
+import { pluralize } from '../../utils/pluralise';
+import { subEventsCountHandler } from '../../utils/subEventsCountHandler';
 
 const RecurringEvents = function ({
   currentLang,
@@ -29,6 +31,7 @@ const RecurringEvents = function ({
   const [isCustom, setIsCustom] = useState(false);
   const [selectedWeekDays, setSelectedWeekDays] = useState([]);
   const [dateModified, setDateModified] = useState(false);
+  const [subEventCount, setSubEventCount] = useState(0);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -123,8 +126,10 @@ const RecurringEvents = function ({
   useEffect(() => {
     if (formFields && formFields?.startDateRecur) {
       if (formFields?.frequency === 'DAILY') {
+        setDateModified(false);
         getNumberOfDays(formFields?.startDateRecur[0], formFields?.startDateRecur[1]);
       } else if (formFields?.frequency === 'WEEKLY') {
+        setDateModified(false);
         getNumberOfWeekDays(
           moment(new Date(formFields?.startDateRecur[0]), 'YYYY,MM,DD'),
           moment(new Date(formFields?.startDateRecur[1]), 'YYYY,MM,DD'),
@@ -148,6 +153,7 @@ const RecurringEvents = function ({
     let numTimes = 0;
     customDates?.map((date) => (numTimes = numTimes + date?.time?.length));
     setNumberOfTimes(numTimes);
+    setSubEventCount(subEventsCountHandler(customDates));
   }, [customDates]);
 
   const getNumberOfWeekDays = async (start, end, daysofweek) => {
@@ -274,6 +280,7 @@ const RecurringEvents = function ({
       daysOfWeek: selectedWeekDaysArray,
     });
   };
+
   return (
     <div className="recurring-events-wrapper">
       {/* <Form.Item
@@ -377,20 +384,19 @@ const RecurringEvents = function ({
             name="startDateRecur"
             className="status-comment-item"
             label={t('dashboard.events.addEditEvent.dates.multipleDates')}
-            rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
+            rules={[
+              { required: isCustom ? false : true, message: t('dashboard.events.addEditEvent.validations.date') },
+            ]}>
             <DateRangePicker
               style={{ width: '423px' }}
               disabledDate={(d) => !d || d.isSameOrBefore(endDisable)}
+              disabled={
+                (isCustom || formFields?.frequency === 'CUSTOM') && formFields?.startDateRecur?.length == 2 && true
+              }
               suffixIcon={
-                nummberofDates > 0 && (
-                  <Tags style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }} color={'#DBF3FD'}>
-                    {nummberofDates} {t('dashboard.events.addEditEvent.dates.dates')}
-                    &nbsp;
-                    {numberOfTimes > 0 && isCustom && (
-                      <>
-                        ,&nbsp;{numberOfTimes}&nbsp;{t('dashboard.events.addEditEvent.dates.times')}
-                      </>
-                    )}
+                subEventCount > 0 && (
+                  <Tags style={{ color: '#1572BB', borderRadius: '4px' }} color={'#DBF3FD'}>
+                    {pluralize(subEventCount, t('dashboard.events.list.event'))}
                   </Tags>
                 )
               }
@@ -398,6 +404,7 @@ const RecurringEvents = function ({
           </Form.Item>
         </div>
       </div>
+
       {!isCustom && (
         <>
           {!isCustom && (
@@ -505,7 +512,7 @@ const RecurringEvents = function ({
       </Form.Item>
       <div className="customize-div">
         {/* {nummberofDates !== 0 && <div> {nummberofDates + ' Dates'}</div>} */}
-        {(nummberofDates || formFields?.startDateRecur?.length == 2) > 0 && (
+        {(nummberofDates || formFields?.startDateRecur?.length == 2 || isCustom) > 0 && (
           <TextButton
             size="large"
             icon={<ControlOutlined />}
@@ -522,7 +529,12 @@ const RecurringEvents = function ({
         customDates={customDates}
         nummberofDates={nummberofDates}
         numberOfTimes={numberOfTimes}
+        setNumberOfTimes={setNumberOfTimes}
         isCustom={isCustom}
+        parentForm={form}
+        parentSetFormState={setFormFields}
+        subEventCount={subEventCount}
+        setSubEventCount={setSubEventCount}
       />
     </div>
   );
