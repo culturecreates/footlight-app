@@ -350,8 +350,16 @@ const RecurringModal = ({
                   item?.time?.map((customTime, index) => (
                     <div className="custom-time-layout" style={{ margin: '9px' }} key={index}>
                       <div>
-                        {customTime?.startTime && customTime?.startTime} {customTime?.endTime ? ' - ' : ''}
-                        {customTime?.endTime && customTime?.endTime}{' '}
+                        {console.log(customTime)}
+                        {customTime?.startTime &&
+                          moment(customTime?.startTime, 'hh:mm a').format(
+                            i18n.language === 'en' ? 'hh:mm a' : i18n.language === 'fr' && 'HH:mm',
+                          )}
+                        {customTime?.endTime ? ' - ' : ''}
+                        {customTime?.endTime &&
+                          moment(customTime?.endTime, 'hh:mm a').format(
+                            i18n.language === 'en' ? 'hh:mm a' : i18n.language === 'fr' && 'HH:mm',
+                          )}
                       </div>
                       {(customTime?.startTime || customTime?.startTime) && (
                         <div>

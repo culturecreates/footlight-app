@@ -102,8 +102,15 @@ const CopyTimeModal = ({ isModalVisible, setIsModalVisible, recurringEvents, cop
         copyTime.time &&
         copyTime.time.map((customTime, index) => (
           <div className="replace-txt" key={index}>
-            {customTime.startTime && customTime.startTime + '-'}
-            {customTime.endTime && customTime.endTime}
+            {customTime?.startTime &&
+              moment(customTime?.startTime, 'hh:mm a').format(
+                i18n.language === 'en' ? 'hh:mm a' : i18n.language === 'fr' && 'HH:mm',
+              )}
+            {customTime?.endTime && ' - '}
+            {customTime?.endTime &&
+              moment(customTime?.endTime, 'hh:mm a').format(
+                i18n.language === 'en' ? 'hh:mm a' : i18n.language === 'fr' && 'HH:mm',
+              )}
           </div>
         ))}
       <div className="replace-txt">{t('dashboard.events.addEditEvent.dates.modal.replaceTimeonFolllowingDates')}</div>
