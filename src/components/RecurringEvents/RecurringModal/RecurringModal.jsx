@@ -267,11 +267,7 @@ const RecurringModal = ({
               className="recurring-cal"
               style="background"
               language={i18n.language?.toLowerCase()}
-              minDate={
-                sortedDates[0]?.initDate
-                  ? new Date(moment(sortedDates[0]?.initDate).subtract(1, 'days'))
-                  : new Date(moment().subtract(1, 'days'))
-              }
+              minDate={null}
               year={sortedDates?.length > 0 ? moment(sortedDates[0]?.initDate).year() : moment().year()}
               enableRangeSelection={true}
               //  onRangeSelected={e =>selectDate(e) }
@@ -351,7 +347,6 @@ const RecurringModal = ({
                   item?.time?.map((customTime, index) => (
                     <div className="custom-time-layout" style={{ margin: '9px' }} key={index}>
                       <div>
-                        {console.log(customTime)}
                         {customTime?.startTime &&
                           moment(customTime?.startTime, 'hh:mm a').format(
                             i18n.language === 'en' ? 'hh:mm a' : i18n.language === 'fr' && 'HH:mm',

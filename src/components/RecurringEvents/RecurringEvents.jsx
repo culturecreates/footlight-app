@@ -23,7 +23,7 @@ const RecurringEvents = function ({
   eventDetails,
   setFormFields,
 }) {
-  const endDisable = moment().format('YYYY-MM-DD');
+  // const endDisable = moment().format('YYYY-MM-DD');
   const [nummberofDates, setNumberofDates] = useState(numberOfDaysEvent);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [customDates, setCustomDates] = useState([]);
@@ -389,7 +389,6 @@ const RecurringEvents = function ({
             rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
             <DateRangePicker
               style={{ width: '423px' }}
-              disabledDate={(d) => !d || d.isSameOrBefore(endDisable)}
               disabled={
                 (isCustom || formFields?.frequency === 'CUSTOM') && formFields?.startDateRecur?.length == 2 && true
               }
