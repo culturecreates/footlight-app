@@ -386,9 +386,7 @@ const RecurringEvents = function ({
             name="startDateRecur"
             className="status-comment-item"
             label={t('dashboard.events.addEditEvent.dates.multipleDates')}
-            rules={[
-              { required: isCustom ? false : true, message: t('dashboard.events.addEditEvent.validations.date') },
-            ]}>
+            rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
             <DateRangePicker
               style={{ width: '423px' }}
               disabledDate={(d) => !d || d.isSameOrBefore(endDisable)}
