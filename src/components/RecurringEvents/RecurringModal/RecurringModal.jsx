@@ -395,6 +395,7 @@ const RecurringModal = ({
                             placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                             use12Hours={i18n?.language === 'en' ? true : false}
                             format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                            getPopupContainer={null}
                             onSelect={(value) => {
                               form.setFieldsValue({
                                 startTimeCustom: value,
@@ -412,6 +413,7 @@ const RecurringModal = ({
                             placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                             use12Hours={i18n?.language === 'en' ? true : false}
                             format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                            getPopupContainer={null}
                             onSelect={(value) => {
                               form.setFieldsValue({
                                 endTimeCustom: value,
