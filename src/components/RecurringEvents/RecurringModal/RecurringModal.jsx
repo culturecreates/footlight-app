@@ -1,6 +1,7 @@
 import { Col, Divider, Row, Form, Checkbox, Empty } from 'antd';
 import React, { useEffect, useState } from 'react';
 import Calendar from 'rc-year-calendar';
+import 'rc-year-calendar/locales/rc-year-calendar.fr';
 import uniqid from 'uniqid';
 import moment from 'moment';
 import {
@@ -265,7 +266,7 @@ const RecurringModal = ({
             <Calendar
               className="recurring-cal"
               style="background"
-              language={i18n.language}
+              language={i18n.language?.toLowerCase()}
               minDate={
                 sortedDates[0]?.initDate
                   ? new Date(moment(sortedDates[0]?.initDate).subtract(1, 'days'))
