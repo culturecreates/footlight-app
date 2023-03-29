@@ -351,7 +351,7 @@ const RecurringModal = ({
                           moment(customTime?.startTime, 'hh:mm a').format(
                             i18n.language === 'en' ? 'hh:mm a' : i18n.language === 'fr' && 'HH:mm',
                           )}
-                        {customTime?.endTime ? ' - ' : ''}
+                        {customTime?.endTime && customTime?.startTime ? ' - ' : ''}
                         {customTime?.endTime &&
                           moment(customTime?.endTime, 'hh:mm a').format(
                             i18n.language === 'en' ? 'hh:mm a' : i18n.language === 'fr' && 'HH:mm',
