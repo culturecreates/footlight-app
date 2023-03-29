@@ -68,6 +68,7 @@ import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../.
 import { usePrompt } from '../../../hooks/usePrompt';
 import { bilingual } from '../../../utils/bilingual';
 import RecurringEvents from '../../../components/RecurringEvents';
+import { pluralize } from '../../../utils/pluralise';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -197,6 +198,7 @@ function AddEvent() {
           'datePicker',
           'dateRangePicker',
           'datePickerWrapper',
+          'startDateRecur',
           ...(eventData?.publishState === eventPublishState.PUBLISHED ? ['prices', 'ticketLink'] : []),
         ])
         .then(() => {
@@ -528,6 +530,7 @@ function AddEvent() {
         'datePickerWrapper',
         'datePicker',
         'dateRangePicker',
+        'startDateRecur',
         'englishEditor',
         'frenchEditor',
         'eventType',
@@ -1140,14 +1143,13 @@ function AddEvent() {
                                     <Tags
                                       style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }}
                                       color={'#DBF3FD'}>
-                                      {
+                                      {pluralize(
                                         enumerateDaysBetweenDates(
                                           formValue?.dateRangePicker[0],
                                           formValue?.dateRangePicker[1],
-                                        )?.length
-                                      }
-                                      &nbsp;
-                                      {t('dashboard.events.addEditEvent.dates.dates')}
+                                        )?.length,
+                                        t('dashboard.events.list.event'),
+                                      )}
                                     </Tags>
                                   )
                                 }
@@ -1219,7 +1221,11 @@ function AddEvent() {
                         rules={[
                           ({ getFieldValue }) => ({
                             validator() {
-                              if (getFieldValue('datePicker') || getFieldValue('dateRangePicker')) {
+                              if (
+                                getFieldValue('datePicker') ||
+                                getFieldValue('dateRangePicker') ||
+                                getFieldValue('startDateRecur')
+                              ) {
                                 return Promise.resolve();
                               } else
                                 return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.date')));

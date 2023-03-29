@@ -1,6 +1,7 @@
 import { Col, Divider, Row, Form, Checkbox, Empty } from 'antd';
 import React, { useEffect, useState } from 'react';
 import Calendar from 'rc-year-calendar';
+import 'rc-year-calendar/locales/rc-year-calendar.fr';
 import uniqid from 'uniqid';
 import moment from 'moment';
 import {
@@ -265,12 +266,8 @@ const RecurringModal = ({
             <Calendar
               className="recurring-cal"
               style="background"
-              language={i18n.language}
-              minDate={
-                sortedDates[0]?.initDate
-                  ? new Date(moment(sortedDates[0]?.initDate).subtract(1, 'days'))
-                  : new Date(moment().subtract(1, 'days'))
-              }
+              language={i18n.language?.toLowerCase()}
+              minDate={null}
               year={sortedDates?.length > 0 ? moment(sortedDates[0]?.initDate).year() : moment().year()}
               enableRangeSelection={true}
               //  onRangeSelected={e =>selectDate(e) }
@@ -350,8 +347,15 @@ const RecurringModal = ({
                   item?.time?.map((customTime, index) => (
                     <div className="custom-time-layout" style={{ margin: '9px' }} key={index}>
                       <div>
-                        {customTime?.startTime && customTime?.startTime} {customTime?.endTime ? ' - ' : ''}
-                        {customTime?.endTime && customTime?.endTime}{' '}
+                        {customTime?.startTime &&
+                          moment(customTime?.startTime, 'hh:mm a').format(
+                            i18n.language === 'en' ? 'hh:mm a' : i18n.language === 'fr' && 'HH:mm',
+                          )}
+                        {customTime?.endTime ? ' - ' : ''}
+                        {customTime?.endTime &&
+                          moment(customTime?.endTime, 'hh:mm a').format(
+                            i18n.language === 'en' ? 'hh:mm a' : i18n.language === 'fr' && 'HH:mm',
+                          )}
                       </div>
                       {(customTime?.startTime || customTime?.startTime) && (
                         <div>
