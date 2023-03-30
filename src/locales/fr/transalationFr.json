@@ -122,7 +122,9 @@
           "placeHolderFrench": "Entrez titre en français",
           "placeHolderEnglish": "Entrez titre en anglais",
           "eventType": "Type de l’événement",
-          "targetAudience": "Public cible"
+          "placeHolderEventType": "Sélectionnez type de l'événement",
+          "targetAudience": "Public cible",
+          "placeHolderTargetAudience": "Sélectionnez public cible"
         },
         "dates": {
           "dates": "Dates",
@@ -256,6 +258,7 @@
         "eventAccessibility": {
           "title": "Accessibilité de l’événement",
           "note": "Note",
+          "placeHolderEventAccessibility": "Sélectionnez accessibilité de l’événement",
           "placeHolderEventAccessibilityFrenchNote": "Ajouter des informations supplémentaires sur l'accessibilité",
           "placeHolderEventAccessibilityEnglishNote": "Ajouter des informations supplémentaires sur l'accessibilité",
           "noteTooltip": "Fournir plus de détails sur les options d'accessibilité sélectionnées, telles que les dates."
