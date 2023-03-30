@@ -259,7 +259,7 @@ function EventReadOnly() {
                         {moment
                           .tz(
                             eventData?.startDateTime ?? eventData?.startDate,
-                            eventData.scheduleTimezone ?? 'Canada/Eastern',
+                            eventData?.scheduleTimezone ?? 'Canada/Eastern',
                           )
                           .format('MM/DD/YYYY')}
                       </p>
@@ -301,7 +301,7 @@ function EventReadOnly() {
                         </p>
                         <p className="read-only-event-content">
                           {moment
-                            .tz(eventData?.startDateTime, eventData.scheduleTimezone ?? 'Canada/Eastern')
+                            .tz(eventData?.startDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
                             .format('h:mm a')}
                         </p>
                       </Col>
@@ -313,7 +313,7 @@ function EventReadOnly() {
                         </p>
                         <p className="read-only-event-content">
                           {moment
-                            .tz(eventData?.endDateTime, eventData.scheduleTimezone ?? 'Canada/Eastern')
+                            .tz(eventData?.endDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
                             .format('h:mm a')}
                         </p>
                       </Col>
