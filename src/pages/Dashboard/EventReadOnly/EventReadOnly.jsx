@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Row, Col, Breadcrumb } from 'antd';
+import { Row, Col, Breadcrumb, Button } from 'antd';
 import Icon, { LeftOutlined, CalendarOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import moment from 'moment-timezone';
 import './eventReadOnly.css';
@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual } from '../../../utils/bilingual';
 import { eventStatusOptions } from '../../../constants/eventStatus';
-import { dateTypes } from '../../../constants/dateTypes';
+import { dateFrequencyOptions, dateTypes, daysOfWeek } from '../../../constants/dateTypes';
 import DateRangePicker from '../../../components/DateRangePicker';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
@@ -33,6 +33,8 @@ import SelectionItem from '../../../components/List/SelectionItem';
 import { ReactComponent as Organizations } from '../../../assets/icons/organisations.svg';
 import Alert from '../../../components/Alert';
 import { eventPublishState, eventPublishStateOptions } from '../../../constants/eventPublishState';
+import { pluralize } from '../../../utils/pluralise';
+import i18n from 'i18next';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -71,9 +73,11 @@ function EventReadOnly() {
   let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
 
   useEffect(() => {
-    setDateType(
-      dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
-    );
+    if (eventData?.recurringEvent) setDateType(dateTypes.MULTIPLE);
+    else
+      setDateType(
+        dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
+      );
   }, [isLoading]);
 
   return (
@@ -265,48 +269,82 @@ function EventReadOnly() {
                       </p>
                     </>
                   )}
-                  {dateType == dateTypes.RANGE && (
+
+                  {(dateType == dateTypes.RANGE || dateType === dateTypes.MULTIPLE) && (
                     <>
-                      <p className="read-only-event-content-sub-title-primary">
-                        {t('dashboard.events.addEditEvent.dates.dateRange')}
-                      </p>
-                      <p className="read-only-event-content-date">
-                        <CalendarOutlined style={{ fontSize: '24px', color: '#1B3DE6', marginRight: '9px' }} />
-                        <DateRangePicker
-                          defaultValue={[
-                            moment.tz(
-                              eventData?.startDate ?? eventData?.startDateTime,
-                              eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                            ),
-                            moment.tz(
-                              eventData?.endDate ?? eventData?.endDateTime,
-                              eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                            ),
-                          ]}
-                          suffixIcon={false}
-                          bordered={false}
-                          allowClear={false}
-                          inputReadOnly={true}
-                          open={false}
-                        />
-                      </p>
+                      <span
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          marginBottom: '4px',
+                        }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span className="read-only-event-content-sub-title-primary">
+                            {t(
+                              `dashboard.events.addEditEvent.dates.${
+                                dateType === dateTypes.MULTIPLE ? `multipleDates` : `dateRange`
+                              }`,
+                            )}
+                          </span>
+                          {dateType === dateTypes.MULTIPLE && <span>-</span>}
+                          <span
+                            className="read-only-event-content-sub-title-primary"
+                            style={{ textTransform: 'capitalize' }}>
+                            {eventData?.recurringEvent?.frequency?.toLowerCase()}
+                          </span>
+                        </span>
+                        {dateType === dateTypes.MULTIPLE && eventData?.subEvents?.length > 0 && (
+                          <Tags
+                            style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }}
+                            color={'#DBF3FD'}>
+                            {pluralize(eventData?.subEvents?.length, t('dashboard.events.list.event'))}
+                          </Tags>
+                        )}
+                      </span>
+                      <Row>
+                        <Col flex="423px">
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <CalendarOutlined style={{ fontSize: '24px', color: '#1B3DE6', marginRight: '9px' }} />
+                            <DateRangePicker
+                              defaultValue={[
+                                moment.tz(
+                                  eventData?.startDate ?? eventData?.startDateTime,
+                                  eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                ),
+                                moment.tz(
+                                  eventData?.endDate ?? eventData?.endDateTime,
+                                  eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                ),
+                              ]}
+                              bordered={false}
+                              allowClear={false}
+                              inputReadOnly={true}
+                              open={false}
+                              suffixIcon={false}
+                              // style={{ width: '423px' }}
+                            />
+                          </div>
+                        </Col>
+                      </Row>
                     </>
                   )}
                   <br />
                   <Row justify="space-between">
-                    {eventData?.startDateTime && (
-                      <Col>
-                        <p className="read-only-event-content-sub-title-primary">
-                          {t('dashboard.events.addEditEvent.dates.startTime')}
-                        </p>
-                        <p className="read-only-event-content">
-                          {moment
-                            .tz(eventData?.startDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                            .format('h:mm a')}
-                        </p>
-                      </Col>
-                    )}
-                    {eventData?.endDateTime && (
+                    {eventData?.startDateTime &&
+                      eventData?.recurringEvent?.frequency !== dateFrequencyOptions[2].value && (
+                        <Col>
+                          <p className="read-only-event-content-sub-title-primary">
+                            {t('dashboard.events.addEditEvent.dates.startTime')}
+                          </p>
+                          <p className="read-only-event-content">
+                            {moment
+                              .tz(eventData?.startDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
+                              .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
+                          </p>
+                        </Col>
+                      )}
+                    {eventData?.endDateTime && eventData?.recurringEvent?.frequency !== dateFrequencyOptions[2].value && (
                       <Col>
                         <p className="read-only-event-content-sub-title-primary">
                           {t('dashboard.events.addEditEvent.dates.endTime')}
@@ -314,11 +352,33 @@ function EventReadOnly() {
                         <p className="read-only-event-content">
                           {moment
                             .tz(eventData?.endDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                            .format('h:mm a')}
+                            .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
                         </p>
                       </Col>
                     )}
                   </Row>
+                  <br />
+                  {dateType === dateTypes.MULTIPLE &&
+                    eventData?.recurringEvent?.frequency === dateFrequencyOptions[1].value && (
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        {daysOfWeek.map((day, index) => {
+                          return (
+                            <Button
+                              key={index}
+                              className="recurring-day-buttons"
+                              style={{
+                                ...(eventData?.recurringEvent?.weekDays?.includes(day?.value) && {
+                                  borderColor: '#607EFC',
+                                  backgroundColor: '#EFF2FF',
+                                }),
+                              }}>
+                              {day.name}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    )}
+
                   <br />
                   {eventData?.eventStatus && (
                     <>
