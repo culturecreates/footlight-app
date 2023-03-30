@@ -979,6 +979,7 @@ function AddEvent() {
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience')}
+                    placeholder={t('dashboard.events.addEditEvent.language.placeHolderTargetAudience')}
                     tagRender={(props) => {
                       const { closable, onClose, label } = props;
                       return (
