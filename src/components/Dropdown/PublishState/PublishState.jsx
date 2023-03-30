@@ -3,11 +3,11 @@ import './publishState.css';
 import { Button, Dropdown, Space } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { eventPublishState } from '../../../constants/eventPublishState';
-import { useUpdateEventStateMutation } from '../../../services/events';
-import { useParams } from 'react-router-dom';
-function PublishState({ children, eventId }) {
-  const { calendarId } = useParams();
-  const [updateEventState] = useUpdateEventStateMutation();
+// import { useUpdateEventStateMutation } from '../../../services/events';
+// import { useParams } from 'react-router-dom';
+function PublishState({ children, reviewPublishHandler }) {
+  // const { calendarId } = useParams();
+  // const [updateEventState] = useUpdateEventStateMutation();
   const items = [
     {
       key: '0',
@@ -20,7 +20,7 @@ function PublishState({ children, eventId }) {
   ];
 
   const onClick = ({ key }) => {
-    if (key === '1') updateEventState({ id: eventId, calendarId: calendarId });
+    if (key === '1') reviewPublishHandler();
   };
 
   return (

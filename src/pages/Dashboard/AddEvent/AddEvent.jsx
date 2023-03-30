@@ -199,7 +199,19 @@ function AddEvent() {
           'dateRangePicker',
           'datePickerWrapper',
           'startDateRecur',
-          ...(eventData?.publishState === eventPublishState.PUBLISHED ? ['prices', 'ticketLink'] : []),
+          ...(eventData?.publishState === eventPublishState.PUBLISHED
+            ? [
+                'prices',
+                'ticketLink',
+                'englishEditor',
+                'frenchEditor',
+                'eventType',
+                'targetAudience',
+                'draggerWrap',
+                'location-form-wrapper',
+                'ticketPickerWrapper',
+              ]
+            : []),
         ])
         .then(() => {
           var values = form.getFieldsValue(true);
@@ -636,7 +648,7 @@ function AddEvent() {
       return (
         <>
           <Form.Item>
-            <PublishState eventId={eventId}>
+            <PublishState eventId={eventId} reviewPublishHandler={(e) => reviewPublishHandler(e)}>
               <span>{eventData?.publishState}</span>
             </PublishState>
           </Form.Item>
