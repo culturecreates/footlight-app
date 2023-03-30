@@ -942,6 +942,7 @@ function AddEvent() {
                     },
                   ]}>
                   <TreeSelectOption
+                    placeholder={t('dashboard.events.addEditEvent.language.placeHolderEventType')}
                     allowClear
                     treeDefaultExpandAll
                     notFoundContent={<NoContent />}

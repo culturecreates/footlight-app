@@ -122,6 +122,7 @@
           "placeHolderFrench": "Enter French event title",
           "placeHolderEnglish": "Enter English event title",
           "eventType": "Event type",
+          "placeHolderEventType": "Select event type",
           "targetAudience": "Target audience"
         },
 

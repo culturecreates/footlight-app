@@ -122,6 +122,7 @@
           "placeHolderFrench": "Entrez titre en français",
           "placeHolderEnglish": "Entrez titre en anglais",
           "eventType": "Type de l’événement",
+          "placeHolderEventType": "Sélectionnez type de l'événement",
           "targetAudience": "Public cible"
         },
         "dates": {
