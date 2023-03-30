@@ -143,9 +143,9 @@ function AddEvent() {
   let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
   let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
   const dateTimeConverter = (date, time) => {
-    let dateSelected = moment.tz(date, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('DD/MM/YYYY');
+    let dateSelected = moment.tz(date, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('DD-MM-YYYY');
     let timeSelected = moment.tz(time, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('hh:mm:ss a');
-    let dateTime = moment(dateSelected + ' ' + timeSelected, 'DD/MM/YYYY HH:mm a');
+    let dateTime = moment(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a');
     return moment(dateTime).toISOString();
   };
   const addUpdateEventApiHandler = (eventObj, toggle) => {
@@ -226,7 +226,7 @@ function AddEvent() {
             else
               startDateTime = moment
                 .tz(values?.datePicker, eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                .format('YYYY/MM/DD');
+                .format('YYYY-MM-DD');
             if (values?.endTime) endDateTime = dateTimeConverter(values?.datePicker, values?.endTime);
           }
           if (dateType === dateTypes.RANGE) {
@@ -234,12 +234,12 @@ function AddEvent() {
             else
               startDateTime = moment
                 .tz(values?.dateRangePicker[0], eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                .format('YYYY/MM/DD');
+                .format('YYYY-MM-DD');
             if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
             else
               endDateTime = moment
                 .tz(values?.dateRangePicker[1], eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                .format('YYYY/MM/DD');
+                .format('YYYY-MM-DD');
           }
           if (dateType === dateTypes.MULTIPLE) {
             const recurEvent = {
