@@ -238,13 +238,15 @@ const RecurringEvents = function ({
 
   const openCustomize = () => {
     if (formFields && formFields?.frequency !== 'CUSTOM') {
-      const obj = {
-        startTime: formFields?.startTimeRecur && moment(formFields?.startTimeRecur).format('hh:mm a'),
-        endTime: formFields?.endTimeRecur && moment(formFields?.endTimeRecur).format('hh:mm a'),
-        start: formFields?.startTimeRecur && moment(formFields?.startTimeRecur).format('HH:mm'),
-        end: formFields?.endTimeRecur && moment(formFields?.endTimeRecur).format('HH:mm'),
-      };
-      setCustomDates(customDates.map((item) => ({ ...item, time: [obj] })));
+      if (formFields?.startTimeRecur || formFields?.endTimeRecur) {
+        const obj = {
+          startTime: formFields?.startTimeRecur && moment(formFields?.startTimeRecur).format('hh:mm a'),
+          endTime: formFields?.endTimeRecur && moment(formFields?.endTimeRecur).format('hh:mm a'),
+          start: formFields?.startTimeRecur && moment(formFields?.startTimeRecur).format('HH:mm'),
+          end: formFields?.endTimeRecur && moment(formFields?.endTimeRecur).format('HH:mm'),
+        };
+        setCustomDates(customDates.map((item) => ({ ...item, time: [obj] })));
+      } else setCustomDates(customDates.map((item) => ({ ...item, time: [] })));
     }
 
     setIsModalVisible(true);
