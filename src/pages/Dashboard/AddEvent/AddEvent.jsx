@@ -68,6 +68,7 @@ import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../.
 import { usePrompt } from '../../../hooks/usePrompt';
 import { bilingual } from '../../../utils/bilingual';
 import RecurringEvents from '../../../components/RecurringEvents';
+import { pluralize } from '../../../utils/pluralise';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -142,8 +143,8 @@ function AddEvent() {
   let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
   let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
   const dateTimeConverter = (date, time) => {
-    let dateSelected = moment.tz(date, eventData.scheduleTimezone ?? 'Canada/Eastern').format('DD/MM/YYYY');
-    let timeSelected = moment.tz(time, eventData.scheduleTimezone ?? 'Canada/Eastern').format('hh:mm:ss a');
+    let dateSelected = moment.tz(date, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('DD/MM/YYYY');
+    let timeSelected = moment.tz(time, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('hh:mm:ss a');
     let dateTime = moment(dateSelected + ' ' + timeSelected, 'DD/MM/YYYY HH:mm a');
     return moment(dateTime).toISOString();
   };
@@ -197,6 +198,7 @@ function AddEvent() {
           'datePicker',
           'dateRangePicker',
           'datePickerWrapper',
+          'startDateRecur',
           ...(eventData?.publishState === eventPublishState.PUBLISHED ? ['prices', 'ticketLink'] : []),
         ])
         .then(() => {
@@ -223,7 +225,7 @@ function AddEvent() {
             if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
             else
               startDateTime = moment
-                .tz(values?.datePicker, eventData.scheduleTimezone ?? 'Canada/Eastern')
+                .tz(values?.datePicker, eventData?.scheduleTimezone ?? 'Canada/Eastern')
                 .format('YYYY/MM/DD');
             if (values?.endTime) endDateTime = dateTimeConverter(values?.datePicker, values?.endTime);
           }
@@ -231,12 +233,12 @@ function AddEvent() {
             if (values?.startTime) startDateTime = dateTimeConverter(values?.dateRangePicker[0], values?.startTime);
             else
               startDateTime = moment
-                .tz(values?.dateRangePicker[0], eventData.scheduleTimezone ?? 'Canada/Eastern')
+                .tz(values?.dateRangePicker[0], eventData?.scheduleTimezone ?? 'Canada/Eastern')
                 .format('YYYY/MM/DD');
             if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
             else
               endDateTime = moment
-                .tz(values?.dateRangePicker[1], eventData.scheduleTimezone ?? 'Canada/Eastern')
+                .tz(values?.dateRangePicker[1], eventData?.scheduleTimezone ?? 'Canada/Eastern')
                 .format('YYYY/MM/DD');
           }
           if (dateType === dateTypes.MULTIPLE) {
@@ -528,6 +530,7 @@ function AddEvent() {
         'datePickerWrapper',
         'datePicker',
         'dateRangePicker',
+        'startDateRecur',
         'englishEditor',
         'frenchEditor',
         'eventType',
@@ -939,6 +942,7 @@ function AddEvent() {
                     },
                   ]}>
                   <TreeSelectOption
+                    placeholder={t('dashboard.events.addEditEvent.language.placeHolderEventType')}
                     allowClear
                     treeDefaultExpandAll
                     notFoundContent={<NoContent />}
@@ -975,6 +979,7 @@ function AddEvent() {
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience')}
+                    placeholder={t('dashboard.events.addEditEvent.language.placeHolderTargetAudience')}
                     tagRender={(props) => {
                       const { closable, onClose, label } = props;
                       return (
@@ -1058,7 +1063,7 @@ function AddEvent() {
                                 ) === dateTypes.SINGLE &&
                                 moment.tz(
                                   eventData?.startDate ?? eventData?.startDateTime,
-                                  eventData.scheduleTimezone ?? 'Canada/Eastern',
+                                  eventData?.scheduleTimezone ?? 'Canada/Eastern',
                                 )
                               }
                               rules={[
@@ -1140,14 +1145,13 @@ function AddEvent() {
                                     <Tags
                                       style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }}
                                       color={'#DBF3FD'}>
-                                      {
+                                      {pluralize(
                                         enumerateDaysBetweenDates(
                                           formValue?.dateRangePicker[0],
                                           formValue?.dateRangePicker[1],
-                                        )?.length
-                                      }
-                                      &nbsp;
-                                      {t('dashboard.events.addEditEvent.dates.dates')}
+                                        )?.length,
+                                        t('dashboard.events.list.event'),
+                                      )}
                                     </Tags>
                                   )
                                 }
@@ -1219,7 +1223,11 @@ function AddEvent() {
                         rules={[
                           ({ getFieldValue }) => ({
                             validator() {
-                              if (getFieldValue('datePicker') || getFieldValue('dateRangePicker')) {
+                              if (
+                                getFieldValue('datePicker') ||
+                                getFieldValue('dateRangePicker') ||
+                                getFieldValue('startDateRecur')
+                              ) {
                                 return Promise.resolve();
                               } else
                                 return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.date')));
@@ -2015,6 +2023,7 @@ function AddEvent() {
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility')}
+                    placeholder={t('dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibility')}
                     tagRender={(props) => {
                       const { label, closable, onClose } = props;
                       return (

@@ -122,7 +122,9 @@
           "placeHolderFrench": "Enter French event title",
           "placeHolderEnglish": "Enter English event title",
           "eventType": "Event type",
-          "targetAudience": "Target audience"
+          "placeHolderEventType": "Select event type",
+          "targetAudience": "Target audience",
+          "placeHolderTargetAudience": "Select target audience"
         },
 
         "dates": {
@@ -258,6 +260,7 @@
         "eventAccessibility": {
           "title": "Event accessibility",
           "note": "Note",
+          "placeHolderEventAccessibility": "Select event accessibility",
           "placeHolderEventAccessibilityFrenchNote": "Add supplementary accessibility information.",
           "placeHolderEventAccessibilityEnglishNote": "Add supplementary accessibility information.",
           "noteTooltip": "Provide more detail about selected accessiblity options, such as date information."

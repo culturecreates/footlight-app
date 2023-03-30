@@ -23,7 +23,7 @@ const RecurringEvents = function ({
   eventDetails,
   setFormFields,
 }) {
-  const endDisable = moment().format('YYYY-MM-DD');
+  // const endDisable = moment().format('YYYY-MM-DD');
   const [nummberofDates, setNumberofDates] = useState(numberOfDaysEvent);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [customDates, setCustomDates] = useState([]);
@@ -238,13 +238,15 @@ const RecurringEvents = function ({
 
   const openCustomize = () => {
     if (formFields && formFields?.frequency !== 'CUSTOM') {
-      const obj = {
-        startTime: formFields?.startTimeRecur && moment(formFields?.startTimeRecur).format('hh:mm a'),
-        endTime: formFields?.endTimeRecur && moment(formFields?.endTimeRecur).format('hh:mm a'),
-        start: formFields?.startTimeRecur && moment(formFields?.startTimeRecur).format('HH:mm'),
-        end: formFields?.endTimeRecur && moment(formFields?.endTimeRecur).format('HH:mm'),
-      };
-      setCustomDates(customDates.map((item) => ({ ...item, time: [obj] })));
+      if (formFields?.startTimeRecur || formFields?.endTimeRecur) {
+        const obj = {
+          startTime: formFields?.startTimeRecur && moment(formFields?.startTimeRecur).format('hh:mm a'),
+          endTime: formFields?.endTimeRecur && moment(formFields?.endTimeRecur).format('hh:mm a'),
+          start: formFields?.startTimeRecur && moment(formFields?.startTimeRecur).format('HH:mm'),
+          end: formFields?.endTimeRecur && moment(formFields?.endTimeRecur).format('HH:mm'),
+        };
+        setCustomDates(customDates.map((item) => ({ ...item, time: [obj] })));
+      } else setCustomDates(customDates.map((item) => ({ ...item, time: [] })));
     }
 
     setIsModalVisible(true);
@@ -386,12 +388,9 @@ const RecurringEvents = function ({
             name="startDateRecur"
             className="status-comment-item"
             label={t('dashboard.events.addEditEvent.dates.multipleDates')}
-            rules={[
-              { required: isCustom ? false : true, message: t('dashboard.events.addEditEvent.validations.date') },
-            ]}>
+            rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
             <DateRangePicker
               style={{ width: '423px' }}
-              disabledDate={(d) => !d || d.isSameOrBefore(endDisable)}
               disabled={
                 (isCustom || formFields?.frequency === 'CUSTOM') && formFields?.startDateRecur?.length == 2 && true
               }
