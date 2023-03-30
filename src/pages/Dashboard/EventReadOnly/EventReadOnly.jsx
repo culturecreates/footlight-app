@@ -34,6 +34,7 @@ import { ReactComponent as Organizations } from '../../../assets/icons/organisat
 import Alert from '../../../components/Alert';
 import { eventPublishState, eventPublishStateOptions } from '../../../constants/eventPublishState';
 import { pluralize } from '../../../utils/pluralise';
+import i18n from 'i18next';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -339,7 +340,7 @@ function EventReadOnly() {
                           <p className="read-only-event-content">
                             {moment
                               .tz(eventData?.startDateTime, eventData.scheduleTimezone ?? 'Canada/Eastern')
-                              .format('h:mm a')}
+                              .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
                           </p>
                         </Col>
                       )}
@@ -351,7 +352,7 @@ function EventReadOnly() {
                         <p className="read-only-event-content">
                           {moment
                             .tz(eventData?.endDateTime, eventData.scheduleTimezone ?? 'Canada/Eastern')
-                            .format('h:mm a')}
+                            .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
                         </p>
                       </Col>
                     )}
