@@ -2023,6 +2023,7 @@ function AddEvent() {
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility')}
+                    placeholder={t('dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibility')}
                     tagRender={(props) => {
                       const { label, closable, onClose } = props;
                       return (

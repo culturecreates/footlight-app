@@ -260,6 +260,7 @@
         "eventAccessibility": {
           "title": "Event accessibility",
           "note": "Note",
+          "placeHolderEventAccessibility": "Select event accessibility",
           "placeHolderEventAccessibilityFrenchNote": "Add supplementary accessibility information.",
           "placeHolderEventAccessibilityEnglishNote": "Add supplementary accessibility information.",
           "noteTooltip": "Provide more detail about selected accessiblity options, such as date information."

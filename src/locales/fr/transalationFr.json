@@ -258,6 +258,7 @@
         "eventAccessibility": {
           "title": "Accessibilité de l’événement",
           "note": "Note",
+          "placeHolderEventAccessibility": "Sélectionnez accessibilité de l’événement",
           "placeHolderEventAccessibilityFrenchNote": "Ajouter des informations supplémentaires sur l'accessibilité",
           "placeHolderEventAccessibilityEnglishNote": "Ajouter des informations supplémentaires sur l'accessibilité",
           "noteTooltip": "Fournir plus de détails sur les options d'accessibilité sélectionnées, telles que les dates."
