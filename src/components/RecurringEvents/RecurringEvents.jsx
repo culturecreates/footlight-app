@@ -32,6 +32,7 @@ const RecurringEvents = function ({
   const [selectedWeekDays, setSelectedWeekDays] = useState([]);
   const [dateModified, setDateModified] = useState(false);
   const [subEventCount, setSubEventCount] = useState(0);
+  const startDateRecur = Form.useWatch('startDateRecur', form);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -391,9 +392,7 @@ const RecurringEvents = function ({
             rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
             <DateRangePicker
               style={{ width: '423px' }}
-              disabled={
-                (isCustom || formFields?.frequency === 'CUSTOM') && formFields?.startDateRecur?.length == 2 && true
-              }
+              disabled={(isCustom || formFields?.frequency === 'CUSTOM') && startDateRecur?.length == 2 && true}
               suffixIcon={
                 subEventCount > 0 && (
                   <Tags style={{ color: '#1572BB', borderRadius: '4px' }} color={'#DBF3FD'}>
