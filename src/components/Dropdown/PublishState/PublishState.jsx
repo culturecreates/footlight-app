@@ -3,11 +3,7 @@ import './publishState.css';
 import { Button, Dropdown, Space } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { eventPublishState } from '../../../constants/eventPublishState';
-// import { useUpdateEventStateMutation } from '../../../services/events';
-// import { useParams } from 'react-router-dom';
 function PublishState({ children, reviewPublishHandler }) {
-  // const { calendarId } = useParams();
-  // const [updateEventState] = useUpdateEventStateMutation();
   const items = [
     {
       key: '0',

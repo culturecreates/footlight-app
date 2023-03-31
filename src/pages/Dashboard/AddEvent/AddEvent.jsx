@@ -578,6 +578,8 @@ function AddEvent() {
             <>
               {calendar[0]?.role === userRoles.GUEST
                 ? t('dashboard.events.addEditEvent.validations.errorReview')
+                : eventId && eventData?.publishState === eventPublishState.PUBLISHED
+                ? t('dashboard.events.addEditEvent.validations.errorDraft')
                 : t('dashboard.events.addEditEvent.validations.errorPublishing')}
               &nbsp;
               <Button
