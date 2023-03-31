@@ -69,6 +69,7 @@ import { usePrompt } from '../../../hooks/usePrompt';
 import { bilingual } from '../../../utils/bilingual';
 import RecurringEvents from '../../../components/RecurringEvents';
 import { pluralize } from '../../../utils/pluralise';
+import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -929,9 +930,10 @@ function AddEvent() {
                     />
                   </Form.Item>
                 </BilingualInput>
+
                 <Form.Item
                   name="eventType"
-                  label={t('dashboard.events.addEditEvent.language.eventType')}
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name')}
                   initialValue={eventData?.additionalType?.map((type) => {
                     return type?.entityId;
                   })}
@@ -963,7 +965,7 @@ function AddEvent() {
                 </Form.Item>
                 <Form.Item
                   name="targetAudience"
-                  label={t('dashboard.events.addEditEvent.language.targetAudience')}
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name')}
                   initialValue={eventData?.audience?.map((audience) => {
                     return audience?.entityId;
                   })}
@@ -1954,7 +1956,7 @@ function AddEvent() {
                   style={{
                     display: !addedFields?.includes(otherInformationFieldNames.inLanguage) && 'none',
                   }}
-                  label={t('dashboard.events.addEditEvent.otherInformation.eventLanguage')}
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name')}
                   initialValue={eventData?.inLanguage?.map((inLanguage) => {
                     return inLanguage?.entityId;
                   })}>
@@ -2012,7 +2014,7 @@ function AddEvent() {
                 <Form.Item
                   name="eventAccessibility"
                   className="eventAccessibility"
-                  label={t('dashboard.events.addEditEvent.eventAccessibility.title')}
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name')}
                   initialValue={eventData?.accessibility?.map((type) => {
                     return type?.entityId;
                   })}>
