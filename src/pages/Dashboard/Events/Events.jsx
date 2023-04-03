@@ -28,7 +28,7 @@ function Events() {
   const timestampRef = useRef(Date.now()).current;
   const { user } = useSelector(getUserDetails);
 
-  const [getEvents, { currentData: eventsData, isLoading }] = useLazyGetEventsQuery();
+  const [getEvents, { currentData: eventsData, isLoading, isFetching }] = useLazyGetEventsQuery();
   const { currentData: allUsersData, isLoading: allUsersLoading } = useGetAllUsersQuery({
     calendarId,
     includeInactiveUsers: false,
@@ -410,7 +410,11 @@ function Events() {
           </Row>
           <Row className="events-content">
             <Col flex="832px">
-              {eventsData ? <EventList data={eventsData} pageNumber={pageNumber} setPageNumber={setPageNumber} /> : ''}
+              {eventsData && !isFetching ? (
+                <EventList data={eventsData} pageNumber={pageNumber} setPageNumber={setPageNumber} />
+              ) : (
+                ''
+              )}
             </Col>
           </Row>
         </Col>

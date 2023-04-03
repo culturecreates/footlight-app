@@ -2,7 +2,7 @@ import { Form, Select, Row, Col, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
-import { dateFrequencyOptions, daysOfWeek } from '../../constants/dateTypes';
+import { dateFrequencyOptions, dateTypes, daysOfWeek } from '../../constants/dateTypes';
 import './recurringEvents.css';
 import RecurringModal from './RecurringModal/index';
 import { ControlOutlined } from '@ant-design/icons';
@@ -22,6 +22,7 @@ const RecurringEvents = function ({
   form,
   eventDetails,
   setFormFields,
+  dateType,
 }) {
   // const endDisable = moment().format('YYYY-MM-DD');
   const [nummberofDates, setNumberofDates] = useState(numberOfDaysEvent);
@@ -32,6 +33,7 @@ const RecurringEvents = function ({
   const [selectedWeekDays, setSelectedWeekDays] = useState([]);
   const [dateModified, setDateModified] = useState(false);
   const [subEventCount, setSubEventCount] = useState(0);
+  const startDateRecur = Form.useWatch('startDateRecur', form);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -157,6 +159,12 @@ const RecurringEvents = function ({
     setNumberOfTimes(numTimes);
     setSubEventCount(subEventsCountHandler(customDates));
   }, [customDates]);
+  useEffect(() => {
+    if (dateType !== dateTypes.MULTIPLE) {
+      setSubEventCount(0);
+      setCustomDates([]);
+    }
+  }, [dateType]);
 
   const getNumberOfWeekDays = async (start, end, daysofweek) => {
     let date = [];
@@ -391,9 +399,7 @@ const RecurringEvents = function ({
             rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
             <DateRangePicker
               style={{ width: '423px' }}
-              disabled={
-                (isCustom || formFields?.frequency === 'CUSTOM') && formFields?.startDateRecur?.length == 2 && true
-              }
+              disabled={(isCustom || formFields?.frequency === 'CUSTOM') && startDateRecur?.length == 2 && true}
               suffixIcon={
                 subEventCount > 0 && (
                   <Tags style={{ color: '#1572BB', borderRadius: '4px' }} color={'#DBF3FD'}>

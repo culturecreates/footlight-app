@@ -18,7 +18,10 @@ function TextEditor(props) {
 
   const { t } = useTranslation();
   const [wordCount, setWordCount] = useState(
-    currentReactQuillRef?.current?.unprivilegedEditor?.getText().split(' ').length,
+    currentReactQuillRef?.current?.unprivilegedEditor
+      ?.getText()
+      .split(' ')
+      ?.filter((n) => n != '').length,
   );
   const modules = {
     toolbar: [
@@ -35,7 +38,12 @@ function TextEditor(props) {
   };
 
   const onChange = () => {
-    setWordCount(currentReactQuillRef?.current?.unprivilegedEditor?.getText().split(' ').length);
+    setWordCount(
+      currentReactQuillRef?.current?.unprivilegedEditor
+        ?.getText()
+        ?.split(' ')
+        .filter((n) => n != '')?.length,
+    );
   };
 
   const translateHandler = () => {
@@ -49,8 +57,18 @@ function TextEditor(props) {
   };
 
   useEffect(() => {
-    setWordCount(currentReactQuillRef?.current?.unprivilegedEditor?.getText().split(' ').length);
-  }, [currentReactQuillRef?.current?.unprivilegedEditor?.getText().split(' ').length]);
+    setWordCount(
+      currentReactQuillRef?.current?.unprivilegedEditor
+        ?.getText()
+        ?.split(' ')
+        .filter((n) => n != '')?.length,
+    );
+  }, [
+    currentReactQuillRef?.current?.unprivilegedEditor
+      ?.getText()
+      ?.split(' ')
+      .filter((n) => n != '')?.length,
+  ]);
 
   return (
     <>

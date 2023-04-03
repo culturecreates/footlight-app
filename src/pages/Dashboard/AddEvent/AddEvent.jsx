@@ -69,6 +69,7 @@ import { usePrompt } from '../../../hooks/usePrompt';
 import { bilingual } from '../../../utils/bilingual';
 import RecurringEvents from '../../../components/RecurringEvents';
 import { pluralize } from '../../../utils/pluralise';
+import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -199,7 +200,19 @@ function AddEvent() {
           'dateRangePicker',
           'datePickerWrapper',
           'startDateRecur',
-          ...(eventData?.publishState === eventPublishState.PUBLISHED ? ['prices', 'ticketLink'] : []),
+          ...(eventData?.publishState === eventPublishState.PUBLISHED
+            ? [
+                'prices',
+                'ticketLink',
+                'englishEditor',
+                'frenchEditor',
+                'eventType',
+                'targetAudience',
+                'draggerWrap',
+                'location-form-wrapper',
+                'ticketPickerWrapper',
+              ]
+            : []),
         ])
         .then(() => {
           var values = form.getFieldsValue(true);
@@ -566,6 +579,8 @@ function AddEvent() {
             <>
               {calendar[0]?.role === userRoles.GUEST
                 ? t('dashboard.events.addEditEvent.validations.errorReview')
+                : eventId && eventData?.publishState === eventPublishState.PUBLISHED
+                ? t('dashboard.events.addEditEvent.validations.errorDraft')
                 : t('dashboard.events.addEditEvent.validations.errorPublishing')}
               &nbsp;
               <Button
@@ -636,7 +651,7 @@ function AddEvent() {
       return (
         <>
           <Form.Item>
-            <PublishState eventId={eventId}>
+            <PublishState eventId={eventId} reviewPublishHandler={(e) => reviewPublishHandler(e)}>
               <span>{eventData?.publishState}</span>
             </PublishState>
           </Form.Item>
@@ -879,6 +894,7 @@ function AddEvent() {
                 </Col>
               </Row>
             </Col>
+
             <CardEvent>
               <Form.Item label={t('dashboard.events.addEditEvent.language.title')} required={true}>
                 <BilingualInput fieldData={eventData?.name}>
@@ -929,9 +945,10 @@ function AddEvent() {
                     />
                   </Form.Item>
                 </BilingualInput>
+
                 <Form.Item
                   name="eventType"
-                  label={t('dashboard.events.addEditEvent.language.eventType')}
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name')}
                   initialValue={eventData?.additionalType?.map((type) => {
                     return type?.entityId;
                   })}
@@ -963,7 +980,7 @@ function AddEvent() {
                 </Form.Item>
                 <Form.Item
                   name="targetAudience"
-                  label={t('dashboard.events.addEditEvent.language.targetAudience')}
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name')}
                   initialValue={eventData?.audience?.map((audience) => {
                     return audience?.entityId;
                   })}
@@ -1060,11 +1077,12 @@ function AddEvent() {
                                   eventData?.startDateTime,
                                   eventData?.endDate,
                                   eventData?.endDateTime,
-                                ) === dateTypes.SINGLE &&
-                                moment.tz(
-                                  eventData?.startDate ?? eventData?.startDateTime,
-                                  eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                                )
+                                ) === dateTypes.SINGLE
+                                  ? moment.tz(
+                                      eventData?.startDate ?? eventData?.startDateTime,
+                                      eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                    )
+                                  : undefined
                               }
                               rules={[
                                 { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
@@ -1124,16 +1142,18 @@ function AddEvent() {
                                   eventData?.startDateTime,
                                   eventData?.endDate,
                                   eventData?.endDateTime,
-                                ) === dateTypes.RANGE && [
-                                  moment.tz(
-                                    eventData?.startDate ?? eventData?.startDateTime,
-                                    eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                                  ),
-                                  moment.tz(
-                                    eventData?.endDate ?? eventData?.endDateTime,
-                                    eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                                  ),
-                                ]
+                                ) === dateTypes.RANGE
+                                  ? [
+                                      moment.tz(
+                                        eventData?.startDate ?? eventData?.startDateTime,
+                                        eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                      ),
+                                      moment.tz(
+                                        eventData?.endDate ?? eventData?.endDateTime,
+                                        eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                      ),
+                                    ]
+                                  : undefined
                               }
                               rules={[
                                 { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
@@ -1208,6 +1228,7 @@ function AddEvent() {
                               form={form}
                               eventDetails={eventData}
                               setFormFields={setFormValue}
+                              dateType={dateType}
                             />
                           </>
                         )}
@@ -1284,7 +1305,13 @@ function AddEvent() {
                           secondaryIcon={<InfoCircleOutlined />}
                           onClick={() => {
                             setDateType(type.type);
-                            form.resetFields(['datePicker', 'dateRangePicker']);
+                            form.setFieldsValue({
+                              datePicker: undefined,
+                              dateRangePicker: undefined,
+                              startDateRecur: undefined,
+                            });
+                            form.resetFields(['frequency']);
+                            setFormValue(null);
                           }}
                         />
                       );
@@ -1374,7 +1401,9 @@ function AddEvent() {
                   label={t('dashboard.events.addEditEvent.location.virtualLocation')}
                   name={virtualLocationFieldNames.virtualLocationName}
                   className={virtualLocationFieldNames.virtualLocationName}
-                  style={{ display: !addedFields?.includes(virtualLocationFieldNames.virtualLocationName) && 'none' }}>
+                  style={{
+                    display: !addedFields?.includes(virtualLocationFieldNames.virtualLocationName) && 'none',
+                  }}>
                   <BilingualInput fieldData={initialVirtualLocation && initialVirtualLocation[0]?.name}>
                     <Form.Item
                       name="frenchVirtualLocation"
@@ -1474,9 +1503,19 @@ function AddEvent() {
                         }),
                         () => ({
                           validator() {
-                            if (reactQuillRefFr?.current?.unprivilegedEditor?.getText().split(' ').length > 49) {
+                            if (
+                              reactQuillRefFr?.current?.unprivilegedEditor
+                                ?.getText()
+                                .split(' ')
+                                ?.filter((n) => n != '')?.length > 49
+                            ) {
                               return Promise.resolve();
-                            } else if (reactQuillRefEn?.current?.unprivilegedEditor?.getText().split(' ').length > 49)
+                            } else if (
+                              reactQuillRefEn?.current?.unprivilegedEditor
+                                ?.getText()
+                                .split(' ')
+                                ?.filter((n) => n != '')?.length > 49
+                            )
                               return Promise.resolve();
                             else
                               return Promise.reject(
@@ -1512,9 +1551,19 @@ function AddEvent() {
                         }),
                         () => ({
                           validator() {
-                            if (reactQuillRefEn?.current?.unprivilegedEditor?.getText().split(' ').length > 49) {
+                            if (
+                              reactQuillRefEn?.current?.unprivilegedEditor
+                                ?.getText()
+                                .split(' ')
+                                ?.filter((n) => n != '')?.length > 49
+                            ) {
                               return Promise.resolve();
-                            } else if (reactQuillRefFr?.current?.unprivilegedEditor?.getText().split(' ').length > 49)
+                            } else if (
+                              reactQuillRefFr?.current?.unprivilegedEditor
+                                ?.getText()
+                                .split(' ')
+                                ?.filter((n) => n != '')?.length > 49
+                            )
                               return Promise.resolve();
                             else
                               return Promise.reject(
@@ -1954,7 +2003,7 @@ function AddEvent() {
                   style={{
                     display: !addedFields?.includes(otherInformationFieldNames.inLanguage) && 'none',
                   }}
-                  label={t('dashboard.events.addEditEvent.otherInformation.eventLanguage')}
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name')}
                   initialValue={eventData?.inLanguage?.map((inLanguage) => {
                     return inLanguage?.entityId;
                   })}>
@@ -2012,7 +2061,7 @@ function AddEvent() {
                 <Form.Item
                   name="eventAccessibility"
                   className="eventAccessibility"
-                  label={t('dashboard.events.addEditEvent.eventAccessibility.title')}
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name')}
                   initialValue={eventData?.accessibility?.map((type) => {
                     return type?.entityId;
                   })}>
@@ -2051,7 +2100,12 @@ function AddEvent() {
                         placeholder={t(
                           'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityFrenchNote',
                         )}
-                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px', resize: 'vertical' }}
+                        style={{
+                          borderRadius: '4px',
+                          border: '4px solid #E8E8E8',
+                          width: '423px',
+                          resize: 'vertical',
+                        }}
                         size="large"
                       />
                     </Form.Item>
@@ -2061,7 +2115,12 @@ function AddEvent() {
                         placeholder={t(
                           'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityEnglishNote',
                         )}
-                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px', resize: 'vertical' }}
+                        style={{
+                          borderRadius: '4px',
+                          border: '4px solid #E8E8E8',
+                          width: '423px',
+                          resize: 'vertical',
+                        }}
                         size="large"
                       />
                     </Form.Item>

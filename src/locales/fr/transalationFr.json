@@ -158,13 +158,13 @@
           "addDates": "Ajouter",
           "times": "times",
           "weekDays": {
-            "sunday": "Lun",
-            "monday": "Mar",
-            "tuesday": "Mer",
-            "wednesday": "Jeu",
-            "thursday": "Ven",
-            "friday": "Sam",
-            "saturday": "Dim"
+            "sunday": "Dim",
+            "monday": "Lun",
+            "tuesday": "Mar",
+            "wednesday": "Mer",
+            "thursday": "Jeu",
+            "friday": "Ven",
+            "saturday": "Sam"
           },
           "modal": {
             "titleHeading": "Sélectionnez la/les dates de l’événement",
