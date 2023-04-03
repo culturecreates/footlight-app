@@ -1503,9 +1503,19 @@ function AddEvent() {
                         }),
                         () => ({
                           validator() {
-                            if (reactQuillRefFr?.current?.unprivilegedEditor?.getText().split(' ').length > 49) {
+                            if (
+                              reactQuillRefFr?.current?.unprivilegedEditor
+                                ?.getText()
+                                .split(' ')
+                                ?.filter((n) => n != '')?.length > 49
+                            ) {
                               return Promise.resolve();
-                            } else if (reactQuillRefEn?.current?.unprivilegedEditor?.getText().split(' ').length > 49)
+                            } else if (
+                              reactQuillRefEn?.current?.unprivilegedEditor
+                                ?.getText()
+                                .split(' ')
+                                ?.filter((n) => n != '')?.length > 49
+                            )
                               return Promise.resolve();
                             else
                               return Promise.reject(
@@ -1541,9 +1551,19 @@ function AddEvent() {
                         }),
                         () => ({
                           validator() {
-                            if (reactQuillRefEn?.current?.unprivilegedEditor?.getText().split(' ').length > 49) {
+                            if (
+                              reactQuillRefEn?.current?.unprivilegedEditor
+                                ?.getText()
+                                .split(' ')
+                                ?.filter((n) => n != '')?.length > 49
+                            ) {
                               return Promise.resolve();
-                            } else if (reactQuillRefFr?.current?.unprivilegedEditor?.getText().split(' ').length > 49)
+                            } else if (
+                              reactQuillRefFr?.current?.unprivilegedEditor
+                                ?.getText()
+                                .split(' ')
+                                ?.filter((n) => n != '')?.length > 49
+                            )
                               return Promise.resolve();
                             else
                               return Promise.reject(
