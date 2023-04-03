@@ -18,7 +18,10 @@ function TextEditor(props) {
 
   const { t } = useTranslation();
   const [wordCount, setWordCount] = useState(
-    currentReactQuillRef?.current?.unprivilegedEditor?.getText().split(' ').length,
+    currentReactQuillRef?.current?.unprivilegedEditor
+      ?.getText()
+      .split(' ')
+      ?.filter((n) => n != '').length,
   );
   const modules = {
     toolbar: [
