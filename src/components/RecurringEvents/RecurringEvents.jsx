@@ -2,7 +2,7 @@ import { Form, Select, Row, Col, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
-import { dateFrequencyOptions, daysOfWeek } from '../../constants/dateTypes';
+import { dateFrequencyOptions, dateTypes, daysOfWeek } from '../../constants/dateTypes';
 import './recurringEvents.css';
 import RecurringModal from './RecurringModal/index';
 import { ControlOutlined } from '@ant-design/icons';
@@ -22,6 +22,7 @@ const RecurringEvents = function ({
   form,
   eventDetails,
   setFormFields,
+  dateType,
 }) {
   // const endDisable = moment().format('YYYY-MM-DD');
   const [nummberofDates, setNumberofDates] = useState(numberOfDaysEvent);
@@ -158,6 +159,12 @@ const RecurringEvents = function ({
     setNumberOfTimes(numTimes);
     setSubEventCount(subEventsCountHandler(customDates));
   }, [customDates]);
+  useEffect(() => {
+    if (dateType !== dateTypes.MULTIPLE) {
+      setSubEventCount(0);
+      setCustomDates([]);
+    }
+  }, [dateType]);
 
   const getNumberOfWeekDays = async (start, end, daysofweek) => {
     let date = [];

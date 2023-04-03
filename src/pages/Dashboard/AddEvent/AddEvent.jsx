@@ -1077,11 +1077,12 @@ function AddEvent() {
                                   eventData?.startDateTime,
                                   eventData?.endDate,
                                   eventData?.endDateTime,
-                                ) === dateTypes.SINGLE &&
-                                moment.tz(
-                                  eventData?.startDate ?? eventData?.startDateTime,
-                                  eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                                )
+                                ) === dateTypes.SINGLE
+                                  ? moment.tz(
+                                      eventData?.startDate ?? eventData?.startDateTime,
+                                      eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                    )
+                                  : undefined
                               }
                               rules={[
                                 { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
@@ -1141,16 +1142,18 @@ function AddEvent() {
                                   eventData?.startDateTime,
                                   eventData?.endDate,
                                   eventData?.endDateTime,
-                                ) === dateTypes.RANGE && [
-                                  moment.tz(
-                                    eventData?.startDate ?? eventData?.startDateTime,
-                                    eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                                  ),
-                                  moment.tz(
-                                    eventData?.endDate ?? eventData?.endDateTime,
-                                    eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                                  ),
-                                ]
+                                ) === dateTypes.RANGE
+                                  ? [
+                                      moment.tz(
+                                        eventData?.startDate ?? eventData?.startDateTime,
+                                        eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                      ),
+                                      moment.tz(
+                                        eventData?.endDate ?? eventData?.endDateTime,
+                                        eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                      ),
+                                    ]
+                                  : undefined
                               }
                               rules={[
                                 { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
@@ -1225,6 +1228,7 @@ function AddEvent() {
                               form={form}
                               eventDetails={eventData}
                               setFormFields={setFormValue}
+                              dateType={dateType}
                             />
                           </>
                         )}
@@ -1301,7 +1305,13 @@ function AddEvent() {
                           secondaryIcon={<InfoCircleOutlined />}
                           onClick={() => {
                             setDateType(type.type);
-                            form.resetFields(['datePicker', 'dateRangePicker']);
+                            form.setFieldsValue({
+                              datePicker: undefined,
+                              dateRangePicker: undefined,
+                              startDateRecur: undefined,
+                            });
+                            form.resetFields(['frequency']);
+                            setFormValue(null);
                           }}
                         />
                       );
