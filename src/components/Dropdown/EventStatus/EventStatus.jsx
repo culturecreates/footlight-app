@@ -67,7 +67,9 @@ function EventStatusOptions({ children, publishState, creator, eventId }) {
             key: 'event-review-publish-warning',
             content: (
               <>
-                {t('dashboard.events.addEditEvent.validations.errorPublishing')}
+                {key === '0'
+                  ? t('dashboard.events.addEditEvent.validations.errorPublishing')
+                  : key === '1' && t('dashboard.events.addEditEvent.validations.errorDraft')}
                 &nbsp;
                 <Button
                   type="text"
