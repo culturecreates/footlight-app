@@ -1,6 +1,6 @@
 import React from 'react';
-import { Dropdown, Modal } from 'antd';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { Button, Dropdown, Modal, message } from 'antd';
+import { ExclamationCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { eventPublishOptions } from '../../../constants/eventPublishOptions';
 import './eventStatus.css';
@@ -56,8 +56,30 @@ function EventStatusOptions({ children, publishState, creator, eventId }) {
   };
   const onClick = ({ key }) => {
     if (key == '2') showDeleteConfirm();
-    else if (key === '0' || key === '1') updateEventState({ id: eventId, calendarId: calendarId });
-    else if (key === '3') navigate(`${location.pathname}${PathName.AddEvent}?duplicateId=${eventId}`);
+    else if (key === '0' || key === '1') {
+      updateEventState({ id: eventId, calendarId: calendarId })
+        .unwrap()
+        .then(() => {})
+        .catch(() => {
+          message.warning({
+            duration: 10,
+            maxCount: 1,
+            key: 'event-review-publish-warning',
+            content: (
+              <>
+                {t('dashboard.events.addEditEvent.validations.errorPublishing')}
+                &nbsp;
+                <Button
+                  type="text"
+                  icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                  onClick={() => message.destroy('event-review-publish-warning')}
+                />
+              </>
+            ),
+            icon: <ExclamationCircleOutlined />,
+          });
+        });
+    } else if (key === '3') navigate(`${location.pathname}${PathName.AddEvent}?duplicateId=${eventId}`);
   };
   return (
     <ProtectedComponents creator={creator}>
