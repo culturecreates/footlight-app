@@ -4,6 +4,7 @@ export const placesApi = createApi({
   reducerPath: 'placesApi',
   baseQuery: baseQueryWithReauth,
   tagTypes: ['Places'],
+  keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getAllPlaces: builder.query({
       query: ({ calendarId }) => ({

@@ -4,6 +4,7 @@ export const eventsApi = createApi({
   reducerPath: 'eventsApi',
   baseQuery: baseQueryWithReauth,
   tagTypes: ['Events', 'Event'],
+  keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getEvents: builder.query({
       query: ({ pageNumber = 1, limit, calendarId, query = '', filterkeys, sort }) => ({

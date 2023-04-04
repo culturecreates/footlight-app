@@ -19,6 +19,8 @@ import { useSelector } from 'react-redux';
 import { sortByOptions, sortOrder } from '../../../constants/sortByOptions';
 import DateRangePicker from '../../../components/DateRangePicker';
 import moment from 'moment';
+import NoContent from '../../../components/NoContent/NoContent';
+import LoadingIndicator from '../../../components/LoadingIndicator/index';
 
 function Events() {
   const { t } = useTranslation();
@@ -410,11 +412,17 @@ function Events() {
           </Row>
           <Row className="events-content">
             <Col flex="832px">
-              {eventsData && !isFetching ? (
-                <EventList data={eventsData} pageNumber={pageNumber} setPageNumber={setPageNumber} />
-              ) : (
-                ''
+              {isFetching && (
+                <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <LoadingIndicator />
+                </div>
               )}
+              {!isFetching &&
+                (eventsData?.data?.length > 0 ? (
+                  <EventList data={eventsData} pageNumber={pageNumber} setPageNumber={setPageNumber} />
+                ) : (
+                  <NoContent style={{ height: '200px' }} />
+                ))}
             </Col>
           </Row>
         </Col>

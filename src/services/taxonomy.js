@@ -4,6 +4,7 @@ export const taxonomyApi = createApi({
   reducerPath: 'taxonomyApi',
   baseQuery: baseQueryWithReauth,
   tagTypes: ['taxonomy'],
+  keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getAllTaxonomy: builder.query({
       query: ({ calendarId, search = '', taxonomyClass, includeConcepts }) => ({
