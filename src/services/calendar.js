@@ -4,6 +4,7 @@ export const calendarApi = createApi({
   reducerPath: 'calendarApi',
   baseQuery: baseQueryWithReauth,
   tagTypes: ['Calendar'],
+  keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getAllCalendars: builder.query({
       query: () => 'calendars',
