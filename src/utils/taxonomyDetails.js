@@ -2,8 +2,12 @@ import { bilingual } from './bilingual';
 
 // Function to get the required taxonomy fields or details.
 
-export const taxonomyDetails = (data, user, mappedToField, field = false) => {
-  let fieldData = data?.filter((taxonomy) => taxonomy?.mappedToField === mappedToField);
+export const taxonomyDetails = (data, user, mappedToField, field = false, isDynamicField = false) => {
+  let fieldData = data?.filter((taxonomy) => {
+    if (taxonomy?.isDynamicField) {
+      if (taxonomy?.isDynamicField == isDynamicField && taxonomy?.mappedToField === mappedToField) return true;
+    } else if (taxonomy?.mappedToField === mappedToField) return true;
+  });
   if (fieldData && fieldData?.length > 0 && fieldData[0]) {
     if (!field) return fieldData[0];
     else {

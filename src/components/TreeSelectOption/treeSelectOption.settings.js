@@ -19,8 +19,12 @@ const handleMultilevelTreeSelect = (children, user) => {
     };
   });
 };
-export const treeTaxonomyOptions = (data, user, mappedToField) => {
-  let fieldData = data?.data?.filter((taxonomy) => taxonomy?.mappedToField === mappedToField);
+export const treeTaxonomyOptions = (data, user, mappedToField, isDynamicField) => {
+  let fieldData = data?.data?.filter((taxonomy) => {
+    if (taxonomy?.isDynamicField) {
+      if (taxonomy?.isDynamicField == isDynamicField && taxonomy?.mappedToField === mappedToField) return true;
+    } else if (taxonomy?.mappedToField === mappedToField) return true;
+  });
   let concepts = fieldData?.map((field) => {
     return field?.concept;
   });

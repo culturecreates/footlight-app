@@ -948,7 +948,7 @@ function AddEvent() {
 
                 <Form.Item
                   name="eventType"
-                  label={taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name')}
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false)}
                   initialValue={eventData?.additionalType?.map((type) => {
                     return type?.entityId;
                   })}
@@ -964,7 +964,7 @@ function AddEvent() {
                     treeDefaultExpandAll
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType')}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType', false)}
                     tagRender={(props) => {
                       const { label, closable, onClose } = props;
                       return (
@@ -980,7 +980,7 @@ function AddEvent() {
                 </Form.Item>
                 <Form.Item
                   name="targetAudience"
-                  label={taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name')}
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false)}
                   initialValue={eventData?.audience?.map((audience) => {
                     return audience?.entityId;
                   })}
@@ -995,7 +995,7 @@ function AddEvent() {
                     treeDefaultExpandAll
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience')}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience', false)}
                     placeholder={t('dashboard.events.addEditEvent.language.placeHolderTargetAudience')}
                     tagRender={(props) => {
                       const { closable, onClose, label } = props;
@@ -2003,7 +2003,7 @@ function AddEvent() {
                   style={{
                     display: !addedFields?.includes(otherInformationFieldNames.inLanguage) && 'none',
                   }}
-                  label={taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name')}
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name', false)}
                   initialValue={eventData?.inLanguage?.map((inLanguage) => {
                     return inLanguage?.entityId;
                   })}>
@@ -2013,7 +2013,7 @@ function AddEvent() {
                     placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'inLanguage')}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'inLanguage', false)}
                     tagRender={(props) => {
                       const { closable, onClose, label } = props;
                       return (
@@ -2061,7 +2061,7 @@ function AddEvent() {
                 <Form.Item
                   name="eventAccessibility"
                   className="eventAccessibility"
-                  label={taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name')}
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false)}
                   initialValue={eventData?.accessibility?.map((type) => {
                     return type?.entityId;
                   })}>
@@ -2071,7 +2071,7 @@ function AddEvent() {
                     style={{ width: '423px' }}
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility')}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility', false)}
                     placeholder={t('dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibility')}
                     tagRender={(props) => {
                       const { label, closable, onClose } = props;
