@@ -137,6 +137,7 @@ function AddEvent() {
   const [showDialog, setShowDialog] = useState(false);
   const [scrollToSelectedField, setScrollToSelectedField] = useState();
   const [formValue, setFormValue] = useState();
+  const [validateFields, setValidateFields] = useState([]);
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -148,6 +149,7 @@ function AddEvent() {
   let requiredFields = currentCalendarData?.formSchema?.filter((form) => form?.formName === 'Event');
   requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
   let requiredFieldNames = requiredFields && requiredFields?.requiredFields?.map((field) => field?.fieldName);
+
   const dateTimeConverter = (date, time) => {
     let dateSelected = moment.tz(date, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('DD-MM-YYYY');
     let timeSelected = moment.tz(time, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('hh:mm:ss a');
@@ -199,25 +201,15 @@ function AddEvent() {
     var promise = new Promise(function (resolve, reject) {
       form
         .validateFields([
-          'french',
-          'english',
-          'datePicker',
-          'dateRangePicker',
-          'datePickerWrapper',
-          'startDateRecur',
-          ...(eventData?.publishState === eventPublishState.PUBLISHED
-            ? [
-                'prices',
-                'ticketLink',
-                'englishEditor',
-                'frenchEditor',
-                'eventType',
-                'targetAudience',
-                'draggerWrap',
-                'location-form-wrapper',
-                'ticketPickerWrapper',
-              ]
-            : []),
+          ...new Set([
+            'french',
+            'english',
+            'datePicker',
+            'dateRangePicker',
+            'datePickerWrapper',
+            'startDateRecur',
+            ...(eventData?.publishState === eventPublishState.PUBLISHED ? validateFields : []),
+          ]),
         ])
         .then(() => {
           var values = form.getFieldsValue(true);
@@ -542,23 +534,7 @@ function AddEvent() {
   const reviewPublishHandler = (event) => {
     event?.preventDefault();
     form
-      .validateFields([
-        'french',
-        'english',
-        'datePickerWrapper',
-        'datePicker',
-        'dateRangePicker',
-        'startDateRecur',
-        'englishEditor',
-        'frenchEditor',
-        'eventType',
-        'targetAudience',
-        'draggerWrap',
-        'location-form-wrapper',
-        'ticketPickerWrapper',
-        'prices',
-        'ticketLink',
-      ])
+      .validateFields(validateFields)
       .then(() => {
         saveAsDraftHandler(event, true)
           .then((id) => {
@@ -853,6 +829,53 @@ function AddEvent() {
         }
       } else
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
+    }
+    if (currentCalendarData) {
+      let publishValidateFields = [];
+      requiredFields?.requiredFields?.map((requiredField) => {
+        switch (requiredField?.fieldName) {
+          case eventFormRequiredFieldNames.NAME:
+            publishValidateFields.push('french', 'english');
+            break;
+          case eventFormRequiredFieldNames.NAME_EN:
+            publishValidateFields.push('english');
+            break;
+          case eventFormRequiredFieldNames.NAME_FR:
+            publishValidateFields.push('french');
+            break;
+          case eventFormRequiredFieldNames.DESCRIPTION:
+            publishValidateFields.push('englishEditor', 'frenchEditor');
+            break;
+          case eventFormRequiredFieldNames.DESCRIPTION_EN:
+            publishValidateFields.push('englishEditor');
+            break;
+          case eventFormRequiredFieldNames.DESCRIPTION_FR:
+            publishValidateFields.push('frenchEditor');
+            break;
+          case eventFormRequiredFieldNames.START_DATE:
+            publishValidateFields.push('datePickerWrapper', 'datePicker', 'dateRangePicker', 'startDateRecur');
+            break;
+          case eventFormRequiredFieldNames.TICKET_INFO:
+            publishValidateFields.push('ticketPickerWrapper', 'prices', 'ticketLink');
+            break;
+          case eventFormRequiredFieldNames.EVENT_TYPE:
+            publishValidateFields.push('eventType');
+            break;
+          case eventFormRequiredFieldNames.AUDIENCE:
+            publishValidateFields.push('targetAudience');
+            break;
+          case eventFormRequiredFieldNames.LOCATION:
+            publishValidateFields.push('location-form-wrapper');
+            break;
+          case eventFormRequiredFieldNames.IMAGE:
+            publishValidateFields.push('draggerWrap');
+            break;
+          default:
+            break;
+        }
+      });
+      publishValidateFields = [...new Set(publishValidateFields)];
+      setValidateFields(publishValidateFields);
     }
   }, [isLoading]);
 
