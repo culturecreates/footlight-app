@@ -66,7 +66,7 @@ function Dashboard() {
               overflowY: 'scroll',
               background: '#F9FAFF',
             }}>
-            <Outlet />
+            <Outlet context={[currentCalendarData]} />
           </Content>
         </Layout>
       </Layout>

@@ -12,7 +12,7 @@ import {
 import moment from 'moment-timezone';
 import i18n from 'i18next';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams, useOutletContext } from 'react-router-dom';
 import { useGetEventQuery, useUpdateEventStateMutation } from '../../../services/events';
 import { PathName } from '../../../constants/pathName';
 import Outlined from '../../../components/Button/Outlined';
@@ -70,6 +70,7 @@ import { bilingual } from '../../../utils/bilingual';
 import RecurringEvents from '../../../components/RecurringEvents';
 import { pluralize } from '../../../utils/pluralise';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
+import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequiredFieldNames';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -82,6 +83,7 @@ function AddEvent() {
   let duplicateId = searchParams.get('duplicateId');
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
+  const [currentCalendarData] = useOutletContext();
   const {
     currentData: eventData,
     isError,
@@ -143,6 +145,9 @@ function AddEvent() {
 
   let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
   let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
+  let requiredFields = currentCalendarData?.formSchema?.filter((form) => form?.formName === 'Event');
+  requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
+  let requiredFieldNames = requiredFields && requiredFields?.requiredFields?.map((field) => field?.fieldName);
   const dateTimeConverter = (date, time) => {
     let dateSelected = moment.tz(date, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('DD-MM-YYYY');
     let timeSelected = moment.tz(time, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('hh:mm:ss a');
@@ -896,7 +901,13 @@ function AddEvent() {
             </Col>
 
             <CardEvent>
-              <Form.Item label={t('dashboard.events.addEditEvent.language.title')} required={true}>
+              <Form.Item
+                label={t('dashboard.events.addEditEvent.language.title')}
+                required={
+                  requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME) ||
+                  requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME_EN) ||
+                  requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME_FR)
+                }>
                 <BilingualInput fieldData={eventData?.name}>
                   <Form.Item
                     name="french"
@@ -954,7 +965,7 @@ function AddEvent() {
                   })}
                   rules={[
                     {
-                      required: true,
+                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EVENT_TYPE),
                       message: t('dashboard.events.addEditEvent.validations.eventType'),
                     },
                   ]}>
@@ -986,7 +997,7 @@ function AddEvent() {
                   })}
                   rules={[
                     {
-                      required: true,
+                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.AUDIENCE),
                       message: t('dashboard.events.addEditEvent.validations.targetAudience'),
                     },
                   ]}>
@@ -1085,7 +1096,10 @@ function AddEvent() {
                                   : undefined
                               }
                               rules={[
-                                { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
+                                {
+                                  required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.START_DATE),
+                                  message: t('dashboard.events.addEditEvent.validations.date'),
+                                },
                               ]}>
                               <DatePickerStyled style={{ width: '423px' }} />
                             </Form.Item>
@@ -1156,7 +1170,10 @@ function AddEvent() {
                                   : undefined
                               }
                               rules={[
-                                { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
+                                {
+                                  required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.START_DATE),
+                                  message: t('dashboard.events.addEditEvent.validations.date'),
+                                },
                               ]}>
                               <DateRangePicker
                                 style={{ width: '423px' }}
@@ -1319,7 +1336,9 @@ function AddEvent() {
                 </Form.Item>
               )}
             </CardEvent>
-            <CardEvent title={t('dashboard.events.addEditEvent.location.title')} required={true}>
+            <CardEvent
+              title={t('dashboard.events.addEditEvent.location.title')}
+              required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.LOCATION)}>
               <Form.Item
                 name="location-form-wrapper"
                 rules={[
@@ -1476,7 +1495,11 @@ function AddEvent() {
               <>
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.description.title')}
-                  required={true}>
+                  required={
+                    requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION) ||
+                    requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION_EN) ||
+                    requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION_FR)
+                  }>
                   <BilingualInput fieldData={eventData?.description}>
                     <TextEditor
                       formName="frenchEditor"
@@ -1579,7 +1602,7 @@ function AddEvent() {
                   label={t('dashboard.events.addEditEvent.otherInformation.image.title')}
                   name="draggerWrap"
                   className="draggerWrap"
-                  required
+                  required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.IMAGE)}
                   initialValue={eventData?.image && eventData?.image?.original?.uri}
                   {...(isAddImageError && {
                     help: t('dashboard.events.addEditEvent.validations.errorImage'),
@@ -2148,7 +2171,9 @@ function AddEvent() {
                 )}
               </Form.Item>
             </CardEvent>
-            <CardEvent title={t('dashboard.events.addEditEvent.tickets.title')} required={true}>
+            <CardEvent
+              title={t('dashboard.events.addEditEvent.tickets.title')}
+              required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.TICKET_INFO)}>
               <>
                 {(ticketType == offerTypes.FREE || !ticketType) && (
                   <Row>
