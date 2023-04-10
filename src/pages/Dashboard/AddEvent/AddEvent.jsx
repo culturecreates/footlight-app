@@ -830,6 +830,8 @@ function AddEvent() {
       } else
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
     }
+  }, [isLoading]);
+  useEffect(() => {
     if (currentCalendarData) {
       let publishValidateFields = [];
       requiredFields?.requiredFields?.map((requiredField) => {
@@ -880,7 +882,7 @@ function AddEvent() {
       publishValidateFields = [...new Set(publishValidateFields)];
       setValidateFields(publishValidateFields);
     }
-  }, [isLoading]);
+  }, [currentCalendarData]);
 
   useEffect(() => {
     setOrganizersList(treeEntitiesOption(initialEntities, user));
@@ -896,7 +898,8 @@ function AddEvent() {
     !isLoading &&
     !placesLoading &&
     !taxonomyLoading &&
-    !initialEntityLoading && (
+    !initialEntityLoading &&
+    currentCalendarData && (
       <div>
         <Form
           form={form}
