@@ -138,6 +138,7 @@ function AddEvent() {
   const [scrollToSelectedField, setScrollToSelectedField] = useState();
   const [formValue, setFormValue] = useState();
   const [validateFields, setValidateFields] = useState([]);
+  const [descriptionMinimumWordCount, setDescriptionMinimumWordCount] = useState(1);
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -149,7 +150,6 @@ function AddEvent() {
   let requiredFields = currentCalendarData?.formSchema?.filter((form) => form?.formName === 'Event');
   requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
   let requiredFieldNames = requiredFields && requiredFields?.requiredFields?.map((field) => field?.fieldName);
-
   const dateTimeConverter = (date, time) => {
     let dateSelected = moment.tz(date, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('DD-MM-YYYY');
     let timeSelected = moment.tz(time, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('hh:mm:ss a');
@@ -845,12 +845,15 @@ function AddEvent() {
             break;
           case eventFormRequiredFieldNames.DESCRIPTION:
             publishValidateFields.push('englishEditor', 'frenchEditor');
+            setDescriptionMinimumWordCount(Number(requiredField?.rule?.minimumWordCount));
             break;
           case eventFormRequiredFieldNames.DESCRIPTION_EN:
             publishValidateFields.push('englishEditor');
+            setDescriptionMinimumWordCount(Number(requiredField?.rule?.minimumWordCount));
             break;
           case eventFormRequiredFieldNames.DESCRIPTION_FR:
             publishValidateFields.push('frenchEditor');
+            setDescriptionMinimumWordCount(Number(requiredField?.rule?.minimumWordCount));
             break;
           case eventFormRequiredFieldNames.START_DATE:
             publishValidateFields.push('datePickerWrapper', 'datePicker', 'dateRangePicker', 'startDateRecur');
@@ -1531,6 +1534,7 @@ function AddEvent() {
                       currentReactQuillRef={reactQuillRefFr}
                       editorLanguage={'fr'}
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.description.frenchPlaceholder')}
+                      descriptionMinimumWordCount={descriptionMinimumWordCount}
                       rules={[
                         () => ({
                           validator() {
@@ -1542,7 +1546,9 @@ function AddEvent() {
                             } else
                               return Promise.reject(
                                 new Error(
-                                  t('dashboard.events.addEditEvent.validations.otherInformation.emptyDescription'),
+                                  t('dashboard.events.addEditEvent.validations.otherInformation.emptyDescription', {
+                                    wordCount: descriptionMinimumWordCount,
+                                  }),
                                 ),
                               );
                           },
@@ -1553,14 +1559,14 @@ function AddEvent() {
                               reactQuillRefFr?.current?.unprivilegedEditor
                                 ?.getText()
                                 .split(' ')
-                                ?.filter((n) => n != '')?.length > 49
+                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
                             ) {
                               return Promise.resolve();
                             } else if (
                               reactQuillRefEn?.current?.unprivilegedEditor
                                 ?.getText()
                                 .split(' ')
-                                ?.filter((n) => n != '')?.length > 49
+                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
                             )
                               return Promise.resolve();
                             else
@@ -1579,6 +1585,7 @@ function AddEvent() {
                       currentReactQuillRef={reactQuillRefEn}
                       editorLanguage={'en'}
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.description.englishPlaceholder')}
+                      descriptionMinimumWordCount={descriptionMinimumWordCount}
                       rules={[
                         () => ({
                           validator() {
@@ -1601,14 +1608,14 @@ function AddEvent() {
                               reactQuillRefEn?.current?.unprivilegedEditor
                                 ?.getText()
                                 .split(' ')
-                                ?.filter((n) => n != '')?.length > 49
+                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
                             ) {
                               return Promise.resolve();
                             } else if (
                               reactQuillRefFr?.current?.unprivilegedEditor
                                 ?.getText()
                                 .split(' ')
-                                ?.filter((n) => n != '')?.length > 49
+                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
                             )
                               return Promise.resolve();
                             else
