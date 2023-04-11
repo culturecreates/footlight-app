@@ -455,7 +455,7 @@ function AddEvent() {
             ...(values?.dynamicFields && { dynamicFields }),
             ...(dateTypes.MULTIPLE && { recurringEvent }),
             inLanguage,
-            isFeaturedEvent: values?.isFeaturedEvent,
+            isFeatured: values?.isFeatured,
           };
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
             new Compressor(values?.dragger[0]?.originFileObj, {
@@ -931,9 +931,9 @@ function AddEvent() {
                     <Col>
                       <Form.Item
                         valuePropName="checked"
-                        name="isFeaturedEvent"
-                        initialValue={eventData?.isFeaturedEvent}>
-                        <StyledSwitch defaultChecked={eventData?.isFeaturedEvent} />
+                        name="isFeatured"
+                        initialValue={eventData?.isFeatured}>
+                        <StyledSwitch defaultChecked={eventData?.isFeatured} />
                       </Form.Item>
                     </Col>
                     <Col>
