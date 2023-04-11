@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
-import { Form, Row, Col, Input, Popover, message, Button } from 'antd';
+import { Form, Row, Col, Input, Popover, message, Button, Switch } from 'antd';
 import {
   SyncOutlined,
   InfoCircleOutlined,
@@ -454,6 +454,7 @@ function AddEvent() {
             ...(values?.dynamicFields && { dynamicFields }),
             ...(dateTypes.MULTIPLE && { recurringEvent }),
             inLanguage,
+            isFeaturedEvent: values?.isFeaturedEvent,
           };
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
             new Compressor(values?.dragger[0]?.originFileObj, {
@@ -925,6 +926,11 @@ function AddEvent() {
                   <div className="add-event-button-wrap">
                     <ButtonDisplayHandler />
                   </div>
+                  <Col>
+                    <Form.Item name="isFeaturedEvent">
+                      <Switch checkedChildren="Featured" unCheckedChildren="Featured" />
+                    </Form.Item>
+                  </Col>
                 </Col>
               </Row>
             </Col>
