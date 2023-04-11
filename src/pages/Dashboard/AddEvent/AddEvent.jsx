@@ -927,7 +927,7 @@ function AddEvent() {
                     <ButtonDisplayHandler />
                   </div>
                   <Col>
-                    <Form.Item name="isFeaturedEvent">
+                    <Form.Item valuePropName="checked" name="isFeaturedEvent" initialValue={eventData?.isFeaturedEvent}>
                       <Switch checkedChildren="Featured" unCheckedChildren="Featured" />
                     </Form.Item>
                   </Col>
