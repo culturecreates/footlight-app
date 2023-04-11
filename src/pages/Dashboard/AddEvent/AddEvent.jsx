@@ -927,18 +927,21 @@ function AddEvent() {
                   <div className="add-event-button-wrap">
                     <ButtonDisplayHandler />
                   </div>
-                  <Col>
-                    <Form.Item
-                      valuePropName="checked"
-                      name="isFeaturedEvent"
-                      className="isFeatured-form-item"
-                      initialValue={eventData?.isFeaturedEvent}>
-                      <StyledSwitch />
-                      <p className="add-event-date-heading" style={{ color: '#222732' }}>
+                  <Row justify={'end'} align={'top'} gutter={[8, 0]}>
+                    <Col>
+                      <Form.Item
+                        valuePropName="checked"
+                        name="isFeaturedEvent"
+                        initialValue={eventData?.isFeaturedEvent}>
+                        <StyledSwitch defaultChecked={eventData?.isFeaturedEvent} />
+                      </Form.Item>
+                    </Col>
+                    <Col>
+                      <span style={{ color: '#222732', minHeight: '32px', display: 'flex', alignItems: 'center' }}>
                         {t('dashboard.events.addEditEvent.featuredEvent')}
-                      </p>
-                    </Form.Item>
-                  </Col>
+                      </span>
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
             </Col>
