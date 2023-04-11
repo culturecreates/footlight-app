@@ -116,7 +116,7 @@ function Lists(props) {
             onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId, eventItem?.publishState)}
             avatar={
               <div className="event-list-image-wrapper">
-                {calendar[0]?.role === userRoles.ADMIN && eventItem?.isFeatured && (
+                {(calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) && eventItem?.isFeatured && (
                   <div className="image-featured-badge">
                     <StarOutlined
                       style={{ fontSize: '12px', color: '#FFFFFF', position: 'absolute', top: '15%', left: '10%' }}
@@ -127,7 +127,10 @@ function Lists(props) {
                   src={eventItem?.image?.original?.uri}
                   className="event-list-image"
                   style={{
-                    border: calendar[0]?.role === userRoles.ADMIN && eventItem?.isFeatured && '3px solid #1B3DE6',
+                    border:
+                      (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) &&
+                      eventItem?.isFeatured &&
+                      '3px solid #1B3DE6',
                   }}
                 />
               </div>

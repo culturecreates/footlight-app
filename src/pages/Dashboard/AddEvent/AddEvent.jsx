@@ -157,6 +157,10 @@ function AddEvent() {
     let dateTime = moment(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a');
     return moment(dateTime).toISOString();
   };
+
+  const calendar = user?.roles.filter((calendar) => {
+    return calendar.calendarId === calendarId;
+  });
   const addUpdateEventApiHandler = (eventObj, toggle) => {
     var promise = new Promise(function (resolve, reject) {
       if (!eventId || eventId === '') {
@@ -550,9 +554,6 @@ function AddEvent() {
       })
       .catch((error) => {
         console.log(error);
-        const calendar = user?.roles.filter((calendar) => {
-          return calendar.calendarId === calendarId;
-        });
 
         message.warning({
           duration: 10,
@@ -583,9 +584,6 @@ function AddEvent() {
   }, [isError]);
 
   const roleCheckHandler = () => {
-    const calendar = user?.roles.filter((calendar) => {
-      return calendar.calendarId === calendarId;
-    });
     if (
       calendar[0]?.role === userRoles.EDITOR ||
       calendar[0]?.role === userRoles.ADMIN ||
@@ -927,18 +925,20 @@ function AddEvent() {
                   <div className="add-event-button-wrap">
                     <ButtonDisplayHandler />
                   </div>
-                  <Row justify={'end'} align={'top'} gutter={[8, 0]}>
-                    <Col>
-                      <Form.Item valuePropName="checked" name="isFeatured" initialValue={eventData?.isFeatured}>
-                        <StyledSwitch defaultChecked={eventData?.isFeatured} />
-                      </Form.Item>
-                    </Col>
-                    <Col>
-                      <span style={{ color: '#222732', minHeight: '32px', display: 'flex', alignItems: 'center' }}>
-                        {t('dashboard.events.addEditEvent.featuredEvent')}
-                      </span>
-                    </Col>
-                  </Row>
+                  {(calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) && (
+                    <Row justify={'end'} align={'top'} gutter={[8, 0]}>
+                      <Col>
+                        <Form.Item valuePropName="checked" name="isFeatured" initialValue={eventData?.isFeatured}>
+                          <StyledSwitch defaultChecked={eventData?.isFeatured} />
+                        </Form.Item>
+                      </Col>
+                      <Col>
+                        <span style={{ color: '#222732', minHeight: '32px', display: 'flex', alignItems: 'center' }}>
+                          {t('dashboard.events.addEditEvent.featuredEvent')}
+                        </span>
+                      </Col>
+                    </Row>
+                  )}
                 </Col>
               </Row>
             </Col>
