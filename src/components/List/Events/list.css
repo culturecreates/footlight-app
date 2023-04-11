@@ -6,11 +6,16 @@
 .event-list-wrapper .event-list-item-wrapper {
   border-bottom: none;
 }
-
-.event-list-wrapper .event-list-image {
+.event-list-wrapper .event-list-image-wrapper {
+  position: relative;
   height: 104px;
   width: 104px;
+}
+.event-list-wrapper .event-list-image {
+  height: 100%;
+  width: 100%;
   object-fit: cover;
+  border-radius: 4px;
 }
 .event-list-wrapper .event-list-title {
   display: flex;
@@ -64,6 +69,17 @@
 
 .event-list-wrapper .event-list-item-meta .ant-list-item-meta-content {
   max-width: 341px;
+}
+
+.event-list-wrapper .event-list-item-meta .image-featured-badge {
+  border-radius: 4px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 32.04px;
+  height: 32.04px;
+  background-color: #1b3de6;
+  clip-path: polygon(0 0, 0% 100%, 100% 0);
 }
 @media only screen and (max-width: 1024px) {
   .event-list-wrapper {
