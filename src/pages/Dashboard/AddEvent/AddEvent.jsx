@@ -929,10 +929,7 @@ function AddEvent() {
                   </div>
                   <Row justify={'end'} align={'top'} gutter={[8, 0]}>
                     <Col>
-                      <Form.Item
-                        valuePropName="checked"
-                        name="isFeatured"
-                        initialValue={eventData?.isFeatured}>
+                      <Form.Item valuePropName="checked" name="isFeatured" initialValue={eventData?.isFeatured}>
                         <StyledSwitch defaultChecked={eventData?.isFeatured} />
                       </Form.Item>
                     </Col>

@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import './list.css';
 import { List, Grid, Dropdown } from 'antd';
-import { MoreOutlined } from '@ant-design/icons';
+import { MoreOutlined, StarOutlined } from '@ant-design/icons';
 import EventStatus from '../../Tags/Events';
 import EventNumber from '../../Tags/EventNumber';
 import EventStatusOptions from '../../Dropdown/EventStatus/EventStatus';
@@ -114,7 +114,24 @@ function Lists(props) {
           <List.Item.Meta
             className="event-list-item-meta"
             onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId, eventItem?.publishState)}
-            avatar={<img src={eventItem?.image?.original?.uri} className="event-list-image" />}
+            avatar={
+              <div className="event-list-image-wrapper">
+                {calendar[0]?.role === userRoles.ADMIN && eventItem?.isFeatured && (
+                  <div className="image-featured-badge">
+                    <StarOutlined
+                      style={{ fontSize: '12px', color: '#FFFFFF', position: 'absolute', top: '15%', left: '10%' }}
+                    />
+                  </div>
+                )}
+                <img
+                  src={eventItem?.image?.original?.uri}
+                  className="event-list-image"
+                  style={{
+                    border: calendar[0]?.role === userRoles.ADMIN && eventItem?.isFeatured && '3px solid #1B3DE6',
+                  }}
+                />
+              </div>
+            }
             title={
               <div className="event-list-title">
                 <span className="event-list-title-heading">
