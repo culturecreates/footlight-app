@@ -3,6 +3,7 @@ import { baseQueryWithReauth } from '../utils/services';
 export const imageApi = createApi({
   reducerPath: 'imageApi',
   baseQuery: baseQueryWithReauth,
+  keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     addImage: builder.mutation({
       query: ({ data, calendarId }) => ({

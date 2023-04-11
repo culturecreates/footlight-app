@@ -3,6 +3,7 @@ import { baseQueryWithReauth } from '../utils/services';
 export const inviteApi = createApi({
   reducerPath: 'inviteApi',
   baseQuery: baseQueryWithReauth,
+  keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getInviteDetails: builder.query({
       query: ({ id }) => {

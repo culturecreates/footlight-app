@@ -3,6 +3,7 @@ import { baseQueryWithReauth } from '../utils/services';
 export const usersApi = createApi({
   reducerPath: 'usersApi',
   baseQuery: baseQueryWithReauth,
+  keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getAllUsers: builder.query({
       query: ({ includeInactiveUsers, includeCalendarFilter, calendarId }) => {

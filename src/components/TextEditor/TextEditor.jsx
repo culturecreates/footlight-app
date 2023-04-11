@@ -7,7 +7,16 @@ import { useTranslation } from 'react-i18next';
 import { pluralize } from '../../utils/pluralise';
 import OutlinedButton from '../Button/Outlined';
 function TextEditor(props) {
-  const { formName, initialValue, dependencies, rules, currentReactQuillRef, placeholder, editorLanguage } = props;
+  const {
+    formName,
+    initialValue,
+    dependencies,
+    rules,
+    currentReactQuillRef,
+    placeholder,
+    editorLanguage,
+    descriptionMinimumWordCount,
+  } = props;
   let translateTo;
 
   if (editorLanguage == 'en') {
@@ -82,13 +91,17 @@ function TextEditor(props) {
         />
       </Form.Item>
       <div className="event-description-footer">
-        <p>{t('dashboard.events.addEditEvent.otherInformation.description.footerTitle')}</p>
+        <p>
+          {t('dashboard.events.addEditEvent.otherInformation.description.footerTitle', {
+            wordCount: descriptionMinimumWordCount,
+          })}
+        </p>
         <p>{pluralize(wordCount, t('dashboard.events.addEditEvent.otherInformation.description.word'))}</p>
       </div>
       <OutlinedButton
         label={t('dashboard.events.addEditEvent.otherInformation.description.translate')}
         size="middle"
-        disabled={wordCount > 1 ? false : true}
+        disabled={wordCount > descriptionMinimumWordCount ? false : true}
         onClick={translateHandler}
       />
     </>

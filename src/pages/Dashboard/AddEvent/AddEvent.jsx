@@ -12,7 +12,7 @@ import {
 import moment from 'moment-timezone';
 import i18n from 'i18next';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams, useOutletContext } from 'react-router-dom';
 import { useGetEventQuery, useUpdateEventStateMutation } from '../../../services/events';
 import { PathName } from '../../../constants/pathName';
 import Outlined from '../../../components/Button/Outlined';
@@ -70,6 +70,7 @@ import { bilingual } from '../../../utils/bilingual';
 import RecurringEvents from '../../../components/RecurringEvents';
 import { pluralize } from '../../../utils/pluralise';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
+import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequiredFieldNames';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -82,6 +83,7 @@ function AddEvent() {
   let duplicateId = searchParams.get('duplicateId');
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
+  const [currentCalendarData] = useOutletContext();
   const {
     currentData: eventData,
     isError,
@@ -135,6 +137,8 @@ function AddEvent() {
   const [showDialog, setShowDialog] = useState(false);
   const [scrollToSelectedField, setScrollToSelectedField] = useState();
   const [formValue, setFormValue] = useState();
+  const [validateFields, setValidateFields] = useState([]);
+  const [descriptionMinimumWordCount, setDescriptionMinimumWordCount] = useState(1);
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -143,6 +147,9 @@ function AddEvent() {
 
   let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
   let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
+  let requiredFields = currentCalendarData?.formSchema?.filter((form) => form?.formName === 'Event');
+  requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
+  let requiredFieldNames = requiredFields && requiredFields?.requiredFields?.map((field) => field?.fieldName);
   const dateTimeConverter = (date, time) => {
     let dateSelected = moment.tz(date, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('DD-MM-YYYY');
     let timeSelected = moment.tz(time, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('hh:mm:ss a');
@@ -194,25 +201,15 @@ function AddEvent() {
     var promise = new Promise(function (resolve, reject) {
       form
         .validateFields([
-          'french',
-          'english',
-          'datePicker',
-          'dateRangePicker',
-          'datePickerWrapper',
-          'startDateRecur',
-          ...(eventData?.publishState === eventPublishState.PUBLISHED
-            ? [
-                'prices',
-                'ticketLink',
-                'englishEditor',
-                'frenchEditor',
-                'eventType',
-                'targetAudience',
-                'draggerWrap',
-                'location-form-wrapper',
-                'ticketPickerWrapper',
-              ]
-            : []),
+          ...new Set([
+            'french',
+            'english',
+            'datePicker',
+            'dateRangePicker',
+            'datePickerWrapper',
+            'startDateRecur',
+            ...(eventData?.publishState === eventPublishState.PUBLISHED ? validateFields : []),
+          ]),
         ])
         .then(() => {
           var values = form.getFieldsValue(true);
@@ -537,23 +534,7 @@ function AddEvent() {
   const reviewPublishHandler = (event) => {
     event?.preventDefault();
     form
-      .validateFields([
-        'french',
-        'english',
-        'datePickerWrapper',
-        'datePicker',
-        'dateRangePicker',
-        'startDateRecur',
-        'englishEditor',
-        'frenchEditor',
-        'eventType',
-        'targetAudience',
-        'draggerWrap',
-        'location-form-wrapper',
-        'ticketPickerWrapper',
-        'prices',
-        'ticketLink',
-      ])
+      .validateFields(validateFields)
       .then(() => {
         saveAsDraftHandler(event, true)
           .then((id) => {
@@ -850,6 +831,58 @@ function AddEvent() {
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
     }
   }, [isLoading]);
+  useEffect(() => {
+    if (currentCalendarData) {
+      let publishValidateFields = [];
+      requiredFields?.requiredFields?.map((requiredField) => {
+        switch (requiredField?.fieldName) {
+          case eventFormRequiredFieldNames.NAME:
+            publishValidateFields.push('french', 'english');
+            break;
+          case eventFormRequiredFieldNames.NAME_EN:
+            publishValidateFields.push('english');
+            break;
+          case eventFormRequiredFieldNames.NAME_FR:
+            publishValidateFields.push('french');
+            break;
+          case eventFormRequiredFieldNames.DESCRIPTION:
+            publishValidateFields.push('englishEditor', 'frenchEditor');
+            setDescriptionMinimumWordCount(Number(requiredField?.rule?.minimumWordCount));
+            break;
+          case eventFormRequiredFieldNames.DESCRIPTION_EN:
+            publishValidateFields.push('englishEditor');
+            setDescriptionMinimumWordCount(Number(requiredField?.rule?.minimumWordCount));
+            break;
+          case eventFormRequiredFieldNames.DESCRIPTION_FR:
+            publishValidateFields.push('frenchEditor');
+            setDescriptionMinimumWordCount(Number(requiredField?.rule?.minimumWordCount));
+            break;
+          case eventFormRequiredFieldNames.START_DATE:
+            publishValidateFields.push('datePickerWrapper', 'datePicker', 'dateRangePicker', 'startDateRecur');
+            break;
+          case eventFormRequiredFieldNames.TICKET_INFO:
+            publishValidateFields.push('ticketPickerWrapper', 'prices', 'ticketLink');
+            break;
+          case eventFormRequiredFieldNames.EVENT_TYPE:
+            publishValidateFields.push('eventType');
+            break;
+          case eventFormRequiredFieldNames.AUDIENCE:
+            publishValidateFields.push('targetAudience');
+            break;
+          case eventFormRequiredFieldNames.LOCATION:
+            publishValidateFields.push('location-form-wrapper');
+            break;
+          case eventFormRequiredFieldNames.IMAGE:
+            publishValidateFields.push('draggerWrap');
+            break;
+          default:
+            break;
+        }
+      });
+      publishValidateFields = [...new Set(publishValidateFields)];
+      setValidateFields(publishValidateFields);
+    }
+  }, [currentCalendarData]);
 
   useEffect(() => {
     setOrganizersList(treeEntitiesOption(initialEntities, user));
@@ -865,7 +898,8 @@ function AddEvent() {
     !isLoading &&
     !placesLoading &&
     !taxonomyLoading &&
-    !initialEntityLoading && (
+    !initialEntityLoading &&
+    currentCalendarData && (
       <div>
         <Form
           form={form}
@@ -896,7 +930,13 @@ function AddEvent() {
             </Col>
 
             <CardEvent>
-              <Form.Item label={t('dashboard.events.addEditEvent.language.title')} required={true}>
+              <Form.Item
+                label={t('dashboard.events.addEditEvent.language.title')}
+                required={
+                  requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME) ||
+                  requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME_EN) ||
+                  requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME_FR)
+                }>
                 <BilingualInput fieldData={eventData?.name}>
                   <Form.Item
                     name="french"
@@ -948,13 +988,13 @@ function AddEvent() {
 
                 <Form.Item
                   name="eventType"
-                  label={taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name')}
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false)}
                   initialValue={eventData?.additionalType?.map((type) => {
                     return type?.entityId;
                   })}
                   rules={[
                     {
-                      required: true,
+                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EVENT_TYPE),
                       message: t('dashboard.events.addEditEvent.validations.eventType'),
                     },
                   ]}>
@@ -964,7 +1004,7 @@ function AddEvent() {
                     treeDefaultExpandAll
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType')}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType', false)}
                     tagRender={(props) => {
                       const { label, closable, onClose } = props;
                       return (
@@ -980,13 +1020,13 @@ function AddEvent() {
                 </Form.Item>
                 <Form.Item
                   name="targetAudience"
-                  label={taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name')}
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false)}
                   initialValue={eventData?.audience?.map((audience) => {
                     return audience?.entityId;
                   })}
                   rules={[
                     {
-                      required: true,
+                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.AUDIENCE),
                       message: t('dashboard.events.addEditEvent.validations.targetAudience'),
                     },
                   ]}>
@@ -995,7 +1035,7 @@ function AddEvent() {
                     treeDefaultExpandAll
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience')}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience', false)}
                     placeholder={t('dashboard.events.addEditEvent.language.placeHolderTargetAudience')}
                     tagRender={(props) => {
                       const { closable, onClose, label } = props;
@@ -1085,7 +1125,10 @@ function AddEvent() {
                                   : undefined
                               }
                               rules={[
-                                { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
+                                {
+                                  required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.START_DATE),
+                                  message: t('dashboard.events.addEditEvent.validations.date'),
+                                },
                               ]}>
                               <DatePickerStyled style={{ width: '423px' }} />
                             </Form.Item>
@@ -1156,7 +1199,10 @@ function AddEvent() {
                                   : undefined
                               }
                               rules={[
-                                { required: true, message: t('dashboard.events.addEditEvent.validations.date') },
+                                {
+                                  required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.START_DATE),
+                                  message: t('dashboard.events.addEditEvent.validations.date'),
+                                },
                               ]}>
                               <DateRangePicker
                                 style={{ width: '423px' }}
@@ -1319,7 +1365,9 @@ function AddEvent() {
                 </Form.Item>
               )}
             </CardEvent>
-            <CardEvent title={t('dashboard.events.addEditEvent.location.title')} required={true}>
+            <CardEvent
+              title={t('dashboard.events.addEditEvent.location.title')}
+              required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.LOCATION)}>
               <Form.Item
                 name="location-form-wrapper"
                 rules={[
@@ -1476,7 +1524,11 @@ function AddEvent() {
               <>
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.description.title')}
-                  required={true}>
+                  required={
+                    requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION) ||
+                    requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION_EN) ||
+                    requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION_FR)
+                  }>
                   <BilingualInput fieldData={eventData?.description}>
                     <TextEditor
                       formName="frenchEditor"
@@ -1485,6 +1537,7 @@ function AddEvent() {
                       currentReactQuillRef={reactQuillRefFr}
                       editorLanguage={'fr'}
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.description.frenchPlaceholder')}
+                      descriptionMinimumWordCount={descriptionMinimumWordCount}
                       rules={[
                         () => ({
                           validator() {
@@ -1496,7 +1549,9 @@ function AddEvent() {
                             } else
                               return Promise.reject(
                                 new Error(
-                                  t('dashboard.events.addEditEvent.validations.otherInformation.emptyDescription'),
+                                  t('dashboard.events.addEditEvent.validations.otherInformation.emptyDescription', {
+                                    wordCount: descriptionMinimumWordCount,
+                                  }),
                                 ),
                               );
                           },
@@ -1507,14 +1562,14 @@ function AddEvent() {
                               reactQuillRefFr?.current?.unprivilegedEditor
                                 ?.getText()
                                 .split(' ')
-                                ?.filter((n) => n != '')?.length > 49
+                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
                             ) {
                               return Promise.resolve();
                             } else if (
                               reactQuillRefEn?.current?.unprivilegedEditor
                                 ?.getText()
                                 .split(' ')
-                                ?.filter((n) => n != '')?.length > 49
+                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
                             )
                               return Promise.resolve();
                             else
@@ -1533,6 +1588,7 @@ function AddEvent() {
                       currentReactQuillRef={reactQuillRefEn}
                       editorLanguage={'en'}
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.description.englishPlaceholder')}
+                      descriptionMinimumWordCount={descriptionMinimumWordCount}
                       rules={[
                         () => ({
                           validator() {
@@ -1555,14 +1611,14 @@ function AddEvent() {
                               reactQuillRefEn?.current?.unprivilegedEditor
                                 ?.getText()
                                 .split(' ')
-                                ?.filter((n) => n != '')?.length > 49
+                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
                             ) {
                               return Promise.resolve();
                             } else if (
                               reactQuillRefFr?.current?.unprivilegedEditor
                                 ?.getText()
                                 .split(' ')
-                                ?.filter((n) => n != '')?.length > 49
+                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
                             )
                               return Promise.resolve();
                             else
@@ -1579,7 +1635,7 @@ function AddEvent() {
                   label={t('dashboard.events.addEditEvent.otherInformation.image.title')}
                   name="draggerWrap"
                   className="draggerWrap"
-                  required
+                  required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.IMAGE)}
                   initialValue={eventData?.image && eventData?.image?.original?.uri}
                   {...(isAddImageError && {
                     help: t('dashboard.events.addEditEvent.validations.errorImage'),
@@ -2003,7 +2059,7 @@ function AddEvent() {
                   style={{
                     display: !addedFields?.includes(otherInformationFieldNames.inLanguage) && 'none',
                   }}
-                  label={taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name')}
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name', false)}
                   initialValue={eventData?.inLanguage?.map((inLanguage) => {
                     return inLanguage?.entityId;
                   })}>
@@ -2013,7 +2069,7 @@ function AddEvent() {
                     placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'inLanguage')}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'inLanguage', false)}
                     tagRender={(props) => {
                       const { closable, onClose, label } = props;
                       return (
@@ -2061,7 +2117,7 @@ function AddEvent() {
                 <Form.Item
                   name="eventAccessibility"
                   className="eventAccessibility"
-                  label={taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name')}
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false)}
                   initialValue={eventData?.accessibility?.map((type) => {
                     return type?.entityId;
                   })}>
@@ -2071,7 +2127,7 @@ function AddEvent() {
                     style={{ width: '423px' }}
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility')}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility', false)}
                     placeholder={t('dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibility')}
                     tagRender={(props) => {
                       const { label, closable, onClose } = props;
@@ -2148,7 +2204,9 @@ function AddEvent() {
                 )}
               </Form.Item>
             </CardEvent>
-            <CardEvent title={t('dashboard.events.addEditEvent.tickets.title')} required={true}>
+            <CardEvent
+              title={t('dashboard.events.addEditEvent.tickets.title')}
+              required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.TICKET_INFO)}>
               <>
                 {(ticketType == offerTypes.FREE || !ticketType) && (
                   <Row>

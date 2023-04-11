@@ -40,7 +40,7 @@ function Dashboard() {
 
   useEffect(() => {
     if (calendarId && accessToken) {
-      getCalendar({ id: calendarId });
+      getCalendar({ id: calendarId }, { sessionId: timestampRef });
       dispatch(setSelectedCalendar(String(calendarId)));
     } else if (!isLoading && allCalendarsData?.data)
       navigate(`${PathName.Dashboard}/${allCalendarsData?.data[0]?.id}${PathName.Events}`);
@@ -66,7 +66,7 @@ function Dashboard() {
               overflowY: 'scroll',
               background: '#F9FAFF',
             }}>
-            <Outlet />
+            <Outlet context={[currentCalendarData]} />
           </Content>
         </Layout>
       </Layout>

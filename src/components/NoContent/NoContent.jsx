@@ -8,7 +8,7 @@ function NoContent(props) {
   const { t } = useTranslation();
 
   return (
-    <div className="no-content-wrapper">
+    <div className="no-content-wrapper" {...props}>
       <span className="no-content-icon">
         <ExclamationCircleOutlined style={{ fontSize: '14px', color: '#607EFC' }} />
       </span>
