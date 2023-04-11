@@ -116,6 +116,7 @@
         "heading": { "newEvent": "New Event", "editEvent": "Edit Event" },
         "addMoreDetails": "Add more details to your event",
         "allDone": "All done",
+        "featuredEvent": "Featured event",
         "language": {
           "title": "Event title",
           "titleLabel": "English",

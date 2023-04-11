@@ -77,6 +77,13 @@
   font-size: 12px;
 }
 
+.add-edit-wrapper .isFeatured-form-item .ant-form-item-control-input-content {
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: row;
+  gap: 8px;
+}
+
 .add-edit-wrapper .ant-popover-inner {
   filter: drop-shadow(0px 8px 32px rgba(0, 0, 0, 0.2));
 }

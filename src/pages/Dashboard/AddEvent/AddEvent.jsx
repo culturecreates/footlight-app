@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
-import { Form, Row, Col, Input, Popover, message, Button, Switch } from 'antd';
+import { Form, Row, Col, Input, Popover, message, Button } from 'antd';
 import {
   SyncOutlined,
   InfoCircleOutlined,
@@ -71,6 +71,7 @@ import RecurringEvents from '../../../components/RecurringEvents';
 import { pluralize } from '../../../utils/pluralise';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequiredFieldNames';
+import StyledSwitch from '../../../components/Switch/index';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -927,8 +928,15 @@ function AddEvent() {
                     <ButtonDisplayHandler />
                   </div>
                   <Col>
-                    <Form.Item valuePropName="checked" name="isFeaturedEvent" initialValue={eventData?.isFeaturedEvent}>
-                      <Switch checkedChildren="Featured" unCheckedChildren="Featured" />
+                    <Form.Item
+                      valuePropName="checked"
+                      name="isFeaturedEvent"
+                      className="isFeatured-form-item"
+                      initialValue={eventData?.isFeaturedEvent}>
+                      <StyledSwitch />
+                      <p className="add-event-date-heading" style={{ color: '#222732' }}>
+                        {t('dashboard.events.addEditEvent.featuredEvent')}
+                      </p>
                     </Form.Item>
                   </Col>
                 </Col>
