@@ -40,7 +40,7 @@ function Dashboard() {
 
   useEffect(() => {
     if (calendarId && accessToken) {
-      getCalendar({ id: calendarId }, { sessionId: timestampRef });
+      getCalendar({ id: calendarId, sessionId: timestampRef });
       dispatch(setSelectedCalendar(String(calendarId)));
     } else if (!isLoading && allCalendarsData?.data)
       navigate(`${PathName.Dashboard}/${allCalendarsData?.data[0]?.id}${PathName.Events}`);
