@@ -91,17 +91,21 @@ function TextEditor(props) {
         />
       </Form.Item>
       <div className="event-description-footer">
-        <p>
-          {t('dashboard.events.addEditEvent.otherInformation.description.footerTitle', {
-            wordCount: descriptionMinimumWordCount,
-          })}
-        </p>
+        {descriptionMinimumWordCount > 1 ? (
+          <p>
+            {t('dashboard.events.addEditEvent.otherInformation.description.footerTitle', {
+              wordCount: descriptionMinimumWordCount,
+            })}
+          </p>
+        ) : (
+          <div></div>
+        )}
         <p>{pluralize(wordCount, t('dashboard.events.addEditEvent.otherInformation.description.word'))}</p>
       </div>
       <OutlinedButton
         label={t('dashboard.events.addEditEvent.otherInformation.description.translate')}
         size="middle"
-        disabled={wordCount > descriptionMinimumWordCount ? false : true}
+        disabled={wordCount > 1 ? false : true}
         onClick={translateHandler}
       />
     </>
