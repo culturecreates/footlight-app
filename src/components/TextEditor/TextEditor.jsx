@@ -105,7 +105,7 @@ function TextEditor(props) {
       <OutlinedButton
         label={t('dashboard.events.addEditEvent.otherInformation.description.translate')}
         size="middle"
-        disabled={wordCount > descriptionMinimumWordCount ? false : true}
+        disabled={wordCount > 1 ? false : true}
         onClick={translateHandler}
       />
     </>
