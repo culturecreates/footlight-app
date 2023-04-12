@@ -152,7 +152,7 @@ function AddEvent() {
   requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
   let requiredFieldNames = requiredFields && requiredFields?.requiredFields?.map((field) => field?.fieldName);
   let standardAdminOnlyFields = requiredFields?.adminOnlyFields?.standardFields;
-  // let dynamicAdminOnlyFields = requiredFields?.adminOnlyFields?.dynamicFields;
+  let dynamicAdminOnlyFields = requiredFields?.adminOnlyFields?.dynamicFields;
 
   const dateTimeConverter = (date, time) => {
     let dateSelected = moment.tz(date, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('DD-MM-YYYY');
@@ -1117,7 +1117,10 @@ function AddEvent() {
                           fr: taxonomy?.name?.fr,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                         })}
-                        initialValue={initialValues}>
+                        initialValue={initialValues}
+                        hidden={
+                          dynamicAdminOnlyFields?.includes(taxonomy?.id) ? (adminCheckHandler() ? false : true) : false
+                        }>
                         <TreeSelectOption
                           allowClear
                           treeDefaultExpandAll
