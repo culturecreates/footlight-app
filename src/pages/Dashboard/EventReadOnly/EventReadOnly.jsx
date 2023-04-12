@@ -4,7 +4,7 @@ import Icon, { LeftOutlined, CalendarOutlined, UserOutlined, InfoCircleOutlined 
 import moment from 'moment-timezone';
 import './eventReadOnly.css';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router';
+import { useParams, useOutletContext } from 'react-router-dom';
 import { useGetEventQuery } from '../../../services/events';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -35,11 +35,15 @@ import Alert from '../../../components/Alert';
 import { eventPublishState, eventPublishStateOptions } from '../../../constants/eventPublishState';
 import { pluralize } from '../../../utils/pluralise';
 import i18n from 'i18next';
+import { userRoles } from '../../../constants/userRoles';
+import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequiredFieldNames';
 
 function EventReadOnly() {
   const { t } = useTranslation();
   const { calendarId, eventId } = useParams();
   const timestampRef = useRef(Date.now()).current;
+  const [currentCalendarData] = useOutletContext();
+
   const { data: eventData, isLoading } = useGetEventQuery(
     { eventId, calendarId, sessionId: timestampRef },
     { skip: eventId ? false : true },
@@ -69,8 +73,21 @@ function EventReadOnly() {
   const { user } = useSelector(getUserDetails);
   const [dateType, setDateType] = useState();
 
+  const calendar = user?.roles.filter((calendar) => {
+    return calendar.calendarId === calendarId;
+  });
+
   let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
   let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
+  let requiredFields = currentCalendarData?.formSchema?.filter((form) => form?.formName === 'Event');
+  requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
+  let standardAdminOnlyFields = requiredFields?.adminOnlyFields?.standardFields;
+  let dynamicAdminOnlyFields = requiredFields?.adminOnlyFields?.dynamicFields;
+
+  const adminCheckHandler = () => {
+    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
+    else return false;
+  };
 
   useEffect(() => {
     if (eventData?.recurringEvent) setDateType(dateTypes.MULTIPLE);
@@ -144,24 +161,43 @@ function EventReadOnly() {
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               <Col flex={'423px'}>
                 <div className="read-only-event-section-wrapper">
-                  <p className="read-only-event-content-sub-title-primary">
-                    {t('dashboard.events.addEditEvent.language.title')}
-                  </p>
-                  {eventData?.name?.fr && (
-                    <>
-                      <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-                      <p className="read-only-event-content">{eventData?.name?.fr}</p>
-                    </>
-                  )}
-                  {eventData?.name?.en && (
-                    <>
-                      <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-                      <p className="read-only-event-content">{eventData?.name?.en}</p>
-                    </>
-                  )}
+                  <div
+                    style={{
+                      display:
+                        standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME) ||
+                        standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_FR) ||
+                        standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_EN)
+                          ? adminCheckHandler()
+                            ? 'initial'
+                            : 'none'
+                          : 'initial',
+                    }}>
+                    <p className="read-only-event-content-sub-title-primary">
+                      {t('dashboard.events.addEditEvent.language.title')}
+                    </p>
+                    {eventData?.name?.fr && (
+                      <>
+                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        <p className="read-only-event-content">{eventData?.name?.fr}</p>
+                      </>
+                    )}
 
+                    {eventData?.name?.en && (
+                      <>
+                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        <p className="read-only-event-content">{eventData?.name?.en}</p>
+                      </>
+                    )}
+                  </div>
                   {eventData?.additionalType.length > 0 && (
-                    <>
+                    <div
+                      style={{
+                        display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_TYPE)
+                          ? adminCheckHandler()
+                            ? 'initial'
+                            : 'none'
+                          : 'initial',
+                      }}>
                       <br />
                       <p className="read-only-event-content-sub-title-primary">
                         {t('dashboard.events.addEditEvent.language.eventType')}
@@ -180,11 +216,18 @@ function EventReadOnly() {
                           return <Tags>{label}</Tags>;
                         }}
                       />
-                    </>
+                    </div>
                   )}
 
                   {eventData?.audience.length > 0 && (
-                    <>
+                    <div
+                      style={{
+                        display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.AUDIENCE)
+                          ? adminCheckHandler()
+                            ? 'initial'
+                            : 'none'
+                          : 'initial',
+                      }}>
                       <p className="read-only-event-content-sub-title-primary">
                         {t('dashboard.events.addEditEvent.language.targetAudience')}
                       </p>
@@ -202,7 +245,7 @@ function EventReadOnly() {
                           return <Tags>{label}</Tags>;
                         }}
                       />
-                    </>
+                    </div>
                   )}
                   {allTaxonomyData?.data?.map((taxonomy, index) => {
                     if (taxonomy?.isDynamicField) {
@@ -216,7 +259,14 @@ function EventReadOnly() {
                       });
                       if (initialTaxonomy?.includes(taxonomy?.id) && initialValues?.length > 0)
                         return (
-                          <>
+                          <div
+                            style={{
+                              display: dynamicAdminOnlyFields?.includes(taxonomy?.id)
+                                ? adminCheckHandler()
+                                  ? 'initial'
+                                  : 'none'
+                                : 'initial',
+                            }}>
                             <p className="read-only-event-content-sub-title-primary">
                               {bilingual({
                                 en: taxonomy?.name?.en,
@@ -237,7 +287,7 @@ function EventReadOnly() {
                                 return <Tags>{label}</Tags>;
                               }}
                             />
-                          </>
+                          </div>
                         );
                     }
                   })}
@@ -406,7 +456,14 @@ function EventReadOnly() {
                   <div className="read-only-event-section-wrapper">
                     <p className="read-only-event-content-title">{t('dashboard.events.addEditEvent.location.title')}</p>
                     {initialPlace && initialPlace?.length > 0 && (
-                      <>
+                      <div
+                        style={{
+                          display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.LOCATION)
+                            ? adminCheckHandler()
+                              ? 'initial'
+                              : 'none'
+                            : 'initial',
+                        }}>
                         <p className="read-only-event-content-sub-title-primary">
                           {t('dashboard.events.addEditEvent.location.title')}
                         </p>
@@ -417,7 +474,7 @@ function EventReadOnly() {
                           defaultValue={initialPlace && initialPlace[0]?.id}
                           options={placesOptions(allPlaces?.data, user)}
                         />
-                      </>
+                      </div>
                     )}
 
                     {initialVirtualLocation[0] && initialVirtualLocation?.length > 0 && (
@@ -469,29 +526,50 @@ function EventReadOnly() {
                   <p className="read-only-event-content-title">
                     {t('dashboard.events.addEditEvent.otherInformation.title')}
                   </p>
-                  <p className="read-only-event-content-sub-title-primary">
-                    {t('dashboard.events.addEditEvent.otherInformation.description.title')}
-                  </p>
-                  {eventData?.description?.fr && (
-                    <>
-                      <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-                      <div dangerouslySetInnerHTML={{ __html: eventData?.description?.fr }} />
-                    </>
-                  )}
-                  {eventData?.description?.en && (
-                    <>
-                      <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-                      <div dangerouslySetInnerHTML={{ __html: eventData?.description?.en }} />
-                    </>
-                  )}
+                  <div
+                    style={{
+                      display:
+                        standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION) ||
+                        standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION_EN) ||
+                        standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION_FR)
+                          ? adminCheckHandler()
+                            ? 'initial'
+                            : 'none'
+                          : 'initial',
+                    }}>
+                    {(eventData?.description?.fr || eventData?.description?.en) && (
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.otherInformation.description.title')}
+                      </p>
+                    )}
+                    {eventData?.description?.fr && (
+                      <>
+                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        <div dangerouslySetInnerHTML={{ __html: eventData?.description?.fr }} />
+                      </>
+                    )}
+                    {eventData?.description?.en && (
+                      <>
+                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        <div dangerouslySetInnerHTML={{ __html: eventData?.description?.en }} />
+                      </>
+                    )}
+                  </div>
                   <br />
                   {eventData?.image && eventData?.image?.original?.uri && (
-                    <>
+                    <div
+                      style={{
+                        display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
+                          ? adminCheckHandler()
+                            ? 'initial'
+                            : 'none'
+                          : 'initial',
+                      }}>
                       <p className="read-only-event-content-sub-title-primary">
                         {t('dashboard.events.addEditEvent.otherInformation.image.title')}
                       </p>
                       <ImageUpload imageUrl={eventData?.image?.original?.uri} imageReadOnly={true} />
-                    </>
+                    </div>
                   )}
                   {eventData?.organizer?.length > 0 && (
                     <>
@@ -835,7 +913,15 @@ function EventReadOnly() {
             <Col flex={'723px'} className="read-only-event-section-col">
               <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
                 <Col flex={'423px'}>
-                  <div className="read-only-event-section-wrapper">
+                  <div
+                    className="read-only-event-section-wrapper"
+                    style={{
+                      display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.FEATURED)
+                        ? adminCheckHandler()
+                          ? ''
+                          : 'none'
+                        : '',
+                    }}>
                     <p className="read-only-event-content-title">{t('dashboard.events.addEditEvent.tickets.title')}</p>
                     {eventData?.offerConfiguration?.category === offerTypes.FREE && (
                       <>
