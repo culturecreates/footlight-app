@@ -151,6 +151,9 @@ function AddEvent() {
   let requiredFields = currentCalendarData?.formSchema?.filter((form) => form?.formName === 'Event');
   requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
   let requiredFieldNames = requiredFields && requiredFields?.requiredFields?.map((field) => field?.fieldName);
+  let standardAdminOnlyFields = requiredFields?.adminOnlyFields?.standardFields;
+  let dynamicAdminOnlyFields = requiredFields?.adminOnlyFields?.dynamicFields;
+
   const dateTimeConverter = (date, time) => {
     let dateSelected = moment.tz(date, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('DD-MM-YYYY');
     let timeSelected = moment.tz(time, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('hh:mm:ss a');
@@ -579,10 +582,6 @@ function AddEvent() {
       });
   };
 
-  useEffect(() => {
-    if (isError) navigate(`${PathName.NotFound}`);
-  }, [isError]);
-
   const roleCheckHandler = () => {
     if (
       calendar[0]?.role === userRoles.EDITOR ||
@@ -675,12 +674,6 @@ function AddEvent() {
       })
       .catch((error) => console.log(error));
   };
-  useEffect(() => {
-    if (addedFields?.length > 0) {
-      const element = document.getElementsByClassName(scrollToSelectedField);
-      element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    }
-  }, [addedFields]);
 
   const addFieldsHandler = (fieldNames) => {
     let array = addedFields?.concat(fieldNames);
@@ -688,9 +681,11 @@ function AddEvent() {
     setAddedFields(array);
     setScrollToSelectedField(array?.at(-1));
   };
+
   const onValuesChangHandler = () => {
     setShowDialog(true);
   };
+
   var enumerateDaysBetweenDates = (startDate, endDate) => {
     var now = startDate.clone(),
       dates = [];
@@ -701,6 +696,35 @@ function AddEvent() {
     }
     return dates;
   };
+
+  const adminCheckHandler = () => {
+    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
+    else return false;
+  };
+  const FeaturedJSX = (
+    <Row justify={'end'} align={'top'} gutter={[8, 0]}>
+      <Col>
+        <Form.Item valuePropName="checked" name="isFeatured" initialValue={eventData?.isFeatured}>
+          <StyledSwitch defaultChecked={eventData?.isFeatured} />
+        </Form.Item>
+      </Col>
+      <Col>
+        <span style={{ color: '#222732', minHeight: '32px', display: 'flex', alignItems: 'center' }}>
+          {t('dashboard.events.addEditEvent.featuredEvent')}
+        </span>
+      </Col>
+    </Row>
+  );
+  useEffect(() => {
+    if (isError) navigate(`${PathName.NotFound}`);
+  }, [isError]);
+
+  useEffect(() => {
+    if (addedFields?.length > 0) {
+      const element = document.getElementsByClassName(scrollToSelectedField);
+      element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }, [addedFields]);
 
   useEffect(() => {
     if (selectedOrganizers) form.setFieldValue('organizers', selectedOrganizers);
@@ -925,20 +949,11 @@ function AddEvent() {
                   <div className="add-event-button-wrap">
                     <ButtonDisplayHandler />
                   </div>
-                  {(calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) && (
-                    <Row justify={'end'} align={'top'} gutter={[8, 0]}>
-                      <Col>
-                        <Form.Item valuePropName="checked" name="isFeatured" initialValue={eventData?.isFeatured}>
-                          <StyledSwitch defaultChecked={eventData?.isFeatured} />
-                        </Form.Item>
-                      </Col>
-                      <Col>
-                        <span style={{ color: '#222732', minHeight: '32px', display: 'flex', alignItems: 'center' }}>
-                          {t('dashboard.events.addEditEvent.featuredEvent')}
-                        </span>
-                      </Col>
-                    </Row>
-                  )}
+                  {standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.FEATURED)
+                    ? adminCheckHandler()
+                      ? FeaturedJSX
+                      : null
+                    : FeaturedJSX}
                 </Col>
               </Row>
             </Col>
@@ -946,6 +961,15 @@ function AddEvent() {
             <CardEvent>
               <Form.Item
                 label={t('dashboard.events.addEditEvent.language.title')}
+                hidden={
+                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME) ||
+                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_EN) ||
+                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_FR)
+                    ? adminCheckHandler()
+                      ? false
+                      : true
+                    : false
+                }
                 required={
                   requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME) ||
                   requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME_EN) ||
@@ -1006,6 +1030,13 @@ function AddEvent() {
                   initialValue={eventData?.additionalType?.map((type) => {
                     return type?.entityId;
                   })}
+                  hidden={
+                    standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_TYPE)
+                      ? adminCheckHandler()
+                        ? false
+                        : true
+                      : false
+                  }
                   rules={[
                     {
                       required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EVENT_TYPE),
@@ -1038,6 +1069,13 @@ function AddEvent() {
                   initialValue={eventData?.audience?.map((audience) => {
                     return audience?.entityId;
                   })}
+                  hidden={
+                    standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.AUDIENCE)
+                      ? adminCheckHandler()
+                        ? false
+                        : true
+                      : false
+                  }
                   rules={[
                     {
                       required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.AUDIENCE),
@@ -1079,7 +1117,10 @@ function AddEvent() {
                           fr: taxonomy?.name?.fr,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                         })}
-                        initialValue={initialValues}>
+                        initialValue={initialValues}
+                        hidden={
+                          dynamicAdminOnlyFields?.includes(taxonomy?.id) ? (adminCheckHandler() ? false : true) : false
+                        }>
                         <TreeSelectOption
                           allowClear
                           treeDefaultExpandAll
@@ -1137,6 +1178,13 @@ function AddEvent() {
                                       eventData?.scheduleTimezone ?? 'Canada/Eastern',
                                     )
                                   : undefined
+                              }
+                              hidden={
+                                standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.START_DATE)
+                                  ? adminCheckHandler()
+                                    ? false
+                                    : true
+                                  : false
                               }
                               rules={[
                                 {
@@ -1211,6 +1259,13 @@ function AddEvent() {
                                       ),
                                     ]
                                   : undefined
+                              }
+                              hidden={
+                                standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.START_DATE)
+                                  ? adminCheckHandler()
+                                    ? false
+                                    : true
+                                  : false
                               }
                               rules={[
                                 {
@@ -1402,7 +1457,14 @@ function AddEvent() {
                   name="locationPlace"
                   className="subheading-wrap"
                   initialValue={initialPlace && initialPlace[0]?.id}
-                  label={t('dashboard.events.addEditEvent.location.title')}>
+                  label={t('dashboard.events.addEditEvent.location.title')}
+                  hidden={
+                    standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.LOCATION)
+                      ? adminCheckHandler()
+                        ? false
+                        : true
+                      : false
+                  }>
                   <Popover
                     open={isPopoverOpen.locationPlace}
                     onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open })}
@@ -1542,6 +1604,15 @@ function AddEvent() {
                     requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION) ||
                     requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION_EN) ||
                     requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION_FR)
+                  }
+                  hidden={
+                    standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION) ||
+                    standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION_EN) ||
+                    standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION_FR)
+                      ? adminCheckHandler()
+                        ? false
+                        : true
+                      : false
                   }>
                   <BilingualInput fieldData={eventData?.description}>
                     <TextEditor
@@ -1650,6 +1721,13 @@ function AddEvent() {
                   name="draggerWrap"
                   className="draggerWrap"
                   required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.IMAGE)}
+                  hidden={
+                    standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
+                      ? adminCheckHandler()
+                        ? false
+                        : true
+                      : false
+                  }
                   initialValue={eventData?.image && eventData?.image?.original?.uri}
                   {...(isAddImageError && {
                     help: t('dashboard.events.addEditEvent.validations.errorImage'),
@@ -2220,7 +2298,14 @@ function AddEvent() {
             </CardEvent>
             <CardEvent
               title={t('dashboard.events.addEditEvent.tickets.title')}
-              required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.TICKET_INFO)}>
+              required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.TICKET_INFO)}
+              hidden={
+                standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.TICKET_INFO)
+                  ? adminCheckHandler()
+                    ? false
+                    : true
+                  : false
+              }>
               <>
                 {(ticketType == offerTypes.FREE || !ticketType) && (
                   <Row>
