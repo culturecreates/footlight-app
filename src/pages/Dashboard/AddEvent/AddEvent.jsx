@@ -218,6 +218,7 @@ function AddEvent() {
         ])
         .then(() => {
           var values = form.getFieldsValue(true);
+          console.log(values);
           var startDateTime,
             endDateTime,
             additionalType = [],
@@ -383,6 +384,7 @@ function AddEvent() {
                 }),
             };
           }
+          console.log(offerConfiguration);
 
           if (values?.organizers) {
             organizers = values?.organizers?.map((organizer) => {
@@ -2280,7 +2282,9 @@ function AddEvent() {
                                 getFieldValue('prices')?.length > 0 &&
                                 getFieldValue('prices')[0] != undefined &&
                                 getFieldValue('prices')[0].price != '') ||
-                              value
+                              value ||
+                              getFieldValue('frenchTicketNote') ||
+                              getFieldValue('englishTicketNote')
                             ) {
                               return Promise.resolve();
                             } else
@@ -2308,7 +2312,9 @@ function AddEvent() {
                                   getFieldValue('prices')?.length > 0 &&
                                   getFieldValue('prices')[0] != undefined &&
                                   getFieldValue('prices')[0].price != '') ||
-                                getFieldValue('ticketLink')
+                                getFieldValue('ticketLink') ||
+                                getFieldValue('frenchTicketNote') ||
+                                getFieldValue('englishTicketNote')
                               ) {
                                 return Promise.resolve();
                               } else
@@ -2339,7 +2345,9 @@ function AddEvent() {
                                   getFieldValue('prices')?.length > 0 &&
                                   getFieldValue('prices')[0] != undefined &&
                                   getFieldValue('prices')[0].price != '') ||
-                                getFieldValue('ticketLink')
+                                getFieldValue('ticketLink') ||
+                                getFieldValue('frenchTicketNote') ||
+                                getFieldValue('englishTicketNote')
                               ) {
                                 return Promise.resolve();
                               } else
@@ -2366,7 +2374,30 @@ function AddEvent() {
                 {(ticketType == offerTypes.FREE || ticketType == offerTypes.PAYING) && (
                   <Form.Item label={t('dashboard.events.addEditEvent.tickets.note')}>
                     <BilingualInput fieldData={eventData?.offerConfiguration?.name}>
-                      <Form.Item name="frenchTicketNote" initialValue={eventData?.offerConfiguration?.name?.fr}>
+                      <Form.Item
+                        name="frenchTicketNote"
+                        initialValue={eventData?.offerConfiguration?.name?.fr}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator() {
+                              if (
+                                (getFieldValue('prices') != undefined &&
+                                  getFieldValue('prices')?.length > 0 &&
+                                  getFieldValue('prices')[0] != undefined &&
+                                  getFieldValue('prices')[0].price != '') ||
+                                getFieldValue('ticketLink') ||
+                                (ticketType == offerTypes.PAYING
+                                  ? getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')
+                                  : true)
+                              ) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(
+                                  new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')),
+                                );
+                            },
+                          }),
+                        ]}>
                         <TextArea
                           autoComplete="off"
                           placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderNotes')}
@@ -2379,7 +2410,30 @@ function AddEvent() {
                           size="large"
                         />
                       </Form.Item>
-                      <Form.Item name="englishTicketNote" initialValue={eventData?.offerConfiguration?.name?.en}>
+                      <Form.Item
+                        name="englishTicketNote"
+                        initialValue={eventData?.offerConfiguration?.name?.en}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator() {
+                              if (
+                                (getFieldValue('prices') != undefined &&
+                                  getFieldValue('prices')?.length > 0 &&
+                                  getFieldValue('prices')[0] != undefined &&
+                                  getFieldValue('prices')[0].price != '') ||
+                                getFieldValue('ticketLink') ||
+                                (ticketType == offerTypes.PAYING
+                                  ? getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')
+                                  : true)
+                              ) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(
+                                  new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')),
+                                );
+                            },
+                          }),
+                        ]}>
                         <TextArea
                           autoComplete="off"
                           placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderNotes')}
