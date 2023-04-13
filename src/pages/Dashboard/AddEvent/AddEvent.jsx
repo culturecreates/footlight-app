@@ -467,6 +467,7 @@ function AddEvent() {
             inLanguage,
             isFeatured: values?.isFeatured,
           };
+
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
             new Compressor(values?.dragger[0]?.originFileObj, {
               convertSize: 200000,
@@ -1632,6 +1633,7 @@ function AddEvent() {
                       <TextEditor
                         formName="frenchEditor"
                         key={contentLanguage.FRENCH}
+                        calendarContentLanguage={calendarContentLanguage}
                         initialValue={eventData?.description?.fr}
                         dependencies={['englishEditor']}
                         currentReactQuillRef={reactQuillRefFr}
@@ -1687,6 +1689,7 @@ function AddEvent() {
                         formName="englishEditor"
                         key={contentLanguage.ENGLISH}
                         initialValue={eventData?.description?.en}
+                        calendarContentLanguage={calendarContentLanguage}
                         dependencies={['frenchEditor']}
                         currentReactQuillRef={reactQuillRefEn}
                         editorLanguage={'en'}
