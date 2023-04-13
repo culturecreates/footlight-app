@@ -218,7 +218,6 @@ function AddEvent() {
         ])
         .then(() => {
           var values = form.getFieldsValue(true);
-          console.log(values);
           var startDateTime,
             endDateTime,
             additionalType = [],
@@ -384,7 +383,6 @@ function AddEvent() {
                 }),
             };
           }
-          console.log(offerConfiguration);
 
           if (values?.organizers) {
             organizers = values?.organizers?.map((organizer) => {
