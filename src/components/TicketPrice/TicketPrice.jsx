@@ -4,6 +4,7 @@ import { Form, Button } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import StyledInput from '../Input/Common';
+import StyledNumberInput from '../Input/Number/StyledNumber';
 
 function TicketPrice(props) {
   const { fields, add, remove, firstFieldName, secondFieldName } = props;
@@ -43,7 +44,8 @@ function TicketPrice(props) {
                 //   },
                 // ]}
               >
-                <StyledInput
+                <StyledNumberInput
+                  controls={false}
                   style={{ borderWidth: '0px' }}
                   addonAfter={t('dashboard.events.addEditEvent.tickets.CAD')}
                 />

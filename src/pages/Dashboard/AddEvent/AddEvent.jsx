@@ -2444,7 +2444,9 @@ function AddEvent() {
                                 getFieldValue('prices')?.length > 0 &&
                                 getFieldValue('prices')[0] != undefined &&
                                 getFieldValue('prices')[0].price != '') ||
-                              value
+                              value ||
+                              getFieldValue('frenchTicketNote') ||
+                              getFieldValue('englishTicketNote')
                             ) {
                               return Promise.resolve();
                             } else
@@ -2474,7 +2476,9 @@ function AddEvent() {
                                     getFieldValue('prices')?.length > 0 &&
                                     getFieldValue('prices')[0] != undefined &&
                                     getFieldValue('prices')[0].price != '') ||
-                                  getFieldValue('ticketLink')
+                                  getFieldValue('ticketLink') ||
+                                  getFieldValue('frenchTicketNote') ||
+                                  getFieldValue('englishTicketNote')
                                 ) {
                                   return Promise.resolve();
                                 } else
@@ -2506,7 +2510,9 @@ function AddEvent() {
                                     getFieldValue('prices')?.length > 0 &&
                                     getFieldValue('prices')[0] != undefined &&
                                     getFieldValue('prices')[0].price != '') ||
-                                  getFieldValue('ticketLink')
+                                  getFieldValue('ticketLink') ||
+                                  getFieldValue('frenchTicketNote') ||
+                                  getFieldValue('englishTicketNote')
                                 ) {
                                   return Promise.resolve();
                                 } else
@@ -2538,7 +2544,28 @@ function AddEvent() {
                         <Form.Item
                           name="frenchTicketNote"
                           initialValue={eventData?.offerConfiguration?.name?.fr}
-                          key={contentLanguage.FRENCH}>
+                          key={contentLanguage.FRENCH}
+                          rules={[
+                            ({ getFieldValue }) => ({
+                              validator() {
+                                if (
+                                  (getFieldValue('prices') != undefined &&
+                                    getFieldValue('prices')?.length > 0 &&
+                                    getFieldValue('prices')[0] != undefined &&
+                                    getFieldValue('prices')[0].price != '') ||
+                                  getFieldValue('ticketLink') ||
+                                  (ticketType == offerTypes.PAYING
+                                    ? getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')
+                                    : true)
+                                ) {
+                                  return Promise.resolve();
+                                } else
+                                  return Promise.reject(
+                                    new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')),
+                                  );
+                              },
+                            }),
+                          ]}>
                           <TextArea
                             autoComplete="off"
                             placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderNotes')}
@@ -2554,7 +2581,28 @@ function AddEvent() {
                         <Form.Item
                           name="englishTicketNote"
                           initialValue={eventData?.offerConfiguration?.name?.en}
-                          key={contentLanguage.ENGLISH}>
+                          key={contentLanguage.ENGLISH}
+                          rules={[
+                            ({ getFieldValue }) => ({
+                              validator() {
+                                if (
+                                  (getFieldValue('prices') != undefined &&
+                                    getFieldValue('prices')?.length > 0 &&
+                                    getFieldValue('prices')[0] != undefined &&
+                                    getFieldValue('prices')[0].price != '') ||
+                                  getFieldValue('ticketLink') ||
+                                  (ticketType == offerTypes.PAYING
+                                    ? getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')
+                                    : true)
+                                ) {
+                                  return Promise.resolve();
+                                } else
+                                  return Promise.reject(
+                                    new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')),
+                                  );
+                              },
+                            }),
+                          ]}>
                           <TextArea
                             autoComplete="off"
                             placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderNotes')}

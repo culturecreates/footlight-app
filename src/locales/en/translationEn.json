@@ -309,7 +309,7 @@
           },
           "ticket": {
             "emptyTicket": "The event requires ticketing information.",
-            "emptyPaidTicket": "This event requires a buy ticket link or a ticket price.",
+            "emptyPaidTicket": "A buy ticket link, ticket price or note is required.",
             "invalidData": "Enter a number."
           },
           "url": "Enter a valid url.",

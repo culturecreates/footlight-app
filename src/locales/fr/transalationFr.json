@@ -307,7 +307,7 @@
           },
           "ticket": {
             "emptyTicket": "L'événement nécessite des informations sur la billetterie.",
-            "emptyPaidTicket": "Cet événement nécessite un lien d'achat de billet ou un prix de billet.",
+            "emptyPaidTicket": "Un lien d'achat de billet, un prix de billet ou une note est requis.",
             "invalidData": "Entrez un nombre."
           },
           "url": "Entrez une URL valide.",
