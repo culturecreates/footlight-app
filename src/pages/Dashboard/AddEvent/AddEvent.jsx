@@ -152,9 +152,9 @@ function AddEvent() {
   let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
   let requiredFields = currentCalendarData?.formSchema?.filter((form) => form?.formName === 'Event');
   requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
-  let requiredFieldNames = requiredFields && requiredFields?.requiredFields?.map((field) => field?.fieldName);
-  let standardAdminOnlyFields = requiredFields?.adminOnlyFields?.standardFields;
-  let dynamicAdminOnlyFields = requiredFields?.adminOnlyFields?.dynamicFields;
+  let requiredFieldNames = requiredFields ? requiredFields?.requiredFields?.map((field) => field?.fieldName) : [];
+  let standardAdminOnlyFields = requiredFields?.adminOnlyFields?.standardFields ?? [];
+  let dynamicAdminOnlyFields = requiredFields?.adminOnlyFields?.dynamicFields ?? [];
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const dateTimeConverter = (date, time) => {
@@ -1651,9 +1651,18 @@ function AddEvent() {
                               } else
                                 return Promise.reject(
                                   new Error(
-                                    t('dashboard.events.addEditEvent.validations.otherInformation.emptyDescription', {
-                                      wordCount: descriptionMinimumWordCount,
-                                    }),
+                                    calendarContentLanguage === contentLanguage.ENGLISH ||
+                                    calendarContentLanguage === contentLanguage.FRENCH
+                                      ? t(
+                                          'dashboard.events.addEditEvent.validations.otherInformation.unilingualEmptyDescription',
+                                        )
+                                      : calendarContentLanguage === contentLanguage.BILINGUAL &&
+                                        t(
+                                          'dashboard.events.addEditEvent.validations.otherInformation.emptyDescription',
+                                          {
+                                            wordCount: descriptionMinimumWordCount,
+                                          },
+                                        ),
                                   ),
                                 );
                             },
@@ -1677,7 +1686,13 @@ function AddEvent() {
                               else
                                 return Promise.reject(
                                   new Error(
-                                    t('dashboard.events.addEditEvent.validations.otherInformation.frenchShort'),
+                                    calendarContentLanguage === contentLanguage.ENGLISH ||
+                                    calendarContentLanguage === contentLanguage.FRENCH
+                                      ? t(
+                                          'dashboard.events.addEditEvent.validations.otherInformation.unilingualDescriptionShort',
+                                        )
+                                      : calendarContentLanguage === contentLanguage.BILINGUAL &&
+                                        t('dashboard.events.addEditEvent.validations.otherInformation.frenchShort'),
                                   ),
                                 );
                             },
@@ -1706,7 +1721,18 @@ function AddEvent() {
                               } else
                                 return Promise.reject(
                                   new Error(
-                                    t('dashboard.events.addEditEvent.validations.otherInformation.emptyDescription'),
+                                    calendarContentLanguage === contentLanguage.ENGLISH ||
+                                    calendarContentLanguage === contentLanguage.FRENCH
+                                      ? t(
+                                          'dashboard.events.addEditEvent.validations.otherInformation.unilingualEmptyDescription',
+                                        )
+                                      : calendarContentLanguage === contentLanguage.BILINGUAL &&
+                                        t(
+                                          'dashboard.events.addEditEvent.validations.otherInformation.emptyDescription',
+                                          {
+                                            wordCount: descriptionMinimumWordCount,
+                                          },
+                                        ),
                                   ),
                                 );
                             },
@@ -1730,7 +1756,13 @@ function AddEvent() {
                               else
                                 return Promise.reject(
                                   new Error(
-                                    t('dashboard.events.addEditEvent.validations.otherInformation.englishShort'),
+                                    calendarContentLanguage === contentLanguage.ENGLISH ||
+                                    calendarContentLanguage === contentLanguage.FRENCH
+                                      ? t(
+                                          'dashboard.events.addEditEvent.validations.otherInformation.unilingualDescriptionShort',
+                                        )
+                                      : calendarContentLanguage === contentLanguage.BILINGUAL &&
+                                        t('dashboard.events.addEditEvent.validations.otherInformation.englishShort'),
                                   ),
                                 );
                             },
