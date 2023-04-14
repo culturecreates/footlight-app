@@ -8,6 +8,7 @@ import {
   CalendarOutlined,
   ExclamationCircleOutlined,
   PlusOutlined,
+  EditOutlined,
 } from '@ant-design/icons';
 import moment from 'moment-timezone';
 import i18n from 'i18next';
@@ -2330,16 +2331,20 @@ function AddEvent() {
                         ]}>
                         <div className="ticket-buttons">
                           <DateAction
-                            style={{ width: '200px', backgroundColor: ticketType == offerTypes.FREE && '#EFF2FF' }}
+                            style={{ backgroundColor: ticketType == offerTypes.FREE && '#EFF2FF' }}
                             iconrender={<MoneyFree />}
                             label={t('dashboard.events.addEditEvent.tickets.free')}
                             onClick={() => setTicketType(offerTypes.FREE)}
                           />
                           <DateAction
                             iconrender={<Money />}
-                            style={{ width: '200px' }}
                             label={t('dashboard.events.addEditEvent.tickets.paid')}
                             onClick={() => setTicketType(offerTypes.PAYING)}
+                          />
+                          <DateAction
+                            iconrender={<EditOutlined />}
+                            label={t('dashboard.events.addEditEvent.tickets.registration')}
+                            onClick={() => setTicketType(offerTypes.REGISTER)}
                           />
                         </div>
                       </Form.Item>
@@ -2454,7 +2459,9 @@ function AddEvent() {
                   </>
                 )}
                 <br />
-                {(ticketType == offerTypes.FREE || ticketType == offerTypes.PAYING) && (
+                {(ticketType == offerTypes.FREE ||
+                  ticketType == offerTypes.PAYING ||
+                  ticketType == offerTypes.REGISTER) && (
                   <Form.Item label={t('dashboard.events.addEditEvent.tickets.note')}>
                     <BilingualInput fieldData={eventData?.offerConfiguration?.name}>
                       <Form.Item
@@ -2533,7 +2540,7 @@ function AddEvent() {
                   </Form.Item>
                 )}
               </>
-              {ticketType && ticketType == offerTypes.PAYING && (
+              {ticketType && (ticketType == offerTypes.PAYING || ticketType == offerTypes.REGISTER) && (
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.tickets.changeTicketType')}
                   style={{ lineHeight: '2.5' }}>
