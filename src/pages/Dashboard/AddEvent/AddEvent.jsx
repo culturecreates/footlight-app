@@ -656,7 +656,7 @@ function AddEvent() {
     getEntities({ searchKey: inputValue, classes: decodeURIComponent(query.toString()), calendarId })
       .unwrap()
       .then((response) => {
-        setAllPlacesList(placesOptions(response, user));
+        setAllPlacesList(placesOptions(response, user, calendarContentLanguage));
       })
       .catch((error) => console.log(error));
   };
@@ -669,11 +669,11 @@ function AddEvent() {
       .unwrap()
       .then((response) => {
         if (type == 'organizers') {
-          setOrganizersList(treeEntitiesOption(response, user));
+          setOrganizersList(treeEntitiesOption(response, user, calendarContentLanguage));
         } else if (type == 'performers') {
-          setPerformerList(treeEntitiesOption(response, user));
+          setPerformerList(treeEntitiesOption(response, user, calendarContentLanguage));
         } else if (type == 'supporters') {
-          setSupporterList(treeEntitiesOption(response, user));
+          setSupporterList(treeEntitiesOption(response, user, calendarContentLanguage));
         }
       })
       .catch((error) => console.log(error));
@@ -758,7 +758,8 @@ function AddEvent() {
           ),
         );
         setTicketType(eventData?.offerConfiguration?.category);
-        if (initialPlace && initialPlace?.length > 0) setLocationPlace(placesOptions(initialPlace)[0]);
+        if (initialPlace && initialPlace?.length > 0)
+          setLocationPlace(placesOptions(initialPlace)[0], user, calendarContentLanguage);
         if (eventData?.locations?.filter((location) => location?.isVirtualLocation == true)?.length > 0)
           initialAddedFields = initialAddedFields?.concat(locationType?.fieldNames);
         if (
@@ -778,7 +779,7 @@ function AddEvent() {
               type: organizer?.type,
             };
           });
-          setSelectedOrganizers(treeEntitiesOption(initialOrganizers, user));
+          setSelectedOrganizers(treeEntitiesOption(initialOrganizers, user, calendarContentLanguage));
         }
         if (eventData?.performer) {
           let initialPerformers = eventData?.performer?.map((performer) => {
@@ -789,7 +790,7 @@ function AddEvent() {
               type: performer?.type,
             };
           });
-          setSelectedPerformers(treeEntitiesOption(initialPerformers, user));
+          setSelectedPerformers(treeEntitiesOption(initialPerformers, user, calendarContentLanguage));
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.performerWrap);
         }
         if (eventData?.collaborators) {
@@ -801,7 +802,7 @@ function AddEvent() {
               type: supporter?.type,
             };
           });
-          setSelectedSupporters(treeEntitiesOption(initialSupporters, user));
+          setSelectedSupporters(treeEntitiesOption(initialSupporters, user, calendarContentLanguage));
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.supporterWrap);
         }
         if (eventData?.url?.uri) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.eventLink);
@@ -913,9 +914,9 @@ function AddEvent() {
   }, [currentCalendarData]);
 
   useEffect(() => {
-    setOrganizersList(treeEntitiesOption(initialEntities, user));
-    setPerformerList(treeEntitiesOption(initialEntities, user));
-    setSupporterList(treeEntitiesOption(initialEntities, user));
+    setOrganizersList(treeEntitiesOption(initialEntities, user, calendarContentLanguage));
+    setPerformerList(treeEntitiesOption(initialEntities, user, calendarContentLanguage));
+    setSupporterList(treeEntitiesOption(initialEntities, user, calendarContentLanguage));
   }, [initialEntityLoading]);
 
   useEffect(() => {
@@ -1059,7 +1060,7 @@ function AddEvent() {
                     treeDefaultExpandAll
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType', false)}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType', false, calendarContentLanguage)}
                     tagRender={(props) => {
                       const { label, closable, onClose } = props;
                       return (
@@ -1097,7 +1098,7 @@ function AddEvent() {
                     treeDefaultExpandAll
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience', false)}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience', false, calendarContentLanguage)}
                     placeholder={t('dashboard.events.addEditEvent.language.placeHolderTargetAudience')}
                     tagRender={(props) => {
                       const { closable, onClose, label } = props;
@@ -1136,7 +1137,7 @@ function AddEvent() {
                           treeDefaultExpandAll
                           notFoundContent={<NoContent />}
                           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                          treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user)}
+                          treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
                           tagRender={(props) => {
                             const { label, closable, onClose } = props;
                             return (
@@ -2225,7 +2226,7 @@ function AddEvent() {
                     placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'inLanguage', false)}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'inLanguage', false, calendarContentLanguage)}
                     tagRender={(props) => {
                       const { closable, onClose, label } = props;
                       return (
@@ -2283,7 +2284,13 @@ function AddEvent() {
                     style={{ width: '423px' }}
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility', false)}
+                    treeData={treeTaxonomyOptions(
+                      allTaxonomyData,
+                      user,
+                      'EventAccessibility',
+                      false,
+                      calendarContentLanguage,
+                    )}
                     placeholder={t('dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibility')}
                     tagRender={(props) => {
                       const { label, closable, onClose } = props;
