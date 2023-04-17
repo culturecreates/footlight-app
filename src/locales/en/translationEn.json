@@ -271,6 +271,7 @@
           "free": "Free",
           "paid": "Paid",
           "registration": "Registration",
+          "registerLink": "Registration link",
           "buyTicketLink": "Buy tickets link",
           "note": "Note",
           "ticketType": "Ticket type",
@@ -311,6 +312,7 @@
           "ticket": {
             "emptyTicket": "The event requires ticketing information.",
             "emptyPaidTicket": "A buy ticket link, ticket price or note is required.",
+            "emptyRegister": "A registration link or note is required.",
             "invalidData": "Enter a number."
           },
           "url": "Enter a valid url.",

@@ -269,6 +269,7 @@
           "free": "Gratuit",
           "paid": "Payant",
           "registration": "Inscription",
+          "registerLink": "Lien pour l’inscription",
           "buyTicketLink": "Lien vers la billeterie",
           "note": "Note",
           "ticketType": "Type de bilets",
@@ -309,6 +310,7 @@
           "ticket": {
             "emptyTicket": "L'événement nécessite des informations sur la billetterie.",
             "emptyPaidTicket": "Un lien d'achat de billet, un prix de billet ou une note est requis.",
+            "emptyRegister": "Un lien d'achat de billet, un prix de billet ou une note est requis.",
             "invalidData": "Entrez un nombre."
           },
           "url": "Entrez une URL valide.",

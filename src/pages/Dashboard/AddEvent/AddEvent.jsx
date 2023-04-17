@@ -886,7 +886,14 @@ function AddEvent() {
             publishValidateFields.push('datePickerWrapper', 'datePicker', 'dateRangePicker', 'startDateRecur');
             break;
           case eventFormRequiredFieldNames.TICKET_INFO:
-            publishValidateFields.push('ticketPickerWrapper', 'prices', 'ticketLink');
+            publishValidateFields.push(
+              'ticketPickerWrapper',
+              'prices',
+              'ticketLink',
+              'registerLink',
+              'englishTicketNote',
+              'frenchTicketNote',
+            );
             break;
           case eventFormRequiredFieldNames.EVENT_TYPE:
             publishValidateFields.push('eventType');
@@ -2319,7 +2326,14 @@ function AddEvent() {
                               if (
                                 ticketType == offerTypes.FREE ||
                                 (ticketType == offerTypes.PAYING &&
-                                  (getFieldValue('ticketLink') || getFieldValue('prices')))
+                                  (getFieldValue('ticketLink') ||
+                                    getFieldValue('prices') ||
+                                    getFieldValue('frenchTicketNote') ||
+                                    getFieldValue('englishTicketNote'))) ||
+                                (ticketType == offerTypes.REGISTER &&
+                                  (getFieldValue('registerLink') ||
+                                    getFieldValue('frenchTicketNote') ||
+                                    getFieldValue('englishTicketNote')))
                               ) {
                                 return Promise.resolve();
                               } else
@@ -2350,6 +2364,35 @@ function AddEvent() {
                       </Form.Item>
                     </Col>
                   </Row>
+                )}
+                {ticketType == offerTypes.REGISTER && (
+                  <Form.Item
+                    name="registerLink"
+                    label={t('dashboard.events.addEditEvent.tickets.registerLink')}
+                    // initialValue={eventData?.offerConfiguration?.url?.uri}
+                    rules={[
+                      {
+                        type: 'url',
+                        message: t('dashboard.events.addEditEvent.validations.url'),
+                      },
+
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          if (value || getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')) {
+                            return Promise.resolve();
+                          } else
+                            return Promise.reject(
+                              new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyRegister')),
+                            );
+                        },
+                      }),
+                    ]}>
+                    <StyledInput
+                      addonBefore="https://"
+                      autoComplete="off"
+                      placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderLinks')}
+                    />
+                  </Form.Item>
                 )}
                 {ticketType == offerTypes.PAYING && (
                   <>
@@ -2476,14 +2519,19 @@ function AddEvent() {
                                   getFieldValue('prices')[0] != undefined &&
                                   getFieldValue('prices')[0].price != '') ||
                                 getFieldValue('ticketLink') ||
-                                (ticketType == offerTypes.PAYING
+                                (ticketType == offerTypes.PAYING || ticketType == offerTypes.REGISTER
                                   ? getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')
                                   : true)
                               ) {
                                 return Promise.resolve();
                               } else
                                 return Promise.reject(
-                                  new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')),
+                                  new Error(
+                                    ticketType == offerTypes.PAYING
+                                      ? t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')
+                                      : ticketType == offerTypes.REGISTER &&
+                                        t('dashboard.events.addEditEvent.validations.ticket.emptyRegister'),
+                                  ),
                                 );
                             },
                           }),
@@ -2512,14 +2560,19 @@ function AddEvent() {
                                   getFieldValue('prices')[0] != undefined &&
                                   getFieldValue('prices')[0].price != '') ||
                                 getFieldValue('ticketLink') ||
-                                (ticketType == offerTypes.PAYING
+                                (ticketType == offerTypes.PAYING || ticketType == offerTypes.REGISTER
                                   ? getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')
                                   : true)
                               ) {
                                 return Promise.resolve();
                               } else
                                 return Promise.reject(
-                                  new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')),
+                                  new Error(
+                                    ticketType == offerTypes.PAYING
+                                      ? t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')
+                                      : ticketType == offerTypes.REGISTER &&
+                                        t('dashboard.events.addEditEvent.validations.ticket.emptyRegister'),
+                                  ),
                                 );
                             },
                           }),
