@@ -68,7 +68,6 @@ import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../.
 import { usePrompt } from '../../../hooks/usePrompt';
 import { bilingual } from '../../../utils/bilingual';
 import RecurringEvents from '../../../components/RecurringEvents';
-import { pluralize } from '../../../utils/pluralise';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequiredFieldNames';
 import StyledSwitch from '../../../components/Switch/index';
@@ -686,17 +685,6 @@ function AddEvent() {
     setShowDialog(true);
   };
 
-  var enumerateDaysBetweenDates = (startDate, endDate) => {
-    var now = startDate.clone(),
-      dates = [];
-
-    while (now.isSameOrBefore(endDate)) {
-      dates.push(now.format('M/D/YYYY'));
-      now.add(1, 'days');
-    }
-    return dates;
-  };
-
   const adminCheckHandler = () => {
     if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
     else return false;
@@ -1273,24 +1261,7 @@ function AddEvent() {
                                   message: t('dashboard.events.addEditEvent.validations.date'),
                                 },
                               ]}>
-                              <DateRangePicker
-                                style={{ width: '423px' }}
-                                suffixIcon={
-                                  formValue?.dateRangePicker?.length == 2 && (
-                                    <Tags
-                                      style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }}
-                                      color={'#DBF3FD'}>
-                                      {pluralize(
-                                        enumerateDaysBetweenDates(
-                                          formValue?.dateRangePicker[0],
-                                          formValue?.dateRangePicker[1],
-                                        )?.length,
-                                        t('dashboard.events.list.event'),
-                                      )}
-                                    </Tags>
-                                  )
-                                }
-                              />
+                              <DateRangePicker style={{ width: '423px' }} />
                             </Form.Item>
                             <Row justify="space-between">
                               <Col flex={'203.5px'}>
