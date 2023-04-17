@@ -965,23 +965,25 @@ function EventReadOnly() {
                         </p>
                       </>
                     )}
-                    {eventData?.offerConfiguration?.url?.uri &&
-                      eventData?.offerConfiguration?.category === offerTypes.PAYING && (
-                        <>
-                          <p className="read-only-event-content-sub-title-primary">
-                            {t('dashboard.events.addEditEvent.tickets.buyTicketLink')}
-                          </p>
-                          <p>
-                            <a
-                              href={eventData?.offerConfiguration?.url?.uri}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="url-links">
-                              {eventData?.offerConfiguration?.url?.uri}
-                            </a>
-                          </p>
-                        </>
-                      )}
+                    {eventData?.offerConfiguration?.url?.uri && (
+                      <>
+                        <p className="read-only-event-content-sub-title-primary">
+                          {eventData?.offerConfiguration?.category === offerTypes.PAYING
+                            ? t('dashboard.events.addEditEvent.tickets.buyTicketLink')
+                            : eventData?.offerConfiguration?.category === offerTypes.REGISTER &&
+                              t('dashboard.events.addEditEvent.tickets.registerLink')}
+                        </p>
+                        <p>
+                          <a
+                            href={eventData?.offerConfiguration?.url?.uri}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="url-links">
+                            {eventData?.offerConfiguration?.url?.uri}
+                          </a>
+                        </p>
+                      </>
+                    )}
                     {eventData?.offerConfiguration?.category === offerTypes.PAYING &&
                       eventData?.offerConfiguration?.prices?.length > 0 && (
                         <table className="ticket-price-table">

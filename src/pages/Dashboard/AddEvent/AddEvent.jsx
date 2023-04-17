@@ -8,6 +8,7 @@ import {
   CalendarOutlined,
   ExclamationCircleOutlined,
   PlusOutlined,
+  EditOutlined,
 } from '@ant-design/icons';
 import moment from 'moment-timezone';
 import i18n from 'i18next';
@@ -385,6 +386,12 @@ function AddEvent() {
                 values?.ticketLink && {
                   url: {
                     uri: urlProtocolCheck(values?.ticketLink),
+                  },
+                }),
+              ...(ticketType === offerTypes.REGISTER &&
+                values?.registerLink && {
+                  url: {
+                    uri: urlProtocolCheck(values?.registerLink),
                   },
                 }),
             };
@@ -890,7 +897,14 @@ function AddEvent() {
             publishValidateFields.push('datePickerWrapper', 'datePicker', 'dateRangePicker', 'startDateRecur');
             break;
           case eventFormRequiredFieldNames.TICKET_INFO:
-            publishValidateFields.push('ticketPickerWrapper', 'prices', 'ticketLink');
+            publishValidateFields.push(
+              'ticketPickerWrapper',
+              'prices',
+              'ticketLink',
+              'registerLink',
+              'englishTicketNote',
+              'frenchTicketNote',
+            );
             break;
           case eventFormRequiredFieldNames.EVENT_TYPE:
             publishValidateFields.push('eventType');
@@ -2397,7 +2411,14 @@ function AddEvent() {
                               if (
                                 ticketType == offerTypes.FREE ||
                                 (ticketType == offerTypes.PAYING &&
-                                  (getFieldValue('ticketLink') || getFieldValue('prices')))
+                                  (getFieldValue('ticketLink') ||
+                                    getFieldValue('prices') ||
+                                    getFieldValue('frenchTicketNote') ||
+                                    getFieldValue('englishTicketNote'))) ||
+                                (ticketType == offerTypes.REGISTER &&
+                                  (getFieldValue('registerLink') ||
+                                    getFieldValue('frenchTicketNote') ||
+                                    getFieldValue('englishTicketNote')))
                               ) {
                                 return Promise.resolve();
                               } else
@@ -2409,21 +2430,54 @@ function AddEvent() {
                         ]}>
                         <div className="ticket-buttons">
                           <DateAction
-                            style={{ width: '200px', backgroundColor: ticketType == offerTypes.FREE && '#EFF2FF' }}
+                            style={{ backgroundColor: ticketType == offerTypes.FREE && '#EFF2FF' }}
                             iconrender={<MoneyFree />}
                             label={t('dashboard.events.addEditEvent.tickets.free')}
                             onClick={() => setTicketType(offerTypes.FREE)}
                           />
                           <DateAction
                             iconrender={<Money />}
-                            style={{ width: '200px' }}
                             label={t('dashboard.events.addEditEvent.tickets.paid')}
                             onClick={() => setTicketType(offerTypes.PAYING)}
+                          />
+                          <DateAction
+                            iconrender={<EditOutlined />}
+                            label={t('dashboard.events.addEditEvent.tickets.registration')}
+                            onClick={() => setTicketType(offerTypes.REGISTER)}
                           />
                         </div>
                       </Form.Item>
                     </Col>
                   </Row>
+                )}
+                {ticketType == offerTypes.REGISTER && (
+                  <Form.Item
+                    name="registerLink"
+                    label={t('dashboard.events.addEditEvent.tickets.registerLink')}
+                    initialValue={eventData?.offerConfiguration?.url?.uri}
+                    rules={[
+                      {
+                        type: 'url',
+                        message: t('dashboard.events.addEditEvent.validations.url'),
+                      },
+
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          if (value || getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')) {
+                            return Promise.resolve();
+                          } else
+                            return Promise.reject(
+                              new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyRegister')),
+                            );
+                        },
+                      }),
+                    ]}>
+                    <StyledInput
+                      addonBefore="https://"
+                      autoComplete="off"
+                      placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderLinks')}
+                    />
+                  </Form.Item>
                 )}
                 {ticketType == offerTypes.PAYING && (
                   <>
@@ -2537,14 +2591,16 @@ function AddEvent() {
                   </>
                 )}
                 <br />
-                {(ticketType == offerTypes.FREE || ticketType == offerTypes.PAYING) && (
+                {(ticketType == offerTypes.FREE ||
+                  ticketType == offerTypes.PAYING ||
+                  ticketType == offerTypes.REGISTER) && (
                   <Form.Item label={t('dashboard.events.addEditEvent.tickets.note')}>
                     <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                       <BilingualInput fieldData={eventData?.offerConfiguration?.name}>
                         <Form.Item
                           name="frenchTicketNote"
-                          initialValue={eventData?.offerConfiguration?.name?.fr}
                           key={contentLanguage.FRENCH}
+                          initialValue={eventData?.offerConfiguration?.name?.fr}
                           rules={[
                             ({ getFieldValue }) => ({
                               validator() {
@@ -2554,14 +2610,19 @@ function AddEvent() {
                                     getFieldValue('prices')[0] != undefined &&
                                     getFieldValue('prices')[0].price != '') ||
                                   getFieldValue('ticketLink') ||
-                                  (ticketType == offerTypes.PAYING
+                                  (ticketType == offerTypes.PAYING || ticketType == offerTypes.REGISTER
                                     ? getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')
                                     : true)
                                 ) {
                                   return Promise.resolve();
                                 } else
                                   return Promise.reject(
-                                    new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')),
+                                    new Error(
+                                      ticketType == offerTypes.PAYING
+                                        ? t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')
+                                        : ticketType == offerTypes.REGISTER &&
+                                          t('dashboard.events.addEditEvent.validations.ticket.emptyRegister'),
+                                    ),
                                   );
                               },
                             }),
@@ -2580,8 +2641,8 @@ function AddEvent() {
                         </Form.Item>
                         <Form.Item
                           name="englishTicketNote"
-                          initialValue={eventData?.offerConfiguration?.name?.en}
                           key={contentLanguage.ENGLISH}
+                          initialValue={eventData?.offerConfiguration?.name?.en}
                           rules={[
                             ({ getFieldValue }) => ({
                               validator() {
@@ -2591,14 +2652,19 @@ function AddEvent() {
                                     getFieldValue('prices')[0] != undefined &&
                                     getFieldValue('prices')[0].price != '') ||
                                   getFieldValue('ticketLink') ||
-                                  (ticketType == offerTypes.PAYING
+                                  (ticketType == offerTypes.PAYING || ticketType == offerTypes.REGISTER
                                     ? getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')
                                     : true)
                                 ) {
                                   return Promise.resolve();
                                 } else
                                   return Promise.reject(
-                                    new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')),
+                                    new Error(
+                                      ticketType == offerTypes.PAYING
+                                        ? t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')
+                                        : ticketType == offerTypes.REGISTER &&
+                                          t('dashboard.events.addEditEvent.validations.ticket.emptyRegister'),
+                                    ),
                                   );
                               },
                             }),
@@ -2620,7 +2686,7 @@ function AddEvent() {
                   </Form.Item>
                 )}
               </>
-              {ticketType && ticketType == offerTypes.PAYING && (
+              {ticketType && (ticketType == offerTypes.PAYING || ticketType == offerTypes.REGISTER) && (
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.tickets.changeTicketType')}
                   style={{ lineHeight: '2.5' }}>

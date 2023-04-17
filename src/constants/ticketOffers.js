@@ -3,6 +3,7 @@ import { Translation } from 'react-i18next';
 export const offerTypes = {
   FREE: 'FREE',
   PAYING: 'PAYING',
+  REGISTER: 'REGISTRATION',
 };
 
 export const offerTypeOptions = [
@@ -17,5 +18,11 @@ export const offerTypeOptions = [
     disabled: false,
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.tickets.changeToPaid')}</Translation>,
     tooltip: <Translation>{(t) => t('dashboard.events.addEditEvent.tickets.changeToPaidTooltip')}</Translation>,
+  },
+  {
+    type: offerTypes.REGISTER,
+    disabled: false,
+    label: <Translation>{(t) => t('dashboard.events.addEditEvent.tickets.changeToRegister')}</Translation>,
+    tooltip: <Translation>{(t) => t('dashboard.events.addEditEvent.tickets.changeToRegisterTooltip')}</Translation>,
   },
 ];
