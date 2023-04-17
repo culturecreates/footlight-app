@@ -305,8 +305,10 @@
           "location": "A place or virtual location is required.",
           "otherInformation": {
             "emptyDescription": "Event description is required ({{wordCount}} word minimum).",
+            "unilingualEmptyDescription": "Event description is required.",
             "englishShort": "English description is too short.",
             "frenchShort": "French description is too short.",
+            "unilingualDescriptionShort": "Description is too short",
             "emptyImage": "An image is required. PNG and JPEG files are supported."
           },
           "ticket": {

@@ -303,8 +303,10 @@
           "location": "Un lieu ou un emplacement virtuel est requis.",
           "otherInformation": {
             "emptyDescription": "Une description de l'événement est requise ({{wordCount}} mots minimum).",
+            "unilingualEmptyDescription": "Une description de l'événement est requise.",
             "englishShort": "La description en anglais est trop courte.",
             "frenchShort": "La description française est trop courte.",
+            "unilingualDescriptionShort": "La description est trop courte",
             "emptyImage": "Une image est requise. Les fichiers PNG et JPEG sont acceptés."
           },
           "ticket": {

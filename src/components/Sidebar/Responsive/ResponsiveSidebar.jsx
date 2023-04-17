@@ -11,7 +11,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import { useTranslation } from 'react-i18next';
 import CalendarList from '../../Dropdown/Calendar';
-import { bilingual } from '../../../utils/bilingual';
+import { contentLanguageBilingual } from '../../../utils/bilingual';
 import i18n from 'i18next';
 
 function ResponsiveSidebar(props) {
@@ -22,6 +22,8 @@ function ResponsiveSidebar(props) {
   const { user } = useSelector(getUserDetails);
 
   const [calendarItem, setCalendarItem] = useState([]);
+
+  const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const items = userNameItems.map((item) => {
     return {
@@ -80,10 +82,11 @@ function ResponsiveSidebar(props) {
     }
   };
   useEffect(() => {
-    const calendarLabel = bilingual({
+    const calendarLabel = contentLanguageBilingual({
       en: currentCalendarData?.name?.en,
       fr: currentCalendarData?.name?.fr,
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+      calendarContentLanguage: calendarContentLanguage,
     });
     setCalendarItem(selectedCalendar(currentCalendarData?.id, currentCalendarData?.image?.uri, calendarLabel));
   }, [currentCalendarData]);

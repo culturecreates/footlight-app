@@ -6,6 +6,7 @@ import 'react-quill/dist/quill.snow.css';
 import { useTranslation } from 'react-i18next';
 import { pluralize } from '../../utils/pluralise';
 import OutlinedButton from '../Button/Outlined';
+import { contentLanguage } from '../../constants/contentLanguage';
 function TextEditor(props) {
   const {
     formName,
@@ -16,6 +17,7 @@ function TextEditor(props) {
     placeholder,
     editorLanguage,
     descriptionMinimumWordCount,
+    calendarContentLanguage,
   } = props;
   let translateTo;
 
@@ -102,12 +104,14 @@ function TextEditor(props) {
         )}
         <p>{pluralize(wordCount, t('dashboard.events.addEditEvent.otherInformation.description.word'))}</p>
       </div>
-      <OutlinedButton
-        label={t('dashboard.events.addEditEvent.otherInformation.description.translate')}
-        size="middle"
-        disabled={wordCount > 1 ? false : true}
-        onClick={translateHandler}
-      />
+      {calendarContentLanguage === contentLanguage.BILINGUAL && (
+        <OutlinedButton
+          label={t('dashboard.events.addEditEvent.otherInformation.description.translate')}
+          size="middle"
+          disabled={wordCount > 1 ? false : true}
+          onClick={translateHandler}
+        />
+      )}
     </>
   );
 }
