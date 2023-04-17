@@ -3,7 +3,7 @@ import { Translation } from 'react-i18next';
 export const offerTypes = {
   FREE: 'FREE',
   PAYING: 'PAYING',
-  REGISTER: 'REGISTER',
+  REGISTER: 'REGISTRATION',
 };
 
 export const offerTypeOptions = [

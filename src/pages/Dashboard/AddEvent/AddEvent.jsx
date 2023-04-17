@@ -385,6 +385,12 @@ function AddEvent() {
                     uri: urlProtocolCheck(values?.ticketLink),
                   },
                 }),
+              ...(ticketType === offerTypes.REGISTER &&
+                values?.registerLink && {
+                  url: {
+                    uri: urlProtocolCheck(values?.registerLink),
+                  },
+                }),
             };
           }
 
@@ -2369,7 +2375,7 @@ function AddEvent() {
                   <Form.Item
                     name="registerLink"
                     label={t('dashboard.events.addEditEvent.tickets.registerLink')}
-                    // initialValue={eventData?.offerConfiguration?.url?.uri}
+                    initialValue={eventData?.offerConfiguration?.url?.uri}
                     rules={[
                       {
                         type: 'url',
