@@ -7,7 +7,7 @@ import i18n from 'i18next';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import EventList from '../../../components/List/Events';
 import { useLazyGetEventsQuery } from '../../../services/events';
-import { useParams, useSearchParams, createSearchParams, useNavigate } from 'react-router-dom';
+import { useParams, useSearchParams, createSearchParams, useNavigate, useOutletContext } from 'react-router-dom';
 import AddEvent from '../../../components/Button/AddEvent';
 import { PathName } from '../../../constants/pathName';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
@@ -29,6 +29,7 @@ function Events() {
   let [searchParams, setSearchParams] = useSearchParams();
   const timestampRef = useRef(Date.now()).current;
   const { user } = useSelector(getUserDetails);
+  const [currentCalendarData] = useOutletContext();
 
   const [getEvents, { currentData: eventsData, isLoading, isFetching }] = useLazyGetEventsQuery();
   const { currentData: allUsersData, isLoading: allUsersLoading } = useGetAllUsersQuery({
@@ -53,6 +54,7 @@ function Events() {
   let userFilterData = allUsersData?.data?.active?.slice()?.sort(function (x, y) {
     return x?.id == user?.id ? -1 : y?.id == user?.id ? 1 : 0;
   });
+  const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   userFilterData = userFilterData
     ?.slice(1)
@@ -214,8 +216,8 @@ function Events() {
                   trigger={['click']}>
                   <Button size="large" className="filter-sort-button">
                     <Space>
-                      {sortByOptions?.map((sortBy) => {
-                        if (sortBy?.key === filter?.sort) return sortBy?.label;
+                      {sortByOptions?.map((sortBy, index) => {
+                        if (sortBy?.key === filter?.sort) return <span key={index}>{sortBy?.label}</span>;
                       })}
                       <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
                     </Space>
@@ -419,7 +421,12 @@ function Events() {
               )}
               {!isFetching &&
                 (eventsData?.data?.length > 0 ? (
-                  <EventList data={eventsData} pageNumber={pageNumber} setPageNumber={setPageNumber} />
+                  <EventList
+                    data={eventsData}
+                    pageNumber={pageNumber}
+                    setPageNumber={setPageNumber}
+                    calendarContentLanguage={calendarContentLanguage}
+                  />
                 ) : (
                   <NoContent style={{ height: '200px' }} />
                 ))}

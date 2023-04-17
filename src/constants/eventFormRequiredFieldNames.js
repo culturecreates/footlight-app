@@ -11,4 +11,5 @@ export const eventFormRequiredFieldNames = {
   AUDIENCE: 'AUDIENCE',
   LOCATION: 'LOCATION',
   IMAGE: 'IMAGE',
+  FEATURED: 'FEATURED',
 };

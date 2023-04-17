@@ -4,6 +4,7 @@ import { Form, Button } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import StyledInput from '../Input/Common';
+import StyledNumberInput from '../Input/Number/StyledNumber';
 
 function TicketPrice(props) {
   const { fields, add, remove, firstFieldName, secondFieldName } = props;
@@ -43,7 +44,8 @@ function TicketPrice(props) {
                 //   },
                 // ]}
               >
-                <StyledInput
+                <StyledNumberInput
+                  controls={false}
                   style={{ borderWidth: '0px' }}
                   addonAfter={t('dashboard.events.addEditEvent.tickets.CAD')}
                 />
@@ -61,27 +63,34 @@ function TicketPrice(props) {
             </td>
           </tr>
         ))}
-        <Form.Item>
-          <Button
-            type="text"
-            size="small"
-            style={{ color: '#1B3DE6', display: 'flex', gap: '8px' }}
-            onClick={() => add()}
-            icon={
+        <tr>
+          <td>
+            <Form.Item>
               <Button
-                shape="default"
+                type="text"
                 size="small"
-                style={{
-                  backgroundColor: '#EFF2FF',
-                  borderRadius: '4px',
-                  border: '0px',
-                }}>
-                <PlusOutlined style={{ color: '#1B3DE6' }} />
+                style={{ color: '#1B3DE6', display: 'flex', gap: '8px' }}
+                onClick={() => add()}
+                icon={
+                  <div
+                    style={{
+                      backgroundColor: '#EFF2FF',
+                      borderRadius: '4px',
+                      border: '0px',
+                      height: '24px',
+                      width: '24px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    <PlusOutlined style={{ color: '#1B3DE6' }} />
+                  </div>
+                }>
+                {t('dashboard.events.addEditEvent.tickets.anotherTicketType')}
               </Button>
-            }>
-            {t('dashboard.events.addEditEvent.tickets.anotherTicketType')}
-          </Button>
-        </Form.Item>
+            </Form.Item>
+          </td>
+        </tr>
       </tbody>
     </table>
   );

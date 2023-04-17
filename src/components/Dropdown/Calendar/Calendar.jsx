@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { setSelectedCalendar } from '../../../redux/reducer/selectedCalendarSlice';
 import { useNavigate } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
-import { bilingual } from '../../../utils/bilingual';
+import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 
@@ -21,10 +21,11 @@ function Calendar({ children, allCalendarsData }) {
       label: (
         <span className="calendar-name-wrapper">
           <span className="calendar-name">
-            {bilingual({
+            {contentLanguageBilingual({
               en: item?.name?.en,
               fr: item?.name?.fr,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+              calendarContentLanguage: item?.contentLanguage,
             })}
           </span>
         </span>

@@ -1,0 +1,10 @@
+.ant-switch-checked {
+  background-color: #607efc;
+}
+
+.ant-switch-handle::before {
+  border: 1px solid #646d7b;
+}
+.ant-switch-handle::after {
+  border: 1px solid #1b3de6;
+}
