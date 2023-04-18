@@ -37,6 +37,7 @@ import { pluralize } from '../../../utils/pluralise';
 import i18n from 'i18next';
 import { userRoles } from '../../../constants/userRoles';
 import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequiredFieldNames';
+import { contentLanguage } from '../../../constants/contentLanguage';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -179,14 +180,18 @@ function EventReadOnly() {
                     </p>
                     {eventData?.name?.fr && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        {calendarContentLanguage === contentLanguage.BILINGUAL && (
+                          <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        )}
                         <p className="read-only-event-content">{eventData?.name?.fr}</p>
                       </>
                     )}
 
                     {eventData?.name?.en && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        {calendarContentLanguage === contentLanguage.BILINGUAL && (
+                          <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        )}
                         <p className="read-only-event-content">{eventData?.name?.en}</p>
                       </>
                     )}
@@ -500,13 +505,17 @@ function EventReadOnly() {
 
                     {initialVirtualLocation[0] && initialVirtualLocation[0]?.name.fr && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        {calendarContentLanguage === contentLanguage.BILINGUAL && (
+                          <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        )}
                         <p className="read-only-event-content">{initialVirtualLocation[0]?.name.fr}</p>
                       </>
                     )}
                     {initialVirtualLocation[0] && initialVirtualLocation[0]?.name.en && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        {calendarContentLanguage === contentLanguage.BILINGUAL && (
+                          <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        )}
                         <p className="read-only-event-content">{initialVirtualLocation[0]?.name.en}</p>
                       </>
                     )}
@@ -558,13 +567,17 @@ function EventReadOnly() {
                     )}
                     {eventData?.description?.fr && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        {calendarContentLanguage === contentLanguage.BILINGUAL && (
+                          <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        )}
                         <div dangerouslySetInnerHTML={{ __html: eventData?.description?.fr }} />
                       </>
                     )}
                     {eventData?.description?.en && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        {calendarContentLanguage === contentLanguage.BILINGUAL && (
+                          <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        )}
                         <div dangerouslySetInnerHTML={{ __html: eventData?.description?.en }} />
                       </>
                     )}
@@ -923,13 +936,17 @@ function EventReadOnly() {
                     )}
                     {eventData?.accessibilityNote?.fr && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        {calendarContentLanguage === contentLanguage.BILINGUAL && (
+                          <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        )}
                         <p className="read-only-event-content">{eventData?.accessibilityNote?.fr}</p>
                       </>
                     )}
                     {eventData?.accessibilityNote?.en && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        {calendarContentLanguage === contentLanguage.BILINGUAL && (
+                          <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        )}
                         <p className="read-only-event-content">{eventData?.accessibilityNote?.en}</p>
                       </>
                     )}
@@ -1033,13 +1050,17 @@ function EventReadOnly() {
                     )}
                     {eventData?.offerConfiguration?.name?.fr && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        {calendarContentLanguage === contentLanguage.BILINGUAL && (
+                          <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        )}
                         <p className="read-only-event-content">{eventData?.offerConfiguration?.name?.fr}</p>
                       </>
                     )}
                     {eventData?.offerConfiguration?.name?.en && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        {calendarContentLanguage === contentLanguage.BILINGUAL && (
+                          <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        )}
                         <p className="read-only-event-content">{eventData?.offerConfiguration?.name?.en}</p>
                       </>
                     )}
