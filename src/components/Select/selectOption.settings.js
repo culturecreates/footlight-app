@@ -1,8 +1,8 @@
-import { bilingual } from '../../utils/bilingual';
+import { contentLanguageBilingual } from '../../utils/bilingual';
 import SelectionItem from '../List/SelectionItem';
 import { EnvironmentOutlined } from '@ant-design/icons';
 
-export const taxonomyOptions = (data, user, mappedToField) => {
+export const taxonomyOptions = (data, user, mappedToField, calendarContentLanguage) => {
   let fieldData = data?.data?.filter((taxonomy) => taxonomy?.mappedToField === mappedToField);
   let concepts = fieldData?.map((field) => {
     return field?.concept;
@@ -10,10 +10,11 @@ export const taxonomyOptions = (data, user, mappedToField) => {
 
   let options = concepts[0]?.map((concept) => {
     return {
-      label: bilingual({
+      label: contentLanguageBilingual({
         en: concept?.name?.en,
         fr: concept?.name?.fr,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+        calendarContentLanguage: calendarContentLanguage,
       }),
       value: concept?.id,
     };
@@ -21,35 +22,39 @@ export const taxonomyOptions = (data, user, mappedToField) => {
   return options;
 };
 
-export const placesOptions = (data, user) => {
+export const placesOptions = (data, user, calendarContentLanguage) => {
   let options = data?.map((place) => {
     return {
       label: (
         <SelectionItem
           itemWidth="100%"
           icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
-          name={bilingual({
+          name={contentLanguageBilingual({
             en: place?.name?.en,
             fr: place?.name?.fr,
             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+            calendarContentLanguage: calendarContentLanguage,
           })}
-          description={bilingual({
+          description={contentLanguageBilingual({
             en: place?.disambiguatingDescription?.en,
             fr: place?.disambiguatingDescription?.fr,
             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+            calendarContentLanguage: calendarContentLanguage,
           })}
         />
       ),
       value: place?.id,
-      name: bilingual({
+      name: contentLanguageBilingual({
         en: place?.name?.en,
         fr: place?.name?.fr,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+        calendarContentLanguage: calendarContentLanguage,
       }),
-      description: bilingual({
+      description: contentLanguageBilingual({
         en: place?.disambiguatingDescription?.en,
         fr: place?.disambiguatingDescription?.fr,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+        calendarContentLanguage: calendarContentLanguage,
       }),
       key: place?.id,
     };

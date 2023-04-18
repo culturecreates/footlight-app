@@ -1,16 +1,17 @@
-import { bilingual } from '../../utils/bilingual';
+import { contentLanguageBilingual } from '../../utils/bilingual';
 import SelectionItem from '../List/SelectionItem';
 import Icon, { UserOutlined } from '@ant-design/icons';
 import { ReactComponent as Organizations } from '../../assets/icons/organisations.svg';
 import { taxonomyClass } from '../../constants/taxonomyClass';
 
-const handleMultilevelTreeSelect = (children, user) => {
+const handleMultilevelTreeSelect = (children, user, calendarContentLanguage) => {
   return children?.map((child) => {
     return {
-      title: bilingual({
+      title: contentLanguageBilingual({
         en: child?.name?.en,
         fr: child?.name?.fr,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+        calendarContentLanguage: calendarContentLanguage,
       }),
       value: child?.id,
       ...(child?.children && {
@@ -19,7 +20,7 @@ const handleMultilevelTreeSelect = (children, user) => {
     };
   });
 };
-export const treeTaxonomyOptions = (data, user, mappedToField, isDynamicField) => {
+export const treeTaxonomyOptions = (data, user, mappedToField, isDynamicField, calendarContentLanguage) => {
   let fieldData = data?.data?.filter((taxonomy) => {
     if (taxonomy?.isDynamicField) {
       if (taxonomy?.isDynamicField == isDynamicField && taxonomy?.mappedToField === mappedToField) return true;
@@ -33,21 +34,22 @@ export const treeTaxonomyOptions = (data, user, mappedToField, isDynamicField) =
     concepts &&
     concepts[0]?.map((concept) => {
       return {
-        title: bilingual({
+        title: contentLanguageBilingual({
           en: concept?.name?.en,
           fr: concept?.name?.fr,
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+          calendarContentLanguage: calendarContentLanguage,
         }),
         value: concept?.id,
         ...(concept?.children && {
-          children: handleMultilevelTreeSelect(concept?.children, user),
+          children: handleMultilevelTreeSelect(concept?.children, user, calendarContentLanguage),
         }),
       };
     });
   return options;
 };
 
-export const treeEntitiesOption = (data, user) => {
+export const treeEntitiesOption = (data, user, calendarContentLanguage) => {
   let options = data?.map((entity) => {
     return {
       label: (
@@ -62,20 +64,22 @@ export const treeEntitiesOption = (data, user) => {
           }
           name={
             (entity?.name || entity?.name?.en || entity?.name?.fr) &&
-            bilingual({
+            contentLanguageBilingual({
               en: entity?.name?.en,
               fr: entity?.name?.fr,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+              calendarContentLanguage: calendarContentLanguage,
             })
           }
           description={
             (entity?.disambiguatingDescription ||
               entity?.disambiguatingDescription?.en ||
               entity?.disambiguatingDescription?.en) &&
-            bilingual({
+            contentLanguageBilingual({
               en: entity?.disambiguatingDescription?.en,
               fr: entity?.disambiguatingDescription?.fr,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+              calendarContentLanguage: calendarContentLanguage,
             })
           }
         />
@@ -84,34 +88,37 @@ export const treeEntitiesOption = (data, user) => {
       type: entity?.type,
       name:
         (entity?.name || entity?.name?.en || entity?.name?.fr) &&
-        bilingual({
+        contentLanguageBilingual({
           en: entity?.name?.en,
           fr: entity?.name?.fr,
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+          calendarContentLanguage: calendarContentLanguage,
         }),
       description:
         (entity?.disambiguatingDescription ||
           entity?.disambiguatingDescription?.en ||
           entity?.disambiguatingDescription?.en) &&
-        bilingual({
+        contentLanguageBilingual({
           en: entity?.disambiguatingDescription?.en,
           fr: entity?.disambiguatingDescription?.fr,
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+          calendarContentLanguage: calendarContentLanguage,
         }),
     };
   });
   return options;
 };
 
-export const treeDynamicTaxonomyOptions = (concepts, user) => {
+export const treeDynamicTaxonomyOptions = (concepts, user, calendarContentLanguage) => {
   let options =
     concepts &&
     concepts?.map((concept) => {
       return {
-        title: bilingual({
+        title: contentLanguageBilingual({
           en: concept?.name?.en,
           fr: concept?.name?.fr,
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+          calendarContentLanguage: calendarContentLanguage,
         }),
         value: concept?.id,
         ...(concept?.children && {

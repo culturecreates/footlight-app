@@ -8,7 +8,7 @@ import { useParams, useOutletContext } from 'react-router-dom';
 import { useGetEventQuery } from '../../../services/events';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
-import { bilingual } from '../../../utils/bilingual';
+import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import { eventStatusOptions } from '../../../constants/eventStatus';
 import { dateFrequencyOptions, dateTypes, daysOfWeek } from '../../../constants/dateTypes';
 import DateRangePicker from '../../../components/DateRangePicker';
@@ -83,6 +83,7 @@ function EventReadOnly() {
   requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
   let standardAdminOnlyFields = requiredFields?.adminOnlyFields?.standardFields;
   let dynamicAdminOnlyFields = requiredFields?.adminOnlyFields?.dynamicFields;
+  const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const adminCheckHandler = () => {
     if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
@@ -113,10 +114,11 @@ function EventReadOnly() {
                     {t('dashboard.sidebar.events')}
                   </Breadcrumb.Item>
                   <Breadcrumb.Item className="breadcrumb-item">
-                    {bilingual({
+                    {contentLanguageBilingual({
                       en: eventData?.name?.en,
                       fr: eventData?.name?.fr,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
                     })}
                   </Breadcrumb.Item>
                 </Breadcrumb>
@@ -207,7 +209,13 @@ function EventReadOnly() {
                         bordered={false}
                         open={false}
                         disabled
-                        treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType')}
+                        treeData={treeTaxonomyOptions(
+                          allTaxonomyData,
+                          user,
+                          'EventType',
+                          false,
+                          calendarContentLanguage,
+                        )}
                         defaultValue={eventData?.additionalType?.map((type) => {
                           return type?.entityId;
                         })}
@@ -236,7 +244,13 @@ function EventReadOnly() {
                         bordered={false}
                         open={false}
                         disabled
-                        treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience')}
+                        treeData={treeTaxonomyOptions(
+                          allTaxonomyData,
+                          user,
+                          'Audience',
+                          false,
+                          calendarContentLanguage,
+                        )}
                         defaultValue={eventData?.audience?.map((audience) => {
                           return audience?.entityId;
                         })}
@@ -281,7 +295,7 @@ function EventReadOnly() {
                               open={false}
                               disabled
                               defaultValue={initialValues}
-                              treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user)}
+                              treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
                               tagRender={(props) => {
                                 const { label } = props;
                                 return <Tags>{label}</Tags>;
@@ -472,7 +486,7 @@ function EventReadOnly() {
                           bordered={false}
                           showArrow={false}
                           defaultValue={initialPlace && initialPlace[0]?.id}
-                          options={placesOptions(allPlaces?.data, user)}
+                          options={placesOptions(allPlaces?.data, user, calendarContentLanguage)}
                         />
                       </div>
                     )}
@@ -582,7 +596,7 @@ function EventReadOnly() {
                         defaultValue={eventData?.organizer?.map((organizer) => organizer?.entityId)}
                         disabled={true}
                         bordered={false}
-                        treeData={treeEntitiesOption(initialEntities, user)}
+                        treeData={treeEntitiesOption(initialEntities, user, calendarContentLanguage)}
                         tagRender={(props) => {
                           const { value } = props;
                           let entity = initialEntities?.filter((entity) => entity?.id == value);
@@ -599,15 +613,17 @@ function EventReadOnly() {
                                     )
                                   )
                                 }
-                                name={bilingual({
+                                name={contentLanguageBilingual({
                                   en: entity[0]?.name?.en,
                                   fr: entity[0]?.name?.fr,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  calendarContentLanguage: calendarContentLanguage,
                                 })}
-                                description={bilingual({
+                                description={contentLanguageBilingual({
                                   en: entity[0]?.disambiguatingDescription?.en,
                                   fr: entity[0]?.disambiguatingDescription?.fr,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  calendarContentLanguage: calendarContentLanguage,
                                 })}
                                 bordered
                               />
@@ -685,7 +701,7 @@ function EventReadOnly() {
                         defaultValue={eventData?.performer?.map((performer) => performer?.entityId)}
                         disabled={true}
                         bordered={false}
-                        treeData={treeEntitiesOption(initialEntities, user)}
+                        treeData={treeEntitiesOption(initialEntities, user, calendarContentLanguage)}
                         tagRender={(props) => {
                           const { value } = props;
                           let entity = initialEntities?.filter((entity) => entity?.id == value);
@@ -702,15 +718,17 @@ function EventReadOnly() {
                                     )
                                   )
                                 }
-                                name={bilingual({
+                                name={contentLanguageBilingual({
                                   en: entity[0]?.name?.en,
                                   fr: entity[0]?.name?.fr,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  calendarContentLanguage: calendarContentLanguage,
                                 })}
-                                description={bilingual({
+                                description={contentLanguageBilingual({
                                   en: entity[0]?.disambiguatingDescription?.en,
                                   fr: entity[0]?.disambiguatingDescription?.fr,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  calendarContentLanguage: calendarContentLanguage,
                                 })}
                                 bordered
                               />
@@ -731,7 +749,7 @@ function EventReadOnly() {
                         defaultValue={eventData?.collaborators?.map((collaborator) => collaborator?.entityId)}
                         disabled={true}
                         bordered={false}
-                        treeData={treeEntitiesOption(initialEntities, user)}
+                        treeData={treeEntitiesOption(initialEntities, user, calendarContentLanguage)}
                         tagRender={(props) => {
                           const { value } = props;
                           let entity = initialEntities?.filter((entity) => entity?.id == value);
@@ -748,15 +766,17 @@ function EventReadOnly() {
                                     )
                                   )
                                 }
-                                name={bilingual({
+                                name={contentLanguageBilingual({
                                   en: entity[0]?.name?.en,
                                   fr: entity[0]?.name?.fr,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  calendarContentLanguage: calendarContentLanguage,
                                 })}
-                                description={bilingual({
+                                description={contentLanguageBilingual({
                                   en: entity[0]?.disambiguatingDescription?.en,
                                   fr: entity[0]?.disambiguatingDescription?.fr,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  calendarContentLanguage: calendarContentLanguage,
                                 })}
                                 bordered
                               />
@@ -836,7 +856,13 @@ function EventReadOnly() {
                         bordered={false}
                         open={false}
                         disabled
-                        treeData={treeTaxonomyOptions(allTaxonomyData, user, 'inLanguage')}
+                        treeData={treeTaxonomyOptions(
+                          allTaxonomyData,
+                          user,
+                          'inLanguage',
+                          false,
+                          calendarContentLanguage,
+                        )}
                         defaultValue={eventData?.inLanguage?.map((inLanguage) => {
                           return inLanguage?.entityId;
                         })}
@@ -872,7 +898,13 @@ function EventReadOnly() {
                           bordered={false}
                           open={false}
                           disabled
-                          treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventAccessibility')}
+                          treeData={treeTaxonomyOptions(
+                            allTaxonomyData,
+                            user,
+                            'EventAccessibility',
+                            false,
+                            calendarContentLanguage,
+                          )}
                           defaultValue={eventData?.accessibility?.map((accessibility) => {
                             return accessibility?.entityId;
                           })}
@@ -933,23 +965,25 @@ function EventReadOnly() {
                         </p>
                       </>
                     )}
-                    {eventData?.offerConfiguration?.url?.uri &&
-                      eventData?.offerConfiguration?.category === offerTypes.PAYING && (
-                        <>
-                          <p className="read-only-event-content-sub-title-primary">
-                            {t('dashboard.events.addEditEvent.tickets.buyTicketLink')}
-                          </p>
-                          <p>
-                            <a
-                              href={eventData?.offerConfiguration?.url?.uri}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="url-links">
-                              {eventData?.offerConfiguration?.url?.uri}
-                            </a>
-                          </p>
-                        </>
-                      )}
+                    {eventData?.offerConfiguration?.url?.uri && (
+                      <>
+                        <p className="read-only-event-content-sub-title-primary">
+                          {eventData?.offerConfiguration?.category === offerTypes.PAYING
+                            ? t('dashboard.events.addEditEvent.tickets.buyTicketLink')
+                            : eventData?.offerConfiguration?.category === offerTypes.REGISTER &&
+                              t('dashboard.events.addEditEvent.tickets.registerLink')}
+                        </p>
+                        <p>
+                          <a
+                            href={eventData?.offerConfiguration?.url?.uri}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="url-links">
+                            {eventData?.offerConfiguration?.url?.uri}
+                          </a>
+                        </p>
+                      </>
+                    )}
                     {eventData?.offerConfiguration?.category === offerTypes.PAYING &&
                       eventData?.offerConfiguration?.prices?.length > 0 && (
                         <table className="ticket-price-table">
@@ -979,10 +1013,11 @@ function EventReadOnly() {
                                 </td>
                                 <td>
                                   <p className="read-only-event-content">
-                                    {bilingual({
+                                    {contentLanguageBilingual({
                                       en: offer?.name?.en,
                                       fr: offer?.name?.fr,
                                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                      calendarContentLanguage: calendarContentLanguage,
                                     })}
                                   </p>
                                 </td>

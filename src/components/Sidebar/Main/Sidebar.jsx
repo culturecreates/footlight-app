@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import CalendarList from '../../Dropdown/Calendar';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
-import { bilingual } from '../../../utils/bilingual';
+import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 
@@ -21,6 +21,7 @@ function Sidebar(props) {
 
   const [collapsed, setCollapsed] = useState(false);
   const [calendarItem, setCalendarItem] = useState([]);
+  const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const items = sidebarItems.map((item, index) => {
     const key = String(index + 1);
@@ -55,10 +56,11 @@ function Sidebar(props) {
   };
 
   useEffect(() => {
-    const calendarLabel = bilingual({
+    const calendarLabel = contentLanguageBilingual({
       en: currentCalendarData?.name?.en,
       fr: currentCalendarData?.name?.fr,
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+      calendarContentLanguage: calendarContentLanguage,
     });
     setCalendarItem(selectedCalendar(currentCalendarData?.id, currentCalendarData?.image?.uri, calendarLabel));
   }, [currentCalendarData]);
