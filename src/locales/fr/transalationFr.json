@@ -277,7 +277,7 @@
           "changeToFree": "Changer pour gratuit",
           "changeToPaid": "Changer pour payant",
           "changeToRegister": "Changer pour inscription",
-          "changeToFreeTooltip": "À utiliser lorsque votre événement est gratuit.",
+          "changeToFreeTooltip": "À utiliser lorsque votre événement est gratuit et ne nécessite pas d'inscription.",
           "changeToPaidTooltip": "A utiliser lorsque l'événement est payant.",
           "changeToRegisterTooltip": "A utiliser lorsque l'événement nécessite l'inscription des participants.",
           "price": "Prix",
