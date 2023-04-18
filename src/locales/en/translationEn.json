@@ -261,6 +261,8 @@
         "eventAccessibility": {
           "title": "Event accessibility",
           "note": "Note",
+          "subHeading": "Select what makes the event (performance or exhibit) accessible. ",
+          "footer": "This option is event specific. Building accessibility is saved with the venue in Places. ",
           "placeHolderEventAccessibility": "Select event accessibility",
           "placeHolderEventAccessibilityFrenchNote": "Add supplementary accessibility information.",
           "placeHolderEventAccessibilityEnglishNote": "Add supplementary accessibility information.",
