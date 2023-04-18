@@ -69,7 +69,6 @@ import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../.
 import { usePrompt } from '../../../hooks/usePrompt';
 import { bilingual } from '../../../utils/bilingual';
 import RecurringEvents from '../../../components/RecurringEvents';
-import { pluralize } from '../../../utils/pluralise';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequiredFieldNames';
 import StyledSwitch from '../../../components/Switch/index';
@@ -697,17 +696,6 @@ function AddEvent() {
     setShowDialog(true);
   };
 
-  var enumerateDaysBetweenDates = (startDate, endDate) => {
-    var now = startDate.clone(),
-      dates = [];
-
-    while (now.isSameOrBefore(endDate)) {
-      dates.push(now.format('M/D/YYYY'));
-      now.add(1, 'days');
-    }
-    return dates;
-  };
-
   const adminCheckHandler = () => {
     if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
     else return false;
@@ -1262,102 +1250,43 @@ function AddEvent() {
                           </>
                         )}
                         {dateType === dateTypes.RANGE && (
-                          <>
-                            <Form.Item
-                              name="dateRangePicker"
-                              label={t('dashboard.events.addEditEvent.dates.dateRange')}
-                              initialValue={
-                                dateTimeTypeHandler(
-                                  eventData?.startDate,
-                                  eventData?.startDateTime,
-                                  eventData?.endDate,
-                                  eventData?.endDateTime,
-                                ) === dateTypes.RANGE
-                                  ? [
-                                      moment.tz(
-                                        eventData?.startDate ?? eventData?.startDateTime,
-                                        eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                                      ),
-                                      moment.tz(
-                                        eventData?.endDate ?? eventData?.endDateTime,
-                                        eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                                      ),
-                                    ]
-                                  : undefined
-                              }
-                              hidden={
-                                standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.START_DATE)
-                                  ? adminCheckHandler()
-                                    ? false
-                                    : true
-                                  : false
-                              }
-                              rules={[
-                                {
-                                  required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.START_DATE),
-                                  message: t('dashboard.events.addEditEvent.validations.date'),
-                                },
-                              ]}>
-                              <DateRangePicker
-                                style={{ width: '423px' }}
-                                suffixIcon={
-                                  formValue?.dateRangePicker?.length == 2 && (
-                                    <Tags
-                                      style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }}
-                                      color={'#DBF3FD'}>
-                                      {pluralize(
-                                        enumerateDaysBetweenDates(
-                                          formValue?.dateRangePicker[0],
-                                          formValue?.dateRangePicker[1],
-                                        )?.length,
-                                        t('dashboard.events.list.event'),
-                                      )}
-                                    </Tags>
-                                  )
-                                }
-                              />
-                            </Form.Item>
-                            <Row justify="space-between">
-                              <Col flex={'203.5px'}>
-                                <Form.Item
-                                  name="startTime"
-                                  label={t('dashboard.events.addEditEvent.dates.startTime')}
-                                  initialValue={
-                                    eventData?.startDateTime
-                                      ? moment.tz(
-                                          eventData?.startDateTime,
-                                          eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                                        )
-                                      : undefined
-                                  }>
-                                  <TimePickerStyled
-                                    placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
-                                    use12Hours={i18n?.language === 'en' ? true : false}
-                                    format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
-                                  />
-                                </Form.Item>
-                              </Col>
-                              <Col flex={'203.5px'}>
-                                <Form.Item
-                                  name="endTime"
-                                  label={t('dashboard.events.addEditEvent.dates.endTime')}
-                                  initialValue={
-                                    eventData?.endDateTime
-                                      ? moment.tz(
-                                          eventData?.endDateTime,
-                                          eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                                        )
-                                      : undefined
-                                  }>
-                                  <TimePickerStyled
-                                    placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
-                                    use12Hours={i18n?.language === 'en' ? true : false}
-                                    format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
-                                  />
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                          </>
+                          <Form.Item
+                            name="dateRangePicker"
+                            label={t('dashboard.events.addEditEvent.dates.dateRange')}
+                            initialValue={
+                              dateTimeTypeHandler(
+                                eventData?.startDate,
+                                eventData?.startDateTime,
+                                eventData?.endDate,
+                                eventData?.endDateTime,
+                              ) === dateTypes.RANGE
+                                ? [
+                                    moment.tz(
+                                      eventData?.startDate ?? eventData?.startDateTime,
+                                      eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                    ),
+                                    moment.tz(
+                                      eventData?.endDate ?? eventData?.endDateTime,
+                                      eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                    ),
+                                  ]
+                                : undefined
+                            }
+                            hidden={
+                              standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.START_DATE)
+                                ? adminCheckHandler()
+                                  ? false
+                                  : true
+                                : false
+                            }
+                            rules={[
+                              {
+                                required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.START_DATE),
+                                message: t('dashboard.events.addEditEvent.validations.date'),
+                              },
+                            ]}>
+                            <DateRangePicker style={{ width: '423px' }} />
+                          </Form.Item>
                         )}
                         {dateType === dateTypes.MULTIPLE && (
                           <>
