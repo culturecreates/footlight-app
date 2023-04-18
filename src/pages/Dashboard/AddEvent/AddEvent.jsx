@@ -2285,13 +2285,21 @@ function AddEvent() {
             </CardEvent>
             <CardEvent title={t('dashboard.events.addEditEvent.eventAccessibility.title')}>
               <>
+                <p className="add-event-date-heading">
+                  {t('dashboard.events.addEditEvent.eventAccessibility.subHeading')}
+                </p>
                 <Form.Item
                   name="eventAccessibility"
                   className="eventAccessibility"
                   label={taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false)}
                   initialValue={eventData?.accessibility?.map((type) => {
                     return type?.entityId;
-                  })}>
+                  })}
+                  help={
+                    <p className="add-event-date-heading" style={{ fontSize: '12px' }}>
+                      {t('dashboard.events.addEditEvent.eventAccessibility.footer')}
+                    </p>
+                  }>
                   <TreeSelectOption
                     allowClear
                     treeDefaultExpandAll

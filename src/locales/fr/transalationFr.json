@@ -259,6 +259,8 @@
         "eventAccessibility": {
           "title": "Accessibilité de l’événement",
           "note": "Note",
+          "subHeading": "Sélectionnez ce qui rend l'événement (spectacle ou exposition) accessible.",
+          "footer": "Cette option est spécifique à l'événement. L'accessibilité du lieu est enregistrée avec le lieu dans Lieux.",
           "placeHolderEventAccessibility": "Sélectionnez accessibilité de l’événement",
           "placeHolderEventAccessibilityFrenchNote": "Ajouter des informations supplémentaires sur l'accessibilité",
           "placeHolderEventAccessibilityEnglishNote": "Ajouter des informations supplémentaires sur l'accessibilité",
