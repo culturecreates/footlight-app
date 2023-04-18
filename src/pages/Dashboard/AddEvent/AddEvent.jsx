@@ -2610,6 +2610,7 @@ function AddEvent() {
                                     getFieldValue('prices')[0] != undefined &&
                                     getFieldValue('prices')[0].price != '') ||
                                   getFieldValue('ticketLink') ||
+                                  getFieldValue('registerLink') ||
                                   (ticketType == offerTypes.PAYING || ticketType == offerTypes.REGISTER
                                     ? getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')
                                     : true)
@@ -2652,6 +2653,7 @@ function AddEvent() {
                                     getFieldValue('prices')[0] != undefined &&
                                     getFieldValue('prices')[0].price != '') ||
                                   getFieldValue('ticketLink') ||
+                                  getFieldValue('registerLink') ||
                                   (ticketType == offerTypes.PAYING || ticketType == offerTypes.REGISTER
                                     ? getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')
                                     : true)
