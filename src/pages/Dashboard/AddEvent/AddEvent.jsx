@@ -9,6 +9,7 @@ import {
   ExclamationCircleOutlined,
   PlusOutlined,
   EditOutlined,
+  SnippetsOutlined,
 } from '@ant-design/icons';
 import moment from 'moment-timezone';
 import i18n from 'i18next';
@@ -714,6 +715,8 @@ function AddEvent() {
       </Col>
     </Row>
   );
+
+  const copyOrganizerContactHandler = () => {};
   useEffect(() => {
     if (isError) navigate(`${PathName.NotFound}`);
   }, [isError]);
@@ -1833,6 +1836,15 @@ function AddEvent() {
                   style={{
                     display: !addedFields?.includes(otherInformationFieldNames.contact) && 'none',
                   }}>
+                  {selectedOrganizers?.length >= 0 && (
+                    <Outlined
+                      icon={<SnippetsOutlined style={{ color: '#1B3DE6', fontSize: '20px' }} />}
+                      size="large"
+                      label={t('dashboard.events.addEditEvent.otherInformation.contact.copyOrganizerContact')}
+                      onClick={copyOrganizerContactHandler}
+                    />
+                  )}
+
                   <Form.Item
                     label={t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}
                     className="subheading-wrap">
