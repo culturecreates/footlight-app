@@ -38,6 +38,7 @@ import i18n from 'i18next';
 import { userRoles } from '../../../constants/userRoles';
 import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequiredFieldNames';
 import { contentLanguage } from '../../../constants/contentLanguage';
+import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -207,7 +208,7 @@ function EventReadOnly() {
                       }}>
                       <br />
                       <p className="read-only-event-content-sub-title-primary">
-                        {t('dashboard.events.addEditEvent.language.eventType')}
+                        {taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false)}
                       </p>
                       <TreeSelectOption
                         style={{ marginBottom: '1rem' }}
@@ -242,7 +243,7 @@ function EventReadOnly() {
                           : 'initial',
                       }}>
                       <p className="read-only-event-content-sub-title-primary">
-                        {t('dashboard.events.addEditEvent.language.targetAudience')}
+                        {taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false)}
                       </p>
                       <TreeSelectOption
                         style={{ marginBottom: '1rem' }}
@@ -862,7 +863,7 @@ function EventReadOnly() {
                   {eventData?.inLanguage.length > 0 && (
                     <>
                       <p className="read-only-event-content-sub-title-primary">
-                        {t('dashboard.events.addEditEvent.otherInformation.eventLanguage')}
+                        {taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name', false)}
                       </p>
                       <TreeSelectOption
                         style={{ marginBottom: '1rem' }}
@@ -904,7 +905,7 @@ function EventReadOnly() {
                     {eventData?.accessibility.length > 0 && (
                       <>
                         <p className="read-only-event-content-sub-title-primary">
-                          {t('dashboard.events.addEditEvent.eventAccessibility.title')}
+                          {taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false)}
                         </p>
                         <TreeSelectOption
                           style={{ marginBottom: '1rem' }}
