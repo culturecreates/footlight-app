@@ -257,11 +257,12 @@
           "eventLanguageTooltip": "Sélectionnez le français, l'anglais ou le bilingue."
         },
         "eventAccessibility": {
-          "title": "Accessibilité de l’événement",
+          "title": "Accessibilité",
           "note": "Note",
+          "label": "Fonctionnalité d'accessibilité",
           "subHeading": "Sélectionnez ce qui rend l'événement (spectacle ou exposition) accessible.",
           "footer": "Cette option est spécifique à l'événement. L'accessibilité du lieu est enregistrée avec le lieu dans Lieux.",
-          "placeHolderEventAccessibility": "Sélectionnez accessibilité de l’événement",
+          "placeHolderEventAccessibility": "Sélectionnez la fonctionnalité d'accessibilité",
           "placeHolderEventAccessibilityFrenchNote": "Ajouter des informations supplémentaires sur l'accessibilité",
           "placeHolderEventAccessibilityEnglishNote": "Ajouter des informations supplémentaires sur l'accessibilité",
           "noteTooltip": "Fournir plus de détails sur les options d'accessibilité sélectionnées, telles que les dates."
