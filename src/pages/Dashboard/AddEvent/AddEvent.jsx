@@ -716,7 +716,21 @@ function AddEvent() {
     </Row>
   );
 
-  const copyOrganizerContactHandler = () => {};
+  const copyOrganizerContactHandler = () => {
+    if (selectedOrganizers?.length > 0) {
+      if (selectedOrganizers[0]?.contact) {
+        const { contact } = selectedOrganizers[0];
+        const { email, name, telephone, url } = contact;
+        form.setFieldsValue({
+          frenchContactTitle: name?.fr,
+          englishContactTitle: name?.en,
+          contactWebsiteUrl: url?.uri,
+          contactPhoneNumber: telephone,
+          contactEmail: email,
+        });
+      }
+    }
+  };
   useEffect(() => {
     if (isError) navigate(`${PathName.NotFound}`);
   }, [isError]);
@@ -1836,7 +1850,7 @@ function AddEvent() {
                   style={{
                     display: !addedFields?.includes(otherInformationFieldNames.contact) && 'none',
                   }}>
-                  {selectedOrganizers?.length >= 0 && (
+                  {selectedOrganizers?.length > 0 && selectedOrganizers[0]?.contact && (
                     <Outlined
                       icon={<SnippetsOutlined style={{ color: '#1B3DE6', fontSize: '20px' }} />}
                       size="large"
