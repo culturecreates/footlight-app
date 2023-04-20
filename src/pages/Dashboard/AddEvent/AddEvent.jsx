@@ -372,10 +372,12 @@ function AddEvent() {
           if (ticketType) {
             offerConfiguration = {
               category: ticketType,
-              name: {
-                en: values?.englishTicketNote,
-                fr: values?.frenchTicketNote,
-              },
+              ...((values?.englishTicketNote || values?.frenchTicketNote) && {
+                name: {
+                  en: values?.englishTicketNote,
+                  fr: values?.frenchTicketNote,
+                },
+              }),
               ...(ticketType === offerTypes.PAYING &&
                 values?.prices?.length > 0 &&
                 values?.prices[0] && {
