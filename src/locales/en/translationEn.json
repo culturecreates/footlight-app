@@ -206,7 +206,7 @@
           },
           "image": {
             "title": "Image",
-            "subHeading": "Only JPEG and PNG files are supported.",
+            "subHeading": " Images should be landscape or square and at least 600px wide. Only JPEG and PNG files are supported.",
             "dragAndDrop": "or drag and drop to upload",
             "browse": "Browse"
           },
@@ -252,16 +252,20 @@
             "placeHolderWebsite": "Enter web address URL",
             "placeHolderPhoneNumber": "Enter phone number",
             "placeHolderEmail": "Enter email address",
-            "contactTooltip": "Add a contact for your event. You can create one or copy the contact information of the Organizer."
+            "contactTooltip": "Add a contact for your event. You can create one or copy the contact information of the Organizer.",
+            "copyOrganizerContact": "Copy organizer contact"
           },
           "eventLanguage": "Event language",
           "eventLanguagePlaceholder": "Select language of event",
           "eventLanguageTooltip": "Select French, English or Bilingual."
         },
         "eventAccessibility": {
-          "title": "Event accessibility",
+          "title": "Accessibility",
           "note": "Note",
-          "placeHolderEventAccessibility": "Select event accessibility",
+          "label": "Accessibility feature",
+          "subHeading": "Select what makes the event (performance or exhibit) accessible. ",
+          "footer": "This option is event specific. Building accessibility is saved with the venue in Places. ",
+          "placeHolderEventAccessibility": "Select accessibility feature",
           "placeHolderEventAccessibilityFrenchNote": "Add supplementary accessibility information.",
           "placeHolderEventAccessibilityEnglishNote": "Add supplementary accessibility information.",
           "noteTooltip": "Provide more detail about selected accessiblity options, such as date information."
@@ -279,7 +283,7 @@
           "changeToFree": "Change to free",
           "changeToPaid": "Change to paid",
           "changeToRegister": "Change to register",
-          "changeToFreeTooltip": "Use when your event is free of charge.",
+          "changeToFreeTooltip": "Use when your event is free of charge and does not require registration.",
           "changeToPaidTooltip": "Use when event is ticketed.",
           "changeToRegisterTooltip": "Use when event requires attendee sign up.",
           "price": "Price",

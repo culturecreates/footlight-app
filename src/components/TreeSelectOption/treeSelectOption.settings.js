@@ -104,6 +104,7 @@ export const treeEntitiesOption = (data, user, calendarContentLanguage) => {
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         }),
+      contact: entity?.contactPoint,
     };
   });
   return options;

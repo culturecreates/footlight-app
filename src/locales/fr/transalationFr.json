@@ -205,7 +205,7 @@
           },
           "image": {
             "title": "Image",
-            "subHeading": "Uniquement les fichiers .jpeg et .png sont acceptés.",
+            "subHeading": "Les images doivent être au format paysage ou carré et mesurer au moins 600 px de large. Uniquement les fichiers .jpeg et .png sont acceptés.",
             "dragAndDrop": "ou glisser pour télécharger",
             "browse": "Parcourir"
           },
@@ -250,16 +250,20 @@
             "placeHolderWebsite": "Entrez l'adresse web URL",
             "placeHolderPhoneNumber": "Entrez le numéro de téléphone",
             "placeHolderEmail": "Entrez l’adresse courriel",
-            "contactTooltip": "Ajoutez un contact pour votre événement. Vous pouvez en créer un ou copier les coordonnées de l'Organisateur."
+            "contactTooltip": "Ajoutez un contact pour votre événement. Vous pouvez en créer un ou copier les coordonnées de l'Organisateur.",
+            "copyOrganizerContact": "Copier le contact de l’organisateur"
           },
           "eventLanguage": "Langue de l'événement",
           "eventLanguagePlaceholder": "Sélectionnez la langue de l'événement",
           "eventLanguageTooltip": "Sélectionnez le français, l'anglais ou le bilingue."
         },
         "eventAccessibility": {
-          "title": "Accessibilité de l’événement",
+          "title": "Accessibilité",
           "note": "Note",
-          "placeHolderEventAccessibility": "Sélectionnez accessibilité de l’événement",
+          "label": "Fonctionnalité d'accessibilité",
+          "subHeading": "Sélectionnez ce qui rend l'événement (spectacle ou exposition) accessible.",
+          "footer": "Cette option est spécifique à l'événement. L'accessibilité du lieu est enregistrée avec le lieu dans Lieux.",
+          "placeHolderEventAccessibility": "Sélectionnez la fonctionnalité d'accessibilité",
           "placeHolderEventAccessibilityFrenchNote": "Ajouter des informations supplémentaires sur l'accessibilité",
           "placeHolderEventAccessibilityEnglishNote": "Ajouter des informations supplémentaires sur l'accessibilité",
           "noteTooltip": "Fournir plus de détails sur les options d'accessibilité sélectionnées, telles que les dates."
@@ -277,7 +281,7 @@
           "changeToFree": "Changer pour gratuit",
           "changeToPaid": "Changer pour payant",
           "changeToRegister": "Changer pour inscription",
-          "changeToFreeTooltip": "À utiliser lorsque votre événement est gratuit.",
+          "changeToFreeTooltip": "À utiliser lorsque votre événement est gratuit et ne nécessite pas d'inscription.",
           "changeToPaidTooltip": "A utiliser lorsque l'événement est payant.",
           "changeToRegisterTooltip": "A utiliser lorsque l'événement nécessite l'inscription des participants.",
           "price": "Prix",
