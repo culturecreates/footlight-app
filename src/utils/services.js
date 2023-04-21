@@ -15,6 +15,15 @@ const baseQuery = fetchBaseQuery({
 
 export const baseQueryWithReauth = async (args, api, extraOptions) => {
   const result = await baseQuery(args, api, extraOptions);
+  if (result.error && result.error.status === 400) {
+    //HTTP 400 Bad Request
+    //The server cannot or will not process the request due to something that is perceived to be a client error.
+    notification.info({
+      message: <Translation>{(t) => t('common.server.status.400.message')}</Translation>,
+      placement: 'top',
+      description: result.error?.data?.message,
+    });
+  }
   if (result.error && result.error.status === 401) {
     // HTTP 401 Unauthorized response status code
     // indicates that the client request has not been completed because it lacks valid authentication credentials for the requested resource.
