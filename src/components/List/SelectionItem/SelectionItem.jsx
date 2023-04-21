@@ -2,9 +2,12 @@ import React from 'react';
 import './selectionItem.css';
 import { Avatar, List, Button, Row, Col } from 'antd';
 import { CloseCircleOutlined, LinkOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 function SelectionItem(props) {
   const { icon, name, description, bordered, closable, onClose, itemWidth, address, accessibility } = props;
+  const { t } = useTranslation();
+
   return (
     <div
       className="selection-item-wrapper"
@@ -36,41 +39,49 @@ function SelectionItem(props) {
       </List.Item>
       {(address || accessibility) && (
         <Row gutter={[28, 0]} align="top">
-          <Col flex="190px">
-            <Row>
-              <Col>
-                <span className="selection-item-sub-title">Adresse postale</span>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <span className="selection-item-sub-content">1234 rue street, Montréal, QC H2X 1Y9</span>
-              </Col>
-            </Row>
-          </Col>
-          <Col flex="150px">
-            <Row>
-              <Col>
-                <span className="selection-item-sub-title">Accessibilité du lieu</span>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <span className="selection-item-sub-content">Ascenseur, lorem</span>
-                <p>
-                  <a
-                    href={'#'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="selection-item-sub-content"
-                    style={{ color: '#0F0E98' }}>
-                    <span className="open-hour-url-link">hia</span>&nbsp;
-                    <LinkOutlined />
-                  </a>
-                </p>
-              </Col>
-            </Row>
-          </Col>
+          {address && (
+            <Col flex="190px">
+              <Row>
+                <Col>
+                  <span className="selection-item-sub-title">
+                    {t('dashboard.events.addEditEvent.location.streetAddress')}
+                  </span>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <span className="selection-item-sub-content">1234 rue street, Montréal, QC H2X 1Y9</span>
+                </Col>
+              </Row>
+            </Col>
+          )}
+          {accessibility && (
+            <Col flex="150px">
+              <Row>
+                <Col>
+                  <span className="selection-item-sub-title">
+                    {t('dashboard.events.addEditEvent.location.venueAccessibility')}
+                  </span>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <span className="selection-item-sub-content">Ascenseur, lorem</span>
+                  <p>
+                    <a
+                      href={'#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="selection-item-sub-content"
+                      style={{ color: '#0F0E98' }}>
+                      <span className="open-hour-url-link">hia</span>&nbsp;
+                      <LinkOutlined />
+                    </a>
+                  </p>
+                </Col>
+              </Row>
+            </Col>
+          )}
         </Row>
       )}
     </div>

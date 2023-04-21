@@ -191,7 +191,9 @@
           "placeHolderVirtualLocationEn": "Entrez le texte anglais à afficher",
           "placeHolderVirtualLocationFr": "Entrez le texte français à afficher",
           "onlineLink": "Lien pour l'événement en ligne",
-          "placeHolderOnlineLink": "Entrez l'adresse web URL"
+          "placeHolderOnlineLink": "Entrez l'adresse web URL",
+          "streetAddress": "Adresse postale",
+          "venueAccessibility": "Accessibilité du lieu"
         },
         "otherInformation": {
           "title": "Autres informations",
