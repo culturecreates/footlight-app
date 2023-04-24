@@ -29,7 +29,7 @@ function Events() {
   let [searchParams, setSearchParams] = useSearchParams();
   const timestampRef = useRef(Date.now()).current;
   const { user } = useSelector(getUserDetails);
-  const [currentCalendarData] = useOutletContext();
+  const [currentCalendarData, pageNumber, setPageNumber] = useOutletContext();
 
   const [getEvents, { currentData: eventsData, isLoading, isFetching }] = useLazyGetEventsQuery();
   const { currentData: allUsersData, isLoading: allUsersLoading } = useGetAllUsersQuery({
@@ -38,7 +38,6 @@ function Events() {
     includeCalendarFilter: true,
     sessionId: timestampRef,
   });
-  const [pageNumber, setPageNumber] = useState(searchParams.get('page') ?? 1);
   const [eventSearchQuery, setEventSearchQuery] = useState(searchParams.get('query') ?? '');
   const [filter, setFilter] = useState({
     publication: [],
@@ -112,7 +111,7 @@ function Events() {
   }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter]);
 
   useEffect(() => {
-    if (calendarId) setPageNumber(1);
+    // if (calendarId) setPageNumber(1);
   }, [calendarId]);
 
   const onSearchHandler = (event) => {

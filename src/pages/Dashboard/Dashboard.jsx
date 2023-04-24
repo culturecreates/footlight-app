@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './dashboard.css';
 import { Layout } from 'antd';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import NavigationBar from '../../components/NavigationBar/Dashboard';
 import Sidebar from '../../components/Sidebar/Main';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -28,6 +28,9 @@ function Dashboard() {
   );
 
   let { calendarId } = useParams();
+  let [searchParams] = useSearchParams();
+
+  const [pageNumber, setPageNumber] = useState(searchParams.get('page') ?? 1);
 
   useEffect(() => {
     if (!accessToken && accessToken === '') navigate(PathName.Login);
@@ -52,7 +55,12 @@ function Dashboard() {
         <NavigationBar currentCalendarData={currentCalendarData} allCalendarsData={allCalendarsData} />
       </Header>
       <Layout>
-        <Sidebar currentCalendarData={currentCalendarData} allCalendarsData={allCalendarsData} />
+        <Sidebar
+          currentCalendarData={currentCalendarData}
+          allCalendarsData={allCalendarsData}
+          pageNumber={pageNumber}
+          setPageNumber={setPageNumber}
+        />
         <Layout
           style={{
             background: '#ffffff',
@@ -66,7 +74,7 @@ function Dashboard() {
               overflowY: 'scroll',
               background: '#F9FAFF',
             }}>
-            <Outlet context={[currentCalendarData]} />
+            <Outlet context={[currentCalendarData, pageNumber, setPageNumber]} />
           </Content>
         </Layout>
       </Layout>
