@@ -21,6 +21,7 @@ import DateRangePicker from '../../../components/DateRangePicker';
 import moment from 'moment';
 import NoContent from '../../../components/NoContent/NoContent';
 import LoadingIndicator from '../../../components/LoadingIndicator/index';
+import { urlArrayHandler } from '../../../utils/urlArrayHandler';
 
 function Events() {
   const { t } = useTranslation();
@@ -39,22 +40,36 @@ function Events() {
     sessionId: timestampRef,
   });
   const [eventSearchQuery, setEventSearchQuery] = useState(searchParams.get('query') ?? '');
+
+  const urlArrayDecoder = (type, string) => {
+    let url = decodeURIComponent(string);
+    url = url?.split(':');
+    let index = url?.findIndex((element) => element === type);
+    if (url[index + 1] === '') return [];
+    else return url[index + 1]?.split(',');
+  };
+
   const [filter, setFilter] = useState({
-    publication: [],
+    publication: searchParams.get('f') ? urlArrayDecoder(filterTypes.PUBLICATION, searchParams.get('f')) : [],
     sort: searchParams.get('sortBy') ?? sortByOptions[2]?.key,
     order: searchParams.get('order') ?? sortOrder?.ASC,
     dates: [],
   });
-  const [userFilter, setUserFilter] = useState([]);
+  const [userFilter, setUserFilter] = useState(
+    searchParams.get('f') ? urlArrayDecoder(filterTypes.USERS, searchParams.get('f')) : [],
+  );
+  let initialSelectedUsers = {};
+  for (let index = 0; index < userFilter?.length; index++) {
+    Object.assign(initialSelectedUsers, { [userFilter[index]]: true });
+  }
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [selectedUsers, setSelectedUsers] = useState({});
+  const [selectedUsers, setSelectedUsers] = useState(initialSelectedUsers ?? {});
   const [selectedDates, setSelectedDates] = useState([]);
 
   let userFilterData = allUsersData?.data?.active?.slice()?.sort(function (x, y) {
     return x?.id == user?.id ? -1 : y?.id == user?.id ? 1 : 0;
   });
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-
   userFilterData = userFilterData
     ?.slice(1)
     ?.sort((a, b) => a?.firstName?.toLowerCase()?.localeCompare(b?.firstName?.toLowerCase()));
@@ -62,8 +77,15 @@ function Events() {
   useEffect(() => {
     let query = new URLSearchParams();
     let sortQuery = new URLSearchParams();
+    let filtersQuery;
+
     userFilter?.forEach((user) => query.append('user', user));
     filter?.publication?.forEach((state) => query.append('publish-state', state));
+
+    filtersQuery =
+      urlArrayHandler(filterTypes.USERS, userFilter) + urlArrayHandler(filterTypes.PUBLICATION, filter.publication);
+    filtersQuery = encodeURIComponent(filtersQuery);
+
     sortQuery.append(
       'sort',
       encodeURIComponent(
@@ -102,10 +124,23 @@ function Events() {
       sessionId: timestampRef,
     });
     if (!eventSearchQuery || eventSearchQuery === '')
-      setSearchParams(createSearchParams({ page: pageNumber, order: filter?.order, sortBy: filter?.sort }));
+      setSearchParams(
+        createSearchParams({
+          page: pageNumber,
+          order: filter?.order,
+          sortBy: filter?.sort,
+          ...(filtersQuery && { f: filtersQuery }),
+        }),
+      );
     else {
       setSearchParams(
-        createSearchParams({ page: pageNumber, query: eventSearchQuery, order: filter?.order, sortBy: filter?.sort }),
+        createSearchParams({
+          page: pageNumber,
+          query: eventSearchQuery,
+          order: filter?.order,
+          sortBy: filter?.sort,
+          ...(filtersQuery && { f: filtersQuery }),
+        }),
       );
     }
   }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter]);
