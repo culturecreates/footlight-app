@@ -393,8 +393,12 @@
         "FETCH_ERROR": {
           "message": "Impossible de compléter la requête."
         },
+
         "403": {
           "message": "Non autorisé"
+        },
+        "400": {
+          "message": "Un problème s'est produit."
         }
       }
     }

@@ -396,6 +396,9 @@
         },
         "403": {
           "message": "Not Authorized"
+        },
+        "400": {
+          "message": "Something went wrong."
         }
       }
     }
