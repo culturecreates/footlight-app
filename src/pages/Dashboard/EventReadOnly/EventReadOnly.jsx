@@ -12,7 +12,7 @@ import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import { eventStatusOptions } from '../../../constants/eventStatus';
 import { dateFrequencyOptions, dateTypes, daysOfWeek } from '../../../constants/dateTypes';
 import DateRangePicker from '../../../components/DateRangePicker';
-import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
+import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import Tags from '../../../components/Tags/Common/Tags';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
@@ -26,7 +26,6 @@ import {
 import SelectOption from '../../../components/Select/SelectOption';
 import { offerTypes } from '../../../constants/ticketOffers';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
-import { useGetAllPlacesQuery } from '../../../services/places';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { useGetEntitiesQuery } from '../../../services/entities';
 import SelectionItem from '../../../components/List/SelectionItem';
@@ -56,10 +55,6 @@ function EventReadOnly() {
     taxonomyClass: taxonomyClass.EVENT,
     includeConcepts: true,
   });
-  const { currentData: allPlaces, isLoading: placesLoading } = useGetAllPlacesQuery({
-    calendarId,
-    sessionId: timestampRef,
-  });
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.organization);
@@ -71,9 +66,11 @@ function EventReadOnly() {
     classes: decodeURIComponent(query.toString()),
     sessionId: timestampRef,
   });
+  const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
 
   const { user } = useSelector(getUserDetails);
   const [dateType, setDateType] = useState();
+  const [locationPlace, setLocationPlace] = useState();
 
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
@@ -98,12 +95,54 @@ function EventReadOnly() {
       setDateType(
         dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
       );
+
+    if (initialPlace && initialPlace?.length > 0) {
+      initialPlace[0] = {
+        ...initialPlace[0],
+        ['openingHours']: initialPlace[0]?.openingHours?.uri,
+      };
+      let initialPlaceAccessibiltiy = [];
+      if (initialPlace[0]?.accessibility?.length > 0) {
+        getAllTaxonomy({
+          calendarId,
+          search: '',
+          taxonomyClass: taxonomyClass.PLACE,
+          includeConcepts: true,
+          sessionId: timestampRef,
+        })
+          .unwrap()
+          .then((res) => {
+            res?.data?.forEach((taxonomy) => {
+              if (taxonomy?.mappedToField === 'PlaceAccessibility') {
+                initialPlace[0]?.accessibility?.forEach((accessibility) => {
+                  taxonomy?.concept?.forEach((concept) => {
+                    if (concept?.id == accessibility?.entityId) {
+                      initialPlaceAccessibiltiy = initialPlaceAccessibiltiy?.concat([concept]);
+                    }
+                  });
+                });
+              }
+            });
+            initialPlace[0] = {
+              ...initialPlace[0],
+              ['accessibility']: initialPlaceAccessibiltiy,
+            };
+            setLocationPlace(placesOptions(initialPlace)[0], user, calendarContentLanguage);
+          })
+          .catch((error) => console.log(error));
+      } else {
+        initialPlace[0] = {
+          ...initialPlace[0],
+          ['accessibility']: [],
+        };
+        setLocationPlace(placesOptions(initialPlace)[0], user, calendarContentLanguage);
+      }
+    }
   }, [isLoading]);
 
   return (
     !isLoading &&
     !taxonomyLoading &&
-    !placesLoading &&
     !initialEntityLoading && (
       <div>
         <Row gutter={[32, 24]} className="read-only-wrapper">
@@ -487,13 +526,20 @@ function EventReadOnly() {
                         <p className="read-only-event-content-sub-title-primary">
                           {t('dashboard.events.addEditEvent.location.title')}
                         </p>
-                        <SelectOption
-                          disabled
-                          bordered={false}
-                          showArrow={false}
-                          defaultValue={initialPlace && initialPlace[0]?.id}
-                          options={placesOptions(allPlaces?.data, user, calendarContentLanguage)}
-                        />
+
+                        {locationPlace && (
+                          <SelectionItem
+                            icon={locationPlace?.label?.props?.icon}
+                            name={locationPlace?.name}
+                            description={locationPlace?.description}
+                            itemWidth="423px"
+                            postalAddress={locationPlace?.postalAddress}
+                            accessibility={locationPlace?.accessibility}
+                            openingHours={locationPlace?.openingHours}
+                            calendarContentLanguage={calendarContentLanguage}
+                            bordered
+                          />
+                        )}
                       </div>
                     )}
 

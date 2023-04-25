@@ -20,4 +20,4 @@ export const taxonomyApi = createApi({
   }),
 });
 
-export const { useGetAllTaxonomyQuery, useGetTaxonomyQuery } = taxonomyApi;
+export const { useGetAllTaxonomyQuery, useGetTaxonomyQuery, useLazyGetAllTaxonomyQuery } = taxonomyApi;

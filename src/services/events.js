@@ -3,7 +3,7 @@ import { baseQueryWithReauth } from '../utils/services';
 export const eventsApi = createApi({
   reducerPath: 'eventsApi',
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['Events', 'Event'],
+  tagTypes: ['Events'],
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getEvents: builder.query({
@@ -14,7 +14,8 @@ export const eventsApi = createApi({
           'calendar-id': calendarId,
         },
       }),
-      providesTags: ['Events'],
+      providesTags: (result) =>
+        result ? [...result.data.map(({ id }) => ({ type: 'Events', id })), 'Events'] : ['Events'],
       transformResponse: (response) => response,
     }),
     getEvent: builder.query({
@@ -25,7 +26,7 @@ export const eventsApi = createApi({
           'calendar-id': calendarId,
         },
       }),
-      providesTags: ['Event'],
+
       transformResponse: (response) => response,
     }),
     updateEventState: builder.mutation({
@@ -36,7 +37,7 @@ export const eventsApi = createApi({
           'calendar-id': calendarId,
         },
       }),
-      invalidatesTags: ['Events', 'Event'],
+      invalidatesTags: (result, error, arg) => [{ type: 'Events', id: arg.id }],
     }),
     deleteEvent: builder.mutation({
       query: ({ id, calendarId }) => ({
@@ -46,7 +47,7 @@ export const eventsApi = createApi({
           'calendar-id': calendarId,
         },
       }),
-      invalidatesTags: ['Events'],
+      invalidatesTags: (result, error, arg) => [{ type: 'Events', id: arg.id }],
     }),
     addEvent: builder.mutation({
       query: ({ data, calendarId }) => ({
