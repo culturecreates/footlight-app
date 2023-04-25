@@ -110,7 +110,7 @@ function SelectionItem(props) {
               </Row>
             </Col>
           )}
-          {accessibility && (
+          {accessibility?.length > 0 && (
             <Col flex="190px">
               <Row>
                 <Col>
