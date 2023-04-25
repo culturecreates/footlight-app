@@ -53,7 +53,7 @@ function Events() {
     publication: searchParams.get('f') ? urlArrayDecoder(filterTypes.PUBLICATION, searchParams.get('f')) : [],
     sort: searchParams.get('sortBy') ?? sortByOptions[2]?.key,
     order: searchParams.get('order') ?? sortOrder?.ASC,
-    dates: [],
+    dates: [searchParams.get('startDateRange'), searchParams.get('endDateRange')],
   });
   const [userFilter, setUserFilter] = useState(
     searchParams.get('f') ? urlArrayDecoder(filterTypes.USERS, searchParams.get('f')) : [],
@@ -64,7 +64,12 @@ function Events() {
   }
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState(initialSelectedUsers ?? {});
-  const [selectedDates, setSelectedDates] = useState([]);
+  const [selectedDates, setSelectedDates] = useState(
+    moment(searchParams.get('startDateRange'), 'YYYY-MM-DD')?.isValid() &&
+      moment(searchParams.get('endDateRange'), 'YYYY-MM-DD')?.isValid()
+      ? [moment(searchParams.get('startDateRange')), moment(searchParams.get('endDateRange'))]
+      : [],
+  );
 
   let userFilterData = allUsersData?.data?.active?.slice()?.sort(function (x, y) {
     return x?.id == user?.id ? -1 : y?.id == user?.id ? 1 : 0;
@@ -129,6 +134,8 @@ function Events() {
           page: pageNumber,
           order: filter?.order,
           sortBy: filter?.sort,
+          ...(filter?.dates[0] && { startDateRange: query?.get('start-date-range') }),
+          ...(filter?.dates[1] && { endDateRange: query?.get('end-date-range') }),
           ...(filtersQuery && { f: filtersQuery }),
         }),
       );
@@ -139,6 +146,8 @@ function Events() {
           query: eventSearchQuery,
           order: filter?.order,
           sortBy: filter?.sort,
+          ...(filter?.dates[0] && { startDateRange: query?.get('start-date-range') }),
+          ...(filter?.dates[1] && { endDateRange: query?.get('end-date-range') }),
           ...(filtersQuery && { f: filtersQuery }),
         }),
       );
