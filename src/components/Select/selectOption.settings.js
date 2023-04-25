@@ -56,6 +56,9 @@ export const placesOptions = (data, user, calendarContentLanguage) => {
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
         calendarContentLanguage: calendarContentLanguage,
       }),
+      postalAddress: place?.postalAddress,
+      accessibility: place?.accessibility,
+      openingHours: place?.openingHours,
       key: place?.id,
     };
   });

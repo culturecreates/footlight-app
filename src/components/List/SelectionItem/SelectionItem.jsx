@@ -3,10 +3,26 @@ import './selectionItem.css';
 import { Avatar, List, Button, Row, Col } from 'antd';
 import { CloseCircleOutlined, LinkOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { contentLanguageBilingual } from '../../../utils/bilingual';
+import { useSelector } from 'react-redux';
+import { getUserDetails } from '../../../redux/reducer/userSlice';
 
 function SelectionItem(props) {
-  const { icon, name, description, bordered, closable, onClose, itemWidth, address, accessibility } = props;
+  const {
+    icon,
+    name,
+    description,
+    bordered,
+    closable,
+    onClose,
+    itemWidth,
+    postalAddress,
+    accessibility,
+    openingHours,
+    calendarContentLanguage,
+  } = props;
   const { t } = useTranslation();
+  const { user } = useSelector(getUserDetails);
 
   return (
     <div
@@ -37,9 +53,9 @@ function SelectionItem(props) {
           description={<span className="selection-item-subheading">{description}</span>}
         />
       </List.Item>
-      {(address || accessibility) && (
+      {(postalAddress || accessibility) && (
         <Row gutter={[28, 0]} align="top">
-          {address && (
+          {postalAddress && (
             <Col flex="190px">
               <Row>
                 <Col>
@@ -50,13 +66,52 @@ function SelectionItem(props) {
               </Row>
               <Row>
                 <Col>
-                  <span className="selection-item-sub-content">1234 rue street, Montréal, QC H2X 1Y9</span>
+                  <div className="selection-item-sub-content">
+                    <address>
+                      {postalAddress?.streetAddress && (
+                        <span>
+                          {contentLanguageBilingual({
+                            en: postalAddress?.streetAddress?.en,
+                            fr: postalAddress?.streetAddress?.fr,
+                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                            calendarContentLanguage: calendarContentLanguage,
+                          })}
+                          ,
+                        </span>
+                      )}
+                      <br />
+                      {postalAddress?.addressLocality && (
+                        <span>
+                          {contentLanguageBilingual({
+                            en: postalAddress?.addressLocality?.en,
+                            fr: postalAddress?.addressLocality?.fr,
+                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                            calendarContentLanguage: calendarContentLanguage,
+                          })}
+                          ,&nbsp;
+                        </span>
+                      )}
+                      {postalAddress?.addressRegion && (
+                        <span>
+                          {contentLanguageBilingual({
+                            en: postalAddress?.addressRegion?.en,
+                            fr: postalAddress?.addressRegion?.fr,
+                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                            calendarContentLanguage: calendarContentLanguage,
+                          })}
+                        </span>
+                      )}
+
+                      {postalAddress?.postalCode && <span>{postalAddress?.postalCode}</span>}
+                      <br />
+                    </address>
+                  </div>
                 </Col>
               </Row>
             </Col>
           )}
           {accessibility && (
-            <Col flex="150px">
+            <Col flex="190px">
               <Row>
                 <Col>
                   <span className="selection-item-sub-title">
@@ -66,18 +121,31 @@ function SelectionItem(props) {
               </Row>
               <Row>
                 <Col>
-                  <span className="selection-item-sub-content">Ascenseur, lorem</span>
-                  <p>
-                    <a
-                      href={'#'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="selection-item-sub-content"
-                      style={{ color: '#0F0E98' }}>
-                      <span className="open-hour-url-link">hia</span>&nbsp;
-                      <LinkOutlined />
-                    </a>
-                  </p>
+                  {accessibility?.map((venueAccessibiltiy, index) => (
+                    <span className="selection-item-sub-content" key={index}>
+                      {contentLanguageBilingual({
+                        en: venueAccessibiltiy?.name?.en,
+                        fr: venueAccessibiltiy?.name?.fr,
+                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      })}
+                      <br />
+                    </span>
+                  ))}
+
+                  {openingHours && (
+                    <p>
+                      <a
+                        href={`${openingHours}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="selection-item-sub-content"
+                        style={{ color: '#0F0E98' }}>
+                        <span className="open-hour-url-link">{openingHours}</span>&nbsp;
+                        <LinkOutlined />
+                      </a>
+                    </p>
+                  )}
                 </Col>
               </Row>
             </Col>
