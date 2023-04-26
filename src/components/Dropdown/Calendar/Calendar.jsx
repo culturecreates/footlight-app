@@ -8,6 +8,7 @@ import { PathName } from '../../../constants/pathName';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
+import Cookies from 'js-cookie';
 
 function Calendar({ children, allCalendarsData, setPageNumber }) {
   const dispatch = useDispatch();
@@ -47,6 +48,14 @@ function Calendar({ children, allCalendarsData, setPageNumber }) {
     navigate(`${PathName.Dashboard}/${key}${PathName.Events}`);
     dispatch(setSelectedCalendar(String(key)));
     setPageNumber(1);
+    Cookies.remove('page');
+    Cookies.remove('query');
+    Cookies.remove('order');
+    Cookies.remove('sortBy');
+    Cookies.remove('users');
+    Cookies.remove('publication');
+    Cookies.remove('start-date-range');
+    Cookies.remove('end-date-range');
     setOpen(false);
   };
 

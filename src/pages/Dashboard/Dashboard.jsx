@@ -12,6 +12,7 @@ import { useLazyGetCalendarQuery, useGetAllCalendarsQuery } from '../../services
 import { setSelectedCalendar } from '../../redux/reducer/selectedCalendarSlice';
 import { setInterfaceLanguage } from '../../redux/reducer/interfaceLanguageSlice';
 import i18n from 'i18next';
+import Cookies from 'js-cookie';
 
 const { Header, Content } = Layout;
 
@@ -30,7 +31,9 @@ function Dashboard() {
   let { calendarId } = useParams();
   let [searchParams] = useSearchParams();
 
-  const [pageNumber, setPageNumber] = useState(searchParams.get('page') ?? 1);
+  const [pageNumber, setPageNumber] = useState(
+    searchParams.get('page') ? searchParams.get('page') : Cookies.get('page') ?? 1,
+  );
 
   useEffect(() => {
     if (!accessToken && accessToken === '') navigate(PathName.Login);

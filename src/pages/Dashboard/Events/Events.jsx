@@ -21,7 +21,7 @@ import DateRangePicker from '../../../components/DateRangePicker';
 import moment from 'moment';
 import NoContent from '../../../components/NoContent/NoContent';
 import LoadingIndicator from '../../../components/LoadingIndicator/index';
-import { urlArrayHandler } from '../../../utils/urlArrayHandler';
+import Cookies from 'js-cookie';
 
 function Events() {
   const { t } = useTranslation();
@@ -39,57 +39,100 @@ function Events() {
     includeCalendarFilter: true,
     sessionId: timestampRef,
   });
-  const [eventSearchQuery, setEventSearchQuery] = useState(searchParams.get('query') ?? '');
-
-  const urlArrayDecoder = (type, string) => {
-    let url = decodeURIComponent(string);
-    url = url?.split(':');
-    let index = url?.findIndex((element) => element === type);
-    if (url[index + 1] === '') return [];
-    else return url[index + 1]?.split(',');
+  const [eventSearchQuery, setEventSearchQuery] = useState(
+    searchParams.get('query') ? searchParams.get('query') : Cookies.get('query') ?? '',
+  );
+  const dateValidChecker = (date = '') => {
+    const dateFormat = 'YYYY-MM-DD';
+    const toDateFormat = moment(new Date(date)).format(dateFormat);
+    if (moment(toDateFormat, dateFormat, true).isValid()) return true;
+    else return false;
   };
 
   const [filter, setFilter] = useState({
-    publication: searchParams.get('f') ? urlArrayDecoder(filterTypes.PUBLICATION, searchParams.get('f')) : [],
-    sort: searchParams.get('sortBy') ?? sortByOptions[2]?.key,
-    order: searchParams.get('order') ?? sortOrder?.ASC,
-    dates: [searchParams.get('startDateRange'), searchParams.get('endDateRange')],
+    publication: searchParams.get('publication')
+      ? decodeURIComponent(searchParams.get('publication'))?.split(',')
+      : Cookies.get('publication')
+      ? decodeURIComponent(Cookies.get('publication'))?.split(',')
+      : [],
+    sort: searchParams.get('sortBy') ? searchParams.get('sortBy') : Cookies.get('sortBy') ?? sortByOptions[2]?.key,
+    order: searchParams.get('order') ? searchParams.get('order') : Cookies.get('order') ?? sortOrder?.ASC,
+    dates: [
+      searchParams.get('startDateRange')
+        ? dateValidChecker(searchParams.get('startDateRange'))
+          ? moment(searchParams.get('startDateRange'))
+          : searchParams.get('startDateRange')
+        : Cookies.get('startDateRange')
+        ? dateValidChecker(Cookies.get('startDateRange'))
+          ? moment(Cookies.get('startDateRange'))
+          : Cookies.get('startDateRange')
+        : [],
+      searchParams.get('endDateRange')
+        ? dateValidChecker(searchParams.get('endDateRange'))
+          ? moment(searchParams.get('endDateRange'))
+          : searchParams.get('endDateRange')
+        : Cookies.get('endDateRange')
+        ? dateValidChecker(Cookies.get('endDateRange'))
+          ? moment(Cookies.get('endDateRange'))
+          : Cookies.get('endDateRange')
+        : [],
+    ],
   });
   const [userFilter, setUserFilter] = useState(
-    searchParams.get('f') ? urlArrayDecoder(filterTypes.USERS, searchParams.get('f')) : [],
+    searchParams.get('users')
+      ? decodeURIComponent(searchParams.get('users'))?.split(',')
+      : Cookies.get('users')
+      ? decodeURIComponent(Cookies.get('users'))?.split(',')
+      : [],
   );
   let initialSelectedUsers = {};
   for (let index = 0; index < userFilter?.length; index++) {
     Object.assign(initialSelectedUsers, { [userFilter[index]]: true });
   }
+
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState(initialSelectedUsers ?? {});
-  const [selectedDates, setSelectedDates] = useState(
-    moment(searchParams.get('startDateRange'), 'YYYY-MM-DD')?.isValid() &&
-      moment(searchParams.get('endDateRange'), 'YYYY-MM-DD')?.isValid()
-      ? [moment(searchParams.get('startDateRange')), moment(searchParams.get('endDateRange'))]
+  const [selectedDates, setSelectedDates] = useState([
+    searchParams.get('startDateRange')
+      ? dateValidChecker(searchParams.get('startDateRange'))
+        ? moment(searchParams.get('startDateRange'))
+        : []
+      : Cookies.get('startDateRange')
+      ? dateValidChecker(Cookies.get('startDateRange'))
+        ? moment(Cookies.get('startDateRange'))
+        : []
       : [],
-  );
+    searchParams.get('endDateRange')
+      ? dateValidChecker(searchParams.get('endDateRange'))
+        ? moment(searchParams.get('endDateRange'))
+        : []
+      : Cookies.get('endDateRange')
+      ? dateValidChecker(Cookies.get('endDateRange'))
+        ? moment(Cookies.get('endDateRange'))
+        : []
+      : [],
+  ]);
 
   let userFilterData = allUsersData?.data?.active?.slice()?.sort(function (x, y) {
     return x?.id == user?.id ? -1 : y?.id == user?.id ? 1 : 0;
   });
-  const calendarContentLanguage = currentCalendarData?.contentLanguage;
+
   userFilterData = userFilterData
     ?.slice(1)
     ?.sort((a, b) => a?.firstName?.toLowerCase()?.localeCompare(b?.firstName?.toLowerCase()));
   userFilterData = [user].concat(userFilterData);
+
+  const calendarContentLanguage = currentCalendarData?.contentLanguage;
+
   useEffect(() => {
     let query = new URLSearchParams();
     let sortQuery = new URLSearchParams();
-    let filtersQuery;
+    let usersQuery, publicationQuery;
 
     userFilter?.forEach((user) => query.append('user', user));
     filter?.publication?.forEach((state) => query.append('publish-state', state));
-
-    filtersQuery =
-      urlArrayHandler(filterTypes.USERS, userFilter) + urlArrayHandler(filterTypes.PUBLICATION, filter.publication);
-    filtersQuery = encodeURIComponent(filtersQuery);
+    if (userFilter?.length > 0) usersQuery = encodeURIComponent(userFilter);
+    if (filter?.publication?.length > 0) publicationQuery = encodeURIComponent(filter.publication);
 
     sortQuery.append(
       'sort',
@@ -136,7 +179,8 @@ function Events() {
           sortBy: filter?.sort,
           ...(filter?.dates[0] && { startDateRange: query?.get('start-date-range') }),
           ...(filter?.dates[1] && { endDateRange: query?.get('end-date-range') }),
-          ...(filtersQuery && { f: filtersQuery }),
+          ...(usersQuery && { users: usersQuery }),
+          ...(publicationQuery && { publication: publicationQuery }),
         }),
       );
     else {
@@ -148,15 +192,22 @@ function Events() {
           sortBy: filter?.sort,
           ...(filter?.dates[0] && { startDateRange: query?.get('start-date-range') }),
           ...(filter?.dates[1] && { endDateRange: query?.get('end-date-range') }),
-          ...(filtersQuery && { f: filtersQuery }),
+          ...(usersQuery && { users: usersQuery }),
+          ...(publicationQuery && { publication: publicationQuery }),
         }),
       );
     }
-  }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter]);
 
-  useEffect(() => {
-    // if (calendarId) setPageNumber(1);
-  }, [calendarId]);
+    Cookies.set('page', pageNumber);
+    Cookies.set('query', eventSearchQuery);
+    Cookies.set('order', filter?.order);
+    Cookies.set('sortBy', filter?.sort);
+    if (usersQuery) Cookies.set('users', usersQuery);
+    if (publicationQuery) Cookies.set('publication', publicationQuery);
+
+    if (filter?.dates[0]) Cookies.set('startDateRange', filter?.dates[0]);
+    if (filter?.dates[1]) Cookies.set('endDateRange', filter?.dates[1]);
+  }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter]);
 
   const onSearchHandler = (event) => {
     setPageNumber(1);
@@ -213,6 +264,23 @@ function Events() {
 
   const handlePopoverOpenChange = (newOpen) => {
     setIsPopoverOpen(newOpen);
+  };
+
+  const filterClearHandler = () => {
+    setFilter({
+      publication: [],
+      sort: sortByOptions[2]?.key,
+      order: sortOrder?.ASC,
+      dates: [],
+    });
+    setUserFilter([]);
+    setSelectedDates([]);
+    let usersToClear = selectedUsers;
+    Object.keys(usersToClear)?.forEach(function (key) {
+      usersToClear[key] = false;
+    });
+    setSelectedUsers(Object.assign({}, usersToClear));
+    setPageNumber(1);
   };
   return (
     !isLoading &&
@@ -431,22 +499,7 @@ function Events() {
                       size="large"
                       className="filter-buttons"
                       style={{ color: '#1B3DE6' }}
-                      onClick={() => {
-                        setFilter({
-                          publication: [],
-                          sort: sortByOptions[2]?.key,
-                          order: sortOrder?.ASC,
-                          dates: [],
-                        });
-                        setUserFilter([]);
-                        setSelectedDates([]);
-                        let usersToClear = selectedUsers;
-                        Object.keys(usersToClear)?.forEach(function (key) {
-                          usersToClear[key] = false;
-                        });
-                        setSelectedUsers(Object.assign({}, usersToClear));
-                        setPageNumber(1);
-                      }}>
+                      onClick={filterClearHandler}>
                       {t('dashboard.events.filter.clear')}&nbsp;
                       <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
                     </Button>
