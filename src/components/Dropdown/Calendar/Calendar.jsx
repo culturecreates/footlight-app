@@ -54,8 +54,8 @@ function Calendar({ children, allCalendarsData, setPageNumber }) {
     Cookies.remove('sortBy');
     Cookies.remove('users');
     Cookies.remove('publication');
-    Cookies.remove('start-date-range');
-    Cookies.remove('end-date-range');
+    Cookies.remove('startDateRange');
+    Cookies.remove('endDateRange');
     setOpen(false);
   };
 

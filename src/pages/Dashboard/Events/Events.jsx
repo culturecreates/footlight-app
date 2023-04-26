@@ -281,6 +281,14 @@ function Events() {
     });
     setSelectedUsers(Object.assign({}, usersToClear));
     setPageNumber(1);
+    Cookies.remove('page');
+    Cookies.remove('query');
+    Cookies.remove('order');
+    Cookies.remove('sortBy');
+    Cookies.remove('users');
+    Cookies.remove('publication');
+    Cookies.remove('startDateRange');
+    Cookies.remove('endDateRange');
   };
   return (
     !isLoading &&
