@@ -399,6 +399,9 @@
         },
         "400": {
           "message": "Something went wrong."
+        },
+        "500": {
+          "message": "Something went wrong."
         }
       }
     }
