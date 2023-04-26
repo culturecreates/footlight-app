@@ -24,6 +24,16 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       description: result.error?.data?.message,
     });
   }
+
+  if (result.error && result.error.status === 500) {
+    //HTTP 500 Internal Server Error
+    //The server encountered an unexpected condition that prevented it from fulfilling the request
+    notification.info({
+      message: <Translation>{(t) => t('common.server.status.500.message')}</Translation>,
+      placement: 'top',
+      description: result.error?.data?.error,
+    });
+  }
   if (result.error && result.error.status === 401) {
     // HTTP 401 Unauthorized response status code
     // indicates that the client request has not been completed because it lacks valid authentication credentials for the requested resource.
