@@ -506,6 +506,9 @@ function AddEvent() {
               if (values?.dragger && values?.dragger?.length == 0) eventObj['image'] = null;
               else
                 eventObj['image'] = {
+                  height: eventData?.image?.height,
+                  type: eventData?.image?.type,
+                  width: eventData?.image?.width,
                   large: {
                     entityId: eventData?.image?.large?.entityId,
                   },
