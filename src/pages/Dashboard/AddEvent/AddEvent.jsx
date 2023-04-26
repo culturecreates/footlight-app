@@ -37,7 +37,7 @@ import { dateTypeOptions, dateTypes } from '../../../constants/dateTypes';
 import ChangeType from '../../../components/ChangeType';
 import CardEvent from '../../../components/Card/Common/Event';
 import Tags from '../../../components/Tags/Common/Tags';
-import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
+import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 import ImageUpload from '../../../components/ImageUpload';
@@ -56,7 +56,6 @@ import { offerTypeOptions, offerTypes } from '../../../constants/ticketOffers';
 import { ReactComponent as Money } from '../../../assets/icons/Money.svg';
 import { ReactComponent as MoneyFree } from '../../../assets/icons/Money-Free.svg';
 import TicketPrice from '../../../components/TicketPrice';
-import { useGetAllPlacesQuery } from '../../../services/places';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
 import { entitiesClass } from '../../../constants/entitiesClass';
@@ -103,10 +102,7 @@ function AddEvent() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
-  const { currentData: allPlaces, isLoading: placesLoading } = useGetAllPlacesQuery({
-    calendarId,
-    sessionId: timestampRef,
-  });
+
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.organization);
   query.append('classes', entitiesClass.person);
@@ -120,6 +116,7 @@ function AddEvent() {
   const [updateEventState] = useUpdateEventStateMutation();
   const [updateEvent] = useUpdateEventMutation();
   const [addImage, { error: isAddImageError }] = useAddImageMutation();
+  const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
 
   const [dateType, setDateType] = useState();
   const [ticketType, setTicketType] = useState();
@@ -659,7 +656,7 @@ function AddEvent() {
     else return roleCheckHandler();
   };
 
-  const placesSearch = (inputValue) => {
+  const placesSearch = (inputValue = '') => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
     getEntities({ searchKey: inputValue, classes: decodeURIComponent(query.toString()), calendarId })
@@ -772,8 +769,48 @@ function AddEvent() {
           ),
         );
         setTicketType(eventData?.offerConfiguration?.category);
-        if (initialPlace && initialPlace?.length > 0)
-          setLocationPlace(placesOptions(initialPlace)[0], user, calendarContentLanguage);
+        if (initialPlace && initialPlace?.length > 0) {
+          initialPlace[0] = {
+            ...initialPlace[0],
+            ['openingHours']: initialPlace[0]?.openingHours?.uri,
+          };
+          let initialPlaceAccessibiltiy = [];
+          if (initialPlace[0]?.accessibility?.length > 0) {
+            getAllTaxonomy({
+              calendarId,
+              search: '',
+              taxonomyClass: taxonomyClass.PLACE,
+              includeConcepts: true,
+              sessionId: timestampRef,
+            })
+              .unwrap()
+              .then((res) => {
+                res?.data?.forEach((taxonomy) => {
+                  if (taxonomy?.mappedToField === 'PlaceAccessibility') {
+                    initialPlace[0]?.accessibility?.forEach((accessibility) => {
+                      taxonomy?.concept?.forEach((concept) => {
+                        if (concept?.id == accessibility?.entityId) {
+                          initialPlaceAccessibiltiy = initialPlaceAccessibiltiy?.concat([concept]);
+                        }
+                      });
+                    });
+                  }
+                });
+                initialPlace[0] = {
+                  ...initialPlace[0],
+                  ['accessibility']: initialPlaceAccessibiltiy,
+                };
+                setLocationPlace(placesOptions(initialPlace)[0], user, calendarContentLanguage);
+              })
+              .catch((error) => console.log(error));
+          } else {
+            initialPlace[0] = {
+              ...initialPlace[0],
+              ['accessibility']: [],
+            };
+            setLocationPlace(placesOptions(initialPlace)[0], user, calendarContentLanguage);
+          }
+        }
         if (eventData?.locations?.filter((location) => location?.isVirtualLocation == true)?.length > 0)
           initialAddedFields = initialAddedFields?.concat(locationType?.fieldNames);
         if (
@@ -938,15 +975,11 @@ function AddEvent() {
     setOrganizersList(treeEntitiesOption(initialEntities, user, calendarContentLanguage));
     setPerformerList(treeEntitiesOption(initialEntities, user, calendarContentLanguage));
     setSupporterList(treeEntitiesOption(initialEntities, user, calendarContentLanguage));
+    placesSearch();
   }, [initialEntityLoading]);
-
-  useEffect(() => {
-    setAllPlacesList(placesOptions(allPlaces?.data, user));
-  }, [placesLoading]);
 
   return (
     !isLoading &&
-    !placesLoading &&
     !taxonomyLoading &&
     !initialEntityLoading &&
     currentCalendarData && (
@@ -1485,6 +1518,10 @@ function AddEvent() {
                       name={locationPlace?.name}
                       description={locationPlace?.description}
                       itemWidth="100%"
+                      postalAddress={locationPlace?.postalAddress}
+                      accessibility={locationPlace?.accessibility}
+                      openingHours={locationPlace?.openingHours}
+                      calendarContentLanguage={calendarContentLanguage}
                       bordered
                       closable
                       onClose={() => {
