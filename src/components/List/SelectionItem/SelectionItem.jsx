@@ -76,7 +76,7 @@ function SelectionItem(props) {
                             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             calendarContentLanguage: calendarContentLanguage,
                           })}
-                          ,
+                          ,&nbsp;
                         </span>
                       )}
                       <br />
@@ -99,6 +99,7 @@ function SelectionItem(props) {
                             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             calendarContentLanguage: calendarContentLanguage,
                           })}
+                          &nbsp;
                         </span>
                       )}
 
