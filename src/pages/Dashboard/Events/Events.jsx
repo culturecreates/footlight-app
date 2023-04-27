@@ -21,7 +21,6 @@ import DateRangePicker from '../../../components/DateRangePicker';
 import moment from 'moment';
 import NoContent from '../../../components/NoContent/NoContent';
 import LoadingIndicator from '../../../components/LoadingIndicator/index';
-import Cookies from 'js-cookie';
 
 function Events() {
   const { t } = useTranslation();
@@ -40,7 +39,7 @@ function Events() {
     sessionId: timestampRef,
   });
   const [eventSearchQuery, setEventSearchQuery] = useState(
-    searchParams.get('query') ? searchParams.get('query') : Cookies.get('query') ?? '',
+    searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('query') ?? '',
   );
   const dateValidChecker = (date = '') => {
     const dateFormat = 'YYYY-MM-DD';
@@ -52,37 +51,39 @@ function Events() {
   const [filter, setFilter] = useState({
     publication: searchParams.get('publication')
       ? decodeURIComponent(searchParams.get('publication'))?.split(',')
-      : Cookies.get('publication')
-      ? decodeURIComponent(Cookies.get('publication'))?.split(',')
+      : sessionStorage.getItem('publication')
+      ? decodeURIComponent(sessionStorage.getItem('publication'))?.split(',')
       : [],
-    sort: searchParams.get('sortBy') ? searchParams.get('sortBy') : Cookies.get('sortBy') ?? sortByOptions[2]?.key,
-    order: searchParams.get('order') ? searchParams.get('order') : Cookies.get('order') ?? sortOrder?.ASC,
+    sort: searchParams.get('sortBy')
+      ? searchParams.get('sortBy')
+      : sessionStorage.getItem('sortBy') ?? sortByOptions[2]?.key,
+    order: searchParams.get('order') ? searchParams.get('order') : sessionStorage.getItem('order') ?? sortOrder?.ASC,
     dates: [
       searchParams.get('startDateRange')
         ? dateValidChecker(searchParams.get('startDateRange'))
           ? moment(searchParams.get('startDateRange'))
           : searchParams.get('startDateRange')
-        : Cookies.get('startDateRange')
-        ? dateValidChecker(Cookies.get('startDateRange'))
-          ? moment(Cookies.get('startDateRange'))
-          : Cookies.get('startDateRange')
+        : sessionStorage.getItem('startDateRange')
+        ? dateValidChecker(sessionStorage.getItem('startDateRange'))
+          ? moment(sessionStorage.getItem('startDateRange'))
+          : sessionStorage.getItem('startDateRange')
         : [],
       searchParams.get('endDateRange')
         ? dateValidChecker(searchParams.get('endDateRange'))
           ? moment(searchParams.get('endDateRange'))
           : searchParams.get('endDateRange')
-        : Cookies.get('endDateRange')
-        ? dateValidChecker(Cookies.get('endDateRange'))
-          ? moment(Cookies.get('endDateRange'))
-          : Cookies.get('endDateRange')
+        : sessionStorage.getItem('endDateRange')
+        ? dateValidChecker(sessionStorage.getItem('endDateRange'))
+          ? moment(sessionStorage.getItem('endDateRange'))
+          : sessionStorage.getItem('endDateRange')
         : [],
     ],
   });
   const [userFilter, setUserFilter] = useState(
     searchParams.get('users')
       ? decodeURIComponent(searchParams.get('users'))?.split(',')
-      : Cookies.get('users')
-      ? decodeURIComponent(Cookies.get('users'))?.split(',')
+      : sessionStorage.getItem('users')
+      ? decodeURIComponent(sessionStorage.getItem('users'))?.split(',')
       : [],
   );
   let initialSelectedUsers = {};
@@ -97,18 +98,18 @@ function Events() {
       ? dateValidChecker(searchParams.get('startDateRange'))
         ? moment(searchParams.get('startDateRange'))
         : []
-      : Cookies.get('startDateRange')
-      ? dateValidChecker(Cookies.get('startDateRange'))
-        ? moment(Cookies.get('startDateRange'))
+      : sessionStorage.getItem('startDateRange')
+      ? dateValidChecker(sessionStorage.getItem('startDateRange'))
+        ? moment(sessionStorage.getItem('startDateRange'))
         : []
       : [],
     searchParams.get('endDateRange')
       ? dateValidChecker(searchParams.get('endDateRange'))
         ? moment(searchParams.get('endDateRange'))
         : []
-      : Cookies.get('endDateRange')
-      ? dateValidChecker(Cookies.get('endDateRange'))
-        ? moment(Cookies.get('endDateRange'))
+      : sessionStorage.getItem('endDateRange')
+      ? dateValidChecker(sessionStorage.getItem('endDateRange'))
+        ? moment(sessionStorage.getItem('endDateRange'))
         : []
       : [],
   ]);
@@ -198,15 +199,15 @@ function Events() {
       );
     }
 
-    Cookies.set('page', pageNumber);
-    Cookies.set('query', eventSearchQuery);
-    Cookies.set('order', filter?.order);
-    Cookies.set('sortBy', filter?.sort);
-    if (usersQuery) Cookies.set('users', usersQuery);
-    if (publicationQuery) Cookies.set('publication', publicationQuery);
+    sessionStorage.setItem('page', pageNumber);
+    sessionStorage.setItem('query', eventSearchQuery);
+    sessionStorage.setItem('order', filter?.order);
+    sessionStorage.setItem('sortBy', filter?.sort);
+    if (usersQuery) sessionStorage.setItem('users', usersQuery);
+    if (publicationQuery) sessionStorage.setItem('publication', publicationQuery);
 
-    if (filter?.dates[0]) Cookies.set('startDateRange', filter?.dates[0]);
-    if (filter?.dates[1]) Cookies.set('endDateRange', filter?.dates[1]);
+    if (filter?.dates[0]) sessionStorage.setItem('startDateRange', filter?.dates[0]);
+    if (filter?.dates[1]) sessionStorage.setItem('endDateRange', filter?.dates[1]);
   }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter]);
 
   const onSearchHandler = (event) => {
@@ -281,14 +282,14 @@ function Events() {
     });
     setSelectedUsers(Object.assign({}, usersToClear));
     setPageNumber(1);
-    Cookies.remove('page');
-    Cookies.remove('query');
-    Cookies.remove('order');
-    Cookies.remove('sortBy');
-    Cookies.remove('users');
-    Cookies.remove('publication');
-    Cookies.remove('startDateRange');
-    Cookies.remove('endDateRange');
+    sessionStorage.removeItem('page');
+    sessionStorage.removeItem('query');
+    sessionStorage.removeItem('order');
+    sessionStorage.removeItem('sortBy');
+    sessionStorage.removeItem('users');
+    sessionStorage.removeItem('publication');
+    sessionStorage.removeItem('startDateRange');
+    sessionStorage.removeItem('endDateRange');
   };
   return (
     !isLoading &&
