@@ -44,8 +44,10 @@ function Events() {
   const dateValidChecker = (date = '') => {
     const dateFormat = 'YYYY-MM-DD';
     const toDateFormat = moment(new Date(date)).format(dateFormat);
-    if (moment(toDateFormat, dateFormat, true).isValid()) return true;
-    else return false;
+    if (date) {
+      if (moment(toDateFormat, dateFormat, true).isValid()) return true;
+      else return false;
+    } else return false;
   };
 
   const [filter, setFilter] = useState({
@@ -58,26 +60,30 @@ function Events() {
       ? searchParams.get('sortBy')
       : sessionStorage.getItem('sortBy') ?? sortByOptions[2]?.key,
     order: searchParams.get('order') ? searchParams.get('order') : sessionStorage.getItem('order') ?? sortOrder?.ASC,
-    dates: [
-      searchParams.get('startDateRange')
-        ? dateValidChecker(searchParams.get('startDateRange'))
-          ? moment(searchParams.get('startDateRange'))
-          : searchParams.get('startDateRange')
-        : sessionStorage.getItem('startDateRange')
-        ? dateValidChecker(sessionStorage.getItem('startDateRange'))
-          ? moment(sessionStorage.getItem('startDateRange'))
-          : sessionStorage.getItem('startDateRange')
+    dates:
+      (searchParams.get('startDateRange') || sessionStorage.getItem('startDateRange')) &&
+      (searchParams.get('endDateRange') || sessionStorage.getItem('endDateRange'))
+        ? [
+            searchParams.get('startDateRange')
+              ? dateValidChecker(searchParams.get('startDateRange'))
+                ? moment(searchParams.get('startDateRange'))
+                : searchParams.get('startDateRange')
+              : sessionStorage.getItem('startDateRange')
+              ? dateValidChecker(sessionStorage.getItem('startDateRange'))
+                ? moment(sessionStorage.getItem('startDateRange'))
+                : sessionStorage.getItem('startDateRange')
+              : '',
+            searchParams.get('endDateRange')
+              ? dateValidChecker(searchParams.get('endDateRange'))
+                ? moment(searchParams.get('endDateRange'))
+                : searchParams.get('endDateRange')
+              : sessionStorage.getItem('endDateRange')
+              ? dateValidChecker(sessionStorage.getItem('endDateRange'))
+                ? moment(sessionStorage.getItem('endDateRange'))
+                : sessionStorage.getItem('endDateRange')
+              : '',
+          ]
         : [],
-      searchParams.get('endDateRange')
-        ? dateValidChecker(searchParams.get('endDateRange'))
-          ? moment(searchParams.get('endDateRange'))
-          : searchParams.get('endDateRange')
-        : sessionStorage.getItem('endDateRange')
-        ? dateValidChecker(sessionStorage.getItem('endDateRange'))
-          ? moment(sessionStorage.getItem('endDateRange'))
-          : sessionStorage.getItem('endDateRange')
-        : [],
-    ],
   });
   const [userFilter, setUserFilter] = useState(
     searchParams.get('users')
@@ -93,26 +99,31 @@ function Events() {
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState(initialSelectedUsers ?? {});
-  const [selectedDates, setSelectedDates] = useState([
-    searchParams.get('startDateRange')
-      ? dateValidChecker(searchParams.get('startDateRange'))
-        ? moment(searchParams.get('startDateRange'))
-        : []
-      : sessionStorage.getItem('startDateRange')
-      ? dateValidChecker(sessionStorage.getItem('startDateRange'))
-        ? moment(sessionStorage.getItem('startDateRange'))
-        : []
+  const [selectedDates, setSelectedDates] = useState(
+    (searchParams.get('startDateRange') || sessionStorage.getItem('startDateRange')) &&
+      (searchParams.get('endDateRange') || sessionStorage.getItem('endDateRange'))
+      ? [
+          searchParams.get('startDateRange')
+            ? dateValidChecker(searchParams.get('startDateRange'))
+              ? moment(searchParams.get('startDateRange'))
+              : ''
+            : sessionStorage.getItem('startDateRange')
+            ? dateValidChecker(sessionStorage.getItem('startDateRange'))
+              ? moment(sessionStorage.getItem('startDateRange'))
+              : ''
+            : '',
+          searchParams.get('endDateRange')
+            ? dateValidChecker(searchParams.get('endDateRange'))
+              ? moment(searchParams.get('endDateRange'))
+              : ''
+            : sessionStorage.getItem('endDateRange')
+            ? dateValidChecker(sessionStorage.getItem('endDateRange'))
+              ? moment(sessionStorage.getItem('endDateRange'))
+              : ''
+            : '',
+        ]
       : [],
-    searchParams.get('endDateRange')
-      ? dateValidChecker(searchParams.get('endDateRange'))
-        ? moment(searchParams.get('endDateRange'))
-        : []
-      : sessionStorage.getItem('endDateRange')
-      ? dateValidChecker(sessionStorage.getItem('endDateRange'))
-        ? moment(sessionStorage.getItem('endDateRange'))
-        : []
-      : [],
-  ]);
+  );
 
   let userFilterData = allUsersData?.data?.active?.slice()?.sort(function (x, y) {
     return x?.id == user?.id ? -1 : y?.id == user?.id ? 1 : 0;
@@ -205,9 +216,8 @@ function Events() {
     sessionStorage.setItem('sortBy', filter?.sort);
     if (usersQuery) sessionStorage.setItem('users', usersQuery);
     if (publicationQuery) sessionStorage.setItem('publication', publicationQuery);
-
-    if (filter?.dates[0]) sessionStorage.setItem('startDateRange', filter?.dates[0]);
-    if (filter?.dates[1]) sessionStorage.setItem('endDateRange', filter?.dates[1]);
+    if (filter?.dates[0] && filter?.dates[0] !== '') sessionStorage.setItem('startDateRange', filter?.dates[0]);
+    if (filter?.dates[1] && filter?.dates[1] !== '') sessionStorage.setItem('endDateRange', filter?.dates[1]);
   }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter]);
 
   const onSearchHandler = (event) => {
