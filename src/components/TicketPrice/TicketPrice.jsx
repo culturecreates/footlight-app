@@ -7,7 +7,7 @@ import StyledInput from '../Input/Common';
 import StyledNumberInput from '../Input/Number/StyledNumber';
 
 function TicketPrice(props) {
-  const { fields, add, remove, firstFieldName, secondFieldName } = props;
+  const { fields, add, remove, firstFieldName, secondFieldName, thirdFieldName } = props;
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -52,7 +52,7 @@ function TicketPrice(props) {
               </Form.Item>
             </td>
             <td>
-              <Form.Item {...restField} name={[name, secondFieldName]}>
+              <Form.Item {...restField} name={[name, secondFieldName, thirdFieldName]}>
                 <StyledInput placeholder={t('dashboard.events.addEditEvent.tickets.enterType')} />
               </Form.Item>
             </td>
