@@ -113,7 +113,10 @@ function SelectionItem(props) {
                             rel="noopener noreferrer"
                             className="selection-item-sub-content"
                             style={{ color: '#0F0E98' }}>
-                            <span className="open-hour-url-link">{openingHours}</span>&nbsp;
+                            <span className="open-hour-url-link">
+                              {t('dashboard.events.addEditEvent.location.openingHours')}
+                            </span>
+                            &nbsp;
                             <LinkOutlined />
                           </a>
                         </p>
