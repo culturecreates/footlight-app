@@ -192,7 +192,9 @@
           "placeHolderVirtualLocationEn": "Enter English text to display",
           "placeHolderVirtualLocationFr": "Enter French text to display",
           "onlineLink": "Link for the online event",
-          "placeHolderOnlineLink": "Enter web address URL"
+          "placeHolderOnlineLink": "Enter web address URL",
+          "streetAddress": "Street address",
+          "venueAccessibility": "Venue accessibility"
         },
         "otherInformation": {
           "title": "Other information",
@@ -396,6 +398,9 @@
           "message": "Not Authorized"
         },
         "400": {
+          "message": "Something went wrong."
+        },
+        "500": {
           "message": "Something went wrong."
         }
       }

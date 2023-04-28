@@ -6,16 +6,29 @@
   padding: 8px;
   margin: 8px 0px 8px 0px;
   min-height: 68px;
+  background-color: #f9faff;
+}
+.selection-item-list-wrapper {
 }
 
-.selection-item-wrapper .selection-item-title {
+.selection-item-list-wrapper .selection-item-title {
   font-weight: 700;
   font-size: 16px;
   color: #222732;
 }
 
-.selection-item-wrapper .selection-item-subheading {
+.selection-item-list-wrapper .selection-item-subheading,
+.selection-item-wrapper .selection-item-sub-content {
   font-weight: 400;
   font-size: 12px;
   color: #646d7b;
+}
+.selection-item-wrapper .selection-item-sub-title {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.selection-item-wrapper .open-hour-url-link{
+  text-decoration: underline;
+  
 }
