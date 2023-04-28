@@ -105,6 +105,19 @@ function SelectionItem(props) {
 
                       {postalAddress?.postalCode && <span>{postalAddress?.postalCode}</span>}
                       <br />
+                      {openingHours && (
+                        <p>
+                          <a
+                            href={`${openingHours}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="selection-item-sub-content"
+                            style={{ color: '#0F0E98' }}>
+                            <span className="open-hour-url-link">{openingHours}</span>&nbsp;
+                            <LinkOutlined />
+                          </a>
+                        </p>
+                      )}
                     </address>
                   </div>
                 </Col>
@@ -133,20 +146,6 @@ function SelectionItem(props) {
                       <br />
                     </span>
                   ))}
-
-                  {openingHours && (
-                    <p>
-                      <a
-                        href={`${openingHours}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="selection-item-sub-content"
-                        style={{ color: '#0F0E98' }}>
-                        <span className="open-hour-url-link">{openingHours}</span>&nbsp;
-                        <LinkOutlined />
-                      </a>
-                    </p>
-                  )}
                 </Col>
               </Row>
             </Col>
