@@ -2553,7 +2553,8 @@ function AddEvent() {
                               remove={remove}
                               fields={fields}
                               firstFieldName={'price'}
-                              secondFieldName={('name', 'fr')}
+                              secondFieldName={'name'}
+                              thirdFieldName={'fr'}
                             />
                           )}
                         </Form.List>
@@ -2587,7 +2588,8 @@ function AddEvent() {
                               remove={remove}
                               fields={fields}
                               firstFieldName={'price'}
-                              secondFieldName={('name', 'en')}
+                              secondFieldName={'name'}
+                              thirdFieldName={'en'}
                             />
                           )}
                         </Form.List>

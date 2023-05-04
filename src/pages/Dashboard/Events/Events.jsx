@@ -29,7 +29,7 @@ function Events() {
   let [searchParams, setSearchParams] = useSearchParams();
   const timestampRef = useRef(Date.now()).current;
   const { user } = useSelector(getUserDetails);
-  const [currentCalendarData] = useOutletContext();
+  const [currentCalendarData, pageNumber, setPageNumber] = useOutletContext();
 
   const [getEvents, { currentData: eventsData, isLoading, isFetching }] = useLazyGetEventsQuery();
   const { currentData: allUsersData, isLoading: allUsersLoading } = useGetAllUsersQuery({
@@ -38,33 +38,114 @@ function Events() {
     includeCalendarFilter: true,
     sessionId: timestampRef,
   });
-  const [pageNumber, setPageNumber] = useState(searchParams.get('page') ?? 1);
-  const [eventSearchQuery, setEventSearchQuery] = useState(searchParams.get('query') ?? '');
+  const [eventSearchQuery, setEventSearchQuery] = useState(
+    searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('query') ?? '',
+  );
+  const dateValidChecker = (date = '') => {
+    const dateFormat = 'YYYY-MM-DD';
+    const toDateFormat = moment(new Date(date)).format(dateFormat);
+    if (date) {
+      if (moment(toDateFormat, dateFormat, true).isValid()) return true;
+      else return false;
+    } else return false;
+  };
+
   const [filter, setFilter] = useState({
-    publication: [],
-    sort: searchParams.get('sortBy') ?? sortByOptions[2]?.key,
-    order: searchParams.get('order') ?? sortOrder?.ASC,
-    dates: [],
+    publication: searchParams.get('publication')
+      ? decodeURIComponent(searchParams.get('publication'))?.split(',')
+      : sessionStorage.getItem('publication')
+      ? decodeURIComponent(sessionStorage.getItem('publication'))?.split(',')
+      : [],
+    sort: searchParams.get('sortBy')
+      ? searchParams.get('sortBy')
+      : sessionStorage.getItem('sortBy') ?? sortByOptions[2]?.key,
+    order: searchParams.get('order') ? searchParams.get('order') : sessionStorage.getItem('order') ?? sortOrder?.ASC,
+    dates:
+      (searchParams.get('startDateRange') || sessionStorage.getItem('startDateRange')) &&
+      (searchParams.get('endDateRange') || sessionStorage.getItem('endDateRange'))
+        ? [
+            searchParams.get('startDateRange')
+              ? dateValidChecker(searchParams.get('startDateRange'))
+                ? moment(searchParams.get('startDateRange'))
+                : searchParams.get('startDateRange')
+              : sessionStorage.getItem('startDateRange')
+              ? dateValidChecker(sessionStorage.getItem('startDateRange'))
+                ? moment(sessionStorage.getItem('startDateRange'))
+                : sessionStorage.getItem('startDateRange')
+              : '',
+            searchParams.get('endDateRange')
+              ? dateValidChecker(searchParams.get('endDateRange'))
+                ? moment(searchParams.get('endDateRange'))
+                : searchParams.get('endDateRange')
+              : sessionStorage.getItem('endDateRange')
+              ? dateValidChecker(sessionStorage.getItem('endDateRange'))
+                ? moment(sessionStorage.getItem('endDateRange'))
+                : sessionStorage.getItem('endDateRange')
+              : '',
+          ]
+        : [],
   });
-  const [userFilter, setUserFilter] = useState([]);
+  const [userFilter, setUserFilter] = useState(
+    searchParams.get('users')
+      ? decodeURIComponent(searchParams.get('users'))?.split(',')
+      : sessionStorage.getItem('users')
+      ? decodeURIComponent(sessionStorage.getItem('users'))?.split(',')
+      : [],
+  );
+  let initialSelectedUsers = {};
+  for (let index = 0; index < userFilter?.length; index++) {
+    Object.assign(initialSelectedUsers, { [userFilter[index]]: true });
+  }
+
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [selectedUsers, setSelectedUsers] = useState({});
-  const [selectedDates, setSelectedDates] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState(initialSelectedUsers ?? {});
+  const [selectedDates, setSelectedDates] = useState(
+    (searchParams.get('startDateRange') || sessionStorage.getItem('startDateRange')) &&
+      (searchParams.get('endDateRange') || sessionStorage.getItem('endDateRange'))
+      ? [
+          searchParams.get('startDateRange')
+            ? dateValidChecker(searchParams.get('startDateRange'))
+              ? moment(searchParams.get('startDateRange'))
+              : ''
+            : sessionStorage.getItem('startDateRange')
+            ? dateValidChecker(sessionStorage.getItem('startDateRange'))
+              ? moment(sessionStorage.getItem('startDateRange'))
+              : ''
+            : '',
+          searchParams.get('endDateRange')
+            ? dateValidChecker(searchParams.get('endDateRange'))
+              ? moment(searchParams.get('endDateRange'))
+              : ''
+            : sessionStorage.getItem('endDateRange')
+            ? dateValidChecker(sessionStorage.getItem('endDateRange'))
+              ? moment(sessionStorage.getItem('endDateRange'))
+              : ''
+            : '',
+        ]
+      : [],
+  );
 
   let userFilterData = allUsersData?.data?.active?.slice()?.sort(function (x, y) {
     return x?.id == user?.id ? -1 : y?.id == user?.id ? 1 : 0;
   });
-  const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   userFilterData = userFilterData
     ?.slice(1)
     ?.sort((a, b) => a?.firstName?.toLowerCase()?.localeCompare(b?.firstName?.toLowerCase()));
   userFilterData = [user].concat(userFilterData);
+
+  const calendarContentLanguage = currentCalendarData?.contentLanguage;
+
   useEffect(() => {
     let query = new URLSearchParams();
     let sortQuery = new URLSearchParams();
+    let usersQuery, publicationQuery;
+
     userFilter?.forEach((user) => query.append('user', user));
     filter?.publication?.forEach((state) => query.append('publish-state', state));
+    if (userFilter?.length > 0) usersQuery = encodeURIComponent(userFilter);
+    if (filter?.publication?.length > 0) publicationQuery = encodeURIComponent(filter.publication);
+
     sortQuery.append(
       'sort',
       encodeURIComponent(
@@ -103,17 +184,41 @@ function Events() {
       sessionId: timestampRef,
     });
     if (!eventSearchQuery || eventSearchQuery === '')
-      setSearchParams(createSearchParams({ page: pageNumber, order: filter?.order, sortBy: filter?.sort }));
+      setSearchParams(
+        createSearchParams({
+          page: pageNumber,
+          order: filter?.order,
+          sortBy: filter?.sort,
+          ...(filter?.dates[0] && { startDateRange: query?.get('start-date-range') }),
+          ...(filter?.dates[1] && { endDateRange: query?.get('end-date-range') }),
+          ...(usersQuery && { users: usersQuery }),
+          ...(publicationQuery && { publication: publicationQuery }),
+        }),
+      );
     else {
       setSearchParams(
-        createSearchParams({ page: pageNumber, query: eventSearchQuery, order: filter?.order, sortBy: filter?.sort }),
+        createSearchParams({
+          page: pageNumber,
+          query: eventSearchQuery,
+          order: filter?.order,
+          sortBy: filter?.sort,
+          ...(filter?.dates[0] && { startDateRange: query?.get('start-date-range') }),
+          ...(filter?.dates[1] && { endDateRange: query?.get('end-date-range') }),
+          ...(usersQuery && { users: usersQuery }),
+          ...(publicationQuery && { publication: publicationQuery }),
+        }),
       );
     }
-  }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter]);
 
-  useEffect(() => {
-    if (calendarId) setPageNumber(1);
-  }, [calendarId]);
+    sessionStorage.setItem('page', pageNumber);
+    sessionStorage.setItem('query', eventSearchQuery);
+    sessionStorage.setItem('order', filter?.order);
+    sessionStorage.setItem('sortBy', filter?.sort);
+    if (usersQuery) sessionStorage.setItem('users', usersQuery);
+    if (publicationQuery) sessionStorage.setItem('publication', publicationQuery);
+    if (filter?.dates[0] && filter?.dates[0] !== '') sessionStorage.setItem('startDateRange', filter?.dates[0]);
+    if (filter?.dates[1] && filter?.dates[1] !== '') sessionStorage.setItem('endDateRange', filter?.dates[1]);
+  }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter]);
 
   const onSearchHandler = (event) => {
     setPageNumber(1);
@@ -170,6 +275,31 @@ function Events() {
 
   const handlePopoverOpenChange = (newOpen) => {
     setIsPopoverOpen(newOpen);
+  };
+
+  const filterClearHandler = () => {
+    setFilter({
+      publication: [],
+      sort: sortByOptions[2]?.key,
+      order: sortOrder?.ASC,
+      dates: [],
+    });
+    setUserFilter([]);
+    setSelectedDates([]);
+    let usersToClear = selectedUsers;
+    Object.keys(usersToClear)?.forEach(function (key) {
+      usersToClear[key] = false;
+    });
+    setSelectedUsers(Object.assign({}, usersToClear));
+    setPageNumber(1);
+    sessionStorage.removeItem('page');
+    sessionStorage.removeItem('query');
+    sessionStorage.removeItem('order');
+    sessionStorage.removeItem('sortBy');
+    sessionStorage.removeItem('users');
+    sessionStorage.removeItem('publication');
+    sessionStorage.removeItem('startDateRange');
+    sessionStorage.removeItem('endDateRange');
   };
   return (
     !isLoading &&
@@ -388,22 +518,7 @@ function Events() {
                       size="large"
                       className="filter-buttons"
                       style={{ color: '#1B3DE6' }}
-                      onClick={() => {
-                        setFilter({
-                          publication: [],
-                          sort: sortByOptions[2]?.key,
-                          order: sortOrder?.ASC,
-                          dates: [],
-                        });
-                        setUserFilter([]);
-                        setSelectedDates([]);
-                        let usersToClear = selectedUsers;
-                        Object.keys(usersToClear)?.forEach(function (key) {
-                          usersToClear[key] = false;
-                        });
-                        setSelectedUsers(Object.assign({}, usersToClear));
-                        setPageNumber(1);
-                      }}>
+                      onClick={filterClearHandler}>
                       {t('dashboard.events.filter.clear')}&nbsp;
                       <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
                     </Button>
