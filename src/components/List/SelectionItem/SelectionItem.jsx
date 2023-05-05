@@ -32,16 +32,17 @@ function SelectionItem(props) {
         className="selection-item-list-wrapper"
         actions={[
           closable && (
-            <Button type="text" key="list-loadmore-close" onClick={onClose}>
-              <CloseCircleOutlined style={{ color: '#1b3de6' }} />
+            <Button type="text" key="list-loadmore-close" onClick={onClose} style={{ padding: '0px' }}>
+              <CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '21px' }} />
             </Button>
           ),
         ]}>
         <List.Item.Meta
-          style={{ alignItems: 'center' }}
+          style={{ alignItems: 'flex-start' }}
           avatar={
             <Avatar
               shape="square"
+              size={'large'}
               icon={icon}
               style={{
                 backgroundColor: '#E3E8FF',

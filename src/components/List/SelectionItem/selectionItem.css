@@ -9,6 +9,12 @@
   background-color: #f9faff;
 }
 .selection-item-list-wrapper {
+  padding: 0px;
+  align-items: self-start;
+}
+
+.selection-item-wrapper .ant-list-item-meta-title {
+  line-height: 1;
 }
 
 .selection-item-list-wrapper .selection-item-title {
@@ -28,7 +34,6 @@
   font-size: 12px;
 }
 
-.selection-item-wrapper .open-hour-url-link{
+.selection-item-wrapper .open-hour-url-link {
   text-decoration: underline;
-  
 }
