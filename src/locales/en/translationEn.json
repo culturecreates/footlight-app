@@ -194,7 +194,8 @@
           "onlineLink": "Link for the online event",
           "placeHolderOnlineLink": "Enter web address URL",
           "streetAddress": "Street address",
-          "venueAccessibility": "Venue accessibility"
+          "venueAccessibility": "Venue accessibility",
+          "openingHours": "Opening hours"
         },
         "otherInformation": {
           "title": "Other information",

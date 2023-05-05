@@ -26,8 +26,14 @@ export const contentLanguageBilingual = ({ fr, en, interfaceLanguage: interfaceL
       break;
   }
 
-  if (contentLanguageKey === 'fr' && fr) return fr;
-  else if (contentLanguageKey === 'en' && en) return en;
-  else if (fr && !en) return fr;
+  if (contentLanguageKey === 'fr') {
+    if (calendarContentLanguage === contentLanguage.FRENCH) return fr;
+    else if (fr) return fr;
+    else if (en) return en;
+  } else if (contentLanguageKey === 'en') {
+    if (calendarContentLanguage === contentLanguage.ENGLISH) return en;
+    else if (en) return en;
+    else if (fr) return fr;
+  } else if (fr && !en) return fr;
   else return en;
 };
