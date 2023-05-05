@@ -229,7 +229,7 @@ function AddEvent() {
             contactPoint,
             accessibility = [],
             accessibilityNote,
-            keywords,
+            keywords = [],
             locationId,
             offerConfiguration,
             organizers = [],
@@ -363,7 +363,7 @@ function AddEvent() {
               ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote }),
             };
           }
-          if (values?.keywords?.length) {
+          if (values?.keywords?.length > 0) {
             keywords = values?.keywords;
           }
           if (ticketType) {
@@ -863,7 +863,8 @@ function AddEvent() {
         if (eventData?.videoUrl) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.videoLink);
         if (eventData?.facebookUrl)
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.facebookLinkWrap);
-        if (eventData?.keywords) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
+        if (eventData?.keywords?.length > 0)
+          initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
         if (eventData?.accessibilityNote?.en || eventData?.accessibilityNote?.fr)
           initialAddedFields = initialAddedFields?.concat(eventAccessibilityFieldNames?.noteWrap);
         if (eventData?.inLanguage?.length > 0)
