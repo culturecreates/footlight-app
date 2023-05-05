@@ -9,7 +9,7 @@ import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 
-function Calendar({ children, allCalendarsData }) {
+function Calendar({ children, allCalendarsData, setPageNumber }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector(getUserDetails);
@@ -46,6 +46,15 @@ function Calendar({ children, allCalendarsData }) {
   const onClick = ({ key }) => {
     navigate(`${PathName.Dashboard}/${key}${PathName.Events}`);
     dispatch(setSelectedCalendar(String(key)));
+    setPageNumber(1);
+    sessionStorage.removeItem('page');
+    sessionStorage.removeItem('query');
+    sessionStorage.removeItem('order');
+    sessionStorage.removeItem('sortBy');
+    sessionStorage.removeItem('users');
+    sessionStorage.removeItem('publication');
+    sessionStorage.removeItem('startDateRange');
+    sessionStorage.removeItem('endDateRange');
     setOpen(false);
   };
 

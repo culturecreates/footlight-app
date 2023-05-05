@@ -229,7 +229,7 @@ function AddEvent() {
             contactPoint,
             accessibility = [],
             accessibilityNote,
-            keywords,
+            keywords = [],
             locationId,
             offerConfiguration,
             organizers = [],
@@ -363,7 +363,7 @@ function AddEvent() {
               ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote }),
             };
           }
-          if (values?.keywords?.length) {
+          if (values?.keywords?.length > 0) {
             keywords = values?.keywords;
           }
           if (ticketType) {
@@ -757,7 +757,7 @@ function AddEvent() {
   }, [selectedSupporters]);
 
   useEffect(() => {
-    if (calendarId && eventData) {
+    if (calendarId && eventData && currentCalendarData) {
       let initialAddedFields = [],
         isRecurring = false;
       if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState) || duplicateId) {
@@ -803,7 +803,7 @@ function AddEvent() {
                   ...initialPlace[0],
                   ['accessibility']: initialPlaceAccessibiltiy,
                 };
-                setLocationPlace(placesOptions(initialPlace)[0], user, calendarContentLanguage);
+                setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0]);
               })
               .catch((error) => console.log(error));
           } else {
@@ -811,7 +811,7 @@ function AddEvent() {
               ...initialPlace[0],
               ['accessibility']: [],
             };
-            setLocationPlace(placesOptions(initialPlace)[0], user, calendarContentLanguage);
+            setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0]);
           }
         }
         if (eventData?.locations?.filter((location) => location?.isVirtualLocation == true)?.length > 0)
@@ -863,7 +863,8 @@ function AddEvent() {
         if (eventData?.videoUrl) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.videoLink);
         if (eventData?.facebookUrl)
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.facebookLinkWrap);
-        if (eventData?.keywords) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
+        if (eventData?.keywords?.length > 0)
+          initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
         if (eventData?.accessibilityNote?.en || eventData?.accessibilityNote?.fr)
           initialAddedFields = initialAddedFields?.concat(eventAccessibilityFieldNames?.noteWrap);
         if (eventData?.inLanguage?.length > 0)
@@ -913,7 +914,7 @@ function AddEvent() {
       } else
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
     }
-  }, [isLoading]);
+  }, [isLoading, currentCalendarData]);
   useEffect(() => {
     if (currentCalendarData) {
       let publishValidateFields = [];
@@ -975,11 +976,13 @@ function AddEvent() {
   }, [currentCalendarData]);
 
   useEffect(() => {
-    setOrganizersList(treeEntitiesOption(initialEntities, user, calendarContentLanguage));
-    setPerformerList(treeEntitiesOption(initialEntities, user, calendarContentLanguage));
-    setSupporterList(treeEntitiesOption(initialEntities, user, calendarContentLanguage));
-    placesSearch();
-  }, [initialEntityLoading]);
+    if (initialEntities && currentCalendarData) {
+      setOrganizersList(treeEntitiesOption(initialEntities, user, calendarContentLanguage));
+      setPerformerList(treeEntitiesOption(initialEntities, user, calendarContentLanguage));
+      setSupporterList(treeEntitiesOption(initialEntities, user, calendarContentLanguage));
+      placesSearch();
+    }
+  }, [initialEntityLoading, currentCalendarData]);
 
   return (
     !isLoading &&

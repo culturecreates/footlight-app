@@ -15,7 +15,7 @@ const { Sider } = Layout;
 function Sidebar(props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { currentCalendarData, allCalendarsData } = props;
+  const { currentCalendarData, allCalendarsData, pageNumber, setPageNumber } = props;
   const { user } = useSelector(getUserDetails);
   let { calendarId } = useParams();
 
@@ -76,7 +76,7 @@ function Sidebar(props) {
       onCollapse={(value) => setCollapsed(value)}
       breakpoint={('sm', 'xs', 'lg')}>
       <div className="sidebar-calendar-menu">
-        <CalendarList allCalendarsData={allCalendarsData}>
+        <CalendarList allCalendarsData={allCalendarsData} pageNumber={pageNumber} setPageNumber={setPageNumber}>
           <Menu
             defaultSelectedKeys={['1']}
             style={{
