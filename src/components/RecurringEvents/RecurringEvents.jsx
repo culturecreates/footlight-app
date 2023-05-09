@@ -38,8 +38,10 @@ const RecurringEvents = function ({
 
   useEffect(() => {
     if (eventDetails) {
-      if (formFields?.frequency === 'CUSTOM' || eventDetails.recurringEvent?.frequency === 'CUSTOM') setIsCustom(true);
-      else setIsCustom(false);
+      if (formFields?.frequency === 'CUSTOM' || eventDetails.recurringEvent?.frequency === 'CUSTOM') {
+        setDateModified(true);
+        setIsCustom(true);
+      } else setIsCustom(false);
       if (eventDetails.recurringEvent?.customDates) {
         setIsCustom(true);
         const custom = eventDetails.recurringEvent?.customDates.map((item) => {
@@ -212,7 +214,6 @@ const RecurringEvents = function ({
       };
       return obj;
     });
-
     if (!dateModified) setCustomDates(custom);
   };
   function getDaysBetweenDates(start, end, dayName) {
