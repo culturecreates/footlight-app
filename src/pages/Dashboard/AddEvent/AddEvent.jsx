@@ -41,7 +41,6 @@ import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../ser
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 import ImageUpload from '../../../components/ImageUpload';
-import Compressor from 'compressorjs';
 import { useAddImageMutation } from '../../../services/image';
 import TreeSelectOption from '../../../components/TreeSelectOption';
 import {
@@ -475,32 +474,26 @@ function AddEvent() {
           };
 
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
-            new Compressor(values?.dragger[0]?.originFileObj, {
-              convertSize: 200000,
-              success: (compressedResult) => {
-                const formdata = new FormData();
-                formdata.append('files', values?.dragger[0].originFileObj);
-                formdata.append('files', new File([compressedResult], 'compressed' + compressedResult.name));
-                formdata &&
-                  addImage({ data: formdata, calendarId })
-                    .unwrap()
-                    .then((response) => {
-                      image = response?.data;
-                      eventObj['image'] = image;
-                      addUpdateEventApiHandler(eventObj, toggle)
-                        .then((id) => resolve(id))
-                        .catch((error) => {
-                          reject();
-                          console.log(error);
-                        });
-                    })
+            const formdata = new FormData();
+            formdata.append('file', values?.dragger[0].originFileObj);
+            formdata &&
+              addImage({ data: formdata, calendarId })
+                .unwrap()
+                .then((response) => {
+                  image = response?.data;
+                  eventObj['image'] = image;
+                  addUpdateEventApiHandler(eventObj, toggle)
+                    .then((id) => resolve(id))
                     .catch((error) => {
+                      reject();
                       console.log(error);
-                      const element = document.getElementsByClassName('draggerWrap');
-                      element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
                     });
-              },
-            });
+                })
+                .catch((error) => {
+                  console.log(error);
+                  const element = document.getElementsByClassName('draggerWrap');
+                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                });
           } else {
             if (values?.draggerWrap) {
               if (values?.dragger && values?.dragger?.length == 0) eventObj['image'] = null;
