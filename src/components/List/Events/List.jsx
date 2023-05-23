@@ -124,7 +124,7 @@ function Lists(props) {
                   </div>
                 )}
                 <img
-                  src={eventItem?.image?.original?.uri}
+                  src={eventItem?.image?.thumbnail?.uri}
                   className="event-list-image"
                   style={{
                     border:
