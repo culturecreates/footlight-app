@@ -90,8 +90,15 @@ function CreateAccount() {
         .catch((error) => {
           console.log(error);
           notification.error({
-            description: t('createAccount.errorNotification'),
+            description: (
+              <>
+                {t('createAccount.errorNotification')}
+                <br />
+                {error?.data?.message}
+              </>
+            ),
             placement: 'top',
+            maxCount: 1,
           });
           navigate(PathName.Login);
         });
