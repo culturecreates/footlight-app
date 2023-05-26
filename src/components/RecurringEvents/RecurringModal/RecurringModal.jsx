@@ -321,7 +321,9 @@ const RecurringModal = ({
               <div key={item.id}>
                 <div className="custom-time-layout">
                   <div className={item.isDeleted ? 'deleted-text custom-no-of-date' : 'custom-no-of-date'}>
-                    {moment(item.startDate).locale(i18n.language).format('MMMM DD, YYYY')}
+                    {moment(moment(item.startDate).format('DD-MM-YYYY'), 'DD-MM-YYYY')
+                      .locale(i18n.language)
+                      .format('MMMM DD, YYYY')}
                   </div>
                   <div className="crud-icons">
                     {item.isDeleted ? (
