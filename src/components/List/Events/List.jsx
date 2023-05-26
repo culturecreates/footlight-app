@@ -168,9 +168,9 @@ function Lists(props) {
                   )}
                 </span>
                 &nbsp;&nbsp;
-                {eventItem?.subEventDetails?.upcomingSubEventCount &&
-                eventItem?.subEventDetails?.upcomingSubEventCount != 0 ? (
-                  <EventNumber label={eventItem?.subEventDetails?.upcomingSubEventCount} />
+                {eventItem?.subEventDetails?.totalSubEventCount &&
+                eventItem?.subEventDetails?.totalSubEventCount != 0 ? (
+                  <EventNumber label={eventItem?.subEventDetails?.totalSubEventCount} />
                 ) : (
                   <></>
                 )}
