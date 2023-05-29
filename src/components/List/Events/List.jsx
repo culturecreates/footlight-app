@@ -63,17 +63,8 @@ function Lists(props) {
           className="event-list-item-wrapper"
           key={index}
           actions={[
-            <EventStatusOptions
-              key={index}
-              publishState={eventItem?.publishState}
-              creator={eventItem?.creator}
-              eventId={eventItem?.id}>
-              <span>
-                <MoreOutlined className="event-list-more-icon" key={index} />
-              </span>
-            </EventStatusOptions>,
-
-            calendar[0]?.role === userRoles.GUEST && (
+            calendar[0]?.role === userRoles.GUEST ||
+            (calendar[0]?.role === userRoles.CONTRIBUTOR && eventItem?.creator?.userId != user?.id) ? (
               <Dropdown
                 className="calendar-dropdown-wrapper"
                 overlayStyle={{
@@ -96,6 +87,16 @@ function Lists(props) {
                   <MoreOutlined className="event-list-more-icon" key={index} />
                 </span>
               </Dropdown>
+            ) : (
+              <EventStatusOptions
+                key={index}
+                publishState={eventItem?.publishState}
+                creator={eventItem?.creator}
+                eventId={eventItem?.id}>
+                <span>
+                  <MoreOutlined className="event-list-more-icon" key={index} />
+                </span>
+              </EventStatusOptions>
             ),
           ]}
           extra={[
