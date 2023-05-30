@@ -73,11 +73,14 @@ import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequire
 import StyledSwitch from '../../../components/Switch/index';
 import ContentLanguageInput from '../../../components/ContentLanguageInput';
 import { contentLanguage } from '../../../constants/contentLanguage';
+import QuickCreateOrganization from '../../../components/Modal/QuickCreateOrganization/QuickCreateOrganization';
+import QuickSelect from '../../../components/Modal/QuickSelect/QuickSelect';
 const { TextArea } = Input;
 
 function AddEvent() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const [organzierForm] = Form.useForm();
   const [addEvent] = useAddEventMutation();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId, eventId } = useParams();
@@ -139,6 +142,8 @@ function AddEvent() {
   const [formValue, setFormValue] = useState();
   const [validateFields, setValidateFields] = useState([]);
   const [descriptionMinimumWordCount, setDescriptionMinimumWordCount] = useState(1);
+  const [quickOrganizerModal, setQuickOrganizerModal] = useState(false);
+  const [quickCreateOrganizerModal, setQuickCreateOrganizerModal] = useState(false);
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -1831,24 +1836,36 @@ function AddEvent() {
                       getPopupContainer={(trigger) => trigger.parentNode}
                       trigger={['click']}
                       content={
-                        organizersList?.length > 0 ? (
-                          organizersList?.map((organizer, index) => (
-                            <div
-                              key={index}
-                              className="event-popover-options"
-                              onClick={() => {
-                                setSelectedOrganizers([...selectedOrganizers, organizer]);
-                                setIsPopoverOpen({
-                                  ...isPopoverOpen,
-                                  organizer: false,
-                                });
-                              }}>
-                              {organizer?.label}
-                            </div>
-                          ))
-                        ) : (
-                          <NoContent />
-                        )
+                        <div>
+                          <div>
+                            {organizersList?.length > 0 ? (
+                              organizersList?.map((organizer, index) => (
+                                <div
+                                  key={index}
+                                  className="event-popover-options"
+                                  onClick={() => {
+                                    setSelectedOrganizers([...selectedOrganizers, organizer]);
+                                    setIsPopoverOpen({
+                                      ...isPopoverOpen,
+                                      organizer: false,
+                                    });
+                                  }}>
+                                  {organizer?.label}
+                                </div>
+                              ))
+                            ) : (
+                              <NoContent />
+                            )}
+                          </div>
+                          <div
+                            className="event-popover-options"
+                            onClick={() => {
+                              setIsPopoverOpen({ ...isPopoverOpen, organizer: false });
+                              setQuickOrganizerModal(true);
+                            }}>
+                            Quick create
+                          </div>
+                        </div>
                       }>
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
@@ -1880,6 +1897,16 @@ function AddEvent() {
                       );
                     })}
                   </Form.Item>
+                  <QuickSelect
+                    open={quickOrganizerModal}
+                    setOpen={setQuickOrganizerModal}
+                    setQuickCreateOrganizerModal={setQuickCreateOrganizerModal}
+                  />
+                  <QuickCreateOrganization
+                    form={organzierForm}
+                    open={quickCreateOrganizerModal}
+                    onCancel={() => setQuickCreateOrganizerModal(false)}
+                  />
                 </Form.Item>
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.contact.title')}
