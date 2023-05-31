@@ -58,7 +58,7 @@ const RecurringModal = ({
   };
   const handleDateSort = (array) => {
     const sortedArray = array?.sort(
-      (a, b) => new moment(a?.startDate).format('YYYYMMDD') - new moment(b?.startDate).format('YYYYMMDD'),
+      (a, b) => new moment(a?.initDate).format('YYYYMMDD') - new moment(b?.initDate).format('YYYYMMDD'),
     );
     return sortedArray;
   };
