@@ -211,10 +211,24 @@ const RecurringModal = ({
     );
   };
 
+  const dateConverter = (date) => {
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+
+    const paddedDay = String(day).padStart(2, '0');
+    const paddedMonth = String(month).padStart(2, '0');
+
+    const formattedDate = `${paddedDay}/${paddedMonth}/${year}`;
+    return formattedDate;
+  };
+
   const getNumberOfDays = async (start, end) => {
+    let startDate = dateConverter(start);
+    let endDate = dateConverter(end);
     let date = [];
 
-    for (var m = moment(start); m.isSameOrBefore(end); m.add(1, 'days')) {
+    for (var m = moment(startDate); m.isSameOrBefore(endDate); m.add(1, 'days')) {
       date.push(m.format('DD/MM/YYYY'));
     }
 
