@@ -9,19 +9,66 @@ import { contentLanguage } from '../../../constants/contentLanguage';
 import BilingualInput from '../../BilingualInput/BilingualInput';
 import ImageUpload from '../../ImageUpload/ImageUpload';
 import StyledInput from '../../Input/Common';
+import { useAddImageMutation } from '../../../services/image';
 
 const { TextArea } = Input;
 
 function QuickCreateOrganization(props) {
-  const { open, setOpen, calendarContentLanguage } = props;
+  const { open, setOpen, calendarContentLanguage, calendarId } = props;
   const [form] = Form.useForm();
   const { t } = useTranslation();
+
+  const [addImage] = useAddImageMutation();
+
   const createOrganizationHandler = () => {
     form
       .validateFields(['french', 'english'])
       .then(() => {
         var values = form.getFieldsValue(true);
-        console.log(values);
+        let name = {},
+          url = {},
+          organizationObj = {},
+          logo = {};
+
+        if (values?.english)
+          name = {
+            en: values?.english,
+          };
+
+        if (values?.french)
+          name = {
+            ...name,
+            fr: values?.french,
+          };
+
+        if (values?.contactWebsiteUrl)
+          url = {
+            uri: values?.contactWebsiteUrl,
+          };
+        organizationObj = {
+          name,
+          url,
+        };
+        if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
+          const formdata = new FormData();
+          formdata.append('file', values?.dragger[0].originFileObj);
+          formdata &&
+            addImage({ data: formdata, calendarId })
+              .unwrap()
+              .then((response) => {
+                logo = response?.data;
+                organizationObj['logo'] = logo;
+                // addUpdateEventApiHandler(eventObj, toggle)
+                //   .then((id) => resolve(id))
+                //   .catch((error) => {
+                //     reject();
+                //     console.log(error);
+                //   });
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+        }
       })
       .catch((error) => console.log(error));
   };

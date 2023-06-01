@@ -1901,7 +1901,11 @@ function AddEvent() {
                     setOpen={setQuickOrganizerModal}
                     setQuickCreateOrganizerModal={setQuickCreateOrganizerModal}
                   />
-                  <QuickCreateOrganization open={quickCreateOrganizerModal} setOpen={setQuickCreateOrganizerModal} />
+                  <QuickCreateOrganization
+                    open={quickCreateOrganizerModal}
+                    setOpen={setQuickCreateOrganizerModal}
+                    calendarId={calendarId}
+                  />
                 </Form.Item>
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.contact.title')}
