@@ -1860,7 +1860,7 @@ function AddEvent() {
                           </div>
                           {quickCreateKeyword?.length > 0 && (
                             <div
-                              className="event-popover-options"
+                              className="quick-create"
                               onClick={() => {
                                 setIsPopoverOpen({ ...isPopoverOpen, organizer: false });
                                 setQuickOrganizerModal(true);

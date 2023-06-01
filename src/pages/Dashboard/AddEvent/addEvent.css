@@ -77,7 +77,6 @@
   font-size: 12px;
 }
 
-
 .add-edit-wrapper .ant-popover-inner {
   filter: drop-shadow(0px 8px 32px rgba(0, 0, 0, 0.2));
 }
@@ -111,4 +110,14 @@
 .add-edit-wrapper .event-popover-options:hover,
 .add-edit-wrapper .event-popover-options-active {
   background: #eff2ff;
+}
+
+.add-edit-wrapper .quick-create {
+  background-color: #eff2ff;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: #1b3de6;
+  font-weight: 700;
+  font-size: 16px;
 }
