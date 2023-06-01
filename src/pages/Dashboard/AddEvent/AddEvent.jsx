@@ -10,6 +10,7 @@ import {
   PlusOutlined,
   EditOutlined,
   SnippetsOutlined,
+  PlusCircleOutlined,
 } from '@ant-design/icons';
 import moment from 'moment-timezone';
 import i18n from 'i18next';
@@ -143,6 +144,7 @@ function AddEvent() {
   const [descriptionMinimumWordCount, setDescriptionMinimumWordCount] = useState(1);
   const [quickOrganizerModal, setQuickOrganizerModal] = useState(false);
   const [quickCreateOrganizerModal, setQuickCreateOrganizerModal] = useState(false);
+  const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -1856,20 +1858,25 @@ function AddEvent() {
                               <NoContent />
                             )}
                           </div>
-                          <div
-                            className="event-popover-options"
-                            onClick={() => {
-                              setIsPopoverOpen({ ...isPopoverOpen, organizer: false });
-                              setQuickOrganizerModal(true);
-                            }}>
-                            Quick create
-                          </div>
+                          {quickCreateKeyword?.length > 0 && (
+                            <div
+                              className="event-popover-options"
+                              onClick={() => {
+                                setIsPopoverOpen({ ...isPopoverOpen, organizer: false });
+                                setQuickOrganizerModal(true);
+                              }}>
+                              <PlusCircleOutlined />
+                              &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
+                              {quickCreateKeyword}&#34;
+                            </div>
+                          )}
                         </div>
                       }>
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
                         onChange={(e) => {
+                          setQuickCreateKeyword(e.target.value);
                           organizationPersonSearch(e.target.value, 'organizers');
                           setIsPopoverOpen({ ...isPopoverOpen, organizer: true });
                         }}
@@ -1905,6 +1912,7 @@ function AddEvent() {
                     open={quickCreateOrganizerModal}
                     setOpen={setQuickCreateOrganizerModal}
                     calendarId={calendarId}
+                    keyword={quickCreateKeyword}
                   />
                 </Form.Item>
                 <Form.Item

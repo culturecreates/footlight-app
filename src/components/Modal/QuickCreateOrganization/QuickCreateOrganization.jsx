@@ -15,7 +15,7 @@ import { useAddOrganizationMutation } from '../../../services/organization';
 const { TextArea } = Input;
 
 function QuickCreateOrganization(props) {
-  const { open, setOpen, calendarContentLanguage, calendarId } = props;
+  const { open, setOpen, calendarContentLanguage, calendarId, keyword } = props;
   const [form] = Form.useForm();
   const { t } = useTranslation();
 
@@ -87,6 +87,7 @@ function QuickCreateOrganization(props) {
     <CustomModal
       open={open}
       destroyOnClose
+      centered
       title={<span>{t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.title')}</span>}
       onCancel={() => setOpen(false)}
       footer={[
@@ -124,6 +125,7 @@ function QuickCreateOrganization(props) {
                 <Form.Item
                   name="french"
                   key={contentLanguage.FRENCH}
+                  initialValue={keyword}
                   dependencies={['english']}
                   rules={[
                     ({ getFieldValue }) => ({
@@ -145,6 +147,7 @@ function QuickCreateOrganization(props) {
                 <Form.Item
                   name="english"
                   dependencies={['french']}
+                  initialValue={keyword}
                   rules={[
                     ({ getFieldValue }) => ({
                       validator(_, value) {
