@@ -14,9 +14,10 @@ function QuickSelect(props) {
   return (
     <CustomModal
       open={open}
+      onCancel={() => setOpen(false)}
       title={<span className="quick-select-modal-title">{t('dashboard.events.addEditEvent.quickCreate.title')}</span>}
       footer={false}>
-      <Row gutter={[0, 10]} className="quick-select-modal-wrapper">
+      <Row gutter={[0, 32]} className="quick-select-modal-wrapper">
         <Col span={24}>
           <span className="quick-select-modal-sub-heading">
             {t('dashboard.events.addEditEvent.quickCreate.subHeading')}

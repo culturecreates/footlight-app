@@ -343,7 +343,12 @@
             "name": "Name",
             "logo": "Logo",
             "logoSubHeading": "Only .jpeg and .png files are accepted.",
-            "success": "Success! Your organization has been created."
+            "success": "Success! Your organization has been created.",
+            "namePlaceholder": "Enter a name",
+            "websitePlaceholder": "Enter website",
+            "validations": {
+              "name": "Name is required."
+            }
           }
         }
       },

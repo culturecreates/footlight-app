@@ -13,7 +13,7 @@
 
 .quick-create-organization-modal-wrapper .quick-create-organization-modal-label::after {
   display: inline-block;
-  margin-right: 4px;
+  margin-left: 4px;
   color: #f43131;
   font-size: 14px;
   font-family: 'Roboto';

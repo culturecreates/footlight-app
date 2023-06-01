@@ -136,9 +136,9 @@ function QuickCreateOrganization(props) {
             </Row>
             <Row>
               <Col>
-                <p className="quick-create-organization-modal-label">
+                <span className="quick-create-organization-modal-label">
                   {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.name')}
-                </p>
+                </span>
               </Col>
             </Row>
             <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
@@ -153,14 +153,19 @@ function QuickCreateOrganization(props) {
                       validator(_, value) {
                         if (value || getFieldValue('english')) {
                           return Promise.resolve();
-                        } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                        } else
+                          return Promise.reject(
+                            new Error(
+                              t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.validations.name'),
+                            ),
+                          );
                       },
                     }),
                   ]}>
                   <TextArea
                     autoSize
                     autoComplete="off"
-                    placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
+                    placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.namePlaceholder')}
                     style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
                     size="large"
                   />
@@ -174,14 +179,19 @@ function QuickCreateOrganization(props) {
                       validator(_, value) {
                         if (value || getFieldValue('french')) {
                           return Promise.resolve();
-                        } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                        } else
+                          return Promise.reject(
+                            new Error(
+                              t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.validations.name'),
+                            ),
+                          );
                       },
                     }),
                   ]}>
                   <TextArea
                     autoSize
                     autoComplete="off"
-                    placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
+                    placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.namePlaceholder')}
                     style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
                     size="large"
                   />
@@ -200,7 +210,7 @@ function QuickCreateOrganization(props) {
               <StyledInput
                 addonBefore="https://"
                 autoComplete="off"
-                placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
+                placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.websitePlaceholder')}
               />
             </Form.Item>
             <Form.Item
