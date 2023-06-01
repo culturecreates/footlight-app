@@ -29,8 +29,7 @@ function QuickCreateOrganization(props) {
         var values = form.getFieldsValue(true);
         let name = {},
           url = {},
-          organizationObj = {},
-          logo = {};
+          organizationObj = {};
 
         if (values?.english)
           name = {
@@ -58,11 +57,12 @@ function QuickCreateOrganization(props) {
             addImage({ data: formdata, calendarId })
               .unwrap()
               .then((response) => {
-                logo = response?.data;
-                organizationObj['logo'] = logo;
+                organizationObj['logo'] = response?.data;
                 addOrganization({ data: organizationObj, calendarId })
                   .unwrap()
-                  .then((response) => console.log(response))
+                  .then(() => {
+                    setOpen(false);
+                  })
                   .catch((error) => {
                     console.log(error);
                   });
@@ -70,6 +70,15 @@ function QuickCreateOrganization(props) {
               .catch((error) => {
                 console.log(error);
               });
+        } else {
+          addOrganization({ data: organizationObj, calendarId })
+            .unwrap()
+            .then(() => {
+              setOpen(false);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         }
       })
       .catch((error) => console.log(error));
@@ -77,6 +86,7 @@ function QuickCreateOrganization(props) {
   return (
     <CustomModal
       open={open}
+      destroyOnClose
       title={<span>{t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.title')}</span>}
       onCancel={() => setOpen(false)}
       footer={[
@@ -94,7 +104,7 @@ function QuickCreateOrganization(props) {
       ]}>
       <Row gutter={[0, 10]}>
         <Col span={24}>
-          <Form form={form} layout="vertical" name="organizerForm">
+          <Form form={form} layout="vertical" name="organizerForm" preserve={false}>
             <Row>
               <Col>
                 <p className="add-event-date-heading">

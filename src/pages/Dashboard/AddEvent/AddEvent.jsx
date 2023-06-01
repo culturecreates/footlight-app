@@ -1815,7 +1815,7 @@ function AddEvent() {
                       </p>
                     </Col>
                   </Row>
-                  <ImageUpload imageUrl={eventData?.image?.original?.uri} imageReadOnly={false} />
+                  <ImageUpload imageUrl={eventData?.image?.original?.uri} imageReadOnly={false} preview={true} />
                 </Form.Item>
                 <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.organizer.title')}>
                   <Row>
