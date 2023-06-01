@@ -340,7 +340,8 @@
             "subHeading": "Ajoutez des informations de base sur cette organisation.",
             "name": "Nom",
             "logo": "Logo",
-            "logoSubHeading": "Seuls les fichiers .jpeg et .png sont acceptés."
+            "logoSubHeading": "Seuls les fichiers .jpeg et .png sont acceptés.",
+            "success": "Succès ! Votre organisation a été créé."
           }
         }
       },

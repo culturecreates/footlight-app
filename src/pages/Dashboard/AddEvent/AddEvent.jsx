@@ -1913,6 +1913,7 @@ function AddEvent() {
                     setOpen={setQuickCreateOrganizerModal}
                     calendarId={calendarId}
                     keyword={quickCreateKeyword}
+                    setKeyword={setQuickCreateKeyword}
                   />
                 </Form.Item>
                 <Form.Item

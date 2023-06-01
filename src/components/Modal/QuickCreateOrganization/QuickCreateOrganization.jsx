@@ -3,7 +3,7 @@ import CustomModal from '../Common/CustomModal';
 import TextButton from '../../Button/Text/Text';
 import { useTranslation } from 'react-i18next';
 import PrimaryButton from '../../Button/Primary/Primary';
-import { Row, Col, Form, Input } from 'antd';
+import { Row, Col, Form, Input, notification } from 'antd';
 import ContentLanguageInput from '../../ContentLanguageInput/ContentLanguageInput';
 import { contentLanguage } from '../../../constants/contentLanguage';
 import BilingualInput from '../../BilingualInput/BilingualInput';
@@ -15,7 +15,7 @@ import { useAddOrganizationMutation } from '../../../services/organization';
 const { TextArea } = Input;
 
 function QuickCreateOrganization(props) {
-  const { open, setOpen, calendarContentLanguage, calendarId, keyword } = props;
+  const { open, setOpen, calendarContentLanguage, calendarId, keyword, setKeyword } = props;
   const [form] = Form.useForm();
   const { t } = useTranslation();
 
@@ -61,6 +61,14 @@ function QuickCreateOrganization(props) {
                 addOrganization({ data: organizationObj, calendarId })
                   .unwrap()
                   .then(() => {
+                    notification.success({
+                      description: t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.success'),
+                      placement: 'top',
+                      closeIcon: <></>,
+                      maxCount: 1,
+                      duration: 3,
+                    });
+                    setKeyword('');
                     setOpen(false);
                   })
                   .catch((error) => {
@@ -74,6 +82,14 @@ function QuickCreateOrganization(props) {
           addOrganization({ data: organizationObj, calendarId })
             .unwrap()
             .then(() => {
+              notification.success({
+                description: t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.success'),
+                placement: 'top',
+                closeIcon: <></>,
+                maxCount: 1,
+                duration: 3,
+              });
+              setKeyword('');
               setOpen(false);
             })
             .catch((error) => {
