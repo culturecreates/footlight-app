@@ -329,6 +329,12 @@
           "errorReview": "This event needs more information before it can be sent for review.",
           "errorDraft": "This event needs more information before it can be saved.",
           "errorImage": "This image cannot be saved. Adjust the image or try a different one."
+        },
+        "quickCreate": {
+          "title": "Create an organizer",
+          "subHeading": "What type of organizer you want to create?",
+          "person": "Person",
+          "organization": "Organization"
         }
       },
       "publishOptions": {

@@ -327,6 +327,12 @@
           "errorReview": "Cet événement a besoin de plus d'informations avant d'être envoyé pour validation.",
           "errorDraft": "Cet événement a besoin de plus d'informations avant d'être enregistré.",
           "errorImage": "Cette image ne peut pas être enregistrée. Ajustez l'image ou essayez-en une autre."
+        },
+        "quickCreate": {
+          "title": "Créer un organisateur",
+          "subHeading": "Quel type d'organisateur voulez-vous créer ?",
+          "person": "Personne",
+          "organization": "Organisation"
         }
       },
 

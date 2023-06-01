@@ -11,17 +11,17 @@ function QuickSelect(props) {
   const { t } = useTranslation();
 
   return (
-    <CustomModal open={open} title={<span>Create an organizer</span>} footer={false}>
+    <CustomModal open={open} title={<span>{t('dashboard.events.addEditEvent.quickCreate.title')}</span>} footer={false}>
       <Row gutter={[0, 10]}>
         <Col span={24}>
-          <span>What type of organizer you want to create</span>
+          <span>{t('dashboard.events.addEditEvent.quickCreate.subHeading')}</span>
         </Col>
         <Col span={24}>
           <Row align={'middle'} justify={'center'}>
             <Col span={8}>
               <DateAction
                 iconrender={<UserOutlined style={{ fontSize: '12px', color: '#607EFC' }} />}
-                label={t('dashboard.events.addEditEvent.tickets.free')}
+                label={t('dashboard.events.addEditEvent.quickCreate.person')}
                 onClick={() => setQuickCreateOrganizerModal(true)}
               />
             </Col>
@@ -36,7 +36,7 @@ function QuickSelect(props) {
                     }}
                   />
                 }
-                label={t('dashboard.events.addEditEvent.tickets.free')}
+                label={t('dashboard.events.addEditEvent.quickCreate.organization')}
                 onClick={() => {
                   setOpen(!open);
                   setQuickCreateOrganizerModal(true);
