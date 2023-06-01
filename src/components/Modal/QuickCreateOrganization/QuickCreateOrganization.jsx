@@ -11,6 +11,7 @@ import ImageUpload from '../../ImageUpload/ImageUpload';
 import StyledInput from '../../Input/Common';
 import { useAddImageMutation } from '../../../services/image';
 import { useAddOrganizationMutation } from '../../../services/organization';
+import './quickCreateOrganization.css';
 
 const { TextArea } = Input;
 
@@ -104,7 +105,11 @@ function QuickCreateOrganization(props) {
       open={open}
       destroyOnClose
       centered
-      title={<span>{t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.title')}</span>}
+      title={
+        <span className="quick-create-organization-modal-title">
+          {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.title')}
+        </span>
+      }
       onCancel={() => setOpen(false)}
       footer={[
         <TextButton
@@ -119,19 +124,19 @@ function QuickCreateOrganization(props) {
           onClick={createOrganizationHandler}
         />,
       ]}>
-      <Row gutter={[0, 10]}>
+      <Row gutter={[0, 10]} className="quick-create-organization-modal-wrapper">
         <Col span={24}>
           <Form form={form} layout="vertical" name="organizerForm" preserve={false}>
             <Row>
               <Col>
-                <p className="add-event-date-heading">
+                <p className="quick-create-organization-modal-sub-heading">
                   {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.subHeading')}
                 </p>
               </Col>
             </Row>
             <Row>
               <Col>
-                <p className="add-event-date-heading">
+                <p className="quick-create-organization-modal-label">
                   {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.name')}
                 </p>
               </Col>
@@ -225,7 +230,7 @@ function QuickCreateOrganization(props) {
               ]}>
               <Row>
                 <Col>
-                  <p className="add-event-date-heading">
+                  <p className="quick-create-organization-modal-sub-heading">
                     {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.logoSubHeading')}
                   </p>
                 </Col>
