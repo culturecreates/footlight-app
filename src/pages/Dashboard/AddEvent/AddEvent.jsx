@@ -80,7 +80,6 @@ const { TextArea } = Input;
 function AddEvent() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const [organzierForm] = Form.useForm();
   const [addEvent] = useAddEventMutation();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId, eventId } = useParams();
@@ -1902,11 +1901,7 @@ function AddEvent() {
                     setOpen={setQuickOrganizerModal}
                     setQuickCreateOrganizerModal={setQuickCreateOrganizerModal}
                   />
-                  <QuickCreateOrganization
-                    form={organzierForm}
-                    open={quickCreateOrganizerModal}
-                    onCancel={() => setQuickCreateOrganizerModal(false)}
-                  />
+                  <QuickCreateOrganization open={quickCreateOrganizerModal} setOpen={setQuickCreateOrganizerModal} />
                 </Form.Item>
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.contact.title')}

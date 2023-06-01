@@ -332,7 +332,16 @@
           "title": "Créer un organisateur",
           "subHeading": "Quel type d'organisateur voulez-vous créer ?",
           "person": "Personne",
-          "organization": "Organisation"
+          "organization": "Organisation",
+          "create": "Créer",
+          "cancel": "Annuler",
+          "quickCreateOrganization": {
+            "title": "Créer une organisation",
+            "subHeading": "Ajoutez des informations de base sur cette organisation.",
+            "name": "Nom",
+            "logo": "Logo",
+            "logoSubHeading": "Seuls les fichiers .jpeg et .png sont acceptés."
+          }
         }
       },
 

@@ -334,7 +334,16 @@
           "title": "Create an organizer",
           "subHeading": "What type of organizer you want to create?",
           "person": "Person",
-          "organization": "Organization"
+          "organization": "Organization",
+          "create": "Create",
+          "cancel": "Cancel",
+          "quickCreateOrganization": {
+            "title": "Create an organization",
+            "subHeading": "Add basic information about this organization.",
+            "name": "Name",
+            "logo": "Logo",
+            "logoSubHeading": "Only .jpeg and .png files are accepted."
+          }
         }
       },
       "publishOptions": {

@@ -13,18 +13,35 @@ import StyledInput from '../../Input/Common';
 const { TextArea } = Input;
 
 function QuickCreateOrganization(props) {
-  const { open, onCancel, onOk, form, calendarContentLanguage } = props;
+  const { open, setOpen, calendarContentLanguage } = props;
+  const [form] = Form.useForm();
   const { t } = useTranslation();
-
+  const createOrganizationHandler = () => {
+    form
+      .validateFields(['french', 'english'])
+      .then(() => {
+        var values = form.getFieldsValue(true);
+        console.log(values);
+      })
+      .catch((error) => console.log(error));
+  };
   return (
     <CustomModal
       open={open}
-      title={<span>Create an organizer</span>}
-      onCancel={onCancel}
-      onOk={onOk}
+      title={<span>{t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.title')}</span>}
+      onCancel={() => setOpen(false)}
       footer={[
-        <TextButton key="cancel" size="large" label={t('dashboard.events.addEditEvent.dates.cancel')} />,
-        <PrimaryButton key="add-dates" label={t('dashboard.events.addEditEvent.dates.addDates')} />,
+        <TextButton
+          key="cancel"
+          size="large"
+          label={t('dashboard.events.addEditEvent.quickCreate.cancel')}
+          onClick={() => setOpen(false)}
+        />,
+        <PrimaryButton
+          key="add-dates"
+          label={t('dashboard.events.addEditEvent.quickCreate.create')}
+          onClick={createOrganizationHandler}
+        />,
       ]}>
       <Row gutter={[0, 10]}>
         <Col span={24}>
@@ -32,27 +49,57 @@ function QuickCreateOrganization(props) {
             <Row>
               <Col>
                 <p className="add-event-date-heading">
-                  {t('dashboard.events.addEditEvent.otherInformation.supporter.subHeading')}
+                  {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.subHeading')}
+                </p>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <p className="add-event-date-heading">
+                  {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.name')}
                 </p>
               </Col>
             </Row>
             <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
               <BilingualInput>
-                <Form.Item name="french" key={contentLanguage.FRENCH} dependencies={['english']}>
+                <Form.Item
+                  name="french"
+                  key={contentLanguage.FRENCH}
+                  dependencies={['english']}
+                  rules={[
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (value || getFieldValue('english')) {
+                          return Promise.resolve();
+                        } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                      },
+                    }),
+                  ]}>
                   <TextArea
                     autoSize
                     autoComplete="off"
                     placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
-                    style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                    style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
                     size="large"
                   />
                 </Form.Item>
-                <Form.Item name="english" dependencies={['french']}>
+                <Form.Item
+                  name="english"
+                  dependencies={['french']}
+                  rules={[
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (value || getFieldValue('french')) {
+                          return Promise.resolve();
+                        } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                      },
+                    }),
+                  ]}>
                   <TextArea
                     autoSize
                     autoComplete="off"
                     placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
-                    style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                    style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
                     size="large"
                   />
                 </Form.Item>
@@ -75,7 +122,7 @@ function QuickCreateOrganization(props) {
               />
             </Form.Item>
             <Form.Item
-              label={t('dashboard.events.addEditEvent.otherInformation.image.title')}
+              label={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.logo')}
               name="draggerWrap"
               className="draggerWrap"
               //   {...(isAddImageError && {
@@ -101,7 +148,7 @@ function QuickCreateOrganization(props) {
               <Row>
                 <Col>
                   <p className="add-event-date-heading">
-                    {t('dashboard.events.addEditEvent.otherInformation.image.subHeading')}
+                    {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.logoSubHeading')}
                   </p>
                 </Col>
               </Row>

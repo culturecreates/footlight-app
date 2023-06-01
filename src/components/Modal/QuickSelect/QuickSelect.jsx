@@ -20,9 +20,9 @@ function QuickSelect(props) {
           <Row align={'middle'} justify={'center'}>
             <Col span={8}>
               <DateAction
-                iconrender={<UserOutlined style={{ fontSize: '12px', color: '#607EFC' }} />}
+                iconrender={<UserOutlined style={{ fontSize: '12px', color: '#9196A3' }} />}
                 label={t('dashboard.events.addEditEvent.quickCreate.person')}
-                onClick={() => setQuickCreateOrganizerModal(true)}
+                disabled
               />
             </Col>
             <Col span={8}>
