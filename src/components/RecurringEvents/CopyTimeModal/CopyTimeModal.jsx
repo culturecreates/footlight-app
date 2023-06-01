@@ -43,9 +43,9 @@ const CopyTimeModal = ({ isModalVisible, setIsModalVisible, recurringEvents, cop
           .map((item) => {
             const obj = {
               label:
-                moment(item.startDate).locale(i18n.language).format('MMMM DD, YYYY') +
+                moment(item?.initDate).locale(i18n.language).format('MMMM DD, YYYY') +
                 ', ' +
-                moment(item.startDate).locale(i18n.language).format('dddd'),
+                moment(item?.initDate).locale(i18n.language).format('dddd'),
               value: item.id,
             };
             return obj;

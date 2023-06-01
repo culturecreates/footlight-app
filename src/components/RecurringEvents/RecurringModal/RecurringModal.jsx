@@ -58,7 +58,7 @@ const RecurringModal = ({
   };
   const handleDateSort = (array) => {
     const sortedArray = array?.sort(
-      (a, b) => new moment(a?.startDate).format('YYYYMMDD') - new moment(b?.startDate).format('YYYYMMDD'),
+      (a, b) => new moment(a?.initDate).format('YYYYMMDD') - new moment(b?.initDate).format('YYYYMMDD'),
     );
     return sortedArray;
   };
@@ -150,7 +150,7 @@ const RecurringModal = ({
             return item;
           }),
         );
-      } else setDataSource([...dateSource, test].sort((a, b) => (b.startDate < a.startDate ? 1 : -1)));
+      } else setDataSource([...dateSource, test].sort((a, b) => (b.initDate < a.initDate ? 1 : -1)));
       setTest(null);
     }
   }, [test]);
@@ -162,7 +162,7 @@ const RecurringModal = ({
         const newCopyArray = dateArrayCal.filter((item) => !checkDateExisting.includes(item.initDate));
 
         const iterated = [...dateSource, [].concat.apply([], newCopyArray)];
-        setDataSource([].concat.apply([], iterated).sort((a, b) => (b.startDate < a.startDate ? 1 : -1)));
+        setDataSource([].concat.apply([], iterated).sort((a, b) => (b?.initDate < a?.initDate ? 1 : -1)));
       }
       setDateArrayCal(null);
     }
@@ -211,11 +211,25 @@ const RecurringModal = ({
     );
   };
 
+  const dateConverter = (date) => {
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+
+    const paddedDay = String(day).padStart(2, '0');
+    const paddedMonth = String(month).padStart(2, '0');
+
+    const formattedDate = `${paddedDay}/${paddedMonth}/${year}`;
+    return moment(formattedDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
+  };
+
   const getNumberOfDays = async (start, end) => {
+    let startDate = dateConverter(start);
+    let endDate = dateConverter(end);
     let date = [];
 
-    for (var m = moment(start); m.isSameOrBefore(end); m.add(1, 'days')) {
-      date.push(m.format('DD/MM/YYYY'));
+    for (var m = moment(startDate); m.isSameOrBefore(endDate); m.add(1, 'days')) {
+      date.push(m.format('YYYY-MM-DD'));
     }
 
     return date;
@@ -273,18 +287,16 @@ const RecurringModal = ({
               //  onRangeSelected={e =>selectDate(e) }
               onRangeSelected={async (e) => {
                 const dateLength = await getNumberOfDays(e.startDate, e.endDate);
-
                 if (dateLength && dateLength.length > 1) {
                   const dateArray = dateLength.map((item) => {
-                    const date = moment(item, 'DD/MM/YYYY');
-
+                    const date = moment(item, 'YYYY-MM-DD');
                     const obj = {
                       id: uniqid(),
                       name: 'test name',
                       location: 'test Location',
-                      startDate: new Date(date.format('YYYY,M,D')),
-                      endDate: new Date(date.format('YYYY,M,D')),
-                      initDate: moment(date).format('YYYY-MM-DD'),
+                      startDate: new Date(moment(date, 'YYYY-MM-DD').format('YYYY-MM-DD')),
+                      endDate: new Date(moment(date, 'YYYY-MM-DD').format('YYYY-MM-DD')),
+                      initDate: moment(moment(date, 'YYYY-MM-DD')).format('YYYY-MM-DD'),
                       isDeleted: false,
                       color: '#607EFC',
                     };
@@ -321,7 +333,7 @@ const RecurringModal = ({
               <div key={item.id}>
                 <div className="custom-time-layout">
                   <div className={item.isDeleted ? 'deleted-text custom-no-of-date' : 'custom-no-of-date'}>
-                    {moment(item.startDate).locale(i18n.language).format('MMMM DD, YYYY')}
+                    {moment(item?.initDate).locale(i18n.language).format('MMMM DD, YYYY')}
                   </div>
                   <div className="crud-icons">
                     {item.isDeleted ? (
