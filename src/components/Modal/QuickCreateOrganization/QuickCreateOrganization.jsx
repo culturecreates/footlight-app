@@ -190,7 +190,6 @@ function QuickCreateOrganization(props) {
             </ContentLanguageInput>
             <Form.Item
               name="contactWebsiteUrl"
-              className="subheading-wrap"
               label={t('dashboard.events.addEditEvent.otherInformation.contact.website')}
               rules={[
                 {
@@ -207,7 +206,6 @@ function QuickCreateOrganization(props) {
             <Form.Item
               label={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.logo')}
               name="draggerWrap"
-              className="draggerWrap"
               //   {...(isAddImageError && {
               //     help: t('dashboard.events.addEditEvent.validations.errorImage'),
               //     validateStatus: 'error',
