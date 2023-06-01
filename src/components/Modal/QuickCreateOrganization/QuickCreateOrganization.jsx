@@ -10,6 +10,7 @@ import BilingualInput from '../../BilingualInput/BilingualInput';
 import ImageUpload from '../../ImageUpload/ImageUpload';
 import StyledInput from '../../Input/Common';
 import { useAddImageMutation } from '../../../services/image';
+import { useAddOrganizationMutation } from '../../../services/organization';
 
 const { TextArea } = Input;
 
@@ -19,6 +20,7 @@ function QuickCreateOrganization(props) {
   const { t } = useTranslation();
 
   const [addImage] = useAddImageMutation();
+  const [addOrganization] = useAddOrganizationMutation();
 
   const createOrganizationHandler = () => {
     form
@@ -58,12 +60,12 @@ function QuickCreateOrganization(props) {
               .then((response) => {
                 logo = response?.data;
                 organizationObj['logo'] = logo;
-                // addUpdateEventApiHandler(eventObj, toggle)
-                //   .then((id) => resolve(id))
-                //   .catch((error) => {
-                //     reject();
-                //     console.log(error);
-                //   });
+                addOrganization({ data: organizationObj, calendarId })
+                  .unwrap()
+                  .then((response) => console.log(response))
+                  .catch((error) => {
+                    console.log(error);
+                  });
               })
               .catch((error) => {
                 console.log(error);
