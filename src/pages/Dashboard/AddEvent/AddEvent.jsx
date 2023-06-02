@@ -1485,27 +1485,31 @@ function AddEvent() {
                     getPopupContainer={(trigger) => trigger.parentNode}
                     trigger={['click']}
                     content={
-                      allPlacesList?.length > 0 ? (
-                        allPlacesList?.map((place, index) => (
-                          <div
-                            key={index}
-                            className={`event-popover-options ${
-                              locationPlace?.value == place?.value ? 'event-popover-options-active' : null
-                            }`}
-                            onClick={() => {
-                              setLocationPlace(place);
-                              form.setFieldValue('locationPlace', place?.value);
-                              setIsPopoverOpen({
-                                ...isPopoverOpen,
-                                locationPlace: false,
-                              });
-                            }}>
-                            {place?.label}
-                          </div>
-                        ))
-                      ) : (
-                        <NoContent />
-                      )
+                      <div>
+                        <div className="search-scrollable-content">
+                          {allPlacesList?.length > 0 ? (
+                            allPlacesList?.map((place, index) => (
+                              <div
+                                key={index}
+                                className={`event-popover-options ${
+                                  locationPlace?.value == place?.value ? 'event-popover-options-active' : null
+                                }`}
+                                onClick={() => {
+                                  setLocationPlace(place);
+                                  form.setFieldValue('locationPlace', place?.value);
+                                  setIsPopoverOpen({
+                                    ...isPopoverOpen,
+                                    locationPlace: false,
+                                  });
+                                }}>
+                                {place?.label}
+                              </div>
+                            ))
+                          ) : (
+                            <NoContent />
+                          )}
+                        </div>
+                      </div>
                     }>
                     <EventsSearch
                       style={{ borderRadius: '4px', width: '423px' }}
@@ -1838,7 +1842,7 @@ function AddEvent() {
                       trigger={['click']}
                       content={
                         <div>
-                          <div>
+                          <div className="search-scrollable-content">
                             {organizersList?.length > 0 ? (
                               organizersList?.map((organizer, index) => (
                                 <div
@@ -2041,7 +2045,7 @@ function AddEvent() {
                       getPopupContainer={(trigger) => trigger.parentNode}
                       content={
                         <div>
-                          <div>
+                          <div className="search-scrollable-content">
                             {performerList?.length > 0 ? (
                               performerList?.map((performer, index) => (
                                 <div
@@ -2135,7 +2139,7 @@ function AddEvent() {
                       getPopupContainer={(trigger) => trigger.parentNode}
                       content={
                         <div>
-                          <div>
+                          <div className="search-scrollable-content">
                             {supporterList?.length > 0 ? (
                               supporterList?.map((supporter, index) => (
                                 <div
