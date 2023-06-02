@@ -1880,7 +1880,10 @@ function AddEvent() {
                           organizationPersonSearch(e.target.value, 'organizers');
                           setIsPopoverOpen({ ...isPopoverOpen, organizer: true });
                         }}
-                        onClick={() => setIsPopoverOpen({ ...isPopoverOpen, organizer: true })}
+                        onClick={(e) => {
+                          setQuickCreateKeyword(e.target.value);
+                          setIsPopoverOpen({ ...isPopoverOpen, organizer: true });
+                        }}
                       />
                     </Popover>
 
@@ -2037,24 +2040,40 @@ function AddEvent() {
                       trigger={['click']}
                       getPopupContainer={(trigger) => trigger.parentNode}
                       content={
-                        performerList?.length > 0 ? (
-                          performerList?.map((performer, index) => (
+                        <div>
+                          <div>
+                            {performerList?.length > 0 ? (
+                              performerList?.map((performer, index) => (
+                                <div
+                                  key={index}
+                                  className="event-popover-options"
+                                  onClick={() => {
+                                    setSelectedPerformers([...selectedPerformers, performer]);
+                                    setIsPopoverOpen({
+                                      ...isPopoverOpen,
+                                      performer: false,
+                                    });
+                                  }}>
+                                  {performer?.label}
+                                </div>
+                              ))
+                            ) : (
+                              <NoContent />
+                            )}
+                          </div>
+                          {quickCreateKeyword?.length > 0 && (
                             <div
-                              key={index}
-                              className="event-popover-options"
+                              className="quick-create"
                               onClick={() => {
-                                setSelectedPerformers([...selectedPerformers, performer]);
-                                setIsPopoverOpen({
-                                  ...isPopoverOpen,
-                                  performer: false,
-                                });
+                                setIsPopoverOpen({ ...isPopoverOpen, performer: false });
+                                setQuickOrganizerModal(true);
                               }}>
-                              {performer?.label}
+                              <PlusCircleOutlined />
+                              &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
+                              {quickCreateKeyword}&#34;
                             </div>
-                          ))
-                        ) : (
-                          <NoContent />
-                        )
+                          )}
+                        </div>
                       }>
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
@@ -2062,8 +2081,12 @@ function AddEvent() {
                         onChange={(e) => {
                           organizationPersonSearch(e.target.value, 'performers');
                           setIsPopoverOpen({ ...isPopoverOpen, performer: true });
+                          setQuickCreateKeyword(e.target.value);
                         }}
-                        onClick={() => setIsPopoverOpen({ ...isPopoverOpen, performer: true })}
+                        onClick={(e) => {
+                          setQuickCreateKeyword(e.target.value);
+                          setIsPopoverOpen({ ...isPopoverOpen, performer: true });
+                        }}
                       />
                     </Popover>
 
@@ -2111,24 +2134,40 @@ function AddEvent() {
                       trigger={['click']}
                       getPopupContainer={(trigger) => trigger.parentNode}
                       content={
-                        supporterList?.length > 0 ? (
-                          supporterList?.map((supporter, index) => (
+                        <div>
+                          <div>
+                            {supporterList?.length > 0 ? (
+                              supporterList?.map((supporter, index) => (
+                                <div
+                                  key={index}
+                                  className="event-popover-options"
+                                  onClick={() => {
+                                    setSelectedSupporters([...selectedSupporters, supporter]);
+                                    setIsPopoverOpen({
+                                      ...isPopoverOpen,
+                                      supporter: false,
+                                    });
+                                  }}>
+                                  {supporter?.label}
+                                </div>
+                              ))
+                            ) : (
+                              <NoContent />
+                            )}
+                          </div>
+                          {quickCreateKeyword?.length > 0 && (
                             <div
-                              key={index}
-                              className="event-popover-options"
+                              className="quick-create"
                               onClick={() => {
-                                setSelectedSupporters([...selectedSupporters, supporter]);
-                                setIsPopoverOpen({
-                                  ...isPopoverOpen,
-                                  supporter: false,
-                                });
+                                setIsPopoverOpen({ ...isPopoverOpen, supporter: false });
+                                setQuickOrganizerModal(true);
                               }}>
-                              {supporter?.label}
+                              <PlusCircleOutlined />
+                              &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
+                              {quickCreateKeyword}&#34;
                             </div>
-                          ))
-                        ) : (
-                          <NoContent />
-                        )
+                          )}
+                        </div>
                       }>
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
@@ -2136,8 +2175,12 @@ function AddEvent() {
                         onChange={(e) => {
                           organizationPersonSearch(e.target.value, 'supporters');
                           setIsPopoverOpen({ ...isPopoverOpen, supporter: true });
+                          setQuickCreateKeyword(e.target.value);
                         }}
-                        onClick={() => setIsPopoverOpen({ ...isPopoverOpen, supporter: true })}
+                        onClick={(e) => {
+                          setQuickCreateKeyword(e.target.value);
+                          setIsPopoverOpen({ ...isPopoverOpen, supporter: true });
+                        }}
                       />
                     </Popover>
 
