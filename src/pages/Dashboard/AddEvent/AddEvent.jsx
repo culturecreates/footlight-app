@@ -1914,6 +1914,8 @@ function AddEvent() {
                     calendarId={calendarId}
                     keyword={quickCreateKeyword}
                     setKeyword={setQuickCreateKeyword}
+                    interfaceLanguage={user?.interfaceLanguage?.toLowerCase()}
+                    calendarContentLanguage={calendarContentLanguage}
                   />
                 </Form.Item>
                 <Form.Item

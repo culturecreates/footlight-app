@@ -16,7 +16,7 @@ import './quickCreateOrganization.css';
 const { TextArea } = Input;
 
 function QuickCreateOrganization(props) {
-  const { open, setOpen, calendarContentLanguage, calendarId, keyword, setKeyword } = props;
+  const { open, setOpen, calendarContentLanguage, calendarId, keyword, setKeyword, interfaceLanguage } = props;
   const [form] = Form.useForm();
   const { t } = useTranslation();
 
@@ -146,7 +146,15 @@ function QuickCreateOrganization(props) {
                 <Form.Item
                   name="french"
                   key={contentLanguage.FRENCH}
-                  initialValue={keyword}
+                  initialValue={
+                    calendarContentLanguage === contentLanguage.BILINGUAL
+                      ? interfaceLanguage === 'fr'
+                        ? keyword
+                        : undefined
+                      : calendarContentLanguage === contentLanguage.FRENCH
+                      ? keyword
+                      : undefined
+                  }
                   dependencies={['english']}
                   rules={[
                     ({ getFieldValue }) => ({
@@ -173,7 +181,15 @@ function QuickCreateOrganization(props) {
                 <Form.Item
                   name="english"
                   dependencies={['french']}
-                  initialValue={keyword}
+                  initialValue={
+                    calendarContentLanguage === contentLanguage.BILINGUAL
+                      ? interfaceLanguage === 'en'
+                        ? keyword
+                        : undefined
+                      : calendarContentLanguage === contentLanguage.ENGLISH
+                      ? keyword
+                      : undefined
+                  }
                   rules={[
                     ({ getFieldValue }) => ({
                       validator(_, value) {
