@@ -41,11 +41,7 @@ function Users() {
   const [updateCurrentUser] = useUpdateCurrentUserMutation();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [password, setPassword] = useState({
-    oldPassword: null,
-    newPassword: null,
-    confirmNewPassword: null,
-  });
+
   const [showDialog, setShowDialog] = useState(false);
 
   usePrompt(t('common.unsavedChanges'), showDialog);
@@ -56,23 +52,61 @@ function Users() {
       newPassword: null,
       confirmNewPassword: null,
     });
-    setPassword({
-      oldPassword: null,
-      newPassword: null,
-      confirmNewPassword: null,
-    });
     setIsModalVisible(false);
   };
   const handlePasswordSave = () => {
     form
       .validateFields(['oldPassword', 'newPassword', 'confirmNewPassword'])
-      .then((values) => {
-        setIsModalVisible(false);
-        setPassword({
-          oldPassword: values?.oldPassword,
-          newPassword: values?.newPassword,
-          confirmNewPassword: values?.confirmNewPassword,
-        });
+      .then(() => {
+        let values = form.getFieldsValue(true);
+        updateCurrentUser({
+          calendarId,
+          body: {
+            firstName: values?.firstName,
+            lastName: values?.lastName,
+            email: values?.email,
+            interfaceLanguage: values?.interfaceLanguage,
+            ...(values?.oldPassword &&
+              values?.newPassword && {
+                modifyPassword: {
+                  currentPassword: values?.oldPassword,
+                  newPassword: values?.newPassword,
+                },
+              }),
+          },
+        })
+          .unwrap()
+          .then((response) => {
+            if (response?.statusCode == 202) {
+              notification.success({
+                description: t('resetPassword.successNotification'),
+                placement: 'top',
+                closeIcon: <></>,
+                maxCount: 1,
+                duration: 3,
+              });
+              setIsModalVisible(false);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+            message.warning({
+              duration: 10,
+              maxCount: 1,
+              key: 'udpate-user-warning',
+              content: (
+                <>
+                  {error?.data?.message} &nbsp;
+                  <Button
+                    type="text"
+                    icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                    onClick={() => message.destroy('udpate-user-warning')}
+                  />
+                </>
+              ),
+              icon: <ExclamationCircleOutlined />,
+            });
+          });
       })
       .catch((error) => {
         console.log(error);
@@ -92,13 +126,6 @@ function Users() {
               lastName: values?.lastName,
               email: values?.email,
               interfaceLanguage: values?.interfaceLanguage,
-              ...(password?.oldPassword &&
-                password?.newPassword && {
-                  modifyPassword: {
-                    currentPassword: password?.oldPassword,
-                    newPassword: password?.newPassword,
-                  },
-                }),
             },
           })
             .unwrap()
@@ -107,7 +134,7 @@ function Users() {
                 i18n.changeLanguage(values?.interfaceLanguage?.toLowerCase());
                 currentUserRefetch();
                 notification.success({
-                  description: t('resetPassword.successNotification'),
+                  description: t('dashboard.userProfile.notification.profileUpdate'),
                   placement: 'top',
                   closeIcon: <></>,
                   maxCount: 1,
