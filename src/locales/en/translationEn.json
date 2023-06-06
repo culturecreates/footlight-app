@@ -373,6 +373,9 @@
       "confirmNewPasswordPlaceHolder": "Confirm new password",
       "cancel": "Cancel",
       "changePasswordButton": "Change password",
+      "notification": {
+        "profileUpdate": "Success! Your user profile has been updated."
+      },
       "validations": {
         "emptyFirstName": "Enter your first name",
         "emptyLastName": "Enter your last name"
