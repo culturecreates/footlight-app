@@ -393,6 +393,9 @@
       "confirmNewPasswordPlaceHolder": "Confirmer nouveau mot de passe",
       "cancel": "Annuler",
       "changePasswordButton": "Changer le mot de passe",
+      "notification": {
+        "profileUpdate": "Succès ! Votre profil d'utilisateur a été mis à jour."
+      },
       "validations": {
         "emptyFirstName": "Entrez votre prénom",
         "emptyLasttName": "Entrez votre nom"
