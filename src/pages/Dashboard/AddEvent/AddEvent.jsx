@@ -75,7 +75,9 @@ import StyledSwitch from '../../../components/Switch/index';
 import ContentLanguageInput from '../../../components/ContentLanguageInput';
 import { contentLanguage } from '../../../constants/contentLanguage';
 import QuickCreateOrganization from '../../../components/Modal/QuickCreateOrganization/QuickCreateOrganization';
+import { featureFlags } from '../../../utils/featureFlags';
 import QuickSelect from '../../../components/Modal/QuickSelect/QuickSelect';
+import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -159,7 +161,6 @@ function AddEvent() {
   let standardAdminOnlyFields = requiredFields?.adminOnlyFields?.standardFields ?? [];
   let dynamicAdminOnlyFields = requiredFields?.adminOnlyFields?.dynamicFields ?? [];
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-
   const dateTimeConverter = (date, time) => {
     let dateSelected = moment.tz(date, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('DD-MM-YYYY');
     let timeSelected = moment.tz(time, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('hh:mm:ss a');
@@ -1862,18 +1863,20 @@ function AddEvent() {
                               <NoContent />
                             )}
                           </div>
-                          {quickCreateKeyword?.length > 0 && (
-                            <div
-                              className="quick-create"
-                              onClick={() => {
-                                setIsPopoverOpen({ ...isPopoverOpen, organizer: false });
-                                setQuickOrganizerModal(true);
-                              }}>
-                              <PlusCircleOutlined />
-                              &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
-                              {quickCreateKeyword}&#34;
-                            </div>
-                          )}
+                          <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>
+                            {quickCreateKeyword?.length > 0 && (
+                              <div
+                                className="quick-create"
+                                onClick={() => {
+                                  setIsPopoverOpen({ ...isPopoverOpen, organizer: false });
+                                  setQuickOrganizerModal(true);
+                                }}>
+                                <PlusCircleOutlined />
+                                &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
+                                {quickCreateKeyword}&#34;
+                              </div>
+                            )}
+                          </FeatureFlag>
                         </div>
                       }>
                       <EventsSearch
@@ -2065,18 +2068,20 @@ function AddEvent() {
                               <NoContent />
                             )}
                           </div>
-                          {quickCreateKeyword?.length > 0 && (
-                            <div
-                              className="quick-create"
-                              onClick={() => {
-                                setIsPopoverOpen({ ...isPopoverOpen, performer: false });
-                                setQuickOrganizerModal(true);
-                              }}>
-                              <PlusCircleOutlined />
-                              &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
-                              {quickCreateKeyword}&#34;
-                            </div>
-                          )}
+                          <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>
+                            {quickCreateKeyword?.length > 0 && (
+                              <div
+                                className="quick-create"
+                                onClick={() => {
+                                  setIsPopoverOpen({ ...isPopoverOpen, performer: false });
+                                  setQuickOrganizerModal(true);
+                                }}>
+                                <PlusCircleOutlined />
+                                &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
+                                {quickCreateKeyword}&#34;
+                              </div>
+                            )}
+                          </FeatureFlag>
                         </div>
                       }>
                       <EventsSearch
@@ -2159,18 +2164,20 @@ function AddEvent() {
                               <NoContent />
                             )}
                           </div>
-                          {quickCreateKeyword?.length > 0 && (
-                            <div
-                              className="quick-create"
-                              onClick={() => {
-                                setIsPopoverOpen({ ...isPopoverOpen, supporter: false });
-                                setQuickOrganizerModal(true);
-                              }}>
-                              <PlusCircleOutlined />
-                              &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
-                              {quickCreateKeyword}&#34;
-                            </div>
-                          )}
+                          <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>
+                            {quickCreateKeyword?.length > 0 && (
+                              <div
+                                className="quick-create"
+                                onClick={() => {
+                                  setIsPopoverOpen({ ...isPopoverOpen, supporter: false });
+                                  setQuickOrganizerModal(true);
+                                }}>
+                                <PlusCircleOutlined />
+                                &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
+                                {quickCreateKeyword}&#34;
+                              </div>
+                            )}
+                          </FeatureFlag>
                         </div>
                       }>
                       <EventsSearch
