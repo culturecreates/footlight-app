@@ -10,6 +10,7 @@ import {
   PlusOutlined,
   EditOutlined,
   SnippetsOutlined,
+  PlusCircleOutlined,
 } from '@ant-design/icons';
 import moment from 'moment-timezone';
 import i18n from 'i18next';
@@ -73,6 +74,10 @@ import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequire
 import StyledSwitch from '../../../components/Switch/index';
 import ContentLanguageInput from '../../../components/ContentLanguageInput';
 import { contentLanguage } from '../../../constants/contentLanguage';
+import QuickCreateOrganization from '../../../components/Modal/QuickCreateOrganization/QuickCreateOrganization';
+import { featureFlags } from '../../../utils/featureFlags';
+import QuickSelect from '../../../components/Modal/QuickSelect/QuickSelect';
+import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -139,6 +144,9 @@ function AddEvent() {
   const [formValue, setFormValue] = useState();
   const [validateFields, setValidateFields] = useState([]);
   const [descriptionMinimumWordCount, setDescriptionMinimumWordCount] = useState(1);
+  const [quickOrganizerModal, setQuickOrganizerModal] = useState(false);
+  const [quickCreateOrganizerModal, setQuickCreateOrganizerModal] = useState(false);
+  const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -153,7 +161,6 @@ function AddEvent() {
   let standardAdminOnlyFields = requiredFields?.adminOnlyFields?.standardFields ?? [];
   let dynamicAdminOnlyFields = requiredFields?.adminOnlyFields?.dynamicFields ?? [];
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-
   const dateTimeConverter = (date, time) => {
     let dateSelected = moment.tz(date, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('DD-MM-YYYY');
     let timeSelected = moment.tz(time, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('hh:mm:ss a');
@@ -1499,27 +1506,31 @@ function AddEvent() {
                     getPopupContainer={(trigger) => trigger.parentNode}
                     trigger={['click']}
                     content={
-                      allPlacesList?.length > 0 ? (
-                        allPlacesList?.map((place, index) => (
-                          <div
-                            key={index}
-                            className={`event-popover-options ${
-                              locationPlace?.value == place?.value ? 'event-popover-options-active' : null
-                            }`}
-                            onClick={() => {
-                              setLocationPlace(place);
-                              form.setFieldValue('locationPlace', place?.value);
-                              setIsPopoverOpen({
-                                ...isPopoverOpen,
-                                locationPlace: false,
-                              });
-                            }}>
-                            {place?.label}
-                          </div>
-                        ))
-                      ) : (
-                        <NoContent />
-                      )
+                      <div>
+                        <div className="search-scrollable-content">
+                          {allPlacesList?.length > 0 ? (
+                            allPlacesList?.map((place, index) => (
+                              <div
+                                key={index}
+                                className={`event-popover-options ${
+                                  locationPlace?.value == place?.value ? 'event-popover-options-active' : null
+                                }`}
+                                onClick={() => {
+                                  setLocationPlace(place);
+                                  form.setFieldValue('locationPlace', place?.value);
+                                  setIsPopoverOpen({
+                                    ...isPopoverOpen,
+                                    locationPlace: false,
+                                  });
+                                }}>
+                                {place?.label}
+                              </div>
+                            ))
+                          ) : (
+                            <NoContent />
+                          )}
+                        </div>
+                      </div>
                     }>
                     <EventsSearch
                       style={{ borderRadius: '4px', width: '423px' }}
@@ -1831,7 +1842,7 @@ function AddEvent() {
                       </p>
                     </Col>
                   </Row>
-                  <ImageUpload imageUrl={eventData?.image?.original?.uri} imageReadOnly={false} />
+                  <ImageUpload imageUrl={eventData?.image?.original?.uri} imageReadOnly={false} preview={true} />
                 </Form.Item>
                 <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.organizer.title')}>
                   <Row>
@@ -1851,33 +1862,55 @@ function AddEvent() {
                       getPopupContainer={(trigger) => trigger.parentNode}
                       trigger={['click']}
                       content={
-                        organizersList?.length > 0 ? (
-                          organizersList?.map((organizer, index) => (
-                            <div
-                              key={index}
-                              className="event-popover-options"
-                              onClick={() => {
-                                setSelectedOrganizers([...selectedOrganizers, organizer]);
-                                setIsPopoverOpen({
-                                  ...isPopoverOpen,
-                                  organizer: false,
-                                });
-                              }}>
-                              {organizer?.label}
-                            </div>
-                          ))
-                        ) : (
-                          <NoContent />
-                        )
+                        <div>
+                          <div className="search-scrollable-content">
+                            {organizersList?.length > 0 ? (
+                              organizersList?.map((organizer, index) => (
+                                <div
+                                  key={index}
+                                  className="event-popover-options"
+                                  onClick={() => {
+                                    setSelectedOrganizers([...selectedOrganizers, organizer]);
+                                    setIsPopoverOpen({
+                                      ...isPopoverOpen,
+                                      organizer: false,
+                                    });
+                                  }}>
+                                  {organizer?.label}
+                                </div>
+                              ))
+                            ) : (
+                              <NoContent />
+                            )}
+                          </div>
+                          <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>
+                            {quickCreateKeyword?.length > 0 && (
+                              <div
+                                className="quick-create"
+                                onClick={() => {
+                                  setIsPopoverOpen({ ...isPopoverOpen, organizer: false });
+                                  setQuickOrganizerModal(true);
+                                }}>
+                                <PlusCircleOutlined />
+                                &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
+                                {quickCreateKeyword}&#34;
+                              </div>
+                            )}
+                          </FeatureFlag>
+                        </div>
                       }>
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
                         onChange={(e) => {
+                          setQuickCreateKeyword(e.target.value);
                           organizationPersonSearch(e.target.value, 'organizers');
                           setIsPopoverOpen({ ...isPopoverOpen, organizer: true });
                         }}
-                        onClick={() => setIsPopoverOpen({ ...isPopoverOpen, organizer: true })}
+                        onClick={(e) => {
+                          setQuickCreateKeyword(e.target.value);
+                          setIsPopoverOpen({ ...isPopoverOpen, organizer: true });
+                        }}
                       />
                     </Popover>
 
@@ -1900,6 +1933,20 @@ function AddEvent() {
                       );
                     })}
                   </Form.Item>
+                  <QuickSelect
+                    open={quickOrganizerModal}
+                    setOpen={setQuickOrganizerModal}
+                    setQuickCreateOrganizerModal={setQuickCreateOrganizerModal}
+                  />
+                  <QuickCreateOrganization
+                    open={quickCreateOrganizerModal}
+                    setOpen={setQuickCreateOrganizerModal}
+                    calendarId={calendarId}
+                    keyword={quickCreateKeyword}
+                    setKeyword={setQuickCreateKeyword}
+                    interfaceLanguage={user?.interfaceLanguage?.toLowerCase()}
+                    calendarContentLanguage={calendarContentLanguage}
+                  />
                 </Form.Item>
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.contact.title')}
@@ -2020,24 +2067,42 @@ function AddEvent() {
                       trigger={['click']}
                       getPopupContainer={(trigger) => trigger.parentNode}
                       content={
-                        performerList?.length > 0 ? (
-                          performerList?.map((performer, index) => (
-                            <div
-                              key={index}
-                              className="event-popover-options"
-                              onClick={() => {
-                                setSelectedPerformers([...selectedPerformers, performer]);
-                                setIsPopoverOpen({
-                                  ...isPopoverOpen,
-                                  performer: false,
-                                });
-                              }}>
-                              {performer?.label}
-                            </div>
-                          ))
-                        ) : (
-                          <NoContent />
-                        )
+                        <div>
+                          <div className="search-scrollable-content">
+                            {performerList?.length > 0 ? (
+                              performerList?.map((performer, index) => (
+                                <div
+                                  key={index}
+                                  className="event-popover-options"
+                                  onClick={() => {
+                                    setSelectedPerformers([...selectedPerformers, performer]);
+                                    setIsPopoverOpen({
+                                      ...isPopoverOpen,
+                                      performer: false,
+                                    });
+                                  }}>
+                                  {performer?.label}
+                                </div>
+                              ))
+                            ) : (
+                              <NoContent />
+                            )}
+                          </div>
+                          <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>
+                            {quickCreateKeyword?.length > 0 && (
+                              <div
+                                className="quick-create"
+                                onClick={() => {
+                                  setIsPopoverOpen({ ...isPopoverOpen, performer: false });
+                                  setQuickOrganizerModal(true);
+                                }}>
+                                <PlusCircleOutlined />
+                                &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
+                                {quickCreateKeyword}&#34;
+                              </div>
+                            )}
+                          </FeatureFlag>
+                        </div>
                       }>
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
@@ -2045,8 +2110,12 @@ function AddEvent() {
                         onChange={(e) => {
                           organizationPersonSearch(e.target.value, 'performers');
                           setIsPopoverOpen({ ...isPopoverOpen, performer: true });
+                          setQuickCreateKeyword(e.target.value);
                         }}
-                        onClick={() => setIsPopoverOpen({ ...isPopoverOpen, performer: true })}
+                        onClick={(e) => {
+                          setQuickCreateKeyword(e.target.value);
+                          setIsPopoverOpen({ ...isPopoverOpen, performer: true });
+                        }}
                       />
                     </Popover>
 
@@ -2094,24 +2163,42 @@ function AddEvent() {
                       trigger={['click']}
                       getPopupContainer={(trigger) => trigger.parentNode}
                       content={
-                        supporterList?.length > 0 ? (
-                          supporterList?.map((supporter, index) => (
-                            <div
-                              key={index}
-                              className="event-popover-options"
-                              onClick={() => {
-                                setSelectedSupporters([...selectedSupporters, supporter]);
-                                setIsPopoverOpen({
-                                  ...isPopoverOpen,
-                                  supporter: false,
-                                });
-                              }}>
-                              {supporter?.label}
-                            </div>
-                          ))
-                        ) : (
-                          <NoContent />
-                        )
+                        <div>
+                          <div className="search-scrollable-content">
+                            {supporterList?.length > 0 ? (
+                              supporterList?.map((supporter, index) => (
+                                <div
+                                  key={index}
+                                  className="event-popover-options"
+                                  onClick={() => {
+                                    setSelectedSupporters([...selectedSupporters, supporter]);
+                                    setIsPopoverOpen({
+                                      ...isPopoverOpen,
+                                      supporter: false,
+                                    });
+                                  }}>
+                                  {supporter?.label}
+                                </div>
+                              ))
+                            ) : (
+                              <NoContent />
+                            )}
+                          </div>
+                          <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>
+                            {quickCreateKeyword?.length > 0 && (
+                              <div
+                                className="quick-create"
+                                onClick={() => {
+                                  setIsPopoverOpen({ ...isPopoverOpen, supporter: false });
+                                  setQuickOrganizerModal(true);
+                                }}>
+                                <PlusCircleOutlined />
+                                &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
+                                {quickCreateKeyword}&#34;
+                              </div>
+                            )}
+                          </FeatureFlag>
+                        </div>
                       }>
                       <EventsSearch
                         style={{ borderRadius: '4px' }}
@@ -2119,8 +2206,12 @@ function AddEvent() {
                         onChange={(e) => {
                           organizationPersonSearch(e.target.value, 'supporters');
                           setIsPopoverOpen({ ...isPopoverOpen, supporter: true });
+                          setQuickCreateKeyword(e.target.value);
                         }}
-                        onClick={() => setIsPopoverOpen({ ...isPopoverOpen, supporter: true })}
+                        onClick={(e) => {
+                          setQuickCreateKeyword(e.target.value);
+                          setIsPopoverOpen({ ...isPopoverOpen, supporter: true });
+                        }}
                       />
                     </Popover>
 
