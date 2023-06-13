@@ -144,6 +144,7 @@ function AddEvent() {
   const [formValue, setFormValue] = useState();
   const [validateFields, setValidateFields] = useState([]);
   const [descriptionMinimumWordCount, setDescriptionMinimumWordCount] = useState(1);
+  const [newEventId, setNewEventId] = useState(null);
   const [quickOrganizerModal, setQuickOrganizerModal] = useState(false);
   const [quickCreateOrganizerModal, setQuickCreateOrganizerModal] = useState(false);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
@@ -173,7 +174,7 @@ function AddEvent() {
   });
   const addUpdateEventApiHandler = (eventObj, toggle) => {
     var promise = new Promise(function (resolve, reject) {
-      if (!eventId || eventId === '') {
+      if (!eventId || eventId === '' || newEventId == null) {
         addEvent({
           data: eventObj,
           calendarId,
@@ -181,6 +182,7 @@ function AddEvent() {
           .unwrap()
           .then((response) => {
             resolve(response?.id);
+            setNewEventId(response?.id);
             if (!toggle) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
           })
           .catch((errorInfo) => {
@@ -195,11 +197,11 @@ function AddEvent() {
         updateEvent({
           data: eventObj,
           calendarId,
-          eventId,
+          eventId: eventId ?? newEventId,
         })
           .unwrap()
           .then(() => {
-            resolve();
+            resolve(eventId ?? newEventId);
             if (!toggle) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
           })
           .catch((error) => {
@@ -562,9 +564,8 @@ function AddEvent() {
           .then((id) => {
             updateEventState({ id: eventId ?? id, calendarId })
               .unwrap()
-              .then(() =>
-                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`).catch((error) => console.log(error)),
-              );
+              .then(() => navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`))
+              .catch((error) => console.log(error));
           })
           .catch((error) => console.log(error));
       })
