@@ -1,0 +1,28 @@
+.quick-create-organization-modal-title {
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.quick-create-organization-modal-wrapper .ant-form-item-label > label,
+.quick-create-organization-modal-wrapper .quick-create-organization-modal-label {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  color: #222732;
+}
+
+.quick-create-organization-modal-wrapper .quick-create-organization-modal-label::after {
+  display: inline-block;
+  margin-left: 4px;
+  color: #f43131;
+  font-size: 14px;
+  font-family: 'Roboto';
+  line-height: 1;
+  content: '*';
+}
+
+.quick-create-organization-modal-wrapper .quick-create-organization-modal-sub-heading {
+  font-weight: 400;
+  font-size: 16px;
+  color: #646d7b;
+}

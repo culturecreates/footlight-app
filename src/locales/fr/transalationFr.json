@@ -104,7 +104,7 @@
           "allTime": "Toutes les dates",
           "past": "Passé"
         },
-        "clear": "Clear"
+        "clear": "Éffacer"
       },
       "readOnlyEvent": {
         "notification": {
@@ -327,6 +327,27 @@
           "errorReview": "Cet événement a besoin de plus d'informations avant d'être envoyé pour validation.",
           "errorDraft": "Cet événement a besoin de plus d'informations avant d'être enregistré.",
           "errorImage": "Cette image ne peut pas être enregistrée. Ajustez l'image ou essayez-en une autre."
+        },
+        "quickCreate": {
+          "title": "Créer un organisateur",
+          "subHeading": "Quel type d'organisateur voulez-vous créer ?",
+          "person": "Personne",
+          "organization": "Organisation",
+          "create": "Créer",
+          "cancel": "Annuler",
+          "quickCreateOrganization": {
+            "title": "Créer une organisation",
+            "subHeading": "Ajoutez des informations de base sur cette organisation.",
+            "name": "Nom",
+            "logo": "Logo",
+            "logoSubHeading": "Seuls les fichiers .jpeg et .png sont acceptés.",
+            "success": "Succès ! Votre organisation a été créé.",
+            "namePlaceholder": "Entrez un nom",
+            "websitePlaceholder": "Entrez un site web",
+            "validations": {
+              "name": "Le nom est requis."
+            }
+          }
         }
       },
 
