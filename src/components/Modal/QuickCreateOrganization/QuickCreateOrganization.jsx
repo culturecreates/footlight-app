@@ -10,19 +10,53 @@ import BilingualInput from '../../BilingualInput/BilingualInput';
 import ImageUpload from '../../ImageUpload/ImageUpload';
 import StyledInput from '../../Input/Common';
 import { useAddImageMutation } from '../../../services/image';
-import { useAddOrganizationMutation } from '../../../services/organization';
+import { useAddOrganizationMutation, useLazyGetOrganizationQuery } from '../../../services/organization';
 import './quickCreateOrganization.css';
+import { treeEntitiesOption } from '../../TreeSelectOption/treeSelectOption.settings';
+import { useSelector } from 'react-redux';
+import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { taxonomyClass } from '../../../constants/taxonomyClass';
 
 const { TextArea } = Input;
 
 function QuickCreateOrganization(props) {
-  const { open, setOpen, calendarContentLanguage, calendarId, keyword, setKeyword, interfaceLanguage } = props;
+  const {
+    open,
+    setOpen,
+    calendarContentLanguage,
+    calendarId,
+    keyword,
+    setKeyword,
+    interfaceLanguage,
+    selectedOrganizers,
+    setSelectedOrganizers,
+  } = props;
   const [form] = Form.useForm();
   const { t } = useTranslation();
 
+  const { user } = useSelector(getUserDetails);
+
   const [addImage] = useAddImageMutation();
   const [addOrganization] = useAddOrganizationMutation();
+  const [getOrganization] = useLazyGetOrganizationQuery();
 
+  const getSelectedOrganizer = (id) => {
+    getOrganization({ id, calendarId })
+      .unwrap()
+      .then((response) => {
+        let createdOrganizer = [
+          {
+            disambiguatingDescription: response?.disambiguatingDescription,
+            id: response?.id,
+            name: response?.name,
+            type: taxonomyClass.ORGANIZATION,
+          },
+        ];
+        createdOrganizer = treeEntitiesOption(createdOrganizer, user, calendarContentLanguage);
+        if (createdOrganizer?.length === 1) setSelectedOrganizers([...selectedOrganizers, createdOrganizer[0]]);
+      })
+      .catch((error) => console.log(error));
+  };
   const createOrganizationHandler = () => {
     form
       .validateFields(['french', 'english'])
@@ -61,7 +95,7 @@ function QuickCreateOrganization(props) {
                 organizationObj['logo'] = response?.data;
                 addOrganization({ data: organizationObj, calendarId })
                   .unwrap()
-                  .then(() => {
+                  .then((response) => {
                     notification.success({
                       description: t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.success'),
                       placement: 'top',
@@ -70,6 +104,7 @@ function QuickCreateOrganization(props) {
                       duration: 3,
                     });
                     setKeyword('');
+                    getSelectedOrganizer(response?.id);
                     setOpen(false);
                   })
                   .catch((error) => {
@@ -82,7 +117,7 @@ function QuickCreateOrganization(props) {
         } else {
           addOrganization({ data: organizationObj, calendarId })
             .unwrap()
-            .then(() => {
+            .then((response) => {
               notification.success({
                 description: t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.success'),
                 placement: 'top',
@@ -91,6 +126,8 @@ function QuickCreateOrganization(props) {
                 duration: 3,
               });
               setKeyword('');
+              console.log(response);
+              getSelectedOrganizer(response?.id);
               setOpen(false);
             })
             .catch((error) => {

@@ -16,7 +16,16 @@ export const organizationApi = createApi({
         body: data,
       }),
     }),
+    getOrganization: builder.query({
+      query: ({ id, calendarId }) => ({
+        url: `organizations/${id}`,
+        method: 'GET',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+    }),
   }),
 });
 
-export const { useAddOrganizationMutation } = organizationApi;
+export const { useAddOrganizationMutation, useLazyGetOrganizationQuery } = organizationApi;
