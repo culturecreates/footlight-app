@@ -646,7 +646,7 @@ function AddEvent() {
         <>
           <Form.Item>
             <PublishState eventId={eventId} reviewPublishHandler={(e) => reviewPublishHandler(e)}>
-              <span>{eventData?.publishState}</span>
+              <span>{t('dashboard.events.publishState.published')}</span>
             </PublishState>
           </Form.Item>
           <Form.Item>

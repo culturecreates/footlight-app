@@ -299,7 +299,7 @@
         "saveOptions": {
           "publish": "Publier",
           "saveAsDraft": "Enregistrer comme brouillon",
-          "save": "Save",
+          "save": "Sauvegarder",
           "sendToReview": "Envoyer pour révision"
         },
         "validations": {
