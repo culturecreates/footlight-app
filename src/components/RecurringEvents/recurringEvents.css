@@ -32,9 +32,11 @@
 .custom-common-modal-container .calendar {
   padding: 1px;
   width: 300px;
-  height: 300px;
-  overflow-y: scroll;
   /* overflow: auto; */
+}
+.custom-common-modal-container .calendar .months-container {
+  height: 296px;
+  overflow-y: scroll;
 }
 .custom-common-modal-container .calendar .months-container .month-container {
   height: 230px;

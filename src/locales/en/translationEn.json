@@ -329,6 +329,27 @@
           "errorReview": "This event needs more information before it can be sent for review.",
           "errorDraft": "This event needs more information before it can be saved.",
           "errorImage": "This image cannot be saved. Adjust the image or try a different one."
+        },
+        "quickCreate": {
+          "title": "Create an organizer",
+          "subHeading": "What type of organizer you want to create?",
+          "person": "Person",
+          "organization": "Organization",
+          "create": "Create",
+          "cancel": "Cancel",
+          "quickCreateOrganization": {
+            "title": "Create an organization",
+            "subHeading": "Add basic information about this organization.",
+            "name": "Name",
+            "logo": "Logo",
+            "logoSubHeading": "Only .jpeg and .png files are accepted.",
+            "success": "Success! Your organization has been created.",
+            "namePlaceholder": "Enter a name",
+            "websitePlaceholder": "Enter website",
+            "validations": {
+              "name": "Name is required."
+            }
+          }
         }
       },
       "publishOptions": {

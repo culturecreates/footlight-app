@@ -11,7 +11,7 @@ import i18n from 'i18next';
 
 const { confirm } = Modal;
 
-const CopyTimeModal = ({ isModalVisible, setIsModalVisible, recurringEvents, copyTime, updateTime }) => {
+const CopyTimeModal = ({ isModalVisible, setIsModalVisible, recurringEvents, copyTime, updateTime, currentLang }) => {
   const { t } = useTranslation();
   const [checkOptions, setCheckOptions] = useState([]);
   const [selectedCheckbox, setSelectedCheckbox] = useState([]);
@@ -42,10 +42,9 @@ const CopyTimeModal = ({ isModalVisible, setIsModalVisible, recurringEvents, cop
           .filter((item) => item.id !== copyTime.id)
           .map((item) => {
             const obj = {
-              label:
-                moment(item?.initDate).locale(i18n.language).format('MMMM DD, YYYY') +
-                ', ' +
-                moment(item?.initDate).locale(i18n.language).format('dddd'),
+              label: moment(item?.initDate)
+                .locale(i18n.language)
+                .format(currentLang === 'en' ? 'ddd, MMMM DD, YYYY' : currentLang === 'fr' && 'ddd DD MMMM YYYY'),
               value: item.id,
             };
             return obj;
@@ -111,6 +110,10 @@ const CopyTimeModal = ({ isModalVisible, setIsModalVisible, recurringEvents, cop
               moment(customTime?.endTime, 'hh:mm a').format(
                 i18n.language === 'en' ? 'hh:mm a' : i18n.language === 'fr' && 'HH:mm',
               )}
+            &nbsp;
+            {moment(copyTime?.initDate)
+              .locale(i18n.language)
+              .format(currentLang === 'en' ? 'ddd, MMMM DD, YYYY' : currentLang === 'fr' && 'ddd DD MMMM YYYY')}
           </div>
         ))}
       <div className="replace-txt">{t('dashboard.events.addEditEvent.dates.modal.replaceTimeonFolllowingDates')}</div>

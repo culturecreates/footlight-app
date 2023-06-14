@@ -2,16 +2,17 @@ import React from 'react';
 import './publishState.css';
 import { Button, Dropdown, Space } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import { eventPublishState } from '../../../constants/eventPublishState';
+import { Translation } from 'react-i18next';
+
 function PublishState({ children, reviewPublishHandler }) {
   const items = [
     {
       key: '0',
-      label: eventPublishState.PUBLISHED,
+      label: <Translation>{(t) => t('dashboard.events.publishState.published')}</Translation>,
     },
     {
       key: '1',
-      label: eventPublishState.DRAFT,
+      label: <Translation>{(t) => t('dashboard.events.publishState.draft')}</Translation>,
     },
   ];
 
@@ -28,6 +29,7 @@ function PublishState({ children, reviewPublishHandler }) {
         selectable: true,
         defaultSelectedKeys: ['0'],
       }}
+      getPopupContainer={(trigger) => trigger.parentNode}
       trigger={['click']}>
       <Button type="default" className="publish-state-dropdown-button">
         <Space>

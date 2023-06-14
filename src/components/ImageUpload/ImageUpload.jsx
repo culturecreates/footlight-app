@@ -99,7 +99,7 @@ function ImageUpload(props) {
           removeIcon: <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />,
         }}
         onChange={handleChange}>
-        {imageUrl ? (
+        {imageUrl && props?.preview ? (
           <img
             src={imageUrl}
             alt="avatar"

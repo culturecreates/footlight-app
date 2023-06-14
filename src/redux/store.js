@@ -14,6 +14,7 @@ import { imageApi } from '../services/image';
 import { placesApi } from '../services/places';
 import { entitiesApi } from '../services/entities';
 import { inviteApi } from '../services/invite';
+import { organizationApi } from '../services/organization';
 
 const persistConfig = {
   key: 'root',
@@ -29,6 +30,7 @@ const middlewares = [
   placesApi.middleware,
   entitiesApi.middleware,
   inviteApi.middleware,
+  organizationApi.middleware,
 ];
 
 const appReducer = combineReducers({
@@ -44,6 +46,7 @@ const appReducer = combineReducers({
   [placesApi.reducerPath]: placesApi.reducer,
   [entitiesApi.reducerPath]: entitiesApi.reducer,
   [inviteApi.reducerPath]: inviteApi.reducer,
+  [organizationApi.reducerPath]: organizationApi.reducer,
 });
 
 const rootReducer = (state, action) => appReducer(state, action);
