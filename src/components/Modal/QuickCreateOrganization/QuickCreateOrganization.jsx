@@ -142,7 +142,7 @@ function QuickCreateOrganization(props) {
               </Col>
             </Row>
             <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-              <BilingualInput>
+              <BilingualInput defaultTab={interfaceLanguage}>
                 <Form.Item
                   name="french"
                   key={contentLanguage.FRENCH}
