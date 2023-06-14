@@ -174,7 +174,7 @@ function AddEvent() {
   });
   const addUpdateEventApiHandler = (eventObj, toggle) => {
     var promise = new Promise(function (resolve, reject) {
-      if (!eventId || eventId === '' || newEventId == null) {
+      if ((!eventId || eventId === '') && newEventId === null) {
         addEvent({
           data: eventObj,
           calendarId,
