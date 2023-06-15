@@ -1947,6 +1947,8 @@ function AddEvent() {
                     setKeyword={setQuickCreateKeyword}
                     interfaceLanguage={user?.interfaceLanguage?.toLowerCase()}
                     calendarContentLanguage={calendarContentLanguage}
+                    setSelectedOrganizers={setSelectedOrganizers}
+                    selectedOrganizers={selectedOrganizers}
                   />
                 </Form.Item>
                 <Form.Item
