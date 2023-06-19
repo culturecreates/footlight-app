@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './addEvent.css';
-import { Form, Row, Col, Input, Popover, message, Button } from 'antd';
+import { Form, Row, Col, Input, Popover, message, Button, notification } from 'antd';
 import {
   SyncOutlined,
   InfoCircleOutlined,
@@ -184,7 +184,16 @@ function AddEvent() {
           .then((response) => {
             resolve(response?.id);
             setNewEventId(response?.id);
-            if (!toggle) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+            if (!toggle) {
+              notification.success({
+                description: t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+                placement: 'top',
+                closeIcon: <></>,
+                maxCount: 1,
+                duration: 3,
+              });
+              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+            }
           })
           .catch((errorInfo) => {
             reject();
@@ -203,7 +212,16 @@ function AddEvent() {
           .unwrap()
           .then(() => {
             resolve(eventId ?? newEventId);
-            if (!toggle) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+            if (!toggle) {
+              notification.success({
+                description: t('dashboard.events.addEditEvent.notification.updateEvent'),
+                placement: 'top',
+                closeIcon: <></>,
+                maxCount: 1,
+                duration: 3,
+              });
+              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+            }
           })
           .catch((error) => {
             reject();
@@ -565,7 +583,19 @@ function AddEvent() {
           .then((id) => {
             updateEventState({ id: eventId ?? id, calendarId })
               .unwrap()
-              .then(() => navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`))
+              .then(() => {
+                notification.success({
+                  description:
+                    calendar[0]?.role === userRoles.GUEST
+                      ? t('dashboard.events.addEditEvent.notification.sendToReview')
+                      : t('dashboard.events.addEditEvent.notification.publish'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+              })
               .catch((error) => console.log(error));
           })
           .catch((error) => console.log(error));
