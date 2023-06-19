@@ -304,6 +304,12 @@
           "save": "Save",
           "sendToReview": "Send to review"
         },
+        "notification": {
+          "saveAsDraft": "Success! Your event has been saved as draft.",
+          "sendToReview": "Success! Your event has been sent for review.",
+          "publish": "Success! Your event has been published",
+          "updateEvent": "Success! Your event has been updated."
+        },
         "validations": {
           "title": "Event title is required.",
           "date": "Event date is required.",

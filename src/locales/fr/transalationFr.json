@@ -302,6 +302,12 @@
           "save": "Sauvegarder",
           "sendToReview": "Envoyer pour révision"
         },
+        "notification": {
+          "saveAsDraft": "Succès! Votre événement a été enregistré comme brouillon.",
+          "sendToReview": "Succès! Votre événement a été envoyé pour validation.",
+          "publish": "Succès! Votre événement a été publié.",
+          "updateEvent": "Succès! Votre événement a été mis à jour."
+        },
         "validations": {
           "title": "Le titre de l'événement est requis.",
           "date": "La date de l'événement est requise.",
