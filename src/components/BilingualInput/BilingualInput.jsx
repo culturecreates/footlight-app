@@ -9,7 +9,7 @@ function BilingualInput(props) {
   let labelFr = t('common.tabFrench');
   let labelEn = t('common.tabEnglish');
 
-  let defaultTab = 'fr';
+  let defaultTab = props?.defaultTab ?? 'fr';
 
   // Adjust tabs unless brand new entity
   if (props.fieldData) {
