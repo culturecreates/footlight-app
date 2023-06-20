@@ -33,11 +33,13 @@
   padding: 1px;
   width: 300px;
   /* overflow: auto; */
-}
-.custom-common-modal-container .calendar .months-container {
   height: 296px;
   overflow-y: scroll;
 }
+/* .custom-common-modal-container .calendar .months-container {
+  height: 296px;
+  overflow-y: scroll;
+} */
 .custom-common-modal-container .calendar .months-container .month-container {
   height: 230px;
 }

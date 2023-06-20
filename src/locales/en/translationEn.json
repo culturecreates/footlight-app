@@ -169,7 +169,7 @@
             "saturday": "Sat"
           },
           "modal": {
-            "titleHeading": "Select dates for your event",
+            "titleHeading": "Select event dates and years",
             "startTime": "Start time",
             "endTime": "End time",
             "addTime": "Add another time",
