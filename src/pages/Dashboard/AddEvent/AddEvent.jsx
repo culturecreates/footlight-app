@@ -449,7 +449,6 @@ function AddEvent() {
               };
             });
           }
-
           if (values?.dynamicFields) {
             dynamicFields = Object.keys(values?.dynamicFields)?.map((dynamicField) => {
               return {
@@ -1245,7 +1244,13 @@ function AddEvent() {
                         fr: taxonomy?.name?.fr,
                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       })}
-                      initialValue={initialValues}
+                      initialValue={
+                        dynamicAdminOnlyFields?.includes(taxonomy?.id)
+                          ? adminCheckHandler()
+                            ? initialValues
+                            : []
+                          : initialValues
+                      }
                       hidden={
                         dynamicAdminOnlyFields?.includes(taxonomy?.id) ? (adminCheckHandler() ? false : true) : false
                       }>
