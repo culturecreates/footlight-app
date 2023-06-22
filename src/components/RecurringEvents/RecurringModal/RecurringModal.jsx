@@ -289,14 +289,14 @@ const RecurringModal = ({
                 const dateLength = await getNumberOfDays(e.startDate, e.endDate);
                 if (dateLength && dateLength.length > 1) {
                   const dateArray = dateLength.map((item) => {
-                    const date = moment(item, 'YYYY-MM-DD');
+                    // const date = moment(item, 'YYYY-MM-DD');
                     const obj = {
                       id: uniqid(),
                       name: 'test name',
                       location: 'test Location',
-                      startDate: new Date(moment(date, 'YYYY-MM-DD').format('YYYY-MM-DD')),
-                      endDate: new Date(moment(date, 'YYYY-MM-DD').format('YYYY-MM-DD')),
-                      initDate: moment(moment(date, 'YYYY-MM-DD')).format('YYYY-MM-DD'),
+                      startDate: new Date(item),
+                      endDate: new Date(item),
+                      initDate: item,
                       isDeleted: false,
                       color: '#607EFC',
                     };
