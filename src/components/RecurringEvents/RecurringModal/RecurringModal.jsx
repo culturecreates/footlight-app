@@ -211,24 +211,24 @@ const RecurringModal = ({
     );
   };
 
-  // const dateConverter = (date) => {
-  //   const day = date.getDate();
-  //   const month = date.getMonth() + 1;
-  //   const year = date.getFullYear();
+  const dateConverter = (date) => {
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
 
-  //   const paddedDay = String(day).padStart(2, '0');
-  //   const paddedMonth = String(month).padStart(2, '0');
+    const paddedDay = String(day).padStart(2, '0');
+    const paddedMonth = String(month).padStart(2, '0');
 
-  //   const formattedDate = `${paddedDay}/${paddedMonth}/${year}`;
-  //   return moment(formattedDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
-  // };
+    const formattedDate = `${paddedDay}/${paddedMonth}/${year}`;
+    return moment(formattedDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
+  };
 
   const getNumberOfDays = async (start, end) => {
-    // let startDate = dateConverter(start);
-    // let endDate = dateConverter(end);
+    let startDate = dateConverter(start);
+    let endDate = dateConverter(end);
     let date = [];
 
-    for (var m = moment(start); m.isSameOrBefore(end); m.add(1, 'days')) {
+    for (var m = moment(startDate); m.isSameOrBefore(endDate); m.add(1, 'days')) {
       date.push(m.format('YYYY-MM-DD'));
     }
 
@@ -294,9 +294,9 @@ const RecurringModal = ({
                       id: uniqid(),
                       name: 'test name',
                       location: 'test Location',
-                      startDate: new Date(moment(date, 'YYYY-MM-DD').format('YYYY-MM-DD')),
-                      endDate: new Date(moment(date, 'YYYY-MM-DD').format('YYYY-MM-DD')),
-                      initDate: moment(moment(date, 'YYYY-MM-DD')).format('YYYY-MM-DD'),
+                      startDate: new Date(item),
+                      endDate: new Date(item),
+                      initDate: moment(date).format('YYYY-MM-DD'),
                       isDeleted: false,
                       color: '#607EFC',
                     };
