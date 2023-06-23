@@ -189,8 +189,8 @@ function Events() {
           page: pageNumber,
           order: filter?.order,
           sortBy: filter?.sort,
-          ...(filter?.dates[0] && { startDateRange: query?.get('start-date-range') }),
-          ...(filter?.dates[1] && { endDateRange: query?.get('end-date-range') }),
+          ...(filter?.dates?.length > 0 && filter?.dates[0] && { startDateRange: query?.get('start-date-range') }),
+          ...(filter?.dates?.length > 1 && filter?.dates[1] && { endDateRange: query?.get('end-date-range') }),
           ...(usersQuery && { users: usersQuery }),
           ...(publicationQuery && { publication: publicationQuery }),
         }),
@@ -202,8 +202,8 @@ function Events() {
           query: eventSearchQuery,
           order: filter?.order,
           sortBy: filter?.sort,
-          ...(filter?.dates[0] && { startDateRange: query?.get('start-date-range') }),
-          ...(filter?.dates[1] && { endDateRange: query?.get('end-date-range') }),
+          ...(filter?.dates?.length > 0 && filter?.dates[0] && { startDateRange: query?.get('start-date-range') }),
+          ...(filter?.dates?.length > 1 && filter?.dates[1] && { endDateRange: query?.get('end-date-range') }),
           ...(usersQuery && { users: usersQuery }),
           ...(publicationQuery && { publication: publicationQuery }),
         }),
@@ -217,9 +217,12 @@ function Events() {
     if (usersQuery) sessionStorage.setItem('users', usersQuery);
     else sessionStorage.removeItem('users');
     if (publicationQuery) sessionStorage.setItem('publication', publicationQuery);
-    else sessionStorage.removeItem('publication');
-    if (filter?.dates[0] && filter?.dates[0] !== '') sessionStorage.setItem('startDateRange', filter?.dates[0]);
-    if (filter?.dates[1] && filter?.dates[1] !== '') sessionStorage.setItem('endDateRange', filter?.dates[1]);
+    if (filter?.dates?.length > 0 && filter?.dates[0] && filter?.dates[0] !== '')
+      sessionStorage.setItem('startDateRange', filter?.dates[0]);
+    else sessionStorage.setItem('startDateRange', query?.get('start-date-range'));
+    if (filter?.dates?.length > 1 && filter?.dates[1] && filter?.dates[1] !== '')
+      sessionStorage.setItem('endDateRange', filter?.dates[1]);
+    else sessionStorage.setItem('endDateRange', query?.get('end-date-range'));
   }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter]);
 
   const onSearchHandler = (event) => {

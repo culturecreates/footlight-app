@@ -120,7 +120,7 @@ function AddEvent() {
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
   const [updateEventState, { isLoading: updateEventStateLoading }] = useUpdateEventStateMutation();
   const [updateEvent, { isLoading: updateEventLoading }] = useUpdateEventMutation();
-  const [addImage, { error: isAddImageError }] = useAddImageMutation();
+  const [addImage, { error: isAddImageError, isLoading: addImageLoading }] = useAddImageMutation();
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
 
   const [dateType, setDateType] = useState();
@@ -449,7 +449,6 @@ function AddEvent() {
               };
             });
           }
-
           if (values?.dynamicFields) {
             dynamicFields = Object.keys(values?.dynamicFields)?.map((dynamicField) => {
               return {
@@ -640,14 +639,16 @@ function AddEvent() {
               size="large"
               label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
               onClick={(e) => saveAsDraftHandler(e)}
-              disabled={updateEventLoading || addEventLoading ? true : false}
+              disabled={updateEventLoading || addEventLoading || addImageLoading ? true : false}
             />
           </Form.Item>
           <Form.Item>
             <PrimaryButton
               label={t('dashboard.events.addEditEvent.saveOptions.publish')}
               onClick={(e) => reviewPublishHandler(e)}
-              disabled={updateEventLoading || addEventLoading || updateEventStateLoading ? true : false}
+              disabled={
+                updateEventLoading || addEventLoading || updateEventStateLoading || addImageLoading ? true : false
+              }
             />
           </Form.Item>
         </>
@@ -660,7 +661,7 @@ function AddEvent() {
               size="large"
               label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
               onClick={(e) => saveAsDraftHandler(e)}
-              disabled={updateEventLoading || addEventLoading ? true : false}
+              disabled={updateEventLoading || addEventLoading || addImageLoading ? true : false}
             />
           </Form.Item>
 
@@ -668,7 +669,9 @@ function AddEvent() {
             <PrimaryButton
               label={t('dashboard.events.addEditEvent.saveOptions.sendToReview')}
               onClick={(e) => reviewPublishHandler(e)}
-              disabled={updateEventLoading || addEventLoading || updateEventStateLoading ? true : false}
+              disabled={
+                updateEventLoading || addEventLoading || updateEventStateLoading || addImageLoading ? true : false
+              }
             />
           </Form.Item>
         </>
@@ -688,7 +691,7 @@ function AddEvent() {
             <PrimaryButton
               label={t('dashboard.events.addEditEvent.saveOptions.save')}
               onClick={(e) => saveAsDraftHandler(e)}
-              disabled={updateEventLoading || addEventLoading ? true : false}
+              disabled={updateEventLoading || addEventLoading || addImageLoading ? true : false}
             />
           </Form.Item>
         </>
@@ -1245,7 +1248,13 @@ function AddEvent() {
                         fr: taxonomy?.name?.fr,
                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       })}
-                      initialValue={initialValues}
+                      initialValue={
+                        dynamicAdminOnlyFields?.includes(taxonomy?.id)
+                          ? adminCheckHandler()
+                            ? initialValues
+                            : []
+                          : initialValues
+                      }
                       hidden={
                         dynamicAdminOnlyFields?.includes(taxonomy?.id) ? (adminCheckHandler() ? false : true) : false
                       }>

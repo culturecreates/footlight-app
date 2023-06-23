@@ -148,7 +148,7 @@ const RecurringEvents = function ({
     if (formFields?.frequency) {
       if (formFields.frequency === 'CUSTOM') {
         if (formFields?.startDateRecur?.length >= 1)
-          getNumberOfDays(formFields?.startDateRecur[0], formFields?.startDateRecur[1]);
+          if (!eventDetails) getNumberOfDays(formFields?.startDateRecur[0], formFields?.startDateRecur[1]);
         setIsCustom(true);
       } else setIsCustom(false);
     }
