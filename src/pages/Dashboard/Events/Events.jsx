@@ -215,7 +215,9 @@ function Events() {
     sessionStorage.setItem('order', filter?.order);
     sessionStorage.setItem('sortBy', filter?.sort);
     if (usersQuery) sessionStorage.setItem('users', usersQuery);
+    else sessionStorage.removeItem('users');
     if (publicationQuery) sessionStorage.setItem('publication', publicationQuery);
+    else sessionStorage.removeItem('publication');
     if (filter?.dates[0] && filter?.dates[0] !== '') sessionStorage.setItem('startDateRange', filter?.dates[0]);
     if (filter?.dates[1] && filter?.dates[1] !== '') sessionStorage.setItem('endDateRange', filter?.dates[1]);
   }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter]);
