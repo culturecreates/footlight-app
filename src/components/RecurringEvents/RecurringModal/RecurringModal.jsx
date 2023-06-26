@@ -150,7 +150,7 @@ const RecurringModal = ({
             return item;
           }),
         );
-      } else setDataSource([...dateSource, test].sort((a, b) => (b.startDate < a.startDate ? 1 : -1)));
+      } else setDataSource([...dateSource, test].sort((a, b) => (b.initDate < a.initDate ? 1 : -1)));
       setTest(null);
     }
   }, [test]);
@@ -162,7 +162,7 @@ const RecurringModal = ({
         const newCopyArray = dateArrayCal.filter((item) => !checkDateExisting.includes(item.initDate));
 
         const iterated = [...dateSource, [].concat.apply([], newCopyArray)];
-        setDataSource([].concat.apply([], iterated).sort((a, b) => (b.startDate < a.startDate ? 1 : -1)));
+        setDataSource([].concat.apply([], iterated).sort((a, b) => (b.initDate < a.initDate ? 1 : -1)));
       }
       setDateArrayCal(null);
     }
@@ -294,9 +294,9 @@ const RecurringModal = ({
                       id: uniqid(),
                       name: 'test name',
                       location: 'test Location',
-                      startDate: new Date(date.format('YYYY-MM-DD')),
-                      endDate: new Date(date.format('YYYY-MM-DD')),
-                      initDate: moment(date).format('YYYY-MM-DD'),
+                      startDate: new Date(date.format('YYYY/M/D')),
+                      endDate: new Date(date.format('YYYY/M/D')),
+                      initDate: date.format('YYYY-MM-DD'),
                       isDeleted: false,
                       color: '#607EFC',
                     };
