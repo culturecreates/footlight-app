@@ -215,11 +215,11 @@ function Events() {
     sessionStorage.setItem('order', filter?.order);
     sessionStorage.setItem('sortBy', filter?.sort);
     if (usersQuery) sessionStorage.setItem('users', usersQuery);
+    else sessionStorage.removeItem('users');
     if (publicationQuery) sessionStorage.setItem('publication', publicationQuery);
     if (filter?.dates?.length > 0 && filter?.dates[0] && filter?.dates[0] !== '')
       sessionStorage.setItem('startDateRange', filter?.dates[0]);
     else sessionStorage.setItem('startDateRange', query?.get('start-date-range'));
-
     if (filter?.dates?.length > 1 && filter?.dates[1] && filter?.dates[1] !== '')
       sessionStorage.setItem('endDateRange', filter?.dates[1]);
     else sessionStorage.setItem('endDateRange', query?.get('end-date-range'));

@@ -162,7 +162,7 @@ const RecurringModal = ({
         const newCopyArray = dateArrayCal.filter((item) => !checkDateExisting.includes(item.initDate));
 
         const iterated = [...dateSource, [].concat.apply([], newCopyArray)];
-        setDataSource([].concat.apply([], iterated).sort((a, b) => (b?.initDate < a?.initDate ? 1 : -1)));
+        setDataSource([].concat.apply([], iterated).sort((a, b) => (b.initDate < a.initDate ? 1 : -1)));
       }
       setDateArrayCal(null);
     }
@@ -289,14 +289,14 @@ const RecurringModal = ({
                 const dateLength = await getNumberOfDays(e.startDate, e.endDate);
                 if (dateLength && dateLength.length > 1) {
                   const dateArray = dateLength.map((item) => {
-                    // const date = moment(item, 'YYYY-MM-DD');
+                    const date = moment(item, 'YYYY-MM-DD');
                     const obj = {
                       id: uniqid(),
                       name: 'test name',
                       location: 'test Location',
-                      startDate: new Date(item),
-                      endDate: new Date(item),
-                      initDate: item,
+                      startDate: new Date(date.format('YYYY/M/D')),
+                      endDate: new Date(date.format('YYYY/M/D')),
+                      initDate: date.format('YYYY-MM-DD'),
                       isDeleted: false,
                       color: '#607EFC',
                     };
