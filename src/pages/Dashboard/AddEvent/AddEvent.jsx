@@ -405,7 +405,7 @@ function AddEvent() {
               ...(ticketType === offerTypes.PAYING &&
                 values?.prices?.length > 0 &&
                 values?.prices[0] && {
-                  prices: values?.prices,
+                  prices: values?.prices?.filter((element) => element != null || element != undefined),
                 }),
               priceCurrency: 'CAD',
               ...(ticketType === offerTypes.PAYING &&
@@ -575,6 +575,7 @@ function AddEvent() {
 
   const reviewPublishHandler = (event) => {
     event?.preventDefault();
+    setShowDialog(false);
     form
       .validateFields(validateFields)
       .then(() => {
@@ -2669,7 +2670,7 @@ function AddEvent() {
                     <BilingualInput>
                       <Form.List
                         name="prices"
-                        initialValue={eventData?.offerConfiguration?.prices}
+                        initialValue={eventData?.offerConfiguration?.prices ?? [undefined]}
                         key={contentLanguage.FRENCH}
                         rules={[
                           ({ getFieldValue }) => ({
@@ -2704,7 +2705,7 @@ function AddEvent() {
                       </Form.List>
                       <Form.List
                         name="prices"
-                        initialValue={eventData?.offerConfiguration?.prices}
+                        initialValue={eventData?.offerConfiguration?.prices ?? [undefined]}
                         key={contentLanguage.ENGLISH}
                         rules={[
                           ({ getFieldValue }) => ({
