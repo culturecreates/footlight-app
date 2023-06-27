@@ -6,6 +6,7 @@ import { featureFlags } from '../../../utils/featureFlags';
 import Main from '../../../layout/Main/Main';
 import OrganizationSearch from '../../../components/Search/Events/EventsSearch';
 import AddOrganization from '../../../components/Button/AddEvent';
+import Sort from '../../../components/Sort/Sort';
 
 function Organizations() {
   const { t } = useTranslation();
@@ -22,6 +23,7 @@ function Organizations() {
           allowClear={true}
           //   onChange={onChangeHandler}
         />
+        <Sort />
       </Main>
     </FeatureFlag>
   );
