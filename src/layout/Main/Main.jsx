@@ -11,10 +11,7 @@ function Main(props) {
         <Col style={{ paddingLeft: 0 }}>
           <Row justify="space-between">
             <Col>
-              <div className="events-heading-wrapper">
-                {/* <h4 className="events-heading">{t('dashboard.events.heading')}</h4> */}
-                {children?.length > 0 ? children[0] : children}
-              </div>
+              <div className="events-heading-wrapper">{children?.length > 0 ? children[0] : children}</div>
             </Col>
 
             <Col> {children?.length > 1 && children[1]}</Col>
@@ -22,59 +19,9 @@ function Main(props) {
         </Col>
         <Row gutter={[20, 10]}>
           <Col xs={24} sm={24} md={12} lg={10} xl={8}>
-            {/* <EventsSearch
-              placeholder={t('dashboard.events.searchPlaceholder')}
-              onPressEnter={(e) => onSearchHandler(e)}
-              defaultValue={eventSearchQuery}
-              allowClear={true}
-              onChange={onChangeHandler}
-            /> */}
             {children?.length > 2 && children[2]}
           </Col>
-          <Col>
-            {children?.length > 3 && children[3]}
-
-            {/* <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              <span style={{ fontSize: '16px', fontWeight: 700 }}>{t('dashboard.events.filter.sort.sortBy')}</span>
-
-              <Dropdown
-                overlayClassName="filter-sort-dropdown-wrapper"
-                overlayStyle={{ minWidth: '200px' }}
-                getPopupContainer={(trigger) => trigger.parentNode}
-                menu={{
-                  items: sortByOptions,
-                  selectable: true,
-                  defaultSelectedKeys: [filter?.sort],
-                  onSelect: onSortSelect,
-                }}
-                trigger={['click']}>
-                <Button size="large" className="filter-sort-button">
-                  <Space>
-                    {sortByOptions?.map((sortBy, index) => {
-                      if (sortBy?.key === filter?.sort) return <span key={index}>{sortBy?.label}</span>;
-                    })}
-                    <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
-                  </Space>
-                </Button>
-              </Dropdown>
-
-              <Button
-                className="filter-sort-button"
-                style={{ borderColor: filter?.order && '#1B3DE6' }}
-                onClick={onSortOrderChange}
-                icon={
-                  filter?.order === sortOrder?.ASC ? (
-                    <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
-                  ) : (
-                    filter?.order === sortOrder?.DESC && (
-                      <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
-                    )
-                  )
-                }
-                size={'large'}
-              />
-            </div> */}
-          </Col>
+          <Col>{children?.length > 3 && children[3]}</Col>
 
           <Col>
             <Row gutter={20}>
