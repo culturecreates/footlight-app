@@ -10,6 +10,7 @@ import { ReactComponent as NotFound } from '../../src/assets/images/illustatus.s
 import EventReadOnly from '../pages/Dashboard/EventReadOnly';
 import CreateAccount from '../pages/CreateAccount/CreateAccount';
 import Users from '../pages/Dashboard/Users';
+import Organizations from '../pages/Dashboard/Organizations';
 
 export const router = createBrowserRouter([
   {
@@ -66,7 +67,7 @@ export const router = createBrowserRouter([
       },
       {
         path: `:calendarId${PathName.Organizations}`,
-        element: <div>Organisations</div>,
+        element: <Organizations />,
       },
       {
         path: `:calendarId${PathName.Taxonomies}`,

@@ -1,5 +1,6 @@
 import Icon, { CalendarOutlined, SettingOutlined, DatabaseOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { ReactComponent as Organizations } from '../assets/icons/organisations.svg';
+import { featureFlags } from '../utils/featureFlags';
 
 const iconStyle = {
   fontSize: '18px',
@@ -25,7 +26,7 @@ export const sidebarItems = [
     path: '/organizations',
     component: <div>organizations</div>,
     icon: <Icon component={Organizations} style={iconStyle} />,
-    disabled: true,
+    disabled: featureFlags.orgPersonPlacesView === 'true' ? false : true,
   },
   {
     name: 'dashboard.sidebar.taxonomies',
