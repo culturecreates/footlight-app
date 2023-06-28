@@ -25,7 +25,17 @@ export const organizationApi = createApi({
         },
       }),
     }),
+    getAllOrganization: builder.query({
+      query: ({ calendarId, sort }) => ({
+        url: `organizations?${sort}`,
+        method: 'GET',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+    }),
   }),
 });
 
-export const { useAddOrganizationMutation, useLazyGetOrganizationQuery } = organizationApi;
+export const { useAddOrganizationMutation, useLazyGetOrganizationQuery, useLazyGetAllOrganizationQuery } =
+  organizationApi;
