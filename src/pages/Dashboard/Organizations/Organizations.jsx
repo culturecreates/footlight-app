@@ -45,7 +45,7 @@ function Organizations() {
   }, []);
   return (
     allOrganizationSuccess && (
-      <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>
+      <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Main>
           <h4 className="events-heading">{t('dashboard.events.heading')}</h4>
           <AddOrganization label={t('dashboard.events.addEvent')} />
