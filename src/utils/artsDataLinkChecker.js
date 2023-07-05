@@ -3,7 +3,7 @@ export const artsDataLinkChecker = (link) => {
 
   if (Array.isArray(link)) {
     let url = link?.filter((url) => url?.uri?.includes(artsData));
-    if (url?.length > 0) return url[0];
+    if (url?.length > 0) return url[0]?.uri;
     else return false;
   } else {
     if (link?.includes(artsData)) return link;

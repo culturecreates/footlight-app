@@ -50,7 +50,7 @@ function ListItem(props) {
         className="event-status-list-item"
         title={
           artsDataLink && (
-            <ArtsDataLink onClick={() => console.log('tag click')}>
+            <ArtsDataLink onClick={() => window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer')}>
               <span style={{ textDecoration: 'underline' }}>Artsdata</span>
               <LinkOutlined />
             </ArtsDataLink>
