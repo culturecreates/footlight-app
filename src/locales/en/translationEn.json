@@ -388,6 +388,12 @@
       "organizations": "Organizations",
       "search": {
         "placeholder": "Search Organizations"
+      },
+      "deleteOrganization": {
+        "title": "Confirm Delete",
+        "description": "Are you sure you want to permanently delete this organization?",
+        "ok": "OK",
+        "cancel": "Cancel"
       }
     },
     "userProfile": {

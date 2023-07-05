@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './organizations.css';
-import { List, Grid } from 'antd';
+import { List, Grid, Modal } from 'antd';
+import { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
@@ -16,6 +17,7 @@ import { useOutletContext, useParams } from 'react-router-dom';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
+const { confirm } = Modal;
 const { useBreakpoint } = Grid;
 
 function Organizations() {
@@ -36,6 +38,22 @@ function Organizations() {
   const totalCount = allOrganizationData?.count;
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
+
+  const deleteOrganizationHandler = (organizationId) => {
+    console.log(organizationId);
+    confirm({
+      title: t('dashboard.organization.deleteOrganization.title'),
+      icon: <ExclamationCircleOutlined />,
+      content: t('dashboard.organization.deleteOrganization.description'),
+      okText: t('dashboard.organization.deleteOrganization.ok'),
+      okType: 'danger',
+      cancelText: t('dashboard.organization.deleteOrganization.cancel'),
+      className: 'delete-modal-container',
+      onOk() {
+        // deleteEvent({ id: eventId, calendarId: calendarId });
+      },
+    });
+  };
 
   useEffect(() => {
     getAllOrganization({
@@ -100,6 +118,13 @@ function Organizations() {
                     createdDate={item?.creator?.date}
                     createdByFirstName={item?.creator?.firstName}
                     createdByLastName={item?.creator?.lastName}
+                    actions={[
+                      <DeleteOutlined
+                        key={'delete-icon'}
+                        style={{ color: '#222732', fontSize: '24px' }}
+                        onClick={() => deleteOrganizationHandler(item?.id)}
+                      />,
+                    ]}
                   />
                 )}
               />

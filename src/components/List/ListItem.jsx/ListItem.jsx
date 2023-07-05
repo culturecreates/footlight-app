@@ -22,13 +22,14 @@ function ListItem(props) {
     updatedByLastName,
     scheduleTimezone,
     listItemHandler,
+    actions,
   } = props;
   const { t } = useTranslation();
   const dateFormat = 'DD-MMM-YYYY';
   const lang = i18n.language;
 
   return (
-    <List.Item className="event-list-item-wrapper" key={id}>
+    <List.Item className="event-list-item-wrapper" key={id} actions={actions}>
       <List.Item.Meta
         className="event-list-item-meta"
         onClick={listItemHandler}
