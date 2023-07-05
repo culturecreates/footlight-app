@@ -2,10 +2,12 @@ import React from 'react';
 import './listItem.css';
 import { useTranslation } from 'react-i18next';
 import { List } from 'antd';
+import { LinkOutlined } from '@ant-design/icons';
 import moment from 'moment-timezone';
 import i18n from 'i18next';
 import Username from '../../Username/Username';
-import EventStatus from '../../Tags/Events/EventStatus';
+
+import ArtsDataLink from '../../Tags/ArtsDataLink/ArtsDataLink';
 
 function ListItem(props) {
   const {
@@ -27,7 +29,6 @@ function ListItem(props) {
   const { t } = useTranslation();
   const dateFormat = 'DD-MMM-YYYY';
   const lang = i18n.language;
-
   return (
     <List.Item className="event-list-item-wrapper" key={id} actions={actions}>
       <List.Item.Meta
@@ -47,8 +48,14 @@ function ListItem(props) {
       />
       <List.Item.Meta
         className="event-status-list-item"
-        onClick={listItemHandler}
-        title={<EventStatus label={artsDataLink} />}
+        title={
+          artsDataLink && (
+            <ArtsDataLink onClick={() => console.log('tag click')}>
+              <span style={{ textDecoration: 'underline' }}>Artsdata</span>
+              <LinkOutlined />
+            </ArtsDataLink>
+          )
+        }
         description={
           <div className="event-list-status">
             <span className="event-list-status-created-by">

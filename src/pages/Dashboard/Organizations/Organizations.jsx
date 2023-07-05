@@ -17,6 +17,7 @@ import { useOutletContext, useParams } from 'react-router-dom';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 const { confirm } = Modal;
 const { useBreakpoint } = Grid;
 
@@ -118,6 +119,7 @@ function Organizations() {
                     createdDate={item?.creator?.date}
                     createdByFirstName={item?.creator?.firstName}
                     createdByLastName={item?.creator?.lastName}
+                    artsDataLink={artsDataLinkChecker(item?.sameAs)}
                     actions={[
                       <DeleteOutlined
                         key={'delete-icon'}
