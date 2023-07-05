@@ -11,7 +11,7 @@ import AddOrganization from '../../../components/Button/AddEvent';
 import Sort from '../../../components/Sort/Sort';
 import NoContent from '../../../components/NoContent/NoContent';
 import ListItem from '../../../components/List/ListItem.jsx/ListItem';
-import { useLazyGetAllOrganizationQuery } from '../../../services/organization';
+import { useDeleteOrganizationMutation, useLazyGetAllOrganizationQuery } from '../../../services/organization';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import { useOutletContext, useParams } from 'react-router-dom';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
@@ -32,6 +32,7 @@ function Organizations() {
     getAllOrganization,
     { currentData: allOrganizationData, isFetching: allOrganizationFetching, isSuccess: allOrganizationSuccess },
   ] = useLazyGetAllOrganizationQuery();
+  const [deleteOrganization] = useDeleteOrganizationMutation();
 
   const [pageNumber, setPageNumber] = useState(1);
 
@@ -40,7 +41,6 @@ function Organizations() {
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const deleteOrganizationHandler = (organizationId) => {
-    console.log(organizationId);
     confirm({
       title: t('dashboard.organization.deleteOrganization.title'),
       icon: <ExclamationCircleOutlined />,
@@ -50,7 +50,7 @@ function Organizations() {
       cancelText: t('dashboard.organization.deleteOrganization.cancel'),
       className: 'delete-modal-container',
       onOk() {
-        // deleteEvent({ id: eventId, calendarId: calendarId });
+        deleteOrganization({ id: organizationId, calendarId: calendarId });
       },
     });
   };
