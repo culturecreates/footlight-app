@@ -3,7 +3,7 @@ import { baseQueryWithReauth } from '../utils/services';
 export const organizationApi = createApi({
   reducerPath: 'organizationApi',
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['organization'],
+  tagTypes: ['Organization'],
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     addOrganization: builder.mutation({
@@ -33,9 +33,26 @@ export const organizationApi = createApi({
           'calendar-id': calendarId,
         },
       }),
+      providesTags: (result) =>
+        result ? [...result.data.map(({ id }) => ({ type: 'Organization', id })), 'Organization'] : ['Organization'],
+      transformResponse: (response) => response,
+    }),
+    deleteOrganization: builder.mutation({
+      query: ({ id, calendarId }) => ({
+        url: `organizations/${id}`,
+        method: 'DELETE',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: 'Organization', id: arg.id }],
     }),
   }),
 });
 
-export const { useAddOrganizationMutation, useLazyGetOrganizationQuery, useLazyGetAllOrganizationQuery } =
-  organizationApi;
+export const {
+  useAddOrganizationMutation,
+  useLazyGetOrganizationQuery,
+  useLazyGetAllOrganizationQuery,
+  useDeleteOrganizationMutation,
+} = organizationApi;

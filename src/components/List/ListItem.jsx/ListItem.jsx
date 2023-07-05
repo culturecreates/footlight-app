@@ -2,10 +2,12 @@ import React from 'react';
 import './listItem.css';
 import { useTranslation } from 'react-i18next';
 import { List } from 'antd';
+import { LinkOutlined } from '@ant-design/icons';
 import moment from 'moment-timezone';
 import i18n from 'i18next';
 import Username from '../../Username/Username';
-import EventStatus from '../../Tags/Events/EventStatus';
+
+import ArtsDataLink from '../../Tags/ArtsDataLink/ArtsDataLink';
 
 function ListItem(props) {
   const {
@@ -22,18 +24,18 @@ function ListItem(props) {
     updatedByLastName,
     scheduleTimezone,
     listItemHandler,
+    actions,
   } = props;
   const { t } = useTranslation();
   const dateFormat = 'DD-MMM-YYYY';
   const lang = i18n.language;
-
   return (
-    <List.Item className="event-list-item-wrapper" key={id}>
+    <List.Item className="event-list-item-wrapper" key={id} actions={actions} style={{ padding: '20px 0px' }}>
       <List.Item.Meta
         className="event-list-item-meta"
         onClick={listItemHandler}
         avatar={
-          <div className="event-list-image-wrapper">
+          <div className="event-list-image-wrapper" style={{ height: '40px', width: '40px' }}>
             <img src={logo} className="event-list-image" />
           </div>
         }
@@ -46,8 +48,14 @@ function ListItem(props) {
       />
       <List.Item.Meta
         className="event-status-list-item"
-        onClick={listItemHandler}
-        title={<EventStatus label={artsDataLink} />}
+        title={
+          artsDataLink && (
+            <ArtsDataLink onClick={() => window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer')}>
+              <span style={{ textDecoration: 'underline' }}>Artsdata</span>
+              <LinkOutlined />
+            </ArtsDataLink>
+          )
+        }
         description={
           <div className="event-list-status">
             <span className="event-list-status-created-by">
