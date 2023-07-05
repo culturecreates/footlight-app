@@ -47,17 +47,17 @@ function Organizations() {
     allOrganizationSuccess && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Main>
-          <h4 className="events-heading">{t('dashboard.events.heading')}</h4>
+          <h4 className="events-heading">{t('dashboard.organization.organizations')}</h4>
           <AddOrganization label={t('dashboard.events.addEvent')} />
           <OrganizationSearch
-            placeholder={t('dashboard.events.searchPlaceholder')}
+            placeholder={t('dashboard.organization.search.placeholder')}
             //   onPressEnter={(e) => onSearchHandler(e)}
             //   defaultValue={eventSearchQuery}
             allowClear={true}
             //   onChange={onChangeHandler}
           />
           <Sort />
-          <div>filter</div>
+          <></>
           {allOrganizationFetching && (
             <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <LoadingIndicator />

@@ -383,6 +383,13 @@
         "cancel": "Cancel"
       }
     },
+    "organization": {
+      "organization": "Organization",
+      "organizations": "Organizations",
+      "search": {
+        "placeholder": "Search Organizations"
+      }
+    },
     "userProfile": {
       "userProfile": "User Profile",
       "subHeading": "Edit your user settings here.",

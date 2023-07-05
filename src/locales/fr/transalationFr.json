@@ -382,6 +382,13 @@
         "cancel": "Annuler"
       }
     },
+    "organization": {
+      "organization": "Organisation",
+      "organizations": "Organisations",
+      "search": {
+        "placeholder": "Recherche d'organisations"
+      }
+    },
     "userProfile": {
       "userProfile": "Profil d’utilisateur",
       "subHeading": "Éditer vos paramètres ici.",
