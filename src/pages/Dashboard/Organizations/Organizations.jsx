@@ -18,6 +18,7 @@ import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import { userRoles } from '../../../constants/userRoles';
 const { confirm } = Modal;
 const { useBreakpoint } = Grid;
 
@@ -41,6 +42,10 @@ function Organizations() {
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
+  const calendar = user?.roles.filter((calendar) => {
+    return calendar.calendarId === calendarId;
+  });
+
   const deleteOrganizationHandler = (organizationId) => {
     confirm({
       title: t('dashboard.organization.deleteOrganization.title'),
@@ -54,6 +59,11 @@ function Organizations() {
         deleteOrganization({ id: organizationId, calendarId: calendarId });
       },
     });
+  };
+
+  const adminCheckHandler = () => {
+    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
+    else return false;
   };
 
   useEffect(() => {
@@ -121,11 +131,13 @@ function Organizations() {
                     createdByLastName={item?.creator?.lastName}
                     artsDataLink={artsDataLinkChecker(item?.sameAs)}
                     actions={[
-                      <DeleteOutlined
-                        key={'delete-icon'}
-                        style={{ color: '#222732', fontSize: '24px' }}
-                        onClick={() => deleteOrganizationHandler(item?.id)}
-                      />,
+                      adminCheckHandler() && (
+                        <DeleteOutlined
+                          key={'delete-icon'}
+                          style={{ color: '#222732', fontSize: '24px' }}
+                          onClick={() => deleteOrganizationHandler(item?.id)}
+                        />
+                      ),
                     ]}
                   />
                 )}
