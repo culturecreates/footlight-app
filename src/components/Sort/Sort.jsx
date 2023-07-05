@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { sortByOptions, sortOrder } from '../../constants/sortByOptions';
+import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../constants/sortByOptions';
 import { useTranslation } from 'react-i18next';
 import { Button, Dropdown, Space } from 'antd';
 import { DownOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 
 function Sort() {
   const { t } = useTranslation();
-  const [filter] = useState({ sort: sortByOptions[2]?.key, order: sortOrder?.ASC });
+  const [filter] = useState({ sort: sortByOptionsOrgsPlacesPerson[0]?.key, order: sortOrder?.ASC });
 
   return (
     <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -17,15 +17,15 @@ function Sort() {
         overlayStyle={{ minWidth: '200px' }}
         getPopupContainer={(trigger) => trigger.parentNode}
         menu={{
-          items: sortByOptions,
+          items: sortByOptionsOrgsPlacesPerson,
           selectable: true,
-          //   defaultSelectedKeys: [filter?.sort],
+          defaultSelectedKeys: [filter?.sort],
           //   onSelect: onSortSelect,
         }}
         trigger={['click']}>
         <Button size="large" className="filter-sort-button">
           <Space>
-            {sortByOptions?.map((sortBy, index) => {
+            {sortByOptionsOrgsPlacesPerson?.map((sortBy, index) => {
               if (sortBy?.key === filter?.sort) return <span key={index}>{sortBy?.label}</span>;
             })}
             <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />

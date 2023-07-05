@@ -19,3 +19,10 @@ export const sortOrder = {
   ASC: 'asc',
   DESC: 'desc',
 };
+
+export const sortByOptionsOrgsPlacesPerson = [
+  {
+    label: <Translation>{(t) => t('dashboard.events.filter.sort.name')}</Translation>,
+    key: `name`,
+  },
+];
