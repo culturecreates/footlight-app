@@ -48,7 +48,7 @@ function Organizations() {
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Main>
           <h4 className="events-heading">{t('dashboard.organization.organizations')}</h4>
-          <AddOrganization label={t('dashboard.events.addEvent')} />
+          <AddOrganization label={t('dashboard.organization.organization')} />
           <OrganizationSearch
             placeholder={t('dashboard.organization.search.placeholder')}
             //   onPressEnter={(e) => onSearchHandler(e)}

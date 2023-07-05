@@ -33,7 +33,7 @@ function ListItem(props) {
         className="event-list-item-meta"
         onClick={listItemHandler}
         avatar={
-          <div className="event-list-image-wrapper">
+          <div className="event-list-image-wrapper" style={{ height: '40px', width: '40px' }}>
             <img src={logo} className="event-list-image" />
           </div>
         }
