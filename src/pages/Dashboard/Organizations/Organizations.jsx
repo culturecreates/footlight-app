@@ -103,7 +103,7 @@ function Organizations() {
                   <ListItem
                     key={index}
                     id={index}
-                    logo={item?.image?.thumbnail?.uri}
+                    logo={item?.logo?.thumbnail?.uri}
                     title={contentLanguageBilingual({
                       en: item?.name?.en,
                       fr: item?.name?.fr,

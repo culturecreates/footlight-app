@@ -30,7 +30,7 @@ function ListItem(props) {
   const dateFormat = 'DD-MMM-YYYY';
   const lang = i18n.language;
   return (
-    <List.Item className="event-list-item-wrapper" key={id} actions={actions}>
+    <List.Item className="event-list-item-wrapper" key={id} actions={actions} style={{ padding: '20px 0px' }}>
       <List.Item.Meta
         className="event-list-item-meta"
         onClick={listItemHandler}
