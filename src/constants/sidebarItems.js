@@ -19,7 +19,7 @@ export const sidebarItems = [
     path: '/places',
     component: <div>places</div>,
     icon: <EnvironmentOutlined style={iconStyle} />,
-    disabled: true,
+    disabled: false,
   },
   {
     name: 'dashboard.sidebar.organizations',
