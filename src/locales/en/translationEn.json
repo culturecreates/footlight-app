@@ -396,6 +396,19 @@
         "cancel": "Cancel"
       }
     },
+    "places": {
+      "place": "Place",
+      "places": "Places",
+      "search": {
+        "placeholder": "Search Places"
+      },
+      "deletePlace": {
+        "title": "Confirm Delete",
+        "description": "Are you sure you want to permanently delete this place?",
+        "ok": "OK",
+        "cancel": "Cancel"
+      }
+    },
     "userProfile": {
       "userProfile": "User Profile",
       "subHeading": "Edit your user settings here.",
