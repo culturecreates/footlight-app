@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../constants/sortByOptions';
 import { useTranslation } from 'react-i18next';
 import { Button, Dropdown, Space } from 'antd';
-import { DownOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
+import { SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 
 function Sort() {
   const { t } = useTranslation();
@@ -22,13 +22,14 @@ function Sort() {
           defaultSelectedKeys: [filter?.sort],
           //   onSelect: onSortSelect,
         }}
-        trigger={['click']}>
-        <Button size="large" className="filter-sort-button">
+        trigger={['click']}
+        open={false}>
+        <Button size="large" className="filter-sort-button" style={{ cursor: 'default' }}>
           <Space>
             {sortByOptionsOrgsPlacesPerson?.map((sortBy, index) => {
               if (sortBy?.key === filter?.sort) return <span key={index}>{sortBy?.label}</span>;
             })}
-            <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
+            {/* <DownOutlined style={{ fontSize: '12px', color: '#222732' }} /> */}
           </Space>
         </Button>
       </Dropdown>
