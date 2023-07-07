@@ -29,6 +29,13 @@ export const sidebarItems = [
     disabled: featureFlags.orgPersonPlacesView === 'true' ? false : true,
   },
   {
+    name: 'dashboard.sidebar.people',
+    path: '/people',
+    component: <div>organizations</div>,
+    icon: <Icon component={Organizations} style={iconStyle} />,
+    disabled: featureFlags.orgPersonPlacesView === 'true' ? false : true,
+  },
+  {
     name: 'dashboard.sidebar.taxonomies',
     path: '/taxonomies',
     component: <div>hai</div>,

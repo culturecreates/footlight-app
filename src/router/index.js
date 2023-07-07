@@ -12,6 +12,7 @@ import CreateAccount from '../pages/CreateAccount/CreateAccount';
 import Users from '../pages/Dashboard/Users';
 import Organizations from '../pages/Dashboard/Organizations';
 import Places from '../pages/Dashboard/Places';
+import People from '../pages/Dashboard/People/People';
 
 export const router = createBrowserRouter([
   {
@@ -69,6 +70,10 @@ export const router = createBrowserRouter([
       {
         path: `:calendarId${PathName.Organizations}`,
         element: <Organizations />,
+      },
+      {
+        path: `:calendarId${PathName.People}`,
+        element: <People />,
       },
       {
         path: `:calendarId${PathName.Taxonomies}`,
