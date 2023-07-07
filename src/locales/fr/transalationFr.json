@@ -395,6 +395,19 @@
         "cancel": "Annuler"
       }
     },
+    "places": {
+      "place": "Lieu",
+      "places": "Lieux",
+      "search": {
+        "placeholder": "Recherche de lieux"
+      },
+      "deletePlace": {
+        "title": "Confirmer la suppression",
+        "description": "Êtes-vous sûr de vouloir supprimer définitivement cet lieu?",
+        "ok": "OK",
+        "cancel": "Annuler"
+      }
+    },
     "userProfile": {
       "userProfile": "Profil d’utilisateur",
       "subHeading": "Éditer vos paramètres ici.",

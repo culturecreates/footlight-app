@@ -42,7 +42,9 @@ function ListItem(props) {
         description={
           <div className="event-list-description">
             <span className="event-list-description-name">{title}</span>
-            <span className="event-list-description-place">{description}</span>
+            <span className="event-list-description-place" style={{ width: '100%' }}>
+              {description}
+            </span>
           </div>
         }
       />

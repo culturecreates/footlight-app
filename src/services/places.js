@@ -14,10 +14,21 @@ export const placesApi = createApi({
           'calendar-id': calendarId,
         },
       }),
-      providesTags: ['Places'],
+      providesTags: (result) =>
+        result ? [...result.data.map(({ id }) => ({ type: 'Places', id })), 'Places'] : ['Places'],
       transformResponse: (response) => response,
+    }),
+    deletePlaces: builder.mutation({
+      query: ({ id, calendarId }) => ({
+        url: `places/${id}`,
+        method: 'DELETE',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: 'Places', id: arg.id }],
     }),
   }),
 });
 
-export const { useLazyGetAllPlacesQuery, useGetAllPlacesQuery } = placesApi;
+export const { useLazyGetAllPlacesQuery, useGetAllPlacesQuery, useDeletePlacesMutation } = placesApi;

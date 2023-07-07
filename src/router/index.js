@@ -11,6 +11,7 @@ import EventReadOnly from '../pages/Dashboard/EventReadOnly';
 import CreateAccount from '../pages/CreateAccount/CreateAccount';
 import Users from '../pages/Dashboard/Users';
 import Organizations from '../pages/Dashboard/Organizations';
+import Places from '../pages/Dashboard/Places';
 
 export const router = createBrowserRouter([
   {
@@ -63,7 +64,7 @@ export const router = createBrowserRouter([
 
       {
         path: `:calendarId${PathName.Places}`,
-        element: <div>Places</div>,
+        element: <Places />,
       },
       {
         path: `:calendarId${PathName.Organizations}`,
