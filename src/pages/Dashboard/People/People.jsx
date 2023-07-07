@@ -1,13 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react';
 import './people.css';
 import { List, Grid, Modal } from 'antd';
-import { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { DeleteOutlined, ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import Main from '../../../layout/Main/Main';
-import PlaceSearch from '../../../components/Search/Events/EventsSearch';
-import AddPlace from '../../../components/Button/AddEvent';
+import PersonSearch from '../../../components/Search/Events/EventsSearch';
+import AddPerson from '../../../components/Button/AddEvent';
 import Sort from '../../../components/Sort/Sort';
 import NoContent from '../../../components/NoContent/NoContent';
 import ListItem from '../../../components/List/ListItem.jsx/ListItem';
@@ -44,7 +44,7 @@ function People() {
     return calendar.calendarId === calendarId;
   });
 
-  const deletePlaceHandler = (placeId) => {
+  const deletePersonHandler = (personId) => {
     confirm({
       title: t('dashboard.people.deletePerson.title'),
       icon: <ExclamationCircleOutlined />,
@@ -54,7 +54,7 @@ function People() {
       cancelText: t('dashboard.people.deletePerson.cancel'),
       className: 'delete-modal-container',
       onOk() {
-        deletePerson({ id: placeId, calendarId: calendarId });
+        deletePerson({ id: personId, calendarId: calendarId });
       },
     });
   };
@@ -75,8 +75,8 @@ function People() {
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Main>
           <h4 className="events-heading">{t('dashboard.people.people')}</h4>
-          <AddPlace label={t('dashboard.people.person')} />
-          <PlaceSearch
+          <AddPerson label={t('dashboard.people.person')} />
+          <PersonSearch
             placeholder={t('dashboard.people.search.placeholder')}
             //   onPressEnter={(e) => onSearchHandler(e)}
             //   defaultValue={eventSearchQuery}
@@ -112,6 +112,7 @@ function People() {
                     key={index}
                     id={index}
                     logo={item?.logo?.thumbnail?.uri}
+                    defaultLogo={<UserOutlined style={{ color: '#607EFC', fontSize: '24px' }} />}
                     title={contentLanguageBilingual({
                       en: item?.name?.en,
                       fr: item?.name?.fr,
@@ -136,7 +137,7 @@ function People() {
                         <DeleteOutlined
                           key={'delete-icon'}
                           style={{ color: '#222732', fontSize: '24px' }}
-                          onClick={() => deletePlaceHandler(item?.id)}
+                          onClick={() => deletePersonHandler(item?.id)}
                         />
                       ),
                     ]}
