@@ -18,7 +18,7 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { userRoles } from '../../../constants/userRoles';
-import { useDeletePlacesMutation, useLazyGetAllPlacesQuery } from '../../../services/places';
+import { useDeletePersonMutation, useLazyGetAllPeopleQuery } from '../../../services/people';
 const { confirm } = Modal;
 const { useBreakpoint } = Grid;
 
@@ -30,13 +30,13 @@ function People() {
   const { user } = useSelector(getUserDetails);
   const [currentCalendarData] = useOutletContext();
 
-  const [getAllPlaces, { currentData: allPlacesData, isFetching: allPlacesFetching, isSuccess: allPlacesSuccess }] =
-    useLazyGetAllPlacesQuery();
-  const [deletePlaces] = useDeletePlacesMutation();
+  const [getAllPeople, { currentData: allPeopleData, isFetching: allPeopleFetching, isSuccess: allPeopleSuccess }] =
+    useLazyGetAllPeopleQuery();
+  const [deletePerson] = useDeletePersonMutation();
 
   const [pageNumber, setPageNumber] = useState(1);
 
-  const totalCount = allPlacesData?.count;
+  const totalCount = allPeopleData?.count;
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -54,7 +54,7 @@ function People() {
       cancelText: t('dashboard.people.deletePerson.cancel'),
       className: 'delete-modal-container',
       onOk() {
-        deletePlaces({ id: placeId, calendarId: calendarId });
+        deletePerson({ id: placeId, calendarId: calendarId });
       },
     });
   };
@@ -65,13 +65,13 @@ function People() {
   };
 
   useEffect(() => {
-    getAllPlaces({
+    getAllPeople({
       calendarId,
       sessionId: timestampRef,
     });
   }, []);
   return (
-    allPlacesSuccess && (
+    allPeopleSuccess && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Main>
           <h4 className="events-heading">{t('dashboard.people.people')}</h4>
@@ -85,17 +85,17 @@ function People() {
           />
           <Sort />
           <></>
-          {allPlacesFetching && (
+          {allPeopleFetching && (
             <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <LoadingIndicator />
             </div>
           )}
-          {!allPlacesFetching &&
-            (allPlacesData?.data?.length > 0 ? (
+          {!allPeopleFetching &&
+            (allPeopleData?.data?.length > 0 ? (
               <List
                 className="event-list-wrapper"
                 itemLayout={screens.xs ? 'vertical' : 'horizontal'}
-                dataSource={allPlacesData?.data}
+                dataSource={allPeopleData?.data}
                 bordered={false}
                 pagination={{
                   onChange: (page) => {
