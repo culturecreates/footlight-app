@@ -44,17 +44,17 @@ function Places() {
     return calendar.calendarId === calendarId;
   });
 
-  const deleteOrganizationHandler = (organizationId) => {
+  const deleteOrganizationHandler = (placeId) => {
     confirm({
-      title: t('dashboard.places.deletePlaces.title'),
+      title: t('dashboard.places.deletePlace.title'),
       icon: <ExclamationCircleOutlined />,
-      content: t('dashboard.places.deletePlaces.description'),
-      okText: t('dashboard.places.deletePlaces.ok'),
+      content: t('dashboard.places.deletePlace.description'),
+      okText: t('dashboard.places.deletePlace.ok'),
       okType: 'danger',
-      cancelText: t('dashboard.places.deletePlaces.cancel'),
+      cancelText: t('dashboard.places.deletePlace.cancel'),
       className: 'delete-modal-container',
       onOk() {
-        deletePlaces({ id: organizationId, calendarId: calendarId });
+        deletePlaces({ id: placeId, calendarId: calendarId });
       },
     });
   };
@@ -127,6 +127,9 @@ function Places() {
                     createdDate={item?.creator?.date}
                     createdByFirstName={item?.creator?.firstName}
                     createdByLastName={item?.creator?.lastName}
+                    updatedDate={item?.modifier?.date}
+                    updatedByFirstName={item?.modifier?.firstName}
+                    updatedByLastName={item?.modifier?.lastName}
                     artsDataLink={artsDataLinkChecker(item?.sameAs)}
                     actions={[
                       adminCheckHandler() && (
