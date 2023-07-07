@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import Main from '../../../layout/Main/Main';
-import OrganizationSearch from '../../../components/Search/Events/EventsSearch';
-import AddOrganization from '../../../components/Button/AddEvent';
+import PlaceSearch from '../../../components/Search/Events/EventsSearch';
+import AddPlace from '../../../components/Button/AddEvent';
 import Sort from '../../../components/Sort/Sort';
 import NoContent from '../../../components/NoContent/NoContent';
 import ListItem from '../../../components/List/ListItem.jsx/ListItem';
@@ -44,7 +44,7 @@ function Places() {
     return calendar.calendarId === calendarId;
   });
 
-  const deleteOrganizationHandler = (placeId) => {
+  const deletePlaceHandler = (placeId) => {
     confirm({
       title: t('dashboard.places.deletePlace.title'),
       icon: <ExclamationCircleOutlined />,
@@ -75,8 +75,8 @@ function Places() {
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Main>
           <h4 className="events-heading">{t('dashboard.places.places')}</h4>
-          <AddOrganization label={t('dashboard.places.place')} />
-          <OrganizationSearch
+          <AddPlace label={t('dashboard.places.place')} />
+          <PlaceSearch
             placeholder={t('dashboard.places.search.placeholder')}
             //   onPressEnter={(e) => onSearchHandler(e)}
             //   defaultValue={eventSearchQuery}
@@ -136,7 +136,7 @@ function Places() {
                         <DeleteOutlined
                           key={'delete-icon'}
                           style={{ color: '#222732', fontSize: '24px' }}
-                          onClick={() => deleteOrganizationHandler(item?.id)}
+                          onClick={() => deletePlaceHandler(item?.id)}
                         />
                       ),
                     ]}
