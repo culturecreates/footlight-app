@@ -409,6 +409,19 @@
         "cancel": "Annuler"
       }
     },
+    "people": {
+      "person": "Personne",
+      "people": "Personnes",
+      "search": {
+        "placeholder": "Rechercher des Personnes"
+      },
+      "deletePerson": {
+        "title": "Confirmer la suppression",
+        "description": "Are you sure you want to permanently delete this personne?",
+        "ok": "OK",
+        "cancel": "Annuler"
+      }
+    },
     "userProfile": {
       "userProfile": "Profil d’utilisateur",
       "subHeading": "Éditer vos paramètres ici.",

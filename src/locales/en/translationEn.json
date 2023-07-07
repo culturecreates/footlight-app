@@ -410,6 +410,19 @@
         "cancel": "Cancel"
       }
     },
+    "people": {
+      "person": "Person",
+      "people": "People",
+      "search": {
+        "placeholder": "Search People"
+      },
+      "deletePerson": {
+        "title": "Confirm Delete",
+        "description": "Are you sure you want to permanently delete this person?",
+        "ok": "OK",
+        "cancel": "Cancel"
+      }
+    },
     "userProfile": {
       "userProfile": "User Profile",
       "subHeading": "Edit your user settings here.",

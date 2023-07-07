@@ -46,12 +46,12 @@ function People() {
 
   const deletePlaceHandler = (placeId) => {
     confirm({
-      title: t('dashboard.places.deletePlace.title'),
+      title: t('dashboard.people.deletePerson.title'),
       icon: <ExclamationCircleOutlined />,
-      content: t('dashboard.places.deletePlace.description'),
-      okText: t('dashboard.places.deletePlace.ok'),
+      content: t('dashboard.people.deletePerson.description'),
+      okText: t('dashboard.people.deletePerson.ok'),
       okType: 'danger',
-      cancelText: t('dashboard.places.deletePlace.cancel'),
+      cancelText: t('dashboard.people.deletePerson.cancel'),
       className: 'delete-modal-container',
       onOk() {
         deletePlaces({ id: placeId, calendarId: calendarId });
@@ -74,10 +74,10 @@ function People() {
     allPlacesSuccess && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Main>
-          <h4 className="events-heading">{t('dashboard.places.places')}</h4>
-          <AddPlace label={t('dashboard.places.place')} />
+          <h4 className="events-heading">{t('dashboard.people.people')}</h4>
+          <AddPlace label={t('dashboard.people.person')} />
           <PlaceSearch
-            placeholder={t('dashboard.places.search.placeholder')}
+            placeholder={t('dashboard.people.search.placeholder')}
             //   onPressEnter={(e) => onSearchHandler(e)}
             //   defaultValue={eventSearchQuery}
             allowClear={true}
