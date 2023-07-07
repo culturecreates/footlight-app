@@ -15,6 +15,7 @@ function ListItem(props) {
     title,
     description,
     logo,
+    defaultLogo,
     artsDataLink,
     createdDate,
     createdByFirstName,
@@ -35,9 +36,25 @@ function ListItem(props) {
         className="event-list-item-meta"
         onClick={listItemHandler}
         avatar={
-          <div className="event-list-image-wrapper" style={{ height: '40px', width: '40px' }}>
-            <img src={logo} className="event-list-image" />
-          </div>
+          logo ? (
+            <div className="event-list-image-wrapper" style={{ height: '40px', width: '40px' }}>
+              <img src={logo} className="event-list-image" />
+            </div>
+          ) : (
+            <div
+              className="event-list-image-wrapper"
+              style={{
+                height: '40px',
+                width: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '4px',
+                backgroundColor: '#E3E8FF',
+              }}>
+              {defaultLogo}
+            </div>
+          )
         }
         description={
           <div className="event-list-description">

@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import './places.css';
 import { List, Grid, Modal } from 'antd';
-import { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { DeleteOutlined, ExclamationCircleOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
@@ -112,6 +112,7 @@ function Places() {
                     key={index}
                     id={index}
                     logo={item?.logo?.thumbnail?.uri}
+                    defaultLogo={<EnvironmentOutlined style={{ color: '#607EFC', fontSize: '24px' }} />}
                     title={contentLanguageBilingual({
                       en: item?.name?.en,
                       fr: item?.name?.fr,

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './organizations.css';
 import { List, Grid, Modal } from 'antd';
-import { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import Icon, { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
@@ -19,6 +19,7 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { userRoles } from '../../../constants/userRoles';
+import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organisations.svg';
 const { confirm } = Modal;
 const { useBreakpoint } = Grid;
 
@@ -114,6 +115,7 @@ function Organizations() {
                     key={index}
                     id={index}
                     logo={item?.logo?.thumbnail?.uri}
+                    defaultLogo={<Icon component={OrganizationLogo} style={{ color: '#607EFC', fontSize: '24px' }} />}
                     title={contentLanguageBilingual({
                       en: item?.name?.en,
                       fr: item?.name?.fr,
