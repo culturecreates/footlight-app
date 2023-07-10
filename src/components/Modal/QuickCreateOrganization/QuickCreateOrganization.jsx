@@ -15,7 +15,7 @@ import './quickCreateOrganization.css';
 import { treeEntitiesOption } from '../../TreeSelectOption/treeSelectOption.settings';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
-import { taxonomyClass } from '../../../constants/taxonomyClass';
+import { entitiesClass } from '../../../constants/entitiesClass';
 
 const { TextArea } = Input;
 
@@ -49,7 +49,7 @@ function QuickCreateOrganization(props) {
             disambiguatingDescription: response?.disambiguatingDescription,
             id: response?.id,
             name: response?.name,
-            type: taxonomyClass.ORGANIZATION,
+            type: entitiesClass.organization,
           },
         ];
         createdOrganizer = treeEntitiesOption(createdOrganizer, user, calendarContentLanguage);
@@ -126,7 +126,6 @@ function QuickCreateOrganization(props) {
                 duration: 3,
               });
               setKeyword('');
-              console.log(response);
               getSelectedOrganizer(response?.id);
               setOpen(false);
             })
