@@ -8,11 +8,12 @@ import Events from '../pages/Dashboard/Events';
 import AddEvent from '../pages/Dashboard/AddEvent';
 import { ReactComponent as NotFound } from '../../src/assets/images/illustatus.svg';
 import EventReadOnly from '../pages/Dashboard/EventReadOnly';
-import CreateAccount from '../pages/CreateAccount/CreateAccount';
+import CreateAccount from '../pages/CreateAccount';
 import Users from '../pages/Dashboard/Users';
 import Organizations from '../pages/Dashboard/Organizations';
 import Places from '../pages/Dashboard/Places';
-import People from '../pages/Dashboard/People/People';
+import People from '../pages/Dashboard/People';
+import OrganizationsReadOnly from '../pages/Dashboard/OrganizationsReadOnly';
 
 export const router = createBrowserRouter([
   {
@@ -71,6 +72,7 @@ export const router = createBrowserRouter([
         path: `:calendarId${PathName.Organizations}`,
         element: <Organizations />,
       },
+      { path: `:calendarId${PathName.Organizations}/:organizationId`, element: <OrganizationsReadOnly /> },
       {
         path: `:calendarId${PathName.People}`,
         element: <People />,
