@@ -28,7 +28,19 @@ export const placesApi = createApi({
       }),
       invalidatesTags: (result, error, arg) => [{ type: 'Places', id: arg.id }],
     }),
+    getPlace: builder.query({
+      query: ({ placeId, calendarId }) => ({
+        url: `places/${placeId}`,
+        method: 'GET',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+
+      transformResponse: (response) => response,
+    }),
   }),
 });
 
-export const { useLazyGetAllPlacesQuery, useGetAllPlacesQuery, useDeletePlacesMutation } = placesApi;
+export const { useLazyGetAllPlacesQuery, useGetAllPlacesQuery, useDeletePlacesMutation, useLazyGetPlaceQuery } =
+  placesApi;

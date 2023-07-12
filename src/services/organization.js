@@ -53,6 +53,7 @@ export const organizationApi = createApi({
 export const {
   useAddOrganizationMutation,
   useLazyGetOrganizationQuery,
+  useGetOrganizationQuery,
   useLazyGetAllOrganizationQuery,
   useDeleteOrganizationMutation,
 } = organizationApi;

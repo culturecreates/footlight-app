@@ -13,7 +13,7 @@ import NoContent from '../../../components/NoContent/NoContent';
 import ListItem from '../../../components/List/ListItem.jsx/ListItem';
 import { useDeleteOrganizationMutation, useLazyGetAllOrganizationQuery } from '../../../services/organization';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -25,6 +25,8 @@ const { useBreakpoint } = Grid;
 
 function Organizations() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const screens = useBreakpoint();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId } = useParams();
@@ -65,6 +67,10 @@ function Organizations() {
   const adminCheckHandler = () => {
     if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
     else return false;
+  };
+
+  const listItemHandler = (id) => {
+    navigate(`${location.pathname}/${id}`);
   };
 
   useEffect(() => {
@@ -132,6 +138,7 @@ function Organizations() {
                     createdByFirstName={item?.creator?.firstName}
                     createdByLastName={item?.creator?.lastName}
                     artsDataLink={artsDataLinkChecker(item?.sameAs)}
+                    listItemHandler={() => listItemHandler(item?.id)}
                     actions={[
                       adminCheckHandler() && (
                         <DeleteOutlined

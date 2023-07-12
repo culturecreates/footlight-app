@@ -147,24 +147,20 @@ function EventReadOnly() {
       <div>
         <Row gutter={[32, 24]} className="read-only-wrapper">
           <Col span={24}>
-            <Row>
-              <Col>
-                <Breadcrumb className="breadcrumb-item">
-                  <Breadcrumb.Item>
-                    <LeftOutlined style={{ marginRight: '17px' }} />
-                    {t('dashboard.sidebar.events')}
-                  </Breadcrumb.Item>
-                  <Breadcrumb.Item className="breadcrumb-item">
-                    {contentLanguageBilingual({
-                      en: eventData?.name?.en,
-                      fr: eventData?.name?.fr,
-                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                      calendarContentLanguage: calendarContentLanguage,
-                    })}
-                  </Breadcrumb.Item>
-                </Breadcrumb>
-              </Col>
-            </Row>
+            <Breadcrumb className="breadcrumb-item">
+              <Breadcrumb.Item>
+                <LeftOutlined style={{ marginRight: '17px' }} />
+                {t('dashboard.sidebar.events')}
+              </Breadcrumb.Item>
+              <Breadcrumb.Item className="breadcrumb-item">
+                {contentLanguageBilingual({
+                  en: eventData?.name?.en,
+                  fr: eventData?.name?.fr,
+                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                  calendarContentLanguage: calendarContentLanguage,
+                })}
+              </Breadcrumb.Item>
+            </Breadcrumb>
           </Col>
 
           <Col span={24}>
