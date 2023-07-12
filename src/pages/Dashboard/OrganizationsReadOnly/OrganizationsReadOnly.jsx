@@ -7,14 +7,17 @@ import { LeftOutlined } from '@ant-design/icons';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { useGetOrganizationQuery } from '../../../services/organization';
 import { PathName } from '../../../constants/pathName';
-import { contentLanguageBilingual } from '../../../utils/bilingual';
+import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useLazyGetPlaceQuery } from '../../../services/places';
 import SelectionItem from '../../../components/List/SelectionItem/SelectionItem';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
-import { useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
+import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
+import { treeDynamicTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
+import Tags from '../../../components/Tags/Common/Tags';
+import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 
 function OrganizationsReadOnly() {
   const { t } = useTranslation();
@@ -32,6 +35,12 @@ function OrganizationsReadOnly() {
     { id: organizationId, calendarId, sessionId: timestampRef },
     { skip: organizationId ? false : true },
   );
+  const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
+    calendarId,
+    search: '',
+    taxonomyClass: taxonomyClass.ORGANIZATION,
+    includeConcepts: true,
+  });
 
   const [getPlace] = useLazyGetPlaceQuery();
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery();
@@ -46,7 +55,6 @@ function OrganizationsReadOnly() {
     if (organizationError) navigate(`${PathName.NotFound}`);
   }, [organizationError]);
 
-  console.log(organizationData);
 
   useEffect(() => {
     if (organizationSuccess) {
@@ -94,7 +102,8 @@ function OrganizationsReadOnly() {
 
   return (
     organizationSuccess &&
-    !organizationLoading && (
+    !organizationLoading &&
+    !taxonomyLoading && (
       <Row gutter={[32, 24]} className="read-only-wrapper">
         <Col span={24}>
           <Breadcrumb className="breadcrumb-item">
@@ -214,6 +223,45 @@ function OrganizationsReadOnly() {
                   {t('dashboard.organization.readOnly.email')}
                 </p>
                 <p className="url-links">{organizationData?.contactPoint?.email}</p>
+              </Col>
+              <Col span={24}>
+                {allTaxonomyData?.data?.map((taxonomy, index) => {
+                  if (taxonomy?.isDynamicField) {
+                    let initialValues,
+                      initialTaxonomy = [];
+                    organizationData?.dynamicFields?.forEach((dynamicField) => {
+                      if (taxonomy?.id === dynamicField?.taxonomyId) {
+                        initialValues = dynamicField?.conceptIds;
+                        initialTaxonomy.push(taxonomy?.id);
+                      }
+                    });
+                    if (initialTaxonomy?.includes(taxonomy?.id) && initialValues?.length > 0)
+                      return (
+                        <div>
+                          <p className="read-only-event-content-sub-title-primary">
+                            {bilingual({
+                              en: taxonomy?.name?.en,
+                              fr: taxonomy?.name?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                            })}
+                          </p>
+                          <TreeSelectOption
+                            key={index}
+                            style={{ marginBottom: '1rem' }}
+                            bordered={false}
+                            open={false}
+                            disabled
+                            defaultValue={initialValues}
+                            treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
+                            tagRender={(props) => {
+                              const { label } = props;
+                              return <Tags>{label}</Tags>;
+                            }}
+                          />
+                        </div>
+                      );
+                  }
+                })}
               </Col>
               <Col span={24}>
                 <p className="read-only-event-content-sub-title-primary">
