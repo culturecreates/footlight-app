@@ -46,7 +46,15 @@ function OrganizationsReadOnly() {
           <Breadcrumb className="breadcrumb-item">
             <Breadcrumb.Item>
               <LeftOutlined style={{ marginRight: '17px' }} />
-              {t('dashboard.sidebar.events')}
+              {t('dashboard.organization.organizations')}
+            </Breadcrumb.Item>
+            <Breadcrumb.Item className="breadcrumb-item">
+              {contentLanguageBilingual({
+                en: organizationData?.name?.en,
+                fr: organizationData?.name?.fr,
+                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                calendarContentLanguage: calendarContentLanguage,
+              })}
             </Breadcrumb.Item>
           </Breadcrumb>
         </Col>
@@ -55,7 +63,15 @@ function OrganizationsReadOnly() {
           <Row>
             <Col>
               <div className="read-only-event-heading">
-                <h4>haiii</h4>
+                <h4>
+                  {' '}
+                  {contentLanguageBilingual({
+                    en: organizationData?.name?.en,
+                    fr: organizationData?.name?.fr,
+                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                    calendarContentLanguage: calendarContentLanguage,
+                  })}
+                </h4>
                 <p className="read-only-event-content-sub-title-secondary">
                   {contentLanguageBilingual({
                     en: organizationData?.disambiguatingDescription?.en,
@@ -69,66 +85,87 @@ function OrganizationsReadOnly() {
           </Row>
         </Col>
         <Card>
-          <>
-            <p className="read-only-event-content-sub-title-primary">
-              {t('dashboard.events.addEditEvent.language.title')}
-            </p>
-            <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-            <p className="read-only-event-content">{organizationData?.name?.fr}</p>
-            <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-            <p className="read-only-event-content">{organizationData?.name?.en}</p>
-
-            <p className="read-only-event-content-sub-title-primary">
-              {t('dashboard.events.addEditEvent.language.title')}
-            </p>
-            <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-            <p className="read-only-event-content">{organizationData?.disambiguatingDescription?.fr}</p>
-            <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-            <p className="read-only-event-content">{organizationData?.disambiguatingDescription?.en}</p>
-
-            <p className="read-only-event-content-sub-title-primary">
-              {t('dashboard.events.addEditEvent.language.title')}
-            </p>
-            <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-            <p className="read-only-event-content">
-              <div dangerouslySetInnerHTML={{ __html: organizationData?.description?.fr }} />
-            </p>
-            <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-            <p className="read-only-event-content">
-              <div dangerouslySetInnerHTML={{ __html: organizationData?.description?.en }} />
-            </p>
-
-            <p className="read-only-event-content-sub-title-primary">
-              {t('dashboard.events.addEditEvent.language.title')}
-            </p>
-            <p>
-              <a href={organizationData?.url?.uri} target="_blank" rel="noopener noreferrer" className="url-links">
-                {organizationData?.url?.uri}
-              </a>
-            </p>
-
-            <p className="read-only-event-content-sub-title-primary">
-              {t('dashboard.events.addEditEvent.language.title')}
-            </p>
-            <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-            <p className="read-only-event-content">{organizationData?.contactPoint?.name?.fr}</p>
-            <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-            <p className="read-only-event-content">{organizationData?.contactPoint?.name?.en}</p>
-            <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-            <p>
-              <a
-                href={organizationData?.contactPoint?.url?.uri}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="url-links">
-                {organizationData?.contactPoint?.url?.uri}
-              </a>
-            </p>
-            <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-            <p className="url-links">{organizationData?.contactPoint?.telephone}</p>
-            <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-            <p className="url-links">{organizationData?.contactPoint?.email}</p>
-          </>
+          <Col>
+            <Row gutter={[0, 24]}>
+              <Col span={12}>
+                <p className="read-only-event-content" style={{ fontSize: '24px' }}>
+                  {t('dashboard.organization.readOnly.details')}
+                </p>
+              </Col>
+              <Col>
+                <p className="read-only-event-content-sub-title-primary">{t('dashboard.organization.readOnly.name')}</p>
+                <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                <p className="read-only-event-content">{organizationData?.name?.fr}</p>
+                <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                <p className="read-only-event-content">{organizationData?.name?.en}</p>
+              </Col>
+              <Col>
+                <p className="read-only-event-content-sub-title-primary">
+                  {t('dashboard.organization.readOnly.disambiguatingDescription')}
+                </p>
+                <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                <p className="read-only-event-content">{organizationData?.disambiguatingDescription?.fr}</p>
+                <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                <p className="read-only-event-content">{organizationData?.disambiguatingDescription?.en}</p>
+              </Col>
+              <Col>
+                <p className="read-only-event-content-sub-title-primary">
+                  {t('dashboard.organization.readOnly.description')}
+                </p>
+                <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                <p className="read-only-event-content">
+                  <div dangerouslySetInnerHTML={{ __html: organizationData?.description?.fr }} />
+                </p>
+                <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                <p className="read-only-event-content">
+                  <div dangerouslySetInnerHTML={{ __html: organizationData?.description?.en }} />
+                </p>
+              </Col>
+              <Col>
+                <p className="read-only-event-content-sub-title-primary">
+                  {t('dashboard.organization.readOnly.website')}
+                </p>
+                <p>
+                  <a href={organizationData?.url?.uri} target="_blank" rel="noopener noreferrer" className="url-links">
+                    {organizationData?.url?.uri}
+                  </a>
+                </p>
+              </Col>
+              <Col>
+                <p className="read-only-event-content-sub-title-primary">
+                  {t('dashboard.organization.readOnly.contact')}
+                </p>
+                <p className="read-only-event-content-sub-title-secondary">
+                  {t('dashboard.organization.readOnly.frenchContactTitle')}
+                </p>
+                <p className="read-only-event-content">{organizationData?.contactPoint?.name?.fr}</p>
+                <p className="read-only-event-content-sub-title-secondary">
+                  {t('dashboard.organization.readOnly.englishContactTitle')}
+                </p>
+                <p className="read-only-event-content">{organizationData?.contactPoint?.name?.en}</p>
+                <p className="read-only-event-content-sub-title-secondary">
+                  {t('dashboard.organization.readOnly.website')}
+                </p>
+                <p>
+                  <a
+                    href={organizationData?.contactPoint?.url?.uri}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="url-links">
+                    {organizationData?.contactPoint?.url?.uri}
+                  </a>
+                </p>
+                <p className="read-only-event-content-sub-title-secondary">
+                  {t('dashboard.organization.readOnly.phoneNumber')}
+                </p>
+                <p className="url-links">{organizationData?.contactPoint?.telephone}</p>
+                <p className="read-only-event-content-sub-title-secondary">
+                  {t('dashboard.organization.readOnly.email')}
+                </p>
+                <p className="url-links">{organizationData?.contactPoint?.email}</p>
+              </Col>
+            </Row>
+          </Col>
           <></>
         </Card>
       </Row>

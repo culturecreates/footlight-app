@@ -394,6 +394,20 @@
         "description": "Êtes-vous sûr de vouloir supprimer définitivement cet organisation?",
         "ok": "OK",
         "cancel": "Annuler"
+      },
+      "readOnly": {
+        "details": "Détails",
+        "name": "Nom",
+        "disambiguatingDescription": "Description identifiante",
+        "description": "Description",
+        "website": "Site web",
+        "contact": "Contact",
+        "frenchContactTitle": "Titre du contact en français",
+        "englishContactTitle": "Titre du contact en anglais",
+        "phoneNumber": "Numéro de téléphone",
+        "email": "Courriel",
+        "memberOf": "Membre de",
+        "location": "Endroit"
       }
     },
     "places": {
