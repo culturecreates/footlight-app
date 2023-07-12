@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './organizationsReadOnly.css';
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,11 @@ import { PathName } from '../../../constants/pathName';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { useLazyGetPlaceQuery } from '../../../services/places';
+import SelectionItem from '../../../components/List/SelectionItem/SelectionItem';
+import { taxonomyClass } from '../../../constants/taxonomyClass';
+import { useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
+import { placesOptions } from '../../../components/Select/selectOption.settings';
 
 function OrganizationsReadOnly() {
   const { t } = useTranslation();
@@ -28,7 +33,12 @@ function OrganizationsReadOnly() {
     { skip: organizationId ? false : true },
   );
 
+  const [getPlace] = useLazyGetPlaceQuery();
+  const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery();
+
   const { user } = useSelector(getUserDetails);
+
+  const [locationPlace, setLocationPlace] = useState();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -37,6 +47,50 @@ function OrganizationsReadOnly() {
   }, [organizationError]);
 
   console.log(organizationData);
+
+  useEffect(() => {
+    if (organizationSuccess) {
+      if (organizationData?.place?.entityId) {
+        let initialPlace = [];
+        let initialPlaceAccessibiltiy = [];
+        getPlace({ placeId: organizationData?.place?.entityId, calendarId })
+          .unwrap()
+          .then((response) => {
+            initialPlace = [response];
+            initialPlace[0] = {
+              ...initialPlace[0],
+              ['openingHours']: initialPlace[0]?.openingHours?.uri,
+            };
+            getAllTaxonomy({
+              calendarId,
+              search: '',
+              taxonomyClass: taxonomyClass.PLACE,
+              includeConcepts: true,
+            })
+              .unwrap()
+              .then((res) => {
+                res?.data?.forEach((taxonomy) => {
+                  if (taxonomy?.mappedToField === 'PlaceAccessibility') {
+                    response?.accessibility?.forEach((accessibility) => {
+                      taxonomy?.concept?.forEach((concept) => {
+                        if (concept?.id == accessibility?.entityId) {
+                          initialPlaceAccessibiltiy = initialPlaceAccessibiltiy?.concat([concept]);
+                        }
+                      });
+                    });
+                  }
+                });
+                initialPlace[0] = {
+                  ...initialPlace[0],
+                  ['accessibility']: initialPlaceAccessibiltiy,
+                };
+                setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0]);
+              })
+              .catch((error) => console.log(error));
+          });
+      }
+    }
+  }, [organizationSuccess]);
 
   return (
     organizationSuccess &&
@@ -64,7 +118,6 @@ function OrganizationsReadOnly() {
             <Col>
               <div className="read-only-event-heading">
                 <h4>
-                  {' '}
                   {contentLanguageBilingual({
                     en: organizationData?.name?.en,
                     fr: organizationData?.name?.fr,
@@ -87,19 +140,19 @@ function OrganizationsReadOnly() {
         <Card>
           <Col>
             <Row gutter={[0, 24]}>
-              <Col span={12}>
+              <Col span={24}>
                 <p className="read-only-event-content" style={{ fontSize: '24px' }}>
                   {t('dashboard.organization.readOnly.details')}
                 </p>
               </Col>
-              <Col>
+              <Col span={24}>
                 <p className="read-only-event-content-sub-title-primary">{t('dashboard.organization.readOnly.name')}</p>
                 <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
                 <p className="read-only-event-content">{organizationData?.name?.fr}</p>
                 <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
                 <p className="read-only-event-content">{organizationData?.name?.en}</p>
               </Col>
-              <Col>
+              <Col span={24}>
                 <p className="read-only-event-content-sub-title-primary">
                   {t('dashboard.organization.readOnly.disambiguatingDescription')}
                 </p>
@@ -108,7 +161,7 @@ function OrganizationsReadOnly() {
                 <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
                 <p className="read-only-event-content">{organizationData?.disambiguatingDescription?.en}</p>
               </Col>
-              <Col>
+              <Col span={24}>
                 <p className="read-only-event-content-sub-title-primary">
                   {t('dashboard.organization.readOnly.description')}
                 </p>
@@ -120,8 +173,6 @@ function OrganizationsReadOnly() {
                 <p className="read-only-event-content">
                   <div dangerouslySetInnerHTML={{ __html: organizationData?.description?.en }} />
                 </p>
-              </Col>
-              <Col>
                 <p className="read-only-event-content-sub-title-primary">
                   {t('dashboard.organization.readOnly.website')}
                 </p>
@@ -131,7 +182,7 @@ function OrganizationsReadOnly() {
                   </a>
                 </p>
               </Col>
-              <Col>
+              <Col span={24}>
                 <p className="read-only-event-content-sub-title-primary">
                   {t('dashboard.organization.readOnly.contact')}
                 </p>
@@ -163,6 +214,24 @@ function OrganizationsReadOnly() {
                   {t('dashboard.organization.readOnly.email')}
                 </p>
                 <p className="url-links">{organizationData?.contactPoint?.email}</p>
+              </Col>
+              <Col span={24}>
+                <p className="read-only-event-content-sub-title-primary">
+                  {t('dashboard.organization.readOnly.location')}
+                </p>
+                {locationPlace && (
+                  <SelectionItem
+                    icon={locationPlace?.label?.props?.icon}
+                    name={locationPlace?.name}
+                    description={locationPlace?.description}
+                    itemWidth="423px"
+                    postalAddress={locationPlace?.postalAddress}
+                    accessibility={locationPlace?.accessibility}
+                    openingHours={locationPlace?.openingHours}
+                    calendarContentLanguage={calendarContentLanguage}
+                    bordered
+                  />
+                )}
               </Col>
             </Row>
           </Col>
