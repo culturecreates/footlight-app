@@ -348,16 +348,18 @@ function OrganizationsReadOnly() {
             </Row>
           </Col>
           <Col>
-            <div style={{ marginTop: '-35%' }}>
-              <img
-                src={organizationData?.image?.original?.uri}
-                alt="avatar"
-                style={{
-                  width: '151px',
-                  objectFit: 'cover',
-                }}
-              />
-            </div>
+            {organizationData?.image?.original?.uri && (
+              <div style={{ marginTop: '-35%' }}>
+                <img
+                  src={organizationData?.image?.original?.uri}
+                  alt="avatar"
+                  style={{
+                    width: '151px',
+                    objectFit: 'cover',
+                  }}
+                />
+              </div>
+            )}
           </Col>
         </Card>
       </Row>
