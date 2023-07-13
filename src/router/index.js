@@ -14,6 +14,7 @@ import Organizations from '../pages/Dashboard/Organizations';
 import Places from '../pages/Dashboard/Places';
 import People from '../pages/Dashboard/People';
 import OrganizationsReadOnly from '../pages/Dashboard/OrganizationsReadOnly';
+import PersonReadOnly from '../pages/Dashboard/PersonReadOnly';
 
 export const router = createBrowserRouter([
   {
@@ -77,6 +78,7 @@ export const router = createBrowserRouter([
         path: `:calendarId${PathName.People}`,
         element: <People />,
       },
+      { path: `:calendarId${PathName.People}/:personId`, element: <PersonReadOnly /> },
       {
         path: `:calendarId${PathName.Taxonomies}`,
         element: <div>Taxonomies</div>,

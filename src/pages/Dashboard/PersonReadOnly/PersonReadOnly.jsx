@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import './organizationsReadOnly.css';
+import './personReadOnly.css';
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
 import { Breadcrumb, Col, Row } from 'antd';
@@ -21,7 +21,7 @@ import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOpt
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 
-function OrganizationsReadOnly() {
+function PersonReadOnly() {
   const { t } = useTranslation();
   const { organizationId, calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
@@ -371,4 +371,4 @@ function OrganizationsReadOnly() {
   );
 }
 
-export default OrganizationsReadOnly;
+export default PersonReadOnly;
