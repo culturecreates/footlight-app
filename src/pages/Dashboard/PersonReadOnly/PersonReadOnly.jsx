@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { Breadcrumb, Col, Row } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
-import { useGetOrganizationQuery } from '../../../services/organization';
 import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
@@ -20,27 +19,25 @@ import Tags from '../../../components/Tags/Common/Tags';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
+import { useGetPersonQuery } from '../../../services/people';
 
 function PersonReadOnly() {
   const { t } = useTranslation();
-  const { organizationId, calendarId } = useParams();
+  const { personId, calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
   const navigate = useNavigate();
   const [currentCalendarData] = useOutletContext();
 
   const {
-    data: organizationData,
-    isLoading: organizationLoading,
-    isSuccess: organizationSuccess,
-    isError: organizationError,
-  } = useGetOrganizationQuery(
-    { id: organizationId, calendarId, sessionId: timestampRef },
-    { skip: organizationId ? false : true },
-  );
+    data: personData,
+    isLoading: personLoading,
+    isSuccess: personSuccess,
+    isError: personError,
+  } = useGetPersonQuery({ personId, calendarId, sessionId: timestampRef }, { skip: personId ? false : true });
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
-    taxonomyClass: taxonomyClass.ORGANIZATION,
+    taxonomyClass: taxonomyClass.PERSON,
     includeConcepts: true,
   });
 
@@ -54,15 +51,15 @@ function PersonReadOnly() {
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   useEffect(() => {
-    if (organizationError) navigate(`${PathName.NotFound}`);
-  }, [organizationError]);
+    if (personError) navigate(`${PathName.NotFound}`);
+  }, [personError]);
 
   useEffect(() => {
-    if (organizationSuccess) {
-      if (organizationData?.place?.entityId) {
+    if (personSuccess) {
+      if (personData?.place?.entityId) {
         let initialPlace = [];
         let initialPlaceAccessibiltiy = [];
-        getPlace({ placeId: organizationData?.place?.entityId, calendarId })
+        getPlace({ placeId: personData?.place?.entityId, calendarId })
           .unwrap()
           .then((response) => {
             initialPlace = [response];
@@ -99,11 +96,11 @@ function PersonReadOnly() {
           });
       }
     }
-  }, [organizationSuccess]);
+  }, [personSuccess]);
 
   return (
-    organizationSuccess &&
-    !organizationLoading &&
+    personSuccess &&
+    !personLoading &&
     !taxonomyLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Row gutter={[32, 24]} className="read-only-wrapper">
@@ -115,8 +112,8 @@ function PersonReadOnly() {
               </Breadcrumb.Item>
               <Breadcrumb.Item className="breadcrumb-item">
                 {contentLanguageBilingual({
-                  en: organizationData?.name?.en,
-                  fr: organizationData?.name?.fr,
+                  en: personData?.name?.en,
+                  fr: personData?.name?.fr,
                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                   calendarContentLanguage: calendarContentLanguage,
                 })}
@@ -130,16 +127,16 @@ function PersonReadOnly() {
                 <div className="read-only-event-heading">
                   <h4>
                     {contentLanguageBilingual({
-                      en: organizationData?.name?.en,
-                      fr: organizationData?.name?.fr,
+                      en: personData?.name?.en,
+                      fr: personData?.name?.fr,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                   </h4>
                   <p className="read-only-event-content-sub-title-secondary">
                     {contentLanguageBilingual({
-                      en: organizationData?.disambiguatingDescription?.en,
-                      fr: organizationData?.disambiguatingDescription?.fr,
+                      en: personData?.disambiguatingDescription?.en,
+                      fr: personData?.disambiguatingDescription?.fr,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
@@ -156,147 +153,87 @@ function PersonReadOnly() {
                     {t('dashboard.organization.readOnly.details')}
                   </p>
                 </Col>
-                {(organizationData?.name?.fr || organizationData?.name?.en) && (
+                {(personData?.name?.fr || personData?.name?.en) && (
                   <Col span={24}>
                     <p className="read-only-event-content-sub-title-primary">
                       {t('dashboard.organization.readOnly.name')}
                     </p>
-                    {organizationData?.name?.fr && (
+                    {personData?.name?.fr && (
                       <>
                         <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-                        <p className="read-only-event-content">{organizationData?.name?.fr}</p>
+                        <p className="read-only-event-content">{personData?.name?.fr}</p>
                       </>
                     )}
-                    {organizationData?.name?.en && (
+                    {personData?.name?.en && (
                       <>
                         <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-                        <p className="read-only-event-content">{organizationData?.name?.en}</p>
+                        <p className="read-only-event-content">{personData?.name?.en}</p>
                       </>
                     )}
                   </Col>
                 )}
-                {(organizationData?.disambiguatingDescription?.en ||
-                  organizationData?.disambiguatingDescription?.fr) && (
+                {(personData?.disambiguatingDescription?.en || personData?.disambiguatingDescription?.fr) && (
                   <Col span={24}>
                     <p className="read-only-event-content-sub-title-primary">
                       {t('dashboard.organization.readOnly.disambiguatingDescription')}
                     </p>
-                    {organizationData?.disambiguatingDescription?.fr && (
+                    {personData?.disambiguatingDescription?.fr && (
                       <>
                         <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-                        <p className="read-only-event-content">{organizationData?.disambiguatingDescription?.fr}</p>
+                        <p className="read-only-event-content">{personData?.disambiguatingDescription?.fr}</p>
                       </>
                     )}
-                    {organizationData?.disambiguatingDescription?.en && (
+                    {personData?.disambiguatingDescription?.en && (
                       <>
                         <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-                        <p className="read-only-event-content">{organizationData?.disambiguatingDescription?.en}</p>
+                        <p className="read-only-event-content">{personData?.disambiguatingDescription?.en}</p>
                       </>
                     )}
                   </Col>
                 )}
-                {(organizationData?.description?.fr || organizationData?.description?.en) && (
+                {(personData?.description?.fr || personData?.description?.en) && (
                   <Col span={24}>
                     <p className="read-only-event-content-sub-title-primary">
                       {t('dashboard.organization.readOnly.description')}
                     </p>
-                    {organizationData?.description?.fr && (
+                    {personData?.description?.fr && (
                       <>
                         <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
                         <p className="read-only-event-content">
-                          <div dangerouslySetInnerHTML={{ __html: organizationData?.description?.fr }} />
+                          <div dangerouslySetInnerHTML={{ __html: personData?.description?.fr }} />
                         </p>
                       </>
                     )}
-                    {organizationData?.description?.en && (
+                    {personData?.description?.en && (
                       <>
                         <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
                         <p className="read-only-event-content">
-                          <div dangerouslySetInnerHTML={{ __html: organizationData?.description?.en }} />
+                          <div dangerouslySetInnerHTML={{ __html: personData?.description?.en }} />
                         </p>
                       </>
                     )}
                   </Col>
                 )}
-                {organizationData?.url?.uri && (
+                {personData?.url?.uri && (
                   <Col span={24}>
                     <p className="read-only-event-content-sub-title-primary">
                       {t('dashboard.organization.readOnly.website')}
                     </p>
                     <p>
-                      <a
-                        href={organizationData?.url?.uri}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="url-links">
-                        {organizationData?.url?.uri}
+                      <a href={personData?.url?.uri} target="_blank" rel="noopener noreferrer" className="url-links">
+                        {personData?.url?.uri}
                       </a>
                     </p>
                   </Col>
                 )}
 
-                {organizationData?.contactPoint && (
-                  <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
-                      {t('dashboard.organization.readOnly.contact')}
-                    </p>
-                    {organizationData?.contactPoint?.name?.fr && (
-                      <>
-                        <p className="read-only-event-content-sub-title-secondary">
-                          {t('dashboard.organization.readOnly.frenchContactTitle')}
-                        </p>
-                        <p className="read-only-event-content">{organizationData?.contactPoint?.name?.fr}</p>
-                      </>
-                    )}
-                    {organizationData?.contactPoint?.name?.en && (
-                      <>
-                        <p className="read-only-event-content-sub-title-secondary">
-                          {t('dashboard.organization.readOnly.englishContactTitle')}
-                        </p>
-                        <p className="read-only-event-content">{organizationData?.contactPoint?.name?.en}</p>
-                      </>
-                    )}
-                    {organizationData?.contactPoint?.url?.uri && (
-                      <>
-                        <p className="read-only-event-content-sub-title-secondary">
-                          {t('dashboard.organization.readOnly.website')}
-                        </p>
-                        <p>
-                          <a
-                            href={organizationData?.contactPoint?.url?.uri}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="url-links">
-                            {organizationData?.contactPoint?.url?.uri}
-                          </a>
-                        </p>
-                      </>
-                    )}
-                    {organizationData?.contactPoint?.telephone && (
-                      <>
-                        <p className="read-only-event-content-sub-title-secondary">
-                          {t('dashboard.organization.readOnly.phoneNumber')}
-                        </p>
-                        <p className="url-links">{organizationData?.contactPoint?.telephone}</p>
-                      </>
-                    )}
-                    {organizationData?.contactPoint?.email && (
-                      <>
-                        <p className="read-only-event-content-sub-title-secondary">
-                          {t('dashboard.organization.readOnly.email')}
-                        </p>
-                        <p className="url-links">{organizationData?.contactPoint?.email}</p>
-                      </>
-                    )}
-                  </Col>
-                )}
-                {organizationData?.dynamicFields?.length > 0 && (
+                {personData?.dynamicFields?.length > 0 && (
                   <Col span={24}>
                     {allTaxonomyData?.data?.map((taxonomy, index) => {
                       if (taxonomy?.isDynamicField) {
                         let initialValues,
                           initialTaxonomy = [];
-                        organizationData?.dynamicFields?.forEach((dynamicField) => {
+                        personData?.dynamicFields?.forEach((dynamicField) => {
                           if (taxonomy?.id === dynamicField?.taxonomyId) {
                             initialValues = dynamicField?.conceptIds;
                             initialTaxonomy.push(taxonomy?.id);
@@ -352,10 +289,10 @@ function PersonReadOnly() {
               </Row>
             </Col>
             <Col>
-              {organizationData?.logo?.original?.uri && (
+              {personData?.logo?.original?.uri && (
                 <div style={{ marginTop: '-35%' }}>
                   <img
-                    src={organizationData?.logo?.original?.uri}
+                    src={personData?.logo?.original?.uri}
                     alt="avatar"
                     style={{
                       objectFit: 'cover',

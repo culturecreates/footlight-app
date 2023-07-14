@@ -12,7 +12,7 @@ import Sort from '../../../components/Sort/Sort';
 import NoContent from '../../../components/NoContent/NoContent';
 import ListItem from '../../../components/List/ListItem.jsx/ListItem';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -25,6 +25,8 @@ const { useBreakpoint } = Grid;
 function People() {
   const { t } = useTranslation();
   const screens = useBreakpoint();
+  const location = useLocation();
+  const navigate = useNavigate();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId } = useParams();
   const { user } = useSelector(getUserDetails);
@@ -62,6 +64,10 @@ function People() {
   const adminCheckHandler = () => {
     if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
     else return false;
+  };
+
+  const listItemHandler = (id) => {
+    navigate(`${location.pathname}/${id}`);
   };
 
   useEffect(() => {
@@ -132,6 +138,7 @@ function People() {
                     updatedByFirstName={item?.modifier?.firstName}
                     updatedByLastName={item?.modifier?.lastName}
                     artsDataLink={artsDataLinkChecker(item?.sameAs)}
+                    listItemHandler={() => listItemHandler(item?.id)}
                     actions={[
                       adminCheckHandler() && (
                         <DeleteOutlined
