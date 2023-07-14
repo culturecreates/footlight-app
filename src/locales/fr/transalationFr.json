@@ -434,6 +434,13 @@
         "description": "Are you sure you want to permanently delete this personne?",
         "ok": "OK",
         "cancel": "Annuler"
+      },
+      "readOnly": {
+        "details": "Détails",
+        "name": "Nom",
+        "disambiguatingDescription": "Description identifiante",
+        "description": "Description",
+        "website": "Site web"
       }
     },
     "userProfile": {

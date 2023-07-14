@@ -28,7 +28,18 @@ export const peopleApi = createApi({
       }),
       invalidatesTags: (result, error, arg) => [{ type: 'People', id: arg.id }],
     }),
+    getPerson: builder.query({
+      query: ({ personId, calendarId }) => ({
+        url: `people/${personId}`,
+        method: 'GET',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+
+      transformResponse: (response) => response,
+    }),
   }),
 });
 
-export const { useLazyGetAllPeopleQuery, useGetAllPeopleQuery, useDeletePersonMutation } = peopleApi;
+export const { useLazyGetAllPeopleQuery, useGetAllPeopleQuery, useDeletePersonMutation, useGetPersonQuery } = peopleApi;

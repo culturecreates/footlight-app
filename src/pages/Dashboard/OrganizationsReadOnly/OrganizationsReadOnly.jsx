@@ -352,13 +352,12 @@ function OrganizationsReadOnly() {
               </Row>
             </Col>
             <Col>
-              {organizationData?.image?.original?.uri && (
+              {organizationData?.logo?.original?.uri && (
                 <div style={{ marginTop: '-35%' }}>
                   <img
-                    src={organizationData?.image?.original?.uri}
+                    src={organizationData?.logo?.original?.uri}
                     alt="avatar"
                     style={{
-                      width: '151px',
                       objectFit: 'cover',
                     }}
                   />
