@@ -15,25 +15,25 @@ import Tags from '../../../components/Tags/Common/Tags';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
-import { useGetPersonQuery } from '../../../services/people';
+import { useGetPlaceQuery } from '../../../services/places';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
-  const { personId, calendarId } = useParams();
+  const { placeId, calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
   const navigate = useNavigate();
   const [currentCalendarData] = useOutletContext();
 
   const {
-    data: personData,
-    isLoading: personLoading,
-    isSuccess: personSuccess,
-    isError: personError,
-  } = useGetPersonQuery({ personId, calendarId, sessionId: timestampRef }, { skip: personId ? false : true });
+    data: placeData,
+    isLoading: placeLoading,
+    isSuccess: placeSuccess,
+    isError: placeError,
+  } = useGetPlaceQuery({ placeId, calendarId, sessionId: timestampRef }, { skip: placeId ? false : true });
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
-    taxonomyClass: taxonomyClass.PERSON,
+    taxonomyClass: taxonomyClass.PLACE,
     includeConcepts: true,
     sessionId: timestampRef,
   });
@@ -43,12 +43,12 @@ function PlaceReadOnly() {
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   useEffect(() => {
-    if (personError) navigate(`${PathName.NotFound}`);
-  }, [personError]);
+    if (placeError) navigate(`${PathName.NotFound}`);
+  }, [placeError]);
 
   return (
-    personSuccess &&
-    !personLoading &&
+    placeSuccess &&
+    !placeLoading &&
     !taxonomyLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Row gutter={[32, 24]} className="read-only-wrapper">
@@ -60,8 +60,8 @@ function PlaceReadOnly() {
               </Breadcrumb.Item>
               <Breadcrumb.Item className="breadcrumb-item">
                 {contentLanguageBilingual({
-                  en: personData?.name?.en,
-                  fr: personData?.name?.fr,
+                  en: placeData?.name?.en,
+                  fr: placeData?.name?.fr,
                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                   calendarContentLanguage: calendarContentLanguage,
                 })}
@@ -75,16 +75,16 @@ function PlaceReadOnly() {
                 <div className="read-only-event-heading">
                   <h4>
                     {contentLanguageBilingual({
-                      en: personData?.name?.en,
-                      fr: personData?.name?.fr,
+                      en: placeData?.name?.en,
+                      fr: placeData?.name?.fr,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                   </h4>
                   <p className="read-only-event-content-sub-title-secondary">
                     {contentLanguageBilingual({
-                      en: personData?.disambiguatingDescription?.en,
-                      fr: personData?.disambiguatingDescription?.fr,
+                      en: placeData?.disambiguatingDescription?.en,
+                      fr: placeData?.disambiguatingDescription?.fr,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
@@ -101,30 +101,30 @@ function PlaceReadOnly() {
                     {t('dashboard.people.readOnly.details')}
                   </p>
                 </Col>
-                {(personData?.name?.fr || personData?.name?.en) && (
+                {(placeData?.name?.fr || placeData?.name?.en) && (
                   <Col span={24}>
                     <p className="read-only-event-content-sub-title-primary">{t('dashboard.people.readOnly.name')}</p>
-                    {personData?.name?.fr && (
+                    {placeData?.name?.fr && (
                       <>
                         <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-                        <p className="read-only-event-content">{personData?.name?.fr}</p>
+                        <p className="read-only-event-content">{placeData?.name?.fr}</p>
                       </>
                     )}
-                    {personData?.name?.en && (
+                    {placeData?.name?.en && (
                       <>
                         <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-                        <p className="read-only-event-content">{personData?.name?.en}</p>
+                        <p className="read-only-event-content">{placeData?.name?.en}</p>
                       </>
                     )}
                   </Col>
                 )}
-                {personData?.dynamicFields?.length > 0 && (
+                {placeData?.dynamicFields?.length > 0 && (
                   <Col span={24}>
                     {allTaxonomyData?.data?.map((taxonomy, index) => {
                       if (taxonomy?.isDynamicField) {
                         let initialValues,
                           initialTaxonomy = [];
-                        personData?.dynamicFields?.forEach((dynamicField) => {
+                        placeData?.dynamicFields?.forEach((dynamicField) => {
                           if (taxonomy?.id === dynamicField?.taxonomyId) {
                             initialValues = dynamicField?.conceptIds;
                             initialTaxonomy.push(taxonomy?.id);
@@ -159,56 +159,56 @@ function PlaceReadOnly() {
                     })}
                   </Col>
                 )}
-                {(personData?.disambiguatingDescription?.en || personData?.disambiguatingDescription?.fr) && (
+                {(placeData?.disambiguatingDescription?.en || placeData?.disambiguatingDescription?.fr) && (
                   <Col span={24}>
                     <p className="read-only-event-content-sub-title-primary">
                       {t('dashboard.people.readOnly.disambiguatingDescription')}
                     </p>
-                    {personData?.disambiguatingDescription?.fr && (
+                    {placeData?.disambiguatingDescription?.fr && (
                       <>
                         <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-                        <p className="read-only-event-content">{personData?.disambiguatingDescription?.fr}</p>
+                        <p className="read-only-event-content">{placeData?.disambiguatingDescription?.fr}</p>
                       </>
                     )}
-                    {personData?.disambiguatingDescription?.en && (
+                    {placeData?.disambiguatingDescription?.en && (
                       <>
                         <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-                        <p className="read-only-event-content">{personData?.disambiguatingDescription?.en}</p>
+                        <p className="read-only-event-content">{placeData?.disambiguatingDescription?.en}</p>
                       </>
                     )}
                   </Col>
                 )}
-                {(personData?.description?.fr || personData?.description?.en) && (
+                {(placeData?.description?.fr || placeData?.description?.en) && (
                   <Col span={24}>
                     <p className="read-only-event-content-sub-title-primary">
                       {t('dashboard.people.readOnly.description')}
                     </p>
-                    {personData?.description?.fr && (
+                    {placeData?.description?.fr && (
                       <>
                         <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
                         <p className="read-only-event-content">
-                          <div dangerouslySetInnerHTML={{ __html: personData?.description?.fr }} />
+                          <div dangerouslySetInnerHTML={{ __html: placeData?.description?.fr }} />
                         </p>
                       </>
                     )}
-                    {personData?.description?.en && (
+                    {placeData?.description?.en && (
                       <>
                         <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
                         <p className="read-only-event-content">
-                          <div dangerouslySetInnerHTML={{ __html: personData?.description?.en }} />
+                          <div dangerouslySetInnerHTML={{ __html: placeData?.description?.en }} />
                         </p>
                       </>
                     )}
                   </Col>
                 )}
-                {personData?.url?.uri && (
+                {placeData?.url?.uri && (
                   <Col span={24}>
                     <p className="read-only-event-content-sub-title-primary">
                       {t('dashboard.people.readOnly.website')}
                     </p>
                     <p>
-                      <a href={personData?.url?.uri} target="_blank" rel="noopener noreferrer" className="url-links">
-                        {personData?.url?.uri}
+                      <a href={placeData?.url?.uri} target="_blank" rel="noopener noreferrer" className="url-links">
+                        {placeData?.url?.uri}
                       </a>
                     </p>
                   </Col>
@@ -216,10 +216,10 @@ function PlaceReadOnly() {
               </Row>
             </Col>
             <Col>
-              {personData?.image?.original?.uri && (
+              {placeData?.image?.original?.uri && (
                 <div style={{ marginTop: '-35%' }}>
                   <img
-                    src={personData?.image?.original?.uri}
+                    src={placeData?.image?.original?.uri}
                     alt="avatar"
                     style={{
                       width: '151px',
