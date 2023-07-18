@@ -10,13 +10,17 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
-import { treeDynamicTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
+import {
+  treeDynamicTaxonomyOptions,
+  treeTaxonomyOptions,
+} from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import Tags from '../../../components/Tags/Common/Tags';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import { useGetPlaceQuery } from '../../../services/places';
 import ArtsDataLink from '../../../components/Tags/ArtsDataLink/ArtsDataLink';
+import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -116,6 +120,27 @@ function PlaceReadOnly() {
                     )}
                   </Col>
                 )}
+                {placeData?.additionalType.length > 0 && (
+                  <div>
+                    <p className="read-only-event-content-sub-title-primary">
+                      {taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false)}
+                    </p>
+                    <TreeSelectOption
+                      style={{ marginBottom: '1rem' }}
+                      bordered={false}
+                      open={false}
+                      disabled
+                      treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Type', false, calendarContentLanguage)}
+                      defaultValue={placeData?.additionalType?.map((type) => {
+                        return type?.entityId;
+                      })}
+                      tagRender={(props) => {
+                        const { label } = props;
+                        return <Tags>{label}</Tags>;
+                      }}
+                    />
+                  </div>
+                )}
                 {placeData?.dynamicFields?.length > 0 && (
                   <Col span={24}>
                     {allTaxonomyData?.data?.map((taxonomy, index) => {
@@ -199,6 +224,27 @@ function PlaceReadOnly() {
                     )}
                   </Col>
                 )}
+              </Row>
+            </Col>
+            <Col>
+              {placeData?.image?.original?.uri && (
+                <div style={{ marginTop: '-35%' }}>
+                  <img
+                    src={placeData?.image?.original?.uri}
+                    alt="avatar"
+                    style={{
+                      width: '151px',
+                      height: '151px',
+                      objectFit: 'cover',
+                    }}
+                  />
+                </div>
+              )}
+            </Col>
+          </Card>
+          <Card>
+            <Col>
+              <Row gutter={[0, 24]}>
                 <Col span={24}>
                   <p className="read-only-event-content" style={{ fontSize: '24px' }}>
                     {t('dashboard.places.readOnly.address.address')}
@@ -319,22 +365,48 @@ function PlaceReadOnly() {
                 )}
               </Row>
             </Col>
-            <Col>
-              {placeData?.image?.original?.uri && (
-                <div style={{ marginTop: '-35%' }}>
-                  <img
-                    src={placeData?.image?.original?.uri}
-                    alt="avatar"
-                    style={{
-                      width: '151px',
-                      height: '151px',
-                      objectFit: 'cover',
-                    }}
-                  />
-                </div>
-              )}
-            </Col>
+            <Col></Col>
           </Card>
+          {placeData?.accessibility?.length > 0 && (
+            <Card>
+              <Col>
+                <Row gutter={[0, 24]}>
+                  <Col span={24}>
+                    <p className="read-only-event-content" style={{ fontSize: '24px' }}>
+                      {t('dashboard.places.readOnly.venueAccessibility')}
+                    </p>
+
+                    <Col span={24}>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {taxonomyDetails(allTaxonomyData?.data, user, 'PlaceAccessibility', 'name', false)}
+                      </p>
+                      <TreeSelectOption
+                        style={{ marginBottom: '1rem' }}
+                        bordered={false}
+                        open={false}
+                        disabled
+                        treeData={treeTaxonomyOptions(
+                          allTaxonomyData,
+                          user,
+                          'PlaceAccessibility',
+                          false,
+                          calendarContentLanguage,
+                        )}
+                        defaultValue={placeData?.accessibility?.map((accessibility) => {
+                          return accessibility?.entityId;
+                        })}
+                        tagRender={(props) => {
+                          const { label } = props;
+                          return <Tags>{label}</Tags>;
+                        }}
+                      />
+                    </Col>
+                  </Col>
+                </Row>
+              </Col>
+              <Col></Col>
+            </Card>
+          )}
         </Row>
       </FeatureFlag>
     )
