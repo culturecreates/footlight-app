@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
 import { Breadcrumb, Col, Row } from 'antd';
-import { LeftOutlined } from '@ant-design/icons';
+import { LeftOutlined, LinkOutlined } from '@ant-design/icons';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
@@ -16,6 +16,7 @@ import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOpt
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import { useGetPlaceQuery } from '../../../services/places';
+import ArtsDataLink from '../../../components/Tags/ArtsDataLink/ArtsDataLink';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -56,7 +57,7 @@ function PlaceReadOnly() {
             <Breadcrumb className="breadcrumb-item">
               <Breadcrumb.Item>
                 <LeftOutlined style={{ marginRight: '17px' }} />
-                {t('dashboard.people.people')}
+                {t('dashboard.places.place')}
               </Breadcrumb.Item>
               <Breadcrumb.Item className="breadcrumb-item">
                 {contentLanguageBilingual({
@@ -96,14 +97,11 @@ function PlaceReadOnly() {
           <Card>
             <Col>
               <Row gutter={[0, 24]}>
-                <Col span={24}>
-                  <p className="read-only-event-content" style={{ fontSize: '24px' }}>
-                    {t('dashboard.people.readOnly.details')}
-                  </p>
-                </Col>
                 {(placeData?.name?.fr || placeData?.name?.en) && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">{t('dashboard.people.readOnly.name')}</p>
+                    <p className="read-only-event-content-sub-title-primary">
+                      {t('dashboard.places.readOnly.placeName')}
+                    </p>
                     {placeData?.name?.fr && (
                       <>
                         <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
@@ -162,7 +160,7 @@ function PlaceReadOnly() {
                 {(placeData?.disambiguatingDescription?.en || placeData?.disambiguatingDescription?.fr) && (
                   <Col span={24}>
                     <p className="read-only-event-content-sub-title-primary">
-                      {t('dashboard.people.readOnly.disambiguatingDescription')}
+                      {t('dashboard.places.readOnly.disambiguatingDescription')}
                     </p>
                     {placeData?.disambiguatingDescription?.fr && (
                       <>
@@ -181,7 +179,7 @@ function PlaceReadOnly() {
                 {(placeData?.description?.fr || placeData?.description?.en) && (
                   <Col span={24}>
                     <p className="read-only-event-content-sub-title-primary">
-                      {t('dashboard.people.readOnly.description')}
+                      {t('dashboard.places.readOnly.description')}
                     </p>
                     {placeData?.description?.fr && (
                       <>
@@ -201,14 +199,120 @@ function PlaceReadOnly() {
                     )}
                   </Col>
                 )}
-                {placeData?.url?.uri && (
+                <Col span={24}>
+                  <p className="read-only-event-content" style={{ fontSize: '24px' }}>
+                    {t('dashboard.places.readOnly.address.address')}
+                  </p>
+                </Col>
+                {(placeData?.address?.streetAddress?.en || placeData?.address?.streetAddress?.fr) && (
                   <Col span={24}>
                     <p className="read-only-event-content-sub-title-primary">
-                      {t('dashboard.people.readOnly.website')}
+                      {t('dashboard.places.readOnly.address.streetAddress')}
+                    </p>
+                    {placeData?.address?.streetAddress?.fr && (
+                      <>
+                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        <p className="read-only-event-content">{placeData?.address?.streetAddress?.fr}</p>
+                      </>
+                    )}
+                    {placeData?.address?.en && (
+                      <>
+                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        <p className="read-only-event-content">{placeData?.address?.streetAddress?.en}</p>
+                      </>
+                    )}
+                  </Col>
+                )}
+                {(placeData?.address?.addressLocality?.en || placeData?.address?.addressLocality?.fr) && (
+                  <Col span={24}>
+                    <p className="read-only-event-content-sub-title-primary">
+                      {t('dashboard.places.readOnly.address.city')}
+                    </p>
+                    <ArtsDataLink>
+                      <span style={{ textDecoration: 'underline' }}>
+                        {contentLanguageBilingual({
+                          en: placeData?.address?.addressLocality?.en,
+                          fr: placeData?.address?.addressLocality?.fr,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                          calendarContentLanguage: calendarContentLanguage,
+                        })}
+                      </span>
+                      <LinkOutlined />
+                    </ArtsDataLink>
+                  </Col>
+                )}
+                {placeData?.address?.postalCode && (
+                  <Col span={24}>
+                    <p className="read-only-event-content-sub-title-primary">
+                      {t('dashboard.places.readOnly.address.postalCode')}
+                    </p>
+                    <p className="read-only-event-content">{placeData?.address?.postalCode}</p>
+                  </Col>
+                )}
+                <Col span={24}>
+                  <Row justify={'space-between'} gutter={[48, 0]}>
+                    {placeData?.address?.addressRegion && (
+                      <Col span={8}>
+                        <p className="read-only-event-content-sub-title-primary">
+                          {t('dashboard.places.readOnly.address.province')}
+                        </p>
+                        <ArtsDataLink>
+                          <span style={{ textDecoration: 'underline' }}>
+                            {contentLanguageBilingual({
+                              en: placeData?.address?.addressRegion?.en,
+                              fr: placeData?.address?.addressRegion?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            })}
+                          </span>
+                          <LinkOutlined />
+                        </ArtsDataLink>
+                      </Col>
+                    )}
+                    {placeData?.address?.addressCountry && (
+                      <Col span={8}>
+                        <p className="read-only-event-content-sub-title-primary">
+                          {t('dashboard.places.readOnly.address.country')}
+                        </p>
+                        <ArtsDataLink>
+                          <span style={{ textDecoration: 'underline' }}>
+                            {contentLanguageBilingual({
+                              en: placeData?.address?.addressCountry?.en,
+                              fr: placeData?.address?.addressCountry?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            })}
+                          </span>
+                          <LinkOutlined />
+                        </ArtsDataLink>
+                      </Col>
+                    )}
+                  </Row>
+                </Col>
+                {placeData?.geoCoordinates && (
+                  <Col span={10}>
+                    <p className="read-only-event-content-sub-title-primary">
+                      {t('dashboard.places.readOnly.address.coordinates')}
+                    </p>
+                    <span className="read-only-event-content">
+                      {placeData?.geoCoordinates?.latitude}
+                      <br />
+                    </span>
+                    <span className="read-only-event-content">{placeData?.geoCoordinates?.longitude}</span>
+                  </Col>
+                )}
+                {placeData?.openingHours?.uri && (
+                  <Col span={24}>
+                    <p className="read-only-event-content-sub-title-primary">
+                      {t('dashboard.places.readOnly.address.openingHoursLink')}
                     </p>
                     <p>
-                      <a href={placeData?.url?.uri} target="_blank" rel="noopener noreferrer" className="url-links">
-                        {placeData?.url?.uri}
+                      <a
+                        href={placeData?.openingHours?.uri}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="url-links">
+                        {placeData?.openingHours?.uri}
                       </a>
                     </p>
                   </Col>
