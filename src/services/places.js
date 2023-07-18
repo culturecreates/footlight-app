@@ -42,5 +42,10 @@ export const placesApi = createApi({
   }),
 });
 
-export const { useLazyGetAllPlacesQuery, useGetAllPlacesQuery, useDeletePlacesMutation, useLazyGetPlaceQuery } =
-  placesApi;
+export const {
+  useLazyGetAllPlacesQuery,
+  useGetAllPlacesQuery,
+  useDeletePlacesMutation,
+  useLazyGetPlaceQuery,
+  useGetPlaceQuery,
+} = placesApi;

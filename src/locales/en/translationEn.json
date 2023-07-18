@@ -422,6 +422,26 @@
         "description": "Are you sure you want to permanently delete this place?",
         "ok": "OK",
         "cancel": "Cancel"
+      },
+      "readOnly": {
+        "placeName": "Place Name",
+        "disambiguatingDescription": "Disambiguating description",
+        "description": "Description",
+        "website": "Website",
+        "address": {
+          "address": "Address",
+          "streetAddress": "Street address",
+          "city": "City",
+          "postalCode": "Postal code",
+          "province": "Province",
+          "country": "Country",
+          "coordinates": "Coordinates",
+          "openingHoursLink": "Opening hours link"
+        },
+        "containedInPlace": "Contained in place",
+        "notContainedInPlace": "Not contained in any place.",
+        "venueAccessibility": "Venue accessibility",
+        "items": "Items"
       }
     },
     "people": {

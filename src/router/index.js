@@ -15,6 +15,7 @@ import Places from '../pages/Dashboard/Places';
 import People from '../pages/Dashboard/People';
 import OrganizationsReadOnly from '../pages/Dashboard/OrganizationsReadOnly';
 import PersonReadOnly from '../pages/Dashboard/PersonReadOnly';
+import PlaceReadOnly from '../pages/Dashboard/PlaceReadOnly';
 
 export const router = createBrowserRouter([
   {
@@ -68,6 +69,10 @@ export const router = createBrowserRouter([
       {
         path: `:calendarId${PathName.Places}`,
         element: <Places />,
+      },
+      {
+        path: `:calendarId${PathName.Places}/:placeId`,
+        element: <PlaceReadOnly />,
       },
       {
         path: `:calendarId${PathName.Organizations}`,
