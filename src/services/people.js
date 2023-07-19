@@ -8,7 +8,7 @@ export const peopleApi = createApi({
   endpoints: (builder) => ({
     getAllPeople: builder.query({
       query: ({ calendarId }) => ({
-        url: `people`,
+        url: `people?page=${1}&limit=${100}`,
         method: 'GET',
         headers: {
           'calendar-id': calendarId,

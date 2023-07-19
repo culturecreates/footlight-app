@@ -4,10 +4,13 @@ import { Row, Col } from 'antd';
 function Event(props) {
   const { title, required, hidden } = props;
   return (
-    <Col flex={'780px'} className="add-event-section-col" style={{ display: hidden && 'none' }}>
+    <Col
+      flex={'780px'}
+      className="add-event-section-col"
+      style={{ display: hidden && 'none', borderRadius: '4px', backgroundColor: '#ffffff' }}>
       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-content">
         <Col flex={'423px'}>
-          <div className="add-event-section-wrapper">
+          <div className="add-event-section-wrapper" style={{ padding: '24px' }}>
             {title && (
               <Row>
                 <Col>

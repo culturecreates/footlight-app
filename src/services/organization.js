@@ -8,7 +8,7 @@ export const organizationApi = createApi({
   endpoints: (builder) => ({
     addOrganization: builder.mutation({
       query: ({ data, calendarId }) => ({
-        url: 'organizations',
+        url: `organizations`,
         method: 'POST',
         headers: {
           'calendar-id': calendarId,
@@ -26,8 +26,8 @@ export const organizationApi = createApi({
       }),
     }),
     getAllOrganization: builder.query({
-      query: ({ calendarId, sort }) => ({
-        url: `organizations?${sort}`,
+      query: ({ calendarId }) => ({
+        url: `organizations?page=${1}&limit=${100}`,
         method: 'GET',
         headers: {
           'calendar-id': calendarId,
