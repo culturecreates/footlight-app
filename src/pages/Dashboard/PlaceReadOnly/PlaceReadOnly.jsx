@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
 import { Breadcrumb, Col, Row } from 'antd';
@@ -9,7 +9,7 @@ import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
-import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
+import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import {
   treeDynamicTaxonomyOptions,
   treeTaxonomyOptions,
@@ -18,9 +18,11 @@ import Tags from '../../../components/Tags/Common/Tags';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
-import { useGetPlaceQuery } from '../../../services/places';
+import { useGetPlaceQuery, useLazyGetPlaceQuery } from '../../../services/places';
 import ArtsDataLink from '../../../components/Tags/ArtsDataLink/ArtsDataLink';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
+import SelectionItem from '../../../components/List/SelectionItem/SelectionItem';
+import { placesOptions } from '../../../components/Select/selectOption.settings';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -42,14 +44,63 @@ function PlaceReadOnly() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
+  const [getPlace] = useLazyGetPlaceQuery();
+  const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery();
 
   const { user } = useSelector(getUserDetails);
+
+  const [locationPlace, setLocationPlace] = useState();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   useEffect(() => {
     if (placeError) navigate(`${PathName.NotFound}`);
   }, [placeError]);
+
+  useEffect(() => {
+    if (placeSuccess) {
+      if (placeData?.containedInPlace?.entityId) {
+        let initialPlace = [];
+        let initialPlaceAccessibiltiy = [];
+        getPlace({ placeId: placeData?.containedInPlace?.entityId, calendarId })
+          .unwrap()
+          .then((response) => {
+            console.log(response);
+            initialPlace = [response];
+            initialPlace[0] = {
+              ...initialPlace[0],
+              ['openingHours']: initialPlace[0]?.openingHours?.uri,
+            };
+            getAllTaxonomy({
+              calendarId,
+              search: '',
+              taxonomyClass: taxonomyClass.PLACE,
+              includeConcepts: true,
+            })
+              .unwrap()
+              .then((res) => {
+                res?.data?.forEach((taxonomy) => {
+                  if (taxonomy?.mappedToField === 'PlaceAccessibility') {
+                    response?.accessibility?.forEach((accessibility) => {
+                      taxonomy?.concept?.forEach((concept) => {
+                        if (concept?.id == accessibility?.entityId) {
+                          initialPlaceAccessibiltiy = initialPlaceAccessibiltiy?.concat([concept]);
+                        }
+                      });
+                    });
+                  }
+                });
+                initialPlace[0] = {
+                  ...initialPlace[0],
+                  ['accessibility']: initialPlaceAccessibiltiy,
+                };
+                setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0]);
+              })
+              .catch((error) => console.log(error));
+          });
+      }
+    }
+  }, [placeSuccess]);
 
   return (
     placeSuccess &&
@@ -269,6 +320,46 @@ function PlaceReadOnly() {
                     )}
                   </Col>
                 )}
+                {(placeData?.name?.fr || placeData?.name?.en) && (
+                  <Col span={24}>
+                    <p className="read-only-event-content-sub-title-primary">
+                      {t('dashboard.places.readOnly.placeName')}
+                    </p>
+                    {placeData?.name?.fr && (
+                      <>
+                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        <p className="read-only-event-content">{placeData?.name?.fr}</p>
+                      </>
+                    )}
+                    {placeData?.name?.en && (
+                      <>
+                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        <p className="read-only-event-content">{placeData?.name?.en}</p>
+                      </>
+                    )}
+                  </Col>
+                )}
+                {placeData?.regions?.length > 0 && (
+                  <div>
+                    <p className="read-only-event-content-sub-title-primary">
+                      {taxonomyDetails(allTaxonomyData?.data, user, 'Region', 'name', false)}
+                    </p>
+                    <TreeSelectOption
+                      style={{ marginBottom: '1rem' }}
+                      bordered={false}
+                      open={false}
+                      disabled
+                      treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Region', false, calendarContentLanguage)}
+                      defaultValue={placeData?.regions?.map((type) => {
+                        return type?.entityId;
+                      })}
+                      tagRender={(props) => {
+                        const { label } = props;
+                        return <Tags>{label}</Tags>;
+                      }}
+                    />
+                  </div>
+                )}
                 {(placeData?.address?.addressLocality?.en || placeData?.address?.addressLocality?.fr) && (
                   <Col span={24}>
                     <p className="read-only-event-content-sub-title-primary">
@@ -407,6 +498,36 @@ function PlaceReadOnly() {
               <Col></Col>
             </Card>
           )}
+          <Card>
+            <Col>
+              <Row gutter={[0, 24]}>
+                <Col span={24}>
+                  <p className="read-only-event-content" style={{ fontSize: '24px' }}>
+                    {t('dashboard.places.readOnly.containedInPlace')}
+                  </p>
+
+                  <Col span={24}>
+                    {placeData?.containedInPlace?.entityId && locationPlace ? (
+                      <SelectionItem
+                        icon={locationPlace?.label?.props?.icon}
+                        name={locationPlace?.name}
+                        description={locationPlace?.description}
+                        itemWidth="423px"
+                        postalAddress={locationPlace?.postalAddress}
+                        accessibility={locationPlace?.accessibility}
+                        openingHours={locationPlace?.openingHours}
+                        calendarContentLanguage={calendarContentLanguage}
+                        bordered
+                      />
+                    ) : (
+                      t('dashboard.places.readOnly.notContainedInPlace')
+                    )}
+                  </Col>
+                </Col>
+              </Row>
+            </Col>
+            <Col></Col>
+          </Card>
         </Row>
       </FeatureFlag>
     )
