@@ -26,8 +26,8 @@ export const organizationApi = createApi({
       }),
     }),
     getAllOrganization: builder.query({
-      query: ({ calendarId }) => ({
-        url: `organizations?page=${1}&limit=${100}`,
+      query: ({ calendarId, pageNumber, limit = 10 }) => ({
+        url: `organizations?page=${pageNumber}&limit=${limit}`,
         method: 'GET',
         headers: {
           'calendar-id': calendarId,

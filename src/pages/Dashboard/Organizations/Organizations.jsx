@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import './organizations.css';
 import { List, Grid, Modal } from 'antd';
 import Icon, { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
@@ -13,7 +13,14 @@ import NoContent from '../../../components/NoContent/NoContent';
 import ListItem from '../../../components/List/ListItem.jsx/ListItem';
 import { useDeleteOrganizationMutation, useLazyGetAllOrganizationQuery } from '../../../services/organization';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
-import { useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import {
+  useLocation,
+  useNavigate,
+  useOutletContext,
+  useParams,
+  useSearchParams,
+  createSearchParams,
+} from 'react-router-dom';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -30,16 +37,15 @@ function Organizations() {
   const screens = useBreakpoint();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId } = useParams();
+  let [searchParams, setSearchParams] = useSearchParams();
   const { user } = useSelector(getUserDetails);
-  const [currentCalendarData] = useOutletContext();
+  const [currentCalendarData, pageNumber, setPageNumber] = useOutletContext();
 
   const [
     getAllOrganization,
     { currentData: allOrganizationData, isFetching: allOrganizationFetching, isSuccess: allOrganizationSuccess },
   ] = useLazyGetAllOrganizationQuery();
   const [deleteOrganization] = useDeleteOrganizationMutation();
-
-  const [pageNumber, setPageNumber] = useState(1);
 
   const totalCount = allOrganizationData?.count;
 
@@ -48,7 +54,7 @@ function Organizations() {
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
-
+  console.log(searchParams);
   const deleteOrganizationHandler = (organizationId) => {
     confirm({
       title: t('dashboard.organization.deleteOrganization.title'),
@@ -77,8 +83,14 @@ function Organizations() {
     getAllOrganization({
       calendarId,
       sessionId: timestampRef,
+      pageNumber,
     });
-  }, []);
+    setSearchParams(
+      createSearchParams({
+        page: pageNumber,
+      }),
+    );
+  }, [pageNumber]);
   return (
     allOrganizationSuccess && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
@@ -94,13 +106,9 @@ function Organizations() {
           />
           <Sort />
           <></>
-          {allOrganizationFetching && (
-            <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <LoadingIndicator />
-            </div>
-          )}
-          {!allOrganizationFetching &&
-            (allOrganizationData?.data?.length > 0 ? (
+
+          {!allOrganizationFetching ? (
+            allOrganizationData?.data?.length > 0 ? (
               <List
                 className="event-list-wrapper"
                 itemLayout={screens.xs ? 'vertical' : 'horizontal'}
@@ -153,7 +161,12 @@ function Organizations() {
               />
             ) : (
               <NoContent style={{ height: '200px' }} />
-            ))}
+            )
+          ) : (
+            <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <LoadingIndicator />
+            </div>
+          )}
         </Main>
       </FeatureFlag>
     )

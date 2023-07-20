@@ -91,13 +91,9 @@ function Places() {
           />
           <Sort />
           <></>
-          {allPlacesFetching && (
-            <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <LoadingIndicator />
-            </div>
-          )}
-          {!allPlacesFetching &&
-            (allPlacesData?.data?.length > 0 ? (
+
+          {!allPlacesFetching ? (
+            allPlacesData?.data?.length > 0 ? (
               <List
                 className="event-list-wrapper"
                 itemLayout={screens.xs ? 'vertical' : 'horizontal'}
@@ -153,7 +149,12 @@ function Places() {
               />
             ) : (
               <NoContent style={{ height: '200px' }} />
-            ))}
+            )
+          ) : (
+            <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <LoadingIndicator />
+            </div>
+          )}
         </Main>
       </FeatureFlag>
     )
