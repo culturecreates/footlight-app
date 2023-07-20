@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Row, Col, Breadcrumb, Button } from 'antd';
-import Icon, { LeftOutlined, CalendarOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Row, Col, Button } from 'antd';
+import Icon, { CalendarOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import moment from 'moment-timezone';
 import './eventReadOnly.css';
 import { useTranslation } from 'react-i18next';
@@ -38,6 +38,7 @@ import { userRoles } from '../../../constants/userRoles';
 import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequiredFieldNames';
 import { contentLanguage } from '../../../constants/contentLanguage';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
+import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -147,20 +148,14 @@ function EventReadOnly() {
       <div>
         <Row gutter={[32, 24]} className="read-only-wrapper">
           <Col span={24}>
-            <Breadcrumb className="breadcrumb-item">
-              <Breadcrumb.Item>
-                <LeftOutlined style={{ marginRight: '17px' }} />
-                {t('dashboard.sidebar.events')}
-              </Breadcrumb.Item>
-              <Breadcrumb.Item className="breadcrumb-item">
-                {contentLanguageBilingual({
-                  en: eventData?.name?.en,
-                  fr: eventData?.name?.fr,
-                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                  calendarContentLanguage: calendarContentLanguage,
-                })}
-              </Breadcrumb.Item>
-            </Breadcrumb>
+            <Breadcrumbs
+              name={contentLanguageBilingual({
+                en: eventData?.name?.en,
+                fr: eventData?.name?.fr,
+                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                calendarContentLanguage: calendarContentLanguage,
+              })}
+            />
           </Col>
 
           <Col span={24}>

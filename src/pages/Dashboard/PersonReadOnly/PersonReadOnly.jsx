@@ -2,8 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import './personReadOnly.css';
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
-import { Breadcrumb, Col, Row } from 'antd';
-import { LeftOutlined } from '@ant-design/icons';
+import { Col, Row } from 'antd';
+import {} from '@ant-design/icons';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
@@ -19,6 +19,7 @@ import { featureFlags } from '../../../utils/featureFlags';
 import { useGetPersonQuery } from '../../../services/people';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 
 function PersonReadOnly() {
   const { t } = useTranslation();
@@ -56,20 +57,14 @@ function PersonReadOnly() {
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Row gutter={[32, 24]} className="read-only-wrapper">
           <Col span={24}>
-            <Breadcrumb className="breadcrumb-item">
-              <Breadcrumb.Item>
-                <LeftOutlined style={{ marginRight: '17px' }} />
-                {t('dashboard.people.people')}
-              </Breadcrumb.Item>
-              <Breadcrumb.Item className="breadcrumb-item">
-                {contentLanguageBilingual({
-                  en: personData?.name?.en,
-                  fr: personData?.name?.fr,
-                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                  calendarContentLanguage: calendarContentLanguage,
-                })}
-              </Breadcrumb.Item>
-            </Breadcrumb>
+            <Breadcrumbs
+              name={contentLanguageBilingual({
+                en: personData?.name?.en,
+                fr: personData?.name?.fr,
+                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                calendarContentLanguage: calendarContentLanguage,
+              })}
+            />
           </Col>
 
           <Col span={24}>

@@ -183,32 +183,22 @@ function Events() {
       sort: sortQuery,
       sessionId: timestampRef,
     });
-    if (!eventSearchQuery || eventSearchQuery === '')
-      setSearchParams(
-        createSearchParams({
-          page: pageNumber,
-          order: filter?.order,
-          sortBy: filter?.sort,
-          ...(filter?.dates?.length > 0 && filter?.dates[0] && { startDateRange: query?.get('start-date-range') }),
-          ...(filter?.dates?.length > 1 && filter?.dates[1] && { endDateRange: query?.get('end-date-range') }),
-          ...(usersQuery && { users: usersQuery }),
-          ...(publicationQuery && { publication: publicationQuery }),
-        }),
-      );
-    else {
-      setSearchParams(
-        createSearchParams({
-          page: pageNumber,
-          query: eventSearchQuery,
-          order: filter?.order,
-          sortBy: filter?.sort,
-          ...(filter?.dates?.length > 0 && filter?.dates[0] && { startDateRange: query?.get('start-date-range') }),
-          ...(filter?.dates?.length > 1 && filter?.dates[1] && { endDateRange: query?.get('end-date-range') }),
-          ...(usersQuery && { users: usersQuery }),
-          ...(publicationQuery && { publication: publicationQuery }),
-        }),
-      );
-    }
+    let params = {
+      page: pageNumber,
+      order: filter?.order,
+      sortBy: filter?.sort,
+      ...(filter?.dates?.length > 0 && filter?.dates[0] && { startDateRange: query?.get('start-date-range') }),
+      ...(filter?.dates?.length > 1 && filter?.dates[1] && { endDateRange: query?.get('end-date-range') }),
+      ...(usersQuery && { users: usersQuery }),
+      ...(publicationQuery && { publication: publicationQuery }),
+    };
+
+    if (eventSearchQuery && eventSearchQuery !== '')
+      params = {
+        ...params,
+        query: eventSearchQuery,
+      };
+    setSearchParams(createSearchParams(params));
 
     sessionStorage.setItem('page', pageNumber);
     sessionStorage.setItem('query', eventSearchQuery);

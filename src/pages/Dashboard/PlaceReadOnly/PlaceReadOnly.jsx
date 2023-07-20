@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
-import { Breadcrumb, Col, Row } from 'antd';
-import { LeftOutlined, LinkOutlined } from '@ant-design/icons';
+import { Col, Row } from 'antd';
+import { LinkOutlined } from '@ant-design/icons';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
@@ -25,6 +25,7 @@ import SelectionItem from '../../../components/List/SelectionItem/SelectionItem'
 import { placesOptions } from '../../../components/Select/selectOption.settings';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -111,20 +112,14 @@ function PlaceReadOnly() {
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Row gutter={[32, 24]} className="read-only-wrapper">
           <Col span={24}>
-            <Breadcrumb className="breadcrumb-item">
-              <Breadcrumb.Item>
-                <LeftOutlined style={{ marginRight: '17px' }} />
-                {t('dashboard.places.place')}
-              </Breadcrumb.Item>
-              <Breadcrumb.Item className="breadcrumb-item">
-                {contentLanguageBilingual({
-                  en: placeData?.name?.en,
-                  fr: placeData?.name?.fr,
-                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                  calendarContentLanguage: calendarContentLanguage,
-                })}
-              </Breadcrumb.Item>
-            </Breadcrumb>
+            <Breadcrumbs
+              name={contentLanguageBilingual({
+                en: placeData?.name?.en,
+                fr: placeData?.name?.fr,
+                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                calendarContentLanguage: calendarContentLanguage,
+              })}
+            />
           </Col>
 
           <Col span={24}>

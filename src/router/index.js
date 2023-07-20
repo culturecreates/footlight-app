@@ -16,6 +16,7 @@ import People from '../pages/Dashboard/People';
 import OrganizationsReadOnly from '../pages/Dashboard/OrganizationsReadOnly';
 import PersonReadOnly from '../pages/Dashboard/PersonReadOnly';
 import PlaceReadOnly from '../pages/Dashboard/PlaceReadOnly';
+import { Translation } from 'react-i18next';
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +43,7 @@ export const router = createBrowserRouter([
   {
     path: PathName.Dashboard,
     element: <Dashboard />,
+
     children: [
       {
         path: `:calendarId${PathName.Events}`,
@@ -50,6 +52,9 @@ export const router = createBrowserRouter([
       {
         path: `:calendarId${PathName.Events}/:eventId`,
         element: <EventReadOnly />,
+        handle: {
+          crumb: () => <Translation>{(t) => t('dashboard.sidebar.events')}</Translation>,
+        },
       },
       {
         path: `:calendarId${PathName.Events}${PathName.AddEvent}`,
@@ -73,17 +78,32 @@ export const router = createBrowserRouter([
       {
         path: `:calendarId${PathName.Places}/:placeId`,
         element: <PlaceReadOnly />,
+        handle: {
+          crumb: () => <Translation>{(t) => t('dashboard.places.place')}</Translation>,
+        },
       },
       {
         path: `:calendarId${PathName.Organizations}`,
         element: <Organizations />,
       },
-      { path: `:calendarId${PathName.Organizations}/:organizationId`, element: <OrganizationsReadOnly /> },
+      {
+        path: `:calendarId${PathName.Organizations}/:organizationId`,
+        element: <OrganizationsReadOnly />,
+        handle: {
+          crumb: () => <Translation>{(t) => t('dashboard.organization.organizations')}</Translation>,
+        },
+      },
       {
         path: `:calendarId${PathName.People}`,
         element: <People />,
       },
-      { path: `:calendarId${PathName.People}/:personId`, element: <PersonReadOnly /> },
+      {
+        path: `:calendarId${PathName.People}/:personId`,
+        element: <PersonReadOnly />,
+        handle: {
+          crumb: () => <Translation>{(t) => t('dashboard.people.people')}</Translation>,
+        },
+      },
       {
         path: `:calendarId${PathName.Taxonomies}`,
         element: <div>Taxonomies</div>,
