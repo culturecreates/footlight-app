@@ -145,6 +145,9 @@ function Organizations() {
                     createdDate={item?.creator?.date}
                     createdByFirstName={item?.creator?.firstName}
                     createdByLastName={item?.creator?.lastName}
+                    updatedDate={item?.modifier?.date}
+                    updatedByFirstName={item?.modifier?.firstName}
+                    updatedByLastName={item?.modifier?.lastName}
                     artsDataLink={artsDataLinkChecker(item?.sameAs)}
                     listItemHandler={() => listItemHandler(item?.id)}
                     actions={[
