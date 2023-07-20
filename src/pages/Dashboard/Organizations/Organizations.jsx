@@ -26,7 +26,7 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { userRoles } from '../../../constants/userRoles';
-import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organisations.svg';
+import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
 const { confirm } = Modal;
 const { useBreakpoint } = Grid;
 
