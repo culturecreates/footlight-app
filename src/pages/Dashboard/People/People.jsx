@@ -47,6 +47,9 @@ function People() {
   const [pageNumber, setPageNumber] = useState(
     searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('peoplePage') ?? 1,
   );
+  const [peopleSearchQuery, setPeopleSearchQuery] = useState(
+    searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('peopleSearchQuery') ?? '',
+  );
 
   const totalCount = allPeopleData?.count;
 
@@ -80,19 +83,33 @@ function People() {
     navigate(`${location.pathname}/${id}`);
   };
 
+  const onSearchHandler = (event) => {
+    setPageNumber(1);
+    setPeopleSearchQuery(event.target.value);
+  };
+  const onChangeHandler = (event) => {
+    if (event.target.value === '') setPeopleSearchQuery('');
+  };
+
   useEffect(() => {
     getAllPeople({
       calendarId,
       sessionId: timestampRef,
       pageNumber,
+      query: peopleSearchQuery,
     });
-    setSearchParams(
-      createSearchParams({
-        page: pageNumber,
-      }),
-    );
+    let params = {
+      page: pageNumber,
+    };
+    if (peopleSearchQuery && peopleSearchQuery !== '')
+      params = {
+        ...params,
+        query: peopleSearchQuery,
+      };
+    setSearchParams(createSearchParams(params));
     sessionStorage.setItem('peoplePage', pageNumber);
-  }, [pageNumber]);
+    sessionStorage.setItem('peopleSearchQuery', peopleSearchQuery);
+  }, [pageNumber, peopleSearchQuery]);
   return (
     allPeopleSuccess && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
@@ -101,10 +118,10 @@ function People() {
           <AddPerson label={t('dashboard.people.person')} />
           <PersonSearch
             placeholder={t('dashboard.people.search.placeholder')}
-            //   onPressEnter={(e) => onSearchHandler(e)}
-            //   defaultValue={eventSearchQuery}
+            onPressEnter={(e) => onSearchHandler(e)}
+            defaultValue={peopleSearchQuery}
             allowClear={true}
-            //   onChange={onChangeHandler}
+            onChange={onChangeHandler}
           />
           <Sort />
           <></>
@@ -131,7 +148,7 @@ function People() {
                     key={index}
                     id={index}
                     logo={item?.logo?.thumbnail?.uri}
-                    defaultLogo={<UserOutlined style={{ color: '#607EFC', fontSize: '24px' }} />}
+                    defaultLogo={<UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />}
                     title={contentLanguageBilingual({
                       en: item?.name?.en,
                       fr: item?.name?.fr,

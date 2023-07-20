@@ -47,6 +47,9 @@ function Places() {
   const [pageNumber, setPageNumber] = useState(
     searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('placesPage') ?? 1,
   );
+  const [placesSearchQuery, setPlacesSearchQuery] = useState(
+    searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('placesSearchQuery') ?? '',
+  );
 
   const totalCount = allPlacesData?.count;
 
@@ -80,19 +83,34 @@ function Places() {
     navigate(`${location.pathname}/${id}`);
   };
 
+  const onSearchHandler = (event) => {
+    setPageNumber(1);
+    setPlacesSearchQuery(event.target.value);
+  };
+
+  const onChangeHandler = (event) => {
+    if (event.target.value === '') setPlacesSearchQuery('');
+  };
+
   useEffect(() => {
     getAllPlaces({
       calendarId,
       sessionId: timestampRef,
       pageNumber,
+      query: placesSearchQuery,
     });
-    setSearchParams(
-      createSearchParams({
-        page: pageNumber,
-      }),
-    );
+    let params = {
+      page: pageNumber,
+    };
+    if (placesSearchQuery && placesSearchQuery !== '')
+      params = {
+        ...params,
+        query: placesSearchQuery,
+      };
+    setSearchParams(createSearchParams(params));
     sessionStorage.setItem('placesPage', pageNumber);
-  }, [pageNumber]);
+    sessionStorage.setItem('placesSearchQuery', placesSearchQuery);
+  }, [pageNumber, placesSearchQuery]);
   return (
     allPlacesSuccess && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
@@ -101,10 +119,10 @@ function Places() {
           <AddPlace label={t('dashboard.places.place')} />
           <PlaceSearch
             placeholder={t('dashboard.places.search.placeholder')}
-            //   onPressEnter={(e) => onSearchHandler(e)}
-            //   defaultValue={eventSearchQuery}
+            onPressEnter={(e) => onSearchHandler(e)}
+            defaultValue={placesSearchQuery}
             allowClear={true}
-            //   onChange={onChangeHandler}
+            onChange={onChangeHandler}
           />
           <Sort />
           <></>
@@ -131,7 +149,7 @@ function Places() {
                     key={index}
                     id={index}
                     logo={item?.logo?.thumbnail?.uri}
-                    defaultLogo={<EnvironmentOutlined style={{ color: '#607EFC', fontSize: '24px' }} />}
+                    defaultLogo={<EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />}
                     title={contentLanguageBilingual({
                       en: item?.name?.en,
                       fr: item?.name?.fr,

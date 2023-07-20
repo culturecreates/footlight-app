@@ -50,6 +50,9 @@ function Organizations() {
   const [pageNumber, setPageNumber] = useState(
     searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('organizationPage') ?? 1,
   );
+  const [organizationSearchQuery, setOrganizationSearchQuery] = useState(
+    searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('organizationSearchQuery') ?? '',
+  );
 
   const totalCount = allOrganizationData?.count;
 
@@ -58,7 +61,7 @@ function Organizations() {
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
-  console.log(searchParams);
+
   const deleteOrganizationHandler = (organizationId) => {
     confirm({
       title: t('dashboard.organization.deleteOrganization.title'),
@@ -83,19 +86,33 @@ function Organizations() {
     navigate(`${location.pathname}/${id}`);
   };
 
+  const onSearchHandler = (event) => {
+    setPageNumber(1);
+    setOrganizationSearchQuery(event.target.value);
+  };
+  const onChangeHandler = (event) => {
+    if (event.target.value === '') setOrganizationSearchQuery('');
+  };
+
   useEffect(() => {
     getAllOrganization({
       calendarId,
       sessionId: timestampRef,
       pageNumber,
+      query: organizationSearchQuery,
     });
-    setSearchParams(
-      createSearchParams({
-        page: pageNumber,
-      }),
-    );
+    let params = {
+      page: pageNumber,
+    };
+    if (organizationSearchQuery && organizationSearchQuery !== '')
+      params = {
+        ...params,
+        query: organizationSearchQuery,
+      };
+    setSearchParams(createSearchParams(params));
     sessionStorage.setItem('organizationPage', pageNumber);
-  }, [pageNumber]);
+    sessionStorage.setItem('organizationSearchQuery', organizationSearchQuery);
+  }, [pageNumber, organizationSearchQuery]);
   return (
     allOrganizationSuccess && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
@@ -104,10 +121,10 @@ function Organizations() {
           <AddOrganization label={t('dashboard.organization.organization')} />
           <OrganizationSearch
             placeholder={t('dashboard.organization.search.placeholder')}
-            //   onPressEnter={(e) => onSearchHandler(e)}
-            //   defaultValue={eventSearchQuery}
+            onPressEnter={(e) => onSearchHandler(e)}
+            defaultValue={organizationSearchQuery}
             allowClear={true}
-            //   onChange={onChangeHandler}
+            onChange={onChangeHandler}
           />
           <Sort />
           <></>
@@ -134,7 +151,7 @@ function Organizations() {
                     key={index}
                     id={index}
                     logo={item?.logo?.thumbnail?.uri}
-                    defaultLogo={<Icon component={OrganizationLogo} style={{ color: '#607EFC', fontSize: '24px' }} />}
+                    defaultLogo={<Icon component={OrganizationLogo} style={{ color: '#607EFC', fontSize: '18px' }} />}
                     title={contentLanguageBilingual({
                       en: item?.name?.en,
                       fr: item?.name?.fr,
