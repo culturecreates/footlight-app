@@ -12,7 +12,14 @@ import Sort from '../../../components/Sort/Sort';
 import NoContent from '../../../components/NoContent/NoContent';
 import ListItem from '../../../components/List/ListItem.jsx/ListItem';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
-import { useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import {
+  useLocation,
+  useNavigate,
+  useOutletContext,
+  useParams,
+  createSearchParams,
+  useSearchParams,
+} from 'react-router-dom';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -29,6 +36,7 @@ function Places() {
   const navigate = useNavigate();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId } = useParams();
+  let [searchParams, setSearchParams] = useSearchParams();
   const { user } = useSelector(getUserDetails);
   const [currentCalendarData] = useOutletContext();
 
@@ -36,7 +44,9 @@ function Places() {
     useLazyGetAllPlacesQuery();
   const [deletePlaces] = useDeletePlacesMutation();
 
-  const [pageNumber, setPageNumber] = useState(1);
+  const [pageNumber, setPageNumber] = useState(
+    searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('placesPage') ?? 1,
+  );
 
   const totalCount = allPlacesData?.count;
 
@@ -75,7 +85,13 @@ function Places() {
       calendarId,
       sessionId: timestampRef,
     });
-  }, []);
+    setSearchParams(
+      createSearchParams({
+        page: pageNumber,
+      }),
+    );
+    sessionStorage.setItem('placesPage', pageNumber);
+  }, [pageNumber]);
   return (
     allPlacesSuccess && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>

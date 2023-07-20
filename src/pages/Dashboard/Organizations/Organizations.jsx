@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './organizations.css';
 import { List, Grid, Modal } from 'antd';
 import Icon, { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
@@ -39,13 +39,17 @@ function Organizations() {
   const { calendarId } = useParams();
   let [searchParams, setSearchParams] = useSearchParams();
   const { user } = useSelector(getUserDetails);
-  const [currentCalendarData, pageNumber, setPageNumber] = useOutletContext();
+  const [currentCalendarData] = useOutletContext();
 
   const [
     getAllOrganization,
     { currentData: allOrganizationData, isFetching: allOrganizationFetching, isSuccess: allOrganizationSuccess },
   ] = useLazyGetAllOrganizationQuery();
   const [deleteOrganization] = useDeleteOrganizationMutation();
+
+  const [pageNumber, setPageNumber] = useState(
+    searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('organizationPage') ?? 1,
+  );
 
   const totalCount = allOrganizationData?.count;
 
@@ -90,6 +94,7 @@ function Organizations() {
         page: pageNumber,
       }),
     );
+    sessionStorage.setItem('organizationPage', pageNumber);
   }, [pageNumber]);
   return (
     allOrganizationSuccess && (
