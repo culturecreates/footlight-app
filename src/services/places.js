@@ -7,8 +7,8 @@ export const placesApi = createApi({
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getAllPlaces: builder.query({
-      query: ({ calendarId }) => ({
-        url: `places?excludeContainsPlace=true&page=${1}&limit=${100}`,
+      query: ({ calendarId, pageNumber = 1, limit = 10 }) => ({
+        url: `places?excludeContainsPlace=true&page=${pageNumber}&limit=${limit}`,
         method: 'GET',
         headers: {
           'calendar-id': calendarId,

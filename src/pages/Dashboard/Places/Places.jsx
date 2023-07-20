@@ -84,6 +84,7 @@ function Places() {
     getAllPlaces({
       calendarId,
       sessionId: timestampRef,
+      pageNumber,
     });
     setSearchParams(
       createSearchParams({
