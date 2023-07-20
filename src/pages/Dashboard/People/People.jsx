@@ -148,7 +148,7 @@ function People() {
                     key={index}
                     id={index}
                     logo={item?.logo?.thumbnail?.uri}
-                    defaultLogo={<UserOutlined style={{ color: '#607EFC', fontSize: '24px' }} />}
+                    defaultLogo={<UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />}
                     title={contentLanguageBilingual({
                       en: item?.name?.en,
                       fr: item?.name?.fr,

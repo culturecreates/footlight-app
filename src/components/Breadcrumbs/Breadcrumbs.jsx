@@ -8,14 +8,9 @@ function Breadcrumbs(props) {
   const { name } = props;
   let matches = useMatches();
   const navigate = useNavigate();
-  console.log(matches);
-  let crumbs = matches
-    // first get rid of any matches that don't have handle and crumb
-    .filter((match) => Boolean(match.handle?.crumb))
-    // now map them into an array of elements, passing the loader
-    // data to each one
-    .map((match) => match.handle.crumb(match.data));
-  console.log(crumbs);
+
+  let crumbs = matches.filter((match) => Boolean(match.handle?.crumb)).map((match) => match.handle.crumb(match.data));
+
   return (
     <Breadcrumb className="breadcrumbs">
       {crumbs.map((crumb, index) => (

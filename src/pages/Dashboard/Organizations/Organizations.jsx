@@ -151,7 +151,7 @@ function Organizations() {
                     key={index}
                     id={index}
                     logo={item?.logo?.thumbnail?.uri}
-                    defaultLogo={<Icon component={OrganizationLogo} style={{ color: '#607EFC', fontSize: '24px' }} />}
+                    defaultLogo={<Icon component={OrganizationLogo} style={{ color: '#607EFC', fontSize: '18px' }} />}
                     title={contentLanguageBilingual({
                       en: item?.name?.en,
                       fr: item?.name?.fr,
