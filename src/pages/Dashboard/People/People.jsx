@@ -91,13 +91,9 @@ function People() {
           />
           <Sort />
           <></>
-          {allPeopleFetching && (
-            <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <LoadingIndicator />
-            </div>
-          )}
-          {!allPeopleFetching &&
-            (allPeopleData?.data?.length > 0 ? (
+
+          {!allPeopleFetching ? (
+            allPeopleData?.data?.length > 0 ? (
               <List
                 className="event-list-wrapper"
                 itemLayout={screens.xs ? 'vertical' : 'horizontal'}
@@ -153,7 +149,12 @@ function People() {
               />
             ) : (
               <NoContent style={{ height: '200px' }} />
-            ))}
+            )
+          ) : (
+            <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <LoadingIndicator />
+            </div>
+          )}
         </Main>
       </FeatureFlag>
     )

@@ -17,6 +17,8 @@ import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOpt
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import { useGetPersonQuery } from '../../../services/people';
+import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
+import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 
 function PersonReadOnly() {
   const { t } = useTranslation();
@@ -94,6 +96,30 @@ function PersonReadOnly() {
               </Col>
             </Row>
           </Col>
+          {artsDataLinkChecker(personData?.sameAs) && (
+            <Col span={24}>
+              <Row>
+                <Col>
+                  <ArtsDataInfo
+                    artsDataLink={artsDataLinkChecker(personData?.sameAs)}
+                    name={contentLanguageBilingual({
+                      en: personData?.name?.en,
+                      fr: personData?.name?.fr,
+                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                    disambiguatingDescription={contentLanguageBilingual({
+                      en: personData?.disambiguatingDescription?.en,
+                      fr: personData?.disambiguatingDescription?.fr,
+                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                  />
+                </Col>
+              </Row>
+            </Col>
+          )}
+
           <Card>
             <Col>
               <Row gutter={[0, 24]}>

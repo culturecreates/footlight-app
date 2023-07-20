@@ -4,6 +4,7 @@ import { Col, Row } from 'antd';
 
 function Main(props) {
   const { children } = props;
+  console.log(children);
   return (
     <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
       <Col span={24}>
@@ -180,7 +181,7 @@ function Main(props) {
           </Col>
         </Row>
         <Row className="events-content">
-          <Col flex="832px">{children?.length > 6 && children[6]}</Col>
+          <Col flex="832px">{children?.length > 5 && children[5]}</Col>
         </Row>
       </Col>
     </Row>

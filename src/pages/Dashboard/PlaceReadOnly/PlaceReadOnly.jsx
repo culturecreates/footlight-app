@@ -23,6 +23,8 @@ import ArtsDataLink from '../../../components/Tags/ArtsDataLink/ArtsDataLink';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import SelectionItem from '../../../components/List/SelectionItem/SelectionItem';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
+import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
+import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -149,6 +151,29 @@ function PlaceReadOnly() {
               </Col>
             </Row>
           </Col>
+          {artsDataLinkChecker(placeData?.sameAs) && (
+            <Col span={24}>
+              <Row>
+                <Col>
+                  <ArtsDataInfo
+                    artsDataLink={artsDataLinkChecker(placeData?.sameAs)}
+                    name={contentLanguageBilingual({
+                      en: placeData?.name?.en,
+                      fr: placeData?.name?.fr,
+                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                    disambiguatingDescription={contentLanguageBilingual({
+                      en: placeData?.disambiguatingDescription?.en,
+                      fr: placeData?.disambiguatingDescription?.fr,
+                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                  />
+                </Col>
+              </Row>
+            </Col>
+          )}
           <Card>
             <Col>
               <Row gutter={[0, 24]}>
@@ -520,7 +545,9 @@ function PlaceReadOnly() {
                         bordered
                       />
                     ) : (
-                      t('dashboard.places.readOnly.notContainedInPlace')
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.places.readOnly.notContainedInPlace')}
+                      </p>
                     )}
                   </Col>
                 </Col>

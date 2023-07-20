@@ -20,6 +20,8 @@ import Tags from '../../../components/Tags/Common/Tags';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
+import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
+import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 
 function OrganizationsReadOnly() {
   const { t } = useTranslation();
@@ -148,6 +150,30 @@ function OrganizationsReadOnly() {
               </Col>
             </Row>
           </Col>
+          {artsDataLinkChecker(organizationData?.sameAs) && (
+            <Col span={24}>
+              <Row>
+                <Col>
+                  <ArtsDataInfo
+                    artsDataLink={artsDataLinkChecker(organizationData?.sameAs)}
+                    name={contentLanguageBilingual({
+                      en: organizationData?.name?.en,
+                      fr: organizationData?.name?.fr,
+                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                    disambiguatingDescription={contentLanguageBilingual({
+                      en: organizationData?.disambiguatingDescription?.en,
+                      fr: organizationData?.disambiguatingDescription?.fr,
+                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                  />
+                </Col>
+              </Row>
+            </Col>
+          )}
+
           <Card>
             <Col>
               <Row gutter={[0, 24]}>

@@ -1,0 +1,20 @@
+.arts-data-info {
+  background-color: #e3e8ff;
+  color: #0f0e98;
+  height: 32px;
+  width: auto;
+  font-size: 12px;
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 400;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.arts-data-info .arts-data-description {
+  min-width: 433px;
+}
+
+.arts-data-info .arts-data-title {
+  cursor: pointer;
+}
