@@ -84,6 +84,7 @@ function People() {
     getAllPeople({
       calendarId,
       sessionId: timestampRef,
+      pageNumber,
     });
     setSearchParams(
       createSearchParams({
