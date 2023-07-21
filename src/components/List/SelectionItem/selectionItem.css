@@ -37,3 +37,22 @@
 .selection-item-wrapper .open-hour-url-link {
   text-decoration: underline;
 }
+
+.selection-item-wrapper .arts-data-link {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  padding: 8px;
+  border-radius: 4px;
+  background: #e3e8ff;
+  color: #0f0e98;
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.selection-item-wrapper .arts-data-link .arts-data-link-content {
+  display: flex;
+  gap: 4px;
+}

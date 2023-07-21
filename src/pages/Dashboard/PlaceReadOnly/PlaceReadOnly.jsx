@@ -68,7 +68,6 @@ function PlaceReadOnly() {
         getPlace({ placeId: placeData?.containedInPlace?.entityId, calendarId })
           .unwrap()
           .then((response) => {
-            console.log(response);
             initialPlace = [response];
             initialPlace[0] = {
               ...initialPlace[0],
@@ -526,22 +525,19 @@ function PlaceReadOnly() {
                   <p className="read-only-event-content" style={{ fontSize: '24px' }}>
                     {t('dashboard.places.readOnly.containedInPlace')}
                   </p>
-
                   <Col span={24}>
                     {placeData?.containedInPlace?.entityId && locationPlace ? (
                       <SelectionItem
                         icon={locationPlace?.label?.props?.icon}
                         name={locationPlace?.name}
                         description={locationPlace?.description}
+                        artsDataLink={artsDataLinkChecker(locationPlace?.sameAs)}
                         itemWidth="423px"
-                        postalAddress={locationPlace?.postalAddress}
-                        accessibility={locationPlace?.accessibility}
-                        openingHours={locationPlace?.openingHours}
                         calendarContentLanguage={calendarContentLanguage}
                         bordered
                       />
                     ) : (
-                      <p className="read-only-event-content-sub-title-primary">
+                      <p className="read-only-event-contentf-sub-title-primary">
                         {t('dashboard.places.readOnly.notContainedInPlace')}
                       </p>
                     )}
