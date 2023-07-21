@@ -359,27 +359,7 @@ function PlaceReadOnly() {
                     )}
                   </Col>
                 )}
-                {placeData?.regions?.length > 0 && (
-                  <div>
-                    <p className="read-only-event-content-sub-title-primary">
-                      {taxonomyDetails(allTaxonomyData?.data, user, 'Region', 'name', false)}
-                    </p>
-                    <TreeSelectOption
-                      style={{ marginBottom: '1rem' }}
-                      bordered={false}
-                      open={false}
-                      disabled
-                      treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Region', false, calendarContentLanguage)}
-                      defaultValue={placeData?.regions?.map((type) => {
-                        return type?.entityId;
-                      })}
-                      tagRender={(props) => {
-                        const { label } = props;
-                        return <Tags>{label}</Tags>;
-                      }}
-                    />
-                  </div>
-                )}
+
                 {(placeData?.address?.addressLocality?.en || placeData?.address?.addressLocality?.fr) && (
                   <Col span={24}>
                     <p className="read-only-event-content-sub-title-primary">
@@ -457,6 +437,27 @@ function PlaceReadOnly() {
                     </span>
                     <span className="read-only-event-content">{placeData?.geoCoordinates?.longitude}</span>
                   </Col>
+                )}
+                {placeData?.regions?.length > 0 && (
+                  <div>
+                    <p className="read-only-event-content-sub-title-primary">
+                      {taxonomyDetails(allTaxonomyData?.data, user, 'Region', 'name', false)}
+                    </p>
+                    <TreeSelectOption
+                      style={{ marginBottom: '1rem' }}
+                      bordered={false}
+                      open={false}
+                      disabled
+                      treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Region', false, calendarContentLanguage)}
+                      defaultValue={placeData?.regions?.map((type) => {
+                        return type?.entityId;
+                      })}
+                      tagRender={(props) => {
+                        const { label } = props;
+                        return <Tags>{label}</Tags>;
+                      }}
+                    />
+                  </div>
                 )}
                 {placeData?.openingHours?.uri && (
                   <Col span={24}>
