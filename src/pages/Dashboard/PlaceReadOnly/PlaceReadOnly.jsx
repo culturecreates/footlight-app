@@ -438,7 +438,7 @@ function PlaceReadOnly() {
                   </Col>
                 )}
                 {placeData?.regions?.length > 0 && (
-                  <div>
+                  <Col span={24}>
                     <p className="read-only-event-content-sub-title-primary">
                       {taxonomyDetails(allTaxonomyData?.data, user, 'Region', 'name', false)}
                     </p>
@@ -456,7 +456,7 @@ function PlaceReadOnly() {
                         return <Tags>{label}</Tags>;
                       }}
                     />
-                  </div>
+                  </Col>
                 )}
                 {placeData?.openingHours?.uri && (
                   <Col span={24}>
