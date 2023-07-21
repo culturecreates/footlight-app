@@ -537,7 +537,7 @@ function PlaceReadOnly() {
                         bordered
                       />
                     ) : (
-                      <p className="read-only-event-contentf-sub-title-primary">
+                      <p className="read-only-event-content-sub-title-primary">
                         {t('dashboard.places.readOnly.notContainedInPlace')}
                       </p>
                     )}
