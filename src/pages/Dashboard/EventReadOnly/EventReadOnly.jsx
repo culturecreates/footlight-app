@@ -633,7 +633,7 @@ function EventReadOnly() {
                       <p className="read-only-event-content-sub-title-primary">
                         {t('dashboard.events.addEditEvent.otherInformation.image.title')}
                       </p>
-                      <ImageUpload imageUrl={eventData?.image?.original?.uri} imageReadOnly={true} />
+                      <ImageUpload imageUrl={eventData?.image?.original?.uri} imageReadOnly={true} preview={true} />
                     </div>
                   )}
                   {eventData?.organizer?.length > 0 && (
