@@ -331,29 +331,10 @@ function PlaceReadOnly() {
                         <p className="read-only-event-content">{placeData?.address?.streetAddress?.fr}</p>
                       </>
                     )}
-                    {placeData?.address?.en && (
+                    {placeData?.address?.streetAddress?.en && (
                       <>
                         <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
                         <p className="read-only-event-content">{placeData?.address?.streetAddress?.en}</p>
-                      </>
-                    )}
-                  </Col>
-                )}
-                {(placeData?.name?.fr || placeData?.name?.en) && (
-                  <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
-                      {t('dashboard.places.readOnly.placeName')}
-                    </p>
-                    {placeData?.name?.fr && (
-                      <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-                        <p className="read-only-event-content">{placeData?.name?.fr}</p>
-                      </>
-                    )}
-                    {placeData?.name?.en && (
-                      <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-                        <p className="read-only-event-content">{placeData?.name?.en}</p>
                       </>
                     )}
                   </Col>
