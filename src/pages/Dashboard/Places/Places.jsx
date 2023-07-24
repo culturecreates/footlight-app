@@ -26,6 +26,9 @@ import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { userRoles } from '../../../constants/userRoles';
 import { useDeletePlacesMutation, useLazyGetAllPlacesQuery } from '../../../services/places';
+import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../../constants/sortByOptions';
+import i18n from 'i18next';
+
 const { confirm } = Modal;
 const { useBreakpoint } = Grid;
 
@@ -50,6 +53,12 @@ function Places() {
   const [placesSearchQuery, setPlacesSearchQuery] = useState(
     searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('placesSearchQuery') ?? '',
   );
+  const [filter, setFilter] = useState({
+    sort: sortByOptionsOrgsPlacesPerson[0]?.key,
+    order: searchParams.get('order')
+      ? searchParams.get('order')
+      : sessionStorage.getItem('placeOrder') ?? sortOrder?.ASC,
+  });
 
   const totalCount = allPlacesData?.count;
 
@@ -93,14 +102,26 @@ function Places() {
   };
 
   useEffect(() => {
+    let sortQuery = new URLSearchParams();
+    sortQuery.append(
+      'sort',
+      encodeURIComponent(
+        `${filter?.order}(${filter?.sort}${
+          filter?.sort === sortByOptionsOrgsPlacesPerson[0]?.key ? '.' + i18n.language : ''
+        })`,
+      ),
+    );
     getAllPlaces({
       calendarId,
       sessionId: timestampRef,
       pageNumber,
       query: placesSearchQuery,
+      sort: sortQuery,
     });
     let params = {
       page: pageNumber,
+      order: filter?.order,
+      sortBy: filter?.sort,
     };
     if (placesSearchQuery && placesSearchQuery !== '')
       params = {
@@ -110,7 +131,8 @@ function Places() {
     setSearchParams(createSearchParams(params));
     sessionStorage.setItem('placesPage', pageNumber);
     sessionStorage.setItem('placesSearchQuery', placesSearchQuery);
-  }, [pageNumber, placesSearchQuery]);
+    sessionStorage.setItem('placeOrder', filter?.order);
+  }, [pageNumber, placesSearchQuery, filter]);
   return (
     allPlacesSuccess && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
@@ -124,7 +146,7 @@ function Places() {
             allowClear={true}
             onChange={onChangeHandler}
           />
-          <Sort />
+          <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
           <></>
 
           {!allPlacesFetching ? (

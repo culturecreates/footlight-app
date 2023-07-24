@@ -27,6 +27,9 @@ import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { userRoles } from '../../../constants/userRoles';
 import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
+import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../../constants/sortByOptions';
+import i18n from 'i18next';
+
 const { confirm } = Modal;
 const { useBreakpoint } = Grid;
 
@@ -53,6 +56,12 @@ function Organizations() {
   const [organizationSearchQuery, setOrganizationSearchQuery] = useState(
     searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('organizationSearchQuery') ?? '',
   );
+  const [filter, setFilter] = useState({
+    sort: sortByOptionsOrgsPlacesPerson[0]?.key,
+    order: searchParams.get('order')
+      ? searchParams.get('order')
+      : sessionStorage.getItem('organizationOrder') ?? sortOrder?.ASC,
+  });
 
   const totalCount = allOrganizationData?.count;
 
@@ -95,14 +104,26 @@ function Organizations() {
   };
 
   useEffect(() => {
+    let sortQuery = new URLSearchParams();
+    sortQuery.append(
+      'sort',
+      encodeURIComponent(
+        `${filter?.order}(${filter?.sort}${
+          filter?.sort === sortByOptionsOrgsPlacesPerson[0]?.key ? '.' + i18n.language : ''
+        })`,
+      ),
+    );
     getAllOrganization({
       calendarId,
       sessionId: timestampRef,
       pageNumber,
       query: organizationSearchQuery,
+      sort: sortQuery,
     });
     let params = {
       page: pageNumber,
+      order: filter?.order,
+      sortBy: filter?.sort,
     };
     if (organizationSearchQuery && organizationSearchQuery !== '')
       params = {
@@ -112,7 +133,8 @@ function Organizations() {
     setSearchParams(createSearchParams(params));
     sessionStorage.setItem('organizationPage', pageNumber);
     sessionStorage.setItem('organizationSearchQuery', organizationSearchQuery);
-  }, [pageNumber, organizationSearchQuery]);
+    sessionStorage.setItem('organizationOrder', filter?.order);
+  }, [pageNumber, organizationSearchQuery, filter]);
   return (
     allOrganizationSuccess && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
@@ -126,7 +148,7 @@ function Organizations() {
             allowClear={true}
             onChange={onChangeHandler}
           />
-          <Sort />
+          <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
           <></>
 
           {!allOrganizationFetching ? (
