@@ -1,6 +1,6 @@
 import React from 'react';
 import './selectionItem.css';
-import { Avatar, List, Button, Row, Col, Badge } from 'antd';
+import { Avatar, List, Button, Row, Col } from 'antd';
 import { CloseCircleOutlined, LinkOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
@@ -160,16 +160,19 @@ function SelectionItem(props) {
       {artsDataLink && (
         <div className="arts-data-link">
           <div className="arts-data-link-content">
-            <span
-              style={{ textDecoration: 'underline', cursor: 'pointer' }}
-              onClick={() => window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer')}>
-              Artsdata
-            </span>
-            {name && <span>{name}</span>}
-            {description && <Badge color="#1B3DE6" />}
+            <div className="arts-data-link-first-line">
+              <span
+                style={{ textDecoration: 'underline', cursor: 'pointer' }}
+                onClick={() => window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer')}>
+                Artsdata
+              </span>
+              {name && <span>{name}</span>}
+              {/* {description && <Badge color="#1B3DE6" size="small" />} */}
+            </div>
             {description && <span>{description}</span>}
           </div>
-          <LinkOutlined />
+
+          <LinkOutlined style={{ fontSize: '16px' }} />
         </div>
       )}
     </div>
