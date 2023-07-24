@@ -24,7 +24,6 @@ function SelectionItem(props) {
   } = props;
   const { t } = useTranslation();
   const { user } = useSelector(getUserDetails);
-
   return (
     <div
       className="selection-item-wrapper"

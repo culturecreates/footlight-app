@@ -872,6 +872,7 @@ function AddEvent() {
               id: organizer?.entityId,
               name: organizer?.entity?.name,
               type: organizer?.type,
+              icon: organizer?.entity?.logo?.thumbnail?.uri,
             };
           });
           setSelectedOrganizers(treeEntitiesOption(initialOrganizers, user, calendarContentLanguage));
@@ -883,6 +884,7 @@ function AddEvent() {
               id: performer?.entityId,
               name: performer?.entity?.name,
               type: performer?.type,
+              icon: performer?.entity?.logo?.thumbnail?.uri,
             };
           });
           setSelectedPerformers(treeEntitiesOption(initialPerformers, user, calendarContentLanguage));
@@ -895,6 +897,7 @@ function AddEvent() {
               id: supporter?.entityId,
               name: supporter?.entity?.name,
               type: supporter?.type,
+              icon: supporter?.entity?.logo?.thumbnail?.uri,
             };
           });
           setSelectedSupporters(treeEntitiesOption(initialSupporters, user, calendarContentLanguage));
