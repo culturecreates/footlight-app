@@ -63,6 +63,7 @@
 .add-edit-wrapper .add-event-section-col {
   background-color: #ffffff;
   border-radius: 4px;
+  padding: 24px;
 }
 
 .add-edit-wrapper .event-description-footer {
