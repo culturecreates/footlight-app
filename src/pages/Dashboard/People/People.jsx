@@ -26,6 +26,9 @@ import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { userRoles } from '../../../constants/userRoles';
 import { useDeletePersonMutation, useLazyGetAllPeopleQuery } from '../../../services/people';
+import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../../constants/sortByOptions';
+import i18n from 'i18next';
+
 const { confirm } = Modal;
 const { useBreakpoint } = Grid;
 
@@ -50,6 +53,12 @@ function People() {
   const [peopleSearchQuery, setPeopleSearchQuery] = useState(
     searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('peopleSearchQuery') ?? '',
   );
+  const [filter, setFilter] = useState({
+    sort: sortByOptionsOrgsPlacesPerson[0]?.key,
+    order: searchParams.get('order')
+      ? searchParams.get('order')
+      : sessionStorage.getItem('peopleOrder') ?? sortOrder?.ASC,
+  });
 
   const totalCount = allPeopleData?.count;
 
@@ -92,14 +101,26 @@ function People() {
   };
 
   useEffect(() => {
+    let sortQuery = new URLSearchParams();
+    sortQuery.append(
+      'sort',
+      encodeURIComponent(
+        `${filter?.order}(${filter?.sort}${
+          filter?.sort === sortByOptionsOrgsPlacesPerson[0]?.key ? '.' + i18n.language : ''
+        })`,
+      ),
+    );
     getAllPeople({
       calendarId,
       sessionId: timestampRef,
       pageNumber,
       query: peopleSearchQuery,
+      sort: sortQuery,
     });
     let params = {
       page: pageNumber,
+      order: filter?.order,
+      sortBy: filter?.sort,
     };
     if (peopleSearchQuery && peopleSearchQuery !== '')
       params = {
@@ -109,7 +130,8 @@ function People() {
     setSearchParams(createSearchParams(params));
     sessionStorage.setItem('peoplePage', pageNumber);
     sessionStorage.setItem('peopleSearchQuery', peopleSearchQuery);
-  }, [pageNumber, peopleSearchQuery]);
+    sessionStorage.setItem('peopleOrder', filter?.order);
+  }, [pageNumber, peopleSearchQuery, filter]);
   return (
     allPeopleSuccess && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
@@ -123,7 +145,7 @@ function People() {
             allowClear={true}
             onChange={onChangeHandler}
           />
-          <Sort />
+          <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
           <></>
 
           {!allPeopleFetching ? (

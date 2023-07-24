@@ -1,13 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../constants/sortByOptions';
 import { useTranslation } from 'react-i18next';
 import { Button, Dropdown, Space } from 'antd';
 import { SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 
-function Sort() {
+function Sort(props) {
+  const { filter, setFilter, setPageNumber } = props;
   const { t } = useTranslation();
-  const [filter] = useState({ sort: sortByOptionsOrgsPlacesPerson[0]?.key, order: sortOrder?.ASC });
-
+  const onSortOrderChange = () => {
+    if (filter?.order == sortOrder?.ASC)
+      setFilter({
+        ...filter,
+        order: sortOrder?.DESC,
+      });
+    else if (filter?.order == sortOrder?.DESC)
+      setFilter({
+        ...filter,
+        order: sortOrder?.ASC,
+      });
+    setPageNumber(1);
+  };
   return (
     <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
       <span style={{ fontSize: '16px', fontWeight: 700 }}>{t('dashboard.events.filter.sort.sortBy')}</span>
@@ -20,7 +32,7 @@ function Sort() {
           items: sortByOptionsOrgsPlacesPerson,
           selectable: true,
           defaultSelectedKeys: [filter?.sort],
-          //   onSelect: onSortSelect,
+          // onSelect: onSortSelect,
         }}
         trigger={['click']}
         open={false}>
@@ -37,7 +49,7 @@ function Sort() {
       <Button
         className="filter-sort-button"
         style={{ borderColor: filter?.order && '#1B3DE6' }}
-        // onClick={onSortOrderChange}
+        onClick={onSortOrderChange}
         icon={
           filter?.order === sortOrder?.ASC ? (
             <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
