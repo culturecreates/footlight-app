@@ -57,9 +57,14 @@ export const treeEntitiesOption = (data, user, calendarContentLanguage) => {
           itemWidth="100%"
           icon={
             entity?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
-              <Icon component={Organizations} style={{ color: '#607EFC' }} />
+              entity?.icon ? (
+                <img src={entity?.icon} />
+              ) : (
+                <Icon component={Organizations} style={{ color: '#607EFC' }} />
+              )
             ) : (
-              entity?.type?.toUpperCase() == taxonomyClass.PERSON && <UserOutlined style={{ color: '#607EFC' }} />
+              entity?.type?.toUpperCase() == taxonomyClass.PERSON &&
+              (entity?.icon ? <img src={entity?.icon} /> : <UserOutlined style={{ color: '#607EFC' }} />)
             )
           }
           name={
