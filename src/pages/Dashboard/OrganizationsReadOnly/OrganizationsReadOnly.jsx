@@ -122,7 +122,7 @@ function OrganizationsReadOnly() {
 
           <Col span={24}>
             <Row>
-              <Col>
+              <Col flex={'780px'}>
                 <div className="read-only-event-heading">
                   <h4>
                     {contentLanguageBilingual({

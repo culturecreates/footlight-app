@@ -172,7 +172,7 @@ function SelectionItem(props) {
             {description && <span>{description}</span>}
           </div>
 
-          <LinkOutlined />
+          <LinkOutlined style={{ fontSize: '16px' }} />
         </div>
       )}
     </div>
