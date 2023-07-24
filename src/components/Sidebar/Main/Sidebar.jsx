@@ -61,7 +61,7 @@ function Sidebar(props) {
     items?.forEach((item) => {
       if (location.pathname?.includes(item?.path)) setSelectedKey([item?.key]);
     });
-  }, []);
+  }, [location]);
 
   useEffect(() => {
     const calendarLabel = contentLanguageBilingual({
