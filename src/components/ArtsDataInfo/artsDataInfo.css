@@ -1,7 +1,7 @@
 .arts-data-info {
   background-color: #e3e8ff;
   color: #0f0e98;
-  height: 32px;
+  min-height: 32px;
   font-size: 12px;
   font-family: Roboto;
   font-style: normal;
@@ -12,4 +12,9 @@
 
 .arts-data-info .arts-data-title {
   cursor: pointer;
+}
+
+.arts-data-info .ant-badge-status-dot {
+  height: 2px;
+  width: 2px;
 }

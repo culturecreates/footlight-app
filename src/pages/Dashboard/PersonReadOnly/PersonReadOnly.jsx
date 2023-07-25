@@ -94,7 +94,7 @@ function PersonReadOnly() {
           {artsDataLinkChecker(personData?.sameAs) && (
             <Col span={24}>
               <Row>
-                <Col>
+                <Col span={16}>
                   <ArtsDataInfo
                     artsDataLink={artsDataLinkChecker(personData?.sameAs)}
                     name={contentLanguageBilingual({
@@ -117,7 +117,7 @@ function PersonReadOnly() {
 
           <Card>
             <Col>
-              <Row gutter={[0, 24]}>
+              <Row>
                 <Col span={24}>
                   <p className="read-only-event-content" style={{ fontSize: '24px' }}>
                     {t('dashboard.people.readOnly.details')}
