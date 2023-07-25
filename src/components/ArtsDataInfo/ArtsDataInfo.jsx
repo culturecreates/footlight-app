@@ -8,7 +8,7 @@ function ArtsDataInfo(props) {
   return (
     <Row className="arts-data-info" align={'middle'} justify={'space-between'}>
       <Col span={20}>
-        <Row gutter={[4, 0]} align={'middle'}>
+        <Row gutter={[8, 0]} align={'middle'}>
           <Col
             className="arts-data-title"
             onClick={() => window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer')}>
