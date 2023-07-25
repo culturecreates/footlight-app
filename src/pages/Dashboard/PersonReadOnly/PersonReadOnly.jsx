@@ -94,7 +94,7 @@ function PersonReadOnly() {
           {artsDataLinkChecker(personData?.sameAs) && (
             <Col span={24}>
               <Row>
-                <Col>
+                <Col span={16}>
                   <ArtsDataInfo
                     artsDataLink={artsDataLinkChecker(personData?.sameAs)}
                     name={contentLanguageBilingual({

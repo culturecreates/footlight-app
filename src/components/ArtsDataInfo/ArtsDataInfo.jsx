@@ -8,7 +8,7 @@ function ArtsDataInfo(props) {
   return (
     <Row className="arts-data-info" align={'middle'} justify={'space-between'}>
       <Col span={20}>
-        <Row gutter={[4, 0]}>
+        <Row gutter={[4, 0]} align={'middle'}>
           <Col
             className="arts-data-title"
             onClick={() => window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer')}>
@@ -19,7 +19,7 @@ function ArtsDataInfo(props) {
           </Col>
           <Col>
             <span>
-              <Badge color="#1B3DE6" />
+              <Badge color="#1B3DE6" style={{ height: '2px', width: '2px' }} />
             </span>
           </Col>
           <Col className="arts-data-description">{disambiguatingDescription}</Col>
