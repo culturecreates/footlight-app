@@ -170,7 +170,7 @@ function OrganizationsReadOnly() {
 
           <Card>
             <Col>
-              <Row gutter={[0, 24]}>
+              <Row>
                 <Col span={24}>
                   <p className="read-only-event-content" style={{ fontSize: '24px' }}>
                     {t('dashboard.organization.readOnly.details')}

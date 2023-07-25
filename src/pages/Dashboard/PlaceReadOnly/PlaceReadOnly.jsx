@@ -170,7 +170,7 @@ function PlaceReadOnly() {
           )}
           <Card>
             <Col>
-              <Row gutter={[0, 24]}>
+              <Row>
                 {(placeData?.name?.fr || placeData?.name?.en) && (
                   <Col span={24}>
                     <p className="read-only-event-content-sub-title-primary">
@@ -316,9 +316,9 @@ function PlaceReadOnly() {
             <Col>
               <Row gutter={[0, 24]}>
                 <Col span={24}>
-                  <p className="read-only-event-content" style={{ fontSize: '24px' }}>
+                  <span className="read-only-event-content" style={{ fontSize: '24px' }}>
                     {t('dashboard.places.readOnly.address.address')}
-                  </p>
+                  </span>
                 </Col>
                 {(placeData?.address?.streetAddress?.en || placeData?.address?.streetAddress?.fr) && (
                   <Col span={24}>
