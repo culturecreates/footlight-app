@@ -379,6 +379,8 @@ function OrganizationsReadOnly() {
                     alt="avatar"
                     style={{
                       objectFit: 'cover',
+                      width: '151px',
+                      height: '151px',
                     }}
                   />
                 </div>
