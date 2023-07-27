@@ -50,6 +50,7 @@ function QuickCreateOrganization(props) {
             id: response?.id,
             name: response?.name,
             type: entitiesClass.organization,
+            logo: response?.logo,
           },
         ];
         createdOrganizer = treeEntitiesOption(createdOrganizer, user, calendarContentLanguage);
