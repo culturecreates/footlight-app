@@ -872,7 +872,8 @@ function AddEvent() {
               id: organizer?.entityId,
               name: organizer?.entity?.name,
               type: organizer?.type,
-              icon: organizer?.entity?.logo?.thumbnail?.uri,
+              logo: organizer?.entity?.logo,
+              image: organizer?.entity?.image,
             };
           });
           setSelectedOrganizers(treeEntitiesOption(initialOrganizers, user, calendarContentLanguage));
@@ -884,7 +885,8 @@ function AddEvent() {
               id: performer?.entityId,
               name: performer?.entity?.name,
               type: performer?.type,
-              icon: performer?.entity?.logo?.thumbnail?.uri,
+              logo: performer?.entity?.logo,
+              image: performer?.entity?.image,
             };
           });
           setSelectedPerformers(treeEntitiesOption(initialPerformers, user, calendarContentLanguage));
@@ -897,7 +899,8 @@ function AddEvent() {
               id: supporter?.entityId,
               name: supporter?.entity?.name,
               type: supporter?.type,
-              icon: supporter?.entity?.logo?.thumbnail?.uri,
+              logo: supporter?.entity?.logo,
+              image: supporter?.entity?.image,
             };
           });
           setSelectedSupporters(treeEntitiesOption(initialSupporters, user, calendarContentLanguage));
