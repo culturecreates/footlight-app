@@ -79,6 +79,7 @@ import { featureFlags } from '../../../utils/featureFlags';
 import QuickSelect from '../../../components/Modal/QuickSelect/QuickSelect';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
+import QuickCreatePerson from '../../../components/Modal/QuickCreatePerson/QuickCreatePerson';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -148,7 +149,9 @@ function AddEvent() {
   const [newEventId, setNewEventId] = useState(null);
   const [quickOrganizerModal, setQuickOrganizerModal] = useState(false);
   const [quickCreateOrganizerModal, setQuickCreateOrganizerModal] = useState(false);
+  const [quickCreatePersonModal, setQuickCreatePersonModal] = useState(false);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
+  const [selectedOrganizerPerformerSupporterType, setSelectedOrganizerPerformerSupporterType] = useState();
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -173,6 +176,13 @@ function AddEvent() {
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
+
+  let organizerPerformerSupporterTypes = {
+    organizer: 'organizer',
+    performer: 'performer',
+    supporter: 'supporter',
+  };
+
   const addUpdateEventApiHandler = (eventObj, toggle) => {
     var promise = new Promise(function (resolve, reject) {
       if ((!eventId || eventId === '') && newEventId === null) {
@@ -1950,6 +1960,7 @@ function AddEvent() {
                         setIsPopoverOpen({ ...isPopoverOpen, organizer: true });
                       }}
                       onClick={(e) => {
+                        setSelectedOrganizerPerformerSupporterType(organizerPerformerSupporterTypes.organizer);
                         setQuickCreateKeyword(e.target.value);
                         setIsPopoverOpen({ ...isPopoverOpen, organizer: true });
                       }}
@@ -1979,6 +1990,7 @@ function AddEvent() {
                   open={quickOrganizerModal}
                   setOpen={setQuickOrganizerModal}
                   setQuickCreateOrganizerModal={setQuickCreateOrganizerModal}
+                  setQuickCreatePersonModal={setQuickCreatePersonModal}
                 />
                 <QuickCreateOrganization
                   open={quickCreateOrganizerModal}
@@ -1990,6 +2002,29 @@ function AddEvent() {
                   calendarContentLanguage={calendarContentLanguage}
                   setSelectedOrganizers={setSelectedOrganizers}
                   selectedOrganizers={selectedOrganizers}
+                  selectedPerformers={selectedPerformers}
+                  setSelectedPerformers={setSelectedPerformers}
+                  selectedSupporters={selectedSupporters}
+                  setSelectedSupporters={setSelectedSupporters}
+                  selectedOrganizerPerformerSupporterType={selectedOrganizerPerformerSupporterType}
+                  organizerPerformerSupporterTypes={organizerPerformerSupporterTypes}
+                />
+                <QuickCreatePerson
+                  open={quickCreatePersonModal}
+                  setOpen={setQuickCreatePersonModal}
+                  calendarId={calendarId}
+                  keyword={quickCreateKeyword}
+                  setKeyword={setQuickCreateKeyword}
+                  interfaceLanguage={user?.interfaceLanguage?.toLowerCase()}
+                  calendarContentLanguage={calendarContentLanguage}
+                  setSelectedOrganizers={setSelectedOrganizers}
+                  selectedOrganizers={selectedOrganizers}
+                  selectedPerformers={selectedPerformers}
+                  setSelectedPerformers={setSelectedPerformers}
+                  selectedSupporters={selectedSupporters}
+                  setSelectedSupporters={setSelectedSupporters}
+                  selectedOrganizerPerformerSupporterType={selectedOrganizerPerformerSupporterType}
+                  organizerPerformerSupporterTypes={organizerPerformerSupporterTypes}
                 />
               </Form.Item>
               <Form.Item
@@ -2157,6 +2192,7 @@ function AddEvent() {
                         setQuickCreateKeyword(e.target.value);
                       }}
                       onClick={(e) => {
+                        setSelectedOrganizerPerformerSupporterType(organizerPerformerSupporterTypes.performer);
                         setQuickCreateKeyword(e.target.value);
                         setIsPopoverOpen({ ...isPopoverOpen, performer: true });
                       }}
@@ -2253,6 +2289,7 @@ function AddEvent() {
                         setQuickCreateKeyword(e.target.value);
                       }}
                       onClick={(e) => {
+                        setSelectedOrganizerPerformerSupporterType(organizerPerformerSupporterTypes.supporter);
                         setQuickCreateKeyword(e.target.value);
                         setIsPopoverOpen({ ...isPopoverOpen, supporter: true });
                       }}

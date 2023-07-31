@@ -3,12 +3,13 @@ import CustomModal from '../Common/CustomModal';
 import { useTranslation } from 'react-i18next';
 import { Row, Col } from 'antd';
 import DateAction from '../../Button/DateAction/DateAction';
-import { ReactComponent as Organizations } from '../../../assets/icons/organisations.svg';
+import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
 import Icon, { UserOutlined } from '@ant-design/icons';
 import './quickSelect.css';
+import { featureFlags } from '../../../utils/featureFlags';
 
 function QuickSelect(props) {
-  const { open, setOpen, setQuickCreateOrganizerModal } = props;
+  const { open, setOpen, setQuickCreateOrganizerModal, setQuickCreatePersonModal } = props;
   const { t } = useTranslation();
 
   return (
@@ -29,9 +30,13 @@ function QuickSelect(props) {
             <Col span={12}>
               <DateAction
                 style={{ width: '200px', height: '125px' }}
-                iconrender={<UserOutlined style={{ fontSize: '12px', color: '#9196A3' }} />}
+                iconrender={<UserOutlined style={{ fontSize: '12px', color: '#607EFC' }} />}
                 label={t('dashboard.events.addEditEvent.quickCreate.person')}
-                disabled
+                onClick={() => {
+                  setOpen(!open);
+                  setQuickCreatePersonModal(true);
+                }}
+                disabled={featureFlags.quickCreatePersonPlace === 'true' ? false : true}
               />
             </Col>
             <Col span={12}>
@@ -39,7 +44,7 @@ function QuickSelect(props) {
                 style={{ width: '200px', height: '125px' }}
                 iconrender={
                   <Icon
-                    component={Organizations}
+                    component={OrganizationLogo}
                     style={{
                       fontSize: '12px',
                       color: '#607EFC',

@@ -1,4 +1,5 @@
 import React from 'react';
+import './quickCreatePerson.css';
 import CustomModal from '../Common/CustomModal';
 import TextButton from '../../Button/Text/Text';
 import { useTranslation } from 'react-i18next';
@@ -7,19 +8,16 @@ import { Row, Col, Form, Input, notification } from 'antd';
 import ContentLanguageInput from '../../ContentLanguageInput/ContentLanguageInput';
 import { contentLanguage } from '../../../constants/contentLanguage';
 import BilingualInput from '../../BilingualInput/BilingualInput';
-import ImageUpload from '../../ImageUpload/ImageUpload';
 import StyledInput from '../../Input/Common';
-import { useAddImageMutation } from '../../../services/image';
-import { useAddOrganizationMutation, useLazyGetOrganizationQuery } from '../../../services/organization';
-import './quickCreateOrganization.css';
 import { treeEntitiesOption } from '../../TreeSelectOption/treeSelectOption.settings';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { entitiesClass } from '../../../constants/entitiesClass';
+import { useAddPersonMutation, useLazyGetPersonQuery } from '../../../services/people';
 
 const { TextArea } = Input;
 
-function QuickCreateOrganization(props) {
+function QuickCreatePerson(props) {
   const {
     open,
     setOpen,
@@ -28,8 +26,8 @@ function QuickCreateOrganization(props) {
     keyword,
     setKeyword,
     interfaceLanguage,
-    selectedOrganizers,
     setSelectedOrganizers,
+    selectedOrganizers,
     selectedPerformers,
     setSelectedPerformers,
     selectedSupporters,
@@ -42,34 +40,33 @@ function QuickCreateOrganization(props) {
 
   const { user } = useSelector(getUserDetails);
 
-  const [addImage] = useAddImageMutation();
-  const [addOrganization] = useAddOrganizationMutation();
-  const [getOrganization] = useLazyGetOrganizationQuery();
+  const [addPerson] = useAddPersonMutation();
+  const [getPerson] = useLazyGetPersonQuery();
 
-  const getSelectedOrganizer = (id) => {
-    getOrganization({ id, calendarId })
+  const getSelectedPerson = (id) => {
+    getPerson({ personId: id, calendarId })
       .unwrap()
       .then((response) => {
-        let createdOrganizer = [
+        let createdPerson = [
           {
             disambiguatingDescription: response?.disambiguatingDescription,
             id: response?.id,
             name: response?.name,
-            type: entitiesClass.organization,
-            logo: response?.logo,
+            type: entitiesClass.person,
+            image: response?.image,
           },
         ];
-        createdOrganizer = treeEntitiesOption(createdOrganizer, user, calendarContentLanguage);
-        if (createdOrganizer?.length === 1) {
+        createdPerson = treeEntitiesOption(createdPerson, user, calendarContentLanguage);
+        if (createdPerson?.length === 1) {
           switch (selectedOrganizerPerformerSupporterType) {
             case organizerPerformerSupporterTypes.organizer:
-              setSelectedOrganizers([...selectedOrganizers, createdOrganizer[0]]);
+              setSelectedOrganizers([...selectedOrganizers, createdPerson[0]]);
               break;
             case organizerPerformerSupporterTypes.performer:
-              setSelectedPerformers([...selectedPerformers, createdOrganizer[0]]);
+              setSelectedPerformers([...selectedPerformers, createdPerson[0]]);
               break;
             case organizerPerformerSupporterTypes.supporter:
-              setSelectedSupporters([...selectedSupporters, createdOrganizer[0]]);
+              setSelectedSupporters([...selectedSupporters, createdPerson[0]]);
               break;
 
             default:
@@ -79,14 +76,14 @@ function QuickCreateOrganization(props) {
       })
       .catch((error) => console.log(error));
   };
-  const createOrganizationHandler = () => {
+  const createPersonHandler = () => {
     form
       .validateFields(['french', 'english'])
       .then(() => {
         var values = form.getFieldsValue(true);
         let name = {},
           url = {},
-          organizationObj = {};
+          personObj = {};
 
         if (values?.english)
           name = {
@@ -103,58 +100,27 @@ function QuickCreateOrganization(props) {
           url = {
             uri: values?.contactWebsiteUrl,
           };
-        organizationObj = {
+        personObj = {
           name,
           url,
         };
-        if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
-          const formdata = new FormData();
-          formdata.append('file', values?.dragger[0].originFileObj);
-          formdata &&
-            addImage({ data: formdata, calendarId })
-              .unwrap()
-              .then((response) => {
-                organizationObj['logo'] = response?.data;
-                addOrganization({ data: organizationObj, calendarId })
-                  .unwrap()
-                  .then((response) => {
-                    notification.success({
-                      description: t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.success'),
-                      placement: 'top',
-                      closeIcon: <></>,
-                      maxCount: 1,
-                      duration: 3,
-                    });
-                    setKeyword('');
-                    getSelectedOrganizer(response?.id);
-                    setOpen(false);
-                  })
-                  .catch((error) => {
-                    console.log(error);
-                  });
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-        } else {
-          addOrganization({ data: organizationObj, calendarId })
-            .unwrap()
-            .then((response) => {
-              notification.success({
-                description: t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.success'),
-                placement: 'top',
-                closeIcon: <></>,
-                maxCount: 1,
-                duration: 3,
-              });
-              setKeyword('');
-              getSelectedOrganizer(response?.id);
-              setOpen(false);
-            })
-            .catch((error) => {
-              console.log(error);
+        addPerson({ data: personObj, calendarId })
+          .unwrap()
+          .then((response) => {
+            notification.success({
+              description: t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.success'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
             });
-        }
+            setKeyword('');
+            getSelectedPerson(response?.id);
+            setOpen(false);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       })
       .catch((error) => console.log(error));
   };
@@ -164,8 +130,8 @@ function QuickCreateOrganization(props) {
       destroyOnClose
       centered
       title={
-        <span className="quick-create-organization-modal-title">
-          {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.title')}
+        <span className="quick-create-person-modal-title">
+          {t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.title')}
         </span>
       }
       onCancel={() => setOpen(false)}
@@ -179,23 +145,23 @@ function QuickCreateOrganization(props) {
         <PrimaryButton
           key="add-dates"
           label={t('dashboard.events.addEditEvent.quickCreate.create')}
-          onClick={createOrganizationHandler}
+          onClick={createPersonHandler}
         />,
       ]}>
-      <Row gutter={[0, 10]} className="quick-create-organization-modal-wrapper">
+      <Row gutter={[0, 10]} className="quick-create-person-modal-wrapper">
         <Col span={24}>
           <Form form={form} layout="vertical" name="organizerForm" preserve={false}>
             <Row>
               <Col>
-                <p className="quick-create-organization-modal-sub-heading">
-                  {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.subHeading')}
+                <p className="quick-create-person-modal-sub-heading">
+                  {t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.subHeading')}
                 </p>
               </Col>
             </Row>
             <Row>
               <Col>
-                <span className="quick-create-organization-modal-label">
-                  {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.name')}
+                <span className="quick-create-person-modal-label">
+                  {t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.name')}
                 </span>
               </Col>
             </Row>
@@ -222,7 +188,7 @@ function QuickCreateOrganization(props) {
                         } else
                           return Promise.reject(
                             new Error(
-                              t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.validations.name'),
+                              t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.validations.name'),
                             ),
                           );
                       },
@@ -231,7 +197,7 @@ function QuickCreateOrganization(props) {
                   <TextArea
                     autoSize
                     autoComplete="off"
-                    placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.namePlaceholder')}
+                    placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.namePlaceholder')}
                     style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
                     size="large"
                   />
@@ -256,7 +222,7 @@ function QuickCreateOrganization(props) {
                         } else
                           return Promise.reject(
                             new Error(
-                              t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.validations.name'),
+                              t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.validations.name'),
                             ),
                           );
                       },
@@ -265,7 +231,7 @@ function QuickCreateOrganization(props) {
                   <TextArea
                     autoSize
                     autoComplete="off"
-                    placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.namePlaceholder')}
+                    placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.namePlaceholder')}
                     style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
                     size="large"
                   />
@@ -284,40 +250,8 @@ function QuickCreateOrganization(props) {
               <StyledInput
                 addonBefore="https://"
                 autoComplete="off"
-                placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.websitePlaceholder')}
+                placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.websitePlaceholder')}
               />
-            </Form.Item>
-            <Form.Item
-              label={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.logo')}
-              name="draggerWrap"
-              //   {...(isAddImageError && {
-              //     help: t('dashboard.events.addEditEvent.validations.errorImage'),
-              //     validateStatus: 'error',
-              //   })}
-              rules={[
-                ({ getFieldValue }) => ({
-                  validator() {
-                    if (
-                      (getFieldValue('dragger') != undefined && getFieldValue('dragger')?.length > 0) ||
-                      !getFieldValue('dragger') ||
-                      getFieldValue('dragger')?.length > 0
-                    ) {
-                      return Promise.resolve();
-                    } else
-                      return Promise.reject(
-                        new Error(t('dashboard.events.addEditEvent.validations.otherInformation.emptyImage')),
-                      );
-                  },
-                }),
-              ]}>
-              <Row>
-                <Col>
-                  <p className="quick-create-organization-modal-sub-heading">
-                    {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.logoSubHeading')}
-                  </p>
-                </Col>
-              </Row>
-              <ImageUpload imageReadOnly={false} preview={false} />
             </Form.Item>
           </Form>
         </Col>
@@ -326,4 +260,4 @@ function QuickCreateOrganization(props) {
   );
 }
 
-export default QuickCreateOrganization;
+export default QuickCreatePerson;

@@ -356,6 +356,18 @@
             "validations": {
               "name": "Name is required."
             }
+          },
+          "quickCreatePerson": {
+            "title": "Create a person",
+            "subHeading": "Add basic information about this person. You can edit the full details in the People section later.",
+            "name": "Name",
+            "success": "Success! Your person has been created.",
+            "namePlaceholder": "Enter a name",
+            "website": "Website",
+            "websitePlaceholder": "Enter website",
+            "validations": {
+              "name": "Name is required."
+            }
           }
         }
       },
