@@ -30,6 +30,12 @@ function QuickCreateOrganization(props) {
     interfaceLanguage,
     selectedOrganizers,
     setSelectedOrganizers,
+    selectedPerformers,
+    setSelectedPerformers,
+    selectedSupporters,
+    setSelectedSupporters,
+    selectedOrganizerPerformerSupporterType,
+    organizerPerformerSupporterTypes,
   } = props;
   const [form] = Form.useForm();
   const { t } = useTranslation();
@@ -54,7 +60,22 @@ function QuickCreateOrganization(props) {
           },
         ];
         createdOrganizer = treeEntitiesOption(createdOrganizer, user, calendarContentLanguage);
-        if (createdOrganizer?.length === 1) setSelectedOrganizers([...selectedOrganizers, createdOrganizer[0]]);
+        if (createdOrganizer?.length === 1) {
+          switch (selectedOrganizerPerformerSupporterType) {
+            case organizerPerformerSupporterTypes.organizer:
+              setSelectedOrganizers([...selectedOrganizers, createdOrganizer[0]]);
+              break;
+            case organizerPerformerSupporterTypes.performer:
+              setSelectedPerformers([...selectedPerformers, createdOrganizer[0]]);
+              break;
+            case organizerPerformerSupporterTypes.supporter:
+              setSelectedSupporters([...selectedSupporters, createdOrganizer[0]]);
+              break;
+
+            default:
+              break;
+          }
+        }
       })
       .catch((error) => console.log(error));
   };
