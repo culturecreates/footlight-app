@@ -79,6 +79,7 @@ import { featureFlags } from '../../../utils/featureFlags';
 import QuickSelect from '../../../components/Modal/QuickSelect/QuickSelect';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
+import QuickCreatePerson from '../../../components/Modal/QuickCreatePerson/QuickCreatePerson';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -148,6 +149,7 @@ function AddEvent() {
   const [newEventId, setNewEventId] = useState(null);
   const [quickOrganizerModal, setQuickOrganizerModal] = useState(false);
   const [quickCreateOrganizerModal, setQuickCreateOrganizerModal] = useState(false);
+  const [quickCreatePersonModal, setQuickCreatePersonModal] = useState(false);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
   usePrompt(t('common.unsavedChanges'), showDialog);
@@ -1979,10 +1981,22 @@ function AddEvent() {
                   open={quickOrganizerModal}
                   setOpen={setQuickOrganizerModal}
                   setQuickCreateOrganizerModal={setQuickCreateOrganizerModal}
+                  setQuickCreatePersonModal={setQuickCreatePersonModal}
                 />
                 <QuickCreateOrganization
                   open={quickCreateOrganizerModal}
                   setOpen={setQuickCreateOrganizerModal}
+                  calendarId={calendarId}
+                  keyword={quickCreateKeyword}
+                  setKeyword={setQuickCreateKeyword}
+                  interfaceLanguage={user?.interfaceLanguage?.toLowerCase()}
+                  calendarContentLanguage={calendarContentLanguage}
+                  setSelectedOrganizers={setSelectedOrganizers}
+                  selectedOrganizers={selectedOrganizers}
+                />
+                <QuickCreatePerson
+                  open={quickCreatePersonModal}
+                  setOpen={setQuickCreatePersonModal}
                   calendarId={calendarId}
                   keyword={quickCreateKeyword}
                   setKeyword={setQuickCreateKeyword}

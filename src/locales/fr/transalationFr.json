@@ -354,6 +354,18 @@
             "validations": {
               "name": "Le nom est requis."
             }
+          },
+          "quickCreatePerson": {
+            "title": "Créer une personne",
+            "subHeading": "Ajoutez des informations de base sur cette personne. Vous pourrez modifier les détails complets dans la section Personnes plus tard.",
+            "name": "Nom",
+            "success": "Succès ! Votre organisation a été créé.",
+            "namePlaceholder": "Entrez un nom",
+            "websitePlaceholder": "Entrez un site web",
+            "website": "Site web",
+            "validations": {
+              "name": "Le nom est requis."
+            }
           }
         }
       },
