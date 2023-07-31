@@ -1588,16 +1588,34 @@ function AddEvent() {
                           <NoContent />
                         )}
                       </div>
+                      <FeatureFlag isFeatureEnabled={featureFlags.quickCreatePersonPlace}>
+                        {quickCreateKeyword?.length > 0 && (
+                          <div
+                            className="quick-create"
+                            onClick={() => {
+                              setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false });
+                              // setQuickOrganizerModal(true);
+                            }}>
+                            <PlusCircleOutlined />
+                            &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
+                            {quickCreateKeyword}&#34;
+                          </div>
+                        )}
+                      </FeatureFlag>
                     </div>
                   }>
                   <EventsSearch
                     style={{ borderRadius: '4px', width: '423px' }}
                     placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
                     onChange={(e) => {
+                      setQuickCreateKeyword(e.target.value);
                       placesSearch(e.target.value);
                       setIsPopoverOpen({ ...isPopoverOpen, locationPlace: true });
                     }}
-                    onClick={() => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: true })}
+                    onClick={(e) => {
+                      setQuickCreateKeyword(e.target.value);
+                      setIsPopoverOpen({ ...isPopoverOpen, locationPlace: true });
+                    }}
                   />
                 </Popover>
                 {locationPlace && (
