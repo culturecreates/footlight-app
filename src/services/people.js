@@ -39,7 +39,24 @@ export const peopleApi = createApi({
 
       transformResponse: (response) => response,
     }),
+    addPerson: builder.mutation({
+      query: ({ data, calendarId }) => ({
+        url: `people`,
+        method: 'POST',
+        headers: {
+          'calendar-id': calendarId,
+        },
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useLazyGetAllPeopleQuery, useGetAllPeopleQuery, useDeletePersonMutation, useGetPersonQuery } = peopleApi;
+export const {
+  useLazyGetAllPeopleQuery,
+  useGetAllPeopleQuery,
+  useDeletePersonMutation,
+  useGetPersonQuery,
+  useAddPersonMutation,
+  useLazyGetPersonQuery,
+} = peopleApi;

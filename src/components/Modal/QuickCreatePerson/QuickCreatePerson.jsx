@@ -9,12 +9,11 @@ import ContentLanguageInput from '../../ContentLanguageInput/ContentLanguageInpu
 import { contentLanguage } from '../../../constants/contentLanguage';
 import BilingualInput from '../../BilingualInput/BilingualInput';
 import StyledInput from '../../Input/Common';
-import { useAddImageMutation } from '../../../services/image';
-import { useAddOrganizationMutation, useLazyGetOrganizationQuery } from '../../../services/organization';
 import { treeEntitiesOption } from '../../TreeSelectOption/treeSelectOption.settings';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { entitiesClass } from '../../../constants/entitiesClass';
+import { useAddPersonMutation, useLazyGetPersonQuery } from '../../../services/people';
 
 const { TextArea } = Input;
 
@@ -35,36 +34,35 @@ function QuickCreatePerson(props) {
 
   const { user } = useSelector(getUserDetails);
 
-  const [addImage] = useAddImageMutation();
-  const [addOrganization] = useAddOrganizationMutation();
-  const [getOrganization] = useLazyGetOrganizationQuery();
+  const [addPerson] = useAddPersonMutation();
+  const [getPerson] = useLazyGetPersonQuery();
 
-  const getSelectedOrganizer = (id) => {
-    getOrganization({ id, calendarId })
+  const getSelectedPerson = (id) => {
+    getPerson({ personId: id, calendarId })
       .unwrap()
       .then((response) => {
-        let createdOrganizer = [
+        let createdPerson = [
           {
             disambiguatingDescription: response?.disambiguatingDescription,
             id: response?.id,
             name: response?.name,
-            type: entitiesClass.organization,
-            logo: response?.logo,
+            type: entitiesClass.person,
+            image: response?.image,
           },
         ];
-        createdOrganizer = treeEntitiesOption(createdOrganizer, user, calendarContentLanguage);
-        if (createdOrganizer?.length === 1) setSelectedOrganizers([...selectedOrganizers, createdOrganizer[0]]);
+        createdPerson = treeEntitiesOption(createdPerson, user, calendarContentLanguage);
+        if (createdPerson?.length === 1) setSelectedOrganizers([...selectedOrganizers, createdPerson[0]]);
       })
       .catch((error) => console.log(error));
   };
-  const createOrganizationHandler = () => {
+  const createPersonHandler = () => {
     form
       .validateFields(['french', 'english'])
       .then(() => {
         var values = form.getFieldsValue(true);
         let name = {},
           url = {},
-          organizationObj = {};
+          personObj = {};
 
         if (values?.english)
           name = {
@@ -81,58 +79,27 @@ function QuickCreatePerson(props) {
           url = {
             uri: values?.contactWebsiteUrl,
           };
-        organizationObj = {
+        personObj = {
           name,
           url,
         };
-        if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
-          const formdata = new FormData();
-          formdata.append('file', values?.dragger[0].originFileObj);
-          formdata &&
-            addImage({ data: formdata, calendarId })
-              .unwrap()
-              .then((response) => {
-                organizationObj['logo'] = response?.data;
-                addOrganization({ data: organizationObj, calendarId })
-                  .unwrap()
-                  .then((response) => {
-                    notification.success({
-                      description: t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.success'),
-                      placement: 'top',
-                      closeIcon: <></>,
-                      maxCount: 1,
-                      duration: 3,
-                    });
-                    setKeyword('');
-                    getSelectedOrganizer(response?.id);
-                    setOpen(false);
-                  })
-                  .catch((error) => {
-                    console.log(error);
-                  });
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-        } else {
-          addOrganization({ data: organizationObj, calendarId })
-            .unwrap()
-            .then((response) => {
-              notification.success({
-                description: t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.success'),
-                placement: 'top',
-                closeIcon: <></>,
-                maxCount: 1,
-                duration: 3,
-              });
-              setKeyword('');
-              getSelectedOrganizer(response?.id);
-              setOpen(false);
-            })
-            .catch((error) => {
-              console.log(error);
+        addPerson({ data: personObj, calendarId })
+          .unwrap()
+          .then((response) => {
+            notification.success({
+              description: t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.success'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
             });
-        }
+            setKeyword('');
+            getSelectedPerson(response?.id);
+            setOpen(false);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       })
       .catch((error) => console.log(error));
   };
@@ -157,7 +124,7 @@ function QuickCreatePerson(props) {
         <PrimaryButton
           key="add-dates"
           label={t('dashboard.events.addEditEvent.quickCreate.create')}
-          onClick={createOrganizationHandler}
+          onClick={createPersonHandler}
         />,
       ]}>
       <Row gutter={[0, 10]} className="quick-create-person-modal-wrapper">
