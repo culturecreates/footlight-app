@@ -6,6 +6,7 @@ import DateAction from '../../Button/DateAction/DateAction';
 import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
 import Icon, { UserOutlined } from '@ant-design/icons';
 import './quickSelect.css';
+import { featureFlags } from '../../../utils/featureFlags';
 
 function QuickSelect(props) {
   const { open, setOpen, setQuickCreateOrganizerModal, setQuickCreatePersonModal } = props;
@@ -35,6 +36,7 @@ function QuickSelect(props) {
                   setOpen(!open);
                   setQuickCreatePersonModal(true);
                 }}
+                disabled={featureFlags.quickCreatePersonPlace === 'true' ? false : true}
               />
             </Col>
             <Col span={12}>
