@@ -21,6 +21,8 @@ import TreeSelectOption from '../../TreeSelectOption/TreeSelectOption';
 import NoContent from '../../NoContent/NoContent';
 import Tags from '../../Tags/Common/Tags';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
+import { useAddPostalAddressMutation } from '../../../services/postalAddress';
+import { useAddPlaceMutation } from '../../../services/places';
 
 const { TextArea } = Input;
 
@@ -56,6 +58,8 @@ function QuickCreatePlace(props) {
     sessionId: timestampRef,
   });
   const [getPerson] = useLazyGetPersonQuery();
+  const [addPostalAddress] = useAddPostalAddressMutation();
+  const [addPlace] = useAddPlaceMutation();
 
   const [address, setAddress] = useState('');
 
@@ -141,7 +145,80 @@ function QuickCreatePlace(props) {
       .validateFields(['french', 'english'])
       .then(() => {
         var values = form.getFieldsValue(true);
+        let languageKey;
+        if (calendarContentLanguage == contentLanguage.ENGLISH) languageKey = 'en';
+        else if (calendarContentLanguage == contentLanguage.FRENCH) languageKey = 'fr';
+        let postalObj = {
+          addressCountry: { [languageKey]: values.addressCountry },
+          addressLocality: { [languageKey]: values.addressLocality },
+          addressRegion: { [languageKey]: values.addressRegion },
+          postalCode: values.postalCode,
+          streetAddress: { [languageKey]: values.streetAddress },
+        };
+
+        if (calendarContentLanguage == contentLanguage.BILINGUAL) {
+          postalObj.addressCountry = {
+            fr: values.addressCountry,
+            en: values.addressCountryEn,
+          };
+          postalObj.addressLocality = {
+            fr: values.addressLocality,
+            en: values.addressLocalityEn,
+          };
+          postalObj.addressRegion = {
+            fr: values.addressRegion,
+            en: values.addressRegionEn,
+          };
+          postalObj.streetAddress = {
+            fr: values.streetAddress,
+            en: values.streetAddressEn,
+          };
+        }
         console.log(values);
+        addPostalAddress({ data: postalObj, calendarId })
+          .unwrap()
+          .then((response) => {
+            if (response && response?.statusCode == 202) {
+              let name = {},
+                placeObj = {},
+                additionalType = undefined;
+              if (values?.english)
+                name = {
+                  en: values?.english,
+                };
+
+              if (values?.french)
+                name = {
+                  ...name,
+                  fr: values?.french,
+                };
+              if (values?.placeType) {
+                additionalType = values?.placeType?.map((placeTypeId) => {
+                  return {
+                    entityId: placeTypeId,
+                  };
+                });
+              }
+              placeObj = {
+                name,
+                additionalType,
+                geo: {
+                  latitude: values?.latitude,
+                  longitude: values?.longitude,
+                },
+                postalAddressId: {
+                  entityId: response?.id,
+                },
+              };
+              addPlace({ data: placeObj, calendarId })
+                .unwrap()
+                .then((response) => {
+                  console.log(response);
+                })
+                .catch((error) => console.log(error));
+            }
+          })
+          .catch((error) => console.log(error));
         setKeyword('');
         if (!values) getSelectedPerson('1');
       })
