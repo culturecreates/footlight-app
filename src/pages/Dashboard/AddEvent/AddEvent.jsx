@@ -1646,14 +1646,7 @@ function AddEvent() {
                   setKeyword={setQuickCreateKeyword}
                   interfaceLanguage={user?.interfaceLanguage?.toLowerCase()}
                   calendarContentLanguage={calendarContentLanguage}
-                  setSelectedOrganizers={setSelectedOrganizers}
-                  selectedOrganizers={selectedOrganizers}
-                  selectedPerformers={selectedPerformers}
-                  setSelectedPerformers={setSelectedPerformers}
-                  selectedSupporters={selectedSupporters}
-                  setSelectedSupporters={setSelectedSupporters}
-                  selectedOrganizerPerformerSupporterType={selectedOrganizerPerformerSupporterType}
-                  organizerPerformerSupporterTypes={organizerPerformerSupporterTypes}
+                  setLocationPlace={setLocationPlace}
                 />
               </Form.Item>
               <Form.Item

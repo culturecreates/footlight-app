@@ -4,17 +4,15 @@ import CustomModal from '../Common/CustomModal';
 import TextButton from '../../Button/Text/Text';
 import { useTranslation } from 'react-i18next';
 import PrimaryButton from '../../Button/Primary/Primary';
-import { Row, Col, Form, Input } from 'antd';
+import { Row, Col, Form, Input, notification } from 'antd';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import { CloseCircleOutlined } from '@ant-design/icons';
 import ContentLanguageInput from '../../ContentLanguageInput/ContentLanguageInput';
 import { contentLanguage } from '../../../constants/contentLanguage';
 import BilingualInput from '../../BilingualInput/BilingualInput';
-import { treeEntitiesOption, treeTaxonomyOptions } from '../../TreeSelectOption/treeSelectOption.settings';
+import { treeTaxonomyOptions } from '../../TreeSelectOption/treeSelectOption.settings';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
-import { entitiesClass } from '../../../constants/entitiesClass';
-import { useLazyGetPersonQuery } from '../../../services/people';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import TreeSelectOption from '../../TreeSelectOption/TreeSelectOption';
@@ -22,7 +20,8 @@ import NoContent from '../../NoContent/NoContent';
 import Tags from '../../Tags/Common/Tags';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import { useAddPostalAddressMutation } from '../../../services/postalAddress';
-import { useAddPlaceMutation } from '../../../services/places';
+import { useAddPlaceMutation, useLazyGetPlaceQuery } from '../../../services/places';
+import { placesOptions } from '../../Select/selectOption.settings';
 
 const { TextArea } = Input;
 
@@ -35,14 +34,7 @@ function QuickCreatePlace(props) {
     keyword,
     setKeyword,
     interfaceLanguage,
-    setSelectedOrganizers,
-    selectedOrganizers,
-    selectedPerformers,
-    setSelectedPerformers,
-    selectedSupporters,
-    setSelectedSupporters,
-    selectedOrganizerPerformerSupporterType,
-    organizerPerformerSupporterTypes,
+    setLocationPlace,
   } = props;
   const [form] = Form.useForm();
   const { t } = useTranslation();
@@ -57,7 +49,7 @@ function QuickCreatePlace(props) {
     includeConcepts: true,
     sessionId: timestampRef,
   });
-  const [getPerson] = useLazyGetPersonQuery();
+  const [getPlace] = useLazyGetPlaceQuery();
   const [addPostalAddress] = useAddPostalAddressMutation();
   const [addPlace] = useAddPlaceMutation();
 
@@ -107,40 +99,16 @@ function QuickCreatePlace(props) {
       .catch((error) => console.error('Error', error));
   };
 
-  const getSelectedPerson = (id) => {
-    getPerson({ personId: id, calendarId })
+  const getSelectedPlace = (id) => {
+    getPlace({ placeId: id, calendarId })
       .unwrap()
       .then((response) => {
-        let createdPerson = [
-          {
-            disambiguatingDescription: response?.disambiguatingDescription,
-            id: response?.id,
-            name: response?.name,
-            type: entitiesClass.person,
-            image: response?.image,
-          },
-        ];
-        createdPerson = treeEntitiesOption(createdPerson, user, calendarContentLanguage);
-        if (createdPerson?.length === 1) {
-          switch (selectedOrganizerPerformerSupporterType) {
-            case organizerPerformerSupporterTypes.organizer:
-              setSelectedOrganizers([...selectedOrganizers, createdPerson[0]]);
-              break;
-            case organizerPerformerSupporterTypes.performer:
-              setSelectedPerformers([...selectedPerformers, createdPerson[0]]);
-              break;
-            case organizerPerformerSupporterTypes.supporter:
-              setSelectedSupporters([...selectedSupporters, createdPerson[0]]);
-              break;
-
-            default:
-              break;
-          }
-        }
+        console.log(response);
+        setLocationPlace(placesOptions([response], user, calendarContentLanguage)[0]);
       })
       .catch((error) => console.log(error));
   };
-  const createPersonHandler = () => {
+  const createPlaceHandler = () => {
     form
       .validateFields(['french', 'english'])
       .then(() => {
@@ -213,14 +181,23 @@ function QuickCreatePlace(props) {
               addPlace({ data: placeObj, calendarId })
                 .unwrap()
                 .then((response) => {
-                  console.log(response);
+                  if (response && response?.statusCode == 202) {
+                    notification.success({
+                      description: t('dashboard.events.addEditEvent.location.quickCreatePlace.success'),
+                      placement: 'top',
+                      closeIcon: <></>,
+                      maxCount: 1,
+                      duration: 3,
+                    });
+                    setKeyword('');
+                    getSelectedPlace(response?.id);
+                    setOpen(false);
+                  }
                 })
                 .catch((error) => console.log(error));
             }
           })
           .catch((error) => console.log(error));
-        setKeyword('');
-        if (!values) getSelectedPerson('1');
       })
       .catch((error) => console.log(error));
   };
@@ -246,7 +223,7 @@ function QuickCreatePlace(props) {
           <PrimaryButton
             key="add-dates"
             label={t('dashboard.events.addEditEvent.location.quickCreatePlace.create')}
-            onClick={createPersonHandler}
+            onClick={createPlaceHandler}
           />,
         ]}>
         <Row gutter={[0, 10]} className="quick-create-place-modal-wrapper">
