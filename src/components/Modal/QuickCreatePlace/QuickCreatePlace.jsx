@@ -1,10 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import './quickCreatePlace.css';
 import CustomModal from '../Common/CustomModal';
 import TextButton from '../../Button/Text/Text';
 import { useTranslation } from 'react-i18next';
 import PrimaryButton from '../../Button/Primary/Primary';
-import { Row, Col, Form, Input, notification } from 'antd';
+import { Row, Col, Form, Input } from 'antd';
+import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import { CloseCircleOutlined } from '@ant-design/icons';
 import ContentLanguageInput from '../../ContentLanguageInput/ContentLanguageInput';
 import { contentLanguage } from '../../../constants/contentLanguage';
@@ -13,7 +14,7 @@ import { treeEntitiesOption, treeTaxonomyOptions } from '../../TreeSelectOption/
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { entitiesClass } from '../../../constants/entitiesClass';
-import { useAddPersonMutation, useLazyGetPersonQuery } from '../../../services/people';
+import { useLazyGetPersonQuery } from '../../../services/people';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import TreeSelectOption from '../../TreeSelectOption/TreeSelectOption';
@@ -54,8 +55,53 @@ function QuickCreatePlace(props) {
     includeConcepts: true,
     sessionId: timestampRef,
   });
-  const [addPerson] = useAddPersonMutation();
   const [getPerson] = useLazyGetPersonQuery();
+
+  const [address, setAddress] = useState('');
+
+  const handleChange = (address) => {
+    setAddress(address);
+  };
+
+  const handleSelect = (address) => {
+    geocodeByAddress(address)
+      .then((results) => {
+        form.setFieldsValue({
+          address: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
+          addressCountry: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
+          addressCountryEn: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
+          addressLocality: results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
+          addressLocalityEn: results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
+          addressRegion: results[0].address_components.find((item) =>
+            item.types.includes('administrative_area_level_1'),
+          )?.short_name,
+          addressRegionEn: results[0].address_components.find((item) =>
+            item.types.includes('administrative_area_level_1'),
+          )?.short_name,
+          postalCode: results[0].address_components.find((item) => item.types.includes('postal_code'))?.long_name,
+        });
+        let streetNumber =
+          results[0].address_components.find((item) => item.types.includes('street_number'))?.long_name ?? null;
+        let streetName = results[0].address_components.find((item) => item.types.includes('route'))?.long_name ?? null;
+        let streetAddress = streetNumber + ' ' + streetName;
+        if (streetNumber && streetName) streetAddress = streetNumber + ' ' + streetName;
+        else if (streetNumber && !streetName) streetAddress = streetNumber;
+        else if (!streetNumber && streetName) streetAddress = streetName;
+        else if (!streetNumber && !streetName) streetAddress = null;
+        form.setFieldsValue({
+          streetAddress: streetAddress,
+          streetAddressEn: streetAddress,
+        });
+        return getLatLng(results[0]);
+      })
+      .then((latLng) =>
+        form.setFieldsValue({
+          latitude: '' + latLng.lat,
+          longitude: '' + latLng.lng,
+        }),
+      )
+      .catch((error) => console.error('Error', error));
+  };
 
   const getSelectedPerson = (id) => {
     getPerson({ personId: id, calendarId })
@@ -95,46 +141,9 @@ function QuickCreatePlace(props) {
       .validateFields(['french', 'english'])
       .then(() => {
         var values = form.getFieldsValue(true);
-        let name = {},
-          url = {},
-          personObj = {};
-
-        if (values?.english)
-          name = {
-            en: values?.english,
-          };
-
-        if (values?.french)
-          name = {
-            ...name,
-            fr: values?.french,
-          };
-
-        if (values?.contactWebsiteUrl)
-          url = {
-            uri: values?.contactWebsiteUrl,
-          };
-        personObj = {
-          name,
-          url,
-        };
-        addPerson({ data: personObj, calendarId })
-          .unwrap()
-          .then((response) => {
-            notification.success({
-              description: t('dashboard.events.addEditEvent.location.quickCreate.quickCreatePerson.success'),
-              placement: 'top',
-              closeIcon: <></>,
-              maxCount: 1,
-              duration: 3,
-            });
-            setKeyword('');
-            getSelectedPerson(response?.id);
-            setOpen(false);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        console.log(values);
+        setKeyword('');
+        if (!values) getSelectedPerson('1');
       })
       .catch((error) => console.log(error));
   };
@@ -249,6 +258,44 @@ function QuickCreatePlace(props) {
                   </Form.Item>
                 </BilingualInput>
               </ContentLanguageInput>
+              <Form.Item name="address" label={t('dashboard.events.addEditEvent.location.quickCreatePlace.address')}>
+                <PlacesAutocomplete
+                  value={address}
+                  onChange={handleChange}
+                  onSelect={handleSelect}
+                  placeholder={'Place name'}>
+                  {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+                    <div>
+                      <input
+                        {...getInputProps({
+                          placeholder: 'Search Places ...',
+                          className: 'location-search-input',
+                        })}
+                      />
+                      <div className="autocomplete-dropdown-container">
+                        {loading && <div>Loading...</div>}
+                        {suggestions?.map((suggestion, index) => {
+                          const className = suggestion.active ? 'suggestion-item--active' : 'suggestion-item';
+                          // inline style for demonstration purpose
+                          const style = suggestion.active
+                            ? { backgroundColor: '#fafafa', cursor: 'pointer' }
+                            : { backgroundColor: '#ffffff', cursor: 'pointer' };
+                          return (
+                            <div
+                              {...getSuggestionItemProps(suggestion, {
+                                className,
+                                style,
+                              })}
+                              key={index}>
+                              <span>{suggestion.description}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </PlacesAutocomplete>
+              </Form.Item>
 
               <Form.Item name="placeType" label={taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false)}>
                 <TreeSelectOption
