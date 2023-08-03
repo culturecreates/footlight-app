@@ -79,7 +79,8 @@ import { featureFlags } from '../../../utils/featureFlags';
 import QuickSelect from '../../../components/Modal/QuickSelect/QuickSelect';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
-import QuickCreatePerson from '../../../components/Modal/QuickCreatePerson/QuickCreatePerson';
+import QuickCreatePerson from '../../../components/Modal/QuickCreatePerson';
+import QuickCreatePlace from '../../../components/Modal/QuickCreatePlace';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -150,6 +151,7 @@ function AddEvent() {
   const [quickOrganizerModal, setQuickOrganizerModal] = useState(false);
   const [quickCreateOrganizerModal, setQuickCreateOrganizerModal] = useState(false);
   const [quickCreatePersonModal, setQuickCreatePersonModal] = useState(false);
+  const [quickCreatePlaceModal, setQuickCreatePlaceModal] = useState(false);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
   const [selectedOrganizerPerformerSupporterType, setSelectedOrganizerPerformerSupporterType] = useState();
 
@@ -1594,7 +1596,7 @@ function AddEvent() {
                             className="quick-create"
                             onClick={() => {
                               setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false });
-                              // setQuickOrganizerModal(true);
+                              setQuickCreatePlaceModal(true);
                             }}>
                             <PlusCircleOutlined />
                             &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
@@ -1636,6 +1638,23 @@ function AddEvent() {
                     }}
                   />
                 )}
+                <QuickCreatePlace
+                  open={quickCreatePlaceModal}
+                  setOpen={setQuickCreatePlaceModal}
+                  calendarId={calendarId}
+                  keyword={quickCreateKeyword}
+                  setKeyword={setQuickCreateKeyword}
+                  interfaceLanguage={user?.interfaceLanguage?.toLowerCase()}
+                  calendarContentLanguage={calendarContentLanguage}
+                  setSelectedOrganizers={setSelectedOrganizers}
+                  selectedOrganizers={selectedOrganizers}
+                  selectedPerformers={selectedPerformers}
+                  setSelectedPerformers={setSelectedPerformers}
+                  selectedSupporters={selectedSupporters}
+                  setSelectedSupporters={setSelectedSupporters}
+                  selectedOrganizerPerformerSupporterType={selectedOrganizerPerformerSupporterType}
+                  organizerPerformerSupporterTypes={organizerPerformerSupporterTypes}
+                />
               </Form.Item>
               <Form.Item
                 label={t('dashboard.events.addEditEvent.location.virtualLocation')}
