@@ -378,6 +378,7 @@
             "success": "Succès ! Votre personne a été créé.",
             "namePlaceholder": "Entrez un nom",
             "websitePlaceholder": "Entrez un site web",
+            "occupationPlaceholder": "Sélectionnez une profession",
             "website": "Site web",
             "validations": {
               "name": "Le nom est requis."
