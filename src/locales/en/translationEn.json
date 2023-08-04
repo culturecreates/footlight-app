@@ -196,7 +196,23 @@
           "placeHolderOnlineLink": "Enter web address URL",
           "streetAddress": "Street address",
           "venueAccessibility": "Venue accessibility",
-          "openingHours": "Opening hours"
+          "openingHours": "Opening hours",
+          "quickCreatePlace": {
+            "title": "Create a place",
+            "subHeading": "Add basic information about the place. You can edit the full details in the Place section later.",
+            "create": "Create",
+            "cancel": "Cancel",
+            "name": "Name",
+            "success": "Success! Your place has been created.",
+            "namePlaceholder": "Enter a name",
+            "address": "Address",
+            "searchPlaceholder": "Search Google Places",
+            "type": "Type",
+            "typePlaceholder": "Select type",
+            "validations": {
+              "name": "Name is required."
+            }
+          }
         },
         "otherInformation": {
           "title": "Other information",
