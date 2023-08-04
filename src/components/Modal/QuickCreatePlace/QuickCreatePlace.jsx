@@ -36,6 +36,7 @@ function QuickCreatePlace(props) {
     setKeyword,
     interfaceLanguage,
     setLocationPlace,
+    eventForm,
   } = props;
   const [form] = Form.useForm();
   const { t } = useTranslation();
@@ -107,6 +108,7 @@ function QuickCreatePlace(props) {
       .unwrap()
       .then((response) => {
         setLocationPlace(placesOptions([response], user, calendarContentLanguage)[0]);
+        eventForm.setFieldValue('locationPlace', id);
       })
       .catch((error) => console.log(error));
   };

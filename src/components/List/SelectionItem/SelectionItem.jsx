@@ -69,7 +69,7 @@ function SelectionItem(props) {
                 <Col>
                   <div className="selection-item-sub-content">
                     <address>
-                      {postalAddress?.streetAddress && (
+                      {(postalAddress?.streetAddress?.en || postalAddress?.streetAddress?.fr) && (
                         <span>
                           {contentLanguageBilingual({
                             en: postalAddress?.streetAddress?.en,
@@ -80,7 +80,7 @@ function SelectionItem(props) {
                           ,&nbsp;
                         </span>
                       )}
-                      <br />
+                      {(postalAddress?.streetAddress?.en || postalAddress?.streetAddress?.fr) && <br />}
                       {postalAddress?.addressLocality && (
                         <span>
                           {contentLanguageBilingual({

@@ -1647,6 +1647,7 @@ function AddEvent() {
                   interfaceLanguage={user?.interfaceLanguage?.toLowerCase()}
                   calendarContentLanguage={calendarContentLanguage}
                   setLocationPlace={setLocationPlace}
+                  eventForm={form}
                 />
               </Form.Item>
               <Form.Item
