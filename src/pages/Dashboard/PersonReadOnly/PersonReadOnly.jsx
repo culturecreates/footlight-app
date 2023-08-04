@@ -11,7 +11,10 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
-import { treeDynamicTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
+import {
+  treeDynamicTaxonomyOptions,
+  treeTaxonomyOptions,
+} from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import Tags from '../../../components/Tags/Common/Tags';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
@@ -20,6 +23,7 @@ import { useGetPersonQuery } from '../../../services/people';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
+import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 
 function PersonReadOnly() {
   const { t } = useTranslation();
@@ -139,6 +143,33 @@ function PersonReadOnly() {
                       </>
                     )}
                   </Col>
+                )}
+                {personData?.occupation.length > 0 && (
+                  <div>
+                    <p className="read-only-event-content-sub-title-primary">
+                      {taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false)}
+                    </p>
+                    <TreeSelectOption
+                      style={{ marginBottom: '1rem' }}
+                      bordered={false}
+                      open={false}
+                      disabled
+                      treeData={treeTaxonomyOptions(
+                        allTaxonomyData,
+                        user,
+                        'Occupation',
+                        false,
+                        calendarContentLanguage,
+                      )}
+                      defaultValue={personData?.occupation?.map((type) => {
+                        return type?.entityId;
+                      })}
+                      tagRender={(props) => {
+                        const { label } = props;
+                        return <Tags>{label}</Tags>;
+                      }}
+                    />
+                  </div>
                 )}
                 {personData?.dynamicFields?.length > 0 && (
                   <Col span={24}>
