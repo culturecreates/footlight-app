@@ -4,9 +4,9 @@ import CustomModal from '../Common/CustomModal';
 import TextButton from '../../Button/Text/Text';
 import { useTranslation } from 'react-i18next';
 import PrimaryButton from '../../Button/Primary/Primary';
-import { Row, Col, Form, Input, notification } from 'antd';
+import { Row, Col, Form, Input, notification, Dropdown } from 'antd';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import ContentLanguageInput from '../../ContentLanguageInput/ContentLanguageInput';
 import { contentLanguage } from '../../../constants/contentLanguage';
 import BilingualInput from '../../BilingualInput/BilingualInput';
@@ -18,6 +18,7 @@ import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import TreeSelectOption from '../../TreeSelectOption/TreeSelectOption';
 import NoContent from '../../NoContent/NoContent';
 import Tags from '../../Tags/Common/Tags';
+import StyledInput from '../../Input/Common';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import { useAddPostalAddressMutation } from '../../../services/postalAddress';
 import { useAddPlaceMutation, useLazyGetPlaceQuery } from '../../../services/places';
@@ -54,56 +55,57 @@ function QuickCreatePlace(props) {
   const [addPlace] = useAddPlaceMutation();
 
   const [address, setAddress] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleChange = (address) => {
+    if (address === '') setDropdownOpen(false);
+    else setDropdownOpen(true);
     setAddress(address);
   };
 
   const handleSelect = (address) => {
-    geocodeByAddress(address)
-      .then((results) => {
-        form.setFieldsValue({
-          address: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
-          addressCountry: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
-          addressCountryEn: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
-          addressLocality: results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
-          addressLocalityEn: results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
-          addressRegion: results[0].address_components.find((item) =>
-            item.types.includes('administrative_area_level_1'),
-          )?.short_name,
-          addressRegionEn: results[0].address_components.find((item) =>
-            item.types.includes('administrative_area_level_1'),
-          )?.short_name,
-          postalCode: results[0].address_components.find((item) => item.types.includes('postal_code'))?.long_name,
-        });
-        let streetNumber =
-          results[0].address_components.find((item) => item.types.includes('street_number'))?.long_name ?? null;
-        let streetName = results[0].address_components.find((item) => item.types.includes('route'))?.long_name ?? null;
-        let streetAddress = streetNumber + ' ' + streetName;
-        if (streetNumber && streetName) streetAddress = streetNumber + ' ' + streetName;
-        else if (streetNumber && !streetName) streetAddress = streetNumber;
-        else if (!streetNumber && streetName) streetAddress = streetName;
-        else if (!streetNumber && !streetName) streetAddress = null;
-        form.setFieldsValue({
-          streetAddress: streetAddress,
-          streetAddressEn: streetAddress,
-        });
-        return getLatLng(results[0]);
-      })
+    geocodeByAddress(address).then((results) => {
+      form.setFieldsValue({
+        address: results[0]?.formatted_address,
+        addressCountry: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
+        addressCountryEn: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
+        addressLocality: results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
+        addressLocalityEn: results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
+        addressRegion: results[0].address_components.find((item) => item.types.includes('administrative_area_level_1'))
+          ?.short_name,
+        addressRegionEn: results[0].address_components.find((item) =>
+          item.types.includes('administrative_area_level_1'),
+        )?.short_name,
+        postalCode: results[0].address_components.find((item) => item.types.includes('postal_code'))?.long_name,
+      });
+      let streetNumber =
+        results[0].address_components.find((item) => item.types.includes('street_number'))?.long_name ?? null;
+      let streetName = results[0].address_components.find((item) => item.types.includes('route'))?.long_name ?? null;
+      let streetAddress = streetNumber + ' ' + streetName;
+      if (streetNumber && streetName) streetAddress = streetNumber + ' ' + streetName;
+      else if (streetNumber && !streetName) streetAddress = streetNumber;
+      else if (!streetNumber && streetName) streetAddress = streetName;
+      else if (!streetNumber && !streetName) streetAddress = null;
+      form.setFieldsValue({
+        streetAddress: streetAddress,
+        streetAddressEn: streetAddress,
+      });
+      return getLatLng(results[0]);
+    });
+    setDropdownOpen(false)
       .then((latLng) =>
         form.setFieldsValue({
           latitude: '' + latLng.lat,
           longitude: '' + latLng.lng,
         }),
       )
-      .catch((error) => console.error('Error', error));
+      .catch((error) => console.error(error));
   };
 
   const getSelectedPlace = (id) => {
     getPlace({ placeId: id, calendarId })
       .unwrap()
       .then((response) => {
-        console.log(response);
         setLocationPlace(placesOptions([response], user, calendarContentLanguage)[0]);
       })
       .catch((error) => console.log(error));
@@ -142,7 +144,6 @@ function QuickCreatePlace(props) {
             en: values.streetAddressEn,
           };
         }
-        console.log(values);
         addPostalAddress({ data: postalObj, calendarId })
           .unwrap()
           .then((response) => {
@@ -313,40 +314,39 @@ function QuickCreatePlace(props) {
                 </BilingualInput>
               </ContentLanguageInput>
               <Form.Item name="address" label={t('dashboard.events.addEditEvent.location.quickCreatePlace.address')}>
-                <PlacesAutocomplete
-                  value={address}
-                  onChange={handleChange}
-                  onSelect={handleSelect}
-                  placeholder={'Place name'}>
-                  {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
-                    <div>
-                      <input
+                <PlacesAutocomplete value={address} onChange={handleChange} onSelect={handleSelect}>
+                  {({ getInputProps, suggestions, getSuggestionItemProps }) => (
+                    <Dropdown
+                      open={dropdownOpen}
+                      overlayClassName="filter-sort-dropdown-wrapper"
+                      getPopupContainer={(trigger) => trigger.parentNode}
+                      menu={{
+                        items: suggestions?.map((suggestion, index) => {
+                          return {
+                            key: index,
+                            label: (
+                              <div {...getSuggestionItemProps(suggestion)} key={index}>
+                                <span>{suggestion.description}</span>
+                              </div>
+                            ),
+                          };
+                        }),
+                        selectable: true,
+                      }}
+                      trigger={['click']}>
+                      <StyledInput
+                        autoComplete="off"
                         {...getInputProps({
-                          placeholder: 'Search Places ...',
-                          className: 'location-search-input',
+                          placeholder: t('dashboard.events.addEditEvent.location.quickCreatePlace.searchPlaceholder'),
                         })}
+                        prefix={
+                          <SearchOutlined
+                            className="events-search-icon"
+                            style={{ color: '#B6C1C9', fontSize: '18px' }}
+                          />
+                        }
                       />
-                      <div className="autocomplete-dropdown-container">
-                        {loading && <div>Loading...</div>}
-                        {suggestions?.map((suggestion, index) => {
-                          const className = suggestion.active ? 'suggestion-item--active' : 'suggestion-item';
-                          // inline style for demonstration purpose
-                          const style = suggestion.active
-                            ? { backgroundColor: '#fafafa', cursor: 'pointer' }
-                            : { backgroundColor: '#ffffff', cursor: 'pointer' };
-                          return (
-                            <div
-                              {...getSuggestionItemProps(suggestion, {
-                                className,
-                                style,
-                              })}
-                              key={index}>
-                              <span>{suggestion.description}</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
+                    </Dropdown>
                   )}
                 </PlacesAutocomplete>
               </Form.Item>
