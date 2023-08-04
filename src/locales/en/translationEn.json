@@ -363,6 +363,7 @@
             "name": "Name",
             "success": "Success! Your person has been created.",
             "namePlaceholder": "Enter a name",
+            "occupationPlaceholder": "Select occupation",
             "website": "Website",
             "websitePlaceholder": "Enter website",
             "validations": {
