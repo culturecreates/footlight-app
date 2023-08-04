@@ -266,7 +266,7 @@ function QuickCreatePerson(props) {
               <Form.Item
                 name="occupation"
                 label={taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false)}
-                hidden={taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false) ? false : false}>
+                hidden={taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false) ? false : true}>
                 <TreeSelectOption
                   placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.occupationPlaceholder')}
                   allowClear
