@@ -144,7 +144,7 @@ function PersonReadOnly() {
                     )}
                   </Col>
                 )}
-                {personData?.occupation.length > 0 && (
+                {personData?.occupation?.length > 0 && (
                   <div>
                     <p className="read-only-event-content-sub-title-primary">
                       {taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false)}
