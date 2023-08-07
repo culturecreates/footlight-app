@@ -16,7 +16,6 @@ import { locale } from '../../../constants/localeSupport';
 import { usePrompt } from '../../../hooks/usePrompt';
 import { useSelector, useDispatch } from 'react-redux';
 import { getUserDetails, setUser } from '../../../redux/reducer/userSlice';
-import { PathName } from '../../../constants/pathName';
 import i18n from 'i18next';
 import CardEvent from '../../../components/Card/Common/Event';
 
@@ -113,7 +112,7 @@ function Users() {
       });
   };
   const handleSave = () => {
-    if (!showDialog) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+    if (!showDialog) navigate(-1);
     else {
       setShowDialog(false);
       form
@@ -157,7 +156,7 @@ function Users() {
                 };
                 dispatch(setUser(userDetails));
 
-                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+                navigate(-1);
               }
             })
             .catch((error) => {

@@ -1,0 +1,18 @@
+.breadcrumbs {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.breadcrumbs .breadcrumb-item {
+  color: #0f0e98;
+}
+
+.breadcrumbs .ant-breadcrumb-separator {
+  color: #222732;
+}
+
+.breadcrumbs .cursor {
+  cursor: pointer;
+}

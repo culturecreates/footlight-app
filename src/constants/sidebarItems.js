@@ -1,5 +1,12 @@
-import Icon, { CalendarOutlined, SettingOutlined, DatabaseOutlined, EnvironmentOutlined } from '@ant-design/icons';
+import Icon, {
+  CalendarOutlined,
+  SettingOutlined,
+  TagOutlined,
+  TeamOutlined,
+  EnvironmentOutlined,
+} from '@ant-design/icons';
 import { ReactComponent as Organizations } from '../assets/icons/organisations.svg';
+import { featureFlags } from '../utils/featureFlags';
 
 const iconStyle = {
   fontSize: '18px',
@@ -18,26 +25,33 @@ export const sidebarItems = [
     path: '/places',
     component: <div>places</div>,
     icon: <EnvironmentOutlined style={iconStyle} />,
-    disabled: true,
+    disabled: false,
   },
   {
     name: 'dashboard.sidebar.organizations',
     path: '/organizations',
     component: <div>organizations</div>,
     icon: <Icon component={Organizations} style={iconStyle} />,
-    disabled: true,
+    disabled: featureFlags.orgPersonPlacesView === 'true' ? false : true,
+  },
+  {
+    name: 'dashboard.sidebar.people',
+    path: '/people',
+    component: <div>people</div>,
+    icon: <TeamOutlined style={iconStyle} />,
+    disabled: featureFlags.orgPersonPlacesView === 'true' ? false : true,
   },
   {
     name: 'dashboard.sidebar.taxonomies',
     path: '/taxonomies',
-    component: <div>hai</div>,
-    icon: <DatabaseOutlined style={iconStyle} />,
+    component: <div>taxonomies</div>,
+    icon: <TagOutlined style={iconStyle} />,
     disabled: true,
   },
   {
     name: 'dashboard.sidebar.settings',
     path: '/settings',
-    component: <div>hai</div>,
+    component: <div>settings</div>,
     icon: <SettingOutlined style={iconStyle} />,
     disabled: true,
   },

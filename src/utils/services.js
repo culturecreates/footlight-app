@@ -1,7 +1,11 @@
 import { fetchBaseQuery } from '@reduxjs/toolkit/query';
-import { clearUser } from '../redux/reducer/userSlice';
+import { clearUser, setUser } from '../redux/reducer/userSlice';
 import { notification } from 'antd';
 import { Translation } from 'react-i18next';
+import Cookies from 'js-cookie';
+import { Mutex } from 'async-mutex';
+
+const mutex = new Mutex();
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.REACT_APP_API_URL,
   prepareHeaders: (headers, { getState }) => {
@@ -14,7 +18,8 @@ const baseQuery = fetchBaseQuery({
 });
 
 export const baseQueryWithReauth = async (args, api, extraOptions) => {
-  const result = await baseQuery(args, api, extraOptions);
+  await mutex.waitForUnlock();
+  let result = await baseQuery(args, api, extraOptions);
   if (result.error && result.error.status === 400) {
     //HTTP 400 Bad Request
     //The server cannot or will not process the request due to something that is perceived to be a client error.
@@ -37,12 +42,54 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
   if (result.error && result.error.status === 401) {
     // HTTP 401 Unauthorized response status code
     // indicates that the client request has not been completed because it lacks valid authentication credentials for the requested resource.
-    api.dispatch(clearUser());
+    if (!mutex.isLocked()) {
+      const release = await mutex.acquire();
+      let refreshResult;
+      let token = api.getState().user?.refreshToken?.token;
+      try {
+        const fetchResponse = await fetch(`${process.env.REACT_APP_API_URL}/refresh-token`, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            refreshToken: token,
+          }),
+        });
+        refreshResult = await fetchResponse.json();
+        if (refreshResult && refreshResult?.accessToken && refreshResult?.refreshToken) {
+          let user = api.getState().user.user;
+          user = {
+            accessToken: refreshResult?.accessToken?.token,
+            expiredTime: refreshResult?.accessToken?.ttl,
+            refreshToken: refreshResult?.refreshToken,
+            ...user,
+          };
+          Cookies.set('accessToken', refreshResult?.accessToken?.token);
+          Cookies.set('refreshToken', refreshResult?.refreshToken?.token);
+
+          api.dispatch(setUser(user));
+          result = await baseQuery(args, api, extraOptions);
+        } else {
+          api.dispatch(clearUser());
+        }
+      } catch (error) {
+        api.dispatch(clearUser());
+      } finally {
+        release();
+      }
+    } else {
+      await mutex.waitForUnlock();
+      result = await baseQuery(args, api, extraOptions);
+    }
   }
+
   if (result.error && result.error.status === 403) {
     // HTTP 403 Forbidden response status code indicates that the server understands the request but refuses to authorize it.
     // This status is similar to 401, but for the 403 Forbidden status code, re-authenticating makes no difference.
     // The access is tied to the application logic, such as insufficient rights to a resource.
+
     notification.info({
       message: <Translation>{(t) => t('common.server.status.403.message')}</Translation>,
       placement: 'top',

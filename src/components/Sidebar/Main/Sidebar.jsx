@@ -4,7 +4,7 @@ import { Layout, Menu } from 'antd';
 import { sidebarItems } from '../../../constants/sidebarItems';
 import { useTranslation } from 'react-i18next';
 import CalendarList from '../../Dropdown/Calendar';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
@@ -15,12 +15,14 @@ const { Sider } = Layout;
 function Sidebar(props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { currentCalendarData, allCalendarsData, pageNumber, setPageNumber } = props;
   const { user } = useSelector(getUserDetails);
   let { calendarId } = useParams();
 
   const [collapsed, setCollapsed] = useState(false);
   const [calendarItem, setCalendarItem] = useState([]);
+  const [selectedKey, setSelectedKey] = useState([]);
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const items = sidebarItems.map((item, index) => {
@@ -56,6 +58,12 @@ function Sidebar(props) {
   };
 
   useEffect(() => {
+    items?.forEach((item) => {
+      if (location.pathname?.includes(item?.path)) setSelectedKey([item?.key]);
+    });
+  }, [location]);
+
+  useEffect(() => {
     const calendarLabel = contentLanguageBilingual({
       en: currentCalendarData?.name?.en,
       fr: currentCalendarData?.name?.fr,
@@ -65,7 +73,8 @@ function Sidebar(props) {
     setCalendarItem(selectedCalendar(currentCalendarData?.id, currentCalendarData?.image?.uri, calendarLabel));
   }, [currentCalendarData]);
 
-  const onSidebarClickHandler = ({ item }) => {
+  const onSidebarClickHandler = ({ item, key }) => {
+    setSelectedKey([key]);
     navigate(`${PathName.Dashboard}/${calendarId}${item.props.path}`);
   };
   return (
@@ -89,7 +98,7 @@ function Sidebar(props) {
       </div>
       <div className="sidebar-main-menu">
         <Menu
-          defaultSelectedKeys={['1']}
+          selectedKeys={selectedKey}
           style={{
             height: 'auto',
             borderRight: 0,
