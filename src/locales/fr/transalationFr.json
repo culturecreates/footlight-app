@@ -95,7 +95,7 @@
           "label": "Publication"
         },
         "sort": {
-          "sortby": "Trier par",
+          "sortBy": "Trier par",
           "name": "Nom",
           "createdDate": "Date de création",
           "eventDate": "Date d’événement"
