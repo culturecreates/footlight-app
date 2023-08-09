@@ -10,6 +10,7 @@ import { ReactComponent as NotFound } from '../../src/assets/images/illustatus.s
 import EventReadOnly from '../pages/Dashboard/EventReadOnly';
 import CreateAccount from '../pages/CreateAccount/CreateAccount';
 import Users from '../pages/Dashboard/Users';
+import ErrorAlert from '../components/Error/Error';
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +37,7 @@ export const router = createBrowserRouter([
   {
     path: PathName.Dashboard,
     element: <Dashboard />,
+    errorElement: <ErrorAlert />,
     children: [
       {
         path: `:calendarId${PathName.Events}`,

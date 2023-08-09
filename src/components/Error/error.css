@@ -1,0 +1,18 @@
+.error-page{
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.error-page > svg {
+  height: 100%;
+  width: 100%;
+}
+
+.error-page .floating-alert{
+    width: 400px;
+    position: absolute;
+    right: 50%;
+    top: 0;
+    transform: translate(50%);
+}
