@@ -154,6 +154,7 @@ function AddEvent() {
   const [quickCreatePlaceModal, setQuickCreatePlaceModal] = useState(false);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
   const [selectedOrganizerPerformerSupporterType, setSelectedOrganizerPerformerSupporterType] = useState();
+  const [imageCropOpen, setImageCropOpen] = useState(false);
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -1925,8 +1926,16 @@ function AddEvent() {
                     </p>
                   </Col>
                 </Row>
-                <ImageUpload imageUrl={eventData?.image?.original?.uri} imageReadOnly={false} preview={true} />
+                <ImageUpload
+                  imageUrl={eventData?.image?.large?.uri}
+                  imageReadOnly={false}
+                  preview={true}
+                  setImageCropOpen={setImageCropOpen}
+                  imageCropOpen={imageCropOpen}
+                  form={form}
+                />
               </Form.Item>
+
               <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.organizer.title')}>
                 <Row>
                   <Col>

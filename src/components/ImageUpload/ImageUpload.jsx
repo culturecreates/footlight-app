@@ -1,26 +1,46 @@
 import React, { useState } from 'react';
 import './imageUpload.css';
 import { message, Upload, Form } from 'antd';
-import { LoadingOutlined, DownloadOutlined, DeleteOutlined } from '@ant-design/icons';
+import { LoadingOutlined, DownloadOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import Outlined from '../Button/Outlined';
 import { useTranslation } from 'react-i18next';
-import ImgCrop from 'antd-img-crop';
+import ImageCrop from '../ImageCrop';
 
 function ImageUpload(props) {
+  const { setImageCropOpen, imageCropOpen, form } = props;
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(props?.imageUrl ?? null);
+  const [cropValues, setCropValues] = useState({
+    large: {
+      x: 0,
+      y: 0,
+      height: 0,
+      width: 0,
+    },
+    thumbnail: {
+      x: 0,
+      y: 0,
+      height: 0,
+      width: 0,
+    },
+    original: {
+      entityId: false,
+      width: 0,
+      height: 0,
+    },
+  });
 
   const normFile = (e) => {
     if (Array.isArray(e)) {
       return e;
     }
+    console.log(e?.fileList);
     return e?.fileList;
   };
   const getBase64 = (img, callback) => {
     const reader = new FileReader();
     reader.addEventListener('load', () => callback(reader.result));
-
     reader.readAsDataURL(img);
     reader.addEventListener('load', (event) => {
       const _loadedImageUrl = event.target.result;
@@ -28,13 +48,17 @@ function ImageUpload(props) {
       image.src = _loadedImageUrl;
       image.addEventListener('load', () => {
         const { width, height } = image;
-        // set image width and height to your state here
-        console.log(width, height);
+        setCropValues({
+          ...cropValues,
+          original: {
+            height,
+            width,
+          },
+        });
       });
     });
   };
   const beforeUpload = (file) => {
-    console.log(file);
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
       message.error(t('dashboard.events.addEditEvent.otherInformation.image.subHeading'));
@@ -50,6 +74,7 @@ function ImageUpload(props) {
       getBase64(info.file.originFileObj, (url) => {
         setLoading(false);
         setImageUrl(url);
+        setImageCropOpen(true);
       });
     }
   };
@@ -81,15 +106,10 @@ function ImageUpload(props) {
       </span>
     </div>
   );
-  const onCropAreaChange = (croppedArea, croppedAreaPixel) => {
-    console.log(croppedArea, croppedAreaPixel);
-  };
+
   return (
-    <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile}>
-      <ImgCrop
-        cropperProps={{
-          onCropAreaChange: onCropAreaChange,
-        }}>
+    <>
+      <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile}>
         <Upload.Dragger
           name="eventImage"
           accept='.png, .jpg, .jpeg"'
@@ -112,6 +132,8 @@ function ImageUpload(props) {
           listType="picture"
           beforeUpload={beforeUpload}
           showUploadList={{
+            showPreviewIcon: !props?.imageReadOnly ? true : false,
+            previewIcon: <EditOutlined style={{ color: '#1B3DE6' }} onClick={() => setImageCropOpen(true)} />,
             showDownloadIcon: props?.imageReadOnly ? true : false,
             downloadIcon: <DownloadOutlined style={{ color: '#1B3DE6' }} />,
             showRemoveIcon: imageUrl ? true : false,
@@ -131,8 +153,17 @@ function ImageUpload(props) {
             uploadButton
           )}
         </Upload.Dragger>
-      </ImgCrop>
-    </Form.Item>
+      </Form.Item>
+      <ImageCrop
+        setOpen={setImageCropOpen}
+        open={imageCropOpen}
+        image={imageUrl}
+        form={form}
+        cropValues={cropValues}
+        setCropValues={setCropValues}
+        setImage={setImageUrl}
+      />
+    </>
   );
 }
 
