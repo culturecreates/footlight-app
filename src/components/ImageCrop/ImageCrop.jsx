@@ -8,6 +8,7 @@ import CustomModal from '../Modal/Common/CustomModal';
 import PrimaryButton from '../Button/Primary/Primary';
 import TextButton from '../Button/Text/Text';
 import getCroppedImg from '../../utils/getCroppedImg';
+import { ratioChecker } from '../../utils/ratioChecker';
 
 function ImageCrop(props) {
   const { image, open, setOpen, largeAspectRatio, thumbnailAspectRatio, form, cropValues, setCropValues, setImage } =
@@ -16,15 +17,14 @@ function ImageCrop(props) {
 
   let ASPECT_RATIO_TYPE = {
     large: {
-      value: largeAspectRatio ? largeAspectRatio : 16 / 9,
+      value: largeAspectRatio ? ratioChecker(largeAspectRatio) : 16 / 9,
       type: 'LARGE',
     },
     thumbnail: {
-      value: thumbnailAspectRatio ? thumbnailAspectRatio : 3 / 2,
+      value: thumbnailAspectRatio ? ratioChecker(thumbnailAspectRatio) : 3 / 2,
       type: 'THUMBNAIL',
     },
   };
-
   const [crop, onCropChange] = useState({ x: 0, y: 0 });
   const [zoom, onZoomChange] = useState(1);
   const [aspectRatio, setAspectRatio] = useState(ASPECT_RATIO_TYPE.large.value);
@@ -135,10 +135,10 @@ function ImageCrop(props) {
               onChange={(event) => aspectRatioControl(event.target.value)}>
               <Space direction="vertical">
                 <Radio value={ASPECT_RATIO_TYPE.large.type}>
-                  16:9 {t('dashboard.events.addEditEvent.otherInformation.image.crop.ratio')}
+                  {largeAspectRatio} {t('dashboard.events.addEditEvent.otherInformation.image.crop.ratio')}
                 </Radio>
                 <Radio value={ASPECT_RATIO_TYPE.thumbnail.type}>
-                  1:1 {t('dashboard.events.addEditEvent.otherInformation.image.crop.ratio')}
+                  {thumbnailAspectRatio} {t('dashboard.events.addEditEvent.otherInformation.image.crop.ratio')}
                 </Radio>
               </Space>
             </Radio.Group>

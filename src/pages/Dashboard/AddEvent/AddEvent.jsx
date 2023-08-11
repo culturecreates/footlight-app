@@ -1959,6 +1959,17 @@ function AddEvent() {
                   setImageCropOpen={setImageCropOpen}
                   imageCropOpen={imageCropOpen}
                   form={form}
+                  eventImageData={eventData?.image}
+                  largeAspectRatio={
+                    currentCalendarData?.imageConfig?.length > 0
+                      ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio
+                      : null
+                  }
+                  thumbnailAspectRatio={
+                    currentCalendarData?.imageConfig?.length > 0
+                      ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio
+                      : null
+                  }
                 />
               </Form.Item>
 

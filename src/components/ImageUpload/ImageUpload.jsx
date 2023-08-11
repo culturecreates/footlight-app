@@ -7,27 +7,27 @@ import { useTranslation } from 'react-i18next';
 import ImageCrop from '../ImageCrop';
 
 function ImageUpload(props) {
-  const { setImageCropOpen, imageCropOpen, form } = props;
+  const { setImageCropOpen, imageCropOpen, form, eventImageData, largeAspectRatio, thumbnailAspectRatio } = props;
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(props?.imageUrl ?? null);
   const [cropValues, setCropValues] = useState({
     large: {
-      x: 0,
-      y: 0,
-      height: 0,
-      width: 0,
-    },
-    thumbnail: {
-      x: 0,
-      y: 0,
-      height: 0,
-      width: 0,
+      xCoordinate: eventImageData?.image?.large?.xCoordinate ?? 0,
+      yCoordinate: eventImageData?.image?.large?.yCoordinate ?? 0,
+      height: eventImageData?.image?.large?.height ?? 0,
+      width: eventImageData?.image?.large?.width ?? 0,
     },
     original: {
-      entityId: false,
-      width: 0,
-      height: 0,
+      entityId: eventImageData?.image?.original?.entityId ?? null,
+      height: eventImageData?.image?.original?.height ?? 0,
+      width: eventImageData?.image?.original?.width ?? 0,
+    },
+    thumbnail: {
+      xCoordinate: eventImageData?.image?.thumbnail?.xCoordinate ?? 0,
+      yCoordinate: eventImageData?.image?.thumbnail?.yCoordinate ?? 0,
+      height: eventImageData?.image?.thumbnail?.height ?? 0,
+      width: eventImageData?.image?.thumbnail?.width ?? 0,
     },
   });
 
@@ -162,6 +162,8 @@ function ImageUpload(props) {
         cropValues={cropValues}
         setCropValues={setCropValues}
         setImage={setImageUrl}
+        largeAspectRatio={largeAspectRatio}
+        thumbnailAspectRatio={thumbnailAspectRatio}
       />
     </>
   );
