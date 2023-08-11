@@ -5,6 +5,12 @@
   gap: 8px;
 }
 
+.image-crop-wrapper .quick-select-modal-sub-heading {
+  font-weight: 400;
+  font-size: 16px;
+  color: #646d7b;
+}
+
 .image-crop-wrapper .slider {
   padding: 22px 0px;
 }

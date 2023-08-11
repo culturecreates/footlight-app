@@ -118,21 +118,22 @@ function ImageCrop(props) {
         />,
       ]}>
       <div className="image-crop-wrapper">
-        <Row gutter={[0, 10]}>
+        <Row gutter={[0, 18]}>
           <Col span={24}>
             <span className="quick-select-modal-sub-heading">
               {t('dashboard.events.addEditEvent.otherInformation.image.crop.subHeading')}
             </span>
           </Col>
           <Col span={24}>
-            <span className="quick-select-modal-sub-heading">
+            <span className="quick-select-modal-sub-heading" style={{ fontWeight: 700, color: '#222732' }}>
               {t('dashboard.events.addEditEvent.otherInformation.image.crop.savedFrameSize')}
             </span>
           </Col>
           <Col span={24}>
             <Radio.Group
               defaultValue={ASPECT_RATIO_TYPE.large.type}
-              onChange={(event) => aspectRatioControl(event.target.value)}>
+              onChange={(event) => aspectRatioControl(event.target.value)}
+              style={{ color: '#222732' }}>
               <Space direction="vertical">
                 <Radio value={ASPECT_RATIO_TYPE.large.type}>
                   {largeAspectRatio} {t('dashboard.events.addEditEvent.otherInformation.image.crop.ratio')}
@@ -145,7 +146,7 @@ function ImageCrop(props) {
           </Col>
           <Col span={24}>
             <div className="controls">
-              <Button type="text" icon={<MinusOutlined />} onClick={() => onZoomChange(zoom - 0.1)} />
+              <Button type="text" icon={<MinusOutlined color=" #646d7b" />} onClick={() => onZoomChange(zoom - 0.1)} />
               <input
                 type="range"
                 value={zoom}
@@ -158,7 +159,11 @@ function ImageCrop(props) {
                 }}
                 className="zoom-range"
               />
-              <Button type="text" icon={<PlusOutlined />} onClick={() => onZoomChange(zoom + 0.1)} />
+              <Button
+                type="text"
+                icon={<PlusOutlined style={{ color: '#646d7b' }} />}
+                onClick={() => onZoomChange(zoom + 0.1)}
+              />
             </div>
           </Col>
           <Col span={24}>
