@@ -277,8 +277,8 @@ function AddEvent() {
             collaborators = [],
             dynamicFields = [],
             recurringEvent,
-            inLanguage = [],
-            image;
+            inLanguage = [];
+
           let eventObj;
           if (dateType === dateTypes.SINGLE) {
             if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
@@ -520,8 +520,17 @@ function AddEvent() {
               addImage({ data: formdata, calendarId })
                 .unwrap()
                 .then((response) => {
-                  image = response?.data;
-                  eventObj['image'] = image;
+                  console.log(response);
+                  let entityId = response?.data?.original?.entityId;
+                  let imageCrop = form.getFieldValue('imageCrop');
+                  imageCrop = {
+                    ...imageCrop,
+                    original: {
+                      ...imageCrop?.original,
+                      entityId,
+                    },
+                  };
+                  eventObj['image'] = imageCrop;
                   addUpdateEventApiHandler(eventObj, toggle)
                     .then((id) => resolve(id))
                     .catch((error) => {
@@ -539,17 +548,18 @@ function AddEvent() {
               if (values?.dragger && values?.dragger?.length == 0) eventObj['image'] = null;
               else
                 eventObj['image'] = {
-                  height: eventData?.image?.height,
-                  type: eventData?.image?.type,
-                  width: eventData?.image?.width,
                   large: {
-                    entityId: eventData?.image?.large?.entityId,
+                    x: eventData?.image?.large?.x,
+                    y: eventData?.image?.large?.y,
                   },
                   original: {
                     entityId: eventData?.image?.original?.entityId,
+                    height: eventData?.image?.original?.height,
+                    width: eventData?.image?.original?.width,
                   },
                   thumbnail: {
-                    entityId: eventData?.image?.thumbnail?.entityId,
+                    x: eventData?.image?.thumbnail?.x,
+                    y: eventData?.image?.thumbnail?.y,
                   },
                 };
             }

@@ -19,7 +19,7 @@ function ImageCrop(props) {
       type: 'LARGE',
     },
     thumbnail: {
-      value: thumbnailAspectRatio ? thumbnailAspectRatio : 1 / 1,
+      value: thumbnailAspectRatio ? thumbnailAspectRatio : 3 / 2,
       type: 'THUMBNAIL',
     },
   };
@@ -84,7 +84,6 @@ function ImageCrop(props) {
   const showCroppedImage = useCallback(async () => {
     try {
       const croppedImage = await getCroppedImg(image, cropValues?.large, null);
-      console.log('donee', { croppedImage });
       setImage(croppedImage);
     } catch (e) {
       console.error(e);
