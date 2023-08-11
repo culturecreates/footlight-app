@@ -520,7 +520,6 @@ function AddEvent() {
               addImage({ data: formdata, calendarId })
                 .unwrap()
                 .then((response) => {
-                  console.log(response);
                   let entityId = response?.data?.original?.entityId;
                   let imageCrop = form.getFieldValue('imageCrop');
                   imageCrop = {

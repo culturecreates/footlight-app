@@ -19,9 +19,9 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   height: 2px;
-  border-top: 2px solid blue;
-  border-bottom: 2px solid blue;
-  background: #3f51b5;
+  border-top: 2px solid #1b3de6;
+  border-bottom: 2px solid #1b3de6;
+  background: #1b3de6;
   width: 100%;
 }
 
@@ -33,7 +33,7 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   border: 1px solid #3f51b5;
-  background: #3f51b5;
+  background: white;
   border-radius: 50%;
   width: 12px;
   height: 12px;
@@ -44,7 +44,7 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   border: 1px solid #3f51b5;
-  background: #3f51b5;
+  background: white;
   border-radius: 50%;
   width: 12px;
   height: 12px;
