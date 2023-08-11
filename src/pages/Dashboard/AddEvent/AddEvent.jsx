@@ -561,8 +561,10 @@ function AddEvent() {
               else
                 eventObj['image'] = {
                   large: {
-                    x: eventData?.image?.large?.x,
-                    y: eventData?.image?.large?.y,
+                    xCoordinate: eventData?.image?.large?.xCoordinate,
+                    yCoordinate: eventData?.image?.large?.yCoordinate,
+                    height: eventData?.image?.large?.height,
+                    width: eventData?.image?.large?.width,
                   },
                   original: {
                     entityId: eventData?.image?.original?.entityId,
@@ -570,8 +572,10 @@ function AddEvent() {
                     width: eventData?.image?.original?.width,
                   },
                   thumbnail: {
-                    x: eventData?.image?.thumbnail?.x,
-                    y: eventData?.image?.thumbnail?.y,
+                    xCoordinate: eventData?.image?.thumbnail?.xCoordinate,
+                    yCoordinate: eventData?.image?.thumbnail?.yCoordinate,
+                    height: eventData?.image?.thumbnail?.height,
+                    width: eventData?.image?.thumbnail?.width,
                   },
                 };
             }
