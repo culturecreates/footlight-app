@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import './imageCrop.css';
-import { Row, Col, Space, Radio } from 'antd';
+import { Row, Col, Space, Radio, Button } from 'antd';
+import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import Cropper from 'react-easy-crop';
 import CustomModal from '../Modal/Common/CustomModal';
 import PrimaryButton from '../Button/Primary/Primary';
@@ -98,17 +99,21 @@ function ImageCrop(props) {
         height: '600px',
       }}
       onCancel={() => setOpen(false)}
-      title={<span className="quick-select-modal-title">{t('dashboard.events.addEditEvent.quickCreate.title')}</span>}
+      title={
+        <span className="quick-select-modal-title">
+          {t('dashboard.events.addEditEvent.otherInformation.image.crop.title')}
+        </span>
+      }
       footer={[
         <TextButton
           key="cancel"
           size="large"
-          label={t('dashboard.events.addEditEvent.quickCreate.cancel')}
+          label={t('dashboard.events.addEditEvent.otherInformation.image.crop.cancel')}
           onClick={() => setOpen(false)}
         />,
         <PrimaryButton
           key="add-dates"
-          label={t('dashboard.events.addEditEvent.quickCreate.create')}
+          label={t('dashboard.events.addEditEvent.otherInformation.image.crop.save')}
           onClick={() => saveCropHandler()}
         />,
       ]}>
@@ -116,12 +121,12 @@ function ImageCrop(props) {
         <Row gutter={[0, 10]}>
           <Col span={24}>
             <span className="quick-select-modal-sub-heading">
-              {t('dashboard.events.addEditEvent.quickCreate.subHeading')}
+              {t('dashboard.events.addEditEvent.otherInformation.image.crop.subHeading')}
             </span>
           </Col>
           <Col span={24}>
             <span className="quick-select-modal-sub-heading">
-              {t('dashboard.events.addEditEvent.quickCreate.subHeading')}
+              {t('dashboard.events.addEditEvent.otherInformation.image.crop.savedFrameSize')}
             </span>
           </Col>
           <Col span={24}>
@@ -129,10 +134,32 @@ function ImageCrop(props) {
               defaultValue={ASPECT_RATIO_TYPE.large.type}
               onChange={(event) => aspectRatioControl(event.target.value)}>
               <Space direction="vertical">
-                <Radio value={ASPECT_RATIO_TYPE.large.type}>16:9 Ratio</Radio>
-                <Radio value={ASPECT_RATIO_TYPE.thumbnail.type}>1:1 Ratio</Radio>
+                <Radio value={ASPECT_RATIO_TYPE.large.type}>
+                  16:9 {t('dashboard.events.addEditEvent.otherInformation.image.crop.ratio')}
+                </Radio>
+                <Radio value={ASPECT_RATIO_TYPE.thumbnail.type}>
+                  1:1 {t('dashboard.events.addEditEvent.otherInformation.image.crop.ratio')}
+                </Radio>
               </Space>
             </Radio.Group>
+          </Col>
+          <Col span={24}>
+            <div className="controls">
+              <Button type="text" icon={<MinusOutlined />} onClick={() => onZoomChange(zoom - 0.1)} />
+              <input
+                type="range"
+                value={zoom}
+                min={1}
+                max={3}
+                step={0.1}
+                aria-labelledby="Zoom"
+                onChange={(e) => {
+                  onZoomChange(e.target.value);
+                }}
+                className="zoom-range"
+              />
+              <Button type="text" icon={<PlusOutlined />} onClick={() => onZoomChange(zoom + 0.1)} />
+            </div>
           </Col>
           <Col span={24}>
             <div className="crop-container">
@@ -148,22 +175,6 @@ function ImageCrop(props) {
                 onCropChange={onCropChange}
                 onZoomChange={onZoomChange}
                 onCropAreaChange={onCropAreaChange}
-              />
-            </div>
-          </Col>
-          <Col span={24}>
-            <div className="controls">
-              <input
-                type="range"
-                value={zoom}
-                min={1}
-                max={3}
-                step={0.1}
-                aria-labelledby="Zoom"
-                onChange={(e) => {
-                  onZoomChange(e.target.value);
-                }}
-                className="zoom-range"
               />
             </div>
           </Col>

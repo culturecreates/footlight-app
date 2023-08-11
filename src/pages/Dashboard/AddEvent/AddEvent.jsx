@@ -524,10 +524,22 @@ function AddEvent() {
                   let entityId = response?.data?.original?.entityId;
                   let imageCrop = form.getFieldValue('imageCrop');
                   imageCrop = {
-                    ...imageCrop,
+                    large: {
+                      xCoordinate: imageCrop?.large?.x,
+                      yCoordinate: imageCrop?.large?.y,
+                      height: imageCrop?.large?.height,
+                      width: imageCrop?.large?.width,
+                    },
+                    thumbnail: {
+                      xCoordinate: imageCrop?.thumbnail?.x,
+                      yCoordinate: imageCrop?.thumbnail?.y,
+                      height: imageCrop?.thumbnail?.height,
+                      width: imageCrop?.thumbnail?.width,
+                    },
                     original: {
-                      ...imageCrop?.original,
-                      entityId,
+                      entityId: entityId,
+                      height: imageCrop?.original?.height,
+                      width: imageCrop?.original?.width,
                     },
                   };
                   eventObj['image'] = imageCrop;

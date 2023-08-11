@@ -227,7 +227,15 @@
             "title": "Image",
             "subHeading": "Les images doivent être au format paysage ou carré et mesurer au moins 600 px de large. Uniquement les fichiers .jpeg et .png sont acceptés.",
             "dragAndDrop": "ou glisser pour télécharger",
-            "browse": "Parcourir"
+            "browse": "Parcourir",
+            "crop": {
+              "title": "Position image",
+              "subHeading": "Adjust position if necessary.",
+              "savedFrameSize": "Saved frame sizes",
+              "ratio": "Ratio",
+              "save": "Sauvegarder",
+              "cancel": "Annuler"
+            }
           },
           "organizer": {
             "title": "Organisateur",
