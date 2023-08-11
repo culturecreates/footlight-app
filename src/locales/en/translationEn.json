@@ -409,6 +409,13 @@
       }
     }
   },
+  "errorPage": {
+    "heading": "Oops, something went wrong!",
+    "notFoundMessage": "The requested page could not be found (404)",
+    "serverErrorsMessage": "If the problem persists, let the site owner know {{code}}",
+    "jsErrorMessage": "Go back to the previous page",
+    "buttonText": "Back"
+  },
   "common": {
     "tabEnglish": "English",
     "tabFrench": "French",

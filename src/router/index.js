@@ -6,7 +6,7 @@ import Dashboard from '../pages/Dashboard';
 import ResetPassword from '../pages/ResetPassword';
 import Events from '../pages/Dashboard/Events';
 import AddEvent from '../pages/Dashboard/AddEvent';
-import { ReactComponent as NotFound } from '../../src/assets/images/illustatus.svg';
+// import { ReactComponent as NotFound } from '../../src/assets/images/illustatus.svg';
 import EventReadOnly from '../pages/Dashboard/EventReadOnly';
 import CreateAccount from '../pages/CreateAccount/CreateAccount';
 import Users from '../pages/Dashboard/Users';
@@ -82,10 +82,6 @@ export const router = createBrowserRouter([
   },
   {
     path: PathName.NotFound,
-    element: (
-      <div>
-        <NotFound />
-      </div>
-    ),
+    element: <ErrorAlert errorType="page not found" />,
   },
 ]);
