@@ -94,6 +94,7 @@ function ImageCrop(props) {
   return (
     <CustomModal
       width={500}
+      centered
       open={open}
       bodyStyle={{
         height: '600px',
