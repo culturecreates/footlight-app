@@ -7,28 +7,39 @@ import { useTranslation } from 'react-i18next';
 import ImageCrop from '../ImageCrop';
 
 function ImageUpload(props) {
-  const { setImageCropOpen, imageCropOpen, form, eventImageData, largeAspectRatio, thumbnailAspectRatio, isCrop } =
-    props;
+  const {
+    setImageCropOpen,
+    imageCropOpen,
+    form,
+    eventImageData,
+    largeAspectRatio,
+    thumbnailAspectRatio,
+    isCrop,
+    preview,
+    originalImageUrl,
+  } = props;
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(props?.imageUrl ?? null);
+  const [originalImage, setOriginalImage] = useState(originalImageUrl ?? null);
+
   const [cropValues, setCropValues] = useState({
     large: {
-      xCoordinate: eventImageData?.image?.large?.xCoordinate ?? 0,
-      yCoordinate: eventImageData?.image?.large?.yCoordinate ?? 0,
-      height: eventImageData?.image?.large?.height ?? 0,
-      width: eventImageData?.image?.large?.width ?? 0,
+      x: eventImageData?.large?.xCoordinate ?? 0,
+      y: eventImageData?.large?.yCoordinate ?? 0,
+      height: eventImageData?.large?.height ?? 0,
+      width: eventImageData?.large?.width ?? 0,
     },
     original: {
-      entityId: eventImageData?.image?.original?.entityId ?? null,
-      height: eventImageData?.image?.original?.height ?? 0,
-      width: eventImageData?.image?.original?.width ?? 0,
+      entityId: eventImageData?.original?.entityId ?? null,
+      height: eventImageData?.original?.height ?? 0,
+      width: eventImageData?.original?.width ?? 0,
     },
     thumbnail: {
-      xCoordinate: eventImageData?.image?.thumbnail?.xCoordinate ?? 0,
-      yCoordinate: eventImageData?.image?.thumbnail?.yCoordinate ?? 0,
-      height: eventImageData?.image?.thumbnail?.height ?? 0,
-      width: eventImageData?.image?.thumbnail?.width ?? 0,
+      x: eventImageData?.thumbnail?.xCoordinate ?? 0,
+      y: eventImageData?.thumbnail?.yCoordinate ?? 0,
+      height: eventImageData?.thumbnail?.height ?? 0,
+      width: eventImageData?.thumbnail?.width ?? 0,
     },
   });
 
@@ -74,6 +85,7 @@ function ImageUpload(props) {
       getBase64(info.file.originFileObj, (url) => {
         setLoading(false);
         setImageUrl(url);
+        setOriginalImage(url);
         if (isCrop) setImageCropOpen(true);
       });
     }
@@ -88,6 +100,7 @@ function ImageUpload(props) {
   const onRemove = () => {
     setImageUrl(false);
   };
+
   const uploadButton = (
     <div style={{ padding: 8 }}>
       {loading ? <LoadingOutlined /> : <></>}
@@ -111,7 +124,7 @@ function ImageUpload(props) {
     <>
       <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile}>
         <Upload.Dragger
-          name="eventImage"
+          name={eventImageData?.original?.entityId}
           accept='.png, .jpg, .jpeg"'
           className="upload-wrapper"
           multiple={false}
@@ -123,7 +136,7 @@ function ImageUpload(props) {
             props?.imageUrl && [
               {
                 uid: '1',
-                name: 'Event image',
+                name: eventImageData?.original?.entityId,
                 status: 'done',
                 url: props.imageUrl,
               },
@@ -140,7 +153,7 @@ function ImageUpload(props) {
             removeIcon: <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />,
           }}
           onChange={handleChange}>
-          {imageUrl && props?.preview ? (
+          {imageUrl && preview ? (
             <img
               src={imageUrl}
               alt="avatar"
@@ -158,7 +171,7 @@ function ImageUpload(props) {
         <ImageCrop
           setOpen={setImageCropOpen}
           open={imageCropOpen}
-          image={imageUrl}
+          image={originalImage}
           form={form}
           cropValues={cropValues}
           setCropValues={setCropValues}

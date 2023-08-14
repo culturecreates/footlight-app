@@ -25,7 +25,7 @@ function ImageCrop(props) {
       type: 'THUMBNAIL',
     },
   };
-  const [crop, onCropChange] = useState({ x: 0, y: 0 });
+  const [crop, onCropChange] = useState(cropValues?.large);
   const [zoom, onZoomChange] = useState(1);
   const [aspectRatio, setAspectRatio] = useState(ASPECT_RATIO_TYPE.large.value);
   const [aspectRatioType, setAspectRatioType] = useState(ASPECT_RATIO_TYPE.large.type);
@@ -176,6 +176,7 @@ function ImageCrop(props) {
                 showGrid={false}
                 image={image}
                 crop={crop}
+                initialCroppedAreaPixels={cropValues?.large}
                 zoom={zoom}
                 aspect={aspectRatio}
                 onCropChange={onCropChange}

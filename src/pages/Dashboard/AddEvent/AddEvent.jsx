@@ -1953,6 +1953,7 @@ function AddEvent() {
                 </Row>
                 <ImageUpload
                   imageUrl={eventData?.image?.large?.uri}
+                  originalImageUrl={eventData?.image?.original?.uri}
                   imageReadOnly={false}
                   preview={true}
                   setImageCropOpen={setImageCropOpen}
@@ -1969,7 +1970,7 @@ function AddEvent() {
                       ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio
                       : null
                   }
-                  isCrop
+                  isCrop={true}
                 />
               </Form.Item>
 
