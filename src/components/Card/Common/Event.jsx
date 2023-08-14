@@ -1,10 +1,14 @@
 import React from 'react';
 import { Row, Col } from 'antd';
+import './event.css';
 
 function Event(props) {
   const { title, required, hidden } = props;
   return (
-    <Col flex={'780px'} className="add-event-section-col" style={{ display: hidden && 'none' }}>
+    <Col
+      className="add-event-section-col"
+      flex={'780px'}
+      style={{ display: hidden && 'none', borderRadius: '4px', backgroundColor: '#ffffff' }}>
       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-content">
         <Col flex={'423px'}>
           <div className="add-event-section-wrapper">

@@ -23,6 +23,7 @@ function Dashboard() {
   const timestampRef = useRef(Date.now()).current;
   const { accessToken, user } = useSelector(getUserDetails);
   const [getCalendar, { currentData: currentCalendarData }] = useLazyGetCalendarQuery();
+
   const { currentData: allCalendarsData, isLoading } = useGetAllCalendarsQuery(
     { sessionId: timestampRef },
     { skip: accessToken ? false : true },

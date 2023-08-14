@@ -15,7 +15,7 @@ import './quickCreateOrganization.css';
 import { treeEntitiesOption } from '../../TreeSelectOption/treeSelectOption.settings';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
-import { taxonomyClass } from '../../../constants/taxonomyClass';
+import { entitiesClass } from '../../../constants/entitiesClass';
 
 const { TextArea } = Input;
 
@@ -30,6 +30,12 @@ function QuickCreateOrganization(props) {
     interfaceLanguage,
     selectedOrganizers,
     setSelectedOrganizers,
+    selectedPerformers,
+    setSelectedPerformers,
+    selectedSupporters,
+    setSelectedSupporters,
+    selectedOrganizerPerformerSupporterType,
+    organizerPerformerSupporterTypes,
   } = props;
   const [form] = Form.useForm();
   const { t } = useTranslation();
@@ -49,11 +55,27 @@ function QuickCreateOrganization(props) {
             disambiguatingDescription: response?.disambiguatingDescription,
             id: response?.id,
             name: response?.name,
-            type: taxonomyClass.ORGANIZATION,
+            type: entitiesClass.organization,
+            logo: response?.logo,
           },
         ];
         createdOrganizer = treeEntitiesOption(createdOrganizer, user, calendarContentLanguage);
-        if (createdOrganizer?.length === 1) setSelectedOrganizers([...selectedOrganizers, createdOrganizer[0]]);
+        if (createdOrganizer?.length === 1) {
+          switch (selectedOrganizerPerformerSupporterType) {
+            case organizerPerformerSupporterTypes.organizer:
+              setSelectedOrganizers([...selectedOrganizers, createdOrganizer[0]]);
+              break;
+            case organizerPerformerSupporterTypes.performer:
+              setSelectedPerformers([...selectedPerformers, createdOrganizer[0]]);
+              break;
+            case organizerPerformerSupporterTypes.supporter:
+              setSelectedSupporters([...selectedSupporters, createdOrganizer[0]]);
+              break;
+
+            default:
+              break;
+          }
+        }
       })
       .catch((error) => console.log(error));
   };
@@ -126,7 +148,6 @@ function QuickCreateOrganization(props) {
                 duration: 3,
               });
               setKeyword('');
-              console.log(response);
               getSelectedOrganizer(response?.id);
               setOpen(false);
             })

@@ -15,9 +15,15 @@ export const taxonomyApi = createApi({
       }),
     }),
     getTaxonomy: builder.query({
-      query: ({ id }) => `taxonomy/${id}`,
+      query: ({ id, includeConcepts, calendarId }) => ({
+        url: `taxonomy/${id}?include-concepts=${includeConcepts}`,
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
     }),
   }),
 });
 
-export const { useGetAllTaxonomyQuery, useGetTaxonomyQuery, useLazyGetAllTaxonomyQuery } = taxonomyApi;
+export const { useGetAllTaxonomyQuery, useGetTaxonomyQuery, useLazyGetAllTaxonomyQuery, useLazyGetTaxonomyQuery } =
+  taxonomyApi;

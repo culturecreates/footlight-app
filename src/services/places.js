@@ -7,17 +7,56 @@ export const placesApi = createApi({
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getAllPlaces: builder.query({
-      query: ({ calendarId }) => ({
-        url: `places?excludeContainsPlace=true`,
+      query: ({ calendarId, pageNumber = 1, limit = 10, query = '', sort = 'sort=asc(name.en)' }) => ({
+        url: `places?excludeContainsPlace=true&page=${pageNumber}&limit=${limit}&query=${query}&${sort}`,
         method: 'GET',
         headers: {
           'calendar-id': calendarId,
         },
       }),
-      providesTags: ['Places'],
+      providesTags: (result) =>
+        result ? [...result.data.map(({ id }) => ({ type: 'Places', id })), 'Places'] : ['Places'],
       transformResponse: (response) => response,
+    }),
+    deletePlaces: builder.mutation({
+      query: ({ id, calendarId }) => ({
+        url: `places/${id}`,
+        method: 'DELETE',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: 'Places', id: arg.id }],
+    }),
+    getPlace: builder.query({
+      query: ({ placeId, calendarId }) => ({
+        url: `places/${placeId}`,
+        method: 'GET',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+
+      transformResponse: (response) => response,
+    }),
+    addPlace: builder.mutation({
+      query: ({ data, calendarId }) => ({
+        url: `places`,
+        method: 'POST',
+        headers: {
+          'calendar-id': calendarId,
+        },
+        body: data,
+      }),
     }),
   }),
 });
 
-export const { useLazyGetAllPlacesQuery, useGetAllPlacesQuery } = placesApi;
+export const {
+  useLazyGetAllPlacesQuery,
+  useGetAllPlacesQuery,
+  useDeletePlacesMutation,
+  useLazyGetPlaceQuery,
+  useGetPlaceQuery,
+  useAddPlaceMutation,
+} = placesApi;

@@ -77,6 +77,7 @@
       "events": "Events",
       "places": "Places",
       "organizations": "Organizations",
+      "people": "People",
       "taxonomies": "Taxonomies",
       "settings": "Settings"
     },
@@ -195,7 +196,23 @@
           "placeHolderOnlineLink": "Enter web address URL",
           "streetAddress": "Street address",
           "venueAccessibility": "Venue accessibility",
-          "openingHours": "Opening hours"
+          "openingHours": "Opening hours",
+          "quickCreatePlace": {
+            "title": "Create a place",
+            "subHeading": "Add basic information about the place. You can edit the full details in the Place section later.",
+            "create": "Create",
+            "cancel": "Cancel",
+            "name": "Name",
+            "success": "Success! Your place has been created.",
+            "namePlaceholder": "Enter a name",
+            "address": "Address",
+            "searchPlaceholder": "Search Google Places",
+            "type": "Type",
+            "typePlaceholder": "Select type",
+            "validations": {
+              "name": "Name is required."
+            }
+          }
         },
         "otherInformation": {
           "title": "Other information",
@@ -355,6 +372,19 @@
             "validations": {
               "name": "Name is required."
             }
+          },
+          "quickCreatePerson": {
+            "title": "Create a person",
+            "subHeading": "Add basic information about this person. You can edit the full details in the People section later.",
+            "name": "Name",
+            "success": "Success! Your person has been created.",
+            "namePlaceholder": "Enter a name",
+            "occupationPlaceholder": "Select occupation",
+            "website": "Website",
+            "websitePlaceholder": "Enter website",
+            "validations": {
+              "name": "Name is required."
+            }
           }
         }
       },
@@ -381,6 +411,86 @@
         "description": "Are you sure you want to permanently delete this event?",
         "ok": "OK",
         "cancel": "Cancel"
+      }
+    },
+    "organization": {
+      "organization": "Organization",
+      "organizations": "Organizations",
+      "search": {
+        "placeholder": "Search Organizations"
+      },
+      "deleteOrganization": {
+        "title": "Confirm Delete",
+        "description": "Are you sure you want to permanently delete this organization?",
+        "ok": "OK",
+        "cancel": "Cancel"
+      },
+      "readOnly": {
+        "details": "Details",
+        "name": "Name",
+        "disambiguatingDescription": "Disambiguating description",
+        "description": "Description",
+        "website": "Website",
+        "contact": "Contact",
+        "frenchContactTitle": "French contact title",
+        "englishContactTitle": "English contact title",
+        "phoneNumber": "Phone number",
+        "email": "Email",
+        "memberOf": "Member of",
+        "location": "Location"
+      }
+    },
+    "places": {
+      "place": "Place",
+      "places": "Places",
+      "search": {
+        "placeholder": "Search Places"
+      },
+      "deletePlace": {
+        "title": "Confirm Delete",
+        "description": "Are you sure you want to permanently delete this place?",
+        "ok": "OK",
+        "cancel": "Cancel"
+      },
+      "readOnly": {
+        "placeName": "Place Name",
+        "disambiguatingDescription": "Disambiguating description",
+        "description": "Description",
+        "website": "Website",
+        "address": {
+          "address": "Address",
+          "streetAddress": "Street address",
+          "city": "City",
+          "postalCode": "Postal code",
+          "province": "Province",
+          "country": "Country",
+          "coordinates": "Coordinates",
+          "openingHoursLink": "Opening hours link"
+        },
+        "containedInPlace": "Contained in place",
+        "notContainedInPlace": "Not contained in any place.",
+        "venueAccessibility": "Venue accessibility",
+        "items": "Items"
+      }
+    },
+    "people": {
+      "person": "Person",
+      "people": "People",
+      "search": {
+        "placeholder": "Search People"
+      },
+      "deletePerson": {
+        "title": "Confirm Delete",
+        "description": "Are you sure you want to permanently delete this person?",
+        "ok": "OK",
+        "cancel": "Cancel"
+      },
+      "readOnly": {
+        "details": "Details",
+        "name": "Name",
+        "disambiguatingDescription": "Disambiguating description",
+        "description": "Description",
+        "website": "Website"
       }
     },
     "userProfile": {

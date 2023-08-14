@@ -20,10 +20,10 @@ function SelectionItem(props) {
     accessibility,
     openingHours,
     calendarContentLanguage,
+    artsDataLink,
   } = props;
   const { t } = useTranslation();
   const { user } = useSelector(getUserDetails);
-
   return (
     <div
       className="selection-item-wrapper"
@@ -69,7 +69,7 @@ function SelectionItem(props) {
                 <Col>
                   <div className="selection-item-sub-content">
                     <address>
-                      {postalAddress?.streetAddress && (
+                      {(postalAddress?.streetAddress?.en || postalAddress?.streetAddress?.fr) && (
                         <span>
                           {contentLanguageBilingual({
                             en: postalAddress?.streetAddress?.en,
@@ -80,7 +80,7 @@ function SelectionItem(props) {
                           ,&nbsp;
                         </span>
                       )}
-                      <br />
+                      {(postalAddress?.streetAddress?.en || postalAddress?.streetAddress?.fr) && <br />}
                       {postalAddress?.addressLocality && (
                         <span>
                           {contentLanguageBilingual({
@@ -155,6 +155,24 @@ function SelectionItem(props) {
             </Col>
           )}
         </Row>
+      )}
+      {artsDataLink && (
+        <div className="arts-data-link">
+          <div className="arts-data-link-content">
+            <div className="arts-data-link-first-line">
+              <span
+                style={{ textDecoration: 'underline', cursor: 'pointer' }}
+                onClick={() => window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer')}>
+                Artsdata
+              </span>
+              {name && <span>{name}</span>}
+              {/* {description && <Badge color="#1B3DE6" size="small" />} */}
+            </div>
+            {description && <span>{description}</span>}
+          </div>
+
+          <LinkOutlined style={{ fontSize: '16px' }} />
+        </div>
       )}
     </div>
   );

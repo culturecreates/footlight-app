@@ -60,6 +60,7 @@ export const placesOptions = (data, user, calendarContentLanguage) => {
       accessibility: place?.accessibility ?? [],
       openingHours: place?.openingHours,
       key: place?.id,
+      sameAs: place?.sameAs,
     };
   });
   return options;

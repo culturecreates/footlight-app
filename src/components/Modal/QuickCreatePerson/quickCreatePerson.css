@@ -1,0 +1,28 @@
+.quick-create-person-modal-title {
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.quick-create-person-modal-wrapper .ant-form-item-label > label,
+.quick-create-person-modal-wrapper .quick-create-person-modal-label {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  color: #222732;
+}
+
+.quick-create-person-modal-wrapper .quick-create-person-modal-label::after {
+  display: inline-block;
+  margin-left: 4px;
+  color: #f43131;
+  font-size: 14px;
+  font-family: 'Roboto';
+  line-height: 1;
+  content: '*';
+}
+
+.quick-create-person-modal-wrapper .quick-create-person-modal-sub-heading {
+  font-weight: 400;
+  font-size: 16px;
+  color: #646d7b;
+}

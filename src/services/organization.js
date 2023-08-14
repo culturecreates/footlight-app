@@ -3,12 +3,12 @@ import { baseQueryWithReauth } from '../utils/services';
 export const organizationApi = createApi({
   reducerPath: 'organizationApi',
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['organization'],
+  tagTypes: ['Organization'],
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     addOrganization: builder.mutation({
       query: ({ data, calendarId }) => ({
-        url: 'organizations',
+        url: `organizations`,
         method: 'POST',
         headers: {
           'calendar-id': calendarId,
@@ -25,7 +25,35 @@ export const organizationApi = createApi({
         },
       }),
     }),
+    getAllOrganization: builder.query({
+      query: ({ calendarId, pageNumber = 1, limit = 10, query = '', sort = 'sort=asc(name.en)' }) => ({
+        url: `organizations?page=${pageNumber}&limit=${limit}&search=${query}&${sort}`,
+        method: 'GET',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+      providesTags: (result) =>
+        result ? [...result.data.map(({ id }) => ({ type: 'Organization', id })), 'Organization'] : ['Organization'],
+      transformResponse: (response) => response,
+    }),
+    deleteOrganization: builder.mutation({
+      query: ({ id, calendarId }) => ({
+        url: `organizations/${id}`,
+        method: 'DELETE',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: 'Organization', id: arg.id }],
+    }),
   }),
 });
 
-export const { useAddOrganizationMutation, useLazyGetOrganizationQuery } = organizationApi;
+export const {
+  useAddOrganizationMutation,
+  useLazyGetOrganizationQuery,
+  useGetOrganizationQuery,
+  useLazyGetAllOrganizationQuery,
+  useDeleteOrganizationMutation,
+} = organizationApi;

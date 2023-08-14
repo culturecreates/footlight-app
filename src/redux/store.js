@@ -15,6 +15,8 @@ import { placesApi } from '../services/places';
 import { entitiesApi } from '../services/entities';
 import { inviteApi } from '../services/invite';
 import { organizationApi } from '../services/organization';
+import { peopleApi } from '../services/people';
+import { postalAddressApi } from '../services/postalAddress';
 
 const persistConfig = {
   key: 'root',
@@ -31,6 +33,8 @@ const middlewares = [
   entitiesApi.middleware,
   inviteApi.middleware,
   organizationApi.middleware,
+  peopleApi.middleware,
+  postalAddressApi.middleware,
 ];
 
 const appReducer = combineReducers({
@@ -47,6 +51,8 @@ const appReducer = combineReducers({
   [entitiesApi.reducerPath]: entitiesApi.reducer,
   [inviteApi.reducerPath]: inviteApi.reducer,
   [organizationApi.reducerPath]: organizationApi.reducer,
+  [peopleApi.reducerPath]: peopleApi.reducer,
+  [postalAddressApi.reducerPath]: postalAddressApi.reducer,
 });
 
 const rootReducer = (state, action) => appReducer(state, action);
