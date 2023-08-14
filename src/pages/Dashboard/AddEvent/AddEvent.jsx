@@ -647,7 +647,7 @@ function AddEvent() {
           key: 'event-review-publish-warning',
           content: (
             <>
-              {calendar[0]?.role === userRoles.GUEST
+              {calendar[0]?.role === <userRoles className="GUEST"></userRoles>
                 ? t('dashboard.events.addEditEvent.validations.errorReview')
                 : eventId && eventData?.publishState === eventPublishState.PUBLISHED
                 ? t('dashboard.events.addEditEvent.validations.errorDraft')
@@ -1969,6 +1969,7 @@ function AddEvent() {
                       ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio
                       : null
                   }
+                  isCrop
                 />
               </Form.Item>
 

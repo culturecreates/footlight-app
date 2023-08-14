@@ -7,7 +7,8 @@ import { useTranslation } from 'react-i18next';
 import ImageCrop from '../ImageCrop';
 
 function ImageUpload(props) {
-  const { setImageCropOpen, imageCropOpen, form, eventImageData, largeAspectRatio, thumbnailAspectRatio } = props;
+  const { setImageCropOpen, imageCropOpen, form, eventImageData, largeAspectRatio, thumbnailAspectRatio, isCrop } =
+    props;
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(props?.imageUrl ?? null);
@@ -35,7 +36,6 @@ function ImageUpload(props) {
     if (Array.isArray(e)) {
       return e;
     }
-    console.log(e?.fileList);
     return e?.fileList;
   };
   const getBase64 = (img, callback) => {
@@ -74,7 +74,7 @@ function ImageUpload(props) {
       getBase64(info.file.originFileObj, (url) => {
         setLoading(false);
         setImageUrl(url);
-        setImageCropOpen(true);
+        if (isCrop) setImageCropOpen(true);
       });
     }
   };
@@ -154,17 +154,19 @@ function ImageUpload(props) {
           )}
         </Upload.Dragger>
       </Form.Item>
-      <ImageCrop
-        setOpen={setImageCropOpen}
-        open={imageCropOpen}
-        image={imageUrl}
-        form={form}
-        cropValues={cropValues}
-        setCropValues={setCropValues}
-        setImage={setImageUrl}
-        largeAspectRatio={largeAspectRatio}
-        thumbnailAspectRatio={thumbnailAspectRatio}
-      />
+      {isCrop && (
+        <ImageCrop
+          setOpen={setImageCropOpen}
+          open={imageCropOpen}
+          image={imageUrl}
+          form={form}
+          cropValues={cropValues}
+          setCropValues={setCropValues}
+          setImage={setImageUrl}
+          largeAspectRatio={largeAspectRatio}
+          thumbnailAspectRatio={thumbnailAspectRatio}
+        />
+      )}
     </>
   );
 }
