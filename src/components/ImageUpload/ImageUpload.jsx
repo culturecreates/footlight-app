@@ -142,11 +142,12 @@ function ImageUpload(props) {
               },
             ]
           }
-          listType="picture"
+          listType="picture-card"
           beforeUpload={beforeUpload}
+          onPreview={() => setImageCropOpen(true)}
           showUploadList={{
             showPreviewIcon: !props?.imageReadOnly ? true : false,
-            previewIcon: <EditOutlined style={{ color: '#1B3DE6' }} onClick={() => setImageCropOpen(true)} />,
+            previewIcon: <EditOutlined style={{ color: '#1B3DE6' }} />,
             showDownloadIcon: props?.imageReadOnly ? true : false,
             downloadIcon: <DownloadOutlined style={{ color: '#1B3DE6' }} />,
             showRemoveIcon: imageUrl ? true : false,

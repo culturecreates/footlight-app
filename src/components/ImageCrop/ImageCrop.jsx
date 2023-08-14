@@ -176,7 +176,6 @@ function ImageCrop(props) {
                 showGrid={false}
                 image={image}
                 crop={crop}
-                initialCroppedAreaPixels={cropValues?.large}
                 zoom={zoom}
                 aspect={aspectRatio}
                 onCropChange={onCropChange}
