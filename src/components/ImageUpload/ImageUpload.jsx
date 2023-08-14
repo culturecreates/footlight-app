@@ -142,7 +142,7 @@ function ImageUpload(props) {
               },
             ]
           }
-          listType="picture-card"
+          listType="picture"
           beforeUpload={beforeUpload}
           onPreview={() => setImageCropOpen(true)}
           showUploadList={{
@@ -168,6 +168,7 @@ function ImageUpload(props) {
           )}
         </Upload.Dragger>
       </Form.Item>
+
       {isCrop && (
         <ImageCrop
           setOpen={setImageCropOpen}
