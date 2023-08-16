@@ -352,8 +352,8 @@
           "errorImage": "Cette image ne peut pas être enregistrée. Ajustez l'image ou essayez-en une autre."
         },
         "quickCreate": {
-          "title": "Créer un organisateur",
-          "subHeading": "Quel type d'organisateur voulez-vous créer ?",
+          "title": "Création Rapide",
+          "subHeading": "Quel type de profil voulez-vous créer ?",
           "person": "Personne",
           "organization": "Organisation",
           "create": "Créer",
