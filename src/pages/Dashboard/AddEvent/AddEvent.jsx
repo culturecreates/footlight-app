@@ -513,6 +513,28 @@ function AddEvent() {
             isFeatured: values?.isFeatured,
           };
 
+          let imageCrop = form.getFieldValue('imageCrop');
+          imageCrop = {
+            large: {
+              xCoordinate: imageCrop?.large?.x,
+              yCoordinate: imageCrop?.large?.y,
+              height: imageCrop?.large?.height,
+              width: imageCrop?.large?.width,
+            },
+            thumbnail: {
+              xCoordinate: imageCrop?.thumbnail?.x,
+              yCoordinate: imageCrop?.thumbnail?.y,
+              height: imageCrop?.thumbnail?.height,
+              width: imageCrop?.thumbnail?.width,
+            },
+            original: {
+              entityId: imageCrop?.original?.entityId,
+              height: imageCrop?.original?.height,
+              width: imageCrop?.original?.width,
+            },
+          };
+          eventObj['image'] = imageCrop;
+
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
             const formdata = new FormData();
             formdata.append('file', values?.dragger[0].originFileObj);
@@ -523,22 +545,10 @@ function AddEvent() {
                   let entityId = response?.data?.original?.entityId;
                   let imageCrop = form.getFieldValue('imageCrop');
                   imageCrop = {
-                    large: {
-                      xCoordinate: imageCrop?.large?.x,
-                      yCoordinate: imageCrop?.large?.y,
-                      height: imageCrop?.large?.height,
-                      width: imageCrop?.large?.width,
-                    },
-                    thumbnail: {
-                      xCoordinate: imageCrop?.thumbnail?.x,
-                      yCoordinate: imageCrop?.thumbnail?.y,
-                      height: imageCrop?.thumbnail?.height,
-                      width: imageCrop?.thumbnail?.width,
-                    },
+                    ...imageCrop,
                     original: {
-                      entityId: entityId,
-                      height: imageCrop?.original?.height,
-                      width: imageCrop?.original?.width,
+                      ...imageCrop?.original,
+                      entityId,
                     },
                   };
                   eventObj['image'] = imageCrop;
@@ -557,26 +567,7 @@ function AddEvent() {
           } else {
             if (values?.draggerWrap) {
               if (values?.dragger && values?.dragger?.length == 0) eventObj['image'] = null;
-              else
-                eventObj['image'] = {
-                  large: {
-                    xCoordinate: eventData?.image?.large?.xCoordinate,
-                    yCoordinate: eventData?.image?.large?.yCoordinate,
-                    height: eventData?.image?.large?.height,
-                    width: eventData?.image?.large?.width,
-                  },
-                  original: {
-                    entityId: eventData?.image?.original?.entityId,
-                    height: eventData?.image?.original?.height,
-                    width: eventData?.image?.original?.width,
-                  },
-                  thumbnail: {
-                    xCoordinate: eventData?.image?.thumbnail?.xCoordinate,
-                    yCoordinate: eventData?.image?.thumbnail?.yCoordinate,
-                    height: eventData?.image?.thumbnail?.height,
-                    width: eventData?.image?.thumbnail?.width,
-                  },
-                };
+              else eventObj['image'] = imageCrop;
             }
 
             addUpdateEventApiHandler(eventObj, toggle)
@@ -1015,6 +1006,29 @@ function AddEvent() {
             daysOfWeek: eventData?.recurringEvent?.weekDays,
           };
           setFormValue(obj);
+        }
+        if (eventData?.image) {
+          form.setFieldsValue({
+            imageCrop: {
+              large: {
+                x: eventData?.image?.large?.xCoordinate,
+                y: eventData?.image?.large?.yCoordinate,
+                height: eventData?.image?.large?.height,
+                width: eventData?.image?.large?.width,
+              },
+              original: {
+                entityId: eventData?.image?.original?.entityId ?? null,
+                height: eventData?.image?.original?.height,
+                width: eventData?.image?.original?.width,
+              },
+              thumbnail: {
+                x: eventData?.image?.thumbnail?.xCoordinate,
+                y: eventData?.image?.thumbnail?.yCoordinate,
+                height: eventData?.image?.thumbnail?.height,
+                width: eventData?.image?.thumbnail?.width,
+              },
+            },
+          });
         }
       } else
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
