@@ -1,10 +1,3 @@
-.create-new-entity-page {
-  display: flex;
-  justify-content: flex-start;
-  gap: 24px;
-  flex-direction: column;
-}
-
 .create-new-entity-page .button-container .ant-btn {
   color: #0f0e98;
   border: none;
