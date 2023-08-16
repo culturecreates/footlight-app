@@ -124,7 +124,6 @@ function ImageUpload(props) {
     <>
       <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile}>
         <Upload.Dragger
-          name={eventImageData?.original?.entityId}
           accept='.png, .jpg, .jpeg"'
           className="upload-wrapper"
           multiple={false}
@@ -132,10 +131,39 @@ function ImageUpload(props) {
           disabled={props?.imageReadOnly}
           maxCount={1}
           onRemove={onRemove}
+          itemRender={(reactNode, file, fileList, actions) => {
+            return (
+              <span className="image-footer">
+                <span className="image-contents">
+                  <img className="image-thumbnail" src={file?.url ?? file?.thumbUrl} />
+                  <a className="image-name" target="_blank" rel="noopener noreferrer" href={file?.url ?? imageUrl}>
+                    {file?.name}
+                  </a>
+                </span>
+                <span className="image-actions">
+                  {props?.imageReadOnly && (
+                    <span onClick={actions?.download}>
+                      <DownloadOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
+                    </span>
+                  )}
+                  {(props?.imageUrl || imageUrl) && (
+                    <span onClick={actions?.remove}>
+                      <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
+                    </span>
+                  )}
+                  {!props?.imageReadOnly && (props?.imageUrl || imageUrl) && (
+                    <span className="edit-image" onClick={actions?.preview}>
+                      <EditOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
+                    </span>
+                  )}
+                </span>
+              </span>
+            );
+          }}
           defaultFileList={
             props?.imageUrl && [
               {
-                uid: '1',
+                uid: eventImageData?.original?.entityId,
                 name: eventImageData?.original?.entityId,
                 status: 'done',
                 url: props.imageUrl,
