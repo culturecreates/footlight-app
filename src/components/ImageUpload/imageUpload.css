@@ -21,8 +21,13 @@
   align-items: center;
   gap: 8px;
 }
+
+.image-footer .image-actions {
+  cursor: pointer;
+}
 .image-footer .image-name {
   white-space: nowrap;
+  cursor: pointer;
 }
 .image-footer .image-thumbnail {
   display: block;
