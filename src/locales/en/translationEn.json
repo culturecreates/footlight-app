@@ -354,8 +354,8 @@
           "errorImage": "This image cannot be saved. Adjust the image or try a different one."
         },
         "quickCreate": {
-          "title": "Create an organizer",
-          "subHeading": "What type of organizer you want to create?",
+          "title": "Quick Create",
+          "subHeading": "What do you want to create?",
           "person": "Person",
           "organization": "Organization",
           "create": "Create",
