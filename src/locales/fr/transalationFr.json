@@ -518,6 +518,13 @@
       }
     }
   },
+  "errorPage": {
+    "heading": "Oups, quelque chose s'est mal passé",
+    "notFoundMessage": "La page demandée n'a pas été trouvée (404)",
+    "serverErrorsMessage": "Si le problème persiste, informez le propriétaire du site {{code}}",
+    "jsErrorMessage": "Retourner à la page précédente",
+    "buttonText": "Retour"
+  },
   "common": {
     "tabEnglish": "Anglais",
     "tabFrench": "Français",

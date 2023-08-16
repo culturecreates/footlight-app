@@ -1,0 +1,67 @@
+.error-page {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--primary-white);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.error-page .content {
+  min-width: 500px;
+  max-width: 700px;
+  max-height: 750px;
+  width: 40%;
+  height: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.error-page .image-container {
+  height: 40%;
+}
+
+.error-page .image-container > svg {
+  width: 100%;
+  height: 100%;
+}
+
+.error-page h1 {
+  color: var(--content-neutral-primary, #222732);
+  text-align: center;
+  font-size: 60px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 120%;
+}
+
+.error-page .error-message,
+.error-page .error-time {
+  color: var(--content-neutral-secondary, #646d7b);
+  text-align: center;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.error-page .btn-container {
+  display: grid;
+  place-content: center;
+}
+
+.error-page .btn-container .ant-btn {
+  border-radius: 4px;
+  background: var(--content-action-default, #1b3de6);
+  color: var(--primary-white);
+  font-weight: 600;
+  text-transform: capitalize;
+  border: none;
+  font-size: 16px;
+  padding: 8px 16px;
+  display: grid;
+  place-content: center;
+}
