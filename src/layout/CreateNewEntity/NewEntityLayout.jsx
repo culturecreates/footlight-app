@@ -17,15 +17,17 @@ const NewEntityLayout = ({ children, heading, text, entityName }) => {
         <h1 className="heading"> {heading}</h1>
       </Col>
 
-      <Col className="content" span={16}>
-        <Col span={24}>
-          <h2 className="sub-heading">Search for another instance</h2>
-          <p>{text}</p>
-        </Col>
-        <Col span={24} className="search">
-          <p>{entityName}</p>
-          {children}
-        </Col>
+      <Col span={16}>
+        <div className="content">
+          <Col span={24}>
+            <h2 className="sub-heading">Search for another instance</h2>
+            <p>{text}</p>
+          </Col>
+          <Col span={24} className="search">
+            <p>{entityName}</p>
+            {children}
+          </Col>
+        </div>
       </Col>
     </Row>
   );
