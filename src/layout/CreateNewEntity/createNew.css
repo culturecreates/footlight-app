@@ -1,0 +1,39 @@
+.create-new-entity-page {
+  display: flex;
+  justify-content: flex-start;
+  gap: 24px;
+  flex-direction: column;
+}
+
+.create-new-entity-page > header > .button-container .ant-btn {
+  color: #0f0e98;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
+  font-weight: 600;
+}
+
+.create-new-entity-page .heading {
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.create-new-entity-page .sub-heading {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.create-new-entity-page > .content {
+  background-color: #ffffff;
+  padding: 24px;
+  border-radius: 4px;
+}
+
+.create-new-entity-page > .content .search p {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0em;
+  text-align: left;
+}
