@@ -2,14 +2,14 @@ import { Button, Row, Col } from 'antd';
 import React from 'react';
 import './createNew.css';
 
-const NewEntityLayout = ({ children, heading, text }) => {
+const NewEntityLayout = ({ children, heading, text, entityName }) => {
   return (
     <Row className="create-new-entity-page">
       <Col span={24}>
         <div className="button-container">
           <Button type="link">back to previous screen</Button>
         </div>
-        <h1 className="heading">{`New ${heading}`}</h1>
+        <h1 className="heading"> {heading}</h1>
       </Col>
 
       <Row className="content">
@@ -18,7 +18,7 @@ const NewEntityLayout = ({ children, heading, text }) => {
           <p>{text}</p>
         </Col>
         <Col span={24} className="search">
-          <p>{heading}</p>
+          <p>{entityName}</p>
           {children}
         </Col>
       </Row>
