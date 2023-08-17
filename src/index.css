@@ -11,6 +11,9 @@ html,
 body,
 #root {
   height: 100%;
+  --primary-white: #ffffff;
+  --content-neutral-primary: #222732;
+  --content-neutral-secondary: #646d7b;
 }
 
 body {

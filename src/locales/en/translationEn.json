@@ -362,8 +362,8 @@
           "errorImage": "This image cannot be saved. Adjust the image or try a different one."
         },
         "quickCreate": {
-          "title": "Create an organizer",
-          "subHeading": "What type of organizer you want to create?",
+          "title": "Quick Create",
+          "subHeading": "What do you want to create?",
           "person": "Person",
           "organization": "Organization",
           "create": "Create",
@@ -526,6 +526,13 @@
         "emptyLastName": "Enter your last name"
       }
     }
+  },
+  "errorPage": {
+    "heading": "Oops, something went wrong!",
+    "notFoundMessage": "The requested page could not be found (404)",
+    "serverErrorsMessage": "If the problem persists, let the site owner know {{code}}",
+    "jsErrorMessage": "Go back to the previous page",
+    "buttonText": "Back"
   },
   "common": {
     "tabEnglish": "English",

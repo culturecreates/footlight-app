@@ -360,8 +360,8 @@
           "errorImage": "Cette image ne peut pas être enregistrée. Ajustez l'image ou essayez-en une autre."
         },
         "quickCreate": {
-          "title": "Créer un organisateur",
-          "subHeading": "Quel type d'organisateur voulez-vous créer ?",
+          "title": "Création Rapide",
+          "subHeading": "Quel type de profil voulez-vous créer ?",
           "person": "Personne",
           "organization": "Organisation",
           "create": "Créer",
@@ -525,6 +525,13 @@
         "emptyLasttName": "Entrez votre nom"
       }
     }
+  },
+  "errorPage": {
+    "heading": "Oups, quelque chose s'est mal passé",
+    "notFoundMessage": "La page demandée n'a pas été trouvée (404)",
+    "serverErrorsMessage": "Si le problème persiste, informez le propriétaire du site {{code}}",
+    "jsErrorMessage": "Retourner à la page précédente",
+    "buttonText": "Retour"
   },
   "common": {
     "tabEnglish": "Anglais",
