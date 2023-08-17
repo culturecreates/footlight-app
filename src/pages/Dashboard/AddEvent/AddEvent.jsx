@@ -533,7 +533,6 @@ function AddEvent() {
               width: imageCrop?.original?.width,
             },
           };
-          eventObj['image'] = imageCrop;
 
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
             const formdata = new FormData();
@@ -543,7 +542,6 @@ function AddEvent() {
                 .unwrap()
                 .then((response) => {
                   let entityId = response?.data?.original?.entityId;
-                  let imageCrop = form.getFieldValue('imageCrop');
                   imageCrop = {
                     ...imageCrop,
                     original: {
