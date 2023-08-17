@@ -2,3 +2,42 @@
   background: #ffffff !important;
   border: 1px dashed #b6c1c9 !important;
 }
+
+.image-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  height: 66px;
+  padding: 8px;
+  margin-top: 8px;
+}
+.image-footer .image-contents,
+.image-footer .image-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.image-footer .image-actions {
+  cursor: pointer;
+}
+.image-footer .image-name {
+  white-space: nowrap;
+  cursor: pointer;
+}
+.image-footer .image-thumbnail {
+  display: block;
+  height: 48px;
+  overflow: hidden;
+  width: 48px;
+}
+
+.image-footer .edit-image {
+  border: 1px solid #607efc;
+  border-radius: 2px;
+  padding: 2px 4px;
+}

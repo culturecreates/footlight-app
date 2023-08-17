@@ -154,6 +154,7 @@ function AddEvent() {
   const [quickCreatePlaceModal, setQuickCreatePlaceModal] = useState(false);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
   const [selectedOrganizerPerformerSupporterType, setSelectedOrganizerPerformerSupporterType] = useState();
+  const [imageCropOpen, setImageCropOpen] = useState(false);
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -276,8 +277,8 @@ function AddEvent() {
             collaborators = [],
             dynamicFields = [],
             recurringEvent,
-            inLanguage = [],
-            image;
+            inLanguage = [];
+
           let eventObj;
           if (dateType === dateTypes.SINGLE) {
             if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
@@ -512,6 +513,27 @@ function AddEvent() {
             isFeatured: values?.isFeatured,
           };
 
+          let imageCrop = form.getFieldValue('imageCrop');
+          imageCrop = {
+            large: {
+              xCoordinate: imageCrop?.large?.x,
+              yCoordinate: imageCrop?.large?.y,
+              height: imageCrop?.large?.height,
+              width: imageCrop?.large?.width,
+            },
+            thumbnail: {
+              xCoordinate: imageCrop?.thumbnail?.x,
+              yCoordinate: imageCrop?.thumbnail?.y,
+              height: imageCrop?.thumbnail?.height,
+              width: imageCrop?.thumbnail?.width,
+            },
+            original: {
+              entityId: imageCrop?.original?.entityId,
+              height: imageCrop?.original?.height,
+              width: imageCrop?.original?.width,
+            },
+          };
+
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
             const formdata = new FormData();
             formdata.append('file', values?.dragger[0].originFileObj);
@@ -519,8 +541,15 @@ function AddEvent() {
               addImage({ data: formdata, calendarId })
                 .unwrap()
                 .then((response) => {
-                  image = response?.data;
-                  eventObj['image'] = image;
+                  let entityId = response?.data?.original?.entityId;
+                  imageCrop = {
+                    ...imageCrop,
+                    original: {
+                      ...imageCrop?.original,
+                      entityId,
+                    },
+                  };
+                  eventObj['image'] = imageCrop;
                   addUpdateEventApiHandler(eventObj, toggle)
                     .then((id) => resolve(id))
                     .catch((error) => {
@@ -536,21 +565,7 @@ function AddEvent() {
           } else {
             if (values?.draggerWrap) {
               if (values?.dragger && values?.dragger?.length == 0) eventObj['image'] = null;
-              else
-                eventObj['image'] = {
-                  height: eventData?.image?.height,
-                  type: eventData?.image?.type,
-                  width: eventData?.image?.width,
-                  large: {
-                    entityId: eventData?.image?.large?.entityId,
-                  },
-                  original: {
-                    entityId: eventData?.image?.original?.entityId,
-                  },
-                  thumbnail: {
-                    entityId: eventData?.image?.thumbnail?.entityId,
-                  },
-                };
+              else eventObj['image'] = imageCrop;
             }
 
             addUpdateEventApiHandler(eventObj, toggle)
@@ -621,7 +636,7 @@ function AddEvent() {
           key: 'event-review-publish-warning',
           content: (
             <>
-              {calendar[0]?.role === userRoles.GUEST
+              {calendar[0]?.role === <userRoles className="GUEST"></userRoles>
                 ? t('dashboard.events.addEditEvent.validations.errorReview')
                 : eventId && eventData?.publishState === eventPublishState.PUBLISHED
                 ? t('dashboard.events.addEditEvent.validations.errorDraft')
@@ -989,6 +1004,29 @@ function AddEvent() {
             daysOfWeek: eventData?.recurringEvent?.weekDays,
           };
           setFormValue(obj);
+        }
+        if (eventData?.image) {
+          form.setFieldsValue({
+            imageCrop: {
+              large: {
+                x: eventData?.image?.large?.xCoordinate,
+                y: eventData?.image?.large?.yCoordinate,
+                height: eventData?.image?.large?.height,
+                width: eventData?.image?.large?.width,
+              },
+              original: {
+                entityId: eventData?.image?.original?.entityId ?? null,
+                height: eventData?.image?.original?.height,
+                width: eventData?.image?.original?.width,
+              },
+              thumbnail: {
+                x: eventData?.image?.thumbnail?.xCoordinate,
+                y: eventData?.image?.thumbnail?.yCoordinate,
+                height: eventData?.image?.thumbnail?.height,
+                width: eventData?.image?.thumbnail?.width,
+              },
+            },
+          });
         }
       } else
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
@@ -1925,8 +1963,29 @@ function AddEvent() {
                     </p>
                   </Col>
                 </Row>
-                <ImageUpload imageUrl={eventData?.image?.original?.uri} imageReadOnly={false} preview={true} />
+                <ImageUpload
+                  imageUrl={eventData?.image?.large?.uri}
+                  originalImageUrl={eventData?.image?.original?.uri}
+                  imageReadOnly={false}
+                  preview={true}
+                  setImageCropOpen={setImageCropOpen}
+                  imageCropOpen={imageCropOpen}
+                  form={form}
+                  eventImageData={eventData?.image}
+                  largeAspectRatio={
+                    currentCalendarData?.imageConfig?.length > 0
+                      ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio
+                      : null
+                  }
+                  thumbnailAspectRatio={
+                    currentCalendarData?.imageConfig?.length > 0
+                      ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio
+                      : null
+                  }
+                  isCrop={true}
+                />
               </Form.Item>
+
               <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.organizer.title')}>
                 <Row>
                   <Col>
