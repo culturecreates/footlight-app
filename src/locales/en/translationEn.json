@@ -446,6 +446,15 @@
         "email": "Email",
         "memberOf": "Member of",
         "location": "Location"
+      },
+      "createNew": {
+        "search": {
+          "title": "New Organization",
+          "searchbarHeader": "Organization",
+          "searchHeading": "Search for another instance",
+          "text": "Search to link to an existing instance of the organization. If you don't find the organization, you can create it.",
+          "breadcrumb": "back to previous screen"
+        }
       }
     },
     "places": {

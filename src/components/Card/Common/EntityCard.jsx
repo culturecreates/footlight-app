@@ -4,11 +4,11 @@ import ArtsDataLink from '../../Tags/ArtsDataLink/ArtsDataLink';
 import { LinkOutlined } from '@ant-design/icons';
 
 const EntityCard = (props) => {
-  const { title, description, artsDataLink, imageUrl } = props;
+  const { title, description, artsDataLink, Logo } = props;
   return (
     <div className="search-option-entity-card">
       <div className="image-container">
-        <img src={imageUrl} alt={imageUrl} />
+        <Logo />
       </div>
       <div className="text-container">
         <div className="title">{title}</div>

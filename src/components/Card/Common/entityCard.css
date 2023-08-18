@@ -8,8 +8,13 @@
 }
 
 .search-option-entity-card .image-container {
-  max-height: 40px;
-  max-width: 40px;
+  height: 40px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background-color: rgb(227, 232, 255);
 }
 
 .search-option-entity-card .text-container {
@@ -17,11 +22,11 @@
   padding: 0 5px;
 }
 
-.search-option-entity-card .image-container img {
+/* .search-option-entity-card .image-container img {
   width: 100%;
   object-fit: contain;
   height: 100%;
-}
+} */
 
 .search-option-entity-card .title {
   font-weight: 700;

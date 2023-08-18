@@ -4,10 +4,13 @@ import EntityCard from '../../../components/Card/Common/EntityCard';
 import NoContent from '../../../components/NoContent/NoContent';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import NewEntityLayout from '../../../layout/CreateNewEntity/NewEntityLayout';
-import logo from '../../../assets/icons/Taxonomy.svg';
+import { ReactComponent as Logo } from '../../../assets/icons/organization-light.svg';
 import './createNew.css';
+import { useTranslation } from 'react-i18next';
 
 function CreateNewOrgainzation() {
+  const { t } = useTranslation();
+
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [organizationList, setOrganizationList] = useState([]);
   const [selectedOrganizers, setSelectedOrganizers] = useState([]);
@@ -16,13 +19,11 @@ function CreateNewOrgainzation() {
     setOrganizationList([]);
   }, []);
 
-  const heading = 'New Organization';
-  const entityName = 'Organization';
-  const text =
-    'Search to link to an existing instance of the organization. If you don’t find the organization, you can create it.';
-
   return (
-    <NewEntityLayout heading={heading} entityName={entityName} text={text}>
+    <NewEntityLayout
+      heading={t('dashboard.organization.createNew.search.title')}
+      entityName={t('dashboard.organization.createNew.search.searchbarHeader')}
+      text={t('dashboard.organization.createNew.search.text')}>
       <div className="search-bar-organization">
         <Popover
           open={isPopoverOpen}
@@ -49,7 +50,7 @@ function CreateNewOrgainzation() {
                         title={organizer.organizationName}
                         description={organizer.smallDescription}
                         artsDataLink={organizer.dummyLink}
-                        imageUrl={logo}
+                        Logo={Logo}
                       />
                     </div>
                   ))
