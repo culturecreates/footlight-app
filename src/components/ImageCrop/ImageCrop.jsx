@@ -11,18 +11,8 @@ import getCroppedImg from '../../utils/getCroppedImg';
 import { ratioChecker } from '../../utils/ratioChecker';
 
 function ImageCrop(props) {
-  const {
-    image,
-    open,
-    setOpen,
-    largeAspectRatio,
-    thumbnailAspectRatio,
-    form,
-    cropValues,
-    setCropValues,
-    setImage,
-    setThumbnailImage,
-  } = props;
+  const { image, open, setOpen, largeAspectRatio, thumbnailAspectRatio, form, cropValues, setCropValues, setImage } =
+    props;
   const { t } = useTranslation();
 
   let ASPECT_RATIO_TYPE = {
@@ -99,7 +89,6 @@ function ImageCrop(props) {
       imageCrop: cropValues,
     });
     showCroppedImage();
-    setOpen(false);
     setInitialLargeCroppedArea(cropValues?.large);
     setInitialThumbnailCroppedArea(cropValues?.thumbnail);
     setAspectRatioType(ASPECT_RATIO_TYPE.large.type);
@@ -120,9 +109,8 @@ function ImageCrop(props) {
   const showCroppedImage = useCallback(async () => {
     try {
       const croppedImage = await getCroppedImg(image, cropValues?.large, null);
-      const croppedThumbnailImage = await getCroppedImg(image, cropValues?.thumbnail, null);
       setImage(croppedImage);
-      setThumbnailImage(croppedThumbnailImage);
+      setOpen(false);
     } catch (e) {
       console.error(e);
     }
