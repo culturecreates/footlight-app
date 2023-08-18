@@ -90,15 +90,18 @@ function ImageCrop(props) {
     });
     showCroppedImage();
     setOpen(false);
-    setInitialLargeCroppedArea(undefined);
-    setInitialThumbnailCroppedArea(undefined);
+    setInitialLargeCroppedArea(cropValues?.large);
+    setInitialThumbnailCroppedArea(cropValues?.thumbnail);
     setAspectRatioType(ASPECT_RATIO_TYPE.large.type);
   };
 
   const onCancel = () => {
     setOpen(false);
-    setInitialLargeCroppedArea(undefined);
-    setInitialThumbnailCroppedArea(undefined);
+    let imageCrop = form.getFieldValue('imageCrop');
+    if (imageCrop) {
+      setInitialLargeCroppedArea(imageCrop?.large);
+      setInitialThumbnailCroppedArea(imageCrop?.thumbnail);
+    }
     setAspectRatioType(ASPECT_RATIO_TYPE.large.type);
     onLargeCropChange({ x: 0, y: 0 });
     onThumbnailCropChange({ x: 0, y: 0 });
@@ -169,43 +172,54 @@ function ImageCrop(props) {
             </Radio.Group>
           </Col>
           <Col span={24}>
-            <div className="controls">
-              <Button
-                type="text"
-                icon={<MinusOutlined color=" #646d7b" />}
-                onClick={() => {
-                  if (aspectRatioType === ASPECT_RATIO_TYPE.large.type) onLargeZoomChange(largeZoom - 0.1);
-                  else if (aspectRatioType === ASPECT_RATIO_TYPE.thumbnail.type)
-                    onThumbnailZoomChange(thumbnailZoom - 0.1);
-                }}
-              />
-              <input
-                type="range"
-                value={
-                  aspectRatioType === ASPECT_RATIO_TYPE.large.type
-                    ? !isNaN(largeZoom) && largeZoom
-                    : aspectRatioType === ASPECT_RATIO_TYPE.thumbnail.type && !isNaN(thumbnailZoom) && thumbnailZoom
-                }
-                min={1}
-                max={3}
-                step={0.1}
-                aria-labelledby="Zoom"
-                onChange={(e) => {
-                  if (aspectRatioType === ASPECT_RATIO_TYPE.large.type) onLargeZoomChange(e.target.value);
-                  else if (aspectRatioType === ASPECT_RATIO_TYPE.thumbnail.type) onThumbnailZoomChange(e.target.event);
-                }}
-                className="zoom-range"
-              />
-              <Button
-                type="text"
-                icon={<PlusOutlined style={{ color: '#646d7b' }} />}
-                onClick={() => {
-                  if (aspectRatioType === ASPECT_RATIO_TYPE.large.type) onLargeZoomChange(largeZoom + 0.1);
-                  else if (aspectRatioType === ASPECT_RATIO_TYPE.thumbnail.type)
-                    onThumbnailZoomChange(thumbnailZoom + 0.1);
-                }}
-              />
-            </div>
+            {aspectRatioType === ASPECT_RATIO_TYPE.large.type && (
+              <div className="controls">
+                <Button
+                  type="text"
+                  icon={<MinusOutlined color=" #646d7b" />}
+                  onClick={() => onLargeZoomChange(largeZoom - 0.1)}
+                />
+                <input
+                  type="range"
+                  value={!isNaN(largeZoom) && largeZoom}
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  aria-labelledby="Zoom"
+                  onChange={(e) => onLargeZoomChange(e.target.value)}
+                  className="zoom-range"
+                />
+                <Button
+                  type="text"
+                  icon={<PlusOutlined style={{ color: '#646d7b' }} />}
+                  onClick={() => onLargeZoomChange(largeZoom + 0.1)}
+                />
+              </div>
+            )}
+            {aspectRatioType === ASPECT_RATIO_TYPE.thumbnail.type && (
+              <div className="controls">
+                <Button
+                  type="text"
+                  icon={<MinusOutlined color=" #646d7b" />}
+                  onClick={() => onThumbnailZoomChange(thumbnailZoom - 0.1)}
+                />
+                <input
+                  type="range"
+                  value={!isNaN(thumbnailZoom) && thumbnailZoom}
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  aria-labelledby="Zoom"
+                  onChange={(e) => onThumbnailZoomChange(e.target.value)}
+                  className="zoom-range"
+                />
+                <Button
+                  type="text"
+                  icon={<PlusOutlined style={{ color: '#646d7b' }} />}
+                  onClick={() => onThumbnailZoomChange(thumbnailZoom + 0.1)}
+                />
+              </div>
+            )}
           </Col>
           <Col span={24}>
             <div className="crop-container">
