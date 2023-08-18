@@ -146,7 +146,7 @@ function ImageUpload(props) {
                       <DownloadOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
                     </span>
                   )}
-                  {(props?.imageUrl || imageUrl) && (
+                  {!props?.imageReadOnly && imageUrl && (
                     <span onClick={actions?.remove}>
                       <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
                     </span>
