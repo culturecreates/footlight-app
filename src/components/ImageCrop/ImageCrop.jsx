@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './imageCrop.css';
 import { Row, Col, Space, Radio, Button } from 'antd';
@@ -25,37 +25,49 @@ function ImageCrop(props) {
       type: 'THUMBNAIL',
     },
   };
-  const [crop, onCropChange] = useState(cropValues?.large);
-  const [zoom, onZoomChange] = useState(1);
-  const [aspectRatio, setAspectRatio] = useState(ASPECT_RATIO_TYPE.large.value);
+  const [largeCrop, onLargeCropChange] = useState({ x: 0, y: 0 });
+  const [thumbnailCrop, onThumbnailCropChange] = useState({ x: 0, y: 0 });
+
+  const [largeZoom, onLargeZoomChange] = useState(1);
+  const [thumbnailZoom, onThumbnailZoomChange] = useState(1);
+
   const [aspectRatioType, setAspectRatioType] = useState(ASPECT_RATIO_TYPE.large.type);
+  const [initialLargeCroppedArea, setInitialLargeCroppedArea] = useState(undefined);
+  const [initialThumbnailCroppedArea, setInitialThumbnailCroppedArea] = useState(undefined);
 
   const onCropAreaChange = (croppedArea, croppedAreaPixel) => {
-    switch (aspectRatioType) {
-      case ASPECT_RATIO_TYPE.large.type:
-        setCropValues({
-          ...cropValues,
-          large: {
-            x: croppedAreaPixel?.x,
-            y: croppedAreaPixel?.y,
-            height: croppedAreaPixel?.height,
-            width: croppedAreaPixel?.width,
-          },
-        });
-        break;
-      case ASPECT_RATIO_TYPE.thumbnail.type:
-        setCropValues({
-          ...cropValues,
-          thumbnail: {
-            x: croppedAreaPixel?.x,
-            y: croppedAreaPixel?.y,
-            height: croppedAreaPixel?.height,
-            width: croppedAreaPixel?.width,
-          },
-        });
-        break;
-      default:
-        break;
+    if (
+      !isNaN(croppedAreaPixel?.x) &&
+      !isNaN(croppedAreaPixel?.y) &&
+      !isNaN(croppedAreaPixel?.height) &&
+      !isNaN(croppedAreaPixel?.width)
+    ) {
+      switch (aspectRatioType) {
+        case ASPECT_RATIO_TYPE.large.type:
+          setCropValues({
+            ...cropValues,
+            large: {
+              x: croppedAreaPixel?.x,
+              y: croppedAreaPixel?.y,
+              height: croppedAreaPixel?.height,
+              width: croppedAreaPixel?.width,
+            },
+          });
+          break;
+        case ASPECT_RATIO_TYPE.thumbnail.type:
+          setCropValues({
+            ...cropValues,
+            thumbnail: {
+              x: croppedAreaPixel?.x,
+              y: croppedAreaPixel?.y,
+              height: croppedAreaPixel?.height,
+              width: croppedAreaPixel?.width,
+            },
+          });
+          break;
+        default:
+          break;
+      }
     }
   };
 
@@ -63,11 +75,9 @@ function ImageCrop(props) {
     switch (type) {
       case ASPECT_RATIO_TYPE.large.type:
         setAspectRatioType(ASPECT_RATIO_TYPE.large.type);
-        setAspectRatio(ASPECT_RATIO_TYPE.large.value);
         break;
       case ASPECT_RATIO_TYPE.thumbnail.type:
         setAspectRatioType(ASPECT_RATIO_TYPE.thumbnail.type);
-        setAspectRatio(ASPECT_RATIO_TYPE.thumbnail.value);
         break;
       default:
         break;
@@ -78,8 +88,20 @@ function ImageCrop(props) {
     form.setFieldsValue({
       imageCrop: cropValues,
     });
-    setOpen(false);
     showCroppedImage();
+    setInitialLargeCroppedArea(undefined);
+    setInitialThumbnailCroppedArea(undefined);
+    setAspectRatioType(ASPECT_RATIO_TYPE.large.type);
+    setOpen(false);
+  };
+
+  const onCancel = () => {
+    setInitialLargeCroppedArea(undefined);
+    setInitialThumbnailCroppedArea(undefined);
+    setAspectRatioType(ASPECT_RATIO_TYPE.large.type);
+    onLargeCropChange({ x: 0, y: 0 });
+    onThumbnailCropChange({ x: 0, y: 0 });
+    setOpen(false);
   };
 
   const showCroppedImage = useCallback(async () => {
@@ -90,6 +112,13 @@ function ImageCrop(props) {
       console.error(e);
     }
   }, [cropValues?.large]);
+
+  useEffect(() => {
+    if (open) {
+      setInitialLargeCroppedArea(cropValues?.large);
+      setInitialThumbnailCroppedArea(cropValues?.thumbnail);
+    }
+  }, [open]);
 
   return (
     <CustomModal
@@ -110,7 +139,7 @@ function ImageCrop(props) {
           key="cancel"
           size="large"
           label={t('dashboard.events.addEditEvent.otherInformation.image.crop.cancel')}
-          onClick={() => setOpen(false)}
+          onClick={() => onCancel()}
         />,
         <PrimaryButton
           key="add-dates"
@@ -133,6 +162,7 @@ function ImageCrop(props) {
           <Col span={24}>
             <Radio.Group
               defaultValue={ASPECT_RATIO_TYPE.large.type}
+              value={aspectRatioType}
               onChange={(event) => aspectRatioControl(event.target.value)}
               style={{ color: '#222732' }}>
               <Space direction="vertical">
@@ -147,41 +177,77 @@ function ImageCrop(props) {
           </Col>
           <Col span={24}>
             <div className="controls">
-              <Button type="text" icon={<MinusOutlined color=" #646d7b" />} onClick={() => onZoomChange(zoom - 0.1)} />
+              <Button
+                type="text"
+                icon={<MinusOutlined color=" #646d7b" />}
+                onClick={() => {
+                  if (aspectRatioType === ASPECT_RATIO_TYPE.large.type) onLargeZoomChange(largeZoom - 0.1);
+                  else if (aspectRatioType === ASPECT_RATIO_TYPE.thumbnail.type)
+                    onThumbnailZoomChange(thumbnailZoom - 0.1);
+                }}
+              />
               <input
                 type="range"
-                value={zoom}
+                value={
+                  aspectRatioType === ASPECT_RATIO_TYPE.large.type
+                    ? largeZoom
+                    : aspectRatioType === ASPECT_RATIO_TYPE.thumbnail.type && thumbnailZoom
+                }
                 min={1}
                 max={3}
                 step={0.1}
                 aria-labelledby="Zoom"
                 onChange={(e) => {
-                  onZoomChange(e.target.value);
+                  if (aspectRatioType === ASPECT_RATIO_TYPE.large.type) onLargeZoomChange(e.target.value);
+                  else if (aspectRatioType === ASPECT_RATIO_TYPE.thumbnail.type) onThumbnailZoomChange(e.target.event);
                 }}
                 className="zoom-range"
               />
               <Button
                 type="text"
                 icon={<PlusOutlined style={{ color: '#646d7b' }} />}
-                onClick={() => onZoomChange(zoom + 0.1)}
+                onClick={() => {
+                  if (aspectRatioType === ASPECT_RATIO_TYPE.large.type) onLargeZoomChange(largeZoom + 0.1);
+                  else if (aspectRatioType === ASPECT_RATIO_TYPE.thumbnail.type)
+                    onThumbnailZoomChange(thumbnailZoom + 0.1);
+                }}
               />
             </div>
           </Col>
           <Col span={24}>
             <div className="crop-container">
-              <Cropper
-                classes={{
-                  containerClassName: 'crop-area-container',
-                }}
-                showGrid={false}
-                image={image}
-                crop={crop}
-                zoom={zoom}
-                aspect={aspectRatio}
-                onCropChange={onCropChange}
-                onZoomChange={onZoomChange}
-                onCropAreaChange={onCropAreaChange}
-              />
+              {aspectRatioType === ASPECT_RATIO_TYPE.large.type && (
+                <Cropper
+                  classes={{
+                    containerClassName: 'crop-area-container',
+                  }}
+                  showGrid={false}
+                  image={image}
+                  crop={largeCrop}
+                  zoom={largeZoom}
+                  aspect={ASPECT_RATIO_TYPE.large.value}
+                  onCropChange={onLargeCropChange}
+                  onZoomChange={onLargeZoomChange}
+                  onCropComplete={onCropAreaChange}
+                  initialCroppedAreaPixels={initialLargeCroppedArea}
+                />
+              )}
+              {aspectRatioType === ASPECT_RATIO_TYPE.thumbnail.type && (
+                <Cropper
+                  classes={{
+                    containerClassName: 'crop-area-container',
+                  }}
+                  showGrid={false}
+                  image={image}
+                  crop={thumbnailCrop}
+                  zoom={thumbnailZoom}
+                  aspect={ASPECT_RATIO_TYPE.thumbnail.value}
+                  onCropChange={onThumbnailCropChange}
+                  onZoomChange={onThumbnailZoomChange}
+                  onCropComplete={onCropAreaChange}
+                  initialCroppedAreaPixels={initialThumbnailCroppedArea}
+                />
+              )}
             </div>
           </Col>
         </Row>
