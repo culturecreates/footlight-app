@@ -22,6 +22,7 @@ function ImageUpload(props) {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(props?.imageUrl ?? null);
   const [originalImage, setOriginalImage] = useState(originalImageUrl ?? null);
+  const [thumbnailImage, setThumbnailImage] = useState(eventImageData?.thumbnail?.uri ?? null);
 
   const [cropValues, setCropValues] = useState({
     large: {
@@ -135,7 +136,7 @@ function ImageUpload(props) {
             return (
               <span className="image-footer">
                 <span className="image-contents">
-                  <img className="image-thumbnail" src={file?.url ?? file?.thumbUrl} />
+                  <img className="image-thumbnail" src={thumbnailImage} />
                   <a className="image-name" target="_blank" rel="noopener noreferrer" href={file?.url ?? imageUrl}>
                     {file?.name}
                   </a>
@@ -208,6 +209,7 @@ function ImageUpload(props) {
           setImage={setImageUrl}
           largeAspectRatio={largeAspectRatio}
           thumbnailAspectRatio={thumbnailAspectRatio}
+          setThumbnailImage={setThumbnailImage}
         />
       )}
     </>
