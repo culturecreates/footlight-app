@@ -10,7 +10,7 @@ const NewEntityLayout = ({ children, heading, text, entityName }) => {
     <Row className="create-new-entity-page" gutter={[0, 24]}>
       <Col span={24}>
         <div className="button-container">
-          <Button type="link" onClick={navigate(-1)}>
+          <Button type="link" onClick={() => navigate(-1)}>
             back to previous screen
           </Button>
         </div>
