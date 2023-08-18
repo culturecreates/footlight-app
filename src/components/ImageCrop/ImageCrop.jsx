@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import './imageCrop.css';
 import { Row, Col, Space, Radio, Button } from 'antd';
@@ -89,19 +89,19 @@ function ImageCrop(props) {
       imageCrop: cropValues,
     });
     showCroppedImage();
+    setOpen(false);
     setInitialLargeCroppedArea(undefined);
     setInitialThumbnailCroppedArea(undefined);
     setAspectRatioType(ASPECT_RATIO_TYPE.large.type);
-    setOpen(false);
   };
 
   const onCancel = () => {
+    setOpen(false);
     setInitialLargeCroppedArea(undefined);
     setInitialThumbnailCroppedArea(undefined);
     setAspectRatioType(ASPECT_RATIO_TYPE.large.type);
     onLargeCropChange({ x: 0, y: 0 });
     onThumbnailCropChange({ x: 0, y: 0 });
-    setOpen(false);
   };
 
   const showCroppedImage = useCallback(async () => {
@@ -112,13 +112,6 @@ function ImageCrop(props) {
       console.error(e);
     }
   }, [cropValues?.large]);
-
-  useEffect(() => {
-    if (open) {
-      setInitialLargeCroppedArea(cropValues?.large);
-      setInitialThumbnailCroppedArea(cropValues?.thumbnail);
-    }
-  }, [open]);
 
   return (
     <CustomModal
@@ -190,8 +183,8 @@ function ImageCrop(props) {
                 type="range"
                 value={
                   aspectRatioType === ASPECT_RATIO_TYPE.large.type
-                    ? largeZoom
-                    : aspectRatioType === ASPECT_RATIO_TYPE.thumbnail.type && thumbnailZoom
+                    ? !isNaN(largeZoom) && largeZoom
+                    : aspectRatioType === ASPECT_RATIO_TYPE.thumbnail.type && !isNaN(thumbnailZoom) && thumbnailZoom
                 }
                 min={1}
                 max={3}
