@@ -17,7 +17,20 @@
 }
 
 .search-bar-organization .ant-popover-inner-content .search-scrollable-content {
-  max-height: 350px;
+  max-height: 250px;
   overflow-y: scroll;
-  padding: 0px 16px 0 8px;
 }
+
+.search-bar-organization .quick-create {
+  background-color: #eff2ff;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: #1b3de6;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  height: 40px;
+  padding: 12px;
+}
+
