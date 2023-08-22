@@ -22,6 +22,7 @@ import {
   createSearchParams,
 } from 'react-router-dom';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
+import { PathName } from '../../../constants/pathName';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
@@ -140,7 +141,10 @@ function Organizations() {
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Main>
           <h4 className="events-heading">{t('dashboard.organization.organizations')}</h4>
-          <AddOrganization label={t('dashboard.organization.organization')} />
+          <AddOrganization
+            label={t('dashboard.organization.organization')}
+            onClick={() => navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.Search}`)}
+          />
           <OrganizationSearch
             placeholder={t('dashboard.organization.search.placeholder')}
             onPressEnter={(e) => onSearchHandler(e)}

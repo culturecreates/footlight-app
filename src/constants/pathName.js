@@ -15,5 +15,6 @@ export const PathName = {
   Join: '/join',
   User: '/user',
   Profile: '/profile',
+  Search: '/search',
   NotFound: '/*',
 };
