@@ -6,6 +6,7 @@ export const PathName = {
   Events: '/events',
   Places: '/places',
   Organizations: '/organizations',
+  AddOrganization: '/add-organization',
   People: '/people',
   Taxonomies: '/taxonomies',
   Settings: '/settings',

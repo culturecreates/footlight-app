@@ -452,7 +452,11 @@
           "title": "Nouvelle organisation",
           "text": "Recherchez pour établir un lien avec une instance existante de l'organisation dans d'autres sources de données. Si vous ne trouvez pas l'organisation, vous pouvez la créer.",
           "searchHeading": "Rechercher une autre instance",
-          "breadcrumb":"Retour à l'écran précédent"
+          "breadcrumb": "Retour à l'écran précédent"
+        },
+        "addOrganization": {
+          "newOrganization": "Nouvelle organisation",
+          "editOrganization": "Modifier l’organisation"
         }
       }
     },
