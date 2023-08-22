@@ -18,6 +18,7 @@ import OrganizationsReadOnly from '../pages/Dashboard/OrganizationsReadOnly';
 import PersonReadOnly from '../pages/Dashboard/PersonReadOnly';
 import PlaceReadOnly from '../pages/Dashboard/PlaceReadOnly';
 import { Translation } from 'react-i18next';
+import SearchOrganizations from '../pages/Dashboard/SearchOrganizations';
 
 export const router = createBrowserRouter([
   {
@@ -86,6 +87,10 @@ export const router = createBrowserRouter([
       {
         path: `:calendarId${PathName.Organizations}`,
         element: <Organizations />,
+      },
+      {
+        path: `:calendarId${PathName.Organizations}${PathName.Search}`,
+        element: <SearchOrganizations />,
       },
       {
         path: `:calendarId${PathName.Organizations}/:organizationId`,

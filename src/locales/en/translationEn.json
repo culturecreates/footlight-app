@@ -453,7 +453,10 @@
           "searchbarHeader": "Organization",
           "searchHeading": "Search for another instance",
           "text": "Search to link to an existing instance of the organization. If you don't find the organization, you can create it.",
-          "breadcrumb": "back to previous screen"
+          "breadcrumb": "back to previous screen",
+          "linkText": "Artsdata",
+          "createNew": "Create new organization",
+          "create": "Create"
         }
       }
     },
