@@ -456,6 +456,10 @@
           "linkText": "Artsdata",
           "createNew": "Créer une nouvelle organisation",
           "create": "Créer"
+        },
+        "addOrganization": {
+          "newOrganization": "Nouvelle organisation",
+          "editOrganization": "Modifier l’organisation"
         }
       }
     },

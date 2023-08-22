@@ -18,6 +18,7 @@ import OrganizationsReadOnly from '../pages/Dashboard/OrganizationsReadOnly';
 import PersonReadOnly from '../pages/Dashboard/PersonReadOnly';
 import PlaceReadOnly from '../pages/Dashboard/PlaceReadOnly';
 import { Translation } from 'react-i18next';
+import CreateNewOrganization from '../pages/Dashboard/CreateNewOrganization';
 import SearchOrganizations from '../pages/Dashboard/SearchOrganizations';
 
 export const router = createBrowserRouter([
@@ -98,6 +99,10 @@ export const router = createBrowserRouter([
         handle: {
           crumb: () => <Translation>{(t) => t('dashboard.organization.organizations')}</Translation>,
         },
+      },
+      {
+        path: `:calendarId${PathName.Organizations}${PathName.AddOrganization}`,
+        element: <CreateNewOrganization />,
       },
       {
         path: `:calendarId${PathName.People}`,
