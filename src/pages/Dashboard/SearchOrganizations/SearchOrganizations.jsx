@@ -7,15 +7,16 @@ import NewEntityLayout from '../../../layout/CreateNewEntity/NewEntityLayout';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { ReactComponent as Logo } from '../../../assets/icons/organization-light.svg';
 import { useTranslation } from 'react-i18next';
-import './createNew.css';
+import './searchOrganizations.css';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
 import { useOutletContext, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
-import { PlusCircleOutlined } from '@ant-design/icons';
+import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import CreateOrganizationButton from '../../../components/Card/Common/CreateOrganizationButton';
 
-function CreateNewOrgainzation() {
+function SearchOrganizations() {
   const { t } = useTranslation();
   const { user } = useSelector(getUserDetails);
   const [currentCalendarData] = useOutletContext();
@@ -103,7 +104,7 @@ function CreateNewOrgainzation() {
                             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             calendarContentLanguage: calendarContentLanguage,
                           })}
-                          artsDataLink={organizer?.uri}
+                          artsDataLink={artsDataLinkChecker(organizer?.uri)}
                           Logo={Logo}
                           linkText={t('dashboard.organization.createNew.search.linkText')}
                         />
@@ -113,20 +114,7 @@ function CreateNewOrgainzation() {
                     <NoContent />
                   )}
                 </div>
-                <div
-                  className="quick-create"
-                  onClick={() => {
-                    setIsPopoverOpen(false);
-                  }}>
-                  <PlusCircleOutlined />
-                  {quickCreateKeyword !== '' ? (
-                    <>
-                      {t('dashboard.organization.createNew.search.create')}&nbsp;{quickCreateKeyword}&nbsp;
-                    </>
-                  ) : (
-                    <>{t('dashboard.organization.createNew.search.createNew')}</>
-                  )}
-                </div>
+                {quickCreateKeyword?.length > 0 && <CreateOrganizationButton quickCreateKeyword={quickCreateKeyword} />}
               </div>
             }>
             <EventsSearch
@@ -149,4 +137,4 @@ function CreateNewOrgainzation() {
   );
 }
 
-export default CreateNewOrgainzation;
+export default SearchOrganizations;
