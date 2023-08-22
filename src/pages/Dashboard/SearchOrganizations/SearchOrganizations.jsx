@@ -14,7 +14,7 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
-import CreateOrganizationButton from '../../../components/Card/Common/CreateOrganizationButton';
+import CreateEntityButton from '../../../components/Card/Common/CreateEntityButton';
 
 function SearchOrganizations() {
   const { t } = useTranslation();
@@ -113,7 +113,7 @@ function SearchOrganizations() {
                     <NoContent />
                   )}
                 </div>
-                {quickCreateKeyword?.length > 0 && <CreateOrganizationButton quickCreateKeyword={quickCreateKeyword} />}
+                {quickCreateKeyword?.length > 0 && <CreateEntityButton quickCreateKeyword={quickCreateKeyword} />}
               </div>
             }>
             <EventsSearch

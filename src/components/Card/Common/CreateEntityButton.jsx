@@ -2,7 +2,7 @@ import React from 'react';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
-function CreateOrganizationButton({ quickCreateKeyword, props }) {
+function CreateEntityButton({ quickCreateKeyword, props }) {
   const { t } = useTranslation();
 
   return (
@@ -14,4 +14,4 @@ function CreateOrganizationButton({ quickCreateKeyword, props }) {
   );
 }
 
-export default CreateOrganizationButton;
+export default CreateEntityButton;
