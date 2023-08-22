@@ -47,7 +47,6 @@ function SearchOrganizations() {
     if (initialEntities && currentCalendarData) {
       setOrganizationList(initialEntities);
     }
-    console.log(initialOrganizersLoading, 'asd');
   }, [initialOrganizersLoading]);
 
   // handlers
