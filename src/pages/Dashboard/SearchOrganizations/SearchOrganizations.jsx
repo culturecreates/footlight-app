@@ -9,17 +9,19 @@ import { ReactComponent as Logo } from '../../../assets/icons/organization-light
 import { useTranslation } from 'react-i18next';
 import './searchOrganizations.css';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import CreateEntityButton from '../../../components/Card/Common/CreateEntityButton';
+import { PathName } from '../../../constants/pathName';
 
 function SearchOrganizations() {
   const { t } = useTranslation();
   const { user } = useSelector(getUserDetails);
   const [currentCalendarData] = useOutletContext();
+  const navigate = useNavigate();
 
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
@@ -106,6 +108,11 @@ function SearchOrganizations() {
                           artsDataLink={artsDataLinkChecker(organizer?.uri)}
                           Logo={Logo}
                           linkText={t('dashboard.organization.createNew.search.linkText')}
+                          onClick={() =>
+                            navigate(
+                              `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizer?.id}`,
+                            )
+                          }
                         />
                       </div>
                     ))
@@ -113,7 +120,17 @@ function SearchOrganizations() {
                     <NoContent />
                   )}
                 </div>
-                {quickCreateKeyword?.length > 0 && <CreateEntityButton quickCreateKeyword={quickCreateKeyword} />}
+                {quickCreateKeyword?.length > 0 && (
+                  <CreateEntityButton
+                    quickCreateKeyword={quickCreateKeyword}
+                    onClick={() => {
+                      navigate(
+                        `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}`,
+                        { name: quickCreateKeyword },
+                      );
+                    }}
+                  />
+                )}
               </div>
             }>
             <EventsSearch
