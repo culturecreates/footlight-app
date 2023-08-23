@@ -142,7 +142,7 @@ function Places() {
           <AddPlace
             label={t('dashboard.places.place')}
             onClick={() => {
-              navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
+              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`);
             }}
           />
           <PlaceSearch
