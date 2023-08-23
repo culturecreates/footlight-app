@@ -74,9 +74,12 @@ export const router = createBrowserRouter([
         path: `:calendarId${PathName.Profile}/:userId`,
         element: <Users />,
       },
-
       {
         path: `:calendarId${PathName.Places}`,
+        element: <Places />,
+      },
+      {
+        path: `:calendarId${PathName.Places}${PathName.Search}`,
         element: <Places />,
       },
       {
