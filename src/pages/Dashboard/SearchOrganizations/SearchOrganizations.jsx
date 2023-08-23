@@ -109,7 +109,7 @@ function SearchOrganizations() {
                             calendarContentLanguage: calendarContentLanguage,
                           })}
                           artsDataLink={artsDataLinkChecker(organizer?.uri)}
-                          Logo={organizer.logo ? organizer.logo?.thumbnail?.uri : <Logo />}
+                          Logo={organizer.logo ? <img src={organizer.logo?.thumbnail?.uri} /> : <Logo />}
                           linkText={t('dashboard.organization.createNew.search.linkText')}
                           onClick={() =>
                             navigate(

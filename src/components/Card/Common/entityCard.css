@@ -29,11 +29,11 @@
   padding: 0 5px;
 }
 
-/* .search-option-entity-card .image-container img {
+.search-option-entity-card .image-container img {
   width: 100%;
-  object-fit: contain;
+  object-fit: cover;
   height: 100%;
-} */
+}
 
 .search-option-entity-card .title {
   font-weight: 700;
