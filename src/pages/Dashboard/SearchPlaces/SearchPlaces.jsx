@@ -107,7 +107,13 @@ function SearchPlaces() {
                             calendarContentLanguage: calendarContentLanguage,
                           })}
                           artsDataLink={artsDataLinkChecker(place?.uri)}
-                          Logo={<EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />}
+                          Logo={
+                            place.logo ? (
+                              place.logo?.thumbnail?.uri
+                            ) : (
+                              <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
+                            )
+                          }
                           linkText={t('dashboard.places.createNew.search.linkText')}
                           onClick={() =>
                             navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`)
