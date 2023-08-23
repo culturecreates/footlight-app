@@ -20,6 +20,7 @@ import PlaceReadOnly from '../pages/Dashboard/PlaceReadOnly';
 import { Translation } from 'react-i18next';
 import CreateNewOrganization from '../pages/Dashboard/CreateNewOrganization';
 import SearchOrganizations from '../pages/Dashboard/SearchOrganizations';
+import SearchPerson from '../pages/Dashboard/SearchPerson';
 
 export const router = createBrowserRouter([
   {
@@ -107,6 +108,10 @@ export const router = createBrowserRouter([
       {
         path: `:calendarId${PathName.People}`,
         element: <People />,
+      },
+      {
+        path: `:calendarId${PathName.People}${PathName.Search}`,
+        element: <SearchPerson />,
       },
       {
         path: `:calendarId${PathName.People}/:personId`,

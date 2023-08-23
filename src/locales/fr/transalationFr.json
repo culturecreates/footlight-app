@@ -514,6 +514,16 @@
         "disambiguatingDescription": "Description identifiante",
         "description": "Description",
         "website": "Site web"
+      },
+      "createNew": {
+        "search": {
+          "title": "Nouvelle personne",
+          "searchbarHeader": "Données associées",
+          "searchHeading": "Rechercher une autre instance",
+          "text": "Recherchez pour établir un lien avec une instance existante de la personne dans d'autres sources de données. Si vous ne trouvez pas la personne, vous pouvez la créer.",
+          "breadcrumb": "Retour à l'écran précédent",
+          "linkText": "Artsdata"
+        }
       }
     },
     "userProfile": {

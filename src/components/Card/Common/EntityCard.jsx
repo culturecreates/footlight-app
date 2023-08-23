@@ -7,9 +7,7 @@ const EntityCard = (props) => {
   const { title, description, artsDataLink, Logo, linkText, onClick } = props;
   return (
     <div className="search-option-entity-card" onClick={onClick}>
-      <div className="image-container">
-        <Logo />
-      </div>
+      <div className="image-container">{Logo}</div>
       <div className="text-container">
         <div className="title">{title}</div>
         <div className="description">{description}</div>
