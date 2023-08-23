@@ -76,7 +76,10 @@ function SearchOrganizations() {
             arrow={false}
             overlayClassName="event-popover"
             placement="bottom"
-            onOpenChange={(open) => setIsPopoverOpen(open)}
+            onOpenChange={(open) => {
+              setIsPopoverOpen(open);
+              searchHandler(quickCreateKeyword);
+            }}
             autoAdjustOverflow={false}
             getPopupContainer={(trigger) => trigger.parentNode}
             trigger={['click']}
@@ -106,7 +109,7 @@ function SearchOrganizations() {
                             calendarContentLanguage: calendarContentLanguage,
                           })}
                           artsDataLink={artsDataLinkChecker(organizer?.uri)}
-                          Logo={Logo}
+                          Logo={<Logo />}
                           linkText={t('dashboard.organization.createNew.search.linkText')}
                           onClick={() =>
                             navigate(
