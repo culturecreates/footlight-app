@@ -456,11 +456,11 @@
           "breadcrumb": "Back to previous screen",
           "linkText": "Artsdata",
           "createNew": "Create new organization",
-          "create": "Create",
-          "addOrganization": {
-            "newOrganization": "New Organization",
-            "editOrganization": "Edit Organization"
-          }
+          "create": "Create"
+        },
+        "addOrganization": {
+          "newOrganization": "New Organization",
+          "editOrganization": "Edit Organization"
         }
       }
     },

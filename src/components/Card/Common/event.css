@@ -4,3 +4,20 @@
   padding-left: 24px;
   padding-right: 24px;
 }
+
+.add-event-section-col .add-event-section-wrapper {
+  padding: 24px;
+  background-color: #ffffff;
+}
+
+.add-event-section-col .add-event-date-wrap {
+  font-weight: 700;
+  font-size: 24px;
+  color: #222732;
+  margin-bottom: 24px;
+}
+.add-event-section-col .title-required:after {
+  margin-left: 4px;
+  content: '*';
+  color: #f43131;
+}
