@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import './organizationsReadOnly.css';
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
-import { Button, Col, Row } from 'antd';
+import { Col, Row } from 'antd';
+import OutlinedButton from '../../../components/Button/Outlined';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { useGetOrganizationQuery } from '../../../services/organization';
 import { PathName } from '../../../constants/pathName';
@@ -123,17 +124,18 @@ function OrganizationsReadOnly() {
                 />
               </Col>
               <Col flex="60px">
-                <ReadOnlyProtectedComponent>
+                <ReadOnlyProtectedComponent creator={organizationData.createdByUserId}>
                   <div className="button-container">
-                    <Button
-                      creator={organizationData.createdByUserId}
+                    <OutlinedButton
+                      label={t('dashboard.organization.readOnly.edit')}
+                      size="middle"
+                      style={{ height: '40px', width: '60px' }}
                       onClick={() =>
                         navigate(
                           `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizationData?.createdByUserId}`,
                         )
-                      }>
-                      {t('dashboard.organization.readOnly.edit')}
-                    </Button>
+                      }
+                    />
                   </div>
                 </ReadOnlyProtectedComponent>
               </Col>
