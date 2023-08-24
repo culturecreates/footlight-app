@@ -132,7 +132,7 @@ function OrganizationsReadOnly() {
                       style={{ height: '40px', width: '60px' }}
                       onClick={() =>
                         navigate(
-                          `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizationData?.createdByUserId}`,
+                          `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizationData?.id}`,
                         )
                       }
                     />
