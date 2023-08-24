@@ -445,7 +445,8 @@
         "phoneNumber": "Phone number",
         "email": "Email",
         "memberOf": "Member of",
-        "location": "Location"
+        "location": "Location",
+        "edit": "Edit"
       },
       "createNew": {
         "search": {

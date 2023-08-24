@@ -444,7 +444,8 @@
         "phoneNumber": "Numéro de téléphone",
         "email": "Courriel",
         "memberOf": "Membre de",
-        "location": "Endroit"
+        "location": "Endroit",
+        "Edit":"Edit"
       },
       "createNew": {
         "search": {
