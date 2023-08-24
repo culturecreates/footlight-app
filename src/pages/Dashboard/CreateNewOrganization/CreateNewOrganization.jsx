@@ -1,5 +1,6 @@
 import React from 'react';
 import './createNewOrganization.css';
+import '../AddEvent/addEvent.css';
 import { Form, Row, Col, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useOutletContext } from 'react-router-dom';
@@ -9,22 +10,26 @@ import { featureFlags } from '../../../utils/featureFlags';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import Card from '../../../components/Card/Common/Event';
+import { formFieldValue, renderFormFields } from '../../../constants/formFields';
+import { useSelector } from 'react-redux';
+import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { contentLanguageBilingual } from '../../../utils/bilingual';
 
 function CreateNewOrganization() {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [currentCalendarData] = useOutletContext();
+  const { user } = useSelector(getUserDetails);
+
+  const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
   formFields = formFields?.length > 0 && formFields[0];
-  console.log(formFields);
   let category = formFields?.formFields?.map((field) => field?.category);
-  console.log(category);
   let unique;
   let fields;
   if (category) unique = [...new Set(category)];
-  console.log(unique);
   if (unique)
     fields = formFields?.formFields
       ?.filter((field) => field.category === unique[0])
@@ -76,7 +81,26 @@ function CreateNewOrganization() {
             {fields?.map((section, index) => {
               return (
                 <Card title={section[0]?.category} key={index}>
-                  <></>
+                  <>
+                    {section?.map((field) => {
+                      return formFieldValue?.map((formField, index) => {
+                        if (formField?.type === field.type) {
+                          return renderFormFields({
+                            type: field?.type,
+                            dataType: field?.datatype,
+                            element: formField?.element,
+                            key: index,
+                            label: contentLanguageBilingual({
+                              en: field?.label?.en,
+                              fr: field?.label?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            }),
+                          });
+                        }
+                      });
+                    })}
+                  </>
                   <></>
                 </Card>
               );
