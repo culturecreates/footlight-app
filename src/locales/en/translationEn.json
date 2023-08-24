@@ -482,6 +482,7 @@
         "disambiguatingDescription": "Disambiguating description",
         "description": "Description",
         "website": "Website",
+        "edit": "Edit",
         "address": {
           "address": "Address",
           "streetAddress": "Street address",
@@ -526,7 +527,8 @@
         "name": "Name",
         "disambiguatingDescription": "Disambiguating description",
         "description": "Description",
-        "website": "Website"
+        "website": "Website",
+        "edit": "Edit"
       },
       "createNew": {
         "search": {
