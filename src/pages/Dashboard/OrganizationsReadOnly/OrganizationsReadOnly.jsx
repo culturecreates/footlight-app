@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import './organizationsReadOnly.css';
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
-import { Col, Row } from 'antd';
+import { Button, Col, Row } from 'antd';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { useGetOrganizationQuery } from '../../../services/organization';
 import { PathName } from '../../../constants/pathName';
@@ -22,6 +22,7 @@ import { featureFlags } from '../../../utils/featureFlags';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import Breadcrumbs from '../../../components/Breadcrumbs';
+import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 
 function OrganizationsReadOnly() {
   const { t } = useTranslation();
@@ -109,15 +110,34 @@ function OrganizationsReadOnly() {
     !taxonomyLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Row gutter={[32, 24]} className="read-only-wrapper">
-          <Col span={24}>
-            <Breadcrumbs
-              name={contentLanguageBilingual({
-                en: organizationData?.name?.en,
-                fr: organizationData?.name?.fr,
-                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                calendarContentLanguage: calendarContentLanguage,
-              })}
-            />
+          <Col span={24} flex="780px" style={{ paddingRight: '0' }}>
+            <Row>
+              <Col flex="auto">
+                <Breadcrumbs
+                  name={contentLanguageBilingual({
+                    en: organizationData?.name?.en,
+                    fr: organizationData?.name?.fr,
+                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                    calendarContentLanguage: calendarContentLanguage,
+                  })}
+                />
+              </Col>
+              <Col flex="60px">
+                <ReadOnlyProtectedComponent>
+                  <div className="button-container">
+                    <Button
+                      creator={organizationData.createdByUserId}
+                      onClick={() =>
+                        navigate(
+                          `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizationData?.createdByUserId}`,
+                        )
+                      }>
+                      {t('dashboard.organization.readOnly.edit')}
+                    </Button>
+                  </div>
+                </ReadOnlyProtectedComponent>
+              </Col>
+            </Row>
           </Col>
 
           <Col span={24}>
