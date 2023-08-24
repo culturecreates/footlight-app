@@ -1,6 +1,5 @@
 .search-option-entity-card {
   min-height: 56px;
-  max-height: 100px;
   padding: 8px 16px 8px 8px;
   gap: 8px;
   display: flex;
@@ -29,11 +28,11 @@
   padding: 0 5px;
 }
 
-/* .search-option-entity-card .image-container img {
+.search-option-entity-card .image-container img {
   width: 100%;
-  object-fit: contain;
+  object-fit: cover;
   height: 100%;
-} */
+}
 
 .search-option-entity-card .title {
   font-weight: 700;

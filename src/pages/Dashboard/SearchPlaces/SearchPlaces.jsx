@@ -1,23 +1,23 @@
 import { Popover } from 'antd';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import CreateEntityButton from '../../../components/Card/Common/CreateEntityButton';
 import EntityCard from '../../../components/Card/Common/EntityCard';
 import NoContent from '../../../components/NoContent/NoContent';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
-import NewEntityLayout from '../../../layout/CreateNewEntity/NewEntityLayout';
-import { entitiesClass } from '../../../constants/entitiesClass';
-import { ReactComponent as Logo } from '../../../assets/icons/organization-light.svg';
-import { useTranslation } from 'react-i18next';
-import './searchOrganizations.css';
-import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
-import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { getUserDetails } from '../../../redux/reducer/userSlice';
-import { contentLanguageBilingual } from '../../../utils/bilingual';
-import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
-import CreateEntityButton from '../../../components/Card/Common/CreateEntityButton';
 import { PathName } from '../../../constants/pathName';
+import NewEntityLayout from '../../../layout/CreateNewEntity/NewEntityLayout';
+import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import { contentLanguageBilingual } from '../../../utils/bilingual';
+import { EnvironmentOutlined } from '@ant-design/icons';
+import './searchPlaces.css';
+import { entitiesClass } from '../../../constants/entitiesClass';
+import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
 
-function SearchOrganizations() {
+function SearchPlaces() {
   const { t } = useTranslation();
   const { user } = useSelector(getUserDetails);
   const [currentCalendarData] = useOutletContext();
@@ -28,49 +28,47 @@ function SearchOrganizations() {
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [organizationList, setOrganizationList] = useState([]);
-  const [selectedOrganizers, setSelectedOrganizers] = useState([]);
+  const [placesList, setPlacesList] = useState([]);
+  const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
 
   let query = new URLSearchParams();
-  query.append('classes', entitiesClass.organization);
-  const { currentData: initialEntities, isLoading: initialOrganizersLoading } = useGetEntitiesQuery({
+  query.append('classes', entitiesClass.place);
+  const { currentData: initialEntities, isLoading: initialPlacesLoading } = useGetEntitiesQuery({
     calendarId,
     searchKey: '',
     classes: decodeURIComponent(query.toString()),
     sessionId: timestampRef,
   });
 
-  // effects
-
   useEffect(() => {
     if (initialEntities && currentCalendarData) {
-      setOrganizationList(initialEntities);
+      setPlacesList(initialEntities);
     }
-  }, [initialOrganizersLoading]);
+  }, [initialPlacesLoading]);
 
   // handlers
 
   const searchHandler = (value) => {
     let query = new URLSearchParams();
-    query.append('classes', entitiesClass.organization);
+    query.append('classes', entitiesClass.place);
     getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
       .unwrap()
       .then((response) => {
-        setOrganizationList(response);
+        setPlacesList(response);
       })
       .catch((error) => console.log(error));
   };
 
   return (
-    !initialOrganizersLoading && (
+    !initialPlacesLoading && (
       <NewEntityLayout
-        heading={t('dashboard.organization.createNew.search.title')}
-        entityName={t('dashboard.organization.createNew.search.searchbarHeader')}
-        text={t('dashboard.organization.createNew.search.text')}>
-        <div className="search-bar-organization">
+        heading={t('dashboard.places.createNew.search.title')}
+        entityName={t('dashboard.places.createNew.search.searchbarHeader')}
+        text={t('dashboard.places.createNew.search.text')}>
+        <div className="search-bar-places">
           <Popover
             open={isPopoverOpen}
             arrow={false}
@@ -86,35 +84,39 @@ function SearchOrganizations() {
             content={
               <div>
                 <div className="search-scrollable-content">
-                  {organizationList?.length > 0 ? (
-                    organizationList?.map((organizer, index) => (
+                  {placesList?.length > 0 ? (
+                    placesList?.map((place, index) => (
                       <div
                         key={index}
                         className="search-popover-options"
                         onClick={() => {
-                          setSelectedOrganizers([...selectedOrganizers, organizer]);
+                          setSelectedPlaces([...selectedPlaces, place]);
                           setIsPopoverOpen(false);
                         }}>
                         <EntityCard
                           title={contentLanguageBilingual({
-                            en: organizer?.name?.en,
-                            fr: organizer?.name?.fr,
+                            en: place?.name?.en,
+                            fr: place?.name?.fr,
                             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             calendarContentLanguage: calendarContentLanguage,
                           })}
                           description={contentLanguageBilingual({
-                            en: organizer?.disambiguatingDescription?.en,
-                            fr: organizer?.disambiguatingDescription?.fr,
+                            en: place?.disambiguatingDescription?.en,
+                            fr: place?.disambiguatingDescription?.fr,
                             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             calendarContentLanguage: calendarContentLanguage,
                           })}
-                          artsDataLink={artsDataLinkChecker(organizer?.uri)}
-                          Logo={organizer.logo ? <img src={organizer.logo?.thumbnail?.uri} /> : <Logo />}
-                          linkText={t('dashboard.organization.createNew.search.linkText')}
-                          onClick={() =>
-                            navigate(
-                              `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizer?.id}`,
+                          artsDataLink={artsDataLinkChecker(place?.uri)}
+                          Logo={
+                            place.logo ? (
+                              place.logo?.thumbnail?.uri
+                            ) : (
+                              <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
                             )
+                          }
+                          linkText={t('dashboard.places.createNew.search.linkText')}
+                          onClick={() =>
+                            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`)
                           }
                         />
                       </div>
@@ -127,10 +129,9 @@ function SearchOrganizations() {
                   <CreateEntityButton
                     quickCreateKeyword={quickCreateKeyword}
                     onClick={() => {
-                      navigate(
-                        `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}`,
-                        { name: quickCreateKeyword },
-                      );
+                      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`, {
+                        name: quickCreateKeyword,
+                      });
                     }}
                   />
                 )}
@@ -138,7 +139,7 @@ function SearchOrganizations() {
             }>
             <EventsSearch
               style={{ borderRadius: '4px' }}
-              placeholder="Search organizations"
+              placeholder="Search places"
               onClick={(e) => {
                 setQuickCreateKeyword(e.target.value);
                 setIsPopoverOpen(true);
@@ -156,4 +157,4 @@ function SearchOrganizations() {
   );
 }
 
-export default SearchOrganizations;
+export default SearchPlaces;
