@@ -496,6 +496,17 @@
         "notContainedInPlace": "Not contained in any place.",
         "venueAccessibility": "Venue accessibility",
         "items": "Items"
+      },
+      "createNew": {
+        "search": {
+          "title": "New place",
+          "searchbarHeader": "Linked data",
+          "searchHeading": "Search for another instance",
+          "text": "Search to link to an existing instance of the place in other data sources. If you don’t find the place, you can create it.",
+          "breadcrumb": "Back to previous screen",
+          "linkText": "Artsdata",
+          "create": "Create"
+        }
       }
     },
     "people": {

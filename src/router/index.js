@@ -21,6 +21,7 @@ import { Translation } from 'react-i18next';
 import CreateNewOrganization from '../pages/Dashboard/CreateNewOrganization';
 import SearchOrganizations from '../pages/Dashboard/SearchOrganizations';
 import SearchPerson from '../pages/Dashboard/SearchPerson';
+import SearchPlaces from '../pages/Dashboard/SearchPlaces';
 
 export const router = createBrowserRouter([
   {
@@ -74,10 +75,13 @@ export const router = createBrowserRouter([
         path: `:calendarId${PathName.Profile}/:userId`,
         element: <Users />,
       },
-
       {
         path: `:calendarId${PathName.Places}`,
         element: <Places />,
+      },
+      {
+        path: `:calendarId${PathName.Places}${PathName.Search}`,
+        element: <SearchPlaces />,
       },
       {
         path: `:calendarId${PathName.Places}/:placeId`,
