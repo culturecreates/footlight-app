@@ -445,7 +445,7 @@
         "email": "Courriel",
         "memberOf": "Membre de",
         "location": "Endroit",
-        "Edit":"Edit"
+        "Edit": "Edit"
       },
       "createNew": {
         "search": {
@@ -481,6 +481,7 @@
         "disambiguatingDescription": "Description identifiante",
         "description": "Description",
         "website": "Website",
+        "edit": "Edit",
         "address": {
           "address": "Adresse",
           "streetAddress": "Adresse postale",
@@ -524,7 +525,8 @@
         "name": "Nom",
         "disambiguatingDescription": "Description identifiante",
         "description": "Description",
-        "website": "Site web"
+        "website": "Site web",
+        "edit": "Edit"
       },
       "createNew": {
         "search": {
