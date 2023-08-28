@@ -10,6 +10,12 @@ const formTypes = {
   EDITOR: 'Editor',
 };
 
+// const datatypes = {
+//   MULTILINGUAL: 'MultiLingual',
+//   STANDARDFIELD: 'StandardField',
+//   STRING: 'String',
+// };
+
 export const formFieldValue = [
   {
     type: formTypes.INPUT,
@@ -48,11 +54,12 @@ export const renderFormFields = ({
   initialValue = undefined,
   name,
   key,
+  required,
   ...rest
 }) => {
   console.log(type, dataType);
   return (
-    <Form.Item name={name} key={key} initialValue={initialValue} rules={rules} {...rest}>
+    <Form.Item name={name} key={key} initialValue={initialValue} rules={rules} required={required} {...rest}>
       {element}
     </Form.Item>
   );
