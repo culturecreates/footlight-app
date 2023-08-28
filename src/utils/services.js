@@ -12,6 +12,9 @@ const baseQuery = fetchBaseQuery({
     const token = getState().user.accessToken;
     if (token) {
       headers.set('authorization', `Bearer ${token}`);
+    } else {
+      const tokenFromCookies = Cookies.get('accessToken');
+      headers.set('authorization', `Bearer ${tokenFromCookies}`);
     }
     return headers;
   },
