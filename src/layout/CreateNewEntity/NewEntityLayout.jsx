@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import './createNew.css';
 import { featureFlags } from '../../utils/featureFlags';
 import FeatureFlag from '../FeatureFlag/FeatureFlag';
+import { LeftOutlined } from '@ant-design/icons';
 
 const NewEntityLayout = ({ children, heading, text, entityName }) => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ const NewEntityLayout = ({ children, heading, text, entityName }) => {
         <Col span={24}>
           <div className="button-container">
             <Button type="link" onClick={() => navigate(-1)}>
+              <LeftOutlined style={{ fontSize: '12px', paddingRight: '5px' }} />
               {t('dashboard.organization.createNew.search.breadcrumb')}
             </Button>
           </div>
@@ -25,11 +27,11 @@ const NewEntityLayout = ({ children, heading, text, entityName }) => {
 
         <Col span={16}>
           <div className="content">
-            <Col span={24}>
+            <Col span={15}>
               <h2 className="sub-heading">{t('dashboard.organization.createNew.search.searchHeading')}</h2>
               <p className="text">{text}</p>
             </Col>
-            <Col span={24} className="search">
+            <Col span={15} className="search">
               <p>{entityName}</p>
               {children}
             </Col>

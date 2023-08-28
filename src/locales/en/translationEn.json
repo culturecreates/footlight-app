@@ -445,7 +445,8 @@
         "phoneNumber": "Phone number",
         "email": "Email",
         "memberOf": "Member of",
-        "location": "Location"
+        "location": "Location",
+        "edit": "Edit"
       },
       "createNew": {
         "search": {
@@ -481,6 +482,7 @@
         "disambiguatingDescription": "Disambiguating description",
         "description": "Description",
         "website": "Website",
+        "edit": "Edit",
         "address": {
           "address": "Address",
           "streetAddress": "Street address",
@@ -495,6 +497,17 @@
         "notContainedInPlace": "Not contained in any place.",
         "venueAccessibility": "Venue accessibility",
         "items": "Items"
+      },
+      "createNew": {
+        "search": {
+          "title": "New place",
+          "searchbarHeader": "Linked data",
+          "searchHeading": "Search for another instance",
+          "text": "Search to link to an existing instance of the place in other data sources. If you don’t find the place, you can create it.",
+          "breadcrumb": "Back to previous screen",
+          "linkText": "Artsdata",
+          "create": "Create"
+        }
       }
     },
     "people": {
@@ -514,7 +527,19 @@
         "name": "Name",
         "disambiguatingDescription": "Disambiguating description",
         "description": "Description",
-        "website": "Website"
+        "website": "Website",
+        "edit": "Edit"
+      },
+      "createNew": {
+        "search": {
+          "title": "New Person",
+          "searchbarHeader": "Linked data",
+          "searchHeading": "Search for another instance",
+          "text": "Search to link to an existing instance of the person in other data sources. If you don’t find the person, you can create them.",
+          "breadcrumb": "Back to previous screen",
+          "linkText": "Artsdata",
+          "create": "Create"
+        }
       }
     },
     "userProfile": {
