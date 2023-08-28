@@ -50,7 +50,7 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       let refreshResult;
       let token = api.getState().user?.refreshToken?.token;
       if (!token) {
-        token = Cookies.get('accessToken');
+        token = Cookies.get('refreshToken');
       }
       try {
         const fetchResponse = await fetch(`${process.env.REACT_APP_API_URL}/refresh-token`, {
