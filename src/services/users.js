@@ -1,5 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQueryWithReauth } from '../utils/services';
+
 export const usersApi = createApi({
   reducerPath: 'usersApi',
   baseQuery: baseQueryWithReauth,
@@ -20,12 +21,13 @@ export const usersApi = createApi({
       query: () => `users/roles`,
     }),
     getCurrentUser: builder.query({
-      query: ({ calendarId }) => {
+      query: (credentials) => {
         return {
           url: `users/current`,
           method: 'GET',
           headers: {
-            'calendar-id': calendarId,
+            authorization: `Bearer ${credentials.accessToken}`,
+            'calendar-id': credentials.calendarId,
           },
         };
       },
@@ -75,4 +77,5 @@ export const {
   useGetAllUsersQuery,
   useGetCurrentUserQuery,
   useUpdateCurrentUserMutation,
+  useLazyGetCurrentUserQuery,
 } = usersApi;

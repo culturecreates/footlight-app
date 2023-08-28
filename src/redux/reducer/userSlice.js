@@ -35,12 +35,13 @@ export const userSlice = createSlice({
     },
     clearUser: () => {
       Cookies.remove('accessToken');
+      Cookies.remove('refreshToken');
       return initialState;
     },
   },
 });
 
-export const { setToken, setUser, clearUser } = userSlice.actions;
+export const { setToken, setUser, clearUser, test } = userSlice.actions;
 
 export const getUserDetails = (state) => state.user;
 

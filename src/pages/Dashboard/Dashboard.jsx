@@ -7,12 +7,13 @@ import Sidebar from '../../components/Sidebar/Main';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../constants/pathName';
 import { useSelector, useDispatch } from 'react-redux';
-import { getUserDetails } from '../../redux/reducer/userSlice';
+import { getUserDetails, setUser } from '../../redux/reducer/userSlice';
 import { useLazyGetCalendarQuery, useGetAllCalendarsQuery } from '../../services/calendar';
 import { setSelectedCalendar } from '../../redux/reducer/selectedCalendarSlice';
 import { setInterfaceLanguage } from '../../redux/reducer/interfaceLanguageSlice';
 import i18n from 'i18next';
 import Cookies from 'js-cookie';
+import { useLazyGetCurrentUserQuery } from '../../services/users';
 
 const { Header, Content } = Layout;
 
@@ -29,6 +30,8 @@ function Dashboard() {
     { skip: accessToken ? false : true },
   );
 
+  const [getCurrentUserDetails] = useLazyGetCurrentUserQuery();
+
   let { calendarId } = useParams();
   let [searchParams] = useSearchParams();
 
@@ -37,8 +40,22 @@ function Dashboard() {
   );
 
   useEffect(() => {
-    if (!accessToken && accessToken === '') navigate(PathName.Login);
-    else {
+    if (!accessToken && accessToken === '') {
+      const accessToken = Cookies.get('accessToken');
+      const refreshToken = Cookies.get('refreshToken');
+
+      if (accessToken) {
+        getCurrentUserDetails({ accessToken, calendarId })
+          .unwrap()
+          .then((response) => {
+            dispatch(
+              setUser({ user: { ...response }, refreshToken: { token: refreshToken }, accessToken: accessToken }),
+            );
+          });
+      } else {
+        navigate(PathName.Login);
+      }
+    } else {
       if (location?.state?.previousPath?.toLowerCase() === 'login' || !calendarId)
         dispatch(setInterfaceLanguage(user?.interfaceLanguage?.toLowerCase()));
       i18n.changeLanguage(user?.interfaceLanguage?.toLowerCase());
