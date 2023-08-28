@@ -9,12 +9,12 @@ const mutex = new Mutex();
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.REACT_APP_API_URL,
   prepareHeaders: (headers, { getState }) => {
-    const token = getState().user.accessToken;
+    let token = getState().user.accessToken;
     if (token) {
       headers.set('authorization', `Bearer ${token}`);
     } else {
-      const tokenFromCookies = Cookies.get('accessToken');
-      headers.set('authorization', `Bearer ${tokenFromCookies}`);
+      token = Cookies.get('accessToken');
+      headers.set('authorization', `Bearer ${token}`);
     }
     return headers;
   },
@@ -49,6 +49,9 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       const release = await mutex.acquire();
       let refreshResult;
       let token = api.getState().user?.refreshToken?.token;
+      if (!token) {
+        token = Cookies.get('accessToken');
+      }
       try {
         const fetchResponse = await fetch(`${process.env.REACT_APP_API_URL}/refresh-token`, {
           method: 'POST',
