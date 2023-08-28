@@ -41,7 +41,7 @@ export const userSlice = createSlice({
   },
 });
 
-export const { setToken, setUser, clearUser, test } = userSlice.actions;
+export const { setToken, setUser, clearUser } = userSlice.actions;
 
 export const getUserDetails = (state) => state.user;
 
