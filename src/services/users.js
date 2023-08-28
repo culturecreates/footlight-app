@@ -21,13 +21,13 @@ export const usersApi = createApi({
       query: () => `users/roles`,
     }),
     getCurrentUser: builder.query({
-      query: (credentials) => {
+      query: ({ accessToken, calendarId }) => {
         return {
           url: `users/current`,
           method: 'GET',
           headers: {
-            authorization: `Bearer ${credentials.accessToken}`,
-            'calendar-id': credentials.calendarId,
+            authorization: `Bearer ${accessToken}`,
+            'calendar-id': calendarId,
           },
         };
       },

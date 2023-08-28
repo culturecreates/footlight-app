@@ -44,8 +44,8 @@ function Dashboard() {
       const accessToken = Cookies.get('accessToken');
       const refreshToken = Cookies.get('refreshToken');
 
-      if (accessToken) {
-        getCurrentUserDetails({ accessToken, calendarId })
+      if (accessToken && calendarId) {
+        getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
           .unwrap()
           .then((response) => {
             dispatch(
