@@ -10,7 +10,7 @@ import { featureFlags } from '../../../utils/featureFlags';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import Card from '../../../components/Card/Common/Event';
-import { formFieldValue, renderFormFields } from '../../../constants/formFields';
+import { formFieldValue, formTypes, renderFormFields } from '../../../constants/formFields';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
@@ -71,6 +71,21 @@ function CreateNewOrganization() {
       });
   };
 
+  const initialValueHandler = (type, mappedField, data) => {
+    let mappedFieldSplit = mappedField?.split('.');
+    let initialData = data;
+    for (let index = 0; index < mappedFieldSplit?.length; index++) {
+      initialData = initialData[mappedFieldSplit[index]];
+    }
+    switch (type) {
+      case formTypes.INPUT:
+        return initialData;
+
+      default:
+        break;
+    }
+  };
+
   console.log(fields);
   console.log(organizationData);
   return (
@@ -119,12 +134,14 @@ function CreateNewOrganization() {
                     {section?.map((field) => {
                       return formFieldValue?.map((formField, index) => {
                         if (formField?.type === field.type) {
+                          console.log(initialValueHandler(field?.type, field?.mappedField, organizationData));
                           return renderFormFields({
                             name: field?.mappedField?.split('.'),
                             type: field?.type,
                             dataType: field?.datatype,
                             element: formField?.element,
                             key: index,
+                            initialValue: initialValueHandler(field?.type, field?.mappedField, organizationData),
                             label: contentLanguageBilingual({
                               en: field?.label?.en,
                               fr: field?.label?.fr,

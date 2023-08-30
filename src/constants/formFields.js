@@ -1,9 +1,13 @@
 import { Form, Input } from 'antd';
 import TextEditor from '../components/TextEditor';
+import NoContent from '../components/NoContent/NoContent';
+import { CloseCircleOutlined } from '@ant-design/icons';
+import Tags from '../components/Tags/Common/Tags';
+import TreeSelectOption from '../components/TreeSelectOption/TreeSelectOption';
 
 const { TextArea } = Input;
 
-const formTypes = {
+export const formTypes = {
   INPUT: 'Input',
   MULTISELECT: 'MultiSelect',
   TEXTAREA: 'TextArea',
@@ -43,6 +47,29 @@ export const formFieldValue = [
   {
     type: formTypes.EDITOR,
     element: <TextEditor />,
+  },
+  {
+    type: formTypes.MULTISELECT,
+    element: (
+      <TreeSelectOption
+        allowClear
+        treeDefaultExpandAll
+        notFoundContent={<NoContent />}
+        clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+        // treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType', false, calendarContentLanguage)}
+        tagRender={(props) => {
+          const { label, closable, onClose } = props;
+          return (
+            <Tags
+              closable={closable}
+              onClose={onClose}
+              closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+              {label}
+            </Tags>
+          );
+        }}
+      />
+    ),
   },
 ];
 
