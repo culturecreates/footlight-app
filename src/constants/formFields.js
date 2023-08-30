@@ -15,12 +15,13 @@ export const formTypes = {
   EDITOR: 'Editor',
 };
 
-// const datatypes = {
-//   MULTILINGUAL: 'MultiLingual',
-//   STANDARDFIELD: 'StandardField',
-//   STRING: 'String',
-//   IDENTITYSTRING:IdentityString,
-// };
+export const dataTypes = {
+  MULTI_LINGUAL: 'MultiLingual',
+  STANDARD_FIELD: 'StandardField',
+  STRING: 'String',
+  IDENTITY_STRING: 'IdentityString',
+  URI_STRING: 'URIString',
+};
 
 export const formFieldValue = [
   {
@@ -54,26 +55,24 @@ export const formFieldValue = [
     type: formTypes.MULTISELECT,
     element: (data, user, type, isDynamicField, calendarContentLanguage) => {
       return (
-        <>
-          <TreeSelectOption
-            allowClear
-            treeDefaultExpandAll
-            notFoundContent={<NoContent />}
-            clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-            treeData={treeTaxonomyOptions(data, user, type, isDynamicField, calendarContentLanguage)}
-            tagRender={(props) => {
-              const { label, closable, onClose } = props;
-              return (
-                <Tags
-                  closable={closable}
-                  onClose={onClose}
-                  closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                  {label}
-                </Tags>
-              );
-            }}
-          />
-        </>
+        <TreeSelectOption
+          allowClear
+          treeDefaultExpandAll
+          notFoundContent={<NoContent />}
+          clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+          treeData={treeTaxonomyOptions(data, user, type, isDynamicField, calendarContentLanguage)}
+          tagRender={(props) => {
+            const { label, closable, onClose } = props;
+            return (
+              <Tags
+                closable={closable}
+                onClose={onClose}
+                closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                {label}
+              </Tags>
+            );
+          }}
+        />
       );
     },
   },

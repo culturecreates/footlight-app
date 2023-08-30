@@ -10,7 +10,7 @@ import { featureFlags } from '../../../utils/featureFlags';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import Card from '../../../components/Card/Common/Event';
-import { formFieldValue, formTypes, renderFormFields } from '../../../constants/formFields';
+import { dataTypes, formFieldValue, formTypes, renderFormFields } from '../../../constants/formFields';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
@@ -81,7 +81,7 @@ function CreateNewOrganization() {
       });
   };
 
-  const initialValueHandler = (type, mappedField, data) => {
+  const initialValueHandler = (type, mappedField, datatype, data) => {
     let mappedFieldSplit = mappedField?.split('.');
     let initialData = data;
     for (let index = 0; index < mappedFieldSplit?.length; index++) {
@@ -89,7 +89,8 @@ function CreateNewOrganization() {
     }
     switch (type) {
       case formTypes.INPUT:
-        return initialData;
+        if (datatype === dataTypes.URI_STRING) return initialData?.uri;
+        else return initialData;
 
       case formTypes.MULTISELECT:
         return initialData?.map((concept) => concept?.entityId);
@@ -148,7 +149,6 @@ function CreateNewOrganization() {
                     {section?.map((field) => {
                       return formFieldValue?.map((formField, index) => {
                         if (formField?.type === field.type) {
-                          console.log(initialValueHandler(field?.type, field?.mappedField, organizationData));
                           return renderFormFields({
                             name: field?.mappedField?.split('.'),
                             type: field?.type,
@@ -161,7 +161,12 @@ function CreateNewOrganization() {
                               calendarContentLanguage,
                             ),
                             key: index,
-                            initialValue: initialValueHandler(field?.type, field?.mappedField, organizationData),
+                            initialValue: initialValueHandler(
+                              field?.type,
+                              field?.mappedField,
+                              field?.datatype,
+                              organizationData,
+                            ),
                             label: contentLanguageBilingual({
                               en: field?.label?.en,
                               fr: field?.label?.fr,
