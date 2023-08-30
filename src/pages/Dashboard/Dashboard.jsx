@@ -47,7 +47,7 @@ function Dashboard() {
       if (!calendarId) {
         calendarId = Cookies.get('calendarId');
       }
-      if (accessToken) {
+      if (accessToken && calendarId) {
         getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
           .unwrap()
           .then((response) => {
