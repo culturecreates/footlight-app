@@ -14,6 +14,7 @@ import LoginInput from '../../components/Input/Common';
 import PasswordInput from '../../components/Input/Password';
 import { setInterfaceLanguage } from '../../redux/reducer/interfaceLanguageSlice';
 import i18n from 'i18next';
+import Cookies from 'js-cookie';
 
 const Login = () => {
   const { t } = useTranslation();
@@ -38,7 +39,8 @@ const Login = () => {
   }, []);
 
   useEffect(() => {
-    if (accessToken && accessToken != '') {
+    const savedAccessToken = Cookies.get('accessToken');
+    if ((accessToken && accessToken != '') || (savedAccessToken && savedAccessToken != '')) {
       navigate(PathName.Dashboard, { state: { previousPath: 'login' } });
     }
   }, [accessToken]);
