@@ -15,6 +15,8 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useGetOrganizationQuery } from '../../../services/organization';
+import { taxonomyClass } from '../../../constants/taxonomyClass';
+import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -36,6 +38,14 @@ function CreateNewOrganization() {
     { id: organizationId, calendarId, sessionId: timestampRef },
     { skip: organizationId ? false : true },
   );
+
+  const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
+    calendarId,
+    search: '',
+    taxonomyClass: taxonomyClass.ORGANIZATION,
+    includeConcepts: true,
+    sessionId: timestampRef,
+  });
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -86,12 +96,13 @@ function CreateNewOrganization() {
     }
   };
 
-  console.log(fields);
-  console.log(organizationData);
+  // console.log(fields);
+  // console.log(organizationData);
   return (
     fields &&
     organizationSuccess &&
-    !organizationLoading && (
+    !organizationLoading &&
+    !taxonomyLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
         <div>
           <Form form={form} layout="vertical" name="event">
@@ -139,7 +150,13 @@ function CreateNewOrganization() {
                             name: field?.mappedField?.split('.'),
                             type: field?.type,
                             dataType: field?.datatype,
-                            element: formField?.element,
+                            element: formField?.element(
+                              allTaxonomyData,
+                              user,
+                              field?.mappedField,
+                              false,
+                              calendarContentLanguage,
+                            ),
                             key: index,
                             initialValue: initialValueHandler(field?.type, field?.mappedField, organizationData),
                             label: contentLanguageBilingual({

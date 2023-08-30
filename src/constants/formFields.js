@@ -4,6 +4,7 @@ import NoContent from '../components/NoContent/NoContent';
 import { CloseCircleOutlined } from '@ant-design/icons';
 import Tags from '../components/Tags/Common/Tags';
 import TreeSelectOption from '../components/TreeSelectOption/TreeSelectOption';
+import { treeTaxonomyOptions } from '../components/TreeSelectOption/treeSelectOption.settings';
 
 const { TextArea } = Input;
 
@@ -23,7 +24,7 @@ export const formTypes = {
 export const formFieldValue = [
   {
     type: formTypes.INPUT,
-    element: (
+    element: () => (
       <TextArea
         autoSize
         autoComplete="off"
@@ -35,7 +36,7 @@ export const formFieldValue = [
   },
   {
     type: formTypes.TEXTAREA,
-    element: (
+    element: () => (
       <TextArea
         autoSize
         autoComplete="off"
@@ -46,36 +47,40 @@ export const formFieldValue = [
   },
   {
     type: formTypes.EDITOR,
-    element: <TextEditor />,
+    element: () => <TextEditor />,
   },
   {
     type: formTypes.MULTISELECT,
-    element: (
-      <TreeSelectOption
-        allowClear
-        treeDefaultExpandAll
-        notFoundContent={<NoContent />}
-        clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-        // treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType', false, calendarContentLanguage)}
-        tagRender={(props) => {
-          const { label, closable, onClose } = props;
-          return (
-            <Tags
-              closable={closable}
-              onClose={onClose}
-              closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-              {label}
-            </Tags>
-          );
-        }}
-      />
-    ),
+    element: (data, user, type, isDynamicField, calendarContentLanguage) => {
+      return (
+        <>
+          <TreeSelectOption
+            allowClear
+            treeDefaultExpandAll
+            notFoundContent={<NoContent />}
+            clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+            treeData={treeTaxonomyOptions(data, user, type, isDynamicField, calendarContentLanguage)}
+            tagRender={(props) => {
+              const { label, closable, onClose } = props;
+              return (
+                <Tags
+                  closable={closable}
+                  onClose={onClose}
+                  closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                  {label}
+                </Tags>
+              );
+            }}
+          />
+        </>
+      );
+    },
   },
 ];
 
 export const renderFormFields = ({
-  type,
-  dataType,
+  // type,
+  // dataType,
   element,
   rules = [],
   initialValue = undefined,
@@ -84,7 +89,6 @@ export const renderFormFields = ({
   required,
   ...rest
 }) => {
-  console.log(type, dataType);
   return (
     <Form.Item name={name} key={key} initialValue={initialValue} rules={rules} required={required} {...rest}>
       {element}
