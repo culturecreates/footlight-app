@@ -69,15 +69,12 @@ function Dashboard() {
     if (calendarId && accessToken) {
       getCalendar({ id: calendarId, sessionId: timestampRef });
       dispatch(setSelectedCalendar(String(calendarId)));
-      console.log('first');
     } else {
       let activeCalendarId = Cookies.get('calendarId');
       if (activeCalendarId && accessToken) {
         navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
-        console.log('second first');
       } else if (!isLoading && allCalendarsData?.data) {
         activeCalendarId = allCalendarsData?.data[0]?.id;
-        console.log('second second');
         Cookies.set('calendarId', activeCalendarId);
         navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
       }
