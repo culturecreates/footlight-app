@@ -44,7 +44,10 @@ function Dashboard() {
       const accessToken = Cookies.get('accessToken');
       const refreshToken = Cookies.get('refreshToken');
 
-      if (accessToken && calendarId) {
+      if (!calendarId) {
+        calendarId = Cookies.get('calendarId');
+      }
+      if (accessToken) {
         getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
           .unwrap()
           .then((response) => {
@@ -66,8 +69,19 @@ function Dashboard() {
     if (calendarId && accessToken) {
       getCalendar({ id: calendarId, sessionId: timestampRef });
       dispatch(setSelectedCalendar(String(calendarId)));
-    } else if (!isLoading && allCalendarsData?.data)
-      navigate(`${PathName.Dashboard}/${allCalendarsData?.data[0]?.id}${PathName.Events}`);
+      console.log('first');
+    } else {
+      let activeCalendarId = Cookies.get('calendarId');
+      if (activeCalendarId && accessToken) {
+        navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
+        console.log('second first');
+      } else if (!isLoading && allCalendarsData?.data) {
+        activeCalendarId = allCalendarsData?.data[0]?.id;
+        console.log('second second');
+        Cookies.set('calendarId', activeCalendarId);
+        navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
+      }
+    }
   }, [calendarId, isLoading, allCalendarsData]);
 
   return (
