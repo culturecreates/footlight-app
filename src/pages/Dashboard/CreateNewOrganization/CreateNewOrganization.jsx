@@ -1,26 +1,51 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import './createNewOrganization.css';
 import '../AddEvent/addEvent.css';
 import { Form, Row, Col, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { LeftOutlined } from '@ant-design/icons';
 import PrimaryButton from '../../../components/Button/Primary';
 import { featureFlags } from '../../../utils/featureFlags';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import Card from '../../../components/Card/Common/Event';
-import { formFieldValue, renderFormFields } from '../../../constants/formFields';
+import { formFieldValue, formTypes, renderFormFields } from '../../../constants/formFields';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
+import { useGetOrganizationQuery } from '../../../services/organization';
+import { taxonomyClass } from '../../../constants/taxonomyClass';
+import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 
 function CreateNewOrganization() {
+  const timestampRef = useRef(Date.now()).current;
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [currentCalendarData] = useOutletContext();
   const { user } = useSelector(getUserDetails);
+  const { calendarId } = useParams();
+  let [searchParams] = useSearchParams();
+
+  const organizationId = searchParams.get('id');
+
+  const {
+    data: organizationData,
+    isLoading: organizationLoading,
+    isSuccess: organizationSuccess,
+  } = useGetOrganizationQuery(
+    { id: organizationId, calendarId, sessionId: timestampRef },
+    { skip: organizationId ? false : true },
+  );
+
+  const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
+    calendarId,
+    search: '',
+    taxonomyClass: taxonomyClass.ORGANIZATION,
+    includeConcepts: true,
+    sessionId: timestampRef,
+  });
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -43,9 +68,41 @@ function CreateNewOrganization() {
     });
   }
 
-  console.log(fields);
+  const onSaveHandler = () => {
+    form
+      .validateFields([])
+      .then(() => {
+        let values = form.getFieldsValue(true);
+        console.log(values);
+      })
+      .catch((error) => {
+        let values = form.getFieldsValue(true);
+        console.log(values, error);
+      });
+  };
+
+  const initialValueHandler = (type, mappedField, data) => {
+    let mappedFieldSplit = mappedField?.split('.');
+    let initialData = data;
+    for (let index = 0; index < mappedFieldSplit?.length; index++) {
+      initialData = initialData[mappedFieldSplit[index]];
+    }
+    switch (type) {
+      case formTypes.INPUT:
+        return initialData;
+
+      default:
+        break;
+    }
+  };
+
+  // console.log(fields);
+  // console.log(organizationData);
   return (
-    fields && (
+    fields &&
+    organizationSuccess &&
+    !organizationLoading &&
+    !taxonomyLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
         <div>
           <Form form={form} layout="vertical" name="event">
@@ -65,7 +122,10 @@ function CreateNewOrganization() {
                   <Col>
                     <div className="add-event-button-wrap">
                       <Form.Item>
-                        <PrimaryButton label={t('dashboard.events.addEditEvent.saveOptions.save')} />
+                        <PrimaryButton
+                          label={t('dashboard.events.addEditEvent.saveOptions.save')}
+                          onClick={onSaveHandler}
+                        />
                       </Form.Item>
                     </div>
                   </Col>
@@ -85,16 +145,27 @@ function CreateNewOrganization() {
                     {section?.map((field) => {
                       return formFieldValue?.map((formField, index) => {
                         if (formField?.type === field.type) {
+                          console.log(initialValueHandler(field?.type, field?.mappedField, organizationData));
                           return renderFormFields({
+                            name: field?.mappedField?.split('.'),
                             type: field?.type,
                             dataType: field?.datatype,
-                            element: formField?.element,
+                            element: formField?.element(
+                              allTaxonomyData,
+                              user,
+                              field?.mappedField,
+                              false,
+                              calendarContentLanguage,
+                            ),
                             key: index,
+                            initialValue: initialValueHandler(field?.type, field?.mappedField, organizationData),
                             label: contentLanguageBilingual({
                               en: field?.label?.en,
                               fr: field?.label?.fr,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                               calendarContentLanguage: calendarContentLanguage,
+                              required: field?.isRequiredField,
+                              hidden: true,
                             }),
                           });
                         }
