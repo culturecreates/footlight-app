@@ -35,12 +35,17 @@ const Login = () => {
       });
   };
   useEffect(() => {
-    if (location?.state?.previousPath === 'logout') dispatch(clearUser());
+    const savedAccessToken = Cookies.get('accessToken');
+    if (location?.state?.previousPath === 'logout') {
+      dispatch(clearUser());
+    }
+    if ((accessToken && accessToken != '') || (savedAccessToken && savedAccessToken != '')) {
+      navigate(PathName.Dashboard, { state: { previousPath: 'login' } });
+    }
   }, []);
 
   useEffect(() => {
-    const savedAccessToken = Cookies.get('accessToken');
-    if ((accessToken && accessToken != '') || (savedAccessToken && savedAccessToken != '')) {
+    if (accessToken && accessToken != '') {
       navigate(PathName.Dashboard, { state: { previousPath: 'login' } });
     }
   }, [accessToken]);
