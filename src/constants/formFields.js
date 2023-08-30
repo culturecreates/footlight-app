@@ -19,6 +19,7 @@ export const formTypes = {
 //   MULTILINGUAL: 'MultiLingual',
 //   STANDARDFIELD: 'StandardField',
 //   STRING: 'String',
+//   IDENTITYSTRING:IdentityString,
 // };
 
 export const formFieldValue = [

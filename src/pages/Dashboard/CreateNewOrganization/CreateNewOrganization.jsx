@@ -91,6 +91,9 @@ function CreateNewOrganization() {
       case formTypes.INPUT:
         return initialData;
 
+      case formTypes.MULTISELECT:
+        return initialData?.map((concept) => concept?.entityId);
+
       default:
         break;
     }
