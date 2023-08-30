@@ -36,16 +36,22 @@ const Login = () => {
   };
   useEffect(() => {
     const savedAccessToken = Cookies.get('accessToken');
+    const calenderId = Cookies.get('calendarId');
     if (location?.state?.previousPath === 'logout') {
       dispatch(clearUser());
     }
-    if ((accessToken && accessToken != '') || (savedAccessToken && savedAccessToken != '')) {
+    if (
+      ((accessToken && accessToken != '') || (savedAccessToken && savedAccessToken != '')) &&
+      calenderId &&
+      calenderId != ''
+    ) {
       navigate(PathName.Dashboard, { state: { previousPath: 'login' } });
     }
   }, []);
 
   useEffect(() => {
-    if (accessToken && accessToken != '') {
+    const calenderId = Cookies.get('calendarId');
+    if (accessToken && accessToken != '' && calenderId && calenderId != '') {
       navigate(PathName.Dashboard, { state: { previousPath: 'login' } });
     }
   }, [accessToken]);
