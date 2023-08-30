@@ -112,7 +112,7 @@ function PlaceReadOnly() {
     !taxonomyLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Row gutter={[32, 24]} className="read-only-wrapper">
-          <Col span={24} flex="780px" style={{ paddingRight: '0' }}>
+          <Col span={24} style={{ paddingRight: '0' }}>
             <Row>
               <Col flex="auto">
                 <Breadcrumbs
