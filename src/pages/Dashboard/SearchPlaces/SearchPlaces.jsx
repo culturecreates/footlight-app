@@ -64,7 +64,7 @@ function SearchPlaces() {
       })
       .catch((error) => console.log(error));
 
-    getArtsDataEntity({ searchKeyword: value, entityType: entitiesClass.organization })
+    getArtsDataEntity({ searchKeyword: value, entityType: entitiesClass.place })
       .unwrap()
       .then((response) => {
         setPlacesListArtsData(response?.result);

@@ -16,6 +16,7 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { UserOutlined } from '@ant-design/icons';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import './searchPerson.css';
+import { useLazyGetArtsDataEntityQuery } from '../../../services/artsData';
 
 function SearchPerson() {
   const { t } = useTranslation();
@@ -29,10 +30,12 @@ function SearchPerson() {
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [peopleList, setPeopleList] = useState([]);
+  const [peopleListArtsData, setPeopleListArtsData] = useState([]);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
   const [selectedPeople, setSelectedPeople] = useState([]);
 
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+  const [getArtsDataEntity] = useLazyGetArtsDataEntityQuery({ sessionId: timestampRef });
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.person);
@@ -60,6 +63,14 @@ function SearchPerson() {
       .unwrap()
       .then((response) => {
         setPeopleList(response);
+      })
+      .catch((error) => console.log(error));
+
+    getArtsDataEntity({ searchKeyword: value, entityType: entitiesClass.person })
+      .unwrap()
+      .then((response) => {
+        setPeopleListArtsData(response?.result);
+        console.log(peopleListArtsData);
       })
       .catch((error) => console.log(error));
   };
