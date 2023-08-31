@@ -85,6 +85,9 @@ function SearchOrganizations() {
             trigger={['click']}
             content={
               <div>
+                <div className="popover-section-header">
+                  {t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                </div>
                 <div className="search-scrollable-content">
                   {organizationList?.length > 0 ? (
                     organizationList?.map((organizer, index) => (

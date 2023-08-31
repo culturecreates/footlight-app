@@ -35,3 +35,8 @@
   padding: 12px;
 }
 
+.search-bar-organization .popover-section-header {
+  padding: 6px 16px 4px 8px;
+  font-weight: 700;
+  color: #646d7b;
+}

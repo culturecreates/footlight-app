@@ -84,6 +84,9 @@ function SearchPerson() {
           trigger={['click']}
           content={
             <div>
+              <div className="popover-section-header">
+                {t('dashboard.people.createNew.search.footlightSectionHeading')}
+              </div>
               <div className="search-scrollable-content">
                 {peopleList?.length > 0 ? (
                   peopleList?.map((person, index) => (

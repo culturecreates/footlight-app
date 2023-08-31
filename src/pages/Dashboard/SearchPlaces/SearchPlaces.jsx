@@ -83,6 +83,9 @@ function SearchPlaces() {
             trigger={['click']}
             content={
               <div>
+                <div className="popover-section-header">
+                  {t('dashboard.places.createNew.search.footlightSectionHeading')}
+                </div>
                 <div className="search-scrollable-content">
                   {placesList?.length > 0 ? (
                     placesList?.map((place, index) => (
