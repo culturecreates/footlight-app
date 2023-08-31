@@ -457,7 +457,9 @@
           "breadcrumb": "Back to previous screen",
           "linkText": "Artsdata",
           "createNew": "Create new organization",
-          "create": "Create"
+          "create": "Create",
+          "footlightSectionHeading": "From Footlight",
+          "artsDataSectionHeading": "Imports from Artsdata"
         },
         "addOrganization": {
           "newOrganization": "New Organization",
@@ -506,7 +508,9 @@
           "text": "Search to link to an existing instance of the place in other data sources. If you don’t find the place, you can create it.",
           "breadcrumb": "Back to previous screen",
           "linkText": "Artsdata",
-          "create": "Create"
+          "create": "Create",
+          "footlightSectionHeading": "From Footlight",
+          "artsDataSectionHeading": "Imports from Artsdata"
         }
       }
     },
@@ -538,7 +542,9 @@
           "text": "Search to link to an existing instance of the person in other data sources. If you don’t find the person, you can create them.",
           "breadcrumb": "Back to previous screen",
           "linkText": "Artsdata",
-          "create": "Create"
+          "create": "Create",
+          "footlightSectionHeading": "From Footlight",
+          "artsDataSectionHeading": "Imports from Artsdata"
         }
       }
     },
