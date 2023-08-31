@@ -1,8 +1,8 @@
-.search-bar-organization .event-popover .ant-popover-arrow {
+.search-bar-organization .entity-popover .ant-popover-arrow {
   display: none;
 }
 
-.search-bar-organization .event-popover {
+.search-bar-organization .entity-popover {
   width: 100%;
   padding-top: 0;
   padding-bottom: 0;
@@ -12,13 +12,14 @@
   filter: drop-shadow(0px 8px 32px rgba(0, 0, 0, 0.2));
 }
 
-.search-bar-organization .event-popover .ant-popover-inner-content {
+.search-bar-organization .entity-popover .ant-popover-inner-content {
   padding: 0px;
 }
 
 .search-bar-organization .ant-popover-inner-content .search-scrollable-content {
   max-height: 250px;
   overflow-y: scroll;
+  width: 100%;
 }
 
 .search-bar-organization .quick-create {

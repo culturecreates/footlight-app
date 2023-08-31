@@ -74,7 +74,7 @@ function SearchOrganizations() {
           <Popover
             open={isPopoverOpen}
             arrow={false}
-            overlayClassName="event-popover"
+            overlayClassName="entity-popover"
             placement="bottom"
             onOpenChange={(open) => {
               setIsPopoverOpen(open);
