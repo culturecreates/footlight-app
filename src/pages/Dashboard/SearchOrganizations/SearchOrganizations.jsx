@@ -70,7 +70,6 @@ function SearchOrganizations() {
       .unwrap()
       .then((response) => {
         setOrganizationListArtsData(response?.result);
-        console.log(organizationListArtsData);
       })
       .catch((error) => console.log(error));
   };

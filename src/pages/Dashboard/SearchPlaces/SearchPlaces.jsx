@@ -16,6 +16,7 @@ import { EnvironmentOutlined } from '@ant-design/icons';
 import './searchPlaces.css';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
+import { useLazyGetArtsDataEntityQuery } from '../../../services/artsData';
 
 function SearchPlaces() {
   const { t } = useTranslation();
@@ -29,10 +30,12 @@ function SearchPlaces() {
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [placesList, setPlacesList] = useState([]);
+  const [placesListArtsData, setPlacesListArtsData] = useState([]);
   const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+  const [getArtsDataEntity] = useLazyGetArtsDataEntityQuery({ sessionId: timestampRef });
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.place);
@@ -58,6 +61,14 @@ function SearchPlaces() {
       .unwrap()
       .then((response) => {
         setPlacesList(response);
+      })
+      .catch((error) => console.log(error));
+
+    getArtsDataEntity({ searchKeyword: value, entityType: entitiesClass.organization })
+      .unwrap()
+      .then((response) => {
+        setPlacesListArtsData(response?.result);
+        console.log(placesListArtsData);
       })
       .catch((error) => console.log(error));
   };
