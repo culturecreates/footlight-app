@@ -16,6 +16,7 @@ import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import CreateEntityButton from '../../../components/Card/Common/CreateEntityButton';
 import { PathName } from '../../../constants/pathName';
+import { useLazyGetArtsDataEntityQuery } from '../../../services/artsData';
 
 function SearchOrganizations() {
   const { t } = useTranslation();
@@ -29,10 +30,12 @@ function SearchOrganizations() {
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [organizationList, setOrganizationList] = useState([]);
+  const [organizationListArtsData, setOrganizationListArtsData] = useState([]);
   const [selectedOrganizers, setSelectedOrganizers] = useState([]);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+  const [getArtsDataEntity] = useLazyGetArtsDataEntityQuery({ sessionId: timestampRef });
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.organization);
@@ -60,6 +63,14 @@ function SearchOrganizations() {
       .unwrap()
       .then((response) => {
         setOrganizationList(response);
+      })
+      .catch((error) => console.log(error));
+
+    getArtsDataEntity({ searchKeyword: value, entityType: entitiesClass.organization })
+      .unwrap()
+      .then((response) => {
+        setOrganizationListArtsData(response?.result);
+        console.log(organizationListArtsData);
       })
       .catch((error) => console.log(error));
   };
@@ -126,6 +137,41 @@ function SearchOrganizations() {
                     <NoContent />
                   )}
                 </div>
+                {quickCreateKeyword !== '' && (
+                  <>
+                    <div className="popover-section-header">
+                      {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                    </div>
+                    <div className="search-scrollable-content">
+                      {organizationListArtsData?.length > 0 ? (
+                        organizationListArtsData?.map((organizer, index) => (
+                          <div
+                            key={index}
+                            className="search-popover-options"
+                            onClick={() => {
+                              setSelectedOrganizers([...selectedOrganizers, organizer]);
+                              setIsPopoverOpen(false);
+                            }}>
+                            <EntityCard
+                              title={organizer?.name}
+                              description={organizer?.description}
+                              artsDataLink={`${process.env.REACT_APP_ARTS_DATA_URI}${organizer?.id}`}
+                              Logo={organizer.logo ? <img src={organizer?.logo?.thumbnail?.uri} /> : <Logo />}
+                              linkText={t('dashboard.organization.createNew.search.linkText')}
+                              onClick={() =>
+                                navigate(
+                                  `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizer?.id}`,
+                                )
+                              }
+                            />
+                          </div>
+                        ))
+                      ) : (
+                        <NoContent />
+                      )}
+                    </div>
+                  </>
+                )}
                 {quickCreateKeyword?.length > 0 && (
                   <CreateEntityButton
                     quickCreateKeyword={quickCreateKeyword}
