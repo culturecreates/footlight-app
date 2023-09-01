@@ -16,7 +16,7 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { UserOutlined } from '@ant-design/icons';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import './searchPerson.css';
-import { useLazyGetArtsDataEntityQuery } from '../../../services/artsData';
+import { useLazyGetArtsDataEntitiesQuery } from '../../../services/artsData';
 
 function SearchPerson() {
   const { t } = useTranslation();
@@ -35,7 +35,7 @@ function SearchPerson() {
   const [selectedPeople, setSelectedPeople] = useState([]);
 
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
-  const [getArtsDataEntity] = useLazyGetArtsDataEntityQuery({ sessionId: timestampRef });
+  const [getArtsDataEntity] = useLazyGetArtsDataEntitiesQuery({ sessionId: timestampRef });
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.person);

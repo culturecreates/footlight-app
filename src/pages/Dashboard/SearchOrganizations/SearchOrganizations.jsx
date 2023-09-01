@@ -16,7 +16,8 @@ import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import CreateEntityButton from '../../../components/Card/Common/CreateEntityButton';
 import { PathName } from '../../../constants/pathName';
-import { useLazyGetArtsDataEntityQuery } from '../../../services/artsData';
+import { useLazyGetArtsDataEntitiesQuery } from '../../../services/artsData';
+import { artsDataDuplicateFilter } from '../../../utils/artsDataEntityFilter';
 
 function SearchOrganizations() {
   const { t } = useTranslation();
@@ -35,7 +36,7 @@ function SearchOrganizations() {
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
-  const [getArtsDataEntity] = useLazyGetArtsDataEntityQuery({ sessionId: timestampRef });
+  const [getArtsDataEntity] = useLazyGetArtsDataEntitiesQuery({ sessionId: timestampRef });
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.organization);
@@ -69,7 +70,8 @@ function SearchOrganizations() {
     getArtsDataEntity({ searchKeyword: value, entityType: entitiesClass.organization })
       .unwrap()
       .then((response) => {
-        setOrganizationListArtsData(response?.result);
+        const filteredArtsData = artsDataDuplicateFilter({ artsData: response?.result, data: organizationList });
+        setOrganizationListArtsData(filteredArtsData);
       })
       .catch((error) => console.log(error));
   };

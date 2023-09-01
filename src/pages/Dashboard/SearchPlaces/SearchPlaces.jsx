@@ -16,7 +16,7 @@ import { EnvironmentOutlined } from '@ant-design/icons';
 import './searchPlaces.css';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
-import { useLazyGetArtsDataEntityQuery } from '../../../services/artsData';
+import { useLazyGetArtsDataEntitiesQuery } from '../../../services/artsData';
 
 function SearchPlaces() {
   const { t } = useTranslation();
@@ -35,7 +35,7 @@ function SearchPlaces() {
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
-  const [getArtsDataEntity] = useLazyGetArtsDataEntityQuery({ sessionId: timestampRef });
+  const [getArtsDataEntity] = useLazyGetArtsDataEntitiesQuery({ sessionId: timestampRef });
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.place);
