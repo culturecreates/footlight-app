@@ -1,4 +1,4 @@
-import { Popover } from 'antd';
+import { notification, Popover } from 'antd';
 import React, { useEffect, useState, useRef } from 'react';
 import EntityCard from '../../../components/Card/Common/EntityCard';
 import NoContent from '../../../components/NoContent/NoContent';
@@ -16,8 +16,9 @@ import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import CreateEntityButton from '../../../components/Card/Common/CreateEntityButton';
 import { PathName } from '../../../constants/pathName';
-import { useLazyGetArtsDataEntitiesQuery } from '../../../services/artsData';
+import { useLazyGetArtsDataEntitiesQuery, useLazyLoadArtsDataEntityQuery } from '../../../services/artsData';
 import { artsDataDuplicateFilter } from '../../../utils/artsDataEntityFilter';
+import { useAddOrganizationMutation } from '../../../services/organization';
 
 function SearchOrganizations() {
   const { t } = useTranslation();
@@ -32,11 +33,12 @@ function SearchOrganizations() {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [organizationList, setOrganizationList] = useState([]);
   const [organizationListArtsData, setOrganizationListArtsData] = useState([]);
-  const [selectedOrganizers, setSelectedOrganizers] = useState([]);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
   const [getArtsDataEntity] = useLazyGetArtsDataEntitiesQuery({ sessionId: timestampRef });
+  const [loadArtsDataEntity] = useLazyLoadArtsDataEntityQuery({ sessionId: timestampRef });
+  const [addOrganization] = useAddOrganizationMutation();
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.organization);
@@ -56,6 +58,31 @@ function SearchOrganizations() {
   }, [initialOrganizersLoading]);
 
   // handlers
+
+  const artsDataClickHandler = async (entity) => {
+    try {
+      const loadedArtsData = await loadArtsDataEntity({ entityId: entity?.id }).unwrap();
+
+      if (loadedArtsData?.data?.length > 0) {
+        addOrganization({ data: loadedArtsData?.data[0], calendarId })
+          .unwrap()
+          .then((response) => {
+            notification.success({
+              description: t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.success'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+            navigate(
+              `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${response?.id}`,
+            );
+          });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const searchHandler = (value) => {
     let query = new URLSearchParams();
@@ -107,7 +134,6 @@ function SearchOrganizations() {
                         key={index}
                         className="search-popover-options"
                         onClick={() => {
-                          setSelectedOrganizers([...selectedOrganizers, organizer]);
                           setIsPopoverOpen(false);
                         }}>
                         <EntityCard
@@ -150,7 +176,6 @@ function SearchOrganizations() {
                             key={index}
                             className="search-popover-options"
                             onClick={() => {
-                              setSelectedOrganizers([...selectedOrganizers, organizer]);
                               setIsPopoverOpen(false);
                             }}>
                             <EntityCard
@@ -159,11 +184,7 @@ function SearchOrganizations() {
                               artsDataLink={`${process.env.REACT_APP_ARTS_DATA_URI}${organizer?.id}`}
                               Logo={organizer.logo ? <img src={organizer?.logo?.thumbnail?.uri} /> : <Logo />}
                               linkText={t('dashboard.organization.createNew.search.linkText')}
-                              onClick={() =>
-                                navigate(
-                                  `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizer?.id}`,
-                                )
-                              }
+                              onClick={() => artsDataClickHandler(organizer)}
                             />
                           </div>
                         ))
