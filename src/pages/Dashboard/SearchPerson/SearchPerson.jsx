@@ -16,7 +16,7 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { UserOutlined } from '@ant-design/icons';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import './searchPerson.css';
-import { useLazyGetArtsDataEntitiesQuery } from '../../../services/artsData';
+import { getArtsDataEntities } from '../../../services/artsData';
 
 function SearchPerson() {
   const { t } = useTranslation();
@@ -35,7 +35,6 @@ function SearchPerson() {
   const [selectedPeople, setSelectedPeople] = useState([]);
 
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
-  const [getArtsDataEntity] = useLazyGetArtsDataEntitiesQuery({ sessionId: timestampRef });
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.person);
@@ -56,6 +55,10 @@ function SearchPerson() {
 
   // handlers
 
+  const artsDataClickHandler = async (entity) => {
+    navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`, { data: entity });
+  };
+
   const searchHandler = (value) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.person);
@@ -66,11 +69,9 @@ function SearchPerson() {
       })
       .catch((error) => console.log(error));
 
-    getArtsDataEntity({ searchKeyword: value, entityType: entitiesClass.person })
-      .unwrap()
+    getArtsDataEntities({ searchKeyword: value, entityType: entitiesClass.person })
       .then((response) => {
         setPeopleListArtsData(response?.result);
-        console.log(peopleListArtsData);
       })
       .catch((error) => console.log(error));
   };
@@ -140,6 +141,45 @@ function SearchPerson() {
                   <NoContent />
                 )}
               </div>
+
+              {quickCreateKeyword.length > 0 && (
+                <>
+                  <div className="popover-section-header">
+                    {t('dashboard.people.createNew.search.artsDataSectionHeading')}
+                  </div>
+                  <div className="search-scrollable-content">
+                    {peopleListArtsData?.length > 0 ? (
+                      peopleListArtsData?.map((person, index) => (
+                        <div
+                          key={index}
+                          className="search-popover-options"
+                          onClick={() => {
+                            setSelectedPeople([...selectedPeople, person]);
+                            setIsPopoverOpen(false);
+                          }}>
+                          <EntityCard
+                            title={person?.name}
+                            description={person?.description}
+                            artsDataLink={`${process.env.REACT_APP_ARTS_DATA_URI}${person?.id}`}
+                            Logo={
+                              person.logo ? (
+                                person.logo?.thumbnail?.uri
+                              ) : (
+                                <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
+                              )
+                            }
+                            linkText={t('dashboard.people.createNew.search.linkText')}
+                            onClick={() => artsDataClickHandler(person)}
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      <NoContent />
+                    )}
+                  </div>
+                </>
+              )}
+
               {quickCreateKeyword?.length > 0 && (
                 <CreateEntityButton
                   quickCreateKeyword={quickCreateKeyword}
