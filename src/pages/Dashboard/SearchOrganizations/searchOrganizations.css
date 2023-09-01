@@ -5,7 +5,7 @@
 .search-bar-organization .entity-popover {
   width: 100%;
   padding-top: 0;
-  padding-bottom: 0;
+  padding-bottom: 10px;
 }
 
 .search-bar-organization .ant-popover-inner {
@@ -39,4 +39,8 @@
   padding: 6px 16px 4px 8px;
   font-weight: 700;
   color: #646d7b;
+}
+
+.search-bar-organization .ant-popover-content {
+  padding-bottom: 10px;
 }
