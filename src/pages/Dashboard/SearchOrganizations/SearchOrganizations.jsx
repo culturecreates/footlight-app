@@ -1,4 +1,3 @@
-import { notification, Popover } from 'antd';
 import React, { useEffect, useState, useRef } from 'react';
 import EntityCard from '../../../components/Card/Common/EntityCard';
 import NoContent from '../../../components/NoContent/NoContent';
@@ -16,9 +15,9 @@ import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import CreateEntityButton from '../../../components/Card/Common/CreateEntityButton';
 import { PathName } from '../../../constants/pathName';
-import { useLazyGetArtsDataEntitiesQuery, useLazyLoadArtsDataEntityQuery } from '../../../services/artsData';
 import { artsDataDuplicateFilter } from '../../../utils/artsDataEntityFilter';
-import { useAddOrganizationMutation } from '../../../services/organization';
+import { Popover } from 'antd';
+import { getArtsDataEntities } from '../../../services/artsData';
 
 function SearchOrganizations() {
   const { t } = useTranslation();
@@ -36,9 +35,6 @@ function SearchOrganizations() {
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
-  const [getArtsDataEntity] = useLazyGetArtsDataEntitiesQuery({ sessionId: timestampRef });
-  const [loadArtsDataEntity] = useLazyLoadArtsDataEntityQuery({ sessionId: timestampRef });
-  const [addOrganization] = useAddOrganizationMutation();
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.organization);
@@ -60,28 +56,10 @@ function SearchOrganizations() {
   // handlers
 
   const artsDataClickHandler = async (entity) => {
-    try {
-      const loadedArtsData = await loadArtsDataEntity({ entityId: entity?.id }).unwrap();
-
-      if (loadedArtsData?.data?.length > 0) {
-        addOrganization({ data: loadedArtsData?.data[0], calendarId })
-          .unwrap()
-          .then((response) => {
-            notification.success({
-              description: t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.success'),
-              placement: 'top',
-              closeIcon: <></>,
-              maxCount: 1,
-              duration: 3,
-            });
-            navigate(
-              `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${response?.id}`,
-            );
-          });
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    navigate(
+      `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${entity?.id}`,
+      { data: entity },
+    );
   };
 
   const searchHandler = (value) => {
@@ -94,8 +72,7 @@ function SearchOrganizations() {
       })
       .catch((error) => console.log(error));
 
-    getArtsDataEntity({ searchKeyword: value, entityType: entitiesClass.organization })
-      .unwrap()
+    getArtsDataEntities({ searchKeyword: value, entityType: entitiesClass.organization })
       .then((response) => {
         const filteredArtsData = artsDataDuplicateFilter({ artsData: response?.result, data: organizationList });
         setOrganizationListArtsData(filteredArtsData);

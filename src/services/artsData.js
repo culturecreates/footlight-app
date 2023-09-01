@@ -1,17 +1,24 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+const baseUrl = process.env.REACT_APP_ARTS_DATA_URI;
 
-export const artsDataApi = createApi({
-  reducerPath: 'artsDataApi',
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.REACT_APP_ARTS_DATA_URI }),
-  endpoints: (builder) => ({
-    getArtsDataEntities: builder.query({
-      query: ({ searchKeyword, entityType }) => `recon?query=${searchKeyword}&type=schema:${entityType}`,
-    }),
-    loadArtsDataEntity: builder.query({
-      query: ({ entityId }) =>
-        `query?adid=${entityId}&format=json&frame=ranked_org_person_footlight&sparql=ranked_org_person_footlight`,
-    }),
-  }),
-});
+// Helper function to make a GET request using fetch
+export async function fetchData(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Network response was not ok: ${response.status}`);
+  }
+  return response.json();
+}
 
-export const { useLazyLoadArtsDataEntityQuery, useLazyGetArtsDataEntitiesQuery } = artsDataApi;
+// Function to get Arts Data Entities
+export async function getArtsDataEntities({ searchKeyword, entityType }) {
+  const query = `recon?query=${searchKeyword}&type=schema:${entityType}`;
+  const url = `${baseUrl}/${query}`;
+  return fetchData(url);
+}
+
+// Function to load Arts Data Entity
+export async function loadArtsDataEntity({ entityId }) {
+  const query = `query?adid=${entityId}&format=json&frame=ranked_org_person_footlight&sparql=ranked_org_person_footlight`;
+  const url = `${baseUrl}/${query}`;
+  return fetchData(url);
+}
