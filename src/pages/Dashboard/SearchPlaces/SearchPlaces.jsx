@@ -16,6 +16,7 @@ import { EnvironmentOutlined } from '@ant-design/icons';
 import './searchPlaces.css';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
+import { getArtsDataEntities } from '../../../services/artsData';
 
 function SearchPlaces() {
   const { t } = useTranslation();
@@ -29,6 +30,7 @@ function SearchPlaces() {
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [placesList, setPlacesList] = useState([]);
+  const [placesListArtsData, setPlacesListArtsData] = useState([]);
   const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
@@ -51,6 +53,10 @@ function SearchPlaces() {
 
   // handlers
 
+  const artsDataClickHandler = async (entity) => {
+    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`, { data: entity });
+  };
+
   const searchHandler = (value) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
@@ -58,6 +64,12 @@ function SearchPlaces() {
       .unwrap()
       .then((response) => {
         setPlacesList(response);
+      })
+      .catch((error) => console.log(error));
+
+    getArtsDataEntities({ searchKeyword: value, entityType: entitiesClass.place })
+      .then((response) => {
+        setPlacesListArtsData(response?.result);
       })
       .catch((error) => console.log(error));
   };
@@ -72,7 +84,7 @@ function SearchPlaces() {
           <Popover
             open={isPopoverOpen}
             arrow={false}
-            overlayClassName="event-popover"
+            overlayClassName="entity-popover"
             placement="bottom"
             onOpenChange={(open) => {
               setIsPopoverOpen(open);
@@ -83,6 +95,9 @@ function SearchPlaces() {
             trigger={['click']}
             content={
               <div>
+                <div className="popover-section-header">
+                  {t('dashboard.places.createNew.search.footlightSectionHeading')}
+                </div>
                 <div className="search-scrollable-content">
                   {placesList?.length > 0 ? (
                     placesList?.map((place, index) => (
@@ -125,6 +140,44 @@ function SearchPlaces() {
                     <NoContent />
                   )}
                 </div>
+
+                {quickCreateKeyword.length > 0 && (
+                  <>
+                    <div className="popover-section-header">
+                      {t('dashboard.places.createNew.search.artsDataSectionHeading')}
+                    </div>
+                    <div className="search-scrollable-content">
+                      {placesListArtsData?.length > 0 ? (
+                        placesListArtsData?.map((place, index) => (
+                          <div
+                            key={index}
+                            className="search-popover-options"
+                            onClick={() => {
+                              setIsPopoverOpen(false);
+                            }}>
+                            <EntityCard
+                              title={place?.name}
+                              description={place?.description}
+                              artsDataLink={`${process.env.REACT_APP_ARTS_DATA_URI}${place?.id}`}
+                              Logo={
+                                place.logo ? (
+                                  place.logo?.thumbnail?.uri
+                                ) : (
+                                  <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
+                                )
+                              }
+                              linkText={t('dashboard.places.createNew.search.linkText')}
+                              onClick={() => artsDataClickHandler(place)}
+                            />
+                          </div>
+                        ))
+                      ) : (
+                        <NoContent />
+                      )}
+                    </div>
+                  </>
+                )}
+
                 {quickCreateKeyword?.length > 0 && (
                   <CreateEntityButton
                     quickCreateKeyword={quickCreateKeyword}

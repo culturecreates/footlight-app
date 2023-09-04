@@ -456,7 +456,9 @@
           "breadcrumb": "Retour à l'écran précédent",
           "linkText": "Artsdata",
           "createNew": "Créer une nouvelle organisation",
-          "create": "Créer"
+          "create": "Créer",
+          "footlightSectionHeading": "From Footlight",
+          "artsDataSectionHeading": "Imports from Artsdata"
         },
         "addOrganization": {
           "newOrganization": "Nouvelle organisation",
@@ -504,7 +506,9 @@
           "searchHeading": "Rechercher une autre instance",
           "text": "Recherchez un lien vers une instance existante du lieu dans d'autres sources de données. Si vous ne trouvez pas le lieu, vous pouvez le créer.",
           "breadcrumb": "Retour à l'écran précédent",
-          "linkText": "Artsdata"
+          "linkText": "Artsdata",
+          "footlightSectionHeading": "From Footlight",
+          "artsDataSectionHeading": "Imports from Artsdata"
         }
       }
     },
@@ -535,7 +539,9 @@
           "searchHeading": "Rechercher une autre instance",
           "text": "Recherchez pour établir un lien avec une instance existante de la personne dans d'autres sources de données. Si vous ne trouvez pas la personne, vous pouvez la créer.",
           "breadcrumb": "Retour à l'écran précédent",
-          "linkText": "Artsdata"
+          "linkText": "Artsdata",
+          "footlightSectionHeading": "From Footlight",
+          "artsDataSectionHeading": "Imports from Artsdata"
         }
       }
     },

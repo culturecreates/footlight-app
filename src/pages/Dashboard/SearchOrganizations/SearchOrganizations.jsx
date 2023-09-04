@@ -1,4 +1,3 @@
-import { Popover } from 'antd';
 import React, { useEffect, useState, useRef } from 'react';
 import EntityCard from '../../../components/Card/Common/EntityCard';
 import NoContent from '../../../components/NoContent/NoContent';
@@ -16,6 +15,9 @@ import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import CreateEntityButton from '../../../components/Card/Common/CreateEntityButton';
 import { PathName } from '../../../constants/pathName';
+import { artsDataDuplicateFilter } from '../../../utils/artsDataEntityFilter';
+import { Popover } from 'antd';
+import { getArtsDataEntities } from '../../../services/artsData';
 
 function SearchOrganizations() {
   const { t } = useTranslation();
@@ -29,7 +31,7 @@ function SearchOrganizations() {
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [organizationList, setOrganizationList] = useState([]);
-  const [selectedOrganizers, setSelectedOrganizers] = useState([]);
+  const [organizationListArtsData, setOrganizationListArtsData] = useState([]);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
@@ -53,6 +55,13 @@ function SearchOrganizations() {
 
   // handlers
 
+  const artsDataClickHandler = async (entity) => {
+    navigate(
+      `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${entity?.id}`,
+      { data: entity },
+    );
+  };
+
   const searchHandler = (value) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.organization);
@@ -60,6 +69,13 @@ function SearchOrganizations() {
       .unwrap()
       .then((response) => {
         setOrganizationList(response);
+      })
+      .catch((error) => console.log(error));
+
+    getArtsDataEntities({ searchKeyword: value, entityType: entitiesClass.organization })
+      .then((response) => {
+        const filteredArtsData = artsDataDuplicateFilter({ artsData: response?.result, data: organizationList });
+        setOrganizationListArtsData(filteredArtsData);
       })
       .catch((error) => console.log(error));
   };
@@ -74,7 +90,7 @@ function SearchOrganizations() {
           <Popover
             open={isPopoverOpen}
             arrow={false}
-            overlayClassName="event-popover"
+            overlayClassName="entity-popover"
             placement="bottom"
             onOpenChange={(open) => {
               setIsPopoverOpen(open);
@@ -85,6 +101,9 @@ function SearchOrganizations() {
             trigger={['click']}
             content={
               <div>
+                <div className="popover-section-header">
+                  {t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                </div>
                 <div className="search-scrollable-content">
                   {organizationList?.length > 0 ? (
                     organizationList?.map((organizer, index) => (
@@ -92,7 +111,6 @@ function SearchOrganizations() {
                         key={index}
                         className="search-popover-options"
                         onClick={() => {
-                          setSelectedOrganizers([...selectedOrganizers, organizer]);
                           setIsPopoverOpen(false);
                         }}>
                         <EntityCard
@@ -123,6 +141,36 @@ function SearchOrganizations() {
                     <NoContent />
                   )}
                 </div>
+                {quickCreateKeyword !== '' && (
+                  <>
+                    <div className="popover-section-header">
+                      {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                    </div>
+                    <div className="search-scrollable-content">
+                      {organizationListArtsData?.length > 0 ? (
+                        organizationListArtsData?.map((organizer, index) => (
+                          <div
+                            key={index}
+                            className="search-popover-options"
+                            onClick={() => {
+                              setIsPopoverOpen(false);
+                            }}>
+                            <EntityCard
+                              title={organizer?.name}
+                              description={organizer?.description}
+                              artsDataLink={`${process.env.REACT_APP_ARTS_DATA_URI}${organizer?.id}`}
+                              Logo={organizer.logo ? <img src={organizer?.logo?.thumbnail?.uri} /> : <Logo />}
+                              linkText={t('dashboard.organization.createNew.search.linkText')}
+                              onClick={() => artsDataClickHandler(organizer)}
+                            />
+                          </div>
+                        ))
+                      ) : (
+                        <NoContent />
+                      )}
+                    </div>
+                  </>
+                )}
                 {quickCreateKeyword?.length > 0 && (
                   <CreateEntityButton
                     quickCreateKeyword={quickCreateKeyword}
