@@ -11,6 +11,10 @@ import BilingualInput from '../components/BilingualInput/BilingualInput';
 
 const { TextArea } = Input;
 
+export const formCategory = {
+  PRIMARY: 'Primary',
+};
+
 export const formTypes = {
   INPUT: 'Input',
   MULTISELECT: 'MultiSelect',

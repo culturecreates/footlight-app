@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import './createNewOrganization.css';
 import '../AddEvent/addEvent.css';
 import { Form, Row, Col, Button } from 'antd';
+import { CloseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { LeftOutlined } from '@ant-design/icons';
@@ -10,13 +11,17 @@ import { featureFlags } from '../../../utils/featureFlags';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import Card from '../../../components/Card/Common/Event';
-import { dataTypes, formFieldValue, formTypes, renderFormFields } from '../../../constants/formFields';
+import { dataTypes, formCategory, formFieldValue, formTypes, renderFormFields } from '../../../constants/formFields';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
-import { contentLanguageBilingual } from '../../../utils/bilingual';
+import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import { useGetOrganizationQuery } from '../../../services/organization';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
+import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
+import NoContent from '../../../components/NoContent/NoContent';
+import { treeDynamicTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
+import Tags from '../../../components/Tags/Common/Tags';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -100,7 +105,7 @@ function CreateNewOrganization() {
     }
   };
 
-  // console.log(fields);
+  console.log(fields);
   // console.log(organizationData);
   return (
     fields &&
@@ -180,6 +185,47 @@ function CreateNewOrganization() {
                         }
                       });
                     })}
+                    {section[0]?.category === formCategory.PRIMARY &&
+                      allTaxonomyData?.data?.map((taxonomy, index) => {
+                        if (taxonomy?.isDynamicField) {
+                          let initialValues;
+                          organizationData?.dynamicFields?.forEach((dynamicField) => {
+                            if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
+                          });
+                          return (
+                            <Form.Item
+                              key={index}
+                              name={['dynamicFields', taxonomy?.id]}
+                              label={bilingual({
+                                en: taxonomy?.name?.en,
+                                fr: taxonomy?.name?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              })}
+                              initialValue={initialValues}>
+                              <TreeSelectOption
+                                allowClear
+                                treeDefaultExpandAll
+                                notFoundContent={<NoContent />}
+                                clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                                treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
+                                tagRender={(props) => {
+                                  const { label, closable, onClose } = props;
+                                  return (
+                                    <Tags
+                                      closable={closable}
+                                      onClose={onClose}
+                                      closeIcon={
+                                        <CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />
+                                      }>
+                                      {label}
+                                    </Tags>
+                                  );
+                                }}
+                              />
+                            </Form.Item>
+                          );
+                        }
+                      })}
                   </>
                   <></>
                 </Card>
