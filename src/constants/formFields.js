@@ -8,6 +8,7 @@ import { treeTaxonomyOptions } from '../components/TreeSelectOption/treeSelectOp
 import { contentLanguage } from './contentLanguage';
 import ContentLanguageInput from '../components/ContentLanguageInput/ContentLanguageInput';
 import BilingualInput from '../components/BilingualInput/BilingualInput';
+import ImageUpload from '../components/ImageUpload/ImageUpload';
 
 const { TextArea } = Input;
 
@@ -20,6 +21,7 @@ export const formTypes = {
   MULTISELECT: 'MultiSelect',
   TEXTAREA: 'TextArea',
   EDITOR: 'Editor',
+  IMAGE: 'Image',
 };
 
 export const dataTypes = {
@@ -109,6 +111,20 @@ export const formFieldValue = [
         />
       );
     },
+  },
+  {
+    type: formTypes.IMAGE,
+    element: ({ form, largeUrl, originalUrl, imageReadOnly, preview, eventImageData }) => (
+      <ImageUpload
+        imageUrl={largeUrl}
+        originalImageUrl={originalUrl}
+        imageReadOnly={imageReadOnly}
+        preview={preview}
+        form={form}
+        eventImageData={eventImageData}
+        isCrop={false}
+      />
+    ),
   },
 ];
 
