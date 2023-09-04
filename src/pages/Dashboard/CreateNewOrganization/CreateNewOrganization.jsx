@@ -85,7 +85,7 @@ function CreateNewOrganization() {
     let mappedFieldSplit = mappedField?.split('.');
     let initialData = data;
     for (let index = 0; index < mappedFieldSplit?.length; index++) {
-      initialData = initialData[mappedFieldSplit[index]];
+      if (initialData) initialData = initialData[mappedFieldSplit[index]];
     }
     switch (type) {
       case formTypes.INPUT:
@@ -153,13 +153,14 @@ function CreateNewOrganization() {
                             name: field?.mappedField?.split('.'),
                             type: field?.type,
                             dataType: field?.datatype,
-                            element: formField?.element(
-                              allTaxonomyData,
-                              user,
-                              field?.mappedField,
-                              false,
+                            element: formField?.element({
+                              datatype: field?.datatype,
+                              taxonomyData: allTaxonomyData,
+                              data: user,
+                              type: field?.mappedField,
+                              isDynamicField: false,
                               calendarContentLanguage,
-                            ),
+                            }),
                             key: index,
                             initialValue: initialValueHandler(
                               field?.type,
