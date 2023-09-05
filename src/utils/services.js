@@ -4,6 +4,7 @@ import { notification } from 'antd';
 import { Translation } from 'react-i18next';
 import Cookies from 'js-cookie';
 import { Mutex } from 'async-mutex';
+import { setErrorStates } from '../redux/reducer/ErrorSlice';
 
 const mutex = new Mutex();
 const baseQuery = fetchBaseQuery({
@@ -37,6 +38,8 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
   if (result.error && result.error.status === 500) {
     //HTTP 500 Internal Server Error
     //The server encountered an unexpected condition that prevented it from fulfilling the request
+    api.dispatch(setErrorStates({ errorCode: result.error.status, isError: true, isServerDown: true }));
+
     notification.info({
       key: '500',
       message: <Translation>{(t) => t('common.server.status.500.message')}</Translation>,
@@ -107,6 +110,7 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
   if (result?.meta?.response && result?.meta?.response.status === 503) {
     // HTTP 503 Service Unavailable server error response code indicates that the server is not ready to handle the request.
     // Common causes are a server that is down for maintenance or that is overloaded.
+    api.dispatch(setErrorStates({ errorCode: result.error.status, isError: true, isServerDown: true }));
 
     notification.info({
       key: '503',

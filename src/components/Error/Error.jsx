@@ -12,8 +12,11 @@ function ErrorAlert(props) {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const image = errorType === 'general' ? <GeneralErrors /> : <Error404 />;
+  const isServerDown = errorType === 'serverDown';
+
+  const image = errorType === 'general' || isServerDown ? <GeneralErrors /> : <Error404 />;
   const message = errorType === 'general' ? error.message : t('errorPage.notFoundMessage');
+  const heading = isServerDown ? t('errorPage.serverDown') : t('errorPage.heading');
 
   console.error(message, new Date().toISOString());
 
@@ -22,17 +25,21 @@ function ErrorAlert(props) {
       <div className="content">
         <div className="image-container">{image}</div>
         <section>
-          <h1>{t('errorPage.heading')}</h1>
-          <p className="error-message">{message}</p>
-          <p className="error-time">{new Date().toISOString()}</p>
-          <div className="btn-container">
-            <Button
-              onClick={() => {
-                navigate(-1);
-              }}>
-              {t('errorPage.buttonText')}
-            </Button>
-          </div>
+          <h1>{heading}</h1>
+          {!isServerDown && (
+            <>
+              <p className="error-message">{message}</p>
+              <p className="error-time">{new Date().toISOString()}</p>
+              <div className="btn-container">
+                <Button
+                  onClick={() => {
+                    navigate(-2);
+                  }}>
+                  {t('errorPage.buttonText')}
+                </Button>
+              </div>
+            </>
+          )}
         </section>
       </div>
     </div>
