@@ -56,10 +56,9 @@ function SearchOrganizations() {
   // handlers
 
   const artsDataClickHandler = async (entity) => {
-    navigate(
-      `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${entity?.id}`,
-      { data: entity },
-    );
+    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}`, {
+      data: entity,
+    });
   };
 
   const searchHandler = (value) => {
