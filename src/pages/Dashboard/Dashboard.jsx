@@ -14,6 +14,7 @@ import { setInterfaceLanguage } from '../../redux/reducer/interfaceLanguageSlice
 import i18n from 'i18next';
 import Cookies from 'js-cookie';
 import { useLazyGetCurrentUserQuery } from '../../services/users';
+import ErrorLayout from '../../layout/ErrorLayout/ErrorLayout';
 
 const { Header, Content } = Layout;
 
@@ -82,35 +83,37 @@ function Dashboard() {
   }, [calendarId, isLoading, allCalendarsData]);
 
   return (
-    <Layout className="dashboard-wrapper">
-      <Header className="dashboard-header">
-        <NavigationBar currentCalendarData={currentCalendarData} allCalendarsData={allCalendarsData} />
-      </Header>
-      <Layout>
-        <Sidebar
-          currentCalendarData={currentCalendarData}
-          allCalendarsData={allCalendarsData}
-          pageNumber={pageNumber}
-          setPageNumber={setPageNumber}
-        />
-        <Layout
-          style={{
-            background: '#ffffff',
-          }}>
-          <Content
-            className="site-layout-background"
+    <ErrorLayout>
+      <Layout className="dashboard-wrapper">
+        <Header className="dashboard-header">
+          <NavigationBar currentCalendarData={currentCalendarData} allCalendarsData={allCalendarsData} />
+        </Header>
+        <Layout>
+          <Sidebar
+            currentCalendarData={currentCalendarData}
+            allCalendarsData={allCalendarsData}
+            pageNumber={pageNumber}
+            setPageNumber={setPageNumber}
+          />
+          <Layout
             style={{
-              padding: '34px 32px 32px 32px',
-              margin: 0,
-              minHeight: 280,
-              overflowY: 'scroll',
-              background: '#F9FAFF',
+              background: '#ffffff',
             }}>
-            <Outlet context={[currentCalendarData, pageNumber, setPageNumber]} />
-          </Content>
+            <Content
+              className="site-layout-background"
+              style={{
+                padding: '34px 32px 32px 32px',
+                margin: 0,
+                minHeight: 280,
+                overflowY: 'scroll',
+                background: '#F9FAFF',
+              }}>
+              <Outlet context={[currentCalendarData, pageNumber, setPageNumber]} />
+            </Content>
+          </Layout>
         </Layout>
       </Layout>
-    </Layout>
+    </ErrorLayout>
   );
 }
 
