@@ -152,6 +152,7 @@ function CreateNewOrganization() {
                               type: field?.mappedField,
                               isDynamicField: false,
                               calendarContentLanguage,
+                              name: field?.mappedField?.split('.'),
                             }),
                             key: index,
                             initialValue: initialValueHandler(
