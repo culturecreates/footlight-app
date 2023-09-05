@@ -15,7 +15,7 @@ import { dataTypes, formCategory, formFieldValue, formTypes, renderFormFields } 
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
-import { useGetOrganizationQuery } from '../../../services/organization';
+import { useAddOrganizationMutation, useGetOrganizationQuery } from '../../../services/organization';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
@@ -36,11 +36,7 @@ function CreateNewOrganization() {
 
   const organizationId = searchParams.get('id');
 
-  const {
-    data: organizationData,
-    isLoading: organizationLoading,
-    isSuccess: organizationSuccess,
-  } = useGetOrganizationQuery(
+  const { data: organizationData, isLoading: organizationLoading } = useGetOrganizationQuery(
     { id: organizationId, calendarId, sessionId: timestampRef },
     { skip: organizationId ? false : true },
   );
@@ -52,6 +48,7 @@ function CreateNewOrganization() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
+  const [addOrganization] = useAddOrganizationMutation();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
@@ -60,13 +57,18 @@ function CreateNewOrganization() {
     form
       .validateFields([])
       .then(() => {
-        let values = form.getFieldsValue(true);
-        console.log(values);
+        var values = form.getFieldsValue(true);
+
+        addOrganization({ data: values, calendarId })
+          .unwrap()
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       })
-      .catch((error) => {
-        let values = form.getFieldsValue(true);
-        console.log(values, error);
-      });
+      .catch((error) => console.log(error));
   };
 
   const initialValueHandler = (type, mappedField, datatype, data) => {
@@ -92,7 +94,6 @@ function CreateNewOrganization() {
   // console.log(organizationData);
   return (
     fields &&
-    organizationSuccess &&
     !organizationLoading &&
     !taxonomyLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
