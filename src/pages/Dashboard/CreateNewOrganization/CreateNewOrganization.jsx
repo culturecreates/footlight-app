@@ -96,9 +96,9 @@ function CreateNewOrganization() {
     !organizationLoading &&
     !taxonomyLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-        <div>
-          <Form form={form} layout="vertical" name="event">
-            <Row gutter={[32, 2]} className="add-edit-wrapper add-organization-wrapper">
+        <div className="add-edit-wrapper add-organization-wrapper">
+          <Form form={form} layout="vertical" name="organization">
+            <Row gutter={[32, 2]}>
               <Col span={24}>
                 <Row justify="space-between">
                   <Col>
@@ -144,7 +144,7 @@ function CreateNewOrganization() {
                           return renderFormFields({
                             name: field?.mappedField?.split('.'),
                             type: field?.type,
-                            dataType: field?.datatype,
+                            datatype: field?.datatype,
                             element: formField?.element({
                               datatype: field?.datatype,
                               taxonomyData: allTaxonomyData,
