@@ -579,7 +579,8 @@
     "notFoundMessage": "The requested page could not be found (404)",
     "serverErrorsMessage": "If the problem persists, let the site owner know {{code}}",
     "jsErrorMessage": "Go back to the previous page",
-    "buttonText": "Back"
+    "buttonText": "Back",
+    "serverDown": "Server under maintenance"
   },
   "common": {
     "tabEnglish": "English",
