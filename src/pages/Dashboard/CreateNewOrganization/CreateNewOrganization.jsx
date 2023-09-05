@@ -22,6 +22,7 @@ import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOpt
 import NoContent from '../../../components/NoContent/NoContent';
 import { treeDynamicTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import Tags from '../../../components/Tags/Common/Tags';
+import { formFieldsHandler } from '../../../utils/formFieldsHandler';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -53,25 +54,7 @@ function CreateNewOrganization() {
   });
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-
-  let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
-  formFields = formFields?.length > 0 && formFields[0];
-  let category = formFields?.formFields?.map((field) => field?.category);
-  let unique;
-  let fields;
-  if (category) unique = [...new Set(category)];
-  if (unique)
-    fields = formFields?.formFields
-      ?.filter((field) => field.category === unique[0])
-      ?.sort((a, b) => a?.order - b?.order);
-
-  if (unique?.length > 0) {
-    fields = unique?.map((category) => {
-      return formFields?.formFields
-        ?.filter((field) => field.category === category)
-        ?.sort((a, b) => a?.order - b?.order);
-    });
-  }
+  let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
 
   const onSaveHandler = () => {
     form
@@ -105,7 +88,7 @@ function CreateNewOrganization() {
     }
   };
 
-  console.log(fields);
+  // console.log(fields);
   // console.log(organizationData);
   return (
     fields &&
@@ -143,7 +126,11 @@ function CreateNewOrganization() {
 
               <Col>
                 <div className="add-edit-event-heading">
-                  <h4>{t('dashboard.organization.createNew.addOrganization.newOrganization')}</h4>
+                  <h4>
+                    {organizationId
+                      ? t('dashboard.organization.createNew.addOrganization.editOrganization')
+                      : t('dashboard.organization.createNew.addOrganization.newOrganization')}
+                  </h4>
                 </div>
               </Col>
             </Row>
