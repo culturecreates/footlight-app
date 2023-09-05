@@ -15,13 +15,14 @@ import { dataTypes, formCategory, formFieldValue, formTypes, renderFormFields } 
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
-import { useGetOrganizationQuery } from '../../../services/organization';
+import { useAddOrganizationMutation, useGetOrganizationQuery } from '../../../services/organization';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 import NoContent from '../../../components/NoContent/NoContent';
 import { treeDynamicTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import Tags from '../../../components/Tags/Common/Tags';
+import { formFieldsHandler } from '../../../utils/formFieldsHandler';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -35,11 +36,7 @@ function CreateNewOrganization() {
 
   const organizationId = searchParams.get('id');
 
-  const {
-    data: organizationData,
-    isLoading: organizationLoading,
-    isSuccess: organizationSuccess,
-  } = useGetOrganizationQuery(
+  const { data: organizationData, isLoading: organizationLoading } = useGetOrganizationQuery(
     { id: organizationId, calendarId, sessionId: timestampRef },
     { skip: organizationId ? false : true },
   );
@@ -51,39 +48,27 @@ function CreateNewOrganization() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
+  const [addOrganization] = useAddOrganizationMutation();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-
-  let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
-  formFields = formFields?.length > 0 && formFields[0];
-  let category = formFields?.formFields?.map((field) => field?.category);
-  let unique;
-  let fields;
-  if (category) unique = [...new Set(category)];
-  if (unique)
-    fields = formFields?.formFields
-      ?.filter((field) => field.category === unique[0])
-      ?.sort((a, b) => a?.order - b?.order);
-
-  if (unique?.length > 0) {
-    fields = unique?.map((category) => {
-      return formFields?.formFields
-        ?.filter((field) => field.category === category)
-        ?.sort((a, b) => a?.order - b?.order);
-    });
-  }
+  let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
 
   const onSaveHandler = () => {
     form
       .validateFields([])
       .then(() => {
-        let values = form.getFieldsValue(true);
-        console.log(values);
+        var values = form.getFieldsValue(true);
+
+        addOrganization({ data: values, calendarId })
+          .unwrap()
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       })
-      .catch((error) => {
-        let values = form.getFieldsValue(true);
-        console.log(values, error);
-      });
+      .catch((error) => console.log(error));
   };
 
   const initialValueHandler = (type, mappedField, datatype, data) => {
@@ -105,17 +90,16 @@ function CreateNewOrganization() {
     }
   };
 
-  console.log(fields);
+  // console.log(fields);
   // console.log(organizationData);
   return (
     fields &&
-    organizationSuccess &&
     !organizationLoading &&
     !taxonomyLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-        <div>
-          <Form form={form} layout="vertical" name="event">
-            <Row gutter={[32, 2]} className="add-edit-wrapper add-organization-wrapper">
+        <div className="add-edit-wrapper add-organization-wrapper">
+          <Form form={form} layout="vertical" name="organization">
+            <Row gutter={[32, 2]}>
               <Col span={24}>
                 <Row justify="space-between">
                   <Col>
@@ -143,7 +127,11 @@ function CreateNewOrganization() {
 
               <Col>
                 <div className="add-edit-event-heading">
-                  <h4>{t('dashboard.organization.createNew.addOrganization.newOrganization')}</h4>
+                  <h4>
+                    {organizationId
+                      ? t('dashboard.organization.createNew.addOrganization.editOrganization')
+                      : t('dashboard.organization.createNew.addOrganization.newOrganization')}
+                  </h4>
                 </div>
               </Col>
             </Row>
@@ -157,7 +145,7 @@ function CreateNewOrganization() {
                           return renderFormFields({
                             name: field?.mappedField?.split('.'),
                             type: field?.type,
-                            dataType: field?.datatype,
+                            datatype: field?.datatype,
                             element: formField?.element({
                               datatype: field?.datatype,
                               taxonomyData: allTaxonomyData,
@@ -165,6 +153,7 @@ function CreateNewOrganization() {
                               type: field?.mappedField,
                               isDynamicField: false,
                               calendarContentLanguage,
+                              name: field?.mappedField?.split('.'),
                             }),
                             key: index,
                             initialValue: initialValueHandler(

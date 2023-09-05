@@ -35,12 +35,12 @@ export const dataTypes = {
 export const formFieldValue = [
   {
     type: formTypes.INPUT,
-    element: ({ datatype, data, calendarContentLanguage }) => {
+    element: ({ datatype, data, calendarContentLanguage, name = [] }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
         return (
           <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
             <BilingualInput fieldData={data}>
-              <Form.Item name={['name', 'fr']} key={contentLanguage.FRENCH} dependencies={['name', 'en']}>
+              <Form.Item name={name?.concat(['fr'])} key={contentLanguage.FRENCH} dependencies={name?.concat(['en'])}>
                 <TextArea
                   autoSize
                   autoComplete="off"
@@ -49,7 +49,7 @@ export const formFieldValue = [
                 />
               </Form.Item>
 
-              <Form.Item name={['name', 'en']} key={contentLanguage.ENGLISH} dependencies={['name', 'fr']}>
+              <Form.Item name={name?.concat(['en'])} key={contentLanguage.ENGLISH} dependencies={name?.concat(['fr'])}>
                 <TextArea
                   autoSize
                   autoComplete="off"
