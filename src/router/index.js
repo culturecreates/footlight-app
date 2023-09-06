@@ -136,6 +136,6 @@ export const router = createBrowserRouter([
   },
   {
     path: PathName.NotFound,
-    element: <ErrorAlert errorType="page not found" />,
+    element: <ErrorAlert errorType="pageNotFound" />,
   },
 ]);
