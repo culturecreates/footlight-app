@@ -141,10 +141,13 @@ function Organizations() {
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Main>
           <h4 className="events-heading">{t('dashboard.organization.organizations')}</h4>
-          <AddOrganization
-            label={t('dashboard.organization.organization')}
-            onClick={() => navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.Search}`)}
-          />
+          <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+            <AddOrganization
+              label={t('dashboard.organization.organization')}
+              onClick={() => navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.Search}`)}
+            />
+          </FeatureFlag>
+
           <OrganizationSearch
             placeholder={t('dashboard.organization.search.placeholder')}
             onPressEnter={(e) => onSearchHandler(e)}
