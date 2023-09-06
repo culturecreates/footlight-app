@@ -125,15 +125,17 @@ function PlaceReadOnly() {
                 />
               </Col>
               <Col flex="60px">
-                <ReadOnlyProtectedComponent creator={placeData.createdByUserId}>
-                  <div className="button-container">
-                    <OutlinedButton
-                      label={t('dashboard.places.readOnly.edit')}
-                      size="middle"
-                      style={{ height: '40px', width: '60px' }}
-                    />
-                  </div>
-                </ReadOnlyProtectedComponent>
+                <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+                  <ReadOnlyProtectedComponent creator={placeData.createdByUserId}>
+                    <div className="button-container">
+                      <OutlinedButton
+                        label={t('dashboard.places.readOnly.edit')}
+                        size="middle"
+                        style={{ height: '40px', width: '60px' }}
+                      />
+                    </div>
+                  </ReadOnlyProtectedComponent>
+                </FeatureFlag>
               </Col>
             </Row>
           </Col>

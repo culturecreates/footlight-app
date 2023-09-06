@@ -124,20 +124,22 @@ function OrganizationsReadOnly() {
                 />
               </Col>
               <Col flex="60px">
-                <ReadOnlyProtectedComponent creator={organizationData.createdByUserId}>
-                  <div className="button-container">
-                    <OutlinedButton
-                      label={t('dashboard.organization.readOnly.edit')}
-                      size="middle"
-                      style={{ height: '40px', width: '60px' }}
-                      onClick={() =>
-                        navigate(
-                          `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizationData?.id}`,
-                        )
-                      }
-                    />
-                  </div>
-                </ReadOnlyProtectedComponent>
+                <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+                  <ReadOnlyProtectedComponent creator={organizationData.createdByUserId}>
+                    <div className="button-container">
+                      <OutlinedButton
+                        label={t('dashboard.organization.readOnly.edit')}
+                        size="middle"
+                        style={{ height: '40px', width: '60px' }}
+                        onClick={() =>
+                          navigate(
+                            `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizationData?.id}`,
+                          )
+                        }
+                      />
+                    </div>
+                  </ReadOnlyProtectedComponent>
+                </FeatureFlag>
               </Col>
             </Row>
           </Col>
