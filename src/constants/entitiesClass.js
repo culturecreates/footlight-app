@@ -3,4 +3,5 @@ export const entitiesClass = {
   person: 'Person',
   organization: 'Organization',
   event: 'Event',
+  people: 'People',
 };
