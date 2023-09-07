@@ -81,6 +81,11 @@ function PersonReadOnly() {
                       label={t('dashboard.people.readOnly.edit')}
                       size="middle"
                       style={{ height: '40px', width: '60px' }}
+                      onClick={() =>
+                        navigate(
+                          `${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${personData?.id}`,
+                        )
+                      }
                     />
                   </div>
                 </ReadOnlyProtectedComponent>
