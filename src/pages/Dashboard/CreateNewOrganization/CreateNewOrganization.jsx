@@ -11,7 +11,7 @@ import { featureFlags } from '../../../utils/featureFlags';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import Card from '../../../components/Card/Common/Event';
-import { dataTypes, formCategory, formFieldValue, formTypes, renderFormFields } from '../../../constants/formFields';
+import { formCategory, formFieldValue, renderFormFields } from '../../../constants/formFields';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
@@ -23,6 +23,8 @@ import NoContent from '../../../components/NoContent/NoContent';
 import { treeDynamicTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import Tags from '../../../components/Tags/Common/Tags';
 import { formFieldsHandler } from '../../../utils/formFieldsHandler';
+import { formPayloadHandler } from '../../../utils/formPayloadHandler';
+import { formInitialValueHandler } from '../../../utils/formInitialValueHandler';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -55,57 +57,6 @@ function CreateNewOrganization() {
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
 
-  const write = (object, path, value) => {
-    return path.reduceRight((obj, next, idx, fullPath) => {
-      if (idx + 1 === fullPath.length) {
-        return { [next]: value };
-      } else {
-        return { [next]: obj };
-      }
-    }, object);
-  };
-
-  const payloadHandler = (value, mappedField) => {
-    const currentField = formFields?.filter((field) => field?.mappedField === mappedField);
-    let currentMappedField = mappedField?.split('.');
-    let payload;
-    if (currentField?.length > 0) {
-      let currentDatatype = currentField[0]?.datatype;
-      switch (currentDatatype) {
-        case dataTypes.MULTI_LINGUAL:
-          if (currentMappedField?.length > 1) return write({}, currentMappedField, value);
-          else return { [mappedField]: value };
-
-        case dataTypes.STANDARD_FIELD:
-          payload = value?.map((id) => {
-            return {
-              entityId: id,
-            };
-          });
-          return { [mappedField]: payload };
-
-        case dataTypes.STRING:
-          if (currentMappedField?.length > 1) return write({}, currentMappedField, value);
-          else return { [mappedField]: value };
-
-        case dataTypes.URI_STRING:
-          return write({}, currentMappedField?.concat(['uri']), value);
-
-        default:
-          break;
-      }
-    } else {
-      if (mappedField === 'dynamicFields')
-        payload = Object.keys(value)?.map((dynamicField) => {
-          return {
-            taxonomyId: dynamicField,
-            conceptIds: value[dynamicField],
-          };
-        });
-      return { [mappedField]: payload };
-    }
-  };
-
   const onSaveHandler = () => {
     form
       .validateFields([])
@@ -113,7 +64,7 @@ function CreateNewOrganization() {
         var values = form.getFieldsValue(true);
         let organizationPayload = {};
         Object.keys(values)?.map((object) => {
-          let payload = payloadHandler(values[object], object);
+          let payload = formPayloadHandler(values[object], object, formFields);
           let newKeys = Object.keys(payload);
           let childKeys = Object.keys(payload[newKeys[0]]);
           organizationPayload = {
@@ -139,25 +90,6 @@ function CreateNewOrganization() {
         //   });
       })
       .catch((error) => console.log(error));
-  };
-
-  const initialValueHandler = (type, mappedField, datatype, data) => {
-    let mappedFieldSplit = mappedField?.split('.');
-    let initialData = data;
-    for (let index = 0; index < mappedFieldSplit?.length; index++) {
-      if (initialData) initialData = initialData[mappedFieldSplit[index]];
-    }
-    switch (type) {
-      case formTypes.INPUT:
-        if (datatype === dataTypes.URI_STRING) return initialData?.uri;
-        else return initialData;
-
-      case formTypes.MULTISELECT:
-        return initialData?.map((concept) => concept?.entityId);
-
-      default:
-        break;
-    }
   };
 
   // console.log(fields);
@@ -226,7 +158,7 @@ function CreateNewOrganization() {
                               name: [field?.mappedField],
                             }),
                             key: index,
-                            initialValue: initialValueHandler(
+                            initialValue: formInitialValueHandler(
                               field?.type,
                               field?.mappedField,
                               field?.datatype,

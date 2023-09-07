@@ -22,6 +22,7 @@ import CreateNewOrganization from '../pages/Dashboard/CreateNewOrganization';
 import SearchOrganizations from '../pages/Dashboard/SearchOrganizations';
 import SearchPerson from '../pages/Dashboard/SearchPerson';
 import SearchPlaces from '../pages/Dashboard/SearchPlaces';
+import CreateNewPerson from '../pages/Dashboard/CreateNewPerson';
 
 export const router = createBrowserRouter([
   {
@@ -123,6 +124,10 @@ export const router = createBrowserRouter([
         handle: {
           crumb: () => <Translation>{(t) => t('dashboard.people.people')}</Translation>,
         },
+      },
+      {
+        path: `:calendarId${PathName.People}${PathName.AddPerson}`,
+        element: <CreateNewPerson />,
       },
       {
         path: `:calendarId${PathName.Taxonomies}`,

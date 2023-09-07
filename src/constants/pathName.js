@@ -8,6 +8,7 @@ export const PathName = {
   Organizations: '/organizations',
   AddOrganization: '/add-organization',
   People: '/people',
+  AddPerson: '/add-person',
   Taxonomies: '/taxonomies',
   Settings: '/settings',
   AddEvent: '/add-event',
