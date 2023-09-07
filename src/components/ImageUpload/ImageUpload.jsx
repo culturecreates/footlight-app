@@ -17,6 +17,7 @@ function ImageUpload(props) {
     isCrop,
     preview,
     originalImageUrl,
+    formName,
   } = props;
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -122,7 +123,7 @@ function ImageUpload(props) {
 
   return (
     <>
-      <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile}>
+      <Form.Item name={formName ?? 'dragger'} valuePropName="fileList" getValueFromEvent={normFile}>
         <Upload.Dragger
           accept='.png, .jpg, .jpeg"'
           className="upload-wrapper"

@@ -30,6 +30,7 @@ export const dataTypes = {
   STRING: 'String',
   IDENTITY_STRING: 'IdentityString',
   URI_STRING: 'URIString',
+  IMAGE: 'Image',
 };
 
 export const formFieldValue = [
@@ -114,7 +115,7 @@ export const formFieldValue = [
   },
   {
     type: formTypes.IMAGE,
-    element: ({ form, largeUrl, originalUrl, imageReadOnly, preview, eventImageData }) => (
+    element: ({ form, largeUrl, originalUrl, imageReadOnly, preview, eventImageData, formName }) => (
       <ImageUpload
         imageUrl={largeUrl}
         originalImageUrl={originalUrl}
@@ -123,6 +124,7 @@ export const formFieldValue = [
         form={form}
         eventImageData={eventImageData}
         isCrop={false}
+        formName={formName}
       />
     ),
   },

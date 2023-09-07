@@ -155,6 +155,8 @@ function CreateNewPerson() {
                               isDynamicField: false,
                               calendarContentLanguage,
                               name: [field?.mappedField],
+                              formName: field?.mappedField,
+                              form,
                             }),
                             key: index,
                             initialValue: formInitialValueHandler(

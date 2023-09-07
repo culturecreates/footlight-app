@@ -36,6 +36,8 @@ export const formPayloadHandler = (value, mappedField, formFields) => {
       case dataTypes.URI_STRING:
         return write({}, currentMappedField?.concat(['uri']), value);
 
+      case dataTypes.IMAGE:
+        break;
       default:
         break;
     }
