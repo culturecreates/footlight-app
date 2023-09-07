@@ -30,8 +30,9 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
 
     api.dispatch(
       setErrorStates({
-        errorCode: result.error.status,
+        errorCode: '400',
         isError: true,
+        message: result.error?.data?.message,
       }),
     );
 
@@ -48,8 +49,9 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
     //The server encountered an unexpected condition that prevented it from fulfilling the request
     api.dispatch(
       setErrorStates({
-        errorCode: result.error.status,
+        errorCode: '500',
         isError: true,
+        message: result.error?.data?.message,
       }),
     );
 
@@ -113,7 +115,7 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
     // HTTP 403 Forbidden response status code indicates that the server understands the request but refuses to authorize it.
     // This status is similar to 401, but for the 403 Forbidden status code, re-authenticating makes no difference.
     // The access is tied to the application logic, such as insufficient rights to a resource.
-    api.dispatch(setErrorStates({ errorCode: result.error.status, isError: true }));
+    api.dispatch(setErrorStates({ errorCode: '403', isError: true, message: result.error?.data?.message }));
 
     notification.info({
       key: '403',
@@ -124,7 +126,7 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
   if (result?.meta?.response && result?.meta?.response.status === 503) {
     // HTTP 503 Service Unavailable server error response code indicates that the server is not ready to handle the request.
     // Common causes are a server that is down for maintenance or that is overloaded.
-    api.dispatch(setErrorStates({ errorCode: result.error.status, isError: true }));
+    api.dispatch(setErrorStates({ errorCode: '503', isError: true }));
 
     notification.info({
       key: '503',
@@ -135,12 +137,6 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
   }
   if (result.error && result.error.status === 'FETCH_ERROR') {
     // Error when the local internet is down. There is no HTTP code.
-    api.dispatch(
-      setErrorStates({
-        errorCode: 'FETCH_ERROR',
-        isError: true,
-      }),
-    );
 
     notification.info({
       key: 'FETCH_ERROR',

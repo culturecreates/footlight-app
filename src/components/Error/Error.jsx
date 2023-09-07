@@ -37,23 +37,7 @@ function ErrorAlert(props) {
   } else if (errorType === 'failedAPI' && errorDetails?.isError) {
     image = <GeneralErrors />;
     heading = t('errorPage.heading');
-    switch (errorDetails.errorCode) {
-      case '500':
-        message = t('common.server.status.500.message');
-        break;
-      case '400':
-        message = t('common.server.status.400.message');
-        break;
-      case '403':
-        message = t('common.server.status.403.message');
-        break;
-      case 'FETCH_ERROR':
-        message = t('common.server.status.FETCH_ERROR.message');
-        break;
-      default:
-        message = '';
-        break;
-    }
+    message = errorDetails?.message;
   }
   if (errorType === 'general' && !errorDetails.isError) {
     image = <GeneralErrors />;
