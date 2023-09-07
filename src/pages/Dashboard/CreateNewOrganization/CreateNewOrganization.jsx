@@ -151,11 +151,17 @@ function CreateNewOrganization() {
                             element: formField?.element({
                               datatype: field?.datatype,
                               taxonomyData: allTaxonomyData,
-                              data: user,
+                              user: user,
                               type: field?.mappedField,
                               isDynamicField: false,
                               calendarContentLanguage,
                               name: [field?.mappedField],
+                              placeholder: contentLanguageBilingual({
+                                en: field?.placeholder?.en,
+                                fr: field?.placeholder?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              }),
                             }),
                             key: index,
                             initialValue: formInitialValueHandler(
@@ -169,8 +175,6 @@ function CreateNewOrganization() {
                               fr: field?.label?.fr,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                               calendarContentLanguage: calendarContentLanguage,
-                              required: field?.isRequiredField,
-                              hidden: true,
                             }),
                           });
                         }
