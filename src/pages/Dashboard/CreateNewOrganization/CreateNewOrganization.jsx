@@ -15,7 +15,7 @@ import { dataTypes, formCategory, formFieldValue, formTypes, renderFormFields } 
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
-import { useAddOrganizationMutation, useGetOrganizationQuery } from '../../../services/organization';
+import { useGetOrganizationQuery } from '../../../services/organization';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
@@ -48,25 +48,95 @@ function CreateNewOrganization() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
-  const [addOrganization] = useAddOrganizationMutation();
+  // const [addOrganization] = useAddOrganizationMutation();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
+  let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
+  formFields = formFields?.length > 0 && formFields[0]?.formFields;
+
+  const write = (object, path, value) => {
+    return path.reduceRight((obj, next, idx, fullPath) => {
+      if (idx + 1 === fullPath.length) {
+        return { [next]: value };
+      } else {
+        return { [next]: obj };
+      }
+    }, object);
+  };
+
+  const payloadHandler = (value, mappedField) => {
+    const currentField = formFields?.filter((field) => field?.mappedField === mappedField);
+    let currentMappedField = mappedField?.split('.');
+    let payload;
+    if (currentField?.length > 0) {
+      let currentDatatype = currentField[0]?.datatype;
+      switch (currentDatatype) {
+        case dataTypes.MULTI_LINGUAL:
+          if (currentMappedField?.length > 1) return write({}, currentMappedField, value);
+          else return { [mappedField]: value };
+
+        case dataTypes.STANDARD_FIELD:
+          payload = value?.map((id) => {
+            return {
+              entityId: id,
+            };
+          });
+          return { [mappedField]: payload };
+
+        case dataTypes.STRING:
+          if (currentMappedField?.length > 1) return write({}, currentMappedField, value);
+          else return { [mappedField]: value };
+
+        case dataTypes.URI_STRING:
+          return write({}, currentMappedField?.concat(['uri']), value);
+
+        default:
+          break;
+      }
+    } else {
+      if (mappedField === 'dynamicFields')
+        payload = Object.keys(value)?.map((dynamicField) => {
+          return {
+            taxonomyId: dynamicField,
+            conceptIds: value[dynamicField],
+          };
+        });
+      return { [mappedField]: payload };
+    }
+  };
 
   const onSaveHandler = () => {
     form
       .validateFields([])
       .then(() => {
         var values = form.getFieldsValue(true);
-
-        addOrganization({ data: values, calendarId })
-          .unwrap()
-          .then((response) => {
-            console.log(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        let organizationPayload = {};
+        Object.keys(values)?.map((object) => {
+          let payload = payloadHandler(values[object], object);
+          let newKeys = Object.keys(payload);
+          let childKeys = Object.keys(payload[newKeys[0]]);
+          organizationPayload = {
+            ...organizationPayload,
+            ...(newKeys?.length > 0 && {
+              [newKeys[0]]: {
+                ...organizationPayload[newKeys[0]],
+                ...(childKeys?.length > 0 && { [childKeys[0]]: payload[newKeys[0]][childKeys[0]] }),
+                ...(childKeys?.length > 1 && {
+                  [childKeys[childKeys?.length - 1]]: payload[newKeys[0]][childKeys[childKeys?.length - 1]],
+                }),
+              },
+            }),
+          };
+        });
+        // addOrganization({ data: {}, calendarId })
+        //   .unwrap()
+        //   .then((response) => {
+        //     console.log(response);
+        //   })
+        //   .catch((error) => {
+        //     console.log(error);
+        //   });
       })
       .catch((error) => console.log(error));
   };
@@ -143,7 +213,7 @@ function CreateNewOrganization() {
                       return formFieldValue?.map((formField, index) => {
                         if (formField?.type === field.type) {
                           return renderFormFields({
-                            name: field?.mappedField?.split('.'),
+                            name: [field?.mappedField],
                             type: field?.type,
                             datatype: field?.datatype,
                             element: formField?.element({
@@ -153,7 +223,7 @@ function CreateNewOrganization() {
                               type: field?.mappedField,
                               isDynamicField: false,
                               calendarContentLanguage,
-                              name: field?.mappedField?.split('.'),
+                              name: [field?.mappedField],
                             }),
                             key: index,
                             initialValue: initialValueHandler(
