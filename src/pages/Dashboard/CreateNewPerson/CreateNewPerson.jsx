@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import './createNewOrganization.css';
 import '../AddEvent/addEvent.css';
 import { Form, Row, Col, Button } from 'antd';
 import { CloseCircleOutlined } from '@ant-design/icons';
@@ -15,7 +14,6 @@ import { formCategory, formFieldValue, renderFormFields } from '../../../constan
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
-import { useGetOrganizationQuery } from '../../../services/organization';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
@@ -25,8 +23,9 @@ import Tags from '../../../components/Tags/Common/Tags';
 import { formFieldsHandler } from '../../../utils/formFieldsHandler';
 import { formPayloadHandler } from '../../../utils/formPayloadHandler';
 import { formInitialValueHandler } from '../../../utils/formInitialValueHandler';
+import { useGetPersonQuery } from '../../../services/people';
 
-function CreateNewOrganization() {
+function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
   const [form] = Form.useForm();
   const { t } = useTranslation();
@@ -36,25 +35,25 @@ function CreateNewOrganization() {
   const { calendarId } = useParams();
   let [searchParams] = useSearchParams();
 
-  const organizationId = searchParams.get('id');
+  const personId = searchParams.get('id');
 
-  const { data: organizationData, isLoading: organizationLoading } = useGetOrganizationQuery(
-    { id: organizationId, calendarId, sessionId: timestampRef },
-    { skip: organizationId ? false : true },
+  const { data: personData, isLoading: personLoading } = useGetPersonQuery(
+    { personId, calendarId, sessionId: timestampRef },
+    { skip: personId ? false : true },
   );
 
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
-    taxonomyClass: taxonomyClass.ORGANIZATION,
+    taxonomyClass: taxonomyClass.PERSON,
     includeConcepts: true,
     sessionId: timestampRef,
   });
   // const [addOrganization] = useAddOrganizationMutation();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-  let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
-  let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
+  let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.people);
+  let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.people);
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
 
   const onSaveHandler = () => {
@@ -62,16 +61,16 @@ function CreateNewOrganization() {
       .validateFields([])
       .then(() => {
         var values = form.getFieldsValue(true);
-        let organizationPayload = {};
+        let personPayload = {};
         Object.keys(values)?.map((object) => {
           let payload = formPayloadHandler(values[object], object, formFields);
           let newKeys = Object.keys(payload);
           let childKeys = Object.keys(payload[newKeys[0]]);
-          organizationPayload = {
-            ...organizationPayload,
+          personPayload = {
+            ...personPayload,
             ...(newKeys?.length > 0 && {
               [newKeys[0]]: {
-                ...organizationPayload[newKeys[0]],
+                ...personPayload[newKeys[0]],
                 ...(childKeys?.length > 0 && { [childKeys[0]]: payload[newKeys[0]][childKeys[0]] }),
                 ...(childKeys?.length > 1 && {
                   [childKeys[childKeys?.length - 1]]: payload[newKeys[0]][childKeys[childKeys?.length - 1]],
@@ -93,10 +92,10 @@ function CreateNewOrganization() {
   };
 
   // console.log(fields);
-  // console.log(organizationData);
+  // console.log(personData);
   return (
     fields &&
-    !organizationLoading &&
+    !personLoading &&
     !taxonomyLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
         <div className="add-edit-wrapper add-organization-wrapper">
@@ -130,9 +129,9 @@ function CreateNewOrganization() {
               <Col>
                 <div className="add-edit-event-heading">
                   <h4>
-                    {organizationId
-                      ? t('dashboard.organization.createNew.addOrganization.editOrganization')
-                      : t('dashboard.organization.createNew.addOrganization.newOrganization')}
+                    {personId
+                      ? t('dashboard.people.createNew.addPerson.editPerson')
+                      : t('dashboard.people.createNew.addPerson.newPerson')}
                   </h4>
                 </div>
               </Col>
@@ -156,13 +155,15 @@ function CreateNewOrganization() {
                               isDynamicField: false,
                               calendarContentLanguage,
                               name: [field?.mappedField],
+                              formName: field?.mappedField,
+                              form,
                             }),
                             key: index,
                             initialValue: formInitialValueHandler(
                               field?.type,
                               field?.mappedField,
                               field?.datatype,
-                              organizationData,
+                              personData,
                             ),
                             label: contentLanguageBilingual({
                               en: field?.label?.en,
@@ -180,7 +181,7 @@ function CreateNewOrganization() {
                       allTaxonomyData?.data?.map((taxonomy, index) => {
                         if (taxonomy?.isDynamicField) {
                           let initialValues;
-                          organizationData?.dynamicFields?.forEach((dynamicField) => {
+                          personData?.dynamicFields?.forEach((dynamicField) => {
                             if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
                           });
                           return (
@@ -229,4 +230,4 @@ function CreateNewOrganization() {
   );
 }
 
-export default CreateNewOrganization;
+export default CreateNewPerson;

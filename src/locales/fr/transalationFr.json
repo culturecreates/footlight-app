@@ -542,6 +542,10 @@
           "linkText": "Artsdata",
           "footlightSectionHeading": "From Footlight",
           "artsDataSectionHeading": "Imports from Artsdata"
+        },
+        "addPerson": {
+          "newPerson": "Nouvelle personne",
+          "editPerson": "Modifier personne"
         }
       }
     },
