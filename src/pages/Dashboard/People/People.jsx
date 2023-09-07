@@ -138,12 +138,14 @@ function People() {
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Main>
           <h4 className="events-heading">{t('dashboard.people.people')}</h4>
-          <AddPerson
-            label={t('dashboard.people.person')}
-            onClick={() => {
-              navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
-            }}
-          />
+          <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+            <AddPerson
+              label={t('dashboard.people.person')}
+              onClick={() => {
+                navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
+              }}
+            />
+          </FeatureFlag>
           <PersonSearch
             placeholder={t('dashboard.people.search.placeholder')}
             onPressEnter={(e) => onSearchHandler(e)}

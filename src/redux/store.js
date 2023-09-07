@@ -17,6 +17,7 @@ import { inviteApi } from '../services/invite';
 import { organizationApi } from '../services/organization';
 import { peopleApi } from '../services/people';
 import { postalAddressApi } from '../services/postalAddress';
+import ErrorSliceReducer from './reducer/ErrorSlice';
 
 const persistConfig = {
   key: 'root',
@@ -41,6 +42,7 @@ const appReducer = combineReducers({
   user: userReducer,
   interfaceLanguage: interfaceLanguageReducer,
   selectedCalendar: selectedCalendarReducer,
+  errors: ErrorSliceReducer,
   [loginApi.reducerPath]: loginApi.reducer,
   [usersApi.reducerPath]: usersApi.reducer,
   [eventsApi.reducerPath]: eventsApi.reducer,

@@ -41,6 +41,11 @@
 .sidebar-wrapper .sidebar-calendar > span {
   margin-left: 0;
 }
+
+.sidebar-wrapper .sidebar-calendar .calendar-icon-container {
+  display: grid;
+  place-content: center;
+}
 @media only screen and (max-width: 600px) {
   .sidebar-wrapper {
     display: none;

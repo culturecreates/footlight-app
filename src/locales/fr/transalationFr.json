@@ -580,7 +580,8 @@
     "notFoundMessage": "La page demandée n'a pas été trouvée (404)",
     "serverErrorsMessage": "Si le problème persiste, informez le propriétaire du site {{code}}",
     "jsErrorMessage": "Retourner à la page précédente",
-    "buttonText": "Retour"
+    "buttonText": "Retour",
+    "serverDown": "Serveur en maintenance"
   },
   "common": {
     "tabEnglish": "Anglais",
