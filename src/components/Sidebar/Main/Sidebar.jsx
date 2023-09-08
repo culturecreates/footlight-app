@@ -42,14 +42,16 @@ function Sidebar(props) {
       {
         key: id,
         icon: (
-          <img
-            style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '73px',
-            }}
-            src={uri}
-          />
+          <div className="calendar-icon-container">
+            <img
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '73px',
+              }}
+              src={uri}
+            />
+          </div>
         ),
         label,
         className: 'sidebar-calendar',

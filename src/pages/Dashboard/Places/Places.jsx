@@ -28,6 +28,7 @@ import { userRoles } from '../../../constants/userRoles';
 import { useDeletePlacesMutation, useLazyGetAllPlacesQuery } from '../../../services/places';
 import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../../constants/sortByOptions';
 import i18n from 'i18next';
+import { PathName } from '../../../constants/pathName';
 
 const { confirm } = Modal;
 const { useBreakpoint } = Grid;
@@ -138,7 +139,15 @@ function Places() {
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Main>
           <h4 className="events-heading">{t('dashboard.places.places')}</h4>
-          <AddPlace label={t('dashboard.places.place')} />
+          <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+            <AddPlace
+              label={t('dashboard.places.place')}
+              onClick={() => {
+                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`);
+              }}
+            />
+          </FeatureFlag>
+
           <PlaceSearch
             placeholder={t('dashboard.places.search.placeholder')}
             onPressEnter={(e) => onSearchHandler(e)}

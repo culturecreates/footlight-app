@@ -15,6 +15,7 @@ import {
   treeDynamicTaxonomyOptions,
   treeTaxonomyOptions,
 } from '../../../components/TreeSelectOption/treeSelectOption.settings';
+import OutlinedButton from '../../../components/Button/Outlined';
 import Tags from '../../../components/Tags/Common/Tags';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
@@ -24,6 +25,7 @@ import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
+import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 
 function PersonReadOnly() {
   const { t } = useTranslation();
@@ -60,15 +62,37 @@ function PersonReadOnly() {
     !taxonomyLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Row gutter={[32, 24]} className="read-only-wrapper">
-          <Col span={24}>
-            <Breadcrumbs
-              name={contentLanguageBilingual({
-                en: personData?.name?.en,
-                fr: personData?.name?.fr,
-                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                calendarContentLanguage: calendarContentLanguage,
-              })}
-            />
+          <Col span={24} style={{ paddingRight: '0' }}>
+            <Row>
+              <Col flex="auto">
+                <Breadcrumbs
+                  name={contentLanguageBilingual({
+                    en: personData?.name?.en,
+                    fr: personData?.name?.fr,
+                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                    calendarContentLanguage: calendarContentLanguage,
+                  })}
+                />
+              </Col>
+              <Col flex="60px">
+                <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+                  <ReadOnlyProtectedComponent creator={personData.createdByUserId}>
+                    <div className="button-container">
+                      <OutlinedButton
+                        label={t('dashboard.people.readOnly.edit')}
+                        size="middle"
+                        style={{ height: '40px', width: '60px' }}
+                        onClick={() =>
+                          navigate(
+                            `${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${personData?.id}`,
+                          )
+                        }
+                      />
+                    </div>
+                  </ReadOnlyProtectedComponent>
+                </FeatureFlag>
+              </Col>
+            </Row>
           </Col>
 
           <Col span={24}>

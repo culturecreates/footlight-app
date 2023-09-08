@@ -17,6 +17,7 @@ import {
 import Tags from '../../../components/Tags/Common/Tags';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
+import OutlinedButton from '../../../components/Button/Outlined';
 import { featureFlags } from '../../../utils/featureFlags';
 import { useGetPlaceQuery, useLazyGetPlaceQuery } from '../../../services/places';
 import ArtsDataLink from '../../../components/Tags/ArtsDataLink/ArtsDataLink';
@@ -26,6 +27,7 @@ import { placesOptions } from '../../../components/Select/selectOption.settings'
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
+import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -110,15 +112,32 @@ function PlaceReadOnly() {
     !taxonomyLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Row gutter={[32, 24]} className="read-only-wrapper">
-          <Col span={24}>
-            <Breadcrumbs
-              name={contentLanguageBilingual({
-                en: placeData?.name?.en,
-                fr: placeData?.name?.fr,
-                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                calendarContentLanguage: calendarContentLanguage,
-              })}
-            />
+          <Col span={24} style={{ paddingRight: '0' }}>
+            <Row>
+              <Col flex="auto">
+                <Breadcrumbs
+                  name={contentLanguageBilingual({
+                    en: placeData?.name?.en,
+                    fr: placeData?.name?.fr,
+                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                    calendarContentLanguage: calendarContentLanguage,
+                  })}
+                />
+              </Col>
+              <Col flex="60px">
+                <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+                  <ReadOnlyProtectedComponent creator={placeData.createdByUserId}>
+                    <div className="button-container">
+                      <OutlinedButton
+                        label={t('dashboard.places.readOnly.edit')}
+                        size="middle"
+                        style={{ height: '40px', width: '60px' }}
+                      />
+                    </div>
+                  </ReadOnlyProtectedComponent>
+                </FeatureFlag>
+              </Col>
+            </Row>
           </Col>
 
           <Col span={24}>

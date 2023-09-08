@@ -227,7 +227,15 @@
             "title": "Image",
             "subHeading": "Les images doivent être au format paysage ou carré et mesurer au moins 600 px de large. Uniquement les fichiers .jpeg et .png sont acceptés.",
             "dragAndDrop": "ou glisser pour télécharger",
-            "browse": "Parcourir"
+            "browse": "Parcourir",
+            "crop": {
+              "title": "Position image",
+              "subHeading": "Adjust position if necessary.",
+              "savedFrameSize": "Saved frame sizes",
+              "ratio": "Ratio",
+              "save": "Sauvegarder",
+              "cancel": "Annuler"
+            }
           },
           "organizer": {
             "title": "Organisateur",
@@ -352,8 +360,8 @@
           "errorImage": "Cette image ne peut pas être enregistrée. Ajustez l'image ou essayez-en une autre."
         },
         "quickCreate": {
-          "title": "Créer un organisateur",
-          "subHeading": "Quel type d'organisateur voulez-vous créer ?",
+          "title": "Création Rapide",
+          "subHeading": "Quel type de profil voulez-vous créer ?",
           "person": "Personne",
           "organization": "Organisation",
           "create": "Créer",
@@ -436,7 +444,26 @@
         "phoneNumber": "Numéro de téléphone",
         "email": "Courriel",
         "memberOf": "Membre de",
-        "location": "Endroit"
+        "location": "Endroit",
+        "Edit": "Edit"
+      },
+      "createNew": {
+        "search": {
+          "searchbarHeader": "Données associées",
+          "title": "Nouvelle organisation",
+          "text": "Recherchez pour établir un lien avec une instance existante de l'organisation dans d'autres sources de données. Si vous ne trouvez pas l'organisation, vous pouvez la créer.",
+          "searchHeading": "Rechercher une autre instance",
+          "breadcrumb": "Retour à l'écran précédent",
+          "linkText": "Artsdata",
+          "createNew": "Créer une nouvelle organisation",
+          "create": "Créer",
+          "footlightSectionHeading": "From Footlight",
+          "artsDataSectionHeading": "Imports from Artsdata"
+        },
+        "addOrganization": {
+          "newOrganization": "Nouvelle organisation",
+          "editOrganization": "Modifier l’organisation"
+        }
       }
     },
     "places": {
@@ -456,6 +483,7 @@
         "disambiguatingDescription": "Description identifiante",
         "description": "Description",
         "website": "Website",
+        "edit": "Edit",
         "address": {
           "address": "Adresse",
           "streetAddress": "Adresse postale",
@@ -470,6 +498,18 @@
         "notContainedInPlace": "Contenu dans aucun endroit.",
         "venueAccessibility": "Accessibilité du site",
         "items": "Éléments"
+      },
+      "createNew": {
+        "search": {
+          "title": "Nouveau lieu",
+          "searchbarHeader": "Données associées",
+          "searchHeading": "Rechercher une autre instance",
+          "text": "Recherchez un lien vers une instance existante du lieu dans d'autres sources de données. Si vous ne trouvez pas le lieu, vous pouvez le créer.",
+          "breadcrumb": "Retour à l'écran précédent",
+          "linkText": "Artsdata",
+          "footlightSectionHeading": "From Footlight",
+          "artsDataSectionHeading": "Imports from Artsdata"
+        }
       }
     },
     "people": {
@@ -489,7 +529,24 @@
         "name": "Nom",
         "disambiguatingDescription": "Description identifiante",
         "description": "Description",
-        "website": "Site web"
+        "website": "Site web",
+        "edit": "Edit"
+      },
+      "createNew": {
+        "search": {
+          "title": "Nouvelle personne",
+          "searchbarHeader": "Données associées",
+          "searchHeading": "Rechercher une autre instance",
+          "text": "Recherchez pour établir un lien avec une instance existante de la personne dans d'autres sources de données. Si vous ne trouvez pas la personne, vous pouvez la créer.",
+          "breadcrumb": "Retour à l'écran précédent",
+          "linkText": "Artsdata",
+          "footlightSectionHeading": "From Footlight",
+          "artsDataSectionHeading": "Imports from Artsdata"
+        },
+        "addPerson": {
+          "newPerson": "Nouvelle personne",
+          "editPerson": "Modifier personne"
+        }
       }
     },
     "userProfile": {
@@ -517,6 +574,14 @@
         "emptyLasttName": "Entrez votre nom"
       }
     }
+  },
+  "errorPage": {
+    "heading": "Oups, quelque chose s'est mal passé",
+    "notFoundMessage": "La page demandée n'a pas été trouvée (404)",
+    "serverErrorsMessage": "Si le problème persiste, informez le propriétaire du site {{code}}",
+    "jsErrorMessage": "Retourner à la page précédente",
+    "buttonText": "Retour",
+    "serverDown": "Serveur en maintenance"
   },
   "common": {
     "tabEnglish": "Anglais",

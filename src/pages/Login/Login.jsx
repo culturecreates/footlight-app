@@ -14,6 +14,7 @@ import LoginInput from '../../components/Input/Common';
 import PasswordInput from '../../components/Input/Password';
 import { setInterfaceLanguage } from '../../redux/reducer/interfaceLanguageSlice';
 import i18n from 'i18next';
+import Cookies from 'js-cookie';
 
 const Login = () => {
   const { t } = useTranslation();
@@ -34,11 +35,23 @@ const Login = () => {
       });
   };
   useEffect(() => {
-    if (location?.state?.previousPath === 'logout') dispatch(clearUser());
+    const savedAccessToken = Cookies.get('accessToken');
+    const calenderId = Cookies.get('calendarId');
+    if (location?.state?.previousPath === 'logout') {
+      dispatch(clearUser());
+    }
+    if (
+      ((accessToken && accessToken != '') || (savedAccessToken && savedAccessToken != '')) &&
+      calenderId &&
+      calenderId != ''
+    ) {
+      navigate(PathName.Dashboard, { state: { previousPath: 'login' } });
+    }
   }, []);
 
   useEffect(() => {
-    if (accessToken && accessToken != '') {
+    const calenderId = Cookies.get('calendarId');
+    if (accessToken && accessToken != '' && calenderId && calenderId != '') {
       navigate(PathName.Dashboard, { state: { previousPath: 'login' } });
     }
   }, [accessToken]);

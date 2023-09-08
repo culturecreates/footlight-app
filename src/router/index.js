@@ -6,10 +6,11 @@ import Dashboard from '../pages/Dashboard';
 import ResetPassword from '../pages/ResetPassword';
 import Events from '../pages/Dashboard/Events';
 import AddEvent from '../pages/Dashboard/AddEvent';
-import { ReactComponent as NotFound } from '../../src/assets/images/illustatus.svg';
+// import { ReactComponent as NotFound } from '../../src/assets/images/illustatus.svg';
 import EventReadOnly from '../pages/Dashboard/EventReadOnly';
 import CreateAccount from '../pages/CreateAccount';
 import Users from '../pages/Dashboard/Users';
+import ErrorAlert from '../components/Error/Error';
 import Organizations from '../pages/Dashboard/Organizations';
 import Places from '../pages/Dashboard/Places';
 import People from '../pages/Dashboard/People';
@@ -17,6 +18,11 @@ import OrganizationsReadOnly from '../pages/Dashboard/OrganizationsReadOnly';
 import PersonReadOnly from '../pages/Dashboard/PersonReadOnly';
 import PlaceReadOnly from '../pages/Dashboard/PlaceReadOnly';
 import { Translation } from 'react-i18next';
+import CreateNewOrganization from '../pages/Dashboard/CreateNewOrganization';
+import SearchOrganizations from '../pages/Dashboard/SearchOrganizations';
+import SearchPerson from '../pages/Dashboard/SearchPerson';
+import SearchPlaces from '../pages/Dashboard/SearchPlaces';
+import CreateNewPerson from '../pages/Dashboard/CreateNewPerson';
 
 export const router = createBrowserRouter([
   {
@@ -43,7 +49,7 @@ export const router = createBrowserRouter([
   {
     path: PathName.Dashboard,
     element: <Dashboard />,
-
+    errorElement: <ErrorAlert />,
     children: [
       {
         path: `:calendarId${PathName.Events}`,
@@ -70,10 +76,13 @@ export const router = createBrowserRouter([
         path: `:calendarId${PathName.Profile}/:userId`,
         element: <Users />,
       },
-
       {
         path: `:calendarId${PathName.Places}`,
         element: <Places />,
+      },
+      {
+        path: `:calendarId${PathName.Places}${PathName.Search}`,
+        element: <SearchPlaces />,
       },
       {
         path: `:calendarId${PathName.Places}/:placeId`,
@@ -87,6 +96,10 @@ export const router = createBrowserRouter([
         element: <Organizations />,
       },
       {
+        path: `:calendarId${PathName.Organizations}${PathName.Search}`,
+        element: <SearchOrganizations />,
+      },
+      {
         path: `:calendarId${PathName.Organizations}/:organizationId`,
         element: <OrganizationsReadOnly />,
         handle: {
@@ -94,8 +107,16 @@ export const router = createBrowserRouter([
         },
       },
       {
+        path: `:calendarId${PathName.Organizations}${PathName.AddOrganization}`,
+        element: <CreateNewOrganization />,
+      },
+      {
         path: `:calendarId${PathName.People}`,
         element: <People />,
+      },
+      {
+        path: `:calendarId${PathName.People}${PathName.Search}`,
+        element: <SearchPerson />,
       },
       {
         path: `:calendarId${PathName.People}/:personId`,
@@ -103,6 +124,10 @@ export const router = createBrowserRouter([
         handle: {
           crumb: () => <Translation>{(t) => t('dashboard.people.people')}</Translation>,
         },
+      },
+      {
+        path: `:calendarId${PathName.People}${PathName.AddPerson}`,
+        element: <CreateNewPerson />,
       },
       {
         path: `:calendarId${PathName.Taxonomies}`,
@@ -116,10 +141,6 @@ export const router = createBrowserRouter([
   },
   {
     path: PathName.NotFound,
-    element: (
-      <div>
-        <NotFound />
-      </div>
-    ),
+    element: <ErrorAlert errorType="pageNotFound" />,
   },
 ]);

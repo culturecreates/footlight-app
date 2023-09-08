@@ -1,0 +1,46 @@
+.search-bar-organization .entity-popover .ant-popover-arrow {
+  display: none;
+}
+
+.search-bar-organization .entity-popover {
+  width: 100%;
+  padding-top: 0;
+  padding-bottom: 10px;
+}
+
+.search-bar-organization .ant-popover-inner {
+  filter: drop-shadow(0px 8px 32px rgba(0, 0, 0, 0.2));
+}
+
+.search-bar-organization .entity-popover .ant-popover-inner-content {
+  padding: 0px;
+}
+
+.search-bar-organization .ant-popover-inner-content .search-scrollable-content {
+  max-height: 250px;
+  overflow-y: scroll;
+  width: 100%;
+}
+
+.search-bar-organization .quick-create {
+  background-color: #eff2ff;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: #1b3de6;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  height: 40px;
+  padding: 12px;
+}
+
+.search-bar-organization .popover-section-header {
+  padding: 6px 16px 4px 8px;
+  font-weight: 700;
+  color: #646d7b;
+}
+
+.search-bar-organization .ant-popover-content {
+  padding-bottom: 10px;
+}

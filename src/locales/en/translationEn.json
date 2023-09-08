@@ -228,7 +228,15 @@
             "title": "Image",
             "subHeading": " Images should be landscape or square and at least 600px wide. Only JPEG and PNG files are supported.",
             "dragAndDrop": "or drag and drop to upload",
-            "browse": "Browse"
+            "browse": "Browse",
+            "crop": {
+              "title": "Position image",
+              "subHeading": "Adjust position if necessary.",
+              "savedFrameSize": "Saved frame sizes",
+              "ratio": "Ratio",
+              "save": "Save",
+              "cancel": "Cancel"
+            }
           },
           "organizer": {
             "title": "Organizer",
@@ -354,8 +362,8 @@
           "errorImage": "This image cannot be saved. Adjust the image or try a different one."
         },
         "quickCreate": {
-          "title": "Create an organizer",
-          "subHeading": "What type of organizer you want to create?",
+          "title": "Quick Create",
+          "subHeading": "What do you want to create?",
           "person": "Person",
           "organization": "Organization",
           "create": "Create",
@@ -437,7 +445,26 @@
         "phoneNumber": "Phone number",
         "email": "Email",
         "memberOf": "Member of",
-        "location": "Location"
+        "location": "Location",
+        "edit": "Edit"
+      },
+      "createNew": {
+        "search": {
+          "title": "New Organization",
+          "searchbarHeader": "Organization",
+          "searchHeading": "Search for another instance",
+          "text": "Search to link to an existing instance of the organization. If you don't find the organization, you can create it.",
+          "breadcrumb": "Back to previous screen",
+          "linkText": "Artsdata",
+          "createNew": "Create new organization",
+          "create": "Create",
+          "footlightSectionHeading": "From Footlight",
+          "artsDataSectionHeading": "Imports from Artsdata"
+        },
+        "addOrganization": {
+          "newOrganization": "New Organization",
+          "editOrganization": "Edit Organization"
+        }
       }
     },
     "places": {
@@ -457,6 +484,7 @@
         "disambiguatingDescription": "Disambiguating description",
         "description": "Description",
         "website": "Website",
+        "edit": "Edit",
         "address": {
           "address": "Address",
           "streetAddress": "Street address",
@@ -471,6 +499,19 @@
         "notContainedInPlace": "Not contained in any place.",
         "venueAccessibility": "Venue accessibility",
         "items": "Items"
+      },
+      "createNew": {
+        "search": {
+          "title": "New place",
+          "searchbarHeader": "Linked data",
+          "searchHeading": "Search for another instance",
+          "text": "Search to link to an existing instance of the place in other data sources. If you don’t find the place, you can create it.",
+          "breadcrumb": "Back to previous screen",
+          "linkText": "Artsdata",
+          "create": "Create",
+          "footlightSectionHeading": "From Footlight",
+          "artsDataSectionHeading": "Imports from Artsdata"
+        }
       }
     },
     "people": {
@@ -490,7 +531,25 @@
         "name": "Name",
         "disambiguatingDescription": "Disambiguating description",
         "description": "Description",
-        "website": "Website"
+        "website": "Website",
+        "edit": "Edit"
+      },
+      "createNew": {
+        "search": {
+          "title": "New Person",
+          "searchbarHeader": "Linked data",
+          "searchHeading": "Search for another instance",
+          "text": "Search to link to an existing instance of the person in other data sources. If you don’t find the person, you can create them.",
+          "breadcrumb": "Back to previous screen",
+          "linkText": "Artsdata",
+          "create": "Create",
+          "footlightSectionHeading": "From Footlight",
+          "artsDataSectionHeading": "Imports from Artsdata"
+        },
+        "addPerson": {
+          "newPerson": "New Person",
+          "editPerson": "Edit Person"
+        }
       }
     },
     "userProfile": {
@@ -518,6 +577,14 @@
         "emptyLastName": "Enter your last name"
       }
     }
+  },
+  "errorPage": {
+    "heading": "Oops, something went wrong!",
+    "notFoundMessage": "The requested page could not be found (404)",
+    "serverErrorsMessage": "If the problem persists, let the site owner know {{code}}",
+    "jsErrorMessage": "Go back to the previous page",
+    "buttonText": "Back",
+    "serverDown": "Server under maintenance"
   },
   "common": {
     "tabEnglish": "English",
