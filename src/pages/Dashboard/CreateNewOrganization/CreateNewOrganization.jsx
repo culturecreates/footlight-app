@@ -176,6 +176,13 @@ function CreateNewOrganization() {
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                               calendarContentLanguage: calendarContentLanguage,
                             }),
+                            userTips: contentLanguageBilingual({
+                              en: field?.userTips?.text?.en,
+                              fr: field?.userTips?.text?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            }),
+                            position: field?.userTips?.position,
                           });
                         }
                       });

@@ -152,18 +152,32 @@ export const formFieldValue = [
 
 export const renderFormFields = ({
   // type,
-  // dataType,
+  datatype,
   element,
   rules = [],
   initialValue = undefined,
   name,
   key,
   required,
+  userTips,
+  position,
   ...rest
 }) => {
   return (
-    <Form.Item name={name} key={key} initialValue={initialValue} rules={rules} required={required} {...rest}>
-      {element}
-    </Form.Item>
+    <>
+      {position === 'top' && datatype !== dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
+
+      <Form.Item
+        name={name}
+        key={key}
+        initialValue={initialValue}
+        rules={rules}
+        required={required}
+        help={position === 'bottom' && <p className="add-event-date-heading">{userTips}</p>}
+        {...rest}>
+        {position === 'top' && datatype === dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
+        {element}
+      </Form.Item>
+    </>
   );
 };

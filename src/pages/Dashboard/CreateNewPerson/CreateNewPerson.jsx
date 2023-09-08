@@ -150,13 +150,17 @@ function CreateNewPerson() {
                             element: formField?.element({
                               datatype: field?.datatype,
                               taxonomyData: allTaxonomyData,
-                              data: user,
+                              user: user,
                               type: field?.mappedField,
                               isDynamicField: false,
                               calendarContentLanguage,
                               name: [field?.mappedField],
-                              formName: field?.mappedField,
-                              form,
+                              placeholder: contentLanguageBilingual({
+                                en: field?.placeholder?.en,
+                                fr: field?.placeholder?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              }),
                             }),
                             key: index,
                             initialValue: formInitialValueHandler(
@@ -170,9 +174,14 @@ function CreateNewPerson() {
                               fr: field?.label?.fr,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                               calendarContentLanguage: calendarContentLanguage,
-                              required: field?.isRequiredField,
-                              hidden: true,
                             }),
+                            userTips: contentLanguageBilingual({
+                              en: field?.userTips?.text?.en,
+                              fr: field?.userTips?.text?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            }),
+                            position: field?.userTips?.position,
                           });
                         }
                       });
