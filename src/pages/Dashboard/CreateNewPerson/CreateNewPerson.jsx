@@ -151,7 +151,7 @@ function CreateNewPerson() {
               .then((response) => {
                 personPayload['image'] = {
                   original: {
-                    entityId: response?.data?.entityId,
+                    entityId: response?.data?.original?.entityId,
                     height: response?.data?.height,
                     width: response?.data?.width,
                   },
