@@ -548,7 +548,11 @@
         },
         "addPerson": {
           "newPerson": "New Person",
-          "editPerson": "Edit Person"
+          "editPerson": "Edit Person",
+          "notification": {
+            "addSuccess": "Success! Your person has been created.",
+            "editSuccess": "Success! Your person has been updated."
+          }
         }
       }
     },

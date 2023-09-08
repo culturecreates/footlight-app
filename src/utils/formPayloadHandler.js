@@ -27,6 +27,7 @@ export const formPayloadHandler = (value, mappedField, formFields) => {
             entityId: id,
           };
         });
+        if (payload?.length == 0) payload = [];
         return { [mappedField]: payload };
 
       case dataTypes.STRING:

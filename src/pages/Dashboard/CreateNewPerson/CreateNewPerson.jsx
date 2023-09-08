@@ -72,7 +72,7 @@ function CreateNewPerson() {
             resolve(response?.id);
             //Add the notification msg for adding person
             notification.success({
-              description: t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+              description: t('dashboard.people.createNew.addPerson.notification.addSuccess'),
               placement: 'top',
               closeIcon: <></>,
               maxCount: 1,
@@ -99,7 +99,7 @@ function CreateNewPerson() {
             resolve(personId);
             //Add success msg for updating a person
             notification.success({
-              description: t('dashboard.events.addEditEvent.notification.updateEvent'),
+              description: t('dashboard.people.createNew.addPerson.notification.editSuccess'),
               placement: 'top',
               closeIcon: <></>,
               maxCount: 1,
@@ -170,16 +170,8 @@ function CreateNewPerson() {
             if (values?.image && values?.image?.length == 0) personPayload['image'] = null;
             else personPayload['image'] = personData?.image;
           }
+          addUpdatePersonApiHandler(personPayload);
         }
-
-        // addOrganization({ data: {}, calendarId })
-        //   .unwrap()
-        //   .then((response) => {
-        //     console.log(response);
-        //   })
-        //   .catch((error) => {
-        //     console.log(error);
-        //   });
       })
       .catch((error) => console.log(error));
   };
@@ -211,7 +203,7 @@ function CreateNewPerson() {
                       <Form.Item>
                         <PrimaryButton
                           label={t('dashboard.events.addEditEvent.saveOptions.save')}
-                          onClick={onSaveHandler}
+                          onClick={() => onSaveHandler()}
                         />
                       </Form.Item>
                     </div>
