@@ -39,7 +39,7 @@ function CreateNewPerson() {
   let [searchParams] = useSearchParams();
 
   const personId = searchParams.get('id');
-  const artsDataId = location?.state?.data;
+  const artsDataId = location?.state?.data ?? null;
 
   const { data: personData, isLoading: personLoading } = useGetPersonQuery(
     { personId, calendarId, sessionId: timestampRef },
