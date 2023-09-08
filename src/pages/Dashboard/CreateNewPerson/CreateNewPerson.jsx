@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import '../AddEvent/addEvent.css';
-import { Form, Row, Col, Button } from 'antd';
+import { Form, Row, Col, Button, notification } from 'antd';
 import { CloseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
@@ -23,7 +23,9 @@ import Tags from '../../../components/Tags/Common/Tags';
 import { formFieldsHandler } from '../../../utils/formFieldsHandler';
 import { formPayloadHandler } from '../../../utils/formPayloadHandler';
 import { formInitialValueHandler } from '../../../utils/formInitialValueHandler';
-import { useGetPersonQuery } from '../../../services/people';
+import { useAddPersonMutation, useGetPersonQuery, useUpdatePersonMutation } from '../../../services/people';
+import { useAddImageMutation } from '../../../services/image';
+import { PathName } from '../../../constants/pathName';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -49,12 +51,70 @@ function CreateNewPerson() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
-  // const [addOrganization] = useAddOrganizationMutation();
+  const [addPerson] = useAddPersonMutation();
+  const [addImage] = useAddImageMutation();
+  const [updatePerson] = useUpdatePersonMutation();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.people);
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.people);
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
+
+  const addUpdatePersonApiHandler = (personObj) => {
+    var promise = new Promise(function (resolve, reject) {
+      if (!personId || personId === '') {
+        addPerson({
+          data: personObj,
+          calendarId,
+        })
+          .unwrap()
+          .then((response) => {
+            resolve(response?.id);
+            //Add the notification msg for adding person
+            notification.success({
+              description: t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}`);
+          })
+          .catch((errorInfo) => {
+            reject();
+            console.log(errorInfo);
+          });
+      } else {
+        personObj = {
+          ...personObj,
+          sameAs: personData?.sameAs,
+        };
+        updatePerson({
+          data: personObj,
+          calendarId,
+          personId,
+        })
+          .unwrap()
+          .then(() => {
+            resolve(personId);
+            //Add success msg for updating a person
+            notification.success({
+              description: t('dashboard.events.addEditEvent.notification.updateEvent'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}`);
+          })
+          .catch((error) => {
+            reject();
+            console.log(error);
+          });
+      }
+    });
+    return promise;
+  };
 
   const onSaveHandler = () => {
     form
@@ -64,21 +124,54 @@ function CreateNewPerson() {
         let personPayload = {};
         Object.keys(values)?.map((object) => {
           let payload = formPayloadHandler(values[object], object, formFields);
-          let newKeys = Object.keys(payload);
-          let childKeys = Object.keys(payload[newKeys[0]]);
-          personPayload = {
-            ...personPayload,
-            ...(newKeys?.length > 0 && {
-              [newKeys[0]]: {
-                ...personPayload[newKeys[0]],
-                ...(childKeys?.length > 0 && { [childKeys[0]]: payload[newKeys[0]][childKeys[0]] }),
-                ...(childKeys?.length > 1 && {
-                  [childKeys[childKeys?.length - 1]]: payload[newKeys[0]][childKeys[childKeys?.length - 1]],
-                }),
-              },
-            }),
-          };
+          if (payload) {
+            let newKeys = Object.keys(payload);
+            let childKeys = Object.keys(payload[newKeys[0]]);
+
+            personPayload = {
+              ...personPayload,
+              ...(newKeys?.length > 0 && {
+                [newKeys[0]]: {
+                  ...personPayload[newKeys[0]],
+                  ...(childKeys?.length > 0 && { [childKeys[0]]: payload[newKeys[0]][childKeys[0]] }),
+                  ...(childKeys?.length > 1 && {
+                    [childKeys[childKeys?.length - 1]]: payload[newKeys[0]][childKeys[childKeys?.length - 1]],
+                  }),
+                },
+              }),
+            };
+          }
         });
+        if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
+          const formdata = new FormData();
+          formdata.append('file', values?.image[0].originFileObj);
+          formdata &&
+            addImage({ data: formdata, calendarId })
+              .unwrap()
+              .then((response) => {
+                personPayload['image'] = {
+                  original: {
+                    entityId: response?.data?.entityId,
+                    height: response?.data?.height,
+                    width: response?.data?.width,
+                  },
+                  large: {},
+                  thumbnail: {},
+                };
+                addUpdatePersonApiHandler(personPayload);
+              })
+              .catch((error) => {
+                console.log(error);
+                const element = document.getElementsByClassName('image');
+                element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+              });
+        } else {
+          if (values?.image) {
+            if (values?.image && values?.image?.length == 0) personPayload['image'] = null;
+            else personPayload['image'] = personData?.image;
+          }
+        }
+
         // addOrganization({ data: {}, calendarId })
         //   .unwrap()
         //   .then((response) => {
@@ -137,100 +230,106 @@ function CreateNewPerson() {
               </Col>
             </Row>
             {fields?.map((section, index) => {
-              return (
-                <Card title={section[0]?.category} key={index}>
-                  <>
-                    {section?.map((field) => {
-                      return formFieldValue?.map((formField, index) => {
-                        if (formField?.type === field.type) {
-                          return renderFormFields({
-                            name: [field?.mappedField],
-                            type: field?.type,
-                            datatype: field?.datatype,
-                            element: formField?.element({
-                              datatype: field?.datatype,
-                              taxonomyData: allTaxonomyData,
-                              user: user,
-                              type: field?.mappedField,
-                              isDynamicField: false,
-                              calendarContentLanguage,
+              if (section?.length > 0)
+                return (
+                  <Card title={section[0]?.category !== formCategory.PRIMARY && section[0]?.category} key={index}>
+                    <>
+                      {section?.map((field) => {
+                        return formFieldValue?.map((formField, index) => {
+                          if (formField?.type === field.type) {
+                            return renderFormFields({
                               name: [field?.mappedField],
-                              placeholder: contentLanguageBilingual({
-                                en: field?.placeholder?.en,
-                                fr: field?.placeholder?.fr,
+                              type: field?.type,
+                              datatype: field?.datatype,
+                              element: formField?.element({
+                                datatype: field?.datatype,
+                                taxonomyData: allTaxonomyData,
+                                user: user,
+                                type: field?.mappedField,
+                                isDynamicField: false,
+                                calendarContentLanguage,
+                                name: [field?.mappedField],
+
+                                placeholder: contentLanguageBilingual({
+                                  en: field?.placeholder?.en,
+                                  fr: field?.placeholder?.fr,
+                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  calendarContentLanguage: calendarContentLanguage,
+                                }),
+                              }),
+                              key: index,
+                              initialValue: formInitialValueHandler(
+                                field?.type,
+                                field?.mappedField,
+                                field?.datatype,
+                                personData,
+                              ),
+                              label: contentLanguageBilingual({
+                                en: field?.label?.en,
+                                fr: field?.label?.fr,
                                 interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                 calendarContentLanguage: calendarContentLanguage,
                               }),
-                            }),
-                            key: index,
-                            initialValue: formInitialValueHandler(
-                              field?.type,
-                              field?.mappedField,
-                              field?.datatype,
-                              personData,
-                            ),
-                            label: contentLanguageBilingual({
-                              en: field?.label?.en,
-                              fr: field?.label?.fr,
-                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              calendarContentLanguage: calendarContentLanguage,
-                            }),
-                            userTips: contentLanguageBilingual({
-                              en: field?.userTips?.text?.en,
-                              fr: field?.userTips?.text?.fr,
-                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              calendarContentLanguage: calendarContentLanguage,
-                            }),
-                            position: field?.userTips?.position,
-                          });
-                        }
-                      });
-                    })}
-                    {section[0]?.category === formCategory.PRIMARY &&
-                      allTaxonomyData?.data?.map((taxonomy, index) => {
-                        if (taxonomy?.isDynamicField) {
-                          let initialValues;
-                          personData?.dynamicFields?.forEach((dynamicField) => {
-                            if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
-                          });
-                          return (
-                            <Form.Item
-                              key={index}
-                              name={['dynamicFields', taxonomy?.id]}
-                              label={bilingual({
-                                en: taxonomy?.name?.en,
-                                fr: taxonomy?.name?.fr,
+                              userTips: contentLanguageBilingual({
+                                en: field?.userTips?.text?.en,
+                                fr: field?.userTips?.text?.fr,
                                 interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              })}
-                              initialValue={initialValues}>
-                              <TreeSelectOption
-                                allowClear
-                                treeDefaultExpandAll
-                                notFoundContent={<NoContent />}
-                                clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                                treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
-                                tagRender={(props) => {
-                                  const { label, closable, onClose } = props;
-                                  return (
-                                    <Tags
-                                      closable={closable}
-                                      onClose={onClose}
-                                      closeIcon={
-                                        <CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />
-                                      }>
-                                      {label}
-                                    </Tags>
-                                  );
-                                }}
-                              />
-                            </Form.Item>
-                          );
-                        }
+                                calendarContentLanguage: calendarContentLanguage,
+                              }),
+                              position: field?.userTips?.position,
+                            });
+                          }
+                        });
                       })}
-                  </>
-                  <></>
-                </Card>
-              );
+                      {section[0]?.category === formCategory.PRIMARY &&
+                        allTaxonomyData?.data?.map((taxonomy, index) => {
+                          if (taxonomy?.isDynamicField) {
+                            let initialValues;
+                            personData?.dynamicFields?.forEach((dynamicField) => {
+                              if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
+                            });
+                            return (
+                              <Form.Item
+                                key={index}
+                                name={['dynamicFields', taxonomy?.id]}
+                                label={bilingual({
+                                  en: taxonomy?.name?.en,
+                                  fr: taxonomy?.name?.fr,
+                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                })}
+                                initialValue={initialValues}>
+                                <TreeSelectOption
+                                  allowClear
+                                  treeDefaultExpandAll
+                                  notFoundContent={<NoContent />}
+                                  clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                                  treeData={treeDynamicTaxonomyOptions(
+                                    taxonomy?.concept,
+                                    user,
+                                    calendarContentLanguage,
+                                  )}
+                                  tagRender={(props) => {
+                                    const { label, closable, onClose } = props;
+                                    return (
+                                      <Tags
+                                        closable={closable}
+                                        onClose={onClose}
+                                        closeIcon={
+                                          <CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />
+                                        }>
+                                        {label}
+                                      </Tags>
+                                    );
+                                  }}
+                                />
+                              </Form.Item>
+                            );
+                          }
+                        })}
+                    </>
+                    <></>
+                  </Card>
+                );
             })}
           </Form>
         </div>

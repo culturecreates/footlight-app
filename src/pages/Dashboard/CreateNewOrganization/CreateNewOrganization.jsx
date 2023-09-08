@@ -138,100 +138,105 @@ function CreateNewOrganization() {
               </Col>
             </Row>
             {fields?.map((section, index) => {
-              return (
-                <Card title={section[0]?.category} key={index}>
-                  <>
-                    {section?.map((field) => {
-                      return formFieldValue?.map((formField, index) => {
-                        if (formField?.type === field.type) {
-                          return renderFormFields({
-                            name: [field?.mappedField],
-                            type: field?.type,
-                            datatype: field?.datatype,
-                            element: formField?.element({
-                              datatype: field?.datatype,
-                              taxonomyData: allTaxonomyData,
-                              user: user,
-                              type: field?.mappedField,
-                              isDynamicField: false,
-                              calendarContentLanguage,
+              if (section?.length > 0)
+                return (
+                  <Card title={section[0]?.category !== formCategory.PRIMARY && section[0]?.category} key={index}>
+                    <>
+                      {section?.map((field) => {
+                        return formFieldValue?.map((formField, index) => {
+                          if (formField?.type === field.type) {
+                            return renderFormFields({
                               name: [field?.mappedField],
-                              placeholder: contentLanguageBilingual({
-                                en: field?.placeholder?.en,
-                                fr: field?.placeholder?.fr,
+                              type: field?.type,
+                              datatype: field?.datatype,
+                              element: formField?.element({
+                                datatype: field?.datatype,
+                                taxonomyData: allTaxonomyData,
+                                user: user,
+                                type: field?.mappedField,
+                                isDynamicField: false,
+                                calendarContentLanguage,
+                                name: [field?.mappedField],
+                                placeholder: contentLanguageBilingual({
+                                  en: field?.placeholder?.en,
+                                  fr: field?.placeholder?.fr,
+                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  calendarContentLanguage: calendarContentLanguage,
+                                }),
+                              }),
+                              key: index,
+                              initialValue: formInitialValueHandler(
+                                field?.type,
+                                field?.mappedField,
+                                field?.datatype,
+                                organizationData,
+                              ),
+                              label: contentLanguageBilingual({
+                                en: field?.label?.en,
+                                fr: field?.label?.fr,
                                 interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                 calendarContentLanguage: calendarContentLanguage,
                               }),
-                            }),
-                            key: index,
-                            initialValue: formInitialValueHandler(
-                              field?.type,
-                              field?.mappedField,
-                              field?.datatype,
-                              organizationData,
-                            ),
-                            label: contentLanguageBilingual({
-                              en: field?.label?.en,
-                              fr: field?.label?.fr,
-                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              calendarContentLanguage: calendarContentLanguage,
-                            }),
-                            userTips: contentLanguageBilingual({
-                              en: field?.userTips?.text?.en,
-                              fr: field?.userTips?.text?.fr,
-                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              calendarContentLanguage: calendarContentLanguage,
-                            }),
-                            position: field?.userTips?.position,
-                          });
-                        }
-                      });
-                    })}
-                    {section[0]?.category === formCategory.PRIMARY &&
-                      allTaxonomyData?.data?.map((taxonomy, index) => {
-                        if (taxonomy?.isDynamicField) {
-                          let initialValues;
-                          organizationData?.dynamicFields?.forEach((dynamicField) => {
-                            if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
-                          });
-                          return (
-                            <Form.Item
-                              key={index}
-                              name={['dynamicFields', taxonomy?.id]}
-                              label={bilingual({
-                                en: taxonomy?.name?.en,
-                                fr: taxonomy?.name?.fr,
+                              userTips: contentLanguageBilingual({
+                                en: field?.userTips?.text?.en,
+                                fr: field?.userTips?.text?.fr,
                                 interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              })}
-                              initialValue={initialValues}>
-                              <TreeSelectOption
-                                allowClear
-                                treeDefaultExpandAll
-                                notFoundContent={<NoContent />}
-                                clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                                treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
-                                tagRender={(props) => {
-                                  const { label, closable, onClose } = props;
-                                  return (
-                                    <Tags
-                                      closable={closable}
-                                      onClose={onClose}
-                                      closeIcon={
-                                        <CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />
-                                      }>
-                                      {label}
-                                    </Tags>
-                                  );
-                                }}
-                              />
-                            </Form.Item>
-                          );
-                        }
+                                calendarContentLanguage: calendarContentLanguage,
+                              }),
+                              position: field?.userTips?.position,
+                            });
+                          }
+                        });
                       })}
-                  </>
-                  <></>
-                </Card>
-              );
+                      {section[0]?.category === formCategory.PRIMARY &&
+                        allTaxonomyData?.data?.map((taxonomy, index) => {
+                          if (taxonomy?.isDynamicField) {
+                            let initialValues;
+                            organizationData?.dynamicFields?.forEach((dynamicField) => {
+                              if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
+                            });
+                            return (
+                              <Form.Item
+                                key={index}
+                                name={['dynamicFields', taxonomy?.id]}
+                                label={bilingual({
+                                  en: taxonomy?.name?.en,
+                                  fr: taxonomy?.name?.fr,
+                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                })}
+                                initialValue={initialValues}>
+                                <TreeSelectOption
+                                  allowClear
+                                  treeDefaultExpandAll
+                                  notFoundContent={<NoContent />}
+                                  clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                                  treeData={treeDynamicTaxonomyOptions(
+                                    taxonomy?.concept,
+                                    user,
+                                    calendarContentLanguage,
+                                  )}
+                                  tagRender={(props) => {
+                                    const { label, closable, onClose } = props;
+                                    return (
+                                      <Tags
+                                        closable={closable}
+                                        onClose={onClose}
+                                        closeIcon={
+                                          <CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />
+                                        }>
+                                        {label}
+                                      </Tags>
+                                    );
+                                  }}
+                                />
+                              </Form.Item>
+                            );
+                          }
+                        })}
+                    </>
+                    <></>
+                  </Card>
+                );
             })}
           </Form>
         </div>
