@@ -541,12 +541,14 @@ function AddEvent() {
               addImage({ data: formdata, calendarId })
                 .unwrap()
                 .then((response) => {
-                  let entityId = response?.data?.original?.entityId;
+                  // let entityId = response?.data?.original?.entityId;
                   imageCrop = {
                     ...imageCrop,
                     original: {
                       ...imageCrop?.original,
-                      entityId,
+                      entityId: response?.data?.original?.entityId,
+                      height: response?.data?.height,
+                      width: response?.data?.width,
                     },
                   };
                   eventObj['image'] = imageCrop;
@@ -1982,7 +1984,7 @@ function AddEvent() {
                       ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio
                       : null
                   }
-                  isCrop={true}
+                  isCrop={false}
                 />
               </Form.Item>
 
