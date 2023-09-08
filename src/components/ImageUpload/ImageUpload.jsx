@@ -152,7 +152,7 @@ function ImageUpload(props) {
                       <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
                     </span>
                   )}
-                  {!props?.imageReadOnly && (props?.imageUrl || imageUrl) && (
+                  {!props?.imageReadOnly && (props?.imageUrl || imageUrl) && isCrop && (
                     <span className="edit-image" onClick={actions?.preview}>
                       <EditOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
                     </span>
