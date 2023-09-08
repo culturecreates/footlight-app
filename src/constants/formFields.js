@@ -154,7 +154,7 @@ export const renderFormFields = ({
   // type,
   datatype,
   element,
-  rules = [],
+  // rules = [],
   initialValue = undefined,
   name,
   key,
@@ -163,6 +163,7 @@ export const renderFormFields = ({
   position,
   ...rest
 }) => {
+  console.log(required);
   return (
     <>
       {position === 'top' && datatype !== dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
@@ -171,7 +172,7 @@ export const renderFormFields = ({
         name={name}
         key={key}
         initialValue={initialValue}
-        rules={rules}
+        // rules={rules}
         required={required}
         help={position === 'bottom' && <p className="add-event-date-heading">{userTips}</p>}
         {...rest}>

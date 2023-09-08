@@ -233,6 +233,7 @@ function CreateNewPerson() {
                               name: [field?.mappedField],
                               type: field?.type,
                               datatype: field?.datatype,
+                              required: field?.isRequiredField,
                               element: formField?.element({
                                 datatype: field?.datatype,
                                 taxonomyData: allTaxonomyData,
@@ -249,6 +250,7 @@ function CreateNewPerson() {
                                   calendarContentLanguage: calendarContentLanguage,
                                 }),
                                 largeUrl: personData?.image?.large?.uri,
+                                required: field?.isRequiredField,
                               }),
                               key: index,
                               initialValue: formInitialValueHandler(
