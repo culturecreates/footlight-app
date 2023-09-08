@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import '../AddEvent/addEvent.css';
 import { Form, Row, Col, Button, notification } from 'antd';
 import { CloseCircleOutlined } from '@ant-design/icons';
@@ -26,6 +26,7 @@ import { formInitialValueHandler } from '../../../utils/formInitialValueHandler'
 import { useAddPersonMutation, useGetPersonQuery, useUpdatePersonMutation } from '../../../services/people';
 import { useAddImageMutation } from '../../../services/image';
 import { PathName } from '../../../constants/pathName';
+import { loadArtsDataEntity } from '../../../services/artsData';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -38,6 +39,7 @@ function CreateNewPerson() {
   let [searchParams] = useSearchParams();
 
   const personId = searchParams.get('id');
+  const artsDataId = location?.state?.data;
 
   const { data: personData, isLoading: personLoading } = useGetPersonQuery(
     { personId, calendarId, sessionId: timestampRef },
@@ -54,6 +56,9 @@ function CreateNewPerson() {
   const [addPerson] = useAddPersonMutation();
   const [addImage] = useAddImageMutation();
   const [updatePerson] = useUpdatePersonMutation();
+
+  const [artsData, setArtsData] = useState(null);
+  const [artsDataLoading, setArtsDataLoading] = useState(false);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.people);
@@ -176,12 +181,26 @@ function CreateNewPerson() {
       .catch((error) => console.log(error));
   };
 
+  useEffect(() => {
+    setArtsDataLoading(true);
+    loadArtsDataEntity({ entityId: artsDataId })
+      .then((response) => {
+        setArtsData(response?.data[0]);
+        setArtsDataLoading(false);
+      })
+      .catch((error) => {
+        setArtsDataLoading(false);
+        console.log(error);
+      });
+  }, []);
+
   // console.log(fields);
   // console.log(personData);
   return (
     fields &&
     !personLoading &&
-    !taxonomyLoading && (
+    !taxonomyLoading &&
+    !artsDataLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
         <div className="add-edit-wrapper add-organization-wrapper">
           <Form form={form} layout="vertical" name="organization">
@@ -257,7 +276,7 @@ function CreateNewPerson() {
                                 field?.type,
                                 field?.mappedField,
                                 field?.datatype,
-                                personData,
+                                personData ?? artsData,
                               ),
                               label: contentLanguageBilingual({
                                 en: field?.label?.en,
