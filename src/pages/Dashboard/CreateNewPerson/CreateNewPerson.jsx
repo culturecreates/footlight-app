@@ -241,13 +241,14 @@ function CreateNewPerson() {
                                 isDynamicField: false,
                                 calendarContentLanguage,
                                 name: [field?.mappedField],
-
+                                preview: true,
                                 placeholder: contentLanguageBilingual({
                                   en: field?.placeholder?.en,
                                   fr: field?.placeholder?.fr,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 }),
+                                largeUrl: personData?.image?.large?.uri,
                               }),
                               key: index,
                               initialValue: formInitialValueHandler(
