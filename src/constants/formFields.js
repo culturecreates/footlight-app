@@ -10,7 +10,7 @@ import ContentLanguageInput from '../components/ContentLanguageInput/ContentLang
 import BilingualInput from '../components/BilingualInput/BilingualInput';
 import ImageUpload from '../components/ImageUpload/ImageUpload';
 import { contentLanguageBilingual } from '../utils/bilingual';
-import { Translation } from 'react-i18next';
+// import { Translation } from 'react-i18next';
 import StyledInput from '../components/Input/Common';
 
 const { TextArea } = Input;
@@ -36,19 +36,19 @@ export const dataTypes = {
   IMAGE: 'Image',
 };
 
-const rules = [
-  {
-    dataType: dataTypes.URI_STRING,
-    rule: [
-      {
-        type: 'url',
-        message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
-      },
-    ],
-  },
-];
+// const rules = [
+//   {
+//     dataType: dataTypes.URI_STRING,
+//     rule: [
+//       {
+//         type: 'url',
+//         message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
+//       },
+//     ],
+//   },
+// ];
 
-console.log(rules);
+// console.log(rules);
 export const formFieldValue = [
   {
     type: formTypes.INPUT,
