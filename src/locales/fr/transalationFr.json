@@ -551,6 +551,9 @@
           "notification": {
             "addSuccess": "Succès ! Votre personne a été créé.",
             "editSuccess": "Succès ! Votre personne a été mis à jour."
+          },
+          "validations": {
+            "nameRequired": "Le nom est requis."
           }
         }
       }

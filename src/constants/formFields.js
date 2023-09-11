@@ -66,7 +66,10 @@ export const formFieldValue = [
                     validator(_, value) {
                       if (value || getFieldValue([name?.concat(['en'])])) {
                         return Promise.resolve();
-                      } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                      } else
+                        return Promise.reject(
+                          new Error(t('dashboard.people.createNew.addPerson.validations.nameRequired')),
+                        );
                     },
                   }),
                 ]}>
@@ -88,7 +91,10 @@ export const formFieldValue = [
                     validator(_, value) {
                       if (value || getFieldValue([name?.concat(['fr'])])) {
                         return Promise.resolve();
-                      } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                      } else
+                        return Promise.reject(
+                          new Error(t('dashboard.people.createNew.addPerson.validations.nameRequired')),
+                        );
                     },
                   }),
                 ]}>
