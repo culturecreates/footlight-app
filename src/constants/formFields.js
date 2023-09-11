@@ -36,23 +36,21 @@ export const dataTypes = {
   IMAGE: 'Image',
 };
 
-// const rules = [
-//   {
-//     dataType: dataTypes.URI_STRING,
-//     rule: [
-//       {
-//         type: 'url',
-//         message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
-//       },
-//     ],
-//   },
-// ];
+const rules = [
+  {
+    dataType: dataTypes.URI_STRING,
+    rule: {
+      type: 'url',
+      message: 'dashboard.events.addEditEvent.validations.url',
+    },
+  },
+];
 
 // console.log(rules);
 export const formFieldValue = [
   {
     type: formTypes.INPUT,
-    element: ({ datatype, data, calendarContentLanguage, name = [], placeholder, user, t }) => {
+    element: ({ datatype, data, calendarContentLanguage, name = [], placeholder, user, t, validations }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
         return (
           <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
@@ -66,10 +64,7 @@ export const formFieldValue = [
                     validator(_, value) {
                       if (value || getFieldValue([name?.concat(['en'])])) {
                         return Promise.resolve();
-                      } else
-                        return Promise.reject(
-                          new Error(t('dashboard.people.createNew.addPerson.validations.nameRequired')),
-                        );
+                      } else return Promise.reject(new Error(validations?.fr));
                     },
                   }),
                 ]}>
@@ -91,10 +86,7 @@ export const formFieldValue = [
                     validator(_, value) {
                       if (value || getFieldValue([name?.concat(['fr'])])) {
                         return Promise.resolve();
-                      } else
-                        return Promise.reject(
-                          new Error(t('dashboard.people.createNew.addPerson.validations.nameRequired')),
-                        );
+                      } else return Promise.reject(new Error(validations?.en));
                     },
                   }),
                 ]}>
@@ -208,7 +200,6 @@ export const renderFormFields = ({
   // type,
   datatype,
   element,
-  // rules = [],
   initialValue = undefined,
   name,
   key,
@@ -228,6 +219,9 @@ export const renderFormFields = ({
         initialValue={initialValue}
         required={required}
         hidden={hidden}
+        rules={rules?.map((rule) => {
+          if (datatype === rule?.dataType) return rules.rule;
+        })}
         help={position === 'bottom' && <p className="add-event-date-heading">{userTips}</p>}
         {...rest}>
         {position === 'top' && datatype === dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}

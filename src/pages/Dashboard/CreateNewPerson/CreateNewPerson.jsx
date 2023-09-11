@@ -42,7 +42,7 @@ function CreateNewPerson() {
   let [searchParams] = useSearchParams();
 
   const personId = searchParams.get('id');
-  const artsDataId = location?.state?.data ?? null;
+  const artsDataId = location?.state?.data?.id ?? null;
 
   const { data: personData, isLoading: personLoading } = useGetPersonQuery(
     { personId, calendarId, sessionId: timestampRef },
@@ -71,6 +71,19 @@ function CreateNewPerson() {
   const addUpdatePersonApiHandler = (personObj) => {
     var promise = new Promise(function (resolve, reject) {
       if (!personId || personId === '') {
+        if (artsDataId && artsData?.data?.length > 0) {
+          let artsDataSameAs = Array.isArray(artsData?.data[0]?.sameAs);
+          if (artsDataSameAs)
+            personObj = {
+              ...personObj,
+              sameAs: artsData?.data[0]?.sameAs,
+            };
+          else
+            personObj = {
+              ...personObj,
+              sameAs: [artsData?.data[0]?.sameAs],
+            };
+        }
         addPerson({
           data: personObj,
           calendarId,
@@ -78,7 +91,6 @@ function CreateNewPerson() {
           .unwrap()
           .then((response) => {
             resolve(response?.id);
-            //Add the notification msg for adding person
             notification.success({
               description: t('dashboard.people.createNew.addPerson.notification.addSuccess'),
               placement: 'top',
@@ -105,7 +117,6 @@ function CreateNewPerson() {
           .unwrap()
           .then(() => {
             resolve(personId);
-            //Add success msg for updating a person
             notification.success({
               description: t('dashboard.people.createNew.addPerson.notification.editSuccess'),
               placement: 'top',
@@ -126,7 +137,10 @@ function CreateNewPerson() {
 
   const onSaveHandler = () => {
     form
-      .validateFields([])
+      .validateFields([
+        ['name', 'fr'],
+        ['name', 'en'],
+      ])
       .then(() => {
         var values = form.getFieldsValue(true);
         let personPayload = {};
@@ -150,38 +164,35 @@ function CreateNewPerson() {
             };
           }
         });
-        let sampleCheck = false;
-        if (sampleCheck) {
-          if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
-            const formdata = new FormData();
-            formdata.append('file', values?.image[0].originFileObj);
-            formdata &&
-              addImage({ data: formdata, calendarId })
-                .unwrap()
-                .then((response) => {
-                  personPayload['image'] = {
-                    original: {
-                      entityId: response?.data?.original?.entityId,
-                      height: response?.data?.height,
-                      width: response?.data?.width,
-                    },
-                    large: {},
-                    thumbnail: {},
-                  };
-                  addUpdatePersonApiHandler(personPayload);
-                })
-                .catch((error) => {
-                  console.log(error);
-                  const element = document.getElementsByClassName('image');
-                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                });
-          } else {
-            if (values?.image) {
-              if (values?.image && values?.image?.length == 0) personPayload['image'] = null;
-              else personPayload['image'] = personData?.image;
-            }
-            addUpdatePersonApiHandler(personPayload);
+        if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
+          const formdata = new FormData();
+          formdata.append('file', values?.image[0].originFileObj);
+          formdata &&
+            addImage({ data: formdata, calendarId })
+              .unwrap()
+              .then((response) => {
+                personPayload['image'] = {
+                  original: {
+                    entityId: response?.data?.original?.entityId,
+                    height: response?.data?.height,
+                    width: response?.data?.width,
+                  },
+                  large: {},
+                  thumbnail: {},
+                };
+                addUpdatePersonApiHandler(personPayload);
+              })
+              .catch((error) => {
+                console.log(error);
+                const element = document.getElementsByClassName('image');
+                element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+              });
+        } else {
+          if (values?.image) {
+            if (values?.image && values?.image?.length == 0) personPayload['image'] = null;
+            else personPayload['image'] = personData?.image;
           }
+          addUpdatePersonApiHandler(personPayload);
         }
       })
       .catch((error) => console.log(error));
@@ -315,6 +326,12 @@ function CreateNewPerson() {
                               placeholder: contentLanguageBilingual({
                                 en: field?.placeholder?.en,
                                 fr: field?.placeholder?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              }),
+                              validations: contentLanguageBilingual({
+                                en: field?.validations?.en,
+                                fr: field?.validations?.fr,
                                 interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                 calendarContentLanguage: calendarContentLanguage,
                               }),
