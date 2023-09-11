@@ -91,7 +91,6 @@ function CreateNewPerson() {
           .unwrap()
           .then((response) => {
             resolve(response?.id);
-            //Add the notification msg for adding person
             notification.success({
               description: t('dashboard.people.createNew.addPerson.notification.addSuccess'),
               placement: 'top',
@@ -118,7 +117,6 @@ function CreateNewPerson() {
           .unwrap()
           .then(() => {
             resolve(personId);
-            //Add success msg for updating a person
             notification.success({
               description: t('dashboard.people.createNew.addPerson.notification.editSuccess'),
               placement: 'top',
@@ -166,38 +164,35 @@ function CreateNewPerson() {
             };
           }
         });
-        let sampleCheck = false;
-        if (sampleCheck) {
-          if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
-            const formdata = new FormData();
-            formdata.append('file', values?.image[0].originFileObj);
-            formdata &&
-              addImage({ data: formdata, calendarId })
-                .unwrap()
-                .then((response) => {
-                  personPayload['image'] = {
-                    original: {
-                      entityId: response?.data?.original?.entityId,
-                      height: response?.data?.height,
-                      width: response?.data?.width,
-                    },
-                    large: {},
-                    thumbnail: {},
-                  };
-                  addUpdatePersonApiHandler(personPayload);
-                })
-                .catch((error) => {
-                  console.log(error);
-                  const element = document.getElementsByClassName('image');
-                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                });
-          } else {
-            if (values?.image) {
-              if (values?.image && values?.image?.length == 0) personPayload['image'] = null;
-              else personPayload['image'] = personData?.image;
-            }
-            addUpdatePersonApiHandler(personPayload);
+        if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
+          const formdata = new FormData();
+          formdata.append('file', values?.image[0].originFileObj);
+          formdata &&
+            addImage({ data: formdata, calendarId })
+              .unwrap()
+              .then((response) => {
+                personPayload['image'] = {
+                  original: {
+                    entityId: response?.data?.original?.entityId,
+                    height: response?.data?.height,
+                    width: response?.data?.width,
+                  },
+                  large: {},
+                  thumbnail: {},
+                };
+                addUpdatePersonApiHandler(personPayload);
+              })
+              .catch((error) => {
+                console.log(error);
+                const element = document.getElementsByClassName('image');
+                element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+              });
+        } else {
+          if (values?.image) {
+            if (values?.image && values?.image?.length == 0) personPayload['image'] = null;
+            else personPayload['image'] = personData?.image;
           }
+          addUpdatePersonApiHandler(personPayload);
         }
       })
       .catch((error) => console.log(error));
@@ -331,6 +326,12 @@ function CreateNewPerson() {
                               placeholder: contentLanguageBilingual({
                                 en: field?.placeholder?.en,
                                 fr: field?.placeholder?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              }),
+                              validations: contentLanguageBilingual({
+                                en: field?.validations?.en,
+                                fr: field?.validations?.fr,
                                 interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                 calendarContentLanguage: calendarContentLanguage,
                               }),
