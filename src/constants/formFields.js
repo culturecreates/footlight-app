@@ -114,6 +114,7 @@ export const formFieldValue = [
           <StyledInput
             addonBefore="https://"
             autoComplete="off"
+            style={{ width: '423px' }}
             placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
           />
         );

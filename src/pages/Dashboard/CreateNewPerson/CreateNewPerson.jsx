@@ -56,9 +56,9 @@ function CreateNewPerson() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
-  const [addPerson] = useAddPersonMutation();
-  const [addImage] = useAddImageMutation();
-  const [updatePerson] = useUpdatePersonMutation();
+  const [addPerson, { isLoading: addPersonLoading }] = useAddPersonMutation();
+  const [addImage, { isLoading: imageUploadLoading }] = useAddImageMutation();
+  const [updatePerson, { isLoading: updatePersonLoading }] = useUpdatePersonMutation();
 
   const [artsData, setArtsData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
@@ -222,6 +222,7 @@ function CreateNewPerson() {
                       <PrimaryButton
                         label={t('dashboard.events.addEditEvent.saveOptions.save')}
                         onClick={() => onSaveHandler()}
+                        disabled={addPersonLoading || imageUploadLoading || updatePersonLoading ? true : false}
                       />
                     </Form.Item>
                   </div>
