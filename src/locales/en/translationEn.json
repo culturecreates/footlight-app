@@ -549,6 +549,8 @@
         "addPerson": {
           "newPerson": "New Person",
           "editPerson": "Edit Person",
+          "question": "Is this the right person? If not, create a new person and do not select this data source.",
+          "dataSource": "Data source",
           "notification": {
             "addSuccess": "Success! Your person has been created.",
             "editSuccess": "Success! Your person has been updated."

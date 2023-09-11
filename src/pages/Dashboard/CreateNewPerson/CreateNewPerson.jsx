@@ -27,6 +27,8 @@ import { useAddPersonMutation, useGetPersonQuery, useUpdatePersonMutation } from
 import { useAddImageMutation } from '../../../services/image';
 import { PathName } from '../../../constants/pathName';
 import { loadArtsDataEntity } from '../../../services/artsData';
+import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
+import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -245,6 +247,35 @@ function CreateNewPerson() {
                 return (
                   <Card title={section[0]?.category !== formCategory.PRIMARY && section[0]?.category} key={index}>
                     <>
+                      {artsDataLinkChecker(personData?.sameAs) && section[0]?.category === formCategory.PRIMARY && (
+                        <Row>
+                          <Col span={24}>
+                            <p className="add-entity-label">{t('dashboard.people.createNew.addPerson.dataSource')}</p>
+                          </Col>
+                          <Col span={24}>
+                            <ArtsDataInfo
+                              artsDataLink={artsDataLinkChecker(personData?.sameAs)}
+                              name={contentLanguageBilingual({
+                                en: personData?.name?.en,
+                                fr: personData?.name?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              })}
+                              disambiguatingDescription={contentLanguageBilingual({
+                                en: personData?.disambiguatingDescription?.en,
+                                fr: personData?.disambiguatingDescription?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              })}
+                            />
+                          </Col>
+                          <Col span={24}>
+                            <p className="add-event-date-heading">
+                              {t('dashboard.people.createNew.addPerson.question')}
+                            </p>
+                          </Col>
+                        </Row>
+                      )}
                       {section?.map((field) => {
                         return formFieldValue?.map((formField, index) => {
                           if (formField?.type === field.type) {
@@ -270,6 +301,7 @@ function CreateNewPerson() {
                                 }),
                                 largeUrl: personData?.image?.large?.uri,
                                 required: field?.isRequiredField,
+                                t: t,
                               }),
                               key: index,
                               initialValue: formInitialValueHandler(
