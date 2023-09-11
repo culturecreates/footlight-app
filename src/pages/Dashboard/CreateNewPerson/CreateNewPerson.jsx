@@ -150,35 +150,38 @@ function CreateNewPerson() {
             };
           }
         });
-        if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
-          const formdata = new FormData();
-          formdata.append('file', values?.image[0].originFileObj);
-          formdata &&
-            addImage({ data: formdata, calendarId })
-              .unwrap()
-              .then((response) => {
-                personPayload['image'] = {
-                  original: {
-                    entityId: response?.data?.original?.entityId,
-                    height: response?.data?.height,
-                    width: response?.data?.width,
-                  },
-                  large: {},
-                  thumbnail: {},
-                };
-                addUpdatePersonApiHandler(personPayload);
-              })
-              .catch((error) => {
-                console.log(error);
-                const element = document.getElementsByClassName('image');
-                element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-              });
-        } else {
-          if (values?.image) {
-            if (values?.image && values?.image?.length == 0) personPayload['image'] = null;
-            else personPayload['image'] = personData?.image;
+        let sampleCheck = false;
+        if (sampleCheck) {
+          if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
+            const formdata = new FormData();
+            formdata.append('file', values?.image[0].originFileObj);
+            formdata &&
+              addImage({ data: formdata, calendarId })
+                .unwrap()
+                .then((response) => {
+                  personPayload['image'] = {
+                    original: {
+                      entityId: response?.data?.original?.entityId,
+                      height: response?.data?.height,
+                      width: response?.data?.width,
+                    },
+                    large: {},
+                    thumbnail: {},
+                  };
+                  addUpdatePersonApiHandler(personPayload);
+                })
+                .catch((error) => {
+                  console.log(error);
+                  const element = document.getElementsByClassName('image');
+                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                });
+          } else {
+            if (values?.image) {
+              if (values?.image && values?.image?.length == 0) personPayload['image'] = null;
+              else personPayload['image'] = personData?.image;
+            }
+            addUpdatePersonApiHandler(personPayload);
           }
-          addUpdatePersonApiHandler(personPayload);
         }
       })
       .catch((error) => console.log(error));
