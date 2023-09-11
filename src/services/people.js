@@ -49,6 +49,16 @@ export const peopleApi = createApi({
         body: data,
       }),
     }),
+    updatePerson: builder.mutation({
+      query: ({ data, calendarId, personId }) => ({
+        url: `people/${personId}`,
+        method: 'PATCH',
+        headers: {
+          'calendar-id': calendarId,
+        },
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -59,4 +69,5 @@ export const {
   useGetPersonQuery,
   useAddPersonMutation,
   useLazyGetPersonQuery,
+  useUpdatePersonMutation,
 } = peopleApi;
