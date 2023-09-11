@@ -10,6 +10,8 @@ import ContentLanguageInput from '../components/ContentLanguageInput/ContentLang
 import BilingualInput from '../components/BilingualInput/BilingualInput';
 import ImageUpload from '../components/ImageUpload/ImageUpload';
 import { contentLanguageBilingual } from '../utils/bilingual';
+import { Translation } from 'react-i18next';
+import StyledInput from '../components/Input/Common';
 
 const { TextArea } = Input;
 
@@ -34,15 +36,40 @@ export const dataTypes = {
   IMAGE: 'Image',
 };
 
+const rules = [
+  {
+    dataType: dataTypes.URI_STRING,
+    rule: [
+      {
+        type: 'url',
+        message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
+      },
+    ],
+  },
+];
+
+console.log(rules);
 export const formFieldValue = [
   {
     type: formTypes.INPUT,
-    element: ({ datatype, data, calendarContentLanguage, name = [], placeholder, user }) => {
+    element: ({ datatype, data, calendarContentLanguage, name = [], placeholder, user, t }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
         return (
           <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
             <BilingualInput fieldData={data}>
-              <Form.Item name={name?.concat(['fr'])} key={contentLanguage.FRENCH} dependencies={name?.concat(['en'])}>
+              <Form.Item
+                name={name?.concat(['fr'])}
+                key={contentLanguage.FRENCH}
+                dependencies={name?.concat(['en'])}
+                rules={[
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (value || getFieldValue([name?.concat(['en'])])) {
+                        return Promise.resolve();
+                      } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                    },
+                  }),
+                ]}>
                 <TextArea
                   autoSize
                   autoComplete="off"
@@ -52,7 +79,19 @@ export const formFieldValue = [
                 />
               </Form.Item>
 
-              <Form.Item name={name?.concat(['en'])} key={contentLanguage.ENGLISH} dependencies={name?.concat(['fr'])}>
+              <Form.Item
+                name={name?.concat(['en'])}
+                key={contentLanguage.ENGLISH}
+                dependencies={name?.concat(['fr'])}
+                rules={[
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (value || getFieldValue([name?.concat(['fr'])])) {
+                        return Promise.resolve();
+                      } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                    },
+                  }),
+                ]}>
                 <TextArea
                   autoSize
                   autoComplete="off"
@@ -63,6 +102,14 @@ export const formFieldValue = [
               </Form.Item>
             </BilingualInput>
           </ContentLanguageInput>
+        );
+      else if (datatype === dataTypes.URI_STRING)
+        return (
+          <StyledInput
+            addonBefore="https://"
+            autoComplete="off"
+            placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
+          />
         );
       else
         return (
@@ -161,9 +208,9 @@ export const renderFormFields = ({
   required,
   userTips,
   position,
+  hidden,
   ...rest
 }) => {
-  console.log(required);
   return (
     <>
       {position === 'top' && datatype !== dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
@@ -172,8 +219,8 @@ export const renderFormFields = ({
         name={name}
         key={key}
         initialValue={initialValue}
-        // rules={rules}
         required={required}
+        hidden={hidden}
         help={position === 'bottom' && <p className="add-event-date-heading">{userTips}</p>}
         {...rest}>
         {position === 'top' && datatype === dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
