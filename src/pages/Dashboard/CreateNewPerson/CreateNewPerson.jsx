@@ -42,7 +42,7 @@ function CreateNewPerson() {
   let [searchParams] = useSearchParams();
 
   const personId = searchParams.get('id');
-  const artsDataId = location?.state?.data ?? null;
+  const artsDataId = location?.state?.data?.id ?? null;
 
   const { data: personData, isLoading: personLoading } = useGetPersonQuery(
     { personId, calendarId, sessionId: timestampRef },
@@ -71,6 +71,19 @@ function CreateNewPerson() {
   const addUpdatePersonApiHandler = (personObj) => {
     var promise = new Promise(function (resolve, reject) {
       if (!personId || personId === '') {
+        if (artsDataId && artsData?.data?.length > 0) {
+          let artsDataSameAs = Array.isArray(artsData?.data[0]?.sameAs);
+          if (artsDataSameAs)
+            personObj = {
+              ...personObj,
+              sameAs: artsData?.data[0]?.sameAs,
+            };
+          else
+            personObj = {
+              ...personObj,
+              sameAs: [artsData?.data[0]?.sameAs],
+            };
+        }
         addPerson({
           data: personObj,
           calendarId,
@@ -126,7 +139,10 @@ function CreateNewPerson() {
 
   const onSaveHandler = () => {
     form
-      .validateFields([])
+      .validateFields([
+        ['name', 'fr'],
+        ['name', 'en'],
+      ])
       .then(() => {
         var values = form.getFieldsValue(true);
         let personPayload = {};
