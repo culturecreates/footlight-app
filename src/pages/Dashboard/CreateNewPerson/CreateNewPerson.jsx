@@ -211,8 +211,6 @@ function CreateNewPerson() {
       });
   }, []);
 
-  // console.log(fields);
-  // console.log(personData);
   return fields && !personLoading && !taxonomyLoading && !artsDataLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <div className="add-edit-wrapper add-organization-wrapper">
@@ -304,6 +302,11 @@ function CreateNewPerson() {
                             </span>
                           </div>
                         </Col>
+                        <Col span={24}>
+                          <div>
+                            <br />
+                          </div>
+                        </Col>
                       </Row>
                     )}
                     {section?.map((field) => {
@@ -338,6 +341,13 @@ function CreateNewPerson() {
                               largeUrl: personData?.image?.large?.uri,
                               required: field?.isRequiredField,
                               t: t,
+                              userTips: contentLanguageBilingual({
+                                en: field?.userTips?.text?.en,
+                                fr: field?.userTips?.text?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              }),
+                              position: field?.userTips?.position,
                             }),
                             key: index,
                             initialValue: formInitialValueHandler(

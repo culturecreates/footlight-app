@@ -10,7 +10,7 @@ import ContentLanguageInput from '../components/ContentLanguageInput/ContentLang
 import BilingualInput from '../components/BilingualInput/BilingualInput';
 import ImageUpload from '../components/ImageUpload/ImageUpload';
 import { contentLanguageBilingual } from '../utils/bilingual';
-// import { Translation } from 'react-i18next';
+import { Translation } from 'react-i18next';
 import StyledInput from '../components/Input/Common';
 
 const { TextArea } = Input;
@@ -41,12 +41,11 @@ const rules = [
     dataType: dataTypes.URI_STRING,
     rule: {
       type: 'url',
-      message: 'dashboard.events.addEditEvent.validations.url',
+      message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
     },
   },
 ];
 
-// console.log(rules);
 export const formFieldValue = [
   {
     type: formTypes.INPUT,
@@ -181,17 +180,31 @@ export const formFieldValue = [
   },
   {
     type: formTypes.IMAGE,
-    element: ({ form, largeUrl, originalUrl, imageReadOnly, preview, eventImageData, name }) => (
-      <ImageUpload
-        imageUrl={largeUrl}
-        originalImageUrl={originalUrl}
-        imageReadOnly={imageReadOnly}
-        preview={preview}
-        form={form}
-        eventImageData={eventImageData}
-        isCrop={false}
-        formName={name}
-      />
+    element: ({
+      form,
+      largeUrl,
+      originalUrl,
+      imageReadOnly,
+      preview,
+      eventImageData,
+      name,
+      datatype,
+      position,
+      userTips,
+    }) => (
+      <>
+        {position === 'top' && datatype === dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
+        <ImageUpload
+          imageUrl={largeUrl}
+          originalImageUrl={originalUrl}
+          imageReadOnly={imageReadOnly}
+          preview={preview}
+          form={form}
+          eventImageData={eventImageData}
+          isCrop={false}
+          formName={name}
+        />
+      </>
     ),
   },
 ];
@@ -207,24 +220,23 @@ export const renderFormFields = ({
   userTips,
   position,
   hidden,
-  ...rest
+  label,
 }) => {
   return (
     <>
       {position === 'top' && datatype !== dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
 
       <Form.Item
+        label={label}
         name={name}
         key={key}
         initialValue={initialValue}
         required={required}
         hidden={hidden}
         rules={rules?.map((rule) => {
-          if (datatype === rule?.dataType) return rules.rule;
+          if (datatype === rule?.dataType) return rule.rule;
         })}
-        help={position === 'bottom' && <p className="add-event-date-heading">{userTips}</p>}
-        {...rest}>
-        {position === 'top' && datatype === dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
+        help={position === 'bottom' && userTips ? <p className="add-event-date-heading">{userTips}</p> : undefined}>
         {element}
       </Form.Item>
     </>
