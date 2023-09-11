@@ -177,7 +177,7 @@ function People() {
                   <ListItem
                     key={index}
                     id={index}
-                    logo={item?.logo?.thumbnail?.uri}
+                    logo={item?.image?.thumbnail?.uri}
                     defaultLogo={<UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />}
                     title={contentLanguageBilingual({
                       en: item?.name?.en,

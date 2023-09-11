@@ -549,9 +549,19 @@
         "addPerson": {
           "newPerson": "New Person",
           "editPerson": "Edit Person",
+          "question": {
+            "firstPart": "Is this the right person? If not, ",
+            "secondPart": "create a new person",
+            "thirdPart": " and do not select this data source."
+          },
+
+          "dataSource": "Data source",
           "notification": {
             "addSuccess": "Success! Your person has been created.",
             "editSuccess": "Success! Your person has been updated."
+          },
+          "validations": {
+            "nameRequired": "Name is required."
           }
         }
       }

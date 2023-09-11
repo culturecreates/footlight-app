@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import '../AddEvent/addEvent.css';
 import { Form, Row, Col, Button, notification } from 'antd';
 import { CloseCircleOutlined } from '@ant-design/icons';
@@ -26,6 +26,10 @@ import { formInitialValueHandler } from '../../../utils/formInitialValueHandler'
 import { useAddPersonMutation, useGetPersonQuery, useUpdatePersonMutation } from '../../../services/people';
 import { useAddImageMutation } from '../../../services/image';
 import { PathName } from '../../../constants/pathName';
+import { loadArtsDataEntity } from '../../../services/artsData';
+import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
+import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -38,6 +42,7 @@ function CreateNewPerson() {
   let [searchParams] = useSearchParams();
 
   const personId = searchParams.get('id');
+  const artsDataId = location?.state?.data ?? null;
 
   const { data: personData, isLoading: personLoading } = useGetPersonQuery(
     { personId, calendarId, sessionId: timestampRef },
@@ -51,9 +56,12 @@ function CreateNewPerson() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
-  const [addPerson] = useAddPersonMutation();
-  const [addImage] = useAddImageMutation();
-  const [updatePerson] = useUpdatePersonMutation();
+  const [addPerson, { isLoading: addPersonLoading }] = useAddPersonMutation();
+  const [addImage, { isLoading: imageUploadLoading }] = useAddImageMutation();
+  const [updatePerson, { isLoading: updatePersonLoading }] = useUpdatePersonMutation();
+
+  const [artsData, setArtsData] = useState(null);
+  const [artsDataLoading, setArtsDataLoading] = useState(false);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.people);
@@ -142,192 +150,255 @@ function CreateNewPerson() {
             };
           }
         });
-        if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
-          const formdata = new FormData();
-          formdata.append('file', values?.image[0].originFileObj);
-          formdata &&
-            addImage({ data: formdata, calendarId })
-              .unwrap()
-              .then((response) => {
-                personPayload['image'] = {
-                  original: {
-                    entityId: response?.data?.original?.entityId,
-                    height: response?.data?.height,
-                    width: response?.data?.width,
-                  },
-                  large: {},
-                  thumbnail: {},
-                };
-                addUpdatePersonApiHandler(personPayload);
-              })
-              .catch((error) => {
-                console.log(error);
-                const element = document.getElementsByClassName('image');
-                element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-              });
-        } else {
-          if (values?.image) {
-            if (values?.image && values?.image?.length == 0) personPayload['image'] = null;
-            else personPayload['image'] = personData?.image;
+        let sampleCheck = false;
+        if (sampleCheck) {
+          if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
+            const formdata = new FormData();
+            formdata.append('file', values?.image[0].originFileObj);
+            formdata &&
+              addImage({ data: formdata, calendarId })
+                .unwrap()
+                .then((response) => {
+                  personPayload['image'] = {
+                    original: {
+                      entityId: response?.data?.original?.entityId,
+                      height: response?.data?.height,
+                      width: response?.data?.width,
+                    },
+                    large: {},
+                    thumbnail: {},
+                  };
+                  addUpdatePersonApiHandler(personPayload);
+                })
+                .catch((error) => {
+                  console.log(error);
+                  const element = document.getElementsByClassName('image');
+                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                });
+          } else {
+            if (values?.image) {
+              if (values?.image && values?.image?.length == 0) personPayload['image'] = null;
+              else personPayload['image'] = personData?.image;
+            }
+            addUpdatePersonApiHandler(personPayload);
           }
-          addUpdatePersonApiHandler(personPayload);
         }
       })
       .catch((error) => console.log(error));
   };
 
+  useEffect(() => {
+    setArtsDataLoading(true);
+    loadArtsDataEntity({ entityId: artsDataId })
+      .then((response) => {
+        setArtsData(response?.data[0]);
+        setArtsDataLoading(false);
+      })
+      .catch((error) => {
+        setArtsDataLoading(false);
+        console.log(error);
+      });
+  }, []);
+
   // console.log(fields);
   // console.log(personData);
-  return (
-    fields &&
-    !personLoading &&
-    !taxonomyLoading && (
-      <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-        <div className="add-edit-wrapper add-organization-wrapper">
-          <Form form={form} layout="vertical" name="organization">
-            <Row gutter={[32, 2]}>
-              <Col span={24}>
-                <Row justify="space-between">
-                  <Col>
-                    <div className="button-container">
-                      <Button
-                        type="link"
-                        onClick={() => navigate(-1)}
-                        icon={<LeftOutlined style={{ marginRight: '17px' }} />}>
-                        {t('dashboard.organization.createNew.search.breadcrumb')}
-                      </Button>
-                    </div>
-                  </Col>
-                  <Col>
-                    <div className="add-event-button-wrap">
-                      <Form.Item>
-                        <PrimaryButton
-                          label={t('dashboard.events.addEditEvent.saveOptions.save')}
-                          onClick={() => onSaveHandler()}
-                        />
-                      </Form.Item>
-                    </div>
-                  </Col>
-                </Row>
-              </Col>
+  return fields && !personLoading && !taxonomyLoading && !artsDataLoading ? (
+    <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+      <div className="add-edit-wrapper add-organization-wrapper">
+        <Form form={form} layout="vertical" name="organization">
+          <Row gutter={[32, 2]}>
+            <Col span={24}>
+              <Row justify="space-between">
+                <Col>
+                  <div className="button-container">
+                    <Button
+                      type="link"
+                      onClick={() => navigate(-1)}
+                      icon={<LeftOutlined style={{ marginRight: '17px' }} />}>
+                      {t('dashboard.organization.createNew.search.breadcrumb')}
+                    </Button>
+                  </div>
+                </Col>
+                <Col>
+                  <div className="add-event-button-wrap">
+                    <Form.Item>
+                      <PrimaryButton
+                        label={t('dashboard.events.addEditEvent.saveOptions.save')}
+                        onClick={() => onSaveHandler()}
+                        disabled={addPersonLoading || imageUploadLoading || updatePersonLoading ? true : false}
+                      />
+                    </Form.Item>
+                  </div>
+                </Col>
+              </Row>
+            </Col>
 
-              <Col>
-                <div className="add-edit-event-heading">
-                  <h4>
-                    {personId
-                      ? t('dashboard.people.createNew.addPerson.editPerson')
-                      : t('dashboard.people.createNew.addPerson.newPerson')}
-                  </h4>
-                </div>
-              </Col>
-            </Row>
-            {fields?.map((section, index) => {
-              if (section?.length > 0)
-                return (
-                  <Card title={section[0]?.category !== formCategory.PRIMARY && section[0]?.category} key={index}>
-                    <>
-                      {section?.map((field) => {
-                        return formFieldValue?.map((formField, index) => {
-                          if (formField?.type === field.type) {
-                            return renderFormFields({
-                              name: [field?.mappedField],
-                              type: field?.type,
+            <Col>
+              <div className="add-edit-event-heading">
+                <h4>
+                  {personId
+                    ? t('dashboard.people.createNew.addPerson.editPerson')
+                    : t('dashboard.people.createNew.addPerson.newPerson')}
+                </h4>
+              </div>
+            </Col>
+          </Row>
+          {fields?.map((section, index) => {
+            if (section?.length > 0)
+              return (
+                <Card title={section[0]?.category !== formCategory.PRIMARY && section[0]?.category} key={index}>
+                  <>
+                    {artsDataLinkChecker(personData?.sameAs) && section[0]?.category === formCategory.PRIMARY && (
+                      <Row>
+                        <Col span={24}>
+                          <p className="add-entity-label">{t('dashboard.people.createNew.addPerson.dataSource')}</p>
+                        </Col>
+                        <Col span={24}>
+                          <ArtsDataInfo
+                            artsDataLink={artsDataLinkChecker(personData?.sameAs)}
+                            name={contentLanguageBilingual({
+                              en: personData?.name?.en,
+                              fr: personData?.name?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            })}
+                            disambiguatingDescription={contentLanguageBilingual({
+                              en: personData?.disambiguatingDescription?.en,
+                              fr: personData?.disambiguatingDescription?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            })}
+                          />
+                        </Col>
+                        <Col span={24}>
+                          <div style={{ display: 'inline' }}>
+                            <span className="add-event-date-heading">
+                              {t('dashboard.people.createNew.addPerson.question.firstPart')}
+                            </span>
+                            <span
+                              className="add-event-date-heading"
+                              style={{
+                                color: '#1b3de6',
+                                textDecoration: 'underline',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                              }}
+                              onClick={() => {
+                                navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
+                              }}>
+                              {t('dashboard.people.createNew.addPerson.question.secondPart')}
+                            </span>
+                            <span className="add-event-date-heading">
+                              {t('dashboard.people.createNew.addPerson.question.thirdPart')}
+                            </span>
+                          </div>
+                        </Col>
+                      </Row>
+                    )}
+                    {section?.map((field) => {
+                      return formFieldValue?.map((formField, index) => {
+                        if (formField?.type === field.type) {
+                          return renderFormFields({
+                            name: [field?.mappedField],
+                            type: field?.type,
+                            datatype: field?.datatype,
+                            required: field?.isRequiredField,
+                            element: formField?.element({
                               datatype: field?.datatype,
-                              element: formField?.element({
-                                datatype: field?.datatype,
-                                taxonomyData: allTaxonomyData,
-                                user: user,
-                                type: field?.mappedField,
-                                isDynamicField: false,
-                                calendarContentLanguage,
-                                name: [field?.mappedField],
-                                preview: true,
-                                placeholder: contentLanguageBilingual({
-                                  en: field?.placeholder?.en,
-                                  fr: field?.placeholder?.fr,
-                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                  calendarContentLanguage: calendarContentLanguage,
-                                }),
-                                largeUrl: personData?.image?.large?.uri,
-                              }),
-                              key: index,
-                              initialValue: formInitialValueHandler(
-                                field?.type,
-                                field?.mappedField,
-                                field?.datatype,
-                                personData,
-                              ),
-                              label: contentLanguageBilingual({
-                                en: field?.label?.en,
-                                fr: field?.label?.fr,
+                              taxonomyData: allTaxonomyData,
+                              user: user,
+                              type: field?.mappedField,
+                              isDynamicField: false,
+                              calendarContentLanguage,
+                              name: [field?.mappedField],
+                              preview: true,
+                              placeholder: contentLanguageBilingual({
+                                en: field?.placeholder?.en,
+                                fr: field?.placeholder?.fr,
                                 interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                 calendarContentLanguage: calendarContentLanguage,
                               }),
-                              userTips: contentLanguageBilingual({
-                                en: field?.userTips?.text?.en,
-                                fr: field?.userTips?.text?.fr,
+                              largeUrl: personData?.image?.large?.uri,
+                              required: field?.isRequiredField,
+                              t: t,
+                            }),
+                            key: index,
+                            initialValue: formInitialValueHandler(
+                              field?.type,
+                              field?.mappedField,
+                              field?.datatype,
+                              personData ?? artsData,
+                            ),
+                            label: contentLanguageBilingual({
+                              en: field?.label?.en,
+                              fr: field?.label?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            }),
+                            userTips: contentLanguageBilingual({
+                              en: field?.userTips?.text?.en,
+                              fr: field?.userTips?.text?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            }),
+                            position: field?.userTips?.position,
+                          });
+                        }
+                      });
+                    })}
+                    {section[0]?.category === formCategory.PRIMARY &&
+                      allTaxonomyData?.data?.map((taxonomy, index) => {
+                        if (taxonomy?.isDynamicField) {
+                          let initialValues;
+                          personData?.dynamicFields?.forEach((dynamicField) => {
+                            if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
+                          });
+                          return (
+                            <Form.Item
+                              key={index}
+                              name={['dynamicFields', taxonomy?.id]}
+                              label={bilingual({
+                                en: taxonomy?.name?.en,
+                                fr: taxonomy?.name?.fr,
                                 interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                calendarContentLanguage: calendarContentLanguage,
-                              }),
-                              position: field?.userTips?.position,
-                            });
-                          }
-                        });
+                              })}
+                              initialValue={initialValues}>
+                              <TreeSelectOption
+                                allowClear
+                                treeDefaultExpandAll
+                                notFoundContent={<NoContent />}
+                                clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                                treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
+                                tagRender={(props) => {
+                                  const { label, closable, onClose } = props;
+                                  return (
+                                    <Tags
+                                      closable={closable}
+                                      onClose={onClose}
+                                      closeIcon={
+                                        <CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />
+                                      }>
+                                      {label}
+                                    </Tags>
+                                  );
+                                }}
+                              />
+                            </Form.Item>
+                          );
+                        }
                       })}
-                      {section[0]?.category === formCategory.PRIMARY &&
-                        allTaxonomyData?.data?.map((taxonomy, index) => {
-                          if (taxonomy?.isDynamicField) {
-                            let initialValues;
-                            personData?.dynamicFields?.forEach((dynamicField) => {
-                              if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
-                            });
-                            return (
-                              <Form.Item
-                                key={index}
-                                name={['dynamicFields', taxonomy?.id]}
-                                label={bilingual({
-                                  en: taxonomy?.name?.en,
-                                  fr: taxonomy?.name?.fr,
-                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                })}
-                                initialValue={initialValues}>
-                                <TreeSelectOption
-                                  allowClear
-                                  treeDefaultExpandAll
-                                  notFoundContent={<NoContent />}
-                                  clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                                  treeData={treeDynamicTaxonomyOptions(
-                                    taxonomy?.concept,
-                                    user,
-                                    calendarContentLanguage,
-                                  )}
-                                  tagRender={(props) => {
-                                    const { label, closable, onClose } = props;
-                                    return (
-                                      <Tags
-                                        closable={closable}
-                                        onClose={onClose}
-                                        closeIcon={
-                                          <CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />
-                                        }>
-                                        {label}
-                                      </Tags>
-                                    );
-                                  }}
-                                />
-                              </Form.Item>
-                            );
-                          }
-                        })}
-                    </>
-                    <></>
-                  </Card>
-                );
-            })}
-          </Form>
-        </div>
-      </FeatureFlag>
-    )
+                  </>
+                  <></>
+                </Card>
+              );
+          })}
+        </Form>
+      </div>
+    </FeatureFlag>
+  ) : (
+    <div style={{ height: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <LoadingIndicator />
+    </div>
   );
 }
 
