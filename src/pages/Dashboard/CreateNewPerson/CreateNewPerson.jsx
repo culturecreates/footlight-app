@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
-import './createNewOrganization.css';
 import '../AddEvent/addEvent.css';
-import { Form, Row, Col, Button } from 'antd';
+import { Form, Row, Col, Button, notification } from 'antd';
 import { CloseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
@@ -15,7 +14,6 @@ import { formCategory, formFieldValue, renderFormFields } from '../../../constan
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
-import { useGetOrganizationQuery } from '../../../services/organization';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
@@ -25,8 +23,11 @@ import Tags from '../../../components/Tags/Common/Tags';
 import { formFieldsHandler } from '../../../utils/formFieldsHandler';
 import { formPayloadHandler } from '../../../utils/formPayloadHandler';
 import { formInitialValueHandler } from '../../../utils/formInitialValueHandler';
+import { useAddPersonMutation, useGetPersonQuery, useUpdatePersonMutation } from '../../../services/people';
+import { useAddImageMutation } from '../../../services/image';
+import { PathName } from '../../../constants/pathName';
 
-function CreateNewOrganization() {
+function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
   const [form] = Form.useForm();
   const { t } = useTranslation();
@@ -36,67 +37,150 @@ function CreateNewOrganization() {
   const { calendarId } = useParams();
   let [searchParams] = useSearchParams();
 
-  const organizationId = searchParams.get('id');
+  const personId = searchParams.get('id');
 
-  const { data: organizationData, isLoading: organizationLoading } = useGetOrganizationQuery(
-    { id: organizationId, calendarId, sessionId: timestampRef },
-    { skip: organizationId ? false : true },
+  const { data: personData, isLoading: personLoading } = useGetPersonQuery(
+    { personId, calendarId, sessionId: timestampRef },
+    { skip: personId ? false : true },
   );
 
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
-    taxonomyClass: taxonomyClass.ORGANIZATION,
+    taxonomyClass: taxonomyClass.PERSON,
     includeConcepts: true,
     sessionId: timestampRef,
   });
-  // const [addOrganization] = useAddOrganizationMutation();
+  const [addPerson] = useAddPersonMutation();
+  const [addImage] = useAddImageMutation();
+  const [updatePerson] = useUpdatePersonMutation();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-  let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
-  let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
+  let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.people);
+  let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.people);
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
+
+  const addUpdatePersonApiHandler = (personObj) => {
+    var promise = new Promise(function (resolve, reject) {
+      if (!personId || personId === '') {
+        addPerson({
+          data: personObj,
+          calendarId,
+        })
+          .unwrap()
+          .then((response) => {
+            resolve(response?.id);
+            //Add the notification msg for adding person
+            notification.success({
+              description: t('dashboard.people.createNew.addPerson.notification.addSuccess'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}`);
+          })
+          .catch((errorInfo) => {
+            reject();
+            console.log(errorInfo);
+          });
+      } else {
+        personObj = {
+          ...personObj,
+          sameAs: personData?.sameAs,
+        };
+        updatePerson({
+          data: personObj,
+          calendarId,
+          personId,
+        })
+          .unwrap()
+          .then(() => {
+            resolve(personId);
+            //Add success msg for updating a person
+            notification.success({
+              description: t('dashboard.people.createNew.addPerson.notification.editSuccess'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}`);
+          })
+          .catch((error) => {
+            reject();
+            console.log(error);
+          });
+      }
+    });
+    return promise;
+  };
 
   const onSaveHandler = () => {
     form
       .validateFields([])
       .then(() => {
         var values = form.getFieldsValue(true);
-        let organizationPayload = {};
+        let personPayload = {};
         Object.keys(values)?.map((object) => {
           let payload = formPayloadHandler(values[object], object, formFields);
-          let newKeys = Object.keys(payload);
-          let childKeys = Object.keys(payload[newKeys[0]]);
-          organizationPayload = {
-            ...organizationPayload,
-            ...(newKeys?.length > 0 && {
-              [newKeys[0]]: {
-                ...organizationPayload[newKeys[0]],
-                ...(childKeys?.length > 0 && { [childKeys[0]]: payload[newKeys[0]][childKeys[0]] }),
-                ...(childKeys?.length > 1 && {
-                  [childKeys[childKeys?.length - 1]]: payload[newKeys[0]][childKeys[childKeys?.length - 1]],
-                }),
-              },
-            }),
-          };
+          if (payload) {
+            let newKeys = Object.keys(payload);
+            let childKeys = Object.keys(payload[newKeys[0]]);
+
+            personPayload = {
+              ...personPayload,
+              ...(newKeys?.length > 0 && {
+                [newKeys[0]]: {
+                  ...personPayload[newKeys[0]],
+                  ...(childKeys?.length > 0 && { [childKeys[0]]: payload[newKeys[0]][childKeys[0]] }),
+                  ...(childKeys?.length > 1 && {
+                    [childKeys[childKeys?.length - 1]]: payload[newKeys[0]][childKeys[childKeys?.length - 1]],
+                  }),
+                },
+              }),
+            };
+          }
         });
-        // addOrganization({ data: {}, calendarId })
-        //   .unwrap()
-        //   .then((response) => {
-        //     console.log(response);
-        //   })
-        //   .catch((error) => {
-        //     console.log(error);
-        //   });
+        if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
+          const formdata = new FormData();
+          formdata.append('file', values?.image[0].originFileObj);
+          formdata &&
+            addImage({ data: formdata, calendarId })
+              .unwrap()
+              .then((response) => {
+                personPayload['image'] = {
+                  original: {
+                    entityId: response?.data?.original?.entityId,
+                    height: response?.data?.height,
+                    width: response?.data?.width,
+                  },
+                  large: {},
+                  thumbnail: {},
+                };
+                addUpdatePersonApiHandler(personPayload);
+              })
+              .catch((error) => {
+                console.log(error);
+                const element = document.getElementsByClassName('image');
+                element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+              });
+        } else {
+          if (values?.image) {
+            if (values?.image && values?.image?.length == 0) personPayload['image'] = null;
+            else personPayload['image'] = personData?.image;
+          }
+          addUpdatePersonApiHandler(personPayload);
+        }
       })
       .catch((error) => console.log(error));
   };
 
   // console.log(fields);
-  // console.log(organizationData);
+  // console.log(personData);
   return (
     fields &&
-    !organizationLoading &&
+    !personLoading &&
     !taxonomyLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
         <div className="add-edit-wrapper add-organization-wrapper">
@@ -119,7 +203,7 @@ function CreateNewOrganization() {
                       <Form.Item>
                         <PrimaryButton
                           label={t('dashboard.events.addEditEvent.saveOptions.save')}
-                          onClick={onSaveHandler}
+                          onClick={() => onSaveHandler()}
                         />
                       </Form.Item>
                     </div>
@@ -130,9 +214,9 @@ function CreateNewOrganization() {
               <Col>
                 <div className="add-edit-event-heading">
                   <h4>
-                    {organizationId
-                      ? t('dashboard.organization.createNew.addOrganization.editOrganization')
-                      : t('dashboard.organization.createNew.addOrganization.newOrganization')}
+                    {personId
+                      ? t('dashboard.people.createNew.addPerson.editPerson')
+                      : t('dashboard.people.createNew.addPerson.newPerson')}
                   </h4>
                 </div>
               </Col>
@@ -157,19 +241,21 @@ function CreateNewOrganization() {
                                 isDynamicField: false,
                                 calendarContentLanguage,
                                 name: [field?.mappedField],
+                                preview: true,
                                 placeholder: contentLanguageBilingual({
                                   en: field?.placeholder?.en,
                                   fr: field?.placeholder?.fr,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 }),
+                                largeUrl: personData?.image?.large?.uri,
                               }),
                               key: index,
                               initialValue: formInitialValueHandler(
                                 field?.type,
                                 field?.mappedField,
                                 field?.datatype,
-                                organizationData,
+                                personData,
                               ),
                               label: contentLanguageBilingual({
                                 en: field?.label?.en,
@@ -192,7 +278,7 @@ function CreateNewOrganization() {
                         allTaxonomyData?.data?.map((taxonomy, index) => {
                           if (taxonomy?.isDynamicField) {
                             let initialValues;
-                            organizationData?.dynamicFields?.forEach((dynamicField) => {
+                            personData?.dynamicFields?.forEach((dynamicField) => {
                               if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
                             });
                             return (
@@ -245,4 +331,4 @@ function CreateNewOrganization() {
   );
 }
 
-export default CreateNewOrganization;
+export default CreateNewPerson;

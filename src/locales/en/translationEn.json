@@ -545,6 +545,14 @@
           "create": "Create",
           "footlightSectionHeading": "From Footlight",
           "artsDataSectionHeading": "Imports from Artsdata"
+        },
+        "addPerson": {
+          "newPerson": "New Person",
+          "editPerson": "Edit Person",
+          "notification": {
+            "addSuccess": "Success! Your person has been created.",
+            "editSuccess": "Success! Your person has been updated."
+          }
         }
       }
     },

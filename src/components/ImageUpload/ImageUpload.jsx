@@ -17,6 +17,7 @@ function ImageUpload(props) {
     isCrop,
     preview,
     originalImageUrl,
+    formName,
   } = props;
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -122,7 +123,7 @@ function ImageUpload(props) {
 
   return (
     <>
-      <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile}>
+      <Form.Item name={formName ?? 'dragger'} valuePropName="fileList" getValueFromEvent={normFile}>
         <Upload.Dragger
           accept='.png, .jpg, .jpeg"'
           className="upload-wrapper"
@@ -151,7 +152,7 @@ function ImageUpload(props) {
                       <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
                     </span>
                   )}
-                  {!props?.imageReadOnly && (props?.imageUrl || imageUrl) && (
+                  {!props?.imageReadOnly && (props?.imageUrl || imageUrl) && isCrop && (
                     <span className="edit-image" onClick={actions?.preview}>
                       <EditOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
                     </span>

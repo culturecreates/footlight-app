@@ -9,6 +9,7 @@ import { contentLanguage } from './contentLanguage';
 import ContentLanguageInput from '../components/ContentLanguageInput/ContentLanguageInput';
 import BilingualInput from '../components/BilingualInput/BilingualInput';
 import ImageUpload from '../components/ImageUpload/ImageUpload';
+import { contentLanguageBilingual } from '../utils/bilingual';
 
 const { TextArea } = Input;
 
@@ -30,12 +31,13 @@ export const dataTypes = {
   STRING: 'String',
   IDENTITY_STRING: 'IdentityString',
   URI_STRING: 'URIString',
+  IMAGE: 'Image',
 };
 
 export const formFieldValue = [
   {
     type: formTypes.INPUT,
-    element: ({ datatype, data, calendarContentLanguage, name = [] }) => {
+    element: ({ datatype, data, calendarContentLanguage, name = [], placeholder, user }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
         return (
           <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
@@ -44,6 +46,7 @@ export const formFieldValue = [
                 <TextArea
                   autoSize
                   autoComplete="off"
+                  placeholder={placeholder?.fr}
                   style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                   size="large"
                 />
@@ -53,6 +56,7 @@ export const formFieldValue = [
                 <TextArea
                   autoSize
                   autoComplete="off"
+                  placeholder={placeholder?.en}
                   style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                   size="large"
                 />
@@ -65,7 +69,12 @@ export const formFieldValue = [
           <TextArea
             autoSize
             autoComplete="off"
-            // placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
+            placeholder={contentLanguageBilingual({
+              en: placeholder?.en,
+              fr: placeholder?.fr,
+              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+              calendarContentLanguage: calendarContentLanguage,
+            })}
             style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
             size="large"
           />
@@ -74,10 +83,16 @@ export const formFieldValue = [
   },
   {
     type: formTypes.TEXTAREA,
-    element: () => (
+    element: ({ placeholder, user, calendarContentLanguage }) => (
       <TextArea
         autoSize
         autoComplete="off"
+        placeholder={contentLanguageBilingual({
+          en: placeholder?.en,
+          fr: placeholder?.fr,
+          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+          calendarContentLanguage: calendarContentLanguage,
+        })}
         style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
         size="large"
       />
@@ -89,12 +104,18 @@ export const formFieldValue = [
   },
   {
     type: formTypes.MULTISELECT,
-    element: ({ taxonomyData, user, type, isDynamicField, calendarContentLanguage }) => {
+    element: ({ taxonomyData, user, type, isDynamicField, calendarContentLanguage, placeholder }) => {
       return (
         <TreeSelectOption
           allowClear
           treeDefaultExpandAll
           notFoundContent={<NoContent />}
+          placeholder={contentLanguageBilingual({
+            en: placeholder?.en,
+            fr: placeholder?.fr,
+            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+            calendarContentLanguage: calendarContentLanguage,
+          })}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
           treeData={treeTaxonomyOptions(taxonomyData, user, type, isDynamicField, calendarContentLanguage)}
           tagRender={(props) => {
@@ -114,7 +135,7 @@ export const formFieldValue = [
   },
   {
     type: formTypes.IMAGE,
-    element: ({ form, largeUrl, originalUrl, imageReadOnly, preview, eventImageData }) => (
+    element: ({ form, largeUrl, originalUrl, imageReadOnly, preview, eventImageData, name }) => (
       <ImageUpload
         imageUrl={largeUrl}
         originalImageUrl={originalUrl}
@@ -123,6 +144,7 @@ export const formFieldValue = [
         form={form}
         eventImageData={eventImageData}
         isCrop={false}
+        formName={name}
       />
     ),
   },
@@ -130,18 +152,32 @@ export const formFieldValue = [
 
 export const renderFormFields = ({
   // type,
-  // dataType,
+  datatype,
   element,
   rules = [],
   initialValue = undefined,
   name,
   key,
   required,
+  userTips,
+  position,
   ...rest
 }) => {
   return (
-    <Form.Item name={name} key={key} initialValue={initialValue} rules={rules} required={required} {...rest}>
-      {element}
-    </Form.Item>
+    <>
+      {position === 'top' && datatype !== dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
+
+      <Form.Item
+        name={name}
+        key={key}
+        initialValue={initialValue}
+        rules={rules}
+        required={required}
+        help={position === 'bottom' && <p className="add-event-date-heading">{userTips}</p>}
+        {...rest}>
+        {position === 'top' && datatype === dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
+        {element}
+      </Form.Item>
+    </>
   );
 };
