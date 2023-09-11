@@ -268,7 +268,27 @@ function CreateNewPerson() {
                           />
                         </Col>
                         <Col span={24}>
-                          <p className="add-event-date-heading">{t('dashboard.people.createNew.addPerson.question')}</p>
+                          <div style={{ display: 'inline' }}>
+                            <span className="add-event-date-heading">
+                              {t('dashboard.people.createNew.addPerson.question.firstPart')}
+                            </span>
+                            <span
+                              className="add-event-date-heading"
+                              style={{
+                                color: '#1b3de6',
+                                textDecoration: 'underline',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                              }}
+                              onClick={() => {
+                                navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
+                              }}>
+                              {t('dashboard.people.createNew.addPerson.question.secondPart')}
+                            </span>
+                            <span className="add-event-date-heading">
+                              {t('dashboard.people.createNew.addPerson.question.thirdPart')}
+                            </span>
+                          </div>
                         </Col>
                       </Row>
                     )}

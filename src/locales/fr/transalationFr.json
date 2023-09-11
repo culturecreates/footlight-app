@@ -546,7 +546,11 @@
         "addPerson": {
           "newPerson": "Nouvelle personne",
           "editPerson": "Modifier personne",
-          "question": "S'agit-il de la bonne personne ? Si non, créez une nouvelle personne et ne sélectionnez pas cette source de données.",
+          "question": {
+            "firstPart": "S'agit-il de la bonne personne ? Si non, ",
+            "secondPart": "créez une nouvelle personne",
+            "thirdPart": " et ne sélectionnez pas cette source de données."
+          },
           "dataSource": "Source de la donnée",
           "notification": {
             "addSuccess": "Succès ! Votre personne a été créé.",
