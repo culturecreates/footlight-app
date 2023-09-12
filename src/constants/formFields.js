@@ -50,7 +50,7 @@ const rules = [
 export const formFieldValue = [
   {
     type: formTypes.INPUT,
-    element: ({ datatype, data, calendarContentLanguage, name = [], placeholder, user, t, validations }) => {
+    element: ({ datatype, data, calendarContentLanguage, name = [], placeholder, user, t, validations, required }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
         return (
           <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
@@ -59,15 +59,19 @@ export const formFieldValue = [
                 name={name?.concat(['fr'])}
                 key={contentLanguage.FRENCH}
                 dependencies={name?.concat(['en'])}
-                rules={[
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (value || getFieldValue([name?.concat(['en'])])) {
-                        return Promise.resolve();
-                      } else return Promise.reject(new Error(validations?.fr));
-                    },
-                  }),
-                ]}>
+                rules={
+                  required
+                    ? [
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value || getFieldValue([name?.concat(['en'])])) {
+                              return Promise.resolve();
+                            } else return Promise.reject(new Error(validations?.fr));
+                          },
+                        }),
+                      ]
+                    : undefined
+                }>
                 <TextArea
                   autoSize
                   autoComplete="off"
@@ -81,15 +85,19 @@ export const formFieldValue = [
                 name={name?.concat(['en'])}
                 key={contentLanguage.ENGLISH}
                 dependencies={name?.concat(['fr'])}
-                rules={[
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (value || getFieldValue([name?.concat(['fr'])])) {
-                        return Promise.resolve();
-                      } else return Promise.reject(new Error(validations?.en));
-                    },
-                  }),
-                ]}>
+                rules={
+                  required
+                    ? [
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value || getFieldValue([name?.concat(['fr'])])) {
+                              return Promise.resolve();
+                            } else return Promise.reject(new Error(validations?.en));
+                          },
+                        }),
+                      ]
+                    : undefined
+                }>
                 <TextArea
                   autoSize
                   autoComplete="off"

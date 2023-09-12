@@ -3,7 +3,7 @@ import '../AddEvent/addEvent.css';
 import { Form, Row, Col, Button, notification } from 'antd';
 import { CloseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { LeftOutlined } from '@ant-design/icons';
 import PrimaryButton from '../../../components/Button/Primary';
 import { featureFlags } from '../../../utils/featureFlags';
@@ -35,6 +35,7 @@ function CreateNewPerson() {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentCalendarData] = useOutletContext();
   const { user } = useSelector(getUserDetails);
   const { calendarId } = useParams();
@@ -60,6 +61,7 @@ function CreateNewPerson() {
   const [updatePerson, { isLoading: updatePersonLoading }] = useUpdatePersonMutation();
 
   const [artsData, setArtsData] = useState(null);
+  const [newEntityData, setNewEntityData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
@@ -148,7 +150,6 @@ function CreateNewPerson() {
           if (payload) {
             let newKeys = Object.keys(payload);
             let childKeys = Object.keys(payload[newKeys[0]]);
-
             personPayload = {
               ...personPayload,
               ...(newKeys?.length > 0 && {
@@ -198,16 +199,25 @@ function CreateNewPerson() {
   };
 
   useEffect(() => {
-    setArtsDataLoading(true);
-    loadArtsDataEntity({ entityId: artsDataId })
-      .then((response) => {
-        setArtsData(response?.data[0]);
-        setArtsDataLoading(false);
-      })
-      .catch((error) => {
-        setArtsDataLoading(false);
-        console.log(error);
+    if (artsDataId) {
+      setArtsDataLoading(true);
+      loadArtsDataEntity({ entityId: artsDataId })
+        .then((response) => {
+          setArtsData(response?.data[0]);
+          setArtsDataLoading(false);
+        })
+        .catch((error) => {
+          setArtsDataLoading(false);
+          console.log(error);
+        });
+    } else if (location?.state?.name) {
+      setNewEntityData({
+        name: {
+          fr: location?.state?.name,
+          en: location?.state?.name,
+        },
       });
+    }
   }, []);
 
   return fields && !personLoading && !taxonomyLoading && !artsDataLoading ? (
@@ -317,7 +327,7 @@ function CreateNewPerson() {
                             allTaxonomyData,
                             user,
                             calendarContentLanguage,
-                            entityData: personData ?? artsData,
+                            entityData: personData ? personData : artsData ? artsData : newEntityData,
                             index,
                             t,
                           });
