@@ -29,6 +29,7 @@ import { loadArtsDataEntity } from '../../../services/artsData';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
+import { userRoles } from '../../../constants/userRoles';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -68,6 +69,15 @@ function CreateNewPerson() {
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.people);
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.people);
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
+
+  const calendar = user?.roles.filter((calendar) => {
+    return calendar.calendarId === calendarId;
+  });
+
+  const adminCheckHandler = () => {
+    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
+    else return false;
+  };
 
   const addUpdatePersonApiHandler = (personObj) => {
     var promise = new Promise(function (resolve, reject) {
@@ -212,7 +222,7 @@ function CreateNewPerson() {
         } else {
           if (values?.image) {
             if (values?.image && values?.image?.length == 0) personPayload['image'] = null;
-            else personPayload['image'] = personData?.image;
+            else personPayload['image'] = imageCrop;
           }
           addUpdatePersonApiHandler(personPayload);
         }
@@ -352,6 +362,7 @@ function CreateNewPerson() {
                             entityData: personData ? personData : artsData ? artsData : newEntityData,
                             index,
                             t,
+                            adminCheckHandler,
                           });
                         }
                       });

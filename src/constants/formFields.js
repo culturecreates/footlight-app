@@ -262,6 +262,7 @@ export const returnFormDataWithFields = ({
   entityData,
   index,
   t,
+  adminCheckHandler,
 }) => {
   return renderFormFields({
     name: [field?.mappedField],
@@ -315,5 +316,6 @@ export const returnFormDataWithFields = ({
       calendarContentLanguage: calendarContentLanguage,
     }),
     position: field?.userTips?.position,
+    hidden: field?.isAdminOnlyField ? (adminCheckHandler() ? false : true) : false,
   });
 };
