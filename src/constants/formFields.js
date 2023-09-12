@@ -12,6 +12,7 @@ import ImageUpload from '../components/ImageUpload/ImageUpload';
 import { contentLanguageBilingual } from '../utils/bilingual';
 import { Translation } from 'react-i18next';
 import StyledInput from '../components/Input/Common';
+import { formInitialValueHandler } from '../utils/formInitialValueHandler';
 
 const { TextArea } = Input;
 
@@ -241,4 +242,69 @@ export const renderFormFields = ({
       </Form.Item>
     </>
   );
+};
+
+export const returnFormDataWithFields = ({
+  field,
+  formField,
+  allTaxonomyData,
+  user,
+  calendarContentLanguage,
+  entityData,
+  index,
+  t,
+}) => {
+  return renderFormFields({
+    name: [field?.mappedField],
+    type: field?.type,
+    datatype: field?.datatype,
+    required: field?.isRequiredField,
+    element: formField?.element({
+      datatype: field?.datatype,
+      taxonomyData: allTaxonomyData,
+      user: user,
+      type: field?.mappedField,
+      isDynamicField: false,
+      calendarContentLanguage,
+      name: [field?.mappedField],
+      preview: true,
+      placeholder: contentLanguageBilingual({
+        en: field?.placeholder?.en,
+        fr: field?.placeholder?.fr,
+        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+        calendarContentLanguage: calendarContentLanguage,
+      }),
+      validations: contentLanguageBilingual({
+        en: field?.validations?.en,
+        fr: field?.validations?.fr,
+        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+        calendarContentLanguage: calendarContentLanguage,
+      }),
+      largeUrl: entityData?.image?.large?.uri,
+      required: field?.isRequiredField,
+      t: t,
+      userTips: contentLanguageBilingual({
+        en: field?.userTips?.text?.en,
+        fr: field?.userTips?.text?.fr,
+        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+        calendarContentLanguage: calendarContentLanguage,
+      }),
+      position: field?.userTips?.position,
+    }),
+    key: index,
+    initialValue: formInitialValueHandler(field?.type, field?.mappedField, field?.datatype, entityData),
+    label: contentLanguageBilingual({
+      en: field?.label?.en,
+      fr: field?.label?.fr,
+      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+      calendarContentLanguage: calendarContentLanguage,
+    }),
+    userTips: contentLanguageBilingual({
+      en: field?.userTips?.text?.en,
+      fr: field?.userTips?.text?.fr,
+      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+      calendarContentLanguage: calendarContentLanguage,
+    }),
+    position: field?.userTips?.position,
+  });
 };

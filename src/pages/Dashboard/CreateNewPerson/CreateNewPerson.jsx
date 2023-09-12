@@ -10,7 +10,7 @@ import { featureFlags } from '../../../utils/featureFlags';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import Card from '../../../components/Card/Common/Event';
-import { formCategory, formFieldValue, renderFormFields } from '../../../constants/formFields';
+import { formCategory, formFieldValue, returnFormDataWithFields } from '../../../constants/formFields';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
@@ -22,7 +22,6 @@ import { treeDynamicTaxonomyOptions } from '../../../components/TreeSelectOption
 import Tags from '../../../components/Tags/Common/Tags';
 import { formFieldsHandler } from '../../../utils/formFieldsHandler';
 import { formPayloadHandler } from '../../../utils/formPayloadHandler';
-import { formInitialValueHandler } from '../../../utils/formInitialValueHandler';
 import { useAddPersonMutation, useGetPersonQuery, useUpdatePersonMutation } from '../../../services/people';
 import { useAddImageMutation } from '../../../services/image';
 import { PathName } from '../../../constants/pathName';
@@ -312,63 +311,15 @@ function CreateNewPerson() {
                     {section?.map((field) => {
                       return formFieldValue?.map((formField, index) => {
                         if (formField?.type === field.type) {
-                          return renderFormFields({
-                            name: [field?.mappedField],
-                            type: field?.type,
-                            datatype: field?.datatype,
-                            required: field?.isRequiredField,
-                            element: formField?.element({
-                              datatype: field?.datatype,
-                              taxonomyData: allTaxonomyData,
-                              user: user,
-                              type: field?.mappedField,
-                              isDynamicField: false,
-                              calendarContentLanguage,
-                              name: [field?.mappedField],
-                              preview: true,
-                              placeholder: contentLanguageBilingual({
-                                en: field?.placeholder?.en,
-                                fr: field?.placeholder?.fr,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                calendarContentLanguage: calendarContentLanguage,
-                              }),
-                              validations: contentLanguageBilingual({
-                                en: field?.validations?.en,
-                                fr: field?.validations?.fr,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                calendarContentLanguage: calendarContentLanguage,
-                              }),
-                              largeUrl: personData?.image?.large?.uri,
-                              required: field?.isRequiredField,
-                              t: t,
-                              userTips: contentLanguageBilingual({
-                                en: field?.userTips?.text?.en,
-                                fr: field?.userTips?.text?.fr,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                calendarContentLanguage: calendarContentLanguage,
-                              }),
-                              position: field?.userTips?.position,
-                            }),
-                            key: index,
-                            initialValue: formInitialValueHandler(
-                              field?.type,
-                              field?.mappedField,
-                              field?.datatype,
-                              personData ?? artsData,
-                            ),
-                            label: contentLanguageBilingual({
-                              en: field?.label?.en,
-                              fr: field?.label?.fr,
-                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              calendarContentLanguage: calendarContentLanguage,
-                            }),
-                            userTips: contentLanguageBilingual({
-                              en: field?.userTips?.text?.en,
-                              fr: field?.userTips?.text?.fr,
-                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              calendarContentLanguage: calendarContentLanguage,
-                            }),
-                            position: field?.userTips?.position,
+                          return returnFormDataWithFields({
+                            field,
+                            formField,
+                            allTaxonomyData,
+                            user,
+                            calendarContentLanguage,
+                            entityData: personData ?? artsData,
+                            index,
+                            t,
                           });
                         }
                       });
