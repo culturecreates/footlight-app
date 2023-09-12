@@ -10,8 +10,9 @@ import ContentLanguageInput from '../components/ContentLanguageInput/ContentLang
 import BilingualInput from '../components/BilingualInput/BilingualInput';
 import ImageUpload from '../components/ImageUpload/ImageUpload';
 import { contentLanguageBilingual } from '../utils/bilingual';
-// import { Translation } from 'react-i18next';
+import { Translation } from 'react-i18next';
 import StyledInput from '../components/Input/Common';
+import { formInitialValueHandler } from '../utils/formInitialValueHandler';
 
 const { TextArea } = Input;
 
@@ -41,16 +42,15 @@ const rules = [
     dataType: dataTypes.URI_STRING,
     rule: {
       type: 'url',
-      message: 'dashboard.events.addEditEvent.validations.url',
+      message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
     },
   },
 ];
 
-// console.log(rules);
 export const formFieldValue = [
   {
     type: formTypes.INPUT,
-    element: ({ datatype, data, calendarContentLanguage, name = [], placeholder, user, t, validations }) => {
+    element: ({ datatype, data, calendarContentLanguage, name = [], placeholder, user, t, validations, required }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
         return (
           <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
@@ -59,15 +59,19 @@ export const formFieldValue = [
                 name={name?.concat(['fr'])}
                 key={contentLanguage.FRENCH}
                 dependencies={name?.concat(['en'])}
-                rules={[
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (value || getFieldValue([name?.concat(['en'])])) {
-                        return Promise.resolve();
-                      } else return Promise.reject(new Error(validations?.fr));
-                    },
-                  }),
-                ]}>
+                rules={
+                  required
+                    ? [
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value || getFieldValue([name?.concat(['en'])])) {
+                              return Promise.resolve();
+                            } else return Promise.reject(new Error(validations?.fr));
+                          },
+                        }),
+                      ]
+                    : undefined
+                }>
                 <TextArea
                   autoSize
                   autoComplete="off"
@@ -81,15 +85,19 @@ export const formFieldValue = [
                 name={name?.concat(['en'])}
                 key={contentLanguage.ENGLISH}
                 dependencies={name?.concat(['fr'])}
-                rules={[
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (value || getFieldValue([name?.concat(['fr'])])) {
-                        return Promise.resolve();
-                      } else return Promise.reject(new Error(validations?.en));
-                    },
-                  }),
-                ]}>
+                rules={
+                  required
+                    ? [
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value || getFieldValue([name?.concat(['fr'])])) {
+                              return Promise.resolve();
+                            } else return Promise.reject(new Error(validations?.en));
+                          },
+                        }),
+                      ]
+                    : undefined
+                }>
                 <TextArea
                   autoSize
                   autoComplete="off"
@@ -181,17 +189,31 @@ export const formFieldValue = [
   },
   {
     type: formTypes.IMAGE,
-    element: ({ form, largeUrl, originalUrl, imageReadOnly, preview, eventImageData, name }) => (
-      <ImageUpload
-        imageUrl={largeUrl}
-        originalImageUrl={originalUrl}
-        imageReadOnly={imageReadOnly}
-        preview={preview}
-        form={form}
-        eventImageData={eventImageData}
-        isCrop={false}
-        formName={name}
-      />
+    element: ({
+      form,
+      largeUrl,
+      originalUrl,
+      imageReadOnly,
+      preview,
+      eventImageData,
+      name,
+      datatype,
+      position,
+      userTips,
+    }) => (
+      <>
+        {position === 'top' && datatype === dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
+        <ImageUpload
+          imageUrl={largeUrl}
+          originalImageUrl={originalUrl}
+          imageReadOnly={imageReadOnly}
+          preview={preview}
+          form={form}
+          eventImageData={eventImageData}
+          isCrop={false}
+          formName={name}
+        />
+      </>
     ),
   },
 ];
@@ -207,26 +229,90 @@ export const renderFormFields = ({
   userTips,
   position,
   hidden,
-  ...rest
+  label,
 }) => {
   return (
     <>
       {position === 'top' && datatype !== dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
 
       <Form.Item
+        label={label}
         name={name}
         key={key}
         initialValue={initialValue}
         required={required}
         hidden={hidden}
         rules={rules?.map((rule) => {
-          if (datatype === rule?.dataType) return rules.rule;
+          if (datatype === rule?.dataType) return rule.rule;
         })}
-        help={position === 'bottom' && <p className="add-event-date-heading">{userTips}</p>}
-        {...rest}>
-        {position === 'top' && datatype === dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
+        help={position === 'bottom' && userTips ? <p className="add-event-date-heading">{userTips}</p> : undefined}>
         {element}
       </Form.Item>
     </>
   );
+};
+
+export const returnFormDataWithFields = ({
+  field,
+  formField,
+  allTaxonomyData,
+  user,
+  calendarContentLanguage,
+  entityData,
+  index,
+  t,
+}) => {
+  return renderFormFields({
+    name: [field?.mappedField],
+    type: field?.type,
+    datatype: field?.datatype,
+    required: field?.isRequiredField,
+    element: formField?.element({
+      datatype: field?.datatype,
+      taxonomyData: allTaxonomyData,
+      user: user,
+      type: field?.mappedField,
+      isDynamicField: false,
+      calendarContentLanguage,
+      name: [field?.mappedField],
+      preview: true,
+      placeholder: contentLanguageBilingual({
+        en: field?.placeholder?.en,
+        fr: field?.placeholder?.fr,
+        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+        calendarContentLanguage: calendarContentLanguage,
+      }),
+      validations: contentLanguageBilingual({
+        en: field?.validations?.en,
+        fr: field?.validations?.fr,
+        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+        calendarContentLanguage: calendarContentLanguage,
+      }),
+      largeUrl: entityData?.image?.large?.uri,
+      required: field?.isRequiredField,
+      t: t,
+      userTips: contentLanguageBilingual({
+        en: field?.userTips?.text?.en,
+        fr: field?.userTips?.text?.fr,
+        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+        calendarContentLanguage: calendarContentLanguage,
+      }),
+      position: field?.userTips?.position,
+    }),
+    key: index,
+    initialValue: formInitialValueHandler(field?.type, field?.mappedField, field?.datatype, entityData),
+    label: contentLanguageBilingual({
+      en: field?.label?.en,
+      fr: field?.label?.fr,
+      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+      calendarContentLanguage: calendarContentLanguage,
+    }),
+    userTips: contentLanguageBilingual({
+      en: field?.userTips?.text?.en,
+      fr: field?.userTips?.text?.fr,
+      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+      calendarContentLanguage: calendarContentLanguage,
+    }),
+    position: field?.userTips?.position,
+  });
 };
