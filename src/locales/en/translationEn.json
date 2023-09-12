@@ -580,6 +580,18 @@
         "emptyFirstName": "Enter your first name",
         "emptyLastName": "Enter your last name"
       }
+    },
+    "settings": {
+      "heading": "Settings",
+      "tab1": "User management",
+      "tab2": "Calendar metadata",
+      "userManagement": {
+        "searchPlaceholder": "Search users",
+        "sort": "Sort by",
+        "status": "Status",
+        "userTypes": "User types",
+        "clear": "Clear"
+      }
     }
   },
   "errorPage": {

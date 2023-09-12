@@ -577,6 +577,18 @@
         "emptyFirstName": "Entrez votre prénom",
         "emptyLasttName": "Entrez votre nom"
       }
+    },
+    "settings": {
+      "heading": "Paramètres",
+      "tab2": "User management",
+      "tab1": "Calendar metadata",
+      "userManagement": {
+        "searchPlaceholder": "Recherche d'utilisateurs",
+        "sort": "Trier par",
+        "status": "Statut",
+        "userTypes": "Type",
+        "clear": "Réinitialiser"
+      }
     }
   },
   "errorPage": {
