@@ -155,6 +155,26 @@ function CreateNewPerson() {
             };
           }
         });
+        let imageCrop = form.getFieldValue('imageCrop');
+        imageCrop = {
+          large: {
+            xCoordinate: imageCrop?.large?.x,
+            yCoordinate: imageCrop?.large?.y,
+            height: imageCrop?.large?.height,
+            width: imageCrop?.large?.width,
+          },
+          thumbnail: {
+            xCoordinate: imageCrop?.thumbnail?.x,
+            yCoordinate: imageCrop?.thumbnail?.y,
+            height: imageCrop?.thumbnail?.height,
+            width: imageCrop?.thumbnail?.width,
+          },
+          original: {
+            entityId: imageCrop?.original?.entityId,
+            height: imageCrop?.original?.height,
+            width: imageCrop?.original?.width,
+          },
+        };
         if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
           const formdata = new FormData();
           formdata.append('file', values?.image[0].originFileObj);
@@ -162,15 +182,26 @@ function CreateNewPerson() {
             addImage({ data: formdata, calendarId })
               .unwrap()
               .then((response) => {
-                personPayload['image'] = {
-                  original: {
-                    entityId: response?.data?.original?.entityId,
-                    height: response?.data?.height,
-                    width: response?.data?.width,
-                  },
-                  large: {},
-                  thumbnail: {},
-                };
+                if (featureFlags.imageCropFeature) {
+                  let entityId = response?.data?.original?.entityId;
+                  imageCrop = {
+                    ...imageCrop,
+                    original: {
+                      ...imageCrop?.original,
+                      entityId,
+                    },
+                  };
+                } else
+                  imageCrop = {
+                    ...imageCrop,
+                    original: {
+                      ...imageCrop?.original,
+                      entityId: response?.data?.original?.entityId,
+                      height: response?.data?.height,
+                      width: response?.data?.width,
+                    },
+                  };
+                personPayload['image'] = imageCrop;
                 addUpdatePersonApiHandler(personPayload);
               })
               .catch((error) => {

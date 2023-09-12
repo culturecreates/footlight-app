@@ -13,6 +13,7 @@ import { contentLanguageBilingual } from '../utils/bilingual';
 import { Translation } from 'react-i18next';
 import StyledInput from '../components/Input/Common';
 import { formInitialValueHandler } from '../utils/formInitialValueHandler';
+import { featureFlags } from '../utils/featureFlags';
 
 const { TextArea } = Input;
 
@@ -210,7 +211,7 @@ export const formFieldValue = [
           preview={preview}
           form={form}
           eventImageData={eventImageData}
-          isCrop={false}
+          isCrop={featureFlags.imageCropFeature}
           formName={name}
         />
       </>
