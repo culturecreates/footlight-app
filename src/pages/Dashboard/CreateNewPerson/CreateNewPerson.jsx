@@ -72,17 +72,17 @@ function CreateNewPerson() {
   const addUpdatePersonApiHandler = (personObj) => {
     var promise = new Promise(function (resolve, reject) {
       if (!personId || personId === '') {
-        if (artsDataId && artsData?.data?.length > 0) {
-          let artsDataSameAs = Array.isArray(artsData?.data[0]?.sameAs);
+        if (artsDataId && artsData) {
+          let artsDataSameAs = Array.isArray(artsData?.sameAs);
           if (artsDataSameAs)
             personObj = {
               ...personObj,
-              sameAs: artsData?.data[0]?.sameAs,
+              sameAs: artsData?.sameAs,
             };
           else
             personObj = {
               ...personObj,
-              sameAs: [artsData?.data[0]?.sameAs],
+              sameAs: [artsData?.sameAs],
             };
         }
         addPerson({
