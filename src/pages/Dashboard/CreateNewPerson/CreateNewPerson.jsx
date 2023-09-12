@@ -149,18 +149,9 @@ function CreateNewPerson() {
           let payload = formPayloadHandler(values[object], object, formFields);
           if (payload) {
             let newKeys = Object.keys(payload);
-            let childKeys = Object.keys(payload[newKeys[0]]);
             personPayload = {
               ...personPayload,
-              ...(newKeys?.length > 0 && {
-                [newKeys[0]]: {
-                  ...personPayload[newKeys[0]],
-                  ...(childKeys?.length > 0 && { [childKeys[0]]: payload[newKeys[0]][childKeys[0]] }),
-                  ...(childKeys?.length > 1 && {
-                    [childKeys[childKeys?.length - 1]]: payload[newKeys[0]][childKeys[childKeys?.length - 1]],
-                  }),
-                },
-              }),
+              ...(newKeys?.length > 0 && { [newKeys[0]]: payload[newKeys[0]] }),
             };
           }
         });
