@@ -29,6 +29,7 @@ import { loadArtsDataEntity } from '../../../services/artsData';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
+import { userRoles } from '../../../constants/userRoles';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -68,6 +69,15 @@ function CreateNewPerson() {
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.people);
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.people);
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
+
+  const calendar = user?.roles.filter((calendar) => {
+    return calendar.calendarId === calendarId;
+  });
+
+  const adminCheckHandler = () => {
+    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
+    else return false;
+  };
 
   const addUpdatePersonApiHandler = (personObj) => {
     var promise = new Promise(function (resolve, reject) {
@@ -155,6 +165,26 @@ function CreateNewPerson() {
             };
           }
         });
+        let imageCrop = form.getFieldValue('imageCrop');
+        imageCrop = {
+          large: {
+            xCoordinate: imageCrop?.large?.x,
+            yCoordinate: imageCrop?.large?.y,
+            height: imageCrop?.large?.height,
+            width: imageCrop?.large?.width,
+          },
+          thumbnail: {
+            xCoordinate: imageCrop?.thumbnail?.x,
+            yCoordinate: imageCrop?.thumbnail?.y,
+            height: imageCrop?.thumbnail?.height,
+            width: imageCrop?.thumbnail?.width,
+          },
+          original: {
+            entityId: imageCrop?.original?.entityId,
+            height: imageCrop?.original?.height,
+            width: imageCrop?.original?.width,
+          },
+        };
         if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
           const formdata = new FormData();
           formdata.append('file', values?.image[0].originFileObj);
@@ -162,15 +192,26 @@ function CreateNewPerson() {
             addImage({ data: formdata, calendarId })
               .unwrap()
               .then((response) => {
-                personPayload['image'] = {
-                  original: {
-                    entityId: response?.data?.original?.entityId,
-                    height: response?.data?.height,
-                    width: response?.data?.width,
-                  },
-                  large: {},
-                  thumbnail: {},
-                };
+                if (featureFlags.imageCropFeature) {
+                  let entityId = response?.data?.original?.entityId;
+                  imageCrop = {
+                    ...imageCrop,
+                    original: {
+                      ...imageCrop?.original,
+                      entityId,
+                    },
+                  };
+                } else
+                  imageCrop = {
+                    ...imageCrop,
+                    original: {
+                      ...imageCrop?.original,
+                      entityId: response?.data?.original?.entityId,
+                      height: response?.data?.height,
+                      width: response?.data?.width,
+                    },
+                  };
+                personPayload['image'] = imageCrop;
                 addUpdatePersonApiHandler(personPayload);
               })
               .catch((error) => {
@@ -181,7 +222,7 @@ function CreateNewPerson() {
         } else {
           if (values?.image) {
             if (values?.image && values?.image?.length == 0) personPayload['image'] = null;
-            else personPayload['image'] = personData?.image;
+            else personPayload['image'] = imageCrop;
           }
           addUpdatePersonApiHandler(personPayload);
         }
@@ -321,6 +362,7 @@ function CreateNewPerson() {
                             entityData: personData ? personData : artsData ? artsData : newEntityData,
                             index,
                             t,
+                            adminCheckHandler,
                           });
                         }
                       });
