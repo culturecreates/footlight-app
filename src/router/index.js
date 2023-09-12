@@ -22,7 +22,7 @@ import CreateNewOrganization from '../pages/Dashboard/CreateNewOrganization';
 import SearchOrganizations from '../pages/Dashboard/SearchOrganizations';
 import SearchPerson from '../pages/Dashboard/SearchPerson';
 import SearchPlaces from '../pages/Dashboard/SearchPlaces';
-import Settings from '../pages/Dashboard/Settings/Settings';
+import Settings from '../pages/Dashboard/Settings';
 import CreateNewPerson from '../pages/Dashboard/CreateNewPerson';
 
 export const router = createBrowserRouter([
