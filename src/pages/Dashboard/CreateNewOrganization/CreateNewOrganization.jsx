@@ -26,6 +26,7 @@ import { formFieldsHandler } from '../../../utils/formFieldsHandler';
 import { formPayloadHandler } from '../../../utils/formPayloadHandler';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import { loadArtsDataEntity } from '../../../services/artsData';
+import { userRoles } from '../../../constants/userRoles';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -61,6 +62,15 @@ function CreateNewOrganization() {
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
+
+  const calendar = user?.roles.filter((calendar) => {
+    return calendar.calendarId === calendarId;
+  });
+
+  const adminCheckHandler = () => {
+    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
+    else return false;
+  };
 
   const onSaveHandler = () => {
     form
@@ -178,6 +188,7 @@ function CreateNewOrganization() {
                             entityData: organizationData ? organizationData : artsData ? artsData : newEntityData,
                             index,
                             t,
+                            adminCheckHandler,
                           });
                         }
                       });
