@@ -1,4 +1,4 @@
-import { Form, Input } from 'antd';
+import { Form, Input, Popover } from 'antd';
 import TextEditor from '../components/TextEditor';
 import NoContent from '../components/NoContent/NoContent';
 import { CloseCircleOutlined } from '@ant-design/icons';
@@ -14,7 +14,8 @@ import { Translation } from 'react-i18next';
 import StyledInput from '../components/Input/Common';
 import { formInitialValueHandler } from '../utils/formInitialValueHandler';
 import { featureFlags } from '../utils/featureFlags';
-// import { featureFlags } from '../utils/featureFlags';
+import EventsSearch from '../components/Search/Events/EventsSearch';
+import SelectionItem from '../components/List/SelectionItem';
 
 const { TextArea } = Input;
 
@@ -28,6 +29,7 @@ export const formTypes = {
   TEXTAREA: 'TextArea',
   EDITOR: 'Editor',
   IMAGE: 'Image',
+  SEARCH: 'Search',
 };
 
 export const dataTypes = {
@@ -37,6 +39,21 @@ export const dataTypes = {
   IDENTITY_STRING: 'IdentityString',
   URI_STRING: 'URIString',
   IMAGE: 'Image',
+};
+
+export const mappedFieldTypes = {
+  NAME: 'name',
+  DISAMBUGATING_DESCRIPTION: 'disambiguatingDescription',
+  ADDITIONAL_TYPE: 'additionalType',
+  DESCRIPTION: 'description',
+  URL: 'url',
+  IMAGE: 'image',
+  LOGO: 'logo',
+  CONTACT_NAME: 'contactPoint.name',
+  CONTACT_URL: 'contactPoint.url',
+  CONTACT_TELEPHONE: 'contactPoint.telephone',
+  CONTACT_EMAIL: 'contactPoint.email',
+  PLACE: 'place',
 };
 
 const rules = [
@@ -214,17 +231,99 @@ export const formFieldValue = [
           originalImageUrl={originalUrl}
           imageReadOnly={imageReadOnly}
           preview={preview}
-          setImageCropOpen={setImageCropOpen}
-          imageCropOpen={imageCropOpen}
+          setImageCropOpen={name?.includes(mappedFieldTypes.IMAGE) && setImageCropOpen}
+          imageCropOpen={name?.includes(mappedFieldTypes.IMAGE) && imageCropOpen}
           form={form}
           eventImageData={eventImageData}
-          isCrop={featureFlags.imageCropFeature}
+          isCrop={name?.includes(mappedFieldTypes.IMAGE) ? featureFlags.imageCropFeature : false}
           largeAspectRatio={largeAspectRatio}
           thumbnailAspectRatio={thumbnailAspectRatio}
           formName={name}
         />
       </>
     ),
+  },
+  {
+    type: formTypes.SEARCH,
+    element: ({
+      form,
+      setIsPopoverOpen,
+      isPopoverOpen,
+      allPlacesList,
+      locationPlace,
+      setLocationPlace,
+      t,
+      name,
+      placesSearch,
+      calendarContentLanguage,
+    }) => {
+      return (
+        <>
+          <Popover
+            open={isPopoverOpen}
+            onOpenChange={(open) => setIsPopoverOpen(open)}
+            overlayClassName="event-popover"
+            placement="bottom"
+            autoAdjustOverflow={false}
+            getPopupContainer={(trigger) => trigger.parentNode}
+            trigger={['click']}
+            content={
+              <div>
+                <div className="search-scrollable-content">
+                  {allPlacesList?.length > 0 ? (
+                    allPlacesList?.map((place, index) => (
+                      <div
+                        key={index}
+                        className={`event-popover-options ${
+                          locationPlace?.value == place?.value ? 'event-popover-options-active' : null
+                        }`}
+                        onClick={() => {
+                          setLocationPlace(place);
+                          form.setFieldValue(name, place?.value);
+                          setIsPopoverOpen(false);
+                        }}>
+                        {place?.label}
+                      </div>
+                    ))
+                  ) : (
+                    <NoContent />
+                  )}
+                </div>
+              </div>
+            }>
+            <EventsSearch
+              style={{ borderRadius: '4px', width: '423px' }}
+              placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
+              onChange={(e) => {
+                placesSearch(e.target.value);
+                setIsPopoverOpen(true);
+              }}
+              onClick={() => {
+                setIsPopoverOpen(true);
+              }}
+            />
+          </Popover>
+          {locationPlace && (
+            <SelectionItem
+              icon={locationPlace?.label?.props?.icon}
+              name={locationPlace?.name}
+              description={locationPlace?.description}
+              itemWidth="100%"
+              postalAddress={locationPlace?.postalAddress}
+              accessibility={locationPlace?.accessibility}
+              openingHours={locationPlace?.openingHours}
+              calendarContentLanguage={calendarContentLanguage}
+              bordered
+              closable
+              onClose={() => {
+                setLocationPlace();
+                form.setFieldValue(name, undefined);
+              }}
+            />
+          )}
+        </>
+      );
+    },
   },
 ];
 
@@ -276,6 +375,12 @@ export const returnFormDataWithFields = ({
   currentCalendarData,
   imageCropOpen,
   setImageCropOpen,
+  placesSearch,
+  allPlacesList,
+  locationPlace,
+  setLocationPlace,
+  setIsPopoverOpen,
+  isPopoverOpen,
 }) => {
   return renderFormFields({
     name: [field?.mappedField],
@@ -323,6 +428,12 @@ export const returnFormDataWithFields = ({
         currentCalendarData?.imageConfig?.length > 0
           ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio
           : null,
+      placesSearch,
+      allPlacesList,
+      locationPlace,
+      setLocationPlace,
+      setIsPopoverOpen,
+      isPopoverOpen,
     }),
     key: index,
     initialValue: formInitialValueHandler(field?.type, field?.mappedField, field?.datatype, entityData),
