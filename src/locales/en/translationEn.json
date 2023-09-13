@@ -558,7 +558,8 @@
           "dataSource": "Data source",
           "notification": {
             "addSuccess": "Success! Your person has been created.",
-            "editSuccess": "Success! Your person has been updated."
+            "editSuccess": "Success! Your person has been updated.",
+            "saveError": "This person needs more information before it can be saved."
           },
           "validations": {
             "nameRequired": "Name is required."
