@@ -554,7 +554,8 @@
           "dataSource": "Source de la donnée",
           "notification": {
             "addSuccess": "Succès ! Votre personne a été créé.",
-            "editSuccess": "Succès ! Votre personne a été mis à jour."
+            "editSuccess": "Succès ! Votre personne a été mis à jour.",
+            "saveError": "Cet personne a besoin de plus d'informations avant d'être enregistré."
           },
           "validations": {
             "nameRequired": "Le nom est requis."

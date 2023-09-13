@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import '../AddEvent/addEvent.css';
-import { Form, Row, Col, Button, notification } from 'antd';
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { Form, Row, Col, Button, notification, message } from 'antd';
+import { CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { LeftOutlined } from '@ant-design/icons';
@@ -64,6 +64,7 @@ function CreateNewPerson() {
   const [artsData, setArtsData] = useState(null);
   const [newEntityData, setNewEntityData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
+  const [imageCropOpen, setImageCropOpen] = useState(false);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.people);
@@ -193,12 +194,13 @@ function CreateNewPerson() {
               .unwrap()
               .then((response) => {
                 if (featureFlags.imageCropFeature) {
-                  let entityId = response?.data?.original?.entityId;
                   imageCrop = {
                     ...imageCrop,
                     original: {
                       ...imageCrop?.original,
-                      entityId,
+                      entityId: response?.data?.original?.entityId,
+                      height: response?.data?.height,
+                      width: response?.data?.width,
                     },
                   };
                 } else
@@ -227,8 +229,53 @@ function CreateNewPerson() {
           addUpdatePersonApiHandler(personPayload);
         }
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error);
+        message.warning({
+          duration: 10,
+          maxCount: 1,
+          key: 'person-save-as-warning',
+          content: (
+            <>
+              {t('dashboard.people.createNew.addPerson.notification.saveError')} &nbsp;
+              <Button
+                type="text"
+                icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                onClick={() => message.destroy('person-save-as-warning')}
+              />
+            </>
+          ),
+          icon: <ExclamationCircleOutlined />,
+        });
+      });
   };
+  useEffect(() => {
+    if (calendarId && personData && currentCalendarData) {
+      if (personData?.image) {
+        form.setFieldsValue({
+          imageCrop: {
+            large: {
+              x: personData?.image?.large?.xCoordinate,
+              y: personData?.image?.large?.yCoordinate,
+              height: personData?.image?.large?.height,
+              width: personData?.image?.large?.width,
+            },
+            original: {
+              entityId: personData?.image?.original?.entityId ?? null,
+              height: personData?.image?.original?.height,
+              width: personData?.image?.original?.width,
+            },
+            thumbnail: {
+              x: personData?.image?.thumbnail?.xCoordinate,
+              y: personData?.image?.thumbnail?.yCoordinate,
+              height: personData?.image?.thumbnail?.height,
+              width: personData?.image?.thumbnail?.width,
+            },
+          },
+        });
+      }
+    }
+  }, [personLoading, currentCalendarData]);
 
   useEffect(() => {
     if (artsDataId) {
@@ -363,6 +410,9 @@ function CreateNewPerson() {
                             index,
                             t,
                             adminCheckHandler,
+                            currentCalendarData,
+                            imageCropOpen,
+                            setImageCropOpen,
                           });
                         }
                       });

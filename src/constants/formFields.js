@@ -14,6 +14,7 @@ import { Translation } from 'react-i18next';
 import StyledInput from '../components/Input/Common';
 import { formInitialValueHandler } from '../utils/formInitialValueHandler';
 import { featureFlags } from '../utils/featureFlags';
+// import { featureFlags } from '../utils/featureFlags';
 
 const { TextArea } = Input;
 
@@ -65,7 +66,7 @@ export const formFieldValue = [
                     ? [
                         ({ getFieldValue }) => ({
                           validator(_, value) {
-                            if (value || getFieldValue([name?.concat(['en'])])) {
+                            if (value || getFieldValue(name?.concat(['en']))) {
                               return Promise.resolve();
                             } else return Promise.reject(new Error(validations?.fr));
                           },
@@ -91,7 +92,7 @@ export const formFieldValue = [
                     ? [
                         ({ getFieldValue }) => ({
                           validator(_, value) {
-                            if (value || getFieldValue([name?.concat(['fr'])])) {
+                            if (value || getFieldValue(name?.concat(['fr']))) {
                               return Promise.resolve();
                             } else return Promise.reject(new Error(validations?.en));
                           },
@@ -201,6 +202,10 @@ export const formFieldValue = [
       datatype,
       position,
       userTips,
+      setImageCropOpen,
+      imageCropOpen,
+      largeAspectRatio,
+      thumbnailAspectRatio,
     }) => (
       <>
         {position === 'top' && datatype === dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
@@ -209,9 +214,13 @@ export const formFieldValue = [
           originalImageUrl={originalUrl}
           imageReadOnly={imageReadOnly}
           preview={preview}
+          setImageCropOpen={setImageCropOpen}
+          imageCropOpen={imageCropOpen}
           form={form}
           eventImageData={eventImageData}
           isCrop={featureFlags.imageCropFeature}
+          largeAspectRatio={largeAspectRatio}
+          thumbnailAspectRatio={thumbnailAspectRatio}
           formName={name}
         />
       </>
@@ -263,6 +272,10 @@ export const returnFormDataWithFields = ({
   index,
   t,
   adminCheckHandler,
+  isCrop,
+  currentCalendarData,
+  imageCropOpen,
+  setImageCropOpen,
 }) => {
   return renderFormFields({
     name: [field?.mappedField],
@@ -300,6 +313,16 @@ export const returnFormDataWithFields = ({
         calendarContentLanguage: calendarContentLanguage,
       }),
       position: field?.userTips?.position,
+      isCrop: isCrop,
+      setImageCropOpen,
+      imageCropOpen,
+      eventImageData: entityData?.image,
+      largeAspectRatio:
+        currentCalendarData?.imageConfig?.length > 0 ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio : null,
+      thumbnailAspectRatio:
+        currentCalendarData?.imageConfig?.length > 0
+          ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio
+          : null,
     }),
     key: index,
     initialValue: formInitialValueHandler(field?.type, field?.mappedField, field?.datatype, entityData),
