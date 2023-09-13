@@ -27,6 +27,8 @@ import { formPayloadHandler } from '../../../utils/formPayloadHandler';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import { loadArtsDataEntity } from '../../../services/artsData';
 import { userRoles } from '../../../constants/userRoles';
+import { useLazyGetEntitiesQuery } from '../../../services/entities';
+import { placesOptions } from '../../../components/Select/selectOption.settings';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -53,10 +55,16 @@ function CreateNewOrganization() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
+  const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
   // const [addOrganization] = useAddOrganizationMutation();
+
   const [artsData, setArtsData] = useState(null);
   const [newEntityData, setNewEntityData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
+  const [allPlacesList, setAllPlacesList] = useState([]);
+  const [locationPlace, setLocationPlace] = useState();
+  const [imageCropOpen, setImageCropOpen] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
@@ -107,6 +115,45 @@ function CreateNewOrganization() {
       .catch((error) => console.log(error));
   };
 
+  const placesSearch = (inputValue = '') => {
+    let query = new URLSearchParams();
+    query.append('classes', entitiesClass.place);
+    getEntities({ searchKey: inputValue, classes: decodeURIComponent(query.toString()), calendarId })
+      .unwrap()
+      .then((response) => {
+        setAllPlacesList(placesOptions(response, user, calendarContentLanguage));
+      })
+      .catch((error) => console.log(error));
+  };
+
+  useEffect(() => {
+    if (calendarId && organizationData && currentCalendarData) {
+      if (organizationData?.image) {
+        form.setFieldsValue({
+          imageCrop: {
+            large: {
+              x: organizationData?.image?.large?.xCoordinate,
+              y: organizationData?.image?.large?.yCoordinate,
+              height: organizationData?.image?.large?.height,
+              width: organizationData?.image?.large?.width,
+            },
+            original: {
+              entityId: organizationData?.image?.original?.entityId ?? null,
+              height: organizationData?.image?.original?.height,
+              width: organizationData?.image?.original?.width,
+            },
+            thumbnail: {
+              x: organizationData?.image?.thumbnail?.xCoordinate,
+              y: organizationData?.image?.thumbnail?.yCoordinate,
+              height: organizationData?.image?.thumbnail?.height,
+              width: organizationData?.image?.thumbnail?.width,
+            },
+          },
+        });
+      }
+    }
+  }, [organizationLoading, currentCalendarData]);
+
   useEffect(() => {
     if (artsDataId) {
       setArtsDataLoading(true);
@@ -119,14 +166,15 @@ function CreateNewOrganization() {
           setArtsDataLoading(false);
           console.log(error);
         });
-    } else if (location?.state?.name) {
+    } else if (location?.state?.name)
       setNewEntityData({
         name: {
           fr: location?.state?.name,
           en: location?.state?.name,
         },
       });
-    }
+
+    placesSearch('');
   }, []);
 
   // console.log(fields);
@@ -189,6 +237,15 @@ function CreateNewOrganization() {
                             index,
                             t,
                             adminCheckHandler,
+                            currentCalendarData,
+                            imageCropOpen,
+                            setImageCropOpen,
+                            placesSearch,
+                            allPlacesList,
+                            locationPlace,
+                            setLocationPlace,
+                            setIsPopoverOpen,
+                            isPopoverOpen,
                           });
                         }
                       });

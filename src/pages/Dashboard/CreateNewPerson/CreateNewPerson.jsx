@@ -413,6 +413,7 @@ function CreateNewPerson() {
                             currentCalendarData,
                             imageCropOpen,
                             setImageCropOpen,
+                            form,
                           });
                         }
                       });
