@@ -381,6 +381,7 @@ export const returnFormDataWithFields = ({
   setLocationPlace,
   setIsPopoverOpen,
   isPopoverOpen,
+  form,
 }) => {
   return renderFormFields({
     name: [field?.mappedField],
@@ -434,6 +435,7 @@ export const returnFormDataWithFields = ({
       setLocationPlace,
       setIsPopoverOpen,
       isPopoverOpen,
+      form,
     }),
     key: index,
     initialValue: formInitialValueHandler(field?.type, field?.mappedField, field?.datatype, entityData),
@@ -451,5 +453,6 @@ export const returnFormDataWithFields = ({
     }),
     position: field?.userTips?.position,
     hidden: field?.isAdminOnlyField ? (adminCheckHandler() ? false : true) : false,
+    form,
   });
 };

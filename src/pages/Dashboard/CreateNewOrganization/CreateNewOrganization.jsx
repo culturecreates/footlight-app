@@ -166,14 +166,15 @@ function CreateNewOrganization() {
           setArtsDataLoading(false);
           console.log(error);
         });
-    } else if (location?.state?.name) {
+    } else if (location?.state?.name)
       setNewEntityData({
         name: {
           fr: location?.state?.name,
           en: location?.state?.name,
         },
       });
-    }
+
+    placesSearch('');
   }, []);
 
   // console.log(fields);
