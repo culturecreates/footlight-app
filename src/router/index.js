@@ -138,6 +138,10 @@ export const router = createBrowserRouter([
         path: `:calendarId${PathName.Settings}`,
         element: <Settings />,
       },
+      {
+        path: `:calendarId${PathName.Settings}${PathName.UserManagement}/:userId`,
+        element: <Settings />,
+      },
     ],
   },
   {

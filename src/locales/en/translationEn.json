@@ -612,6 +612,18 @@
         "editor": "Editor",
         "contributor": "Contributor",
         "guest": "Guest"
+      },
+      "userReadOnly": {
+        "editBtn": "Edit details",
+        "userName": "Username",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "phoneNumber": "Phone Number",
+        "email": "Email",
+        "userType": "User type",
+        "languagePreference": "Langage preference",
+        "calenderAccess": "Calendar access",
+        "details":"Details"
       }
     }
   },

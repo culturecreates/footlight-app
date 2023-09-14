@@ -608,6 +608,18 @@
         "editor": "Éditeur",
         "contributor": "Collaborateur",
         "guest": "Invité"
+      },
+      "userReadOnly": {
+        "editBtn": "Éditer l’information",
+        "userName": "Nom d’utilisateur",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "phoneNumber": "Numéro de téléphone",
+        "email": "Courriel",
+        "userType": "Type d’utilisateur",
+        "languagePreference": "Préférence de langue",
+        "calenderAccess": "Accès aux calendriers",
+        "details": "Détails"
       }
     }
   },
