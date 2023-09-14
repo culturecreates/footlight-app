@@ -591,12 +591,12 @@
         "status": "Status",
         "userTypes": "User types",
         "clear": "Clear",
-        "userName": "Nom d’utilisateur",
-        "firstName": "Prénom",
-        "lastName": "Nom",
-        "active": "Actif",
-        "inActive": "Désactivé",
-        "invite": "Invité"
+        "userName": "Username",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "active": "Active",
+        "inActive": "Desactivated",
+        "invite": "Invited"
       }
     }
   },
