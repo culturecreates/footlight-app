@@ -595,8 +595,12 @@
         "firstName": "First name",
         "lastName": "Last name",
         "active": "Active",
-        "inActive": "Desactivated",
-        "invite": "Invited"
+        "inActive": "inActive",
+        "invite": "Invited",
+        "admin": "Admin",
+        "editor": "Editor",
+        "contributor": "Contributor",
+        "guest": "Guest"
       }
     }
   },

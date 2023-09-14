@@ -593,7 +593,11 @@
         "lastName": "Nom",
         "active": "Actif",
         "inActive": "Désactivé",
-        "invite": "Invité"
+        "invite": "Invité",
+        "admin": "Administrateur",
+        "editor": "Éditeur",
+        "contributor": "Collaborateur",
+        "guest": "Invité"
       }
     }
   },
