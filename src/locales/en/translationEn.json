@@ -590,7 +590,13 @@
         "sort": "Sort by",
         "status": "Status",
         "userTypes": "User types",
-        "clear": "Clear"
+        "clear": "Clear",
+        "userName": "Nom d’utilisateur",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "active": "Actif",
+        "inActive": "Désactivé",
+        "invite": "Invité"
       }
     }
   },

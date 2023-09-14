@@ -587,7 +587,13 @@
         "sort": "Trier par",
         "status": "Statut",
         "userTypes": "Type",
-        "clear": "Réinitialiser"
+        "clear": "Réinitialiser",
+        "userName": "Nom d’utilisateur",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "active": "Actif",
+        "inActive": "Désactivé",
+        "invite": "Invité"
       }
     }
   },
