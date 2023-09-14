@@ -1,5 +1,4 @@
 import { Form, Input, Popover } from 'antd';
-import TextEditor from '../components/TextEditor';
 import NoContent from '../components/NoContent/NoContent';
 import { CloseCircleOutlined } from '@ant-design/icons';
 import Tags from '../components/Tags/Common/Tags';
@@ -16,6 +15,7 @@ import { formInitialValueHandler } from '../utils/formInitialValueHandler';
 import { featureFlags } from '../utils/featureFlags';
 import EventsSearch from '../components/Search/Events/EventsSearch';
 import SelectionItem from '../components/List/SelectionItem';
+import BilingualTextEditor from '../components/BilingualTextEditor';
 
 const { TextArea } = Input;
 
@@ -172,10 +172,6 @@ export const formFieldValue = [
     ),
   },
   {
-    type: formTypes.EDITOR,
-    element: () => <TextEditor />,
-  },
-  {
     type: formTypes.MULTISELECT,
     element: ({ taxonomyData, user, type, isDynamicField, calendarContentLanguage, placeholder }) => {
       return (
@@ -323,6 +319,32 @@ export const formFieldValue = [
           )}
         </>
       );
+    },
+  },
+  {
+    type: formTypes.EDITOR,
+
+    element: ({
+      datatype,
+      data,
+      calendarContentLanguage,
+      name = [],
+      placeholder,
+      required,
+      // validations,
+      descriptionMinimumWordCount = 10,
+    }) => {
+      if (datatype === dataTypes.MULTI_LINGUAL)
+        return (
+          <BilingualTextEditor
+            data={data}
+            calendarContentLanguage={calendarContentLanguage}
+            name={name}
+            placeholder={placeholder}
+            descriptionMinimumWordCount={descriptionMinimumWordCount}
+            required={required}
+          />
+        );
     },
   },
 ];
