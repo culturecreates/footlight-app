@@ -29,7 +29,312 @@ import { loadArtsDataEntity } from '../../../services/artsData';
 import { userRoles } from '../../../constants/userRoles';
 import { useLazyGetEntitiesQuery } from '../../../services/entities';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
-
+// const sampleForm = {
+//   forms: [
+//     {
+//       formName: 'Organization',
+//       formFields: [
+//         {
+//           order: 1,
+//           name: 'Name',
+//           label: { en: 'Name', fr: 'Nom' },
+//           mappedField: 'name',
+//           isRequiredField: true,
+//           isAdminOnlyField: false,
+//           type: 'Input',
+//           datatype: 'MultiLingual',
+//           category: 'Primary',
+//           placeholder: {
+//             en: { en: 'Enter english organization name', fr: 'Enter french organization name' },
+//             fr: { en: "Entrez nom de l'organisation en anglais", fr: "Entrez le nom de l'organisation en français" },
+//           },
+//           isPreLoaded: true,
+//           validations: {
+//             en: { en: 'Name is required.', fr: 'Name is required.' },
+//             fr: { en: 'Le nom est requis.', fr: 'Le nom est requis.' },
+//           },
+//         },
+//         {
+//           order: 2,
+//           name: 'Disambiguating description',
+//           label: { en: 'Disambiguating description', fr: 'Description identifiante' },
+//           mappedField: 'disambiguatingDescription',
+//           isRequiredField: false,
+//           isAdminOnlyField: false,
+//           type: 'Input',
+//           datatype: 'MultiLingual',
+//           category: 'Primary',
+//           placeholder: {
+//             en: { en: 'Enter english disambiguation description', fr: 'Enter french disambiguation description' },
+//             fr: { en: 'Entrez la description identifiante', fr: 'Entrez la description identifiante' },
+//           },
+//           isPreLoaded: true,
+//           userTips: {
+//             text: {
+//               en: 'Add to differentiate organization in search results',
+//               fr: "Ajouter pour différencier l'organisation dans les résultats de recherche.",
+//             },
+//             position: 'bottom',
+//           },
+//         },
+//         {
+//           order: 3,
+//           name: 'Organization type',
+//           label: { en: 'Organization type', fr: 'Type' },
+//           mappedField: 'additionalType',
+//           isRequiredField: false,
+//           isAdminOnlyField: false,
+//           type: 'MultiSelect',
+//           category: 'Primary',
+//           datatype: 'StandardField',
+//           placeholder: { en: { en: 'Select Organization type' }, fr: { fr: 'Select Organization type' } },
+//           isPreLoaded: true,
+//         },
+//         {
+//           order: 4,
+//           name: 'Description',
+//           label: { en: 'Description', fr: 'Description' },
+//           mappedField: 'description',
+//           isRequiredField: false,
+//           isAdminOnlyField: false,
+//           type: 'Editor',
+//           datatype: 'MultiLingual',
+//           category: 'Primary',
+//           placeholder: {
+//             en: { en: 'Enter English description', fr: 'Enter French description' },
+//             fr: { en: 'Entrez la description', fr: 'Entrez la description' },
+//           },
+//           isPreLoaded: true,
+//         },
+//         {
+//           order: 5,
+//           name: 'Website',
+//           label: { en: 'Website', fr: 'Site web' },
+//           mappedField: 'url',
+//           isRequiredField: false,
+//           isAdminOnlyField: false,
+//           type: 'Input',
+//           datatype: 'URIString',
+//           category: 'Primary',
+//           placeholder: { en: { en: 'enter URL' }, fr: { fr: 'enter URL' } },
+//           isPreLoaded: true,
+//         },
+//         {
+//           order: 6,
+//           name: 'Logo',
+//           label: { en: 'Logo', fr: 'Logo' },
+//           mappedField: 'logo',
+//           isRequiredField: false,
+//           isAdminOnlyField: false,
+//           type: 'Image',
+//           datatype: 'Image',
+//           category: 'Primary',
+//           placeholder: { en: { en: 'Browse or drag to upload' }, fr: { fr: 'Parcourir ou glisser pour télécharger' } },
+//           isPreLoaded: true,
+//           userTips: {
+//             text: {
+//               en: 'Only .jpeg and .png files are supported.',
+//               fr: 'Uniquement les fichiers .jpeg et .png sont acceptés.',
+//             },
+//             position: 'top',
+//           },
+//         },
+//         {
+//           order: 7,
+//           name: 'Image',
+//           label: { en: 'Image', fr: 'Image' },
+//           mappedField: 'image',
+//           isRequiredField: false,
+//           isAdminOnlyField: false,
+//           type: 'Image',
+//           datatype: 'Image',
+//           category: 'Primary',
+//           placeholder: { en: { en: 'Browse or drag to upload' }, fr: { fr: 'Parcourir ou glisser pour télécharger' } },
+//           isPreLoaded: true,
+//           userTips: {
+//             text: {
+//               en: 'Only .jpeg and .png files are supported.',
+//               fr: 'Uniquement les fichiers .jpeg et .png sont acceptés.',
+//             },
+//             position: 'top',
+//           },
+//         },
+//         {
+//           order: 8,
+//           name: 'Contact title',
+//           label: { en: 'Contact title', fr: 'Titre du contact' },
+//           mappedField: 'contactPoint.name',
+//           isRequiredField: false,
+//           isAdminOnlyField: false,
+//           type: 'Input',
+//           datatype: 'MultiLingual',
+//           category: 'Contact',
+//           placeholder: { en: { en: 'Enter contact title' }, fr: { fr: 'Entrez titre contact' } },
+//           isPreLoaded: true,
+//         },
+//         {
+//           order: 9,
+//           name: 'Website',
+//           label: { en: 'Website', fr: 'Site web' },
+//           mappedField: 'contactPoint.url',
+//           isRequiredField: false,
+//           isAdminOnlyField: false,
+//           type: 'Input',
+//           datatype: 'URIString',
+//           category: 'Contact',
+//           placeholder: { en: { en: 'enter URL' }, fr: { fr: 'enter URL' } },
+//           isPreLoaded: true,
+//         },
+//         {
+//           order: 10,
+//           name: 'Phone Number',
+//           label: { en: 'Phone Number', fr: 'Numéro de téléphone' },
+//           mappedField: 'contactPoint.telephone',
+//           isRequiredField: false,
+//           isAdminOnlyField: false,
+//           type: 'Input',
+//           datatype: 'String',
+//           category: 'Contact',
+//           placeholder: { en: { en: 'enter phone number' }, fr: { fr: 'entrez numéro téléphone' } },
+//           isPreLoaded: true,
+//         },
+//         {
+//           order: 11,
+//           name: 'Email',
+//           label: { en: 'Email', fr: 'Courriel' },
+//           mappedField: 'contactPoint.email',
+//           isRequiredField: false,
+//           isAdminOnlyField: false,
+//           type: 'Input',
+//           datatype: 'String',
+//           category: 'Contact',
+//           placeholder: { en: { en: 'enter email' }, fr: { fr: 'entrez email' } },
+//           isPreLoaded: true,
+//         },
+//         {
+//           order: 12,
+//           name: 'Description',
+//           label: { en: 'Description', fr: 'Description' },
+//           mappedField: 'contactPoint.description',
+//           isRequiredField: false,
+//           isAdminOnlyField: false,
+//           type: 'Editor',
+//           datatype: 'String',
+//           category: 'Contact',
+//           placeholder: {
+//             en: { en: 'Enter english contact description', fr: 'Enter french contact description' },
+//             fr: { en: 'Entrez description contact en anglais', fr: 'Entrez description contact en français' },
+//           },
+//           isPreLoaded: true,
+//         },
+//         {
+//           order: 13,
+//           name: 'Location',
+//           label: { en: 'Location', fr: 'Endroit' },
+//           isRequiredField: false,
+//           isAdminOnlyField: false,
+//           type: 'Search',
+//           datatype: 'IdentityString',
+//           category: 'Primary',
+//           mappedField: 'place',
+//           placeholder: { en: { en: 'Search places' }, fr: { fr: 'Rechercher un lieu' } },
+//           isPreLoaded: true,
+//         },
+//       ],
+//     },
+//     {
+//       formName: 'People',
+//       formFields: [
+//         {
+//           order: 1,
+//           name: 'Name',
+//           label: { en: 'Name', fr: 'Nom' },
+//           mappedField: 'name',
+//           isRequiredField: true,
+//           isAdminOnlyField: false,
+//           type: 'Input',
+//           datatype: 'MultiLingual',
+//           category: 'Primary',
+//           placeholder: { en: { en: 'Enter name' }, fr: { fr: 'Nom' } },
+//           isPreLoaded: true,
+//           validations: {
+//             en: { en: 'Name is required.', fr: 'Name is required.' },
+//             fr: { en: 'Le nom est requis.', fr: 'Le nom est requis.' },
+//           },
+//         },
+//         {
+//           order: 2,
+//           name: 'Occupation',
+//           label: { en: 'Occupation', fr: 'Profession' },
+//           mappedField: 'Occupation',
+//           isRequiredField: false,
+//           isAdminOnlyField: false,
+//           type: 'MultiSelect',
+//           datatype: 'StandardField',
+//           category: 'Primary',
+//           placeholder: { en: { en: 'Select occupation' }, fr: { fr: 'Profession' } },
+//           isPreLoaded: true,
+//         },
+//         {
+//           order: 3,
+//           name: 'Disambiguating description',
+//           label: { en: 'Disambiguating Description', fr: 'Description identifiante' },
+//           mappedField: 'disambiguatingDescription',
+//           isRequiredField: false,
+//           isAdminOnlyField: false,
+//           type: 'Input',
+//           datatype: 'MultiLingual',
+//           category: 'Primary',
+//           placeholder: {
+//             en: { en: 'Enter english disambiguation description', fr: 'Enter french disambiguation description' },
+//             fr: { en: 'Entrez la description identifiante', fr: 'Entrez la description identifiante' },
+//           },
+//           isPreLoaded: true,
+//           userTips: {
+//             text: {
+//               en: 'Add to differentiate person in search results',
+//               fr: 'AAjouter pour différencier la personne dans les résultats de recherche',
+//             },
+//             position: 'bottom',
+//           },
+//         },
+//         {
+//           order: 4,
+//           name: 'Website',
+//           label: { en: 'Website', fr: 'Site web' },
+//           mappedField: 'url',
+//           isRequiredField: false,
+//           isAdminOnlyField: false,
+//           type: 'Input',
+//           datatype: 'URIString',
+//           category: 'Primary',
+//           placeholder: { en: { en: 'enter URL' }, fr: { fr: 'entrer URL' } },
+//           isPreLoaded: true,
+//         },
+//         {
+//           order: 5,
+//           name: 'Image',
+//           label: { en: 'Image', fr: 'Image' },
+//           mappedField: 'image',
+//           isRequiredField: false,
+//           isAdminOnlyField: false,
+//           type: 'Image',
+//           datatype: 'Image',
+//           category: 'Primary',
+//           placeholder: { en: { en: 'Browse or drag to upload' }, fr: { fr: 'Parcourir ou glisser pour télécharger' } },
+//           isPreLoaded: true,
+//           userTips: {
+//             text: {
+//               en: 'Only .jpeg and .png files are supported.',
+//               fr: 'Uniquement les fichiers .jpeg et .png sont acceptés.',
+//             },
+//             position: 'top',
+//           },
+//         },
+//       ],
+//     },
+//   ],
+// };
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
   const [form] = Form.useForm();
@@ -86,23 +391,16 @@ function CreateNewOrganization() {
       .then(() => {
         var values = form.getFieldsValue(true);
         let organizationPayload = {};
+        // console.log(values);
         Object.keys(values)?.map((object) => {
           let payload = formPayloadHandler(values[object], object, formFields);
           let newKeys = Object.keys(payload);
-          let childKeys = Object.keys(payload[newKeys[0]]);
           organizationPayload = {
             ...organizationPayload,
-            ...(newKeys?.length > 0 && {
-              [newKeys[0]]: {
-                ...organizationPayload[newKeys[0]],
-                ...(childKeys?.length > 0 && { [childKeys[0]]: payload[newKeys[0]][childKeys[0]] }),
-                ...(childKeys?.length > 1 && {
-                  [childKeys[childKeys?.length - 1]]: payload[newKeys[0]][childKeys[childKeys?.length - 1]],
-                }),
-              },
-            }),
+            ...(newKeys?.length > 0 && { [newKeys[0]]: payload[newKeys[0]] }),
           };
         });
+        // console.log(organizationPayload);
         // addOrganization({ data: {}, calendarId })
         //   .unwrap()
         //   .then((response) => {
@@ -112,7 +410,9 @@ function CreateNewOrganization() {
         //     console.log(error);
         //   });
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const placesSearch = (inputValue = '') => {
@@ -246,6 +546,7 @@ function CreateNewOrganization() {
                             setLocationPlace,
                             setIsPopoverOpen,
                             isPopoverOpen,
+                            form,
                           });
                         }
                       });

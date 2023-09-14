@@ -18,7 +18,7 @@ export const formPayloadHandler = (value, mappedField, formFields) => {
     let currentDatatype = currentField[0]?.datatype;
     switch (currentDatatype) {
       case dataTypes.MULTI_LINGUAL:
-        if (currentMappedField?.length > 1) return write({}, currentMappedField, value);
+        if (currentMappedField?.length > 1) return write({}, currentMappedField, value ?? { en: '', fr: '' });
         else return { [mappedField]: value };
 
       case dataTypes.STANDARD_FIELD:
@@ -27,15 +27,18 @@ export const formPayloadHandler = (value, mappedField, formFields) => {
             entityId: id,
           };
         });
-        if (payload?.length == 0) payload = [];
+        if (payload?.length == 0 || !payload) payload = [];
         return { [mappedField]: payload };
 
       case dataTypes.STRING:
-        if (currentMappedField?.length > 1) return write({}, currentMappedField, value);
+        if (currentMappedField?.length > 1) return write({}, currentMappedField, value ?? '');
         else return { [mappedField]: value };
 
       case dataTypes.URI_STRING:
-        return write({}, currentMappedField?.concat(['uri']), value);
+        return write({}, currentMappedField?.concat(['uri']), value ?? '');
+
+      case dataTypes.IDENTITY_STRING:
+        return write({}, currentMappedField?.concat(['entityId']), value ?? '');
 
       default:
         break;
