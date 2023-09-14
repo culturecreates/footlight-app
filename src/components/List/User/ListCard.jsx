@@ -9,6 +9,7 @@ const ListCard = (props) => {
 
   const [activityStatusStyle, setActivityStatusStyle] = useState();
   const [activityStatusTextColor, setActivityStatusTextColor] = useState();
+  const [activityStatusText, setActivityStatusText] = useState();
 
   useEffect(() => {
     handleStatusTagStyles();
@@ -16,20 +17,22 @@ const ListCard = (props) => {
 
   const handleStatusTagStyles = () => {
     switch (activityStatus) {
-      case userActivityStatus.ACTIVE:
+      case userActivityStatus[0].key:
         setActivityStatusStyle({ color: '#1D8221' });
         setActivityStatusTextColor('#DEF3D6');
+        setActivityStatusText(userActivityStatus[0].label);
         break;
-      case userActivityStatus.INACTIVE:
+      case userActivityStatus[1].key:
         setActivityStatusStyle({ color: '#222732' });
         setActivityStatusTextColor(' #E8E8E8');
+        setActivityStatusText(userActivityStatus[1].label);
         break;
-      case userActivityStatus.PENDING:
+      case userActivityStatus[2].key:
         setActivityStatusStyle({ color: '#B59800 ' });
         setActivityStatusTextColor('#FFF7CC');
+        setActivityStatusText(userActivityStatus[2].label);
         break;
       default:
-        setActivityStatusStyle({ color: '#FFF7CC' });
         break;
     }
   };
@@ -44,7 +47,7 @@ const ListCard = (props) => {
       <List.Item.Meta className="user-item-meta" title={title} description={description} />
       <div className="user-item-content">
         <Tags color={activityStatusTextColor} style={activityStatusStyle}>
-          {activityStatus}
+          {activityStatusText}
         </Tags>
         <div className="invitation-details">
           <span className="invitation-details-text-prolouge">{`Invited By `}</span>
