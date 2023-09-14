@@ -56,7 +56,7 @@ function SearchPerson() {
   // handlers
 
   const artsDataClickHandler = async (entity) => {
-    navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`, { data: entity });
+    navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}`, { state: { data: entity } });
   };
 
   const searchHandler = (value) => {
@@ -132,7 +132,9 @@ function SearchPerson() {
                         }
                         linkText={t('dashboard.people.createNew.search.linkText')}
                         onClick={() =>
-                          navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`)
+                          navigate(
+                            `${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${person?.id}`,
+                          )
                         }
                       />
                     </div>
@@ -184,7 +186,11 @@ function SearchPerson() {
                 <CreateEntityButton
                   quickCreateKeyword={quickCreateKeyword}
                   onClick={() => {
-                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
+                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}`, {
+                      state: {
+                        name: quickCreateKeyword,
+                      },
+                    });
                   }}
                 />
               )}

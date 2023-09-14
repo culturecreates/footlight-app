@@ -12,7 +12,8 @@ export const formInitialValueHandler = (type, mappedField, datatype, data) => {
       else return initialData;
 
     case formTypes.MULTISELECT:
-      return initialData?.map((concept) => concept?.entityId);
+      if (initialData?.length > 0) return initialData?.map((concept) => concept?.entityId);
+      else return [];
 
     default:
       break;

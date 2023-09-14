@@ -541,20 +541,20 @@ function EventReadOnly() {
                       </p>
                     )}
 
-                    {initialVirtualLocation[0] && initialVirtualLocation[0]?.name.fr && (
+                    {initialVirtualLocation[0] && initialVirtualLocation[0]?.name?.fr && (
                       <>
                         {calendarContentLanguage === contentLanguage.BILINGUAL && (
                           <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
                         )}
-                        <p className="read-only-event-content">{initialVirtualLocation[0]?.name.fr}</p>
+                        <p className="read-only-event-content">{initialVirtualLocation[0]?.name?.fr}</p>
                       </>
                     )}
-                    {initialVirtualLocation[0] && initialVirtualLocation[0]?.name.en && (
+                    {initialVirtualLocation[0] && initialVirtualLocation[0]?.name?.en && (
                       <>
                         {calendarContentLanguage === contentLanguage.BILINGUAL && (
                           <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
                         )}
-                        <p className="read-only-event-content">{initialVirtualLocation[0]?.name.en}</p>
+                        <p className="read-only-event-content">{initialVirtualLocation[0]?.name?.en}</p>
                       </>
                     )}
 
