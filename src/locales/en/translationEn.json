@@ -464,6 +464,19 @@
         "addOrganization": {
           "newOrganization": "New Organization",
           "editOrganization": "Edit Organization"
+        },
+        "notification": {
+          "addSuccess": "Success! Your organization has been created.",
+          "editSuccess": "Success! Your organization has been updated.",
+          "saveError": "This organization needs more information before it can be saved."
+        },
+        "validations": {
+          "nameRequired": "Name is required.",
+          "emptyDescription": "Description is required ({{wordCount}} word minimum).",
+          "unilingualEmptyDescription": "Description is required.",
+          "englishShort": "English description is too short.",
+          "frenchShort": "French description is too short.",
+          "unilingualDescriptionShort": "Description is too short"
         }
       }
     },
