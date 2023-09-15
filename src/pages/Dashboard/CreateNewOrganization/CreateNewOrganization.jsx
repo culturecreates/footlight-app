@@ -73,7 +73,6 @@ function CreateNewOrganization() {
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
-
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
@@ -314,31 +313,46 @@ function CreateNewOrganization() {
                         }
                       })}
                   </>
-                  <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
-                    {section?.map((field) => {
-                      if (!addedFields?.includes(field?.mappedField) && !field?.isPreLoaded)
-                        return (
-                          <ChangeType
-                            primaryIcon={<PlusOutlined />}
-                            disabled={false}
-                            label={contentLanguageBilingual({
-                              en: field?.label?.en,
-                              fr: field?.label?.fr,
-                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              calendarContentLanguage: calendarContentLanguage,
-                            })}
-                            promptText={contentLanguageBilingual({
-                              en: field?.helperText?.en,
-                              fr: field?.helperText?.fr,
-                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              calendarContentLanguage: calendarContentLanguage,
-                            })}
-                            secondaryIcon={<InfoCircleOutlined />}
-                            onClick={() => addFieldsHandler(field?.mappedField)}
-                          />
-                        );
-                    })}
-                  </Form.Item>
+                  <>
+                    {' '}
+                    {section?.filter((field) => !field?.isPreLoaded)?.length > 0 && (
+                      <Form.Item
+                        label={t('dashboard.events.addEditEvent.addMoreDetails')}
+                        style={{ lineHeight: '2.5' }}>
+                        {section
+                          ?.filter((field) => !field?.isPreLoaded)
+                          ?.map((field) => addedFields?.includes(field?.mappedField))
+                          ?.includes(false) ? (
+                          section?.map((field) => {
+                            if (!addedFields?.includes(field?.mappedField) && !field?.isPreLoaded)
+                              return (
+                                <ChangeType
+                                  key={field?.mappedField}
+                                  primaryIcon={<PlusOutlined />}
+                                  disabled={false}
+                                  label={contentLanguageBilingual({
+                                    en: field?.label?.en,
+                                    fr: field?.label?.fr,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    calendarContentLanguage: calendarContentLanguage,
+                                  })}
+                                  promptText={contentLanguageBilingual({
+                                    en: field?.helperText?.en,
+                                    fr: field?.helperText?.fr,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    calendarContentLanguage: calendarContentLanguage,
+                                  })}
+                                  secondaryIcon={<InfoCircleOutlined />}
+                                  onClick={() => addFieldsHandler(field?.mappedField)}
+                                />
+                              );
+                          })
+                        ) : (
+                          <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                        )}
+                      </Form.Item>
+                    )}
+                  </>
                 </Card>
               );
           })}
