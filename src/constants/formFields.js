@@ -361,11 +361,12 @@ export const renderFormFields = ({
   position,
   hidden,
   label,
+  style,
+  mappedField,
 }) => {
   return (
     <>
       {position === 'top' && datatype !== dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
-
       <Form.Item
         label={label}
         name={name}
@@ -373,6 +374,8 @@ export const renderFormFields = ({
         initialValue={initialValue}
         required={required}
         hidden={hidden}
+        style={style}
+        className={mappedField}
         rules={rules?.map((rule) => {
           if (datatype === rule?.dataType) return rule.rule;
         })}
@@ -404,9 +407,11 @@ export const returnFormDataWithFields = ({
   setIsPopoverOpen,
   isPopoverOpen,
   form,
+  style,
 }) => {
   return renderFormFields({
     name: [field?.mappedField],
+    mappedField: field?.mappedField,
     type: field?.type,
     datatype: field?.datatype,
     required: field?.isRequiredField,
@@ -476,5 +481,6 @@ export const returnFormDataWithFields = ({
     position: field?.userTips?.position,
     hidden: field?.isAdminOnlyField ? (adminCheckHandler() ? false : true) : false,
     form,
+    style,
   });
 };
