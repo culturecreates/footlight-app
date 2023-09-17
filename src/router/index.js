@@ -24,6 +24,7 @@ import SearchPerson from '../pages/Dashboard/SearchPerson';
 import SearchPlaces from '../pages/Dashboard/SearchPlaces';
 import Settings from '../pages/Dashboard/Settings';
 import CreateNewPerson from '../pages/Dashboard/CreateNewPerson';
+import UserReadOnly from '../pages/Dashboard/UserReadOnly';
 
 export const router = createBrowserRouter([
   {
@@ -140,7 +141,7 @@ export const router = createBrowserRouter([
       },
       {
         path: `:calendarId${PathName.Settings}${PathName.UserManagement}/:userId`,
-        element: <Settings />,
+        element: <UserReadOnly />,
       },
     ],
   },
