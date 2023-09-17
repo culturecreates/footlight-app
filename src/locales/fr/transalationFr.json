@@ -618,8 +618,9 @@
         "email": "Courriel",
         "userType": "Type d’utilisateur",
         "languagePreference": "Préférence de langue",
-        "calenderAccess": "Accès aux calendriers",
-        "details": "Détails"
+        "calendarAccess": "Accès aux calendriers",
+        "details": "Détails",
+        "breadcrumb": "Retour à la liste des utilisateurs"
       }
     }
   },

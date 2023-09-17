@@ -622,8 +622,10 @@
         "email": "Email",
         "userType": "User type",
         "languagePreference": "Langage preference",
-        "calenderAccess": "Calendar access",
-        "details":"Details"
+        "memberOf": "Member of",
+        "calendarAccess": "Calendar access",
+        "details": "Details",
+        "breadcrumb": "Back to user list"
       }
     }
   },
