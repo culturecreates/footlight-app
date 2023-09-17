@@ -611,7 +611,8 @@
         "admin": "Admin",
         "editor": "Editor",
         "contributor": "Contributor",
-        "guest": "Guest"
+        "guest": "Guest",
+        "invitedBy": "Invited By"
       },
       "userReadOnly": {
         "editBtn": "Edit details",

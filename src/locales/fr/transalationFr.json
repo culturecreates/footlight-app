@@ -607,7 +607,8 @@
         "admin": "Administrateur",
         "editor": "Éditeur",
         "contributor": "Collaborateur",
-        "guest": "Invité"
+        "guest": "Invité",
+        "invitedBy": "Invité par"
       },
       "userReadOnly": {
         "editBtn": "Éditer l’information",
