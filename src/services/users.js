@@ -20,6 +20,17 @@ export const usersApi = createApi({
     getUserRoles: builder.query({
       query: () => `users/roles`,
     }),
+    getUserById: builder.query({
+      query: ({ userId, calendarId }) => {
+        return {
+          url: `users/${userId}`,
+          method: 'GET',
+          headers: {
+            'calendar-id': calendarId,
+          },
+        };
+      },
+    }),
     getCurrentUser: builder.query({
       query: ({ accessToken, calendarId }) => {
         return {
@@ -72,6 +83,7 @@ export const usersApi = createApi({
 // auto-generated based on the defined endpoints
 export const {
   useGetUserRolesQuery,
+  useGetUserByIdQuery,
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useGetAllUsersQuery,
