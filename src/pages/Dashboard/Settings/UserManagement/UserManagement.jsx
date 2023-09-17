@@ -17,6 +17,8 @@ import bulletIcon from '../../../../assets/icons/dot-bullet.svg';
 import { SortAscendingOutlined, SortDescendingOutlined, DownOutlined } from '@ant-design/icons';
 import { sortByOptionsUsers, sortOrder } from '../../../../constants/sortByOptions';
 import Username from '../../../../components/Username';
+import { PathName } from '../../../../constants/pathName';
+import { roleHandler } from '../../../../utils/roleHandler';
 
 const UserManagement = () => {
   const { useBreakpoint } = Grid;
@@ -67,33 +69,6 @@ const UserManagement = () => {
     else return false;
   };
 
-  const roleHandler = (item) => {
-    const requiredRole = item?.roles.filter((r) => {
-      return r.calendarId === calendarId;
-    });
-    let role = '';
-    switch (requiredRole[0]?.role) {
-      case userRoles.ADMIN:
-        role = t('dashboard.settings.userManagement.admin');
-        break;
-      case userRoles.CONTRIBUTOR:
-        role = t('dashboard.settings.userManagement.contributor');
-        break;
-
-      case userRoles.EDITOR:
-        role = t('dashboard.settings.userManagement.editor');
-        break;
-
-      case userRoles.GUEST:
-        role = t('dashboard.settings.userManagement.guest');
-        break;
-
-      default:
-        break;
-    }
-    return role;
-  };
-
   const createTitleHandler = (firstName, lastName) => {
     return (
       <div className="title-wrapper">
@@ -105,7 +80,7 @@ const UserManagement = () => {
   };
 
   const listItemHandler = (id) => {
-    navigate(`${location.pathname}/${id}`);
+    navigate(`${location.pathname}${PathName.UserManagement}/${id}`);
   };
 
   return !allUsersLoading ? (
@@ -176,7 +151,7 @@ const UserManagement = () => {
               key={index}
               listItemHandler={() => listItemHandler(item?.id)}
               title={createTitleHandler(item?.firstName, item?.lastName)}
-              description={roleHandler(item)}
+              description={roleHandler({ roles: item?.roles, calendarId })}
               activityStatus={item?.userStatus}
               invitedBy={<Username firstName={item?.firstName} lastName={item?.lastName} />}
               actions={[
@@ -201,28 +176,3 @@ const UserManagement = () => {
 };
 
 export default UserManagement;
-
-{
-  /* <ListItem
-              key={index}
-              id={index}
-              isLogoRequired={false}
-              title={item?.firstName + ' ' + item?.lastName}
-              description={roleHandler(item)}
-              createdDate={item?.creator?.date}
-              createdByFirstName={item?.invitedBy}
-              createdByLastName={item?.creator?.lastName}
-              updatedDate={item?.modifier?.date}
-              updatedByFirstName={item?.modifier?.firstName}
-              updatedByLastName={item?.modifier?.lastName}
-              artsDataLink={artsDataLinkChecker(item?.sameAs)}
-              listItemHandler={() => listItemHandler(item?.id)}
-              actions={[
-                adminCheckHandler() && (
-                  <span>
-                    <MoreOutlined className="event-list-more-icon" key={index} />
-                  </span>
-                ),
-              ]}
-            /> */
-}
