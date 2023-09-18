@@ -397,7 +397,7 @@
 
       "publishOptions": {
         "publishEvent": "Publier l'événement",
-        "unpublishEvent": "Dépublier l'événement",
+        "unpublishEvent": "Passer en brouillon",
         "deleteEvent": "Supprimer l'événement",
         "duplicateEvent": "Dupliquer l’événement"
       },
