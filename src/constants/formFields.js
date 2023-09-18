@@ -332,7 +332,7 @@ export const formFieldValue = [
       placeholder,
       required,
       // validations,
-      descriptionMinimumWordCount = 10,
+      descriptionMinimumWordCount,
     }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
         return (
