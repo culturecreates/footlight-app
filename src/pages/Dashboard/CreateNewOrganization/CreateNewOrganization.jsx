@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import './createNewOrganization.css';
 import '../AddEvent/addEvent.css';
-import { Form, Row, Col, Button } from 'antd';
-import { CloseCircleOutlined, PlusOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Form, Row, Col, Button, message, notification } from 'antd';
+import { CloseCircleOutlined, PlusOutlined, InfoCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { LeftOutlined } from '@ant-design/icons';
@@ -15,7 +15,11 @@ import { formCategory, formFieldValue, returnFormDataWithFields } from '../../..
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
-import { useGetOrganizationQuery } from '../../../services/organization';
+import {
+  useAddOrganizationMutation,
+  useGetOrganizationQuery,
+  useUpdateOrganizationMutation,
+} from '../../../services/organization';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
@@ -30,6 +34,8 @@ import { userRoles } from '../../../constants/userRoles';
 import { useLazyGetEntitiesQuery } from '../../../services/entities';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
 import ChangeType from '../../../components/ChangeType';
+import { PathName } from '../../../constants/pathName';
+import { useAddImageMutation } from '../../../services/image';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -57,7 +63,9 @@ function CreateNewOrganization() {
     sessionId: timestampRef,
   });
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
-  // const [addOrganization] = useAddOrganizationMutation();
+  const [addOrganization, { isLoading: addOrganizationLoading }] = useAddOrganizationMutation();
+  const [updateOrganization, { isLoading: updateOrganizationLoading }] = useUpdateOrganizationMutation();
+  const [addImage, { isLoading: imageUploadLoading }] = useAddImageMutation();
 
   const [artsData, setArtsData] = useState(null);
   const [newEntityData, setNewEntityData] = useState(null);
@@ -82,6 +90,73 @@ function CreateNewOrganization() {
     else return false;
   };
 
+  const addUpdatePersonApiHandler = (organizationObj) => {
+    var promise = new Promise(function (resolve, reject) {
+      if (!organizationId || organizationId === '') {
+        if (artsDataId && artsData) {
+          let artsDataSameAs = Array.isArray(artsData?.sameAs);
+          if (artsDataSameAs)
+            organizationObj = {
+              ...organizationObj,
+              sameAs: artsData?.sameAs,
+            };
+          else
+            organizationObj = {
+              ...organizationObj,
+              sameAs: [artsData?.sameAs],
+            };
+        }
+        addOrganization({
+          data: organizationObj,
+          calendarId,
+        })
+          .unwrap()
+          .then((response) => {
+            resolve(response?.id);
+            notification.success({
+              description: t('dashboard.organization.createNew.notification.addSuccess'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}`);
+          })
+          .catch((errorInfo) => {
+            reject();
+            console.log(errorInfo);
+          });
+      } else {
+        organizationObj = {
+          ...organizationObj,
+          sameAs: organizationObj?.sameAs,
+        };
+        updateOrganization({
+          data: organizationObj,
+          calendarId,
+          organizationId,
+        })
+          .unwrap()
+          .then(() => {
+            resolve(organizationId);
+            notification.success({
+              description: t('dashboard.organization.createNew.notification.editSuccess'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}`);
+          })
+          .catch((error) => {
+            reject();
+            console.log(error);
+          });
+      }
+    });
+    return promise;
+  };
+
   const onSaveHandler = () => {
     form
       .validateFields([])
@@ -97,18 +172,87 @@ function CreateNewOrganization() {
             ...(newKeys?.length > 0 && { [newKeys[0]]: payload[newKeys[0]] }),
           };
         });
-        // console.log(organizationPayload);
-        // addOrganization({ data: {}, calendarId })
-        //   .unwrap()
-        //   .then((response) => {
-        //     console.log(response);
-        //   })
-        //   .catch((error) => {
-        //     console.log(error);
-        //   });
+        let imageCrop = form.getFieldValue('imageCrop');
+        imageCrop = {
+          large: {
+            xCoordinate: imageCrop?.large?.x,
+            yCoordinate: imageCrop?.large?.y,
+            height: imageCrop?.large?.height,
+            width: imageCrop?.large?.width,
+          },
+          thumbnail: {
+            xCoordinate: imageCrop?.thumbnail?.x,
+            yCoordinate: imageCrop?.thumbnail?.y,
+            height: imageCrop?.thumbnail?.height,
+            width: imageCrop?.thumbnail?.width,
+          },
+          original: {
+            entityId: imageCrop?.original?.entityId,
+            height: imageCrop?.original?.height,
+            width: imageCrop?.original?.width,
+          },
+        };
+        if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
+          const formdata = new FormData();
+          formdata.append('file', values?.image[0].originFileObj);
+          formdata &&
+            addImage({ data: formdata, calendarId })
+              .unwrap()
+              .then((response) => {
+                if (featureFlags.imageCropFeature) {
+                  imageCrop = {
+                    ...imageCrop,
+                    original: {
+                      ...imageCrop?.original,
+                      entityId: response?.data?.original?.entityId,
+                      height: response?.data?.height,
+                      width: response?.data?.width,
+                    },
+                  };
+                } else
+                  imageCrop = {
+                    ...imageCrop,
+                    original: {
+                      ...imageCrop?.original,
+                      entityId: response?.data?.original?.entityId,
+                      height: response?.data?.height,
+                      width: response?.data?.width,
+                    },
+                  };
+                organizationPayload['image'] = imageCrop;
+                addUpdatePersonApiHandler(organizationPayload);
+              })
+              .catch((error) => {
+                console.log(error);
+                const element = document.getElementsByClassName('image');
+                element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+              });
+        } else {
+          if (values?.image) {
+            if (values?.image && values?.image?.length == 0) organizationPayload['image'] = null;
+            else organizationPayload['image'] = imageCrop;
+          }
+          addUpdatePersonApiHandler(organizationPayload);
+        }
       })
       .catch((error) => {
         console.log(error);
+        message.warning({
+          duration: 10,
+          maxCount: 1,
+          key: 'organization-save-as-warning',
+          content: (
+            <>
+              {t('dashboard.organization.createNew.notification.saveError')} &nbsp;
+              <Button
+                type="text"
+                icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                onClick={() => message.destroy('person-save-as-warning')}
+              />
+            </>
+          ),
+          icon: <ExclamationCircleOutlined />,
+        });
       });
   };
 
@@ -214,7 +358,10 @@ function CreateNewOrganization() {
                     <Form.Item>
                       <PrimaryButton
                         label={t('dashboard.events.addEditEvent.saveOptions.save')}
-                        onClick={onSaveHandler}
+                        onClick={() => onSaveHandler()}
+                        disabled={
+                          addOrganizationLoading || imageUploadLoading || updateOrganizationLoading ? true : false
+                        }
                       />
                     </Form.Item>
                   </div>
@@ -314,7 +461,6 @@ function CreateNewOrganization() {
                       })}
                   </>
                   <>
-                    {' '}
                     {section?.filter((field) => !field?.isPreLoaded)?.length > 0 && (
                       <Form.Item
                         label={t('dashboard.events.addEditEvent.addMoreDetails')}
