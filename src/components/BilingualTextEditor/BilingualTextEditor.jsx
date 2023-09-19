@@ -10,7 +10,7 @@ function BilingualTextEditor(props) {
   const { t } = useTranslation();
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
-  const [descriptionMinimumWordCount] = useState(props?.descriptionMinimumWordCount ?? 0);
+  const [descriptionMinimumWordCount] = useState(props?.descriptionMinimumWordCount ?? null);
 
   return (
     <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
@@ -49,34 +49,36 @@ function BilingualTextEditor(props) {
                   },
                 })
               : [],
-            () => ({
-              validator() {
-                if (
-                  reactQuillRefFr?.current?.unprivilegedEditor
-                    ?.getText()
-                    .split(' ')
-                    ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
-                ) {
-                  return Promise.resolve();
-                } else if (
-                  reactQuillRefEn?.current?.unprivilegedEditor
-                    ?.getText()
-                    .split(' ')
-                    ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
-                )
-                  return Promise.resolve();
-                else
-                  return Promise.reject(
-                    new Error(
-                      calendarContentLanguage === contentLanguage.ENGLISH ||
-                      calendarContentLanguage === contentLanguage.FRENCH
-                        ? t('dashboard.organization.createNew.validations.unilingualDescriptionShort')
-                        : calendarContentLanguage === contentLanguage.BILINGUAL &&
-                          t('dashboard.organization.createNew.validations.frenchShort'),
-                    ),
-                  );
-              },
-            }),
+            descriptionMinimumWordCount
+              ? () => ({
+                  validator() {
+                    if (
+                      reactQuillRefFr?.current?.unprivilegedEditor
+                        ?.getText()
+                        .split(' ')
+                        ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
+                    ) {
+                      return Promise.resolve();
+                    } else if (
+                      reactQuillRefEn?.current?.unprivilegedEditor
+                        ?.getText()
+                        .split(' ')
+                        ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
+                    )
+                      return Promise.resolve();
+                    else
+                      return Promise.reject(
+                        new Error(
+                          calendarContentLanguage === contentLanguage.ENGLISH ||
+                          calendarContentLanguage === contentLanguage.FRENCH
+                            ? t('dashboard.organization.createNew.validations.unilingualDescriptionShort')
+                            : calendarContentLanguage === contentLanguage.BILINGUAL &&
+                              t('dashboard.organization.createNew.validations.frenchShort'),
+                        ),
+                      );
+                  },
+                })
+              : [],
           ]}
         />
 
@@ -115,34 +117,36 @@ function BilingualTextEditor(props) {
                 })
               : [],
 
-            () => ({
-              validator() {
-                if (
-                  reactQuillRefEn?.current?.unprivilegedEditor
-                    ?.getText()
-                    .split(' ')
-                    ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
-                ) {
-                  return Promise.resolve();
-                } else if (
-                  reactQuillRefFr?.current?.unprivilegedEditor
-                    ?.getText()
-                    .split(' ')
-                    ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
-                )
-                  return Promise.resolve();
-                else
-                  return Promise.reject(
-                    new Error(
-                      calendarContentLanguage === contentLanguage.ENGLISH ||
-                      calendarContentLanguage === contentLanguage.FRENCH
-                        ? t('dashboard.organization.createNew.validations.unilingualDescriptionShort')
-                        : calendarContentLanguage === contentLanguage.BILINGUAL &&
-                          t('dashboard.organization.createNew.validations.englishShort'),
-                    ),
-                  );
-              },
-            }),
+            descriptionMinimumWordCount
+              ? () => ({
+                  validator() {
+                    if (
+                      reactQuillRefEn?.current?.unprivilegedEditor
+                        ?.getText()
+                        .split(' ')
+                        ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
+                    ) {
+                      return Promise.resolve();
+                    } else if (
+                      reactQuillRefFr?.current?.unprivilegedEditor
+                        ?.getText()
+                        .split(' ')
+                        ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
+                    )
+                      return Promise.resolve();
+                    else
+                      return Promise.reject(
+                        new Error(
+                          calendarContentLanguage === contentLanguage.ENGLISH ||
+                          calendarContentLanguage === contentLanguage.FRENCH
+                            ? t('dashboard.organization.createNew.validations.unilingualDescriptionShort')
+                            : calendarContentLanguage === contentLanguage.BILINGUAL &&
+                              t('dashboard.organization.createNew.validations.englishShort'),
+                        ),
+                      );
+                  },
+                })
+              : [],
           ]}
         />
       </BilingualInput>

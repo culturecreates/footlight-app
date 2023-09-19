@@ -462,7 +462,8 @@
         },
         "addOrganization": {
           "newOrganization": "Nouvelle organisation",
-          "editOrganization": "Modifier l’organisation"
+          "editOrganization": "Modifier l’organisation",
+          "addMoreDetails": "Ajouter des détails à votre organisation"
         },
         "notification": {
           "addSuccess": "Succès ! Votre organisation a été créé.",

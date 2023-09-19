@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import './createNewOrganization.css';
 import '../AddEvent/addEvent.css';
-import { Form, Row, Col, Button } from 'antd';
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { Form, Row, Col, Button, message, notification } from 'antd';
+import { CloseCircleOutlined, PlusOutlined, InfoCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { LeftOutlined } from '@ant-design/icons';
@@ -14,8 +14,12 @@ import Card from '../../../components/Card/Common/Event';
 import { formCategory, formFieldValue, returnFormDataWithFields } from '../../../constants/formFields';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
-import { bilingual } from '../../../utils/bilingual';
-import { useGetOrganizationQuery } from '../../../services/organization';
+import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
+import {
+  useAddOrganizationMutation,
+  useGetOrganizationQuery,
+  useUpdateOrganizationMutation,
+} from '../../../services/organization';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
@@ -29,312 +33,10 @@ import { loadArtsDataEntity } from '../../../services/artsData';
 import { userRoles } from '../../../constants/userRoles';
 import { useLazyGetEntitiesQuery } from '../../../services/entities';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
-// const sampleForm = {
-//   forms: [
-//     {
-//       formName: 'Organization',
-//       formFields: [
-//         {
-//           order: 1,
-//           name: 'Name',
-//           label: { en: 'Name', fr: 'Nom' },
-//           mappedField: 'name',
-//           isRequiredField: true,
-//           isAdminOnlyField: false,
-//           type: 'Input',
-//           datatype: 'MultiLingual',
-//           category: 'Primary',
-//           placeholder: {
-//             en: { en: 'Enter english organization name', fr: 'Enter french organization name' },
-//             fr: { en: "Entrez nom de l'organisation en anglais", fr: "Entrez le nom de l'organisation en français" },
-//           },
-//           isPreLoaded: true,
-//           validations: {
-//             en: { en: 'Name is required.', fr: 'Name is required.' },
-//             fr: { en: 'Le nom est requis.', fr: 'Le nom est requis.' },
-//           },
-//         },
-//         {
-//           order: 2,
-//           name: 'Disambiguating description',
-//           label: { en: 'Disambiguating description', fr: 'Description identifiante' },
-//           mappedField: 'disambiguatingDescription',
-//           isRequiredField: false,
-//           isAdminOnlyField: false,
-//           type: 'Input',
-//           datatype: 'MultiLingual',
-//           category: 'Primary',
-//           placeholder: {
-//             en: { en: 'Enter english disambiguation description', fr: 'Enter french disambiguation description' },
-//             fr: { en: 'Entrez la description identifiante', fr: 'Entrez la description identifiante' },
-//           },
-//           isPreLoaded: true,
-//           userTips: {
-//             text: {
-//               en: 'Add to differentiate organization in search results',
-//               fr: "Ajouter pour différencier l'organisation dans les résultats de recherche.",
-//             },
-//             position: 'bottom',
-//           },
-//         },
-//         {
-//           order: 3,
-//           name: 'Organization type',
-//           label: { en: 'Organization type', fr: 'Type' },
-//           mappedField: 'additionalType',
-//           isRequiredField: false,
-//           isAdminOnlyField: false,
-//           type: 'MultiSelect',
-//           category: 'Primary',
-//           datatype: 'StandardField',
-//           placeholder: { en: { en: 'Select Organization type' }, fr: { fr: 'Select Organization type' } },
-//           isPreLoaded: true,
-//         },
-//         {
-//           order: 4,
-//           name: 'Description',
-//           label: { en: 'Description', fr: 'Description' },
-//           mappedField: 'description',
-//           isRequiredField: false,
-//           isAdminOnlyField: false,
-//           type: 'Editor',
-//           datatype: 'MultiLingual',
-//           category: 'Primary',
-//           placeholder: {
-//             en: { en: 'Enter English description', fr: 'Enter French description' },
-//             fr: { en: 'Entrez la description', fr: 'Entrez la description' },
-//           },
-//           isPreLoaded: true,
-//         },
-//         {
-//           order: 5,
-//           name: 'Website',
-//           label: { en: 'Website', fr: 'Site web' },
-//           mappedField: 'url',
-//           isRequiredField: false,
-//           isAdminOnlyField: false,
-//           type: 'Input',
-//           datatype: 'URIString',
-//           category: 'Primary',
-//           placeholder: { en: { en: 'enter URL' }, fr: { fr: 'enter URL' } },
-//           isPreLoaded: true,
-//         },
-//         {
-//           order: 6,
-//           name: 'Logo',
-//           label: { en: 'Logo', fr: 'Logo' },
-//           mappedField: 'logo',
-//           isRequiredField: false,
-//           isAdminOnlyField: false,
-//           type: 'Image',
-//           datatype: 'Image',
-//           category: 'Primary',
-//           placeholder: { en: { en: 'Browse or drag to upload' }, fr: { fr: 'Parcourir ou glisser pour télécharger' } },
-//           isPreLoaded: true,
-//           userTips: {
-//             text: {
-//               en: 'Only .jpeg and .png files are supported.',
-//               fr: 'Uniquement les fichiers .jpeg et .png sont acceptés.',
-//             },
-//             position: 'top',
-//           },
-//         },
-//         {
-//           order: 7,
-//           name: 'Image',
-//           label: { en: 'Image', fr: 'Image' },
-//           mappedField: 'image',
-//           isRequiredField: false,
-//           isAdminOnlyField: false,
-//           type: 'Image',
-//           datatype: 'Image',
-//           category: 'Primary',
-//           placeholder: { en: { en: 'Browse or drag to upload' }, fr: { fr: 'Parcourir ou glisser pour télécharger' } },
-//           isPreLoaded: true,
-//           userTips: {
-//             text: {
-//               en: 'Only .jpeg and .png files are supported.',
-//               fr: 'Uniquement les fichiers .jpeg et .png sont acceptés.',
-//             },
-//             position: 'top',
-//           },
-//         },
-//         {
-//           order: 8,
-//           name: 'Contact title',
-//           label: { en: 'Contact title', fr: 'Titre du contact' },
-//           mappedField: 'contactPoint.name',
-//           isRequiredField: false,
-//           isAdminOnlyField: false,
-//           type: 'Input',
-//           datatype: 'MultiLingual',
-//           category: 'Contact',
-//           placeholder: { en: { en: 'Enter contact title' }, fr: { fr: 'Entrez titre contact' } },
-//           isPreLoaded: true,
-//         },
-//         {
-//           order: 9,
-//           name: 'Website',
-//           label: { en: 'Website', fr: 'Site web' },
-//           mappedField: 'contactPoint.url',
-//           isRequiredField: false,
-//           isAdminOnlyField: false,
-//           type: 'Input',
-//           datatype: 'URIString',
-//           category: 'Contact',
-//           placeholder: { en: { en: 'enter URL' }, fr: { fr: 'enter URL' } },
-//           isPreLoaded: true,
-//         },
-//         {
-//           order: 10,
-//           name: 'Phone Number',
-//           label: { en: 'Phone Number', fr: 'Numéro de téléphone' },
-//           mappedField: 'contactPoint.telephone',
-//           isRequiredField: false,
-//           isAdminOnlyField: false,
-//           type: 'Input',
-//           datatype: 'String',
-//           category: 'Contact',
-//           placeholder: { en: { en: 'enter phone number' }, fr: { fr: 'entrez numéro téléphone' } },
-//           isPreLoaded: true,
-//         },
-//         {
-//           order: 11,
-//           name: 'Email',
-//           label: { en: 'Email', fr: 'Courriel' },
-//           mappedField: 'contactPoint.email',
-//           isRequiredField: false,
-//           isAdminOnlyField: false,
-//           type: 'Input',
-//           datatype: 'String',
-//           category: 'Contact',
-//           placeholder: { en: { en: 'enter email' }, fr: { fr: 'entrez email' } },
-//           isPreLoaded: true,
-//         },
-//         {
-//           order: 12,
-//           name: 'Description',
-//           label: { en: 'Description', fr: 'Description' },
-//           mappedField: 'contactPoint.description',
-//           isRequiredField: false,
-//           isAdminOnlyField: false,
-//           type: 'Editor',
-//           datatype: 'String',
-//           category: 'Contact',
-//           placeholder: {
-//             en: { en: 'Enter english contact description', fr: 'Enter french contact description' },
-//             fr: { en: 'Entrez description contact en anglais', fr: 'Entrez description contact en français' },
-//           },
-//           isPreLoaded: true,
-//         },
-//         {
-//           order: 13,
-//           name: 'Location',
-//           label: { en: 'Location', fr: 'Endroit' },
-//           isRequiredField: false,
-//           isAdminOnlyField: false,
-//           type: 'Search',
-//           datatype: 'IdentityString',
-//           category: 'Primary',
-//           mappedField: 'place',
-//           placeholder: { en: { en: 'Search places' }, fr: { fr: 'Rechercher un lieu' } },
-//           isPreLoaded: true,
-//         },
-//       ],
-//     },
-//     {
-//       formName: 'People',
-//       formFields: [
-//         {
-//           order: 1,
-//           name: 'Name',
-//           label: { en: 'Name', fr: 'Nom' },
-//           mappedField: 'name',
-//           isRequiredField: true,
-//           isAdminOnlyField: false,
-//           type: 'Input',
-//           datatype: 'MultiLingual',
-//           category: 'Primary',
-//           placeholder: { en: { en: 'Enter name' }, fr: { fr: 'Nom' } },
-//           isPreLoaded: true,
-//           validations: {
-//             en: { en: 'Name is required.', fr: 'Name is required.' },
-//             fr: { en: 'Le nom est requis.', fr: 'Le nom est requis.' },
-//           },
-//         },
-//         {
-//           order: 2,
-//           name: 'Occupation',
-//           label: { en: 'Occupation', fr: 'Profession' },
-//           mappedField: 'Occupation',
-//           isRequiredField: false,
-//           isAdminOnlyField: false,
-//           type: 'MultiSelect',
-//           datatype: 'StandardField',
-//           category: 'Primary',
-//           placeholder: { en: { en: 'Select occupation' }, fr: { fr: 'Profession' } },
-//           isPreLoaded: true,
-//         },
-//         {
-//           order: 3,
-//           name: 'Disambiguating description',
-//           label: { en: 'Disambiguating Description', fr: 'Description identifiante' },
-//           mappedField: 'disambiguatingDescription',
-//           isRequiredField: false,
-//           isAdminOnlyField: false,
-//           type: 'Input',
-//           datatype: 'MultiLingual',
-//           category: 'Primary',
-//           placeholder: {
-//             en: { en: 'Enter english disambiguation description', fr: 'Enter french disambiguation description' },
-//             fr: { en: 'Entrez la description identifiante', fr: 'Entrez la description identifiante' },
-//           },
-//           isPreLoaded: true,
-//           userTips: {
-//             text: {
-//               en: 'Add to differentiate person in search results',
-//               fr: 'AAjouter pour différencier la personne dans les résultats de recherche',
-//             },
-//             position: 'bottom',
-//           },
-//         },
-//         {
-//           order: 4,
-//           name: 'Website',
-//           label: { en: 'Website', fr: 'Site web' },
-//           mappedField: 'url',
-//           isRequiredField: false,
-//           isAdminOnlyField: false,
-//           type: 'Input',
-//           datatype: 'URIString',
-//           category: 'Primary',
-//           placeholder: { en: { en: 'enter URL' }, fr: { fr: 'entrer URL' } },
-//           isPreLoaded: true,
-//         },
-//         {
-//           order: 5,
-//           name: 'Image',
-//           label: { en: 'Image', fr: 'Image' },
-//           mappedField: 'image',
-//           isRequiredField: false,
-//           isAdminOnlyField: false,
-//           type: 'Image',
-//           datatype: 'Image',
-//           category: 'Primary',
-//           placeholder: { en: { en: 'Browse or drag to upload' }, fr: { fr: 'Parcourir ou glisser pour télécharger' } },
-//           isPreLoaded: true,
-//           userTips: {
-//             text: {
-//               en: 'Only .jpeg and .png files are supported.',
-//               fr: 'Uniquement les fichiers .jpeg et .png sont acceptés.',
-//             },
-//             position: 'top',
-//           },
-//         },
-//       ],
-//     },
-//   ],
-// };
+import ChangeType from '../../../components/ChangeType';
+import { PathName } from '../../../constants/pathName';
+import { useAddImageMutation } from '../../../services/image';
+
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
   const [form] = Form.useForm();
@@ -361,7 +63,9 @@ function CreateNewOrganization() {
     sessionId: timestampRef,
   });
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
-  // const [addOrganization] = useAddOrganizationMutation();
+  const [addOrganization, { isLoading: addOrganizationLoading }] = useAddOrganizationMutation();
+  const [updateOrganization, { isLoading: updateOrganizationLoading }] = useUpdateOrganizationMutation();
+  const [addImage, { isLoading: imageUploadLoading }] = useAddImageMutation();
 
   const [artsData, setArtsData] = useState(null);
   const [newEntityData, setNewEntityData] = useState(null);
@@ -370,12 +74,13 @@ function CreateNewOrganization() {
   const [locationPlace, setLocationPlace] = useState();
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [addedFields, setAddedFields] = useState([]);
+  const [scrollToSelectedField, setScrollToSelectedField] = useState();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
-
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
@@ -385,33 +90,314 @@ function CreateNewOrganization() {
     else return false;
   };
 
+  const addUpdateOrganizationApiHandler = (organizationObj) => {
+    var promise = new Promise(function (resolve, reject) {
+      if (!organizationId || organizationId === '') {
+        if (artsDataId && artsData) {
+          let artsDataSameAs = Array.isArray(artsData?.sameAs);
+          if (artsDataSameAs)
+            organizationObj = {
+              ...organizationObj,
+              sameAs: artsData?.sameAs,
+            };
+          else
+            organizationObj = {
+              ...organizationObj,
+              sameAs: [artsData?.sameAs],
+            };
+        }
+        addOrganization({
+          data: organizationObj,
+          calendarId,
+        })
+          .unwrap()
+          .then((response) => {
+            resolve(response?.id);
+            notification.success({
+              description: t('dashboard.organization.createNew.notification.addSuccess'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}`);
+          })
+          .catch((errorInfo) => {
+            reject();
+            console.log(errorInfo);
+          });
+      } else {
+        organizationObj = {
+          ...organizationObj,
+          sameAs: organizationObj?.sameAs,
+        };
+        updateOrganization({
+          data: organizationObj,
+          calendarId,
+          organizationId,
+        })
+          .unwrap()
+          .then(() => {
+            resolve(organizationId);
+            notification.success({
+              description: t('dashboard.organization.createNew.notification.editSuccess'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}`);
+          })
+          .catch((error) => {
+            reject();
+            console.log(error);
+          });
+      }
+    });
+    return promise;
+  };
+
   const onSaveHandler = () => {
     form
       .validateFields([])
       .then(() => {
         var values = form.getFieldsValue(true);
         let organizationPayload = {};
-        // console.log(values);
         Object.keys(values)?.map((object) => {
           let payload = formPayloadHandler(values[object], object, formFields);
-          let newKeys = Object.keys(payload);
-          organizationPayload = {
-            ...organizationPayload,
-            ...(newKeys?.length > 0 && { [newKeys[0]]: payload[newKeys[0]] }),
-          };
+          if (payload) {
+            let newKeys = Object.keys(payload);
+            let childKeys = object?.split('.');
+            organizationPayload = {
+              ...organizationPayload,
+              ...(newKeys?.length > 0 && { [newKeys[0]]: payload[newKeys[0]] }),
+              ...(childKeys?.length == 2 && {
+                [childKeys[0]]: {
+                  ...organizationPayload[childKeys[0]],
+                  [childKeys[1]]: payload[childKeys[0]][childKeys[1]],
+                },
+              }),
+            };
+          }
         });
-        // console.log(organizationPayload);
-        // addOrganization({ data: {}, calendarId })
-        //   .unwrap()
-        //   .then((response) => {
-        //     console.log(response);
-        //   })
-        //   .catch((error) => {
-        //     console.log(error);
-        //   });
+        let imageCrop = form.getFieldValue('imageCrop');
+        imageCrop = {
+          large: {
+            xCoordinate: imageCrop?.large?.x,
+            yCoordinate: imageCrop?.large?.y,
+            height: imageCrop?.large?.height,
+            width: imageCrop?.large?.width,
+          },
+          thumbnail: {
+            xCoordinate: imageCrop?.thumbnail?.x,
+            yCoordinate: imageCrop?.thumbnail?.y,
+            height: imageCrop?.thumbnail?.height,
+            width: imageCrop?.thumbnail?.width,
+          },
+          original: {
+            entityId: imageCrop?.original?.entityId,
+            height: imageCrop?.original?.height,
+            width: imageCrop?.original?.width,
+          },
+        };
+        if ((values?.image || (values?.image && values?.image?.length > 0)) && !values?.logo) {
+          if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
+            const formdata = new FormData();
+            formdata.append('file', values?.image[0].originFileObj);
+            formdata &&
+              addImage({ data: formdata, calendarId })
+                .unwrap()
+                .then((response) => {
+                  if (featureFlags.imageCropFeature) {
+                    imageCrop = {
+                      ...imageCrop,
+                      original: {
+                        ...imageCrop?.original,
+                        entityId: response?.data?.original?.entityId,
+                        height: response?.data?.height,
+                        width: response?.data?.width,
+                      },
+                    };
+                  } else
+                    imageCrop = {
+                      ...imageCrop,
+                      original: {
+                        ...imageCrop?.original,
+                        entityId: response?.data?.original?.entityId,
+                        height: response?.data?.height,
+                        width: response?.data?.width,
+                      },
+                    };
+                  organizationPayload['image'] = imageCrop;
+                  addUpdateOrganizationApiHandler(organizationPayload);
+                })
+                .catch((error) => {
+                  console.log(error);
+                  const element = document.getElementsByClassName('image');
+                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                });
+          } else {
+            if (values?.image) {
+              if (values?.image && values?.image?.length == 0) organizationPayload['image'] = null;
+              else organizationPayload['image'] = imageCrop;
+            }
+            addUpdateOrganizationApiHandler(organizationPayload);
+          }
+        } else if ((values?.logo || (values?.logo && values?.logo?.length > 0)) && !values?.image) {
+          if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
+            const formdata = new FormData();
+            formdata.append('file', values?.logo[0].originFileObj);
+            formdata &&
+              addImage({ data: formdata, calendarId })
+                .unwrap()
+                .then((response) => {
+                  organizationPayload['logo'] = {
+                    original: {
+                      entityId: response?.data?.original?.entityId,
+                      height: response?.data?.height,
+                      width: response?.data?.width,
+                    },
+                    large: {},
+                    thumbnail: {},
+                  };
+                  addUpdateOrganizationApiHandler(organizationPayload);
+                })
+                .catch((error) => {
+                  console.log(error);
+                  const element = document.getElementsByClassName('logo');
+                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                });
+          } else {
+            if (values?.logo) {
+              if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
+              else organizationPayload['logo'] = organizationData?.logo;
+            }
+            addUpdateOrganizationApiHandler(organizationPayload);
+          }
+        } else if (
+          (values?.image || (values?.image && values?.image?.length > 0)) &&
+          (values?.logo || (values?.logo && values?.logo?.length > 0))
+        ) {
+          if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
+            const formdata = new FormData();
+            formdata.append('file', values?.image[0].originFileObj);
+            formdata &&
+              addImage({ data: formdata, calendarId })
+                .unwrap()
+                .then((response) => {
+                  if (featureFlags.imageCropFeature) {
+                    imageCrop = {
+                      ...imageCrop,
+                      original: {
+                        ...imageCrop?.original,
+                        entityId: response?.data?.original?.entityId,
+                        height: response?.data?.height,
+                        width: response?.data?.width,
+                      },
+                    };
+                  } else
+                    imageCrop = {
+                      ...imageCrop,
+                      original: {
+                        ...imageCrop?.original,
+                        entityId: response?.data?.original?.entityId,
+                        height: response?.data?.height,
+                        width: response?.data?.width,
+                      },
+                    };
+                  organizationPayload['image'] = imageCrop;
+                  if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
+                    const formdata = new FormData();
+                    formdata.append('file', values?.logo[0].originFileObj);
+                    formdata &&
+                      addImage({ data: formdata, calendarId })
+                        .unwrap()
+                        .then((response) => {
+                          organizationPayload['logo'] = {
+                            original: {
+                              entityId: response?.data?.original?.entityId,
+                              height: response?.data?.height,
+                              width: response?.data?.width,
+                            },
+                            large: {},
+                            thumbnail: {},
+                          };
+                          addUpdateOrganizationApiHandler(organizationPayload);
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                          const element = document.getElementsByClassName('logo');
+                          element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                        });
+                  } else {
+                    if (values?.logo) {
+                      if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
+                      else organizationPayload['logo'] = organizationData?.logo;
+                    }
+                    addUpdateOrganizationApiHandler(organizationPayload);
+                  }
+                })
+                .catch((error) => {
+                  console.log(error);
+                  const element = document.getElementsByClassName('image');
+                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                });
+          } else {
+            if (values?.image) {
+              if (values?.image && values?.image?.length == 0) organizationPayload['image'] = null;
+              else organizationPayload['image'] = imageCrop;
+            }
+            if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
+              const formdata = new FormData();
+              formdata.append('file', values?.logo[0].originFileObj);
+              formdata &&
+                addImage({ data: formdata, calendarId })
+                  .unwrap()
+                  .then((response) => {
+                    organizationPayload['logo'] = {
+                      original: {
+                        entityId: response?.data?.original?.entityId,
+                        height: response?.data?.height,
+                        width: response?.data?.width,
+                      },
+                      large: {},
+                      thumbnail: {},
+                    };
+                    addUpdateOrganizationApiHandler(organizationPayload);
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    const element = document.getElementsByClassName('logo');
+                    element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                  });
+            } else {
+              if (values?.logo) {
+                if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
+                else organizationPayload['logo'] = organizationData?.logo;
+              }
+              addUpdateOrganizationApiHandler(organizationPayload);
+            }
+          }
+        }
       })
       .catch((error) => {
         console.log(error);
+        message.warning({
+          duration: 10,
+          maxCount: 1,
+          key: 'organization-save-as-warning',
+          content: (
+            <>
+              {t('dashboard.organization.createNew.notification.saveError')} &nbsp;
+              <Button
+                type="text"
+                icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                onClick={() => message.destroy('person-save-as-warning')}
+              />
+            </>
+          ),
+          icon: <ExclamationCircleOutlined />,
+        });
       });
   };
 
@@ -425,6 +411,20 @@ function CreateNewOrganization() {
       })
       .catch((error) => console.log(error));
   };
+
+  const addFieldsHandler = (fieldNames) => {
+    let array = addedFields?.concat(fieldNames);
+    array = [...new Set(array)];
+    setAddedFields(array);
+    setScrollToSelectedField(array?.at(-1));
+  };
+
+  useEffect(() => {
+    if (addedFields?.length > 0) {
+      const element = document.getElementsByClassName(scrollToSelectedField);
+      element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }, [addedFields]);
 
   useEffect(() => {
     if (calendarId && organizationData && currentCalendarData) {
@@ -451,6 +451,8 @@ function CreateNewOrganization() {
           },
         });
       }
+      let organizationKeys = Object.keys(organizationData);
+      if (organizationKeys?.length > 0) setAddedFields(organizationKeys);
     }
   }, [organizationLoading, currentCalendarData]);
 
@@ -477,8 +479,6 @@ function CreateNewOrganization() {
     placesSearch('');
   }, []);
 
-  // console.log(fields);
-  // console.log(organizationData);
   return fields && !organizationLoading && !taxonomyLoading && !artsDataLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <div className="add-edit-wrapper add-organization-wrapper">
@@ -501,7 +501,10 @@ function CreateNewOrganization() {
                     <Form.Item>
                       <PrimaryButton
                         label={t('dashboard.events.addEditEvent.saveOptions.save')}
-                        onClick={onSaveHandler}
+                        onClick={() => onSaveHandler()}
+                        disabled={
+                          addOrganizationLoading || imageUploadLoading || updateOrganizationLoading ? true : false
+                        }
                       />
                     </Form.Item>
                   </div>
@@ -547,6 +550,13 @@ function CreateNewOrganization() {
                             setIsPopoverOpen,
                             isPopoverOpen,
                             form,
+                            style: {
+                              display: !field?.isPreLoaded
+                                ? !addedFields?.includes(field?.mappedField)
+                                  ? 'none'
+                                  : ''
+                                : '',
+                            },
                           });
                         }
                       });
@@ -593,7 +603,45 @@ function CreateNewOrganization() {
                         }
                       })}
                   </>
-                  <></>
+                  <>
+                    {section?.filter((field) => !field?.isPreLoaded)?.length > 0 && (
+                      <Form.Item
+                        label={t('dashboard.organization.createNew.addOrganization.addMoreDetails')}
+                        style={{ lineHeight: '2.5' }}>
+                        {section
+                          ?.filter((field) => !field?.isPreLoaded)
+                          ?.map((field) => addedFields?.includes(field?.mappedField))
+                          ?.includes(false) ? (
+                          section?.map((field) => {
+                            if (!addedFields?.includes(field?.mappedField) && !field?.isPreLoaded)
+                              return (
+                                <ChangeType
+                                  key={field?.mappedField}
+                                  primaryIcon={<PlusOutlined />}
+                                  disabled={false}
+                                  label={contentLanguageBilingual({
+                                    en: field?.label?.en,
+                                    fr: field?.label?.fr,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    calendarContentLanguage: calendarContentLanguage,
+                                  })}
+                                  promptText={contentLanguageBilingual({
+                                    en: field?.helperText?.en,
+                                    fr: field?.helperText?.fr,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    calendarContentLanguage: calendarContentLanguage,
+                                  })}
+                                  secondaryIcon={<InfoCircleOutlined />}
+                                  onClick={() => addFieldsHandler(field?.mappedField)}
+                                />
+                              );
+                          })
+                        ) : (
+                          <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                        )}
+                      </Form.Item>
+                    )}
+                  </>
                 </Card>
               );
           })}
