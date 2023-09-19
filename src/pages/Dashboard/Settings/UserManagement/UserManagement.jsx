@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import UserSearch from '../../../../components/Search/Events/EventsSearch';
 import { useNavigate, useParams, useSearchParams, createSearchParams } from 'react-router-dom';
-import { useGetAllUsersQuery } from '../../../../services/users';
+import { useGetAllUsersQuery, useLazyGetAllUsersQuery } from '../../../../services/users';
 import LoadingIndicator from '../../../../components/LoadingIndicator';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -36,28 +36,75 @@ const UserManagement = () => {
 
   //   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
-  const { data: allUsersData, isLoading: allUsersLoading } = useGetAllUsersQuery({
-    calendarId,
-    includeInactiveUsers: true,
-    includeCalendarFilter: false,
-    sessionId: timestampRef,
+  const [pageNumber, setPageNumber] = useState(1);
+  const [userData, setUserData] = useState([]);
+  const [filter, setFilter] = useState({
+    sort: searchParams.get('sortByUser')
+      ? searchParams.get('sortByUser')
+      : sessionStorage.getItem('sortByUser') ?? sortByOptionsUsers[0]?.key,
+    order: searchParams.get('order') ? searchParams.get('order') : sessionStorage.getItem('order') ?? sortOrder?.ASC,
+    userRole: searchParams.get('userRole') ? searchParams.get('userRole') : sessionStorage.getItem('userRole'),
+    activityStatus: searchParams.get('userStatus')
+      ? searchParams.get('userStatus')
+      : sessionStorage.getItem('userStatus') ?? userActivityStatus[0]?.key,
   });
 
-  const totalCount = allUsersData?.count;
+  const [userSearchQuery, setUserSearchQuery] = useState(
+    searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('query') ?? '',
+  );
+
+  const {
+    currentData: data,
+    // isSuccess: isInitialDataFetchSuccess,
+    isLoading: isInitialDataLoading,
+  } = useGetAllUsersQuery({
+    page: pageNumber,
+    limit: 10,
+    filters: '', // userstatus,userRole,a
+    query: userSearchQuery,
+    sessionId: timestampRef,
+    calendarId: calendarId,
+    includeCalenderFilter: false,
+  });
+
+  const [getAllUsers, { isLoading: isUsersLoading }] = useLazyGetAllUsersQuery();
+
+  const totalCount = data?.count;
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
 
-  const [pageNumber, setPageNumber] = useState(1);
-  const [combinedUserData, setCombinedUserData] = useState([]);
-  const [filter, setFilter] = useState({
-    sort: sortByOptionsUsers[0]?.key,
-    order: searchParams.get('order') ? searchParams.get('order') : sessionStorage.getItem('order') ?? sortOrder?.ASC,
-    activityStatus: userActivityStatus[0]?.key,
-  });
+  useEffect(() => {
+    console.log(userData, 'data');
+  }, [userData]);
 
   useEffect(() => {
-    setPageNumber(1);
+    let sortQuery = new URLSearchParams();
+
+    sortQuery.append('sort', encodeURIComponent(`${filter?.order}(${filter?.sort})`));
+
+    console.log(decodeURIComponent(sortQuery.toString()), 'kasjdn');
+
+    getAllUsers({
+      page: pageNumber,
+      limit: 10,
+      filters: decodeURIComponent(sortQuery.toString()), // userstatus,userRole,a
+      query: userSearchQuery,
+      sessionId: timestampRef,
+      calendarId: calendarId,
+      includeCalenderFilter: false,
+    })
+      .unwrap()
+      .then((response) => {
+        setUserData(response.data);
+      });
+  }, [filter, pageNumber]);
+
+  useEffect(() => {
+    let sortQuery = new URLSearchParams();
+
+    sortQuery.append('sort', encodeURIComponent(`${filter?.order}(${filter?.sort})`));
+
     let params = {
       page: pageNumber,
       order: filter?.order,
@@ -66,21 +113,18 @@ const UserManagement = () => {
 
     setSearchParams(createSearchParams(params));
 
-    if (allUsersData?.data) {
-      setCombinedUserData([...allUsersData.data.active, ...allUsersData.data.inactive, ...allUsersData.data.invited]);
-    }
     setFilter({
       sort: sortByOptionsUsers[0]?.key,
       order: searchParams.get('order') ? searchParams.get('order') : sessionStorage.getItem('order') ?? sortOrder?.ASC,
       activityStatus: userActivityStatus[0]?.key,
     });
-  }, [allUsersLoading]);
+    setUserData(data);
+  }, []);
 
   // handlers
   const onSearchHandler = (event) => {
-    // Uncomment the next line to set the search query state:
-    // setOrganizationSearchQuery(event.target.value);
-    console.log(event);
+    setPageNumber(1);
+    setUserSearchQuery(event.target.value);
   };
 
   const filterClearHandler = () => {
@@ -94,6 +138,12 @@ const UserManagement = () => {
       order: sortOrder?.ASC,
     });
     setPageNumber(1);
+  };
+
+  const userTypeFilterChangeHandler = (values) => {
+    if (values !== filter.userRole) {
+      setFilter((prev) => ({ ...prev, userRole: values }));
+    }
   };
 
   const adminCheckHandler = () => {
@@ -115,7 +165,7 @@ const UserManagement = () => {
     navigate(`${location.pathname}${PathName.UserManagement}/${id}`);
   };
 
-  return !allUsersLoading ? (
+  return !isInitialDataLoading && !isUsersLoading ? (
     <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
       <Col span={24}>
         <Row gutter={[20, 10]}>
@@ -185,7 +235,7 @@ const UserManagement = () => {
                   filtervalue: activityStatus.key,
                 };
               })}
-              value={filter?.publication}>
+              value={filter?.activityStatus}>
               <Button
                 size="large"
                 className="filter-buttons"
@@ -196,7 +246,7 @@ const UserManagement = () => {
           </Col>
           <Col>
             <SearchableCheckbox
-              // onFilterChange={(values) => onFilterChange(values, filterTypes.PUBLICATION)}
+              onFilterChange={(values) => userTypeFilterChangeHandler(values)}
               data={userRolesWithTranslation?.map((role) => {
                 return {
                   key: role.key,
@@ -204,11 +254,8 @@ const UserManagement = () => {
                   filtervalue: role.key,
                 };
               })}
-              value={filter?.publication}>
-              <Button
-                size="large"
-                className="filter-buttons"
-                style={{ borderColor: filter?.publication?.length > 0 && '#607EFC' }}>
+              value={filter?.userRole}>
+              <Button size="large" className="filter-buttons" style={{ borderColor: filter?.userRole && '#607EFC' }}>
                 {t('dashboard.settings.userManagement.userTypes')}
               </Button>
             </SearchableCheckbox>
@@ -224,15 +271,15 @@ const UserManagement = () => {
 
         <Row>
           <Col span={24}>
-            {combinedUserData.length > 0 ? (
+            {userData !== undefined ? (
               <List
                 className="event-list-wrapper"
                 itemLayout={screens.xs ? 'vertical' : 'horizontal'}
-                dataSource={combinedUserData}
+                dataSource={userData}
                 bordered={false}
                 pagination={{
                   onChange: (page) => {
-                    console.log(page);
+                    setPageNumber(page);
                   },
                   pageSize: 10,
                   hideOnSinglePage: true,
