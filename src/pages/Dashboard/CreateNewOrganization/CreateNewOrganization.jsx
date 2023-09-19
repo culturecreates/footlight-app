@@ -479,8 +479,6 @@ function CreateNewOrganization() {
     placesSearch('');
   }, []);
 
-  // console.log(fields);
-  // console.log(organizationData);
   return fields && !organizationLoading && !taxonomyLoading && !artsDataLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <div className="add-edit-wrapper add-organization-wrapper">

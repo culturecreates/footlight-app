@@ -192,7 +192,7 @@ export const formFieldValue = [
   },
   {
     type: formTypes.MULTISELECT,
-    element: ({ taxonomyData, user, type, isDynamicField, calendarContentLanguage, placeholder }) => {
+    element: ({ taxonomyData, user, taxonomyAlias, isDynamicField, calendarContentLanguage, placeholder }) => {
       return (
         <TreeSelectOption
           allowClear
@@ -205,7 +205,7 @@ export const formFieldValue = [
             calendarContentLanguage: calendarContentLanguage,
           })}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-          treeData={treeTaxonomyOptions(taxonomyData, user, type, isDynamicField, calendarContentLanguage)}
+          treeData={treeTaxonomyOptions(taxonomyData, user, taxonomyAlias, isDynamicField, calendarContentLanguage)}
           tagRender={(props) => {
             const { label, closable, onClose } = props;
             return (
@@ -438,7 +438,7 @@ export const returnFormDataWithFields = ({
       datatype: field?.datatype,
       taxonomyData: allTaxonomyData,
       user: user,
-      type: field?.mappedField,
+      type: field?.type,
       isDynamicField: false,
       calendarContentLanguage,
       name: [field?.mappedField],
@@ -482,6 +482,7 @@ export const returnFormDataWithFields = ({
       setIsPopoverOpen,
       isPopoverOpen,
       form,
+      taxonomyAlias: field?.taxonomyAlias,
     }),
     key: index,
     initialValue: formInitialValueHandler(field?.type, field?.mappedField, field?.datatype, entityData),
@@ -501,5 +502,6 @@ export const returnFormDataWithFields = ({
     hidden: field?.isAdminOnlyField ? (adminCheckHandler() ? false : true) : false,
     form,
     style,
+    taxonomyAlias: field?.taxonomyAlias,
   });
 };
