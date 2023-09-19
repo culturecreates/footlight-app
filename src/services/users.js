@@ -7,9 +7,9 @@ export const usersApi = createApi({
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getAllUsers: builder.query({
-      query: ({ includeInactiveUsers, includeCalendarFilter, calendarId }) => {
+      query: ({ includeCalenderFilter, calendarId, query = '', page = 1, limit, filters }) => {
         return {
-          url: `users?includeInactiveUsers=${includeInactiveUsers}&includeCalendarFilter=${includeCalendarFilter}`,
+          url: `users?includeCalendarFilter=${includeCalenderFilter}&${filters}&query=${query}&page=${page}&limit=${limit}`,
           method: 'GET',
           headers: {
             'calendar-id': calendarId,
@@ -90,4 +90,5 @@ export const {
   useGetCurrentUserQuery,
   useUpdateCurrentUserMutation,
   useLazyGetCurrentUserQuery,
+  useLazyGetAllUsersQuery,
 } = usersApi;
