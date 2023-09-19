@@ -163,14 +163,22 @@ function CreateNewOrganization() {
       .then(() => {
         var values = form.getFieldsValue(true);
         let organizationPayload = {};
-        // console.log(values);
         Object.keys(values)?.map((object) => {
           let payload = formPayloadHandler(values[object], object, formFields);
-          let newKeys = Object.keys(payload);
-          organizationPayload = {
-            ...organizationPayload,
-            ...(newKeys?.length > 0 && { [newKeys[0]]: payload[newKeys[0]] }),
-          };
+          if (payload) {
+            let newKeys = Object.keys(payload);
+            let childKeys = object?.split('.');
+            organizationPayload = {
+              ...organizationPayload,
+              ...(newKeys?.length > 0 && { [newKeys[0]]: payload[newKeys[0]] }),
+              ...(childKeys?.length == 2 && {
+                [childKeys[0]]: {
+                  ...organizationPayload[childKeys[0]],
+                  [childKeys[1]]: payload[childKeys[0]][childKeys[1]],
+                },
+              }),
+            };
+          }
         });
         let imageCrop = form.getFieldValue('imageCrop');
         imageCrop = {

@@ -39,6 +39,7 @@ export const dataTypes = {
   IDENTITY_STRING: 'IdentityString',
   URI_STRING: 'URIString',
   IMAGE: 'Image',
+  EMAIL: 'Email',
 };
 
 export const mappedFieldTypes = {
@@ -62,6 +63,13 @@ const rules = [
     rule: {
       type: 'url',
       message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
+    },
+  },
+  {
+    dataType: dataTypes.EMAIL,
+    rule: {
+      type: 'email',
+      message: <Translation>{(t) => t('login.validations.invalidEmail')}</Translation>,
     },
   },
 ];
@@ -135,6 +143,17 @@ export const formFieldValue = [
             autoComplete="off"
             style={{ width: '423px' }}
             placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
+          />
+        );
+      else if (datatype === dataTypes.EMAIL)
+        return (
+          <StyledInput
+            placeholder={contentLanguageBilingual({
+              en: placeholder?.en,
+              fr: placeholder?.fr,
+              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+              calendarContentLanguage: calendarContentLanguage,
+            })}
           />
         );
       else
