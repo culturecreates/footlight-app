@@ -606,7 +606,7 @@ function CreateNewOrganization() {
                   <>
                     {section?.filter((field) => !field?.isPreLoaded)?.length > 0 && (
                       <Form.Item
-                        label={t('dashboard.events.addEditEvent.addMoreDetails')}
+                        label={t('dashboard.organization.createNew.addOrganization.addMoreDetails')}
                         style={{ lineHeight: '2.5' }}>
                         {section
                           ?.filter((field) => !field?.isPreLoaded)
