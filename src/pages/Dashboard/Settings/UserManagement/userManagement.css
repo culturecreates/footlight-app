@@ -37,6 +37,8 @@
   font-weight: 600;
   line-height: 16px;
   text-decoration-line: underline;
+  display: flex;
+  align-items: center;
 }
 
 .settings-wrapper .users-list-item-wrapper .user-item-content .tags-wrapper {

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import UserSearch from '../../../../components/Search/Events/EventsSearch';
 import { useNavigate, useParams, useSearchParams, createSearchParams } from 'react-router-dom';
-import { useGetAllUsersQuery, useLazyGetAllUsersQuery } from '../../../../services/users';
+import { useLazyGetAllUsersQuery } from '../../../../services/users';
 import LoadingIndicator from '../../../../components/LoadingIndicator';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -14,7 +14,6 @@ import { Button, Col, Dropdown, Grid, List, Row, Space } from 'antd';
 import ListCard from '../../../../components/List/User/ListCard';
 import bulletIcon from '../../../../assets/icons/dot-bullet.svg';
 import { userActivityStatus } from '../../../../constants/userActivityStatus';
-import SearchableCheckbox from '../../../../components/Filter/SearchableCheckbox';
 import { SortAscendingOutlined, SortDescendingOutlined, DownOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { sortByOptionsUsers, sortOrder } from '../../../../constants/sortByOptions';
 import Username from '../../../../components/Username';
@@ -30,96 +29,85 @@ const UserManagement = () => {
   const { user } = useSelector(getUserDetails);
   let [searchParams, setSearchParams] = useSearchParams();
 
-  //   const [currentCalendarData] = useOutletContext();
   const navigate = useNavigate();
   const screens = useBreakpoint();
 
-  //   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-
   const [pageNumber, setPageNumber] = useState(1);
+  const [totalCount, setTotalCount] = useState();
   const [userData, setUserData] = useState([]);
   const [filter, setFilter] = useState({
-    sort: searchParams.get('sortByUser')
-      ? searchParams.get('sortByUser')
-      : sessionStorage.getItem('sortByUser') ?? sortByOptionsUsers[0]?.key,
+    sort: searchParams.get('sortBy')
+      ? searchParams.get('sortBy')
+      : sessionStorage.getItem('sortBy') ?? sortByOptionsUsers[0]?.key,
     order: searchParams.get('order') ? searchParams.get('order') : sessionStorage.getItem('order') ?? sortOrder?.ASC,
-    userRole: searchParams.get('userRole') ? searchParams.get('userRole') : sessionStorage.getItem('userRole'),
-    activityStatus: searchParams.get('userStatus')
-      ? searchParams.get('userStatus')
-      : sessionStorage.getItem('userStatus') ?? userActivityStatus[0]?.key,
   });
 
   const [userSearchQuery, setUserSearchQuery] = useState(
     searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('query') ?? '',
   );
 
-  const {
-    currentData: data,
-    // isSuccess: isInitialDataFetchSuccess,
-    isLoading: isInitialDataLoading,
-  } = useGetAllUsersQuery({
-    page: pageNumber,
-    limit: 10,
-    filters: '', // userstatus,userRole,a
-    query: userSearchQuery,
-    sessionId: timestampRef,
-    calendarId: calendarId,
-    includeCalenderFilter: false,
-  });
-
   const [getAllUsers, { isLoading: isUsersLoading }] = useLazyGetAllUsersQuery();
 
-  const totalCount = data?.count;
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
 
   useEffect(() => {
-    console.log(userData, 'data');
-  }, [userData]);
-
-  useEffect(() => {
     let sortQuery = new URLSearchParams();
+    let statusFilter = new URLSearchParams();
+    let roleFilter = new URLSearchParams();
 
     sortQuery.append('sort', encodeURIComponent(`${filter?.order}(${filter?.sort})`));
+    statusFilter.append('userStatus', encodeURIComponent(`${filter?.userStatus ? filter?.userStatus : ''}`));
+    roleFilter.append('userRole', encodeURIComponent(`${filter?.userRole ? filter?.userRole : ''}`));
 
-    console.log(decodeURIComponent(sortQuery.toString()), 'kasjdn');
+    const filtersDecoded =
+      decodeURIComponent(sortQuery.toString()) +
+      '&' +
+      decodeURIComponent(statusFilter.toString()) +
+      '&' +
+      decodeURIComponent(roleFilter.toString());
 
     getAllUsers({
       page: pageNumber,
       limit: 10,
-      filters: decodeURIComponent(sortQuery.toString()), // userstatus,userRole,a
+      filters: filtersDecoded, // userstatus,userRole,a
       query: userSearchQuery,
       sessionId: timestampRef,
       calendarId: calendarId,
-      includeCalenderFilter: false,
+      includeCalenderFilter: true,
     })
       .unwrap()
       .then((response) => {
         setUserData(response.data);
+        setTotalCount(response?.count);
       });
-  }, [filter, pageNumber]);
+  }, [filter, pageNumber, userSearchQuery]);
 
   useEffect(() => {
-    let sortQuery = new URLSearchParams();
-
-    sortQuery.append('sort', encodeURIComponent(`${filter?.order}(${filter?.sort})`));
-
     let params = {
       page: pageNumber,
       order: filter?.order,
       sortBy: filter?.sort,
     };
 
+    if (filter?.userRole) {
+      params.userRole = filter.userRole;
+      sessionStorage.setItem('userRole', filter.userRole);
+    }
+
+    if (filter?.userStatus) {
+      params.userStatus = filter.userStatus;
+      sessionStorage.setItem('userStatus', filter.userStatus);
+    }
+
     setSearchParams(createSearchParams(params));
 
-    setFilter({
-      sort: sortByOptionsUsers[0]?.key,
-      order: searchParams.get('order') ? searchParams.get('order') : sessionStorage.getItem('order') ?? sortOrder?.ASC,
-      activityStatus: userActivityStatus[0]?.key,
-    });
-    setUserData(data);
-  }, []);
+    sessionStorage.setItem('page', pageNumber);
+    sessionStorage.setItem('order', filter?.order);
+    sessionStorage.setItem('sortBy', filter?.sort);
+    sessionStorage.setItem('query', userSearchQuery);
+  }, [filter, userSearchQuery]);
 
   // handlers
   const onSearchHandler = (event) => {
@@ -127,8 +115,27 @@ const UserManagement = () => {
     setUserSearchQuery(event.target.value);
   };
 
+  const handleSortOrderChange = () => {
+    setPageNumber(1);
+    filter?.order === sortOrder?.ASC
+      ? setFilter({ ...filter, order: sortOrder?.DESC })
+      : setFilter({ ...filter, order: sortOrder?.ASC });
+  };
+
   const filterClearHandler = () => {
-    console.log('cleared filters');
+    setFilter({
+      publication: [],
+      sort: sortByOptionsUsers[0]?.key,
+      order: sortOrder?.ASC,
+    });
+    setUserSearchQuery('');
+    setPageNumber(1);
+    sessionStorage.removeItem('page');
+    sessionStorage.removeItem('query');
+    sessionStorage.removeItem('order');
+    sessionStorage.removeItem('sortBy');
+    sessionStorage.removeItem('userStatus');
+    sessionStorage.removeItem('userRole');
   };
 
   const onSortSelect = ({ selectedKeys }) => {
@@ -140,10 +147,14 @@ const UserManagement = () => {
     setPageNumber(1);
   };
 
-  const userTypeFilterChangeHandler = (values) => {
-    if (values !== filter.userRole) {
-      setFilter((prev) => ({ ...prev, userRole: values }));
-    }
+  const onTooltipClickHandler = ({ item, event }) => {
+    event.stopPropagation();
+    console.log(item);
+  };
+
+  const userTypeFilterChangeHandler = ({ selectedKeys }) => {
+    setPageNumber(1);
+    setFilter({ ...filter, userRole: selectedKeys[0] });
   };
 
   const adminCheckHandler = () => {
@@ -151,12 +162,21 @@ const UserManagement = () => {
     else return false;
   };
 
-  const createTitleHandler = (firstName, lastName) => {
+  const onSearchChangeHandler = (event) => {
+    if (event.target.value === '') setUserSearchQuery('');
+  };
+
+  const handleStatusFilterChange = ({ selectedKeys }) => {
+    setPageNumber(1);
+    setFilter({ ...filter, userStatus: selectedKeys[0] });
+  };
+
+  const createTitleHandler = (firstName, lastName, userName) => {
     return (
       <div className="title-wrapper">
         <span>{firstName + ' ' + lastName}</span>
         <img src={bulletIcon} />
-        <Username firstName={firstName} lastName={lastName} />
+        <Username userName={userName} />
       </div>
     );
   };
@@ -165,7 +185,7 @@ const UserManagement = () => {
     navigate(`${location.pathname}${PathName.UserManagement}/${id}`);
   };
 
-  return !isInitialDataLoading && !isUsersLoading ? (
+  return !isUsersLoading ? (
     <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
       <Col span={24}>
         <Row gutter={[20, 10]}>
@@ -173,9 +193,9 @@ const UserManagement = () => {
             <UserSearch
               placeholder={t('dashboard.settings.userManagement.searchPlaceholder')}
               onPressEnter={(e) => onSearchHandler(e)}
-              // defaultValue={organizationSearchQuery}
+              defaultValue={userSearchQuery}
               allowClear={true}
-              // onChange={onChangeHandler}
+              onChange={onSearchChangeHandler}
             />
           </Col>
           <Col>
@@ -210,7 +230,7 @@ const UserManagement = () => {
                 <Button
                   className="filter-sort-button"
                   style={{ borderColor: filter?.order && '#1B3DE6' }}
-                  // onClick={onSortOrderChange}
+                  onClick={handleSortOrderChange}
                   icon={
                     filter?.order === sortOrder?.ASC ? (
                       <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
@@ -226,39 +246,43 @@ const UserManagement = () => {
             </Row>
           </Col>
           <Col>
-            <SearchableCheckbox
-              // onFilterChange={(values) => onFilterChange(values, filterTypes.PUBLICATION)}
-              data={userActivityStatus?.map((activityStatus) => {
-                return {
-                  key: activityStatus.key,
-                  label: <div>{activityStatus.label}</div>,
-                  filtervalue: activityStatus.key,
-                };
-              })}
-              value={filter?.activityStatus}>
-              <Button
-                size="large"
-                className="filter-buttons"
-                style={{ borderColor: filter?.publication?.length > 0 && '#607EFC' }}>
-                {t('dashboard.settings.userManagement.status')}
-              </Button>
-            </SearchableCheckbox>
+            <Dropdown
+              overlayClassName="filter-sort-dropdown-wrapper"
+              getPopupContainer={(trigger) => trigger.parentNode}
+              overlayStyle={{ minWidth: '200px' }}
+              menu={{
+                items: userActivityStatus,
+                selectable: true,
+                onSelect: handleStatusFilterChange,
+              }}
+              trigger={['click']}>
+              <Space>
+                <Button
+                  size="large"
+                  className="filter-buttons"
+                  style={{ borderColor: filter?.userStatus && '#607EFC' }}>
+                  {t('dashboard.settings.userManagement.status')}
+                </Button>
+              </Space>
+            </Dropdown>
           </Col>
           <Col>
-            <SearchableCheckbox
-              onFilterChange={(values) => userTypeFilterChangeHandler(values)}
-              data={userRolesWithTranslation?.map((role) => {
-                return {
-                  key: role.key,
-                  label: <div>{role.label}</div>,
-                  filtervalue: role.key,
-                };
-              })}
-              value={filter?.userRole}>
-              <Button size="large" className="filter-buttons" style={{ borderColor: filter?.userRole && '#607EFC' }}>
-                {t('dashboard.settings.userManagement.userTypes')}
-              </Button>
-            </SearchableCheckbox>
+            <Dropdown
+              overlayClassName="filter-sort-dropdown-wrapper"
+              getPopupContainer={(trigger) => trigger.parentNode}
+              overlayStyle={{ minWidth: '200px' }}
+              menu={{
+                items: userRolesWithTranslation,
+                selectable: true,
+                onSelect: userTypeFilterChangeHandler,
+              }}
+              trigger={['click']}>
+              <Space>
+                <Button size="large" className="filter-buttons" style={{ borderColor: filter?.userRole && '#607EFC' }}>
+                  {t('dashboard.settings.userManagement.userTypes')}
+                </Button>
+              </Space>
+            </Dropdown>
           </Col>
 
           <Col>
@@ -292,15 +316,30 @@ const UserManagement = () => {
                     id={index}
                     key={index}
                     listItemHandler={() => listItemHandler(item?.id)}
-                    title={createTitleHandler(item?.firstName, item?.lastName)}
+                    title={createTitleHandler(item?.firstName, item?.lastName, item?.username)}
                     description={roleHandler({ roles: item?.roles, calendarId })}
                     activityStatus={item?.userStatus}
-                    invitedBy={<Username firstName={item?.firstName} lastName={item?.lastName} />}
+                    invitedBy={item?.invitedBy && <Username userName={item?.invitedBy} />}
                     actions={[
                       adminCheckHandler() && (
-                        <span>
-                          <MoreOutlined className="event-list-more-icon" key={index} />
-                        </span>
+                        <Dropdown
+                          overlayClassName="filter-sort-dropdown-wrapper"
+                          overlayStyle={{ minWidth: '200px' }}
+                          getPopupContainer={(trigger) => trigger.parentNode}
+                          menu={{
+                            items: sortByOptionsUsers,
+                            selectable: true,
+                            defaultSelectedKeys: [filter?.sort],
+                            onSelect: onSortSelect,
+                          }}
+                          trigger={['click']}>
+                          <span
+                            onClick={(event) => {
+                              onTooltipClickHandler({ item, event });
+                            }}>
+                            <MoreOutlined className="event-list-more-icon" key={index} />
+                          </span>
+                        </Dropdown>
                       ),
                     ]}
                   />
