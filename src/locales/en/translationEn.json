@@ -612,7 +612,14 @@
         "editor": "Editor",
         "contributor": "Contributor",
         "guest": "Guest",
-        "invitedBy": "Invited By"
+        "invitedBy": "Invited By",
+        "tooltip": {
+          "editUser": "Edit user",
+          "sendInvitation": "Send invitation",
+          "copyInvitationLink": "Copy invitation link",
+          "activateOrDeactivate": "Activate/Deactivate",
+          "deleteUser": "Delete user"
+        }
       },
       "userReadOnly": {
         "editBtn": "Edit details",

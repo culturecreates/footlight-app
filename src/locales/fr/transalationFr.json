@@ -608,7 +608,14 @@
         "editor": "Éditeur",
         "contributor": "Collaborateur",
         "guest": "Invité",
-        "invitedBy": "Invité par"
+        "invitedBy": "Invité par",
+        "tooltip": {
+          "editUser": "Modifier l'utilisateur",
+          "sendInvitation": "Envoyer l'invitation",
+          "copyInvitationLink": "Copier le lien de l'invitation",
+          "activateOrDeactivate": "Activé/Désactivé",
+          "deleteUser": "Supprimer l'utilisateur"
+        }
       },
       "userReadOnly": {
         "editBtn": "Éditer l’information",
