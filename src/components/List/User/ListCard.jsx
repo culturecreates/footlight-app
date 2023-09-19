@@ -17,10 +17,12 @@ const ListCard = (props) => {
       <List.Item.Meta className="user-item-meta" title={title} description={description} />
       <div className="user-item-content">
         <StatusTag activityStatus={activityStatus} />
-        <div className="invitation-details">
-          <span className="invitation-details-text-prolouge">{t('dashboard.settings.userManagement.invitedBy')}</span>
-          <span className="invitation-details-username">{invitedBy}</span>
-        </div>
+        {invitedBy && (
+          <div className="invitation-details">
+            <span className="invitation-details-text-prologue">{t('dashboard.settings.userManagement.invitedBy')}</span>
+            <span className="invitation-details-username">{invitedBy}</span>
+          </div>
+        )}
       </div>
     </List.Item>
   );
