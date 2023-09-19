@@ -551,7 +551,7 @@ function CreateNewOrganization() {
                             isPopoverOpen,
                             form,
                             style: {
-                              display: !field?.isPreLoaded
+                              display: !field?.isPreset
                                 ? !addedFields?.includes(field?.mappedField)
                                   ? 'none'
                                   : ''
@@ -604,16 +604,16 @@ function CreateNewOrganization() {
                       })}
                   </>
                   <>
-                    {section?.filter((field) => !field?.isPreLoaded)?.length > 0 && (
+                    {section?.filter((field) => !field?.isPreset)?.length > 0 && (
                       <Form.Item
                         label={t('dashboard.organization.createNew.addOrganization.addMoreDetails')}
                         style={{ lineHeight: '2.5' }}>
                         {section
-                          ?.filter((field) => !field?.isPreLoaded)
+                          ?.filter((field) => !field?.isPreset)
                           ?.map((field) => addedFields?.includes(field?.mappedField))
                           ?.includes(false) ? (
                           section?.map((field) => {
-                            if (!addedFields?.includes(field?.mappedField) && !field?.isPreLoaded)
+                            if (!addedFields?.includes(field?.mappedField) && !field?.isPreset)
                               return (
                                 <ChangeType
                                   key={field?.mappedField}
