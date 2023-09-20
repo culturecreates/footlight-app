@@ -1,7 +1,7 @@
 import { eventPublishState } from '../constants/eventPublishState';
 import { userRoles } from '../constants/userRoles';
 
-export const routinghandler = (user, calendarId, creatorId, publishState = '') => {
+export const routinghandler = (user, calendarId, creatorId, publishState = '', isEntity = false) => {
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
@@ -9,9 +9,12 @@ export const routinghandler = (user, calendarId, creatorId, publishState = '') =
   switch (calendar[0]?.role) {
     case userRoles.GUEST:
       if (user?.id === creatorId) {
-        if (eventPublishState.DRAFT === publishState) return true;
-        else return false;
+        if (isEntity == false) {
+          if (eventPublishState.DRAFT === publishState) return true;
+          else return false;
+        } else if (isEntity == true) return true;
       } else return false;
+      break;
     case userRoles.CONTRIBUTOR:
       if (user?.id === creatorId) return true;
       else return false;

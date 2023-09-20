@@ -36,6 +36,7 @@ import { placesOptions } from '../../../components/Select/selectOption.settings'
 import ChangeType from '../../../components/ChangeType';
 import { PathName } from '../../../constants/pathName';
 import { useAddImageMutation } from '../../../services/image';
+import { routinghandler } from '../../../utils/roleRoutingHandler';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -428,31 +429,36 @@ function CreateNewOrganization() {
 
   useEffect(() => {
     if (calendarId && organizationData && currentCalendarData) {
-      if (organizationData?.image) {
-        form.setFieldsValue({
-          imageCrop: {
-            large: {
-              x: organizationData?.image?.large?.xCoordinate,
-              y: organizationData?.image?.large?.yCoordinate,
-              height: organizationData?.image?.large?.height,
-              width: organizationData?.image?.large?.width,
+      if (routinghandler(user, calendarId, organizationData?.createdByUserId, null, true)) {
+        if (organizationData?.image) {
+          form.setFieldsValue({
+            imageCrop: {
+              large: {
+                x: organizationData?.image?.large?.xCoordinate,
+                y: organizationData?.image?.large?.yCoordinate,
+                height: organizationData?.image?.large?.height,
+                width: organizationData?.image?.large?.width,
+              },
+              original: {
+                entityId: organizationData?.image?.original?.entityId ?? null,
+                height: organizationData?.image?.original?.height,
+                width: organizationData?.image?.original?.width,
+              },
+              thumbnail: {
+                x: organizationData?.image?.thumbnail?.xCoordinate,
+                y: organizationData?.image?.thumbnail?.yCoordinate,
+                height: organizationData?.image?.thumbnail?.height,
+                width: organizationData?.image?.thumbnail?.width,
+              },
             },
-            original: {
-              entityId: organizationData?.image?.original?.entityId ?? null,
-              height: organizationData?.image?.original?.height,
-              width: organizationData?.image?.original?.width,
-            },
-            thumbnail: {
-              x: organizationData?.image?.thumbnail?.xCoordinate,
-              y: organizationData?.image?.thumbnail?.yCoordinate,
-              height: organizationData?.image?.thumbnail?.height,
-              width: organizationData?.image?.thumbnail?.width,
-            },
-          },
-        });
-      }
-      let organizationKeys = Object.keys(organizationData);
-      if (organizationKeys?.length > 0) setAddedFields(organizationKeys);
+          });
+        }
+        let organizationKeys = Object.keys(organizationData);
+        if (organizationKeys?.length > 0) setAddedFields(organizationKeys);
+      } else
+        window.location.replace(
+          `${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${organizationId}`,
+        );
     }
   }, [organizationLoading, currentCalendarData]);
 

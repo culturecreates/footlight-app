@@ -12,10 +12,10 @@ function ReadOnlyProtectedComponent({ children, creator }) {
 
   switch (calendar[0]?.role) {
     case userRoles.GUEST:
-      if (user?.id === creator?.userId) return children;
+      if (user?.id === creator) return children;
       else return;
     case userRoles.CONTRIBUTOR:
-      if (user?.id === creator?.userId) return children;
+      if (user?.id === creator) return children;
       else return;
     case userRoles.EDITOR:
       return children;
