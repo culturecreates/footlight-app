@@ -1,10 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import './createNewOrganization.css';
 import '../AddEvent/addEvent.css';
-import { Form, Row, Col, Button } from 'antd';
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { Form, Row, Col, Button, message, notification } from 'antd';
+import { CloseCircleOutlined, PlusOutlined, InfoCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { LeftOutlined } from '@ant-design/icons';
 import PrimaryButton from '../../../components/Button/Primary';
 import { featureFlags } from '../../../utils/featureFlags';
@@ -14,8 +14,12 @@ import Card from '../../../components/Card/Common/Event';
 import { formCategory, formFieldValue, returnFormDataWithFields } from '../../../constants/formFields';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
-import { bilingual } from '../../../utils/bilingual';
-import { useGetOrganizationQuery } from '../../../services/organization';
+import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
+import {
+  useAddOrganizationMutation,
+  useGetOrganizationQuery,
+  useUpdateOrganizationMutation,
+} from '../../../services/organization';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
@@ -29,12 +33,17 @@ import { loadArtsDataEntity } from '../../../services/artsData';
 import { userRoles } from '../../../constants/userRoles';
 import { useLazyGetEntitiesQuery } from '../../../services/entities';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
+import ChangeType from '../../../components/ChangeType';
+import { PathName } from '../../../constants/pathName';
+import { useAddImageMutation } from '../../../services/image';
+import { routinghandler } from '../../../utils/roleRoutingHandler';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentCalendarData] = useOutletContext();
   const { user } = useSelector(getUserDetails);
   const { calendarId } = useParams();
@@ -56,7 +65,9 @@ function CreateNewOrganization() {
     sessionId: timestampRef,
   });
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
-  // const [addOrganization] = useAddOrganizationMutation();
+  const [addOrganization, { isLoading: addOrganizationLoading }] = useAddOrganizationMutation();
+  const [updateOrganization, { isLoading: updateOrganizationLoading }] = useUpdateOrganizationMutation();
+  const [addImage, { isLoading: imageUploadLoading }] = useAddImageMutation();
 
   const [artsData, setArtsData] = useState(null);
   const [newEntityData, setNewEntityData] = useState(null);
@@ -65,12 +76,13 @@ function CreateNewOrganization() {
   const [locationPlace, setLocationPlace] = useState();
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [addedFields, setAddedFields] = useState([]);
+  const [scrollToSelectedField, setScrollToSelectedField] = useState();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
-
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
@@ -80,39 +92,320 @@ function CreateNewOrganization() {
     else return false;
   };
 
+  const addUpdateOrganizationApiHandler = (organizationObj) => {
+    var promise = new Promise(function (resolve, reject) {
+      if (!organizationId || organizationId === '') {
+        if (artsDataId && artsData) {
+          let artsDataSameAs = Array.isArray(artsData?.sameAs);
+          if (artsDataSameAs)
+            organizationObj = {
+              ...organizationObj,
+              sameAs: artsData?.sameAs,
+            };
+          else
+            organizationObj = {
+              ...organizationObj,
+              sameAs: [artsData?.sameAs],
+            };
+        }
+        addOrganization({
+          data: organizationObj,
+          calendarId,
+        })
+          .unwrap()
+          .then((response) => {
+            resolve(response?.id);
+            notification.success({
+              description: t('dashboard.organization.createNew.notification.addSuccess'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}`);
+          })
+          .catch((errorInfo) => {
+            reject();
+            console.log(errorInfo);
+          });
+      } else {
+        organizationObj = {
+          ...organizationObj,
+          sameAs: organizationObj?.sameAs,
+        };
+        updateOrganization({
+          data: organizationObj,
+          calendarId,
+          organizationId,
+        })
+          .unwrap()
+          .then(() => {
+            resolve(organizationId);
+            notification.success({
+              description: t('dashboard.organization.createNew.notification.editSuccess'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}`);
+          })
+          .catch((error) => {
+            reject();
+            console.log(error);
+          });
+      }
+    });
+    return promise;
+  };
+
   const onSaveHandler = () => {
     form
-      .validateFields([])
+      .validateFields([
+        ['name', 'fr'],
+        ['name', 'en'],
+      ])
       .then(() => {
         var values = form.getFieldsValue(true);
         let organizationPayload = {};
         Object.keys(values)?.map((object) => {
           let payload = formPayloadHandler(values[object], object, formFields);
-          let newKeys = Object.keys(payload);
-          let childKeys = Object.keys(payload[newKeys[0]]);
-          organizationPayload = {
-            ...organizationPayload,
-            ...(newKeys?.length > 0 && {
-              [newKeys[0]]: {
-                ...organizationPayload[newKeys[0]],
-                ...(childKeys?.length > 0 && { [childKeys[0]]: payload[newKeys[0]][childKeys[0]] }),
-                ...(childKeys?.length > 1 && {
-                  [childKeys[childKeys?.length - 1]]: payload[newKeys[0]][childKeys[childKeys?.length - 1]],
-                }),
-              },
-            }),
-          };
+          if (payload) {
+            let newKeys = Object.keys(payload);
+            let childKeys = object?.split('.');
+            organizationPayload = {
+              ...organizationPayload,
+              ...(newKeys?.length > 0 && { [newKeys[0]]: payload[newKeys[0]] }),
+              ...(childKeys?.length == 2 && {
+                [childKeys[0]]: {
+                  ...organizationPayload[childKeys[0]],
+                  [childKeys[1]]: payload[childKeys[0]][childKeys[1]],
+                },
+              }),
+            };
+          }
         });
-        // addOrganization({ data: {}, calendarId })
-        //   .unwrap()
-        //   .then((response) => {
-        //     console.log(response);
-        //   })
-        //   .catch((error) => {
-        //     console.log(error);
-        //   });
+        let imageCrop = form.getFieldValue('imageCrop');
+        imageCrop = {
+          large: {
+            xCoordinate: imageCrop?.large?.x,
+            yCoordinate: imageCrop?.large?.y,
+            height: imageCrop?.large?.height,
+            width: imageCrop?.large?.width,
+          },
+          thumbnail: {
+            xCoordinate: imageCrop?.thumbnail?.x,
+            yCoordinate: imageCrop?.thumbnail?.y,
+            height: imageCrop?.thumbnail?.height,
+            width: imageCrop?.thumbnail?.width,
+          },
+          original: {
+            entityId: imageCrop?.original?.entityId,
+            height: imageCrop?.original?.height,
+            width: imageCrop?.original?.width,
+          },
+        };
+        if ((values?.image || (values?.image && values?.image?.length > 0)) && !values?.logo) {
+          if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
+            const formdata = new FormData();
+            formdata.append('file', values?.image[0].originFileObj);
+            formdata &&
+              addImage({ data: formdata, calendarId })
+                .unwrap()
+                .then((response) => {
+                  if (featureFlags.imageCropFeature) {
+                    imageCrop = {
+                      ...imageCrop,
+                      original: {
+                        ...imageCrop?.original,
+                        entityId: response?.data?.original?.entityId,
+                        height: response?.data?.height,
+                        width: response?.data?.width,
+                      },
+                    };
+                  } else
+                    imageCrop = {
+                      ...imageCrop,
+                      original: {
+                        ...imageCrop?.original,
+                        entityId: response?.data?.original?.entityId,
+                        height: response?.data?.height,
+                        width: response?.data?.width,
+                      },
+                    };
+                  organizationPayload['image'] = imageCrop;
+                  addUpdateOrganizationApiHandler(organizationPayload);
+                })
+                .catch((error) => {
+                  console.log(error);
+                  const element = document.getElementsByClassName('image');
+                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                });
+          } else {
+            if (values?.image) {
+              if (values?.image && values?.image?.length == 0) organizationPayload['image'] = null;
+              else organizationPayload['image'] = imageCrop;
+            }
+            addUpdateOrganizationApiHandler(organizationPayload);
+          }
+        } else if ((values?.logo || (values?.logo && values?.logo?.length > 0)) && !values?.image) {
+          if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
+            const formdata = new FormData();
+            formdata.append('file', values?.logo[0].originFileObj);
+            formdata &&
+              addImage({ data: formdata, calendarId })
+                .unwrap()
+                .then((response) => {
+                  organizationPayload['logo'] = {
+                    original: {
+                      entityId: response?.data?.original?.entityId,
+                      height: response?.data?.height,
+                      width: response?.data?.width,
+                    },
+                    large: {},
+                    thumbnail: {},
+                  };
+                  addUpdateOrganizationApiHandler(organizationPayload);
+                })
+                .catch((error) => {
+                  console.log(error);
+                  const element = document.getElementsByClassName('logo');
+                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                });
+          } else {
+            if (values?.logo) {
+              if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
+              else organizationPayload['logo'] = organizationData?.logo;
+            }
+            addUpdateOrganizationApiHandler(organizationPayload);
+          }
+        } else if (
+          (values?.image || (values?.image && values?.image?.length > 0)) &&
+          (values?.logo || (values?.logo && values?.logo?.length > 0))
+        ) {
+          if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
+            const formdata = new FormData();
+            formdata.append('file', values?.image[0].originFileObj);
+            formdata &&
+              addImage({ data: formdata, calendarId })
+                .unwrap()
+                .then((response) => {
+                  if (featureFlags.imageCropFeature) {
+                    imageCrop = {
+                      ...imageCrop,
+                      original: {
+                        ...imageCrop?.original,
+                        entityId: response?.data?.original?.entityId,
+                        height: response?.data?.height,
+                        width: response?.data?.width,
+                      },
+                    };
+                  } else
+                    imageCrop = {
+                      ...imageCrop,
+                      original: {
+                        ...imageCrop?.original,
+                        entityId: response?.data?.original?.entityId,
+                        height: response?.data?.height,
+                        width: response?.data?.width,
+                      },
+                    };
+                  organizationPayload['image'] = imageCrop;
+                  if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
+                    const formdata = new FormData();
+                    formdata.append('file', values?.logo[0].originFileObj);
+                    formdata &&
+                      addImage({ data: formdata, calendarId })
+                        .unwrap()
+                        .then((response) => {
+                          organizationPayload['logo'] = {
+                            original: {
+                              entityId: response?.data?.original?.entityId,
+                              height: response?.data?.height,
+                              width: response?.data?.width,
+                            },
+                            large: {},
+                            thumbnail: {},
+                          };
+                          addUpdateOrganizationApiHandler(organizationPayload);
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                          const element = document.getElementsByClassName('logo');
+                          element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                        });
+                  } else {
+                    if (values?.logo) {
+                      if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
+                      else organizationPayload['logo'] = organizationData?.logo;
+                    }
+                    addUpdateOrganizationApiHandler(organizationPayload);
+                  }
+                })
+                .catch((error) => {
+                  console.log(error);
+                  const element = document.getElementsByClassName('image');
+                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                });
+          } else {
+            if (values?.image) {
+              if (values?.image && values?.image?.length == 0) organizationPayload['image'] = null;
+              else organizationPayload['image'] = imageCrop;
+            }
+            if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
+              const formdata = new FormData();
+              formdata.append('file', values?.logo[0].originFileObj);
+              formdata &&
+                addImage({ data: formdata, calendarId })
+                  .unwrap()
+                  .then((response) => {
+                    organizationPayload['logo'] = {
+                      original: {
+                        entityId: response?.data?.original?.entityId,
+                        height: response?.data?.height,
+                        width: response?.data?.width,
+                      },
+                      large: {},
+                      thumbnail: {},
+                    };
+                    addUpdateOrganizationApiHandler(organizationPayload);
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    const element = document.getElementsByClassName('logo');
+                    element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                  });
+            } else {
+              if (values?.logo) {
+                if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
+                else organizationPayload['logo'] = organizationData?.logo;
+              }
+              addUpdateOrganizationApiHandler(organizationPayload);
+            }
+          }
+        } else {
+          addUpdateOrganizationApiHandler(organizationPayload);
+        }
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error);
+        message.warning({
+          duration: 10,
+          maxCount: 1,
+          key: 'organization-save-as-warning',
+          content: (
+            <>
+              {t('dashboard.organization.createNew.notification.saveError')} &nbsp;
+              <Button
+                type="text"
+                icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                onClick={() => message.destroy('person-save-as-warning')}
+              />
+            </>
+          ),
+          icon: <ExclamationCircleOutlined />,
+        });
+      });
   };
 
   const placesSearch = (inputValue = '') => {
@@ -126,31 +419,52 @@ function CreateNewOrganization() {
       .catch((error) => console.log(error));
   };
 
+  const addFieldsHandler = (fieldNames) => {
+    let array = addedFields?.concat(fieldNames);
+    array = [...new Set(array)];
+    setAddedFields(array);
+    setScrollToSelectedField(array?.at(-1));
+  };
+
+  useEffect(() => {
+    if (addedFields?.length > 0) {
+      const element = document.getElementsByClassName(scrollToSelectedField);
+      element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }, [addedFields]);
+
   useEffect(() => {
     if (calendarId && organizationData && currentCalendarData) {
-      if (organizationData?.image) {
-        form.setFieldsValue({
-          imageCrop: {
-            large: {
-              x: organizationData?.image?.large?.xCoordinate,
-              y: organizationData?.image?.large?.yCoordinate,
-              height: organizationData?.image?.large?.height,
-              width: organizationData?.image?.large?.width,
+      if (routinghandler(user, calendarId, organizationData?.createdByUserId, null, true)) {
+        if (organizationData?.image) {
+          form.setFieldsValue({
+            imageCrop: {
+              large: {
+                x: organizationData?.image?.large?.xCoordinate,
+                y: organizationData?.image?.large?.yCoordinate,
+                height: organizationData?.image?.large?.height,
+                width: organizationData?.image?.large?.width,
+              },
+              original: {
+                entityId: organizationData?.image?.original?.entityId ?? null,
+                height: organizationData?.image?.original?.height,
+                width: organizationData?.image?.original?.width,
+              },
+              thumbnail: {
+                x: organizationData?.image?.thumbnail?.xCoordinate,
+                y: organizationData?.image?.thumbnail?.yCoordinate,
+                height: organizationData?.image?.thumbnail?.height,
+                width: organizationData?.image?.thumbnail?.width,
+              },
             },
-            original: {
-              entityId: organizationData?.image?.original?.entityId ?? null,
-              height: organizationData?.image?.original?.height,
-              width: organizationData?.image?.original?.width,
-            },
-            thumbnail: {
-              x: organizationData?.image?.thumbnail?.xCoordinate,
-              y: organizationData?.image?.thumbnail?.yCoordinate,
-              height: organizationData?.image?.thumbnail?.height,
-              width: organizationData?.image?.thumbnail?.width,
-            },
-          },
-        });
-      }
+          });
+        }
+        let organizationKeys = Object.keys(organizationData);
+        if (organizationKeys?.length > 0) setAddedFields(organizationKeys);
+      } else
+        window.location.replace(
+          `${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${organizationId}`,
+        );
     }
   }, [organizationLoading, currentCalendarData]);
 
@@ -177,8 +491,6 @@ function CreateNewOrganization() {
     placesSearch('');
   }, []);
 
-  // console.log(fields);
-  // console.log(organizationData);
   return fields && !organizationLoading && !taxonomyLoading && !artsDataLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <div className="add-edit-wrapper add-organization-wrapper">
@@ -201,7 +513,10 @@ function CreateNewOrganization() {
                     <Form.Item>
                       <PrimaryButton
                         label={t('dashboard.events.addEditEvent.saveOptions.save')}
-                        onClick={onSaveHandler}
+                        onClick={() => onSaveHandler()}
+                        disabled={
+                          addOrganizationLoading || imageUploadLoading || updateOrganizationLoading ? true : false
+                        }
                       />
                     </Form.Item>
                   </div>
@@ -246,6 +561,14 @@ function CreateNewOrganization() {
                             setLocationPlace,
                             setIsPopoverOpen,
                             isPopoverOpen,
+                            form,
+                            style: {
+                              display: !field?.isPreset
+                                ? !addedFields?.includes(field?.mappedField)
+                                  ? 'none'
+                                  : ''
+                                : '',
+                            },
                           });
                         }
                       });
@@ -292,7 +615,45 @@ function CreateNewOrganization() {
                         }
                       })}
                   </>
-                  <></>
+                  <>
+                    {section?.filter((field) => !field?.isPreset)?.length > 0 && (
+                      <Form.Item
+                        label={t('dashboard.organization.createNew.addOrganization.addMoreDetails')}
+                        style={{ lineHeight: '2.5' }}>
+                        {section
+                          ?.filter((field) => !field?.isPreset)
+                          ?.map((field) => addedFields?.includes(field?.mappedField))
+                          ?.includes(false) ? (
+                          section?.map((field) => {
+                            if (!addedFields?.includes(field?.mappedField) && !field?.isPreset)
+                              return (
+                                <ChangeType
+                                  key={field?.mappedField}
+                                  primaryIcon={<PlusOutlined />}
+                                  disabled={false}
+                                  label={contentLanguageBilingual({
+                                    en: field?.label?.en,
+                                    fr: field?.label?.fr,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    calendarContentLanguage: calendarContentLanguage,
+                                  })}
+                                  promptText={contentLanguageBilingual({
+                                    en: field?.helperText?.en,
+                                    fr: field?.helperText?.fr,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    calendarContentLanguage: calendarContentLanguage,
+                                  })}
+                                  secondaryIcon={<InfoCircleOutlined />}
+                                  onClick={() => addFieldsHandler(field?.mappedField)}
+                                />
+                              );
+                          })
+                        ) : (
+                          <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                        )}
+                      </Form.Item>
+                    )}
+                  </>
                 </Card>
               );
           })}

@@ -5,6 +5,7 @@ export const PathName = {
   ResetPassword: '/reset-password',
   Events: '/events',
   Places: '/places',
+  AddPlace: '/add-place',
   Organizations: '/organizations',
   AddOrganization: '/add-organization',
   People: '/people',

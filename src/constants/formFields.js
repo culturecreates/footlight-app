@@ -1,5 +1,4 @@
 import { Form, Input, Popover } from 'antd';
-import TextEditor from '../components/TextEditor';
 import NoContent from '../components/NoContent/NoContent';
 import { CloseCircleOutlined } from '@ant-design/icons';
 import Tags from '../components/Tags/Common/Tags';
@@ -16,6 +15,7 @@ import { formInitialValueHandler } from '../utils/formInitialValueHandler';
 import { featureFlags } from '../utils/featureFlags';
 import EventsSearch from '../components/Search/Events/EventsSearch';
 import SelectionItem from '../components/List/SelectionItem';
+import BilingualTextEditor from '../components/BilingualTextEditor';
 
 const { TextArea } = Input;
 
@@ -39,6 +39,7 @@ export const dataTypes = {
   IDENTITY_STRING: 'IdentityString',
   URI_STRING: 'URIString',
   IMAGE: 'Image',
+  EMAIL: 'Email',
 };
 
 export const mappedFieldTypes = {
@@ -64,6 +65,13 @@ const rules = [
       message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
     },
   },
+  {
+    dataType: dataTypes.EMAIL,
+    rule: {
+      type: 'email',
+      message: <Translation>{(t) => t('login.validations.invalidEmail')}</Translation>,
+    },
+  },
 ];
 
 export const formFieldValue = [
@@ -78,6 +86,7 @@ export const formFieldValue = [
                 name={name?.concat(['fr'])}
                 key={contentLanguage.FRENCH}
                 dependencies={name?.concat(['en'])}
+                initialValue={data?.fr}
                 rules={
                   required
                     ? [
@@ -104,6 +113,7 @@ export const formFieldValue = [
                 name={name?.concat(['en'])}
                 key={contentLanguage.ENGLISH}
                 dependencies={name?.concat(['fr'])}
+                initialValue={data?.en}
                 rules={
                   required
                     ? [
@@ -137,19 +147,26 @@ export const formFieldValue = [
             placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
           />
         );
-      else
+      else if (datatype === dataTypes.EMAIL)
         return (
-          <TextArea
-            autoSize
-            autoComplete="off"
+          <StyledInput
             placeholder={contentLanguageBilingual({
               en: placeholder?.en,
               fr: placeholder?.fr,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             })}
-            style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-            size="large"
+          />
+        );
+      else
+        return (
+          <StyledInput
+            placeholder={contentLanguageBilingual({
+              en: placeholder?.en,
+              fr: placeholder?.fr,
+              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+              calendarContentLanguage: calendarContentLanguage,
+            })}
           />
         );
     },
@@ -172,12 +189,8 @@ export const formFieldValue = [
     ),
   },
   {
-    type: formTypes.EDITOR,
-    element: () => <TextEditor />,
-  },
-  {
     type: formTypes.MULTISELECT,
-    element: ({ taxonomyData, user, type, isDynamicField, calendarContentLanguage, placeholder }) => {
+    element: ({ taxonomyData, user, taxonomyAlias, isDynamicField, calendarContentLanguage, placeholder }) => {
       return (
         <TreeSelectOption
           allowClear
@@ -190,7 +203,7 @@ export const formFieldValue = [
             calendarContentLanguage: calendarContentLanguage,
           })}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-          treeData={treeTaxonomyOptions(taxonomyData, user, type, isDynamicField, calendarContentLanguage)}
+          treeData={treeTaxonomyOptions(taxonomyData, user, taxonomyAlias, isDynamicField, calendarContentLanguage)}
           tagRender={(props) => {
             const { label, closable, onClose } = props;
             return (
@@ -231,8 +244,8 @@ export const formFieldValue = [
           originalImageUrl={originalUrl}
           imageReadOnly={imageReadOnly}
           preview={preview}
-          setImageCropOpen={name?.includes(mappedFieldTypes.IMAGE) && setImageCropOpen}
-          imageCropOpen={name?.includes(mappedFieldTypes.IMAGE) && imageCropOpen}
+          setImageCropOpen={name?.includes(mappedFieldTypes.IMAGE) ? setImageCropOpen : false}
+          imageCropOpen={name?.includes(mappedFieldTypes.IMAGE) ? imageCropOpen : false}
           form={form}
           eventImageData={eventImageData}
           isCrop={name?.includes(mappedFieldTypes.IMAGE) ? featureFlags.imageCropFeature : false}
@@ -325,6 +338,31 @@ export const formFieldValue = [
       );
     },
   },
+  {
+    type: formTypes.EDITOR,
+    element: ({
+      datatype,
+      data,
+      calendarContentLanguage,
+      name = [],
+      placeholder,
+      required,
+      // validations,
+      descriptionMinimumWordCount,
+    }) => {
+      if (datatype === dataTypes.MULTI_LINGUAL)
+        return (
+          <BilingualTextEditor
+            data={data}
+            calendarContentLanguage={calendarContentLanguage}
+            name={name}
+            placeholder={placeholder}
+            descriptionMinimumWordCount={descriptionMinimumWordCount}
+            required={required}
+          />
+        );
+    },
+  },
 ];
 
 export const renderFormFields = ({
@@ -339,11 +377,12 @@ export const renderFormFields = ({
   position,
   hidden,
   label,
+  style,
+  mappedField,
 }) => {
   return (
     <>
       {position === 'top' && datatype !== dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
-
       <Form.Item
         label={label}
         name={name}
@@ -351,10 +390,18 @@ export const renderFormFields = ({
         initialValue={initialValue}
         required={required}
         hidden={hidden}
+        style={style}
+        className={mappedField}
         rules={rules?.map((rule) => {
           if (datatype === rule?.dataType) return rule.rule;
         })}
-        help={position === 'bottom' && userTips ? <p className="add-event-date-heading">{userTips}</p> : undefined}>
+        help={
+          position === 'bottom' && userTips ? (
+            <p className="add-event-date-heading" style={{ marginTop: '-15px' }}>
+              {userTips}
+            </p>
+          ) : undefined
+        }>
         {element}
       </Form.Item>
     </>
@@ -382,17 +429,20 @@ export const returnFormDataWithFields = ({
   setIsPopoverOpen,
   isPopoverOpen,
   form,
+  style,
 }) => {
   return renderFormFields({
     name: [field?.mappedField],
+    mappedField: field?.mappedField,
     type: field?.type,
     datatype: field?.datatype,
     required: field?.isRequiredField,
     element: formField?.element({
+      data: entityData[field?.mappedField],
       datatype: field?.datatype,
       taxonomyData: allTaxonomyData,
       user: user,
-      type: field?.mappedField,
+      type: field?.type,
       isDynamicField: false,
       calendarContentLanguage,
       name: [field?.mappedField],
@@ -409,7 +459,14 @@ export const returnFormDataWithFields = ({
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
         calendarContentLanguage: calendarContentLanguage,
       }),
-      largeUrl: entityData?.image?.large?.uri,
+      largeUrl:
+        field?.mappedField === mappedFieldTypes.IMAGE
+          ? entityData?.image?.large?.uri
+          : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo?.large?.uri,
+      originalImageUrl:
+        field?.mappedField === mappedFieldTypes.IMAGE
+          ? entityData?.image?.original?.uri
+          : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo?.original?.uri,
       required: field?.isRequiredField,
       t: t,
       userTips: contentLanguageBilingual({
@@ -422,7 +479,10 @@ export const returnFormDataWithFields = ({
       isCrop: isCrop,
       setImageCropOpen,
       imageCropOpen,
-      eventImageData: entityData?.image,
+      eventImageData:
+        field?.mappedField === mappedFieldTypes.IMAGE
+          ? entityData?.image
+          : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo,
       largeAspectRatio:
         currentCalendarData?.imageConfig?.length > 0 ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio : null,
       thumbnailAspectRatio:
@@ -436,6 +496,7 @@ export const returnFormDataWithFields = ({
       setIsPopoverOpen,
       isPopoverOpen,
       form,
+      taxonomyAlias: field?.taxonomyAlias,
     }),
     key: index,
     initialValue: formInitialValueHandler(field?.type, field?.mappedField, field?.datatype, entityData),
@@ -454,5 +515,7 @@ export const returnFormDataWithFields = ({
     position: field?.userTips?.position,
     hidden: field?.isAdminOnlyField ? (adminCheckHandler() ? false : true) : false,
     form,
+    style,
+    taxonomyAlias: field?.taxonomyAlias,
   });
 };

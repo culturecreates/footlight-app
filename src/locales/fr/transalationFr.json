@@ -397,7 +397,7 @@
 
       "publishOptions": {
         "publishEvent": "Publier l'événement",
-        "unpublishEvent": "Dépublier l'événement",
+        "unpublishEvent": "Passer en brouillon",
         "deleteEvent": "Supprimer l'événement",
         "duplicateEvent": "Dupliquer l’événement"
       },
@@ -462,7 +462,21 @@
         },
         "addOrganization": {
           "newOrganization": "Nouvelle organisation",
-          "editOrganization": "Modifier l’organisation"
+          "editOrganization": "Modifier l’organisation",
+          "addMoreDetails": "Ajouter des détails à votre organisation"
+        },
+        "notification": {
+          "addSuccess": "Succès ! Votre organisation a été créé.",
+          "editSuccess": "Succès ! Votre organisation a été mis à jour.",
+          "saveError": "Cet organisation a besoin de plus d'informations avant d'être enregistré."
+        },
+        "validations": {
+          "nameRequired": "Le nom est requis.",
+          "emptyDescription": "Une description est requise ({{wordCount}} mots minimum).",
+          "unilingualEmptyDescription": "Une description est requise.",
+          "englishShort": "La description en anglais est trop courte.",
+          "frenchShort": "La description française est trop courte.",
+          "unilingualDescriptionShort": "La description est trop courte"
         }
       }
     },

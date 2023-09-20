@@ -25,6 +25,7 @@ import SearchPlaces from '../pages/Dashboard/SearchPlaces';
 import Settings from '../pages/Dashboard/Settings';
 import CreateNewPerson from '../pages/Dashboard/CreateNewPerson';
 import UserReadOnly from '../pages/Dashboard/UserReadOnly';
+import CreateNewPlace from '../pages/Dashboard/CreateNewPlace';
 
 export const router = createBrowserRouter([
   {
@@ -92,6 +93,10 @@ export const router = createBrowserRouter([
         handle: {
           crumb: () => <Translation>{(t) => t('dashboard.places.place')}</Translation>,
         },
+      },
+      {
+        path: `:calendarId${PathName.Places}${PathName.AddPlace}`,
+        element: <CreateNewPlace />,
       },
       {
         path: `:calendarId${PathName.Organizations}`,

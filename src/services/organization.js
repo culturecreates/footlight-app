@@ -47,6 +47,16 @@ export const organizationApi = createApi({
       }),
       invalidatesTags: (result, error, arg) => [{ type: 'Organization', id: arg.id }],
     }),
+    updateOrganization: builder.mutation({
+      query: ({ data, calendarId, organizationId }) => ({
+        url: `organizations/${organizationId}`,
+        method: 'PATCH',
+        headers: {
+          'calendar-id': calendarId,
+        },
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -56,4 +66,5 @@ export const {
   useGetOrganizationQuery,
   useLazyGetAllOrganizationQuery,
   useDeleteOrganizationMutation,
+  useUpdateOrganizationMutation,
 } = organizationApi;
