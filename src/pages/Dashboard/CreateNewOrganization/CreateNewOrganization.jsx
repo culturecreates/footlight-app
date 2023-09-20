@@ -384,6 +384,14 @@ function CreateNewOrganization() {
             }
           }
         } else {
+          if (values?.logo) {
+            if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
+            else organizationPayload['logo'] = organizationData?.logo;
+          }
+          if (values?.image) {
+            if (values?.image && values?.image?.length == 0) organizationPayload['image'] = null;
+            else organizationPayload['image'] = imageCrop;
+          }
           addUpdateOrganizationApiHandler(organizationPayload);
         }
       })

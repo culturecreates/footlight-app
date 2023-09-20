@@ -523,6 +523,25 @@
           "linkText": "Artsdata",
           "footlightSectionHeading": "From Footlight",
           "artsDataSectionHeading": "Imports from Artsdata"
+        },
+        "addPlace": {
+          "newPlace": "Nouveau lieu",
+          "editPlace": "Modifier lieu",
+          "question": {
+            "firstPart": "S'agit-il de la bonne lieu ? Si non, ",
+            "secondPart": "créez une nouvelle lieu",
+            "thirdPart": " et ne sélectionnez pas cette source de données."
+          },
+          "name": "Nom du lieu",
+          "dataSource": "Source de la donnée",
+          "notification": {
+            "addSuccess": "Succès ! Votre lieu a été créé.",
+            "editSuccess": "Succès ! Votre lieu a été mis à jour.",
+            "saveError": "Cet lieu a besoin de plus d'informations avant d'être enregistré."
+          },
+          "validations": {
+            "nameRequired": "Le nom est requis."
+          }
         }
       }
     },
