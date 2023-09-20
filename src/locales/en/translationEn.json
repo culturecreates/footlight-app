@@ -595,6 +595,13 @@
               "french": "Enter Disambiguating description"
             }
           },
+          "description": {
+            "description": "Description"
+          },
+          "image": {
+            "image": "Image",
+            "subheading": "Only .jpeg and .png files are accepted."
+          },
           "notification": {
             "addSuccess": "Success! Your place has been created.",
             "editSuccess": "Success! Your place has been updated.",

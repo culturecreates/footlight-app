@@ -33,6 +33,8 @@ import EventsSearch from '../../../components/Search/Events/EventsSearch';
 import { useLazyGetEntitiesQuery } from '../../../services/entities';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
+import TextEditor from '../../../components/TextEditor';
+import ImageUpload from '../../../components/ImageUpload';
 
 const { TextArea } = Input;
 
@@ -66,6 +68,10 @@ function CreateNewPlace() {
     PLACE_ACCESSIBILITY: 'placeAccessibility',
     DISAMBIGUATING_DESCRIPTION_ENGLISH: 'englishDisambiguatingDescription',
     DISAMBIGUATING_DESCRIPTION_FRENCH: 'frenchDisambiguatingDescription',
+    EDITOR_FRENCH: 'frenchEditor',
+    EDITOR_ENGLISH: 'englishEditor',
+    DRAGGER: 'dragger',
+    DRAGGER_WRAP: 'draggerWrap',
   };
   const placeId = searchParams.get('id');
   const artsDataId = location?.state?.data?.id ?? null;
@@ -84,6 +90,9 @@ function CreateNewPlace() {
   });
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
 
+  const reactQuillRefFr = useRef(null);
+  const reactQuillRefEn = useRef(null);
+
   const [artsData, setArtsData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState({
@@ -91,7 +100,8 @@ function CreateNewPlace() {
   });
   const [containedInPlace, setContainedInPlace] = useState();
   const [allPlacesList, setAllPlacesList] = useState([]);
-
+  const [descriptionMinimumWordCount] = useState(1);
+  const [imageCropOpen, setImageCropOpen] = useState(false);
   // const [addedFields, setAddedFields] = useState([]);
   // const [scrollToSelectedField, setScrollToSelectedField] = useState();
 
@@ -364,6 +374,200 @@ function CreateNewPlace() {
                     </Form.Item>
                   </BilingualInput>
                 </ContentLanguageInput>
+              </Form.Item>
+              <Form.Item label={t('dashboard.places.createNew.addPlace.description.description')}>
+                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <BilingualInput fieldData={placeData?.description}>
+                    <TextEditor
+                      formName={formFieldNames.EDITOR_FRENCH}
+                      key={contentLanguage.FRENCH}
+                      calendarContentLanguage={calendarContentLanguage}
+                      initialValue={placeData?.description?.fr}
+                      dependencies={[formFieldNames.EDITOR_ENGLISH]}
+                      currentReactQuillRef={reactQuillRefFr}
+                      editorLanguage={'fr'}
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.description.frenchPlaceholder')}
+                      descriptionMinimumWordCount={descriptionMinimumWordCount}
+                      rules={[
+                        () => ({
+                          validator() {
+                            if (
+                              reactQuillRefFr?.current?.unprivilegedEditor?.getLength() > 1 ||
+                              reactQuillRefEn?.current?.unprivilegedEditor?.getLength() > 1
+                            ) {
+                              return Promise.resolve();
+                            } else
+                              return Promise.reject(
+                                new Error(
+                                  calendarContentLanguage === contentLanguage.ENGLISH ||
+                                  calendarContentLanguage === contentLanguage.FRENCH
+                                    ? t(
+                                        'dashboard.events.addEditEvent.validations.otherInformation.unilingualEmptyDescription',
+                                      )
+                                    : calendarContentLanguage === contentLanguage.BILINGUAL &&
+                                      t('dashboard.events.addEditEvent.validations.otherInformation.emptyDescription', {
+                                        wordCount: descriptionMinimumWordCount,
+                                      }),
+                                ),
+                              );
+                          },
+                        }),
+                        () => ({
+                          validator() {
+                            if (
+                              reactQuillRefFr?.current?.unprivilegedEditor
+                                ?.getText()
+                                .split(' ')
+                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
+                            ) {
+                              return Promise.resolve();
+                            } else if (
+                              reactQuillRefEn?.current?.unprivilegedEditor
+                                ?.getText()
+                                .split(' ')
+                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
+                            )
+                              return Promise.resolve();
+                            else
+                              return Promise.reject(
+                                new Error(
+                                  calendarContentLanguage === contentLanguage.ENGLISH ||
+                                  calendarContentLanguage === contentLanguage.FRENCH
+                                    ? t(
+                                        'dashboard.events.addEditEvent.validations.otherInformation.unilingualDescriptionShort',
+                                      )
+                                    : calendarContentLanguage === contentLanguage.BILINGUAL &&
+                                      t('dashboard.events.addEditEvent.validations.otherInformation.frenchShort'),
+                                ),
+                              );
+                          },
+                        }),
+                      ]}
+                    />
+
+                    <TextEditor
+                      formName={formFieldNames.EDITOR_ENGLISH}
+                      key={contentLanguage.ENGLISH}
+                      initialValue={placeData?.description?.en}
+                      calendarContentLanguage={calendarContentLanguage}
+                      dependencies={[formFieldNames.EDITOR_FRENCH]}
+                      currentReactQuillRef={reactQuillRefEn}
+                      editorLanguage={'en'}
+                      placeholder={t('dashboard.events.addEditEvent.otherInformation.description.englishPlaceholder')}
+                      descriptionMinimumWordCount={descriptionMinimumWordCount}
+                      rules={[
+                        () => ({
+                          validator() {
+                            if (
+                              reactQuillRefFr?.current?.unprivilegedEditor?.getLength() > 1 ||
+                              reactQuillRefEn?.current?.unprivilegedEditor?.getLength() > 1
+                            ) {
+                              return Promise.resolve();
+                            } else
+                              return Promise.reject(
+                                new Error(
+                                  calendarContentLanguage === contentLanguage.ENGLISH ||
+                                  calendarContentLanguage === contentLanguage.FRENCH
+                                    ? t(
+                                        'dashboard.events.addEditEvent.validations.otherInformation.unilingualEmptyDescription',
+                                      )
+                                    : calendarContentLanguage === contentLanguage.BILINGUAL &&
+                                      t('dashboard.events.addEditEvent.validations.otherInformation.emptyDescription', {
+                                        wordCount: descriptionMinimumWordCount,
+                                      }),
+                                ),
+                              );
+                          },
+                        }),
+                        () => ({
+                          validator() {
+                            if (
+                              reactQuillRefEn?.current?.unprivilegedEditor
+                                ?.getText()
+                                .split(' ')
+                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
+                            ) {
+                              return Promise.resolve();
+                            } else if (
+                              reactQuillRefFr?.current?.unprivilegedEditor
+                                ?.getText()
+                                .split(' ')
+                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
+                            )
+                              return Promise.resolve();
+                            else
+                              return Promise.reject(
+                                new Error(
+                                  calendarContentLanguage === contentLanguage.ENGLISH ||
+                                  calendarContentLanguage === contentLanguage.FRENCH
+                                    ? t(
+                                        'dashboard.events.addEditEvent.validations.otherInformation.unilingualDescriptionShort',
+                                      )
+                                    : calendarContentLanguage === contentLanguage.BILINGUAL &&
+                                      t('dashboard.events.addEditEvent.validations.otherInformation.englishShort'),
+                                ),
+                              );
+                          },
+                        }),
+                      ]}
+                    />
+                  </BilingualInput>
+                </ContentLanguageInput>
+              </Form.Item>
+              <Form.Item
+                label={t('dashboard.places.createNew.addPlace.image.image')}
+                name={formFieldNames.DRAGGER_WRAP}
+                className="draggerWrap"
+                initialValue={placeData?.image && placeData?.image?.original?.uri}
+                // {...(isAddImageError && {
+                //   help: t('dashboard.events.addEditEvent.validations.errorImage'),
+                //   validateStatus: 'error',
+                // })}
+                rules={[
+                  ({ getFieldValue }) => ({
+                    validator() {
+                      if (
+                        (getFieldValue(formFieldNames.DRAGGER) != undefined &&
+                          getFieldValue(formFieldNames.DRAGGER)?.length > 0) ||
+                        (placeData?.image?.original?.uri && !getFieldValue(formFieldNames.DRAGGER)) ||
+                        (placeData?.image?.original?.uri && getFieldValue(formFieldNames.DRAGGER)?.length > 0)
+                      ) {
+                        return Promise.resolve();
+                      } else
+                        return Promise.reject(
+                          new Error(t('dashboard.events.addEditEvent.validations.otherInformation.emptyImage')),
+                        );
+                    },
+                  }),
+                ]}>
+                <Row>
+                  <Col>
+                    <p className="add-event-date-heading">
+                      {t('dashboard.places.createNew.addPlace.image.subheading')}
+                    </p>
+                  </Col>
+                </Row>
+                <ImageUpload
+                  imageUrl={placeData?.image?.large?.uri}
+                  originalImageUrl={placeData?.image?.original?.uri}
+                  imageReadOnly={false}
+                  preview={true}
+                  setImageCropOpen={setImageCropOpen}
+                  imageCropOpen={imageCropOpen}
+                  form={form}
+                  eventImageData={placeData?.image}
+                  largeAspectRatio={
+                    currentCalendarData?.imageConfig?.length > 0
+                      ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio
+                      : null
+                  }
+                  thumbnailAspectRatio={
+                    currentCalendarData?.imageConfig?.length > 0
+                      ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio
+                      : null
+                  }
+                  isCrop={featureFlags.imageCropFeature}
+                />
               </Form.Item>
             </>
             <></>

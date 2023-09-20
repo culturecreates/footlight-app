@@ -591,6 +591,13 @@
               "french": "Entrez la description identifiante"
             }
           },
+          "description": {
+            "description": "Description"
+          },
+          "image": {
+            "image": "Image",
+            "subheading": "Only .jpeg and .png files are accepted."
+          },
           "dataSource": "Source de la donnée",
           "notification": {
             "addSuccess": "Succès ! Votre lieu a été créé.",
