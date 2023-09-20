@@ -30,6 +30,7 @@ import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import { userRoles } from '../../../constants/userRoles';
+import { routinghandler } from '../../../utils/roleRoutingHandler';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -251,29 +252,32 @@ function CreateNewPerson() {
   };
   useEffect(() => {
     if (calendarId && personData && currentCalendarData) {
-      if (personData?.image) {
-        form.setFieldsValue({
-          imageCrop: {
-            large: {
-              x: personData?.image?.large?.xCoordinate,
-              y: personData?.image?.large?.yCoordinate,
-              height: personData?.image?.large?.height,
-              width: personData?.image?.large?.width,
+      if (routinghandler(user, calendarId, personData?.createdByUserId, null, true)) {
+        if (personData?.image) {
+          form.setFieldsValue({
+            imageCrop: {
+              large: {
+                x: personData?.image?.large?.xCoordinate,
+                y: personData?.image?.large?.yCoordinate,
+                height: personData?.image?.large?.height,
+                width: personData?.image?.large?.width,
+              },
+              original: {
+                entityId: personData?.image?.original?.entityId ?? null,
+                height: personData?.image?.original?.height,
+                width: personData?.image?.original?.width,
+              },
+              thumbnail: {
+                x: personData?.image?.thumbnail?.xCoordinate,
+                y: personData?.image?.thumbnail?.yCoordinate,
+                height: personData?.image?.thumbnail?.height,
+                width: personData?.image?.thumbnail?.width,
+              },
             },
-            original: {
-              entityId: personData?.image?.original?.entityId ?? null,
-              height: personData?.image?.original?.height,
-              width: personData?.image?.original?.width,
-            },
-            thumbnail: {
-              x: personData?.image?.thumbnail?.xCoordinate,
-              y: personData?.image?.thumbnail?.yCoordinate,
-              height: personData?.image?.thumbnail?.height,
-              width: personData?.image?.thumbnail?.width,
-            },
-          },
-        });
-      }
+          });
+        }
+      } else
+        window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.People}/${personId}`);
     }
   }, [personLoading, currentCalendarData]);
 
