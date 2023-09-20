@@ -19,6 +19,7 @@ function ImageUpload(props) {
     originalImageUrl,
     formName,
   } = props;
+  console.log(props);
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(props?.imageUrl ?? null);
