@@ -158,17 +158,13 @@ export const formFieldValue = [
         );
       else
         return (
-          <TextArea
-            autoSize
-            autoComplete="off"
+          <StyledInput
             placeholder={contentLanguageBilingual({
               en: placeholder?.en,
               fr: placeholder?.fr,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             })}
-            style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-            size="large"
           />
         );
     },
@@ -398,7 +394,13 @@ export const renderFormFields = ({
         rules={rules?.map((rule) => {
           if (datatype === rule?.dataType) return rule.rule;
         })}
-        help={position === 'bottom' && userTips ? <p className="add-event-date-heading">{userTips}</p> : undefined}>
+        help={
+          position === 'bottom' && userTips ? (
+            <p className="add-event-date-heading" style={{ marginTop: '-15px' }}>
+              {userTips}
+            </p>
+          ) : undefined
+        }>
         {element}
       </Form.Item>
     </>
