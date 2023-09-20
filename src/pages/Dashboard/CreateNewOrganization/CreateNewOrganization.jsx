@@ -383,6 +383,8 @@ function CreateNewOrganization() {
               addUpdateOrganizationApiHandler(organizationPayload);
             }
           }
+        } else {
+          addUpdateOrganizationApiHandler(organizationPayload);
         }
       })
       .catch((error) => {

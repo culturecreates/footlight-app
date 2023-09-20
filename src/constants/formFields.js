@@ -86,6 +86,7 @@ export const formFieldValue = [
                 name={name?.concat(['fr'])}
                 key={contentLanguage.FRENCH}
                 dependencies={name?.concat(['en'])}
+                initialValue={data?.fr}
                 rules={
                   required
                     ? [
@@ -112,6 +113,7 @@ export const formFieldValue = [
                 name={name?.concat(['en'])}
                 key={contentLanguage.ENGLISH}
                 dependencies={name?.concat(['fr'])}
+                initialValue={data?.en}
                 rules={
                   required
                     ? [
@@ -338,7 +340,6 @@ export const formFieldValue = [
   },
   {
     type: formTypes.EDITOR,
-
     element: ({
       datatype,
       data,
@@ -437,6 +438,7 @@ export const returnFormDataWithFields = ({
     datatype: field?.datatype,
     required: field?.isRequiredField,
     element: formField?.element({
+      data: entityData[field?.mappedField],
       datatype: field?.datatype,
       taxonomyData: allTaxonomyData,
       user: user,
