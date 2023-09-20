@@ -574,6 +574,12 @@
               "coordinates": "Coordonnées"
             }
           },
+          "containedInPlace": {
+            "containedInPlace": "Contenu dans un lieu",
+            "subHeading": "Instructions Lorem ipsum si nécessaire.",
+            "addPlace": "Ajouter un lieu",
+            "placeholder": "Rechercher un lieu"
+          },
           "dataSource": "Source de la donnée",
           "notification": {
             "addSuccess": "Succès ! Votre lieu a été créé.",

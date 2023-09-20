@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import './createNewPlace.css';
 import '../AddEvent/addEvent.css';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
-import { Button, Col, Form, Input, Row } from 'antd';
+import { Button, Col, Form, Input, Popover, Row } from 'antd';
 import { LeftOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import PrimaryButton from '../../../components/Button/Primary';
 import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
@@ -28,6 +28,11 @@ import NoContent from '../../../components/NoContent/NoContent';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import Tags from '../../../components/Tags/Common/Tags';
 import StyledInput from '../../../components/Input/Common';
+import SelectionItem from '../../../components/List/SelectionItem';
+import EventsSearch from '../../../components/Search/Events/EventsSearch';
+import { useLazyGetEntitiesQuery } from '../../../services/entities';
+import { entitiesClass } from '../../../constants/entitiesClass';
+import { placesOptions } from '../../../components/Select/selectOption.settings';
 
 const { TextArea } = Input;
 
@@ -57,6 +62,7 @@ function CreateNewPlace() {
     COUNTRY_ENGLISH: 'englishCountry',
     COUNTRY_FRENCH: 'frenchConutry',
     COORDINATES: 'coordinates',
+    CONTAINED_IN_PLACE: 'containedInPlace',
   };
   const placeId = searchParams.get('id');
   const artsDataId = location?.state?.data?.id ?? null;
@@ -73,22 +79,29 @@ function CreateNewPlace() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
+  const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
 
   const [artsData, setArtsData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState({
+    containedInPlace: false,
+  });
+  const [containedInPlace, setContainedInPlace] = useState();
+  const [allPlacesList, setAllPlacesList] = useState([]);
+
   // const [addedFields, setAddedFields] = useState([]);
   // const [scrollToSelectedField, setScrollToSelectedField] = useState();
 
-  // const placesSearch = (inputValue = '') => {
-  //   let query = new URLSearchParams();
-  //   query.append('classes', entitiesClass.place);
-  //   getEntities({ searchKey: inputValue, classes: decodeURIComponent(query.toString()), calendarId })
-  //     .unwrap()
-  //     .then((response) => {
-  //       setAllPlacesList(placesOptions(response, user, calendarContentLanguage));
-  //     })
-  //     .catch((error) => console.log(error));
-  // };
+  const placesSearch = (inputValue = '') => {
+    let query = new URLSearchParams();
+    query.append('classes', entitiesClass.place);
+    getEntities({ searchKey: inputValue, classes: decodeURIComponent(query.toString()), calendarId })
+      .unwrap()
+      .then((response) => {
+        setAllPlacesList(placesOptions(response, user, calendarContentLanguage));
+      })
+      .catch((error) => console.log(error));
+  };
 
   // const addFieldsHandler = (fieldNames) => {
   //   let array = addedFields?.concat(fieldNames);
@@ -159,7 +172,7 @@ function CreateNewPlace() {
         },
       });
 
-    // placesSearch('');
+    placesSearch('');
   }, []);
 
   return !isPlaceLoading && !artsDataLoading && !taxonomyLoading ? (
@@ -571,6 +584,82 @@ function CreateNewPlace() {
                     );
                   }}
                 />
+              </Form.Item>
+            </>
+            <></>
+          </Card>
+          <Card title={t('dashboard.places.createNew.addPlace.containedInPlace.containedInPlace')}>
+            <>
+              <Form.Item
+                name={formFieldNames.CONTAINED_IN_PLACE}
+                className="subheading-wrap"
+                // initialValue={initialPlace && initialPlace[0]?.id}
+                label={t('dashboard.places.createNew.addPlace.containedInPlace.addPlace')}>
+                <Popover
+                  open={isPopoverOpen.containedInPlace}
+                  onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, containedInPlace: open })}
+                  overlayClassName="event-popover"
+                  placement="bottom"
+                  autoAdjustOverflow={false}
+                  getPopupContainer={(trigger) => trigger.parentNode}
+                  trigger={['click']}
+                  content={
+                    <div>
+                      <div className="search-scrollable-content">
+                        {allPlacesList?.length > 0 ? (
+                          allPlacesList?.map((place, index) => (
+                            <div
+                              key={index}
+                              className={`event-popover-options ${
+                                containedInPlace?.value == place?.value ? 'event-popover-options-active' : null
+                              }`}
+                              onClick={() => {
+                                setContainedInPlace(place);
+                                form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.value);
+                                setIsPopoverOpen({
+                                  ...isPopoverOpen,
+                                  containedInPlace: false,
+                                });
+                              }}>
+                              {place?.label}
+                            </div>
+                          ))
+                        ) : (
+                          <NoContent />
+                        )}
+                      </div>
+                    </div>
+                  }>
+                  <EventsSearch
+                    style={{ borderRadius: '4px', width: '423px' }}
+                    placeholder={t('dashboard.places.createNew.addPlace.containedInPlace.placeholder')}
+                    onChange={(e) => {
+                      placesSearch(e.target.value);
+                      setIsPopoverOpen({ ...isPopoverOpen, containedInPlace: true });
+                    }}
+                    onClick={() => {
+                      setIsPopoverOpen({ ...isPopoverOpen, containedInPlace: true });
+                    }}
+                  />
+                </Popover>
+                {containedInPlace && (
+                  <SelectionItem
+                    icon={containedInPlace?.label?.props?.icon}
+                    name={containedInPlace?.name}
+                    description={containedInPlace?.description}
+                    itemWidth="100%"
+                    postalAddress={containedInPlace?.postalAddress}
+                    accessibility={containedInPlace?.accessibility}
+                    openingHours={containedInPlace?.openingHours}
+                    calendarContentLanguage={calendarContentLanguage}
+                    bordered
+                    closable
+                    onClose={() => {
+                      setContainedInPlace();
+                      form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, undefined);
+                    }}
+                  />
+                )}
               </Form.Item>
             </>
             <></>

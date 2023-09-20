@@ -578,6 +578,12 @@
               "coordinates": "Coordinates"
             }
           },
+          "containedInPlace": {
+            "containedInPlace": "Contained in place",
+            "subHeading": "Lorem ipsum instructions if needed.",
+            "addPlace": "Add a place",
+            "placeholder": "Search a place"
+          },
           "notification": {
             "addSuccess": "Success! Your place has been created.",
             "editSuccess": "Success! Your place has been updated.",
