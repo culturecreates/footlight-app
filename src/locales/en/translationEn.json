@@ -618,7 +618,12 @@
           "sendInvitation": "Send invitation",
           "copyInvitationLink": "Copy invitation link",
           "activateOrDeactivate": "Activate/Deactivate",
-          "deleteUser": "Delete user"
+          "deleteUser": "Delete user",
+          "modal": {
+            "deleteText": "Are you sure you want to permanently delete this user",
+            "deactivateText": "Are you sure you want to deactivate this user",
+            "activateText": "Are you sure you want to activate this user"
+          }
         }
       },
       "userReadOnly": {

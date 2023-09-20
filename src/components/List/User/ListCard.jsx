@@ -8,14 +8,9 @@ const ListCard = (props) => {
   const { id, actions, listItemHandler, title, description, activityStatus, invitedBy } = props;
   const { t } = useTranslation();
   return (
-    <List.Item
-      className="users-list-item-wrapper"
-      key={id}
-      actions={actions}
-      style={{ padding: '24px 0px' }}
-      onClick={listItemHandler}>
-      <List.Item.Meta className="user-item-meta" title={title} description={description} />
-      <div className="user-item-content">
+    <List.Item className="users-list-item-wrapper" key={id} actions={actions} style={{ padding: '24px 0px' }}>
+      <List.Item.Meta className="user-item-meta" title={title} description={description} onClick={listItemHandler} />
+      <div className="user-item-content" onClick={listItemHandler}>
         <StatusTag activityStatus={activityStatus} />
         {invitedBy && (
           <div className="invitation-details">

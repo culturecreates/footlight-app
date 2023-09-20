@@ -15,6 +15,19 @@ export const inviteApi = createApi({
       transformResponse: (response) => response.data,
     }),
 
+    inviteUser: builder.mutation({
+      query: ({ firstName, lastName, email, role, calendarId }) => {
+        return {
+          url: `invite`,
+          method: 'POST',
+          headers: {
+            'calendar-id': calendarId,
+          },
+          body: { firstName, lastName, email, role },
+        };
+      },
+    }),
+
     acceptInvite: builder.mutation({
       query: ({ id, password }) => {
         return {
@@ -27,4 +40,9 @@ export const inviteApi = createApi({
   }),
 });
 
-export const { useGetInviteDetailsQuery, useAcceptInviteMutation, useLazyGetInviteDetailsQuery } = inviteApi;
+export const {
+  useGetInviteDetailsQuery,
+  useAcceptInviteMutation,
+  useLazyGetInviteDetailsQuery,
+  useInviteUserMutation,
+} = inviteApi;

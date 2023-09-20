@@ -1,7 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import UserSearch from '../../../../components/Search/Events/EventsSearch';
 import { useNavigate, useParams, useSearchParams, createSearchParams } from 'react-router-dom';
-import { useLazyGetAllUsersQuery } from '../../../../services/users';
+import {
+  useActivateUserMutation,
+  useDeactivateUserMutation,
+  useDeleteUserMutation,
+  useLazyGetAllUsersQuery,
+} from '../../../../services/users';
 import LoadingIndicator from '../../../../components/LoadingIndicator';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -10,18 +15,26 @@ import { MoreOutlined } from '@ant-design/icons';
 import NoContent from '../../../../components/NoContent/NoContent';
 import './userManagement.css';
 import { userRoles, userRolesWithTranslation } from '../../../../constants/userRoles';
-import { Button, Col, Dropdown, Grid, List, Row, Space } from 'antd';
+import { Button, Col, Dropdown, Grid, List, Modal, notification, Row, Space } from 'antd';
 import ListCard from '../../../../components/List/User/ListCard';
 import bulletIcon from '../../../../assets/icons/dot-bullet.svg';
 import { userActivityStatus } from '../../../../constants/userActivityStatus';
-import { SortAscendingOutlined, SortDescendingOutlined, DownOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import {
+  SortAscendingOutlined,
+  SortDescendingOutlined,
+  DownOutlined,
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+} from '@ant-design/icons';
 import { sortByOptionsUsers, sortOrder } from '../../../../constants/sortByOptions';
 import Username from '../../../../components/Username';
 import { PathName } from '../../../../constants/pathName';
 import { roleHandler } from '../../../../utils/roleHandler';
+import { useInviteUserMutation } from '../../../../services/invite';
 
 const UserManagement = () => {
   const { useBreakpoint } = Grid;
+  const { confirm } = Modal;
 
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
@@ -32,25 +45,52 @@ const UserManagement = () => {
   const navigate = useNavigate();
   const screens = useBreakpoint();
 
+  const roleAndStatusFilter = {};
+  if (searchParams.get('userRole') || sessionStorage.getItem('userRole')) {
+    roleAndStatusFilter.userRole = searchParams.get('userRole')
+      ? searchParams.get('userRole')
+      : sessionStorage.getItem('userRole') ?? '';
+  }
+  if (searchParams.get('userStatus') || sessionStorage.getItem('userStatus')) {
+    roleAndStatusFilter.userStatus = searchParams.get('userStatus')
+      ? searchParams.get('userStatus')
+      : sessionStorage.getItem('userStatus') ?? '';
+  }
   const [pageNumber, setPageNumber] = useState(1);
   const [totalCount, setTotalCount] = useState();
-  const [userData, setUserData] = useState([]);
+
   const [filter, setFilter] = useState({
     sort: searchParams.get('sortBy')
       ? searchParams.get('sortBy')
       : sessionStorage.getItem('sortBy') ?? sortByOptionsUsers[0]?.key,
     order: searchParams.get('order') ? searchParams.get('order') : sessionStorage.getItem('order') ?? sortOrder?.ASC,
+    ...roleAndStatusFilter,
   });
 
   const [userSearchQuery, setUserSearchQuery] = useState(
     searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('query') ?? '',
   );
 
-  const [getAllUsers, { isLoading: isUsersLoading }] = useLazyGetAllUsersQuery();
+  const [getAllUsers, { currentData: userData, isLoading: isUsersLoading }] = useLazyGetAllUsersQuery();
+  const [inviteUserMutation, { error }] = useInviteUserMutation();
+  const [deleteUser] = useDeleteUserMutation();
+  const [activateUser] = useActivateUserMutation();
+  const [deActivateUser] = useDeactivateUserMutation();
 
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
+
+  useEffect(() => {
+    if (error) {
+      notification.info({
+        key: 'err',
+        message: 'error',
+        placement: 'top',
+        description: error,
+      });
+    }
+  }, error);
 
   useEffect(() => {
     let sortQuery = new URLSearchParams();
@@ -79,7 +119,6 @@ const UserManagement = () => {
     })
       .unwrap()
       .then((response) => {
-        setUserData(response.data);
         setTotalCount(response?.count);
       });
   }, [filter, pageNumber, userSearchQuery]);
@@ -91,13 +130,13 @@ const UserManagement = () => {
       sortBy: filter?.sort,
     };
 
-    if (filter?.userRole) {
-      params.userRole = filter.userRole;
+    if (filter?.userRole || searchParams.get('userRole') || sessionStorage.getItem('userRole')) {
+      params.userRole = filter.userRole || searchParams.get('userRole') || sessionStorage.getItem('userRole');
       sessionStorage.setItem('userRole', filter.userRole);
     }
 
-    if (filter?.userStatus) {
-      params.userStatus = filter.userStatus;
+    if (filter?.userStatus || searchParams.get('userStatus') || sessionStorage.getItem('userStatus')) {
+      params.userStatus = filter.userStatus || searchParams.get('userStatus') || sessionStorage.getItem('userStatus');
       sessionStorage.setItem('userStatus', filter.userStatus);
     }
 
@@ -147,14 +186,48 @@ const UserManagement = () => {
     setPageNumber(1);
   };
 
-  const onTooltipClickHandler = ({ item, event }) => {
-    event.stopPropagation();
-    console.log(item);
-  };
-
   const userTypeFilterChangeHandler = ({ selectedKeys }) => {
     setPageNumber(1);
     setFilter({ ...filter, userRole: selectedKeys[0] });
+  };
+
+  const handleStatusFilterChange = ({ selectedKeys }) => {
+    setPageNumber(1);
+    setFilter({ ...filter, userStatus: selectedKeys[0] });
+  };
+
+  const tooltipItemDisplayHandler = ({ item }) => {
+    const dropdownItems = [{ key: 'editUser', label: t('dashboard.settings.userManagement.tooltip.editUser') }];
+
+    if (!item?.isSuperAdmin && item.userStatus === userActivityStatus[2].key) {
+      dropdownItems.push({
+        key: 'copyInvitationLink',
+        label: t('dashboard.settings.userManagement.tooltip.copyInvitationLink'),
+      });
+    }
+
+    if (item.userStatus === userActivityStatus[2].key && !adminCheckHandler()) {
+      dropdownItems.push({
+        key: 'sendInvitation',
+        label: t('dashboard.settings.userManagement.tooltip.sendInvitation'),
+      });
+    }
+
+    if (item.userStatus !== userActivityStatus[2].key && !item?.isSuperAdmin) {
+      dropdownItems.push({
+        key: 'activateOrDeactivate',
+        label: t('dashboard.settings.userManagement.tooltip.activateOrDeactivate'),
+      });
+    }
+
+    if (item.userStatus === userActivityStatus[1].key) {
+      dropdownItems.push({
+        key: 'deleteUser',
+        label: t('dashboard.settings.userManagement.tooltip.deleteUser'),
+      });
+    }
+
+    return dropdownItems;
   };
 
   const adminCheckHandler = () => {
@@ -166,11 +239,6 @@ const UserManagement = () => {
     if (event.target.value === '') setUserSearchQuery('');
   };
 
-  const handleStatusFilterChange = ({ selectedKeys }) => {
-    setPageNumber(1);
-    setFilter({ ...filter, userStatus: selectedKeys[0] });
-  };
-
   const createTitleHandler = (firstName, lastName, userName) => {
     return (
       <div className="title-wrapper">
@@ -179,6 +247,80 @@ const UserManagement = () => {
         <Username userName={userName} />
       </div>
     );
+  };
+
+  const tooltipItemClickHandler = ({ key, item }) => {
+    switch (key) {
+      case 'editUser':
+        console.log('edit screen navigation');
+        break;
+
+      case 'sendInvitation':
+        inviteUserMutation({
+          firstName: item.firstName,
+          lastName: item.lastName,
+          email: item.email,
+          role: 'GUEST',
+          calendarId,
+        })
+          .unwrap()
+          .then((response) => {
+            console.log(response);
+          });
+        break;
+
+      case 'copyInvitationLink':
+        // Code to handle 'copyInvitationLink' case
+        break;
+
+      case 'activateOrDeactivate':
+        if (item.userStatus === userActivityStatus[0].key) {
+          confirm({
+            title: t('dashboard.events.deleteEvent.title'),
+            icon: <ExclamationCircleOutlined />,
+            content: t('dashboard.settings.userManagement.tooltip.modal.deactivateText'),
+            okText: t('dashboard.events.deleteEvent.ok'),
+            okType: 'danger',
+            cancelText: t('dashboard.events.deleteEvent.cancel'),
+            className: 'delete-modal-container',
+            onOk() {
+              deActivateUser({ id: item._id, calendarId: calendarId });
+            },
+          });
+        } else if (item.userStatus === userActivityStatus[1].key) {
+          confirm({
+            title: t('dashboard.events.deleteEvent.title'),
+            icon: <ExclamationCircleOutlined />,
+            content: t('dashboard.settings.userManagement.tooltip.modal.activateText'),
+            okText: t('dashboard.events.deleteEvent.ok'),
+            okType: 'danger',
+            cancelText: t('dashboard.events.deleteEvent.cancel'),
+            className: 'delete-modal-container',
+            onOk() {
+              activateUser({ id: item._id, calendarId: calendarId });
+            },
+          });
+        }
+        break;
+
+      case 'deleteUser':
+        confirm({
+          title: t('dashboard.events.deleteEvent.title'),
+          icon: <ExclamationCircleOutlined />,
+          content: t('dashboard.settings.userManagement.tooltip.modal.deleteText'),
+          okText: t('dashboard.events.deleteEvent.ok'),
+          okType: 'danger',
+          cancelText: t('dashboard.events.deleteEvent.cancel'),
+          className: 'delete-modal-container',
+          onOk() {
+            deleteUser({ id: item._id, calendarId: calendarId });
+          },
+        });
+        break;
+
+      default:
+        break;
+    }
   };
 
   const listItemHandler = (id) => {
@@ -253,14 +395,12 @@ const UserManagement = () => {
               menu={{
                 items: userActivityStatus,
                 selectable: true,
+                defaultSelectedKeys: [filter?.userRole],
                 onSelect: handleStatusFilterChange,
               }}
               trigger={['click']}>
               <Space>
-                <Button
-                  size="large"
-                  className="filter-buttons"
-                  style={{ borderColor: filter?.userStatus && '#607EFC' }}>
+                <Button size="large" className="filter-buttons" style={{ borderColor: filter?.userRole && '#607EFC' }}>
                   {t('dashboard.settings.userManagement.status')}
                 </Button>
               </Space>
@@ -294,16 +434,21 @@ const UserManagement = () => {
         </Row>
 
         <Row>
-          <Col span={24}>
-            {userData !== undefined ? (
+          <Col span={16}>
+            {userData?.data.length > 0 ? (
               <List
                 className="event-list-wrapper"
                 itemLayout={screens.xs ? 'vertical' : 'horizontal'}
-                dataSource={userData}
+                dataSource={userData?.data}
                 bordered={false}
                 pagination={{
                   onChange: (page) => {
                     setPageNumber(page);
+                    window.scrollTo({
+                      top: 0,
+                      left: 0,
+                      behavior: 'smooth',
+                    });
                   },
                   pageSize: 10,
                   hideOnSinglePage: true,
@@ -315,7 +460,7 @@ const UserManagement = () => {
                   <ListCard
                     id={index}
                     key={index}
-                    listItemHandler={() => listItemHandler(item?.id)}
+                    listItemHandler={() => listItemHandler(item?._id)}
                     title={createTitleHandler(item?.firstName, item?.lastName, item?.username)}
                     description={roleHandler({ roles: item?.roles, calendarId })}
                     activityStatus={item?.userStatus}
@@ -327,16 +472,13 @@ const UserManagement = () => {
                           overlayStyle={{ minWidth: '200px' }}
                           getPopupContainer={(trigger) => trigger.parentNode}
                           menu={{
-                            items: sortByOptionsUsers,
-                            selectable: true,
-                            defaultSelectedKeys: [filter?.sort],
-                            onSelect: onSortSelect,
+                            items: tooltipItemDisplayHandler({ item }),
+                            onClick: ({ key }) => {
+                              tooltipItemClickHandler({ key, item });
+                            },
                           }}
                           trigger={['click']}>
-                          <span
-                            onClick={(event) => {
-                              onTooltipClickHandler({ item, event });
-                            }}>
+                          <span>
                             <MoreOutlined className="event-list-more-icon" key={index} />
                           </span>
                         </Dropdown>
