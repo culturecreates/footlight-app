@@ -575,8 +575,7 @@
               }
             },
             "coordinates": {
-              "cooridinates": "Coordinates",
-              "placeholder": ""
+              "coordinates": "Coordinates"
             }
           },
           "notification": {

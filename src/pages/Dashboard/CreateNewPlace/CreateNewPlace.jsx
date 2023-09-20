@@ -532,7 +532,45 @@ function CreateNewPlace() {
               <Form.Item
                 name={formFieldNames.COORDINATES}
                 label={t('dashboard.places.createNew.addPlace.address.coordinates.coordinates')}>
-                <StyledInput placeholder={t('dashboard.places.createNew.addPlace.address.postalCode.placeholder')} />
+                <StyledInput />
+              </Form.Item>
+              <Form.Item
+                name={formFieldNames.TYPE}
+                label={taxonomyDetails(
+                  allTaxonomyData?.data,
+                  user,
+                  placeTaxonomyMappedFieldTypes.REGION,
+                  'name',
+                  false,
+                )}
+                initialValue={placeData?.regions?.map((type) => {
+                  return type?.entityId;
+                })}>
+                <TreeSelectOption
+                  placeholder={t('dashboard.events.addEditEvent.language.placeHolderEventType')}
+                  allowClear
+                  treeDefaultExpandAll
+                  notFoundContent={<NoContent />}
+                  clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                  treeData={treeTaxonomyOptions(
+                    allTaxonomyData,
+                    user,
+                    placeTaxonomyMappedFieldTypes.REGION,
+                    false,
+                    calendarContentLanguage,
+                  )}
+                  tagRender={(props) => {
+                    const { label, closable, onClose } = props;
+                    return (
+                      <Tags
+                        closable={closable}
+                        onClose={onClose}
+                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                        {label}
+                      </Tags>
+                    );
+                  }}
+                />
               </Form.Item>
             </>
             <></>

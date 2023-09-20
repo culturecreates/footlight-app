@@ -278,7 +278,7 @@
             "placeHolderWebsite": "Entrez l'adresse web URL",
             "placeHolderPhoneNumber": "Entrez le numéro de téléphone",
             "placeHolderEmail": "Entrez l’adresse courriel",
-            "contactTooltip": "Ajoutez un contact pour votre événement. Vous pouvez en créer un ou copier les coordonnées de l'Organisateur.",
+            "contactTooltip": "Ajoutez un contact pour votre événement. Vous pouvez en créer un ou copier les données de l'Organisateur.",
             "copyOrganizerContact": "Copier le contact de l’organisateur"
           },
           "eventLanguage": "Langue de l'événement",
@@ -569,6 +569,9 @@
                 "english": "Entrer la pays en anglais",
                 "french": "Entrer la pays en français"
               }
+            },
+            "coordinates": {
+              "coordinates": "Coordonnées"
             }
           },
           "dataSource": "Source de la donnée",
