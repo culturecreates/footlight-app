@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './events.css';
-import { Checkbox, Col, Row, Badge, Divider, Button, Dropdown, Space, Popover } from 'antd';
+import { Checkbox, Col, Row, Badge, Button, Dropdown, Space, Popover, Divider } from 'antd';
 import { CloseCircleOutlined, DownOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
@@ -12,11 +12,11 @@ import AddEvent from '../../../components/Button/AddEvent';
 import { PathName } from '../../../constants/pathName';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
 import { eventPublishStateOptions } from '../../../constants/eventPublishState';
-import { useGetAllUsersQuery } from '../../../services/users';
+import { useLazyGetAllUsersQuery } from '../../../services/users';
 import { filterTypes } from '../../../constants/filterTypes';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
-import { sortByOptions, sortOrder } from '../../../constants/sortByOptions';
+import { sortByOptions, sortByOptionsUsers, sortOrder } from '../../../constants/sortByOptions';
 import DateRangePicker from '../../../components/DateRangePicker';
 import moment from 'moment';
 import NoContent from '../../../components/NoContent/NoContent';
@@ -32,12 +32,9 @@ function Events() {
   const [currentCalendarData, pageNumber, setPageNumber] = useOutletContext();
 
   const [getEvents, { currentData: eventsData, isLoading, isFetching }] = useLazyGetEventsQuery();
-  const { currentData: allUsersData, isLoading: allUsersLoading } = useGetAllUsersQuery({
-    calendarId,
-    includeInactiveUsers: false,
-    includeCalendarFilter: true,
-    sessionId: timestampRef,
-  });
+  const [getAllUsers, { currentData: userFilterData, isLoading: allUsersLoading }] = useLazyGetAllUsersQuery();
+  const [searchKey, setSearchKey] = useState();
+
   const [eventSearchQuery, setEventSearchQuery] = useState(
     searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('query') ?? '',
   );
@@ -125,14 +122,26 @@ function Events() {
       : [],
   );
 
-  let userFilterData = allUsersData?.data?.active?.slice()?.sort(function (x, y) {
-    return x?.id == user?.id ? -1 : y?.id == user?.id ? 1 : 0;
-  });
+  // let userFilterData = allUsersData?.data?.active?.slice()?.sort(function (x, y) {
+  //   return x?.id == user?.id ? -1 : y?.id == user?.id ? 1 : 0;
+  // });
 
-  userFilterData = userFilterData
-    ?.slice(1)
-    ?.sort((a, b) => a?.firstName?.toLowerCase()?.localeCompare(b?.firstName?.toLowerCase()));
-  userFilterData = [user].concat(userFilterData);
+  // userFilterData = userFilterData
+  //   ?.slice(1)
+  //   ?.sort((a, b) => a?.firstName?.toLowerCase()?.localeCompare(b?.firstName?.toLowerCase()));
+  // userFilterData = [user].concat(userFilterData);
+
+  const userSearch = () => {
+    getAllUsers({
+      page: pageNumber,
+      limit: 30,
+      query: searchKey,
+      filters: `sort=asc(${sortByOptionsUsers[1].key})`,
+      sessionId: timestampRef,
+      calendarId: calendarId,
+      includeCalenderFilter: true,
+    });
+  };
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -214,6 +223,18 @@ function Events() {
       sessionStorage.setItem('endDateRange', filter?.dates[1]);
     else sessionStorage.setItem('endDateRange', query?.get('end-date-range'));
   }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter]);
+
+  useEffect(() => {
+    getAllUsers({
+      page: pageNumber,
+      limit: 30,
+      query: '',
+      filters: `sort=asc(${sortByOptionsUsers[1].key})`,
+      sessionId: timestampRef,
+      calendarId: calendarId,
+      includeCalenderFilter: true,
+    });
+  }, []);
 
   const onSearchHandler = (event) => {
     setPageNumber(1);
@@ -297,8 +318,7 @@ function Events() {
     sessionStorage.removeItem('endDateRange');
   };
   return (
-    !isLoading &&
-    !allUsersLoading && (
+    !isLoading && (
       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
         <Col span={24}>
           <Col style={{ paddingLeft: 0 }}>
@@ -403,25 +423,29 @@ function Events() {
                 <Col>
                   <SearchableCheckbox
                     allowSearch={true}
+                    loading={allUsersLoading}
                     overlayStyle={{ height: '304px' }}
-                    data={userFilterData?.map((userDetail) => {
+                    searchImplementation={userSearch}
+                    setSearchKey={setSearchKey}
+                    searchKey={searchKey}
+                    data={userFilterData?.data?.map((userDetail) => {
                       return {
-                        key: userDetail?.id,
+                        key: userDetail?._id,
                         label: (
                           <>
                             <Checkbox
-                              value={userDetail?.id}
-                              key={userDetail?.id}
+                              value={userDetail?._id}
+                              key={userDetail?._id}
                               style={{ marginLeft: '8px' }}
                               onChange={(e) => onCheckboxChange(e)}>
-                              {user?.id == userDetail?.id
+                              {user?.id == userDetail?._id
                                 ? t('dashboard.events.filter.users.myEvents')
-                                : userDetail?.firstName?.charAt(0)?.toLowerCase() + userDetail?.lastName?.toLowerCase()}
+                                : userDetail?.username}
                             </Checkbox>
-                            {user?.id == userDetail?.id && <Divider style={{ margin: 8 }} />}
+                            {user?.id == userDetail?._id && <Divider style={{ margin: 8 }} />}
                           </>
                         ),
-                        filtervalue: userDetail?.firstName?.charAt(0)?.toLowerCase() + userDetail?.lastName,
+                        filtervalue: userDetail?.username,
                       };
                     })}
                     value={userFilter}>
