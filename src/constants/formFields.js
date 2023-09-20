@@ -438,7 +438,7 @@ export const returnFormDataWithFields = ({
     datatype: field?.datatype,
     required: field?.isRequiredField,
     element: formField?.element({
-      data: entityData[field?.mappedField],
+      data: entityData && entityData[field?.mappedField],
       datatype: field?.datatype,
       taxonomyData: allTaxonomyData,
       user: user,
