@@ -27,6 +27,8 @@ import TreeSelectOption from '../../../components/TreeSelectOption';
 import NoContent from '../../../components/NoContent/NoContent';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import Tags from '../../../components/Tags/Common/Tags';
+import StyledInput from '../../../components/Input/Common';
+
 const { TextArea } = Input;
 
 function CreateNewPlace() {
@@ -40,6 +42,22 @@ function CreateNewPlace() {
   const { calendarId } = useParams();
   let [searchParams] = useSearchParams();
 
+  const formFieldNames = {
+    NAME: 'name',
+    ENGLISH: 'english',
+    FRENCH: 'french',
+    TYPE: 'type',
+    STREET_ADDRESS_ENGLISH: 'englishStreetAddress',
+    STREET_ADDRESS_FRENCH: 'frenchStreetAddress',
+    CITY_FRENCH: 'frenchCity',
+    CITY_ENGLISH: 'englishCity',
+    POSTAL_CODE: 'postalCode',
+    PROVINCE_ENGLISH: 'englishProvince',
+    PROVINCE_FRENCH: 'frenchProvince',
+    COUNTRY_ENGLISH: 'englishCountry',
+    COUNTRY_FRENCH: 'frenchConutry',
+    COORDINATES: 'coordinates',
+  };
   const placeId = searchParams.get('id');
   const artsDataId = location?.state?.data?.id ?? null;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
@@ -193,14 +211,14 @@ function CreateNewPlace() {
                 <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                   <BilingualInput fieldData={placeData?.name}>
                     <Form.Item
-                      name="french"
+                      name={formFieldNames.FRENCH}
                       key={contentLanguage.FRENCH}
                       initialValue={placeData?.name?.fr}
-                      dependencies={['english']}
+                      dependencies={[formFieldNames.ENGLISH]}
                       rules={[
                         ({ getFieldValue }) => ({
                           validator(_, value) {
-                            if (value || getFieldValue('english')) {
+                            if (value || getFieldValue(formFieldNames.FRENCH)) {
                               return Promise.resolve();
                             } else
                               return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
@@ -216,14 +234,14 @@ function CreateNewPlace() {
                       />
                     </Form.Item>
                     <Form.Item
-                      name="english"
+                      name={formFieldNames.ENGLISH}
                       key={contentLanguage.ENGLISH}
                       initialValue={placeData?.name?.en}
-                      dependencies={['french']}
+                      dependencies={[formFieldNames.FRENCH]}
                       rules={[
                         ({ getFieldValue }) => ({
                           validator(_, value) {
-                            if (value || getFieldValue('french')) {
+                            if (value || getFieldValue(formFieldNames.ENGLISH)) {
                               return Promise.resolve();
                             } else
                               return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
@@ -242,7 +260,7 @@ function CreateNewPlace() {
                 </ContentLanguageInput>
               </Form.Item>
               <Form.Item
-                name="eventType"
+                name={formFieldNames.TYPE}
                 label={taxonomyDetails(allTaxonomyData?.data, user, placeTaxonomyMappedFieldTypes.TYPE, 'name', false)}
                 initialValue={placeData?.additionalType?.map((type) => {
                   return type?.entityId;
@@ -272,6 +290,249 @@ function CreateNewPlace() {
                     );
                   }}
                 />
+              </Form.Item>
+            </>
+            <></>
+          </Card>
+          <Card title={t('dashboard.places.createNew.addPlace.address.address')}>
+            <>
+              <Form.Item label={t('dashboard.places.createNew.addPlace.address.streetAddress')} required={true}>
+                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <BilingualInput fieldData={placeData?.name}>
+                    <Form.Item
+                      name={formFieldNames.STREET_ADDRESS_FRENCH}
+                      key={contentLanguage.FRENCH}
+                      initialValue={placeData?.name?.fr}
+                      dependencies={[formFieldNames.STREET_ADDRESS_ENGLISH]}
+                      rules={[
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value || getFieldValue(formFieldNames.STREET_ADDRESS_ENGLISH)) {
+                              return Promise.resolve();
+                            } else
+                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                          },
+                        }),
+                      ]}>
+                      <TextArea
+                        autoSize
+                        autoComplete="off"
+                        placeholder={t('dashboard.places.createNew.addPlace.address.streetAddressPlaceholder.french')}
+                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                        size="large"
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name={formFieldNames.STREET_ADDRESS_ENGLISH}
+                      key={contentLanguage.ENGLISH}
+                      initialValue={placeData?.name?.en}
+                      dependencies={[formFieldNames.STREET_ADDRESS_FRENCH]}
+                      rules={[
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value || getFieldValue(formFieldNames.STREET_ADDRESS_FRENCH)) {
+                              return Promise.resolve();
+                            } else
+                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                          },
+                        }),
+                      ]}>
+                      <TextArea
+                        autoSize
+                        autoComplete="off"
+                        placeholder={t('dashboard.places.createNew.addPlace.address.streetAddressPlaceholder.english')}
+                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                        size="large"
+                      />
+                    </Form.Item>
+                  </BilingualInput>
+                </ContentLanguageInput>
+              </Form.Item>
+              <Form.Item label={t('dashboard.places.createNew.addPlace.address.city.city')}>
+                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <BilingualInput fieldData={placeData?.name}>
+                    <Form.Item
+                      name={formFieldNames.CITY_FRENCH}
+                      key={contentLanguage.FRENCH}
+                      initialValue={placeData?.name?.fr}
+                      dependencies={[formFieldNames.CITY_ENGLISH]}
+                      rules={[
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value || getFieldValue(formFieldNames.CITY_ENGLISH)) {
+                              return Promise.resolve();
+                            } else
+                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                          },
+                        }),
+                      ]}>
+                      <TextArea
+                        autoSize
+                        autoComplete="off"
+                        placeholder={t('dashboard.places.createNew.addPlace.address.city.placeholder.french')}
+                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                        size="large"
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name={formFieldNames.CITY_ENGLISH}
+                      key={contentLanguage.ENGLISH}
+                      initialValue={placeData?.name?.en}
+                      dependencies={[formFieldNames.CITY_FRENCH]}
+                      rules={[
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value || getFieldValue(formFieldNames.CITY_FRENCH)) {
+                              return Promise.resolve();
+                            } else
+                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                          },
+                        }),
+                      ]}>
+                      <TextArea
+                        autoSize
+                        autoComplete="off"
+                        placeholder={t('dashboard.places.createNew.addPlace.address.city.placeholder.english')}
+                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                        size="large"
+                      />
+                    </Form.Item>
+                  </BilingualInput>
+                </ContentLanguageInput>
+              </Form.Item>
+              <Form.Item
+                name={formFieldNames.POSTAL_CODE}
+                label={t('dashboard.places.createNew.addPlace.address.postalCode.postalCode')}
+                rules={[
+                  {
+                    type: 'url',
+                    message: t('dashboard.events.addEditEvent.validations.url'),
+                  },
+                ]}>
+                <StyledInput placeholder={t('dashboard.places.createNew.addPlace.address.postalCode.placeholder')} />
+              </Form.Item>
+              <Row gutter={[16, 0]}>
+                <Col span={12}>
+                  <Form.Item label={t('dashboard.places.createNew.addPlace.address.province.province')}>
+                    <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                      <BilingualInput fieldData={placeData?.name}>
+                        <Form.Item
+                          name={formFieldNames.PROVINCE_FRENCH}
+                          key={contentLanguage.FRENCH}
+                          initialValue={placeData?.name?.fr}
+                          dependencies={[formFieldNames.PROVINCE_ENGLISH]}
+                          rules={[
+                            ({ getFieldValue }) => ({
+                              validator(_, value) {
+                                if (value || getFieldValue(formFieldNames.PROVINCE_ENGLISH)) {
+                                  return Promise.resolve();
+                                } else
+                                  return Promise.reject(
+                                    new Error(t('dashboard.events.addEditEvent.validations.title')),
+                                  );
+                              },
+                            }),
+                          ]}>
+                          <TextArea
+                            autoSize
+                            autoComplete="off"
+                            placeholder={t('dashboard.places.createNew.addPlace.address.province.placeholder.french')}
+                            style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                            size="large"
+                          />
+                        </Form.Item>
+                        <Form.Item
+                          name={formFieldNames.PROVINCE_ENGLISH}
+                          key={contentLanguage.ENGLISH}
+                          initialValue={placeData?.name?.en}
+                          dependencies={[formFieldNames.PROVINCE_FRENCH]}
+                          rules={[
+                            ({ getFieldValue }) => ({
+                              validator(_, value) {
+                                if (value || getFieldValue(formFieldNames.PROVINCE_FRENCH)) {
+                                  return Promise.resolve();
+                                } else
+                                  return Promise.reject(
+                                    new Error(t('dashboard.events.addEditEvent.validations.title')),
+                                  );
+                              },
+                            }),
+                          ]}>
+                          <TextArea
+                            autoSize
+                            autoComplete="off"
+                            placeholder={t('dashboard.places.createNew.addPlace.address.province.placeholder.english')}
+                            style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                            size="large"
+                          />
+                        </Form.Item>
+                      </BilingualInput>
+                    </ContentLanguageInput>
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item label={t('dashboard.places.createNew.addPlace.address.country.country')}>
+                    <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                      <BilingualInput fieldData={placeData?.name}>
+                        <Form.Item
+                          name={formFieldNames.CITY_FRENCH}
+                          key={contentLanguage.FRENCH}
+                          initialValue={placeData?.name?.fr}
+                          dependencies={[formFieldNames.CITY_ENGLISH]}
+                          rules={[
+                            ({ getFieldValue }) => ({
+                              validator(_, value) {
+                                if (value || getFieldValue(formFieldNames.CITY_ENGLISH)) {
+                                  return Promise.resolve();
+                                } else
+                                  return Promise.reject(
+                                    new Error(t('dashboard.events.addEditEvent.validations.title')),
+                                  );
+                              },
+                            }),
+                          ]}>
+                          <TextArea
+                            autoSize
+                            autoComplete="off"
+                            placeholder={t('dashboard.places.createNew.addPlace.address.country.placeholder.french')}
+                            style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                            size="large"
+                          />
+                        </Form.Item>
+                        <Form.Item
+                          name={formFieldNames.CITY_ENGLISH}
+                          key={contentLanguage.ENGLISH}
+                          initialValue={placeData?.name?.en}
+                          dependencies={[formFieldNames.CITY_FRENCH]}
+                          rules={[
+                            ({ getFieldValue }) => ({
+                              validator(_, value) {
+                                if (value || getFieldValue(formFieldNames.CITY_FRENCH)) {
+                                  return Promise.resolve();
+                                } else
+                                  return Promise.reject(
+                                    new Error(t('dashboard.events.addEditEvent.validations.title')),
+                                  );
+                              },
+                            }),
+                          ]}>
+                          <TextArea
+                            autoSize
+                            autoComplete="off"
+                            placeholder={t('dashboard.places.createNew.addPlace.address.country.placeholder.english')}
+                            style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                            size="large"
+                          />
+                        </Form.Item>
+                      </BilingualInput>
+                    </ContentLanguageInput>
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Form.Item
+                name={formFieldNames.COORDINATES}
+                label={t('dashboard.places.createNew.addPlace.address.coordinates.coordinates')}>
+                <StyledInput placeholder={t('dashboard.places.createNew.addPlace.address.postalCode.placeholder')} />
               </Form.Item>
             </>
             <></>

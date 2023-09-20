@@ -464,7 +464,13 @@
         "addOrganization": {
           "newOrganization": "New Organization",
           "editOrganization": "Edit Organization",
-          "addMoreDetails": "Add more details to your organization"
+          "addMoreDetails": "Add more details to your organization",
+          "dataSource": "Data source",
+          "question": {
+            "firstPart": "Is this the right organization? If not, ",
+            "secondPart": "create a new organization",
+            "thirdPart": " and do not select this data source."
+          }
         },
         "notification": {
           "addSuccess": "Success! Your organization has been created.",
@@ -537,6 +543,42 @@
           "name": "Place Name",
 
           "dataSource": "Data source",
+          "address": {
+            "address": "Address",
+            "searchAddressDescription": "Search for the name of place and/or address.",
+            "searchAddressPlaceholder": "Search",
+            "streetAddress": "Street address",
+            "streetAddressPlaceholder": {
+              "english": "Enter street address in English",
+              "french": "Enter street address in French"
+            },
+            "city": {
+              "city": "City",
+              "placeholder": { "french": "Enter city in French", "english": "Enter city in English" }
+            },
+            "postalCode": {
+              "postalCode": "Postal code",
+              "placeholder": "Enter postal code"
+            },
+            "province": {
+              "province": "Province",
+              "placeholder": {
+                "english": "Enter province in English",
+                "french": "Enter province in French"
+              }
+            },
+            "country": {
+              "country": "Country",
+              "placeholder": {
+                "english": "Enter country in English",
+                "french": "Enter country in French"
+              }
+            },
+            "coordinates": {
+              "cooridinates": "Coordinates",
+              "placeholder": ""
+            }
+          },
           "notification": {
             "addSuccess": "Success! Your place has been created.",
             "editSuccess": "Success! Your place has been updated.",

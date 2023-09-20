@@ -37,6 +37,8 @@ import ChangeType from '../../../components/ChangeType';
 import { PathName } from '../../../constants/pathName';
 import { useAddImageMutation } from '../../../services/image';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
+import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
+import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -547,6 +549,62 @@ function CreateNewOrganization() {
               return (
                 <Card title={section[0]?.category !== formCategory.PRIMARY && section[0]?.category} key={index}>
                   <>
+                    {artsDataLinkChecker(organizationData?.sameAs) && section[0]?.category === formCategory.PRIMARY && (
+                      <Row>
+                        <Col span={24}>
+                          <p className="add-entity-label">
+                            {t('dashboard.organization.createNew.addOrganization.dataSource')}
+                          </p>
+                        </Col>
+                        <Col span={24}>
+                          <ArtsDataInfo
+                            artsDataLink={artsDataLinkChecker(organizationData?.sameAs)}
+                            name={contentLanguageBilingual({
+                              en: organizationData?.name?.en,
+                              fr: organizationData?.name?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            })}
+                            disambiguatingDescription={contentLanguageBilingual({
+                              en: organizationData?.disambiguatingDescription?.en,
+                              fr: organizationData?.disambiguatingDescription?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            })}
+                          />
+                        </Col>
+                        <Col span={24}>
+                          <div style={{ display: 'inline' }}>
+                            <span className="add-event-date-heading">
+                              {t('dashboard.organization.createNew.addOrganization.question.firstPart')}
+                            </span>
+                            <span
+                              className="add-event-date-heading"
+                              style={{
+                                color: '#1b3de6',
+                                textDecoration: 'underline',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                              }}
+                              onClick={() => {
+                                navigate(
+                                  `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.Search}`,
+                                );
+                              }}>
+                              {t('dashboard.organization.createNew.addOrganization.question.secondPart')}
+                            </span>
+                            <span className="add-event-date-heading">
+                              {t('dashboard.organization.createNew.addOrganization.question.thirdPart')}
+                            </span>
+                          </div>
+                        </Col>
+                        <Col span={24}>
+                          <div>
+                            <br />
+                          </div>
+                        </Col>
+                      </Row>
+                    )}
                     {section?.map((field) => {
                       return formFieldValue?.map((formField, index) => {
                         if (formField?.type === field.type) {

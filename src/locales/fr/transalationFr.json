@@ -463,7 +463,13 @@
         "addOrganization": {
           "newOrganization": "Nouvelle organisation",
           "editOrganization": "Modifier l’organisation",
-          "addMoreDetails": "Ajouter des détails à votre organisation"
+          "addMoreDetails": "Ajouter des détails à votre organisation",
+          "dataSource": "Data source",
+          "question": {
+            "firstPart": "Est-ce la bonne organisation ? Si non, ",
+            "secondPart": "créez une nouvelle organisation",
+            "thirdPart": " et ne sélectionnez pas cette source de données."
+          }
         },
         "notification": {
           "addSuccess": "Succès ! Votre organisation a été créé.",
@@ -533,6 +539,38 @@
             "thirdPart": " et ne sélectionnez pas cette source de données."
           },
           "name": "Nom du lieu",
+          "address": {
+            "address": "Adresse",
+            "searchAddressDescription": "Entrer le nom du lieu et/ou l'adresse.",
+            "searchAddressPlaceholder": "Rechercher",
+            "streetAddress": "Adresse postale",
+            "streetAddressPlaceholder": {
+              "english": "Entrez l’adresse postale en anglais",
+              "french": "Entrez l’adresse postale en français"
+            },
+            "city": {
+              "city": "Ville",
+              "placeholder": { "french": "Entrer la ville en français", "english": "Entrer la ville en anglais" }
+            },
+            "postalCode": {
+              "postalCode": "Code postal",
+              "placeholder": "Entrez le code postal"
+            },
+            "province": {
+              "province": "Province",
+              "placeholder": {
+                "english": "Entrer la province en anglais",
+                "french": "Entrer la province en français"
+              }
+            },
+            "country": {
+              "country": "Pays",
+              "placeholder": {
+                "english": "Entrer la pays en anglais",
+                "french": "Entrer la pays en français"
+              }
+            }
+          },
           "dataSource": "Source de la donnée",
           "notification": {
             "addSuccess": "Succès ! Votre lieu a été créé.",
