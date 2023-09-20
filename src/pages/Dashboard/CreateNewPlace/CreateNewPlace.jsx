@@ -25,7 +25,10 @@ import { placeTaxonomyMappedFieldTypes } from '../../../constants/placeMappedFie
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import TreeSelectOption from '../../../components/TreeSelectOption';
 import NoContent from '../../../components/NoContent/NoContent';
-import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
+import {
+  treeDynamicTaxonomyOptions,
+  treeTaxonomyOptions,
+} from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import Tags from '../../../components/Tags/Common/Tags';
 import StyledInput from '../../../components/Input/Common';
 import SelectionItem from '../../../components/List/SelectionItem';
@@ -35,6 +38,7 @@ import { entitiesClass } from '../../../constants/entitiesClass';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
 import TextEditor from '../../../components/TextEditor';
 import ImageUpload from '../../../components/ImageUpload';
+import { bilingual } from '../../../utils/bilingual';
 
 const { TextArea } = Input;
 
@@ -72,6 +76,7 @@ function CreateNewPlace() {
     EDITOR_ENGLISH: 'englishEditor',
     DRAGGER: 'dragger',
     DRAGGER_WRAP: 'draggerWrap',
+    DYNAMIC_FIELS: 'dynamicFields',
   };
   const placeId = searchParams.get('id');
   const artsDataId = location?.state?.data?.id ?? null;
@@ -569,6 +574,44 @@ function CreateNewPlace() {
                   isCrop={featureFlags.imageCropFeature}
                 />
               </Form.Item>
+              {allTaxonomyData?.data?.map((taxonomy, index) => {
+                if (taxonomy?.isDynamicField) {
+                  let initialValues;
+                  placeData?.dynamicFields?.forEach((dynamicField) => {
+                    if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
+                  });
+                  return (
+                    <Form.Item
+                      key={index}
+                      name={[formFieldNames.DYNAMIC_FIELS, taxonomy?.id]}
+                      label={bilingual({
+                        en: taxonomy?.name?.en,
+                        fr: taxonomy?.name?.fr,
+                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      })}
+                      initialValue={initialValues}>
+                      <TreeSelectOption
+                        allowClear
+                        treeDefaultExpandAll
+                        notFoundContent={<NoContent />}
+                        clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                        treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
+                        tagRender={(props) => {
+                          const { label, closable, onClose } = props;
+                          return (
+                            <Tags
+                              closable={closable}
+                              onClose={onClose}
+                              closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                              {label}
+                            </Tags>
+                          );
+                        }}
+                      />
+                    </Form.Item>
+                  );
+                }
+              })}
             </>
             <></>
           </Card>
