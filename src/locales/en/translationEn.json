@@ -588,6 +588,13 @@
             "venueAccessibility": "Venue accessibility",
             "subheading": "These accessibility items will be displayed in all the event located at this venue."
           },
+          "disambiguatingDescription": {
+            "disambiguatingDescription": "Disambiguating description",
+            "placeholder": {
+              "english": "Enter Disambiguating description",
+              "french": "Enter Disambiguating description"
+            }
+          },
           "notification": {
             "addSuccess": "Success! Your place has been created.",
             "editSuccess": "Success! Your place has been updated.",

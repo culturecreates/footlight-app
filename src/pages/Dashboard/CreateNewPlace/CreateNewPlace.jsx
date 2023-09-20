@@ -64,6 +64,8 @@ function CreateNewPlace() {
     COORDINATES: 'coordinates',
     CONTAINED_IN_PLACE: 'containedInPlace',
     PLACE_ACCESSIBILITY: 'placeAccessibility',
+    DISAMBIGUATING_DESCRIPTION_ENGLISH: 'englishDisambiguatingDescription',
+    DISAMBIGUATING_DESCRIPTION_FRENCH: 'frenchDisambiguatingDescription',
   };
   const placeId = searchParams.get('id');
   const artsDataId = location?.state?.data?.id ?? null;
@@ -232,7 +234,7 @@ function CreateNewPlace() {
                       rules={[
                         ({ getFieldValue }) => ({
                           validator(_, value) {
-                            if (value || getFieldValue(formFieldNames.FRENCH)) {
+                            if (value || getFieldValue(formFieldNames.ENGLISH)) {
                               return Promise.resolve();
                             } else
                               return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
@@ -255,7 +257,7 @@ function CreateNewPlace() {
                       rules={[
                         ({ getFieldValue }) => ({
                           validator(_, value) {
-                            if (value || getFieldValue(formFieldNames.ENGLISH)) {
+                            if (value || getFieldValue(formFieldNames.FRENCH)) {
                               return Promise.resolve();
                             } else
                               return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
@@ -273,6 +275,7 @@ function CreateNewPlace() {
                   </BilingualInput>
                 </ContentLanguageInput>
               </Form.Item>
+
               <Form.Item
                 name={formFieldNames.TYPE}
                 label={taxonomyDetails(allTaxonomyData?.data, user, placeTaxonomyMappedFieldTypes.TYPE, 'name', false)}
@@ -304,6 +307,63 @@ function CreateNewPlace() {
                     );
                   }}
                 />
+              </Form.Item>
+              <Form.Item
+                label={t('dashboard.places.createNew.addPlace.disambiguatingDescription.disambiguatingDescription')}>
+                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <BilingualInput fieldData={placeData?.name}>
+                    <Form.Item
+                      name={formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH}
+                      key={contentLanguage.FRENCH}
+                      initialValue={placeData?.name?.fr}
+                      dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH]}
+                      rules={[
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value || getFieldValue(formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH)) {
+                              return Promise.resolve();
+                            } else
+                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                          },
+                        }),
+                      ]}>
+                      <TextArea
+                        autoSize
+                        autoComplete="off"
+                        placeholder={t(
+                          'dashboard.places.createNew.addPlace.disambiguatingDescription.placeholder.french',
+                        )}
+                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                        size="large"
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name={formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH}
+                      key={contentLanguage.ENGLISH}
+                      initialValue={placeData?.name?.en}
+                      dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH]}
+                      rules={[
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value || getFieldValue(formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH)) {
+                              return Promise.resolve();
+                            } else
+                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                          },
+                        }),
+                      ]}>
+                      <TextArea
+                        autoSize
+                        autoComplete="off"
+                        placeholder={t(
+                          'dashboard.places.createNew.addPlace.disambiguatingDescription.placeholder.english',
+                        )}
+                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                        size="large"
+                      />
+                    </Form.Item>
+                  </BilingualInput>
+                </ContentLanguageInput>
               </Form.Item>
             </>
             <></>

@@ -584,6 +584,13 @@
             "venueAccessibility": "Accessibilité du site",
             "subheading": "Ces éléments d'accessibilité seront affichés dans tous les événements se déroulant dans ce lieu."
           },
+          "disambiguatingDescription": {
+            "disambiguatingDescription": "Description identifiante",
+            "placeholder": {
+              "english": "Entrez la description identifiante",
+              "french": "Entrez la description identifiante"
+            }
+          },
           "dataSource": "Source de la donnée",
           "notification": {
             "addSuccess": "Succès ! Votre lieu a été créé.",
