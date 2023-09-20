@@ -580,6 +580,10 @@
             "addPlace": "Ajouter un lieu",
             "placeholder": "Rechercher un lieu"
           },
+          "venueAccessibility": {
+            "venueAccessibility": "Accessibilité du site",
+            "subheading": "Ces éléments d'accessibilité seront affichés dans tous les événements se déroulant dans ce lieu."
+          },
           "dataSource": "Source de la donnée",
           "notification": {
             "addSuccess": "Succès ! Votre lieu a été créé.",

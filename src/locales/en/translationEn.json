@@ -584,6 +584,10 @@
             "addPlace": "Add a place",
             "placeholder": "Search a place"
           },
+          "venueAccessibility": {
+            "venueAccessibility": "Venue accessibility",
+            "subheading": "These accessibility items will be displayed in all the event located at this venue."
+          },
           "notification": {
             "addSuccess": "Success! Your place has been created.",
             "editSuccess": "Success! Your place has been updated.",

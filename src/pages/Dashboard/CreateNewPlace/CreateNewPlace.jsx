@@ -63,6 +63,7 @@ function CreateNewPlace() {
     COUNTRY_FRENCH: 'frenchConutry',
     COORDINATES: 'coordinates',
     CONTAINED_IN_PLACE: 'containedInPlace',
+    PLACE_ACCESSIBILITY: 'placeAccessibility',
   };
   const placeId = searchParams.get('id');
   const artsDataId = location?.state?.data?.id ?? null;
@@ -660,6 +661,57 @@ function CreateNewPlace() {
                     }}
                   />
                 )}
+              </Form.Item>
+            </>
+            <></>
+          </Card>
+          <Card title={t('dashboard.places.createNew.addPlace.venueAccessibility.venueAccessibility')}>
+            <>
+              <Row>
+                <Col>
+                  <p className="add-event-date-heading">
+                    {t('dashboard.places.createNew.addPlace.venueAccessibility.subheading')}
+                  </p>
+                </Col>
+              </Row>
+              <Form.Item
+                name={formFieldNames.PLACE_ACCESSIBILITY}
+                style={{ width: '423px' }}
+                label={taxonomyDetails(
+                  allTaxonomyData?.data,
+                  user,
+                  placeTaxonomyMappedFieldTypes.PLACE_ACCESSIBILITY,
+                  'name',
+                  false,
+                )}
+                initialValue={placeData?.accessibility?.map((type) => {
+                  return type?.entityId;
+                })}>
+                <TreeSelectOption
+                  placeholder={t('dashboard.events.addEditEvent.language.placeHolderEventType')}
+                  allowClear
+                  treeDefaultExpandAll
+                  notFoundContent={<NoContent />}
+                  clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                  treeData={treeTaxonomyOptions(
+                    allTaxonomyData,
+                    user,
+                    placeTaxonomyMappedFieldTypes.PLACE_ACCESSIBILITY,
+                    false,
+                    calendarContentLanguage,
+                  )}
+                  tagRender={(props) => {
+                    const { label, closable, onClose } = props;
+                    return (
+                      <Tags
+                        closable={closable}
+                        onClose={onClose}
+                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                        {label}
+                      </Tags>
+                    );
+                  }}
+                />
               </Form.Item>
             </>
             <></>
