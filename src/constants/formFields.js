@@ -86,6 +86,7 @@ export const formFieldValue = [
                 name={name?.concat(['fr'])}
                 key={contentLanguage.FRENCH}
                 dependencies={name?.concat(['en'])}
+                initialValue={data?.fr}
                 rules={
                   required
                     ? [
@@ -112,6 +113,7 @@ export const formFieldValue = [
                 name={name?.concat(['en'])}
                 key={contentLanguage.ENGLISH}
                 dependencies={name?.concat(['fr'])}
+                initialValue={data?.en}
                 rules={
                   required
                     ? [
@@ -242,8 +244,8 @@ export const formFieldValue = [
           originalImageUrl={originalUrl}
           imageReadOnly={imageReadOnly}
           preview={preview}
-          setImageCropOpen={name?.includes(mappedFieldTypes.IMAGE) && setImageCropOpen}
-          imageCropOpen={name?.includes(mappedFieldTypes.IMAGE) && imageCropOpen}
+          setImageCropOpen={name?.includes(mappedFieldTypes.IMAGE) ? setImageCropOpen : false}
+          imageCropOpen={name?.includes(mappedFieldTypes.IMAGE) ? imageCropOpen : false}
           form={form}
           eventImageData={eventImageData}
           isCrop={name?.includes(mappedFieldTypes.IMAGE) ? featureFlags.imageCropFeature : false}
@@ -338,7 +340,6 @@ export const formFieldValue = [
   },
   {
     type: formTypes.EDITOR,
-
     element: ({
       datatype,
       data,
@@ -437,6 +438,7 @@ export const returnFormDataWithFields = ({
     datatype: field?.datatype,
     required: field?.isRequiredField,
     element: formField?.element({
+      data: entityData[field?.mappedField],
       datatype: field?.datatype,
       taxonomyData: allTaxonomyData,
       user: user,
@@ -457,7 +459,14 @@ export const returnFormDataWithFields = ({
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
         calendarContentLanguage: calendarContentLanguage,
       }),
-      largeUrl: entityData?.image?.large?.uri,
+      largeUrl:
+        field?.mappedField === mappedFieldTypes.IMAGE
+          ? entityData?.image?.large?.uri
+          : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo?.large?.uri,
+      originalImageUrl:
+        field?.mappedField === mappedFieldTypes.IMAGE
+          ? entityData?.image?.original?.uri
+          : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo?.original?.uri,
       required: field?.isRequiredField,
       t: t,
       userTips: contentLanguageBilingual({
@@ -470,7 +479,10 @@ export const returnFormDataWithFields = ({
       isCrop: isCrop,
       setImageCropOpen,
       imageCropOpen,
-      eventImageData: entityData?.image,
+      eventImageData:
+        field?.mappedField === mappedFieldTypes.IMAGE
+          ? entityData?.image
+          : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo,
       largeAspectRatio:
         currentCalendarData?.imageConfig?.length > 0 ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio : null,
       thumbnailAspectRatio:

@@ -4,7 +4,7 @@ import '../AddEvent/addEvent.css';
 import { Form, Row, Col, Button, message, notification } from 'antd';
 import { CloseCircleOutlined, PlusOutlined, InfoCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { LeftOutlined } from '@ant-design/icons';
 import PrimaryButton from '../../../components/Button/Primary';
 import { featureFlags } from '../../../utils/featureFlags';
@@ -43,6 +43,7 @@ function CreateNewOrganization() {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentCalendarData] = useOutletContext();
   const { user } = useSelector(getUserDetails);
   const { calendarId } = useParams();
@@ -160,7 +161,10 @@ function CreateNewOrganization() {
 
   const onSaveHandler = () => {
     form
-      .validateFields([])
+      .validateFields([
+        ['name', 'fr'],
+        ['name', 'en'],
+      ])
       .then(() => {
         var values = form.getFieldsValue(true);
         let organizationPayload = {};
@@ -379,6 +383,8 @@ function CreateNewOrganization() {
               addUpdateOrganizationApiHandler(organizationPayload);
             }
           }
+        } else {
+          addUpdateOrganizationApiHandler(organizationPayload);
         }
       })
       .catch((error) => {
