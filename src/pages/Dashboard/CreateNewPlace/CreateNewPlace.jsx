@@ -38,7 +38,9 @@ import { entitiesClass } from '../../../constants/entitiesClass';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
 import TextEditor from '../../../components/TextEditor';
 import ImageUpload from '../../../components/ImageUpload';
-import { bilingual } from '../../../utils/bilingual';
+import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
+import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
+import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 
 const { TextArea } = Input;
 
@@ -238,6 +240,60 @@ function CreateNewPlace() {
           </Row>
           <Card>
             <>
+              {artsDataLinkChecker(placeData?.sameAs) && (
+                <Row>
+                  <Col span={24}>
+                    <p className="add-entity-label">
+                      {t('dashboard.organization.createNew.addOrganization.dataSource')}
+                    </p>
+                  </Col>
+                  <Col span={24}>
+                    <ArtsDataInfo
+                      artsDataLink={artsDataLinkChecker(placeData?.sameAs)}
+                      name={contentLanguageBilingual({
+                        en: placeData?.name?.en,
+                        fr: placeData?.name?.fr,
+                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      })}
+                      disambiguatingDescription={contentLanguageBilingual({
+                        en: placeData?.disambiguatingDescription?.en,
+                        fr: placeData?.disambiguatingDescription?.fr,
+                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      })}
+                    />
+                  </Col>
+                  <Col span={24}>
+                    <div style={{ display: 'inline' }}>
+                      <span className="add-event-date-heading">
+                        {t('dashboard.places.createNew.addPlace.question.firstPart')}
+                      </span>
+                      <span
+                        className="add-event-date-heading"
+                        style={{
+                          color: '#1b3de6',
+                          textDecoration: 'underline',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => {
+                          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`);
+                        }}>
+                        {t('dashboard.places.createNew.addPlace.question.secondPart')}
+                      </span>
+                      <span className="add-event-date-heading">
+                        {t('dashboard.places.createNew.addPlace.question.thirdPart')}
+                      </span>
+                    </div>
+                  </Col>
+                  <Col span={24}>
+                    <div>
+                      <br />
+                    </div>
+                  </Col>
+                </Row>
+              )}
               <Form.Item label={t('dashboard.places.createNew.addPlace.name')} required={true}>
                 <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                   <BilingualInput fieldData={placeData?.name}>
