@@ -15,7 +15,7 @@ import { MoreOutlined } from '@ant-design/icons';
 import NoContent from '../../../../components/NoContent/NoContent';
 import './userManagement.css';
 import { userRoles, userRolesWithTranslation } from '../../../../constants/userRoles';
-import { Button, Col, Dropdown, Grid, List, Modal, notification, Row, Space } from 'antd';
+import { Button, Col, Dropdown, Grid, List, Modal, Row, Space } from 'antd';
 import ListCard from '../../../../components/List/User/ListCard';
 import bulletIcon from '../../../../assets/icons/dot-bullet.svg';
 import { userActivityStatus } from '../../../../constants/userActivityStatus';
@@ -45,34 +45,31 @@ const UserManagement = () => {
   const navigate = useNavigate();
   const screens = useBreakpoint();
 
-  const roleAndStatusFilter = {};
-  if (searchParams.get('userRole') || sessionStorage.getItem('userRole')) {
-    roleAndStatusFilter.userRole = searchParams.get('userRole')
-      ? searchParams.get('userRole')
-      : sessionStorage.getItem('userRole') ?? '';
-  }
-  if (searchParams.get('userStatus') || sessionStorage.getItem('userStatus')) {
-    roleAndStatusFilter.userStatus = searchParams.get('userStatus')
-      ? searchParams.get('userStatus')
-      : sessionStorage.getItem('userStatus') ?? '';
-  }
   const [pageNumber, setPageNumber] = useState(1);
   const [totalCount, setTotalCount] = useState();
 
-  const [filter, setFilter] = useState({
-    sort: searchParams.get('sortBy')
-      ? searchParams.get('sortBy')
-      : sessionStorage.getItem('sortBy') ?? sortByOptionsUsers[0]?.key,
-    order: searchParams.get('order') ? searchParams.get('order') : sessionStorage.getItem('order') ?? sortOrder?.ASC,
-    ...roleAndStatusFilter,
-  });
+  const sortByParam = searchParams.get('sortBy');
+  const orderParam = searchParams.get('order');
+  const userRoleParam = searchParams.get('userRole');
+  const userStatusParam = searchParams.get('userStatus');
+  const queryParam = searchParams.get('query');
 
-  const [userSearchQuery, setUserSearchQuery] = useState(
-    searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('query') ?? '',
-  );
+  const defaultSort = sortByParam || sessionStorage.getItem('sortByUserListing') || sortByOptionsUsers[0]?.key;
+  const defaultOrder = orderParam || sessionStorage.getItem('orderUserListing') || sortOrder?.ASC;
+  const defaultUserRole = userRoleParam || sessionStorage.getItem('userRoleUserListing') || '';
+  const defaultUserStatus = userStatusParam || sessionStorage.getItem('userStatusUserListing') || '';
+  const defaultQuery = queryParam || sessionStorage.getItem('queryUserListing') || '';
+
+  const [filter, setFilter] = useState({
+    sort: decodeURIComponent(defaultSort),
+    order: decodeURIComponent(defaultOrder),
+    userRole: decodeURIComponent(defaultUserRole),
+    userStatus: decodeURIComponent(defaultUserStatus),
+  });
+  const [userSearchQuery, setUserSearchQuery] = useState(decodeURIComponent(defaultQuery));
 
   const [getAllUsers, { currentData: userData, isLoading: isUsersLoading }] = useLazyGetAllUsersQuery();
-  const [inviteUserMutation, { error }] = useInviteUserMutation();
+  const [inviteUserMutation] = useInviteUserMutation();
   const [deleteUser] = useDeleteUserMutation();
   const [activateUser] = useActivateUserMutation();
   const [deActivateUser] = useDeactivateUserMutation();
@@ -82,36 +79,29 @@ const UserManagement = () => {
   });
 
   useEffect(() => {
-    if (error) {
-      notification.info({
-        key: 'err',
-        message: 'error',
-        placement: 'top',
-        description: error,
-      });
-    }
-  }, error);
+    console.log(filter);
+  }, [filter]);
 
   useEffect(() => {
     let sortQuery = new URLSearchParams();
-    let statusFilter = new URLSearchParams();
-    let roleFilter = new URLSearchParams();
+    let optionalFilters = new URLSearchParams();
 
     sortQuery.append('sort', encodeURIComponent(`${filter?.order}(${filter?.sort})`));
-    statusFilter.append('userStatus', encodeURIComponent(`${filter?.userStatus ? filter?.userStatus : ''}`));
-    roleFilter.append('userRole', encodeURIComponent(`${filter?.userRole ? filter?.userRole : ''}`));
+
+    if (filter.userStatus !== '') {
+      optionalFilters.append('userStatus', encodeURIComponent(`${filter?.userStatus && filter?.userStatus}`));
+    }
+    if (filter.userRole !== '') {
+      optionalFilters.append('userRole', encodeURIComponent(`${filter?.userRole && filter?.userRole}`));
+    }
 
     const filtersDecoded =
-      decodeURIComponent(sortQuery.toString()) +
-      '&' +
-      decodeURIComponent(statusFilter.toString()) +
-      '&' +
-      decodeURIComponent(roleFilter.toString());
+      decodeURIComponent(sortQuery.toString()) + '&' + decodeURIComponent(optionalFilters.toString());
 
     getAllUsers({
       page: pageNumber,
       limit: 10,
-      filters: filtersDecoded, // userstatus,userRole,a
+      filters: filtersDecoded,
       query: userSearchQuery,
       sessionId: timestampRef,
       calendarId: calendarId,
@@ -121,32 +111,23 @@ const UserManagement = () => {
       .then((response) => {
         setTotalCount(response?.count);
       });
-  }, [filter, pageNumber, userSearchQuery]);
 
-  useEffect(() => {
     let params = {
       page: pageNumber,
       order: filter?.order,
       sortBy: filter?.sort,
+      ...(filter.userRole !== '' && { userRole: filter.userRole }),
+      ...(filter.userStatus !== '' && { userRole: filter.userStatus }),
+      ...(userSearchQuery !== '' && { query: userSearchQuery }),
     };
-
-    if (filter?.userRole || searchParams.get('userRole') || sessionStorage.getItem('userRole')) {
-      params.userRole = filter.userRole || searchParams.get('userRole') || sessionStorage.getItem('userRole');
-      sessionStorage.setItem('userRole', filter.userRole);
-    }
-
-    if (filter?.userStatus || searchParams.get('userStatus') || sessionStorage.getItem('userStatus')) {
-      params.userStatus = filter.userStatus || searchParams.get('userStatus') || sessionStorage.getItem('userStatus');
-      sessionStorage.setItem('userStatus', filter.userStatus);
-    }
-
     setSearchParams(createSearchParams(params));
-
     sessionStorage.setItem('page', pageNumber);
-    sessionStorage.setItem('order', filter?.order);
-    sessionStorage.setItem('sortBy', filter?.sort);
-    sessionStorage.setItem('query', userSearchQuery);
-  }, [filter, userSearchQuery]);
+    sessionStorage.setItem('queryUserListing', userSearchQuery);
+    sessionStorage.setItem('orderUserListing', filter?.order);
+    sessionStorage.setItem('sortByUserListing', filter?.sort);
+    sessionStorage.setItem('userRoleUserListing', filter?.userRole);
+    sessionStorage.setItem('userStatusUserListing', filter?.userStatus);
+  }, [filter, pageNumber, userSearchQuery]);
 
   // handlers
   const onSearchHandler = (event) => {
@@ -163,18 +144,19 @@ const UserManagement = () => {
 
   const filterClearHandler = () => {
     setFilter({
-      publication: [],
       sort: sortByOptionsUsers[0]?.key,
       order: sortOrder?.ASC,
+      userRole: '',
+      userStatus: '',
     });
     setUserSearchQuery('');
     setPageNumber(1);
     sessionStorage.removeItem('page');
     sessionStorage.removeItem('query');
-    sessionStorage.removeItem('order');
-    sessionStorage.removeItem('sortBy');
-    sessionStorage.removeItem('userStatus');
-    sessionStorage.removeItem('userRole');
+    sessionStorage.removeItem('orderUserListing');
+    sessionStorage.removeItem('sortByUserListing');
+    sessionStorage.removeItem('userStatusUserListing');
+    sessionStorage.removeItem('userRoleUserListing');
   };
 
   const onSortSelect = ({ selectedKeys }) => {
@@ -426,10 +408,15 @@ const UserManagement = () => {
           </Col>
 
           <Col>
-            <Button size="large" className="filter-buttons" style={{ color: '#1B3DE6' }} onClick={filterClearHandler}>
-              {t('dashboard.events.filter.clear')}&nbsp;
-              <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
-            </Button>
+            {(filter.order !== sortOrder.ASC ||
+              filter.sort !== sortByOptionsUsers[0].key ||
+              filter.userRole !== '' ||
+              filter.userStatus !== '') && (
+              <Button size="large" className="filter-buttons" style={{ color: '#1B3DE6' }} onClick={filterClearHandler}>
+                {t('dashboard.events.filter.clear')}&nbsp;
+                <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
+              </Button>
+            )}
           </Col>
         </Row>
 
