@@ -23,6 +23,7 @@ export const roleHandler = ({ roles, calendarId }) => {
       break;
 
     default:
+      role = <Translation>{(t) => t('dashboard.settings.userManagement.superAdmin')}</Translation>;
       break;
   }
   return role;

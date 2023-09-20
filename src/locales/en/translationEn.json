@@ -626,6 +626,7 @@
         "editor": "Editor",
         "contributor": "Contributor",
         "guest": "Guest",
+        "superAdmin":"Super Admin",
         "invitedBy": "Invited By",
         "tooltip": {
           "editUser": "Edit user",

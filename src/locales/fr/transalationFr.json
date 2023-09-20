@@ -622,6 +622,7 @@
         "editor": "Éditeur",
         "contributor": "Collaborateur",
         "guest": "Invité",
+        "superAdmin":"Super Administrateur",
         "invitedBy": "Invité par",
         "tooltip": {
           "editUser": "Modifier l'utilisateur",
