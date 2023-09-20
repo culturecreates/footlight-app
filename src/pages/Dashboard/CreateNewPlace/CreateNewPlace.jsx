@@ -3,7 +3,7 @@ import './createNewPlace.css';
 import '../AddEvent/addEvent.css';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import { Button, Col, Form, Input, Popover, Row } from 'antd';
-import { LeftOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { LeftOutlined, CloseCircleOutlined, InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import PrimaryButton from '../../../components/Button/Primary';
 import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -41,6 +41,8 @@ import ImageUpload from '../../../components/ImageUpload';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import ChangeType from '../../../components/ChangeType';
+import { addressTypeOptions, addressTypeOptionsFieldNames } from '../../../constants/addressTypeOptions';
 
 const { TextArea } = Input;
 
@@ -79,6 +81,7 @@ function CreateNewPlace() {
     DRAGGER: 'dragger',
     DRAGGER_WRAP: 'draggerWrap',
     DYNAMIC_FIELS: 'dynamicFields',
+    OPENING_HOURS: 'openingHours',
   };
   const placeId = searchParams.get('id');
   const artsDataId = location?.state?.data?.id ?? null;
@@ -109,8 +112,8 @@ function CreateNewPlace() {
   const [allPlacesList, setAllPlacesList] = useState([]);
   const [descriptionMinimumWordCount] = useState(1);
   const [imageCropOpen, setImageCropOpen] = useState(false);
-  // const [addedFields, setAddedFields] = useState([]);
-  // const [scrollToSelectedField, setScrollToSelectedField] = useState();
+  const [addedFields, setAddedFields] = useState([]);
+  const [scrollToSelectedField, setScrollToSelectedField] = useState();
 
   const placesSearch = (inputValue = '') => {
     let query = new URLSearchParams();
@@ -123,24 +126,25 @@ function CreateNewPlace() {
       .catch((error) => console.log(error));
   };
 
-  // const addFieldsHandler = (fieldNames) => {
-  //   let array = addedFields?.concat(fieldNames);
-  //   array = [...new Set(array)];
-  //   setAddedFields(array);
-  //   setScrollToSelectedField(array?.at(-1));
-  // };
+  const addFieldsHandler = (fieldNames) => {
+    let array = addedFields?.concat(fieldNames);
+    array = [...new Set(array)];
+    setAddedFields(array);
+    setScrollToSelectedField(array?.at(-1));
+  };
 
-  // useEffect(() => {
-  //   if (addedFields?.length > 0) {
-  //     const element = document.getElementsByClassName(scrollToSelectedField);
-  //     element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-  //   }
-  // }, [addedFields]);
+  useEffect(() => {
+    if (addedFields?.length > 0) {
+      const element = document.getElementsByClassName(scrollToSelectedField);
+      element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }, [addedFields]);
 
   console.log(artsData);
 
   useEffect(() => {
     if (calendarId && placeData && currentCalendarData) {
+      let initialAddedFields = [];
       if (routinghandler(user, calendarId, placeData?.createdByUserId, null, true)) {
         if (placeData?.image) {
           form.setFieldsValue({
@@ -165,8 +169,7 @@ function CreateNewPlace() {
             },
           });
         }
-        // let placeKeys = Object.keys(placeData);
-        // if (placeKeys?.length > 0) setAddedFields(placeKeys);
+        setAddedFields(initialAddedFields);
       } else
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Places}/${placeId}`);
     }
@@ -949,8 +952,46 @@ function CreateNewPlace() {
                   }}
                 />
               </Form.Item>
+              <Form.Item
+                name={formFieldNames.OPENING_HOURS}
+                className={`${formFieldNames.OPENING_HOURS} subheading-wrap`}
+                label={t('dashboard.places.createNew.addPlace.address.openingHours.openingHours')}
+                initialValue={placeData?.openingHours?.uri}
+                style={{
+                  display: !addedFields?.includes(addressTypeOptionsFieldNames.OPENING_HOURS) && 'none',
+                }}
+                rules={[
+                  {
+                    type: 'url',
+                    message: t('dashboard.events.addEditEvent.validations.url'),
+                  },
+                ]}>
+                <StyledInput
+                  addonBefore="https://"
+                  autoComplete="off"
+                  placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
+                />
+              </Form.Item>
             </>
-            <></>
+            <Form.Item label={t('dashboard.places.createNew.addPlace.addMoreDetails')} style={{ lineHeight: '2.5' }}>
+              {addedFields?.includes(addressTypeOptionsFieldNames.OPENING_HOURS) ? (
+                <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+              ) : (
+                addressTypeOptions.map((type) => {
+                  return (
+                    <ChangeType
+                      key={type.type}
+                      primaryIcon={<PlusOutlined />}
+                      disabled={type.disabled}
+                      label={type.label}
+                      promptText={type.tooltip}
+                      secondaryIcon={<InfoCircleOutlined />}
+                      onClick={() => addFieldsHandler(type?.fieldNames)}
+                    />
+                  );
+                })
+              )}
+            </Form.Item>
           </Card>
           <Card title={t('dashboard.places.createNew.addPlace.containedInPlace.containedInPlace')}>
             <>

@@ -572,6 +572,10 @@
             },
             "coordinates": {
               "coordinates": "Coordonnées"
+            },
+            "openingHours": {
+              "openingHours": "Lien des heures d'ouverture",
+              "tooltip": "Ajoutez un lien vers les heures d'ouverture"
             }
           },
           "containedInPlace": {
@@ -598,6 +602,7 @@
             "image": "Image",
             "subheading": "Only .jpeg and .png files are accepted."
           },
+          "addMoreDetails": "Ajouter plus de détails",
           "dataSource": "Source de la donnée",
           "notification": {
             "addSuccess": "Succès ! Votre lieu a été créé.",
