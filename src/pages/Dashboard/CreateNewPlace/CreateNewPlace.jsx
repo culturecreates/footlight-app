@@ -19,7 +19,12 @@ import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import { useTranslation } from 'react-i18next';
 import { loadArtsDataEntity } from '../../../services/artsData';
-import { useAddPlaceMutation, useGetPlaceQuery, useUpdatePlaceMutation } from '../../../services/places';
+import {
+  useAddPlaceMutation,
+  useGetPlaceQuery,
+  useLazyGetPlaceQuery,
+  useUpdatePlaceMutation,
+} from '../../../services/places';
 import { useSelector } from 'react-redux';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import ContentLanguageInput from '../../../components/ContentLanguageInput';
@@ -29,7 +34,7 @@ import BilingualInput from '../../../components/BilingualInput';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import { placeTaxonomyMappedFieldTypes } from '../../../constants/placeMappedFieldTypes';
-import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
+import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import TreeSelectOption from '../../../components/TreeSelectOption';
 import NoContent from '../../../components/NoContent/NoContent';
 import {
@@ -99,14 +104,16 @@ function CreateNewPlace() {
     DYNAMIC_FIELS: 'dynamicFields',
     OPENING_HOURS: 'openingHours',
     ACCESSIBILITY_NOTE_WRAP: 'accessibilityNotewrap',
-    ACCESSIBILITY_NOTE_ENGLISH: 'englishAccessibilityNotewrap',
-    ACCESSIBILITY_NOTE_FRENCH: 'frenchAccessibilityNotewrap',
+    ACCESSIBILITY_NOTE_ENGLISH: 'englishAccessibilityNote',
+    ACCESSIBILITY_NOTE_FRENCH: 'frenchAccessibilityNote',
+    REGION: 'region',
   };
   const placeId = searchParams.get('id');
+  console.log(placeId);
   const artsDataId = location?.state?.data?.id ?? null;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
-  const { currentData: placeData, isPlaceLoading } = useGetPlaceQuery(
+  const { currentData: placeData, isLoading: isPlaceLoading } = useGetPlaceQuery(
     { placeId: placeId, calendarId, sessionId: timestampRef },
     { skip: placeId ? false : true },
   );
@@ -122,6 +129,8 @@ function CreateNewPlace() {
   const [addPlace, { isLoading: addPlaceLoading }] = useAddPlaceMutation();
   const [updatePlace, { isLoading: updatePlaceLoading }] = useUpdatePlaceMutation();
   const [addPostalAddress] = useAddPostalAddressMutation();
+  const [getPlace] = useLazyGetPlaceQuery();
+  const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -182,7 +191,7 @@ function CreateNewPlace() {
       } else {
         placeObj = {
           ...placeObj,
-          sameAs: placeObj?.sameAs,
+          sameAs: placeData?.sameAs,
         };
         updatePlace({
           data: placeObj,
@@ -226,7 +235,7 @@ function CreateNewPlace() {
         ])
         .then(() => {
           var values = form.getFieldsValue(true);
-          let placeObj, languageKey;
+          let placeObj, languageKey, dynamicFields;
           if (calendarContentLanguage == contentLanguage.ENGLISH) languageKey = 'en';
           else if (calendarContentLanguage == contentLanguage.FRENCH) languageKey = 'fr';
           let postalObj = {
@@ -256,6 +265,14 @@ function CreateNewPlace() {
             };
           }
 
+          if (values?.dynamicFields) {
+            dynamicFields = Object.keys(values?.dynamicFields)?.map((dynamicField) => {
+              return {
+                taxonomyId: dynamicField,
+                conceptIds: values?.dynamicFields[dynamicField],
+              };
+            });
+          }
           let imageCrop = form.getFieldValue('imageCrop');
           imageCrop = {
             large: {
@@ -276,7 +293,56 @@ function CreateNewPlace() {
               width: imageCrop?.original?.width,
             },
           };
+          placeObj = {
+            name: {
+              en: values?.english,
+              fr: values?.french,
+            },
+            description: {
+              en: values?.englishEditor,
+              fr: values?.frenchEditor,
+            },
+            openingHours: { uri: values?.openingHours },
+            containedInPlace: values?.containedInPlace ? { entityId: values?.containedInPlace } : undefined,
+            geo: {
+              latitude: values?.latitude,
+              longitude: values?.longitude,
+            },
 
+            accessibilityNote: {
+              fr: values?.frenchAccessibilityNote,
+              en: values?.englishAccessibilityNote,
+            },
+            accessibility: values?.placeAccessibility
+              ? values?.placeAccessibility.map((item) => {
+                  const obj = {
+                    entityId: item,
+                  };
+                  return obj;
+                })
+              : undefined,
+            regions: values?.region
+              ? values.region.map((item) => {
+                  const obj = {
+                    entityId: item,
+                  };
+                  return obj;
+                })
+              : undefined,
+            additionalType: values?.type
+              ? values?.type.map((item) => {
+                  const obj = {
+                    entityId: item,
+                  };
+                  return obj;
+                })
+              : undefined,
+            disambiguatingDescription: {
+              fr: values.frenchDisambiguatingDescription,
+              en: values.englishDisambiguatingDescription,
+            },
+            ...(values?.dynamicFields && { dynamicFields }),
+          };
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
             const formdata = new FormData();
             formdata.append('file', values?.dragger[0].originFileObj);
@@ -444,9 +510,57 @@ function CreateNewPlace() {
   console.log(artsData);
 
   useEffect(() => {
+    console.log(placeData);
     if (calendarId && placeData && currentCalendarData) {
-      let initialAddedFields = [];
+      console.log(placeData);
+      let initialAddedFields = [],
+        initialPlaceAccessibiltiy = [],
+        initialPlace;
       if (routinghandler(user, calendarId, placeData?.createdByUserId, null, true)) {
+        if (placeData?.containedInPlace?.entityId) {
+          getPlace({ placeId: placeData?.containedInPlace?.entityId, calendarId })
+            .unwrap()
+            .then((response) => {
+              console.log(response);
+              if (response?.accessibility?.length > 0) {
+                getAllTaxonomy({
+                  calendarId,
+                  search: '',
+                  taxonomyClass: taxonomyClass.PLACE,
+                  includeConcepts: true,
+                  sessionId: timestampRef,
+                })
+                  .unwrap()
+                  .then((res) => {
+                    res?.data?.forEach((taxonomy) => {
+                      if (taxonomy?.mappedToField === 'PlaceAccessibility') {
+                        response?.accessibility?.forEach((accessibility) => {
+                          taxonomy?.concept?.forEach((concept) => {
+                            if (concept?.id == accessibility?.entityId) {
+                              initialPlaceAccessibiltiy = initialPlaceAccessibiltiy?.concat([concept]);
+                            }
+                          });
+                        });
+                      }
+                    });
+                    initialPlace = {
+                      ...response,
+                      ['accessibility']: initialPlaceAccessibiltiy,
+                    };
+                    setContainedInPlace(placesOptions([initialPlace], user, calendarContentLanguage)[0]);
+                  })
+                  .catch((error) => console.log(error));
+              } else {
+                initialPlace = {
+                  ...response,
+                  ['accessibility']: [],
+                };
+                setContainedInPlace(placesOptions([response], user, calendarContentLanguage)[0]);
+              }
+            })
+            .catch((error) => console.log(error));
+          form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, placeData?.containedInPlace?.entityId);
+        }
         if (placeData?.image) {
           form.setFieldsValue({
             imageCrop: {
@@ -470,6 +584,14 @@ function CreateNewPlace() {
             },
           });
         }
+        if (placeData?.openingHours) initialAddedFields = initialAddedFields?.concat(formFieldNames?.OPENING_HOURS);
+        if (placeData?.accessibilityNote)
+          initialAddedFields = initialAddedFields?.concat(formFieldNames?.ACCESSIBILITY_NOTE_WRAP);
+        form.setFieldsValue({
+          latitude: placeData.geoCoordinates && '' + placeData.geoCoordinates.latitude,
+          longitude: placeData.geoCoordinates && '' + placeData.geoCoordinates.longitude,
+          coordinates: placeData.geoCoordinates.latitude + ',' + placeData.geoCoordinates.longitude,
+        });
         setAddedFields(initialAddedFields);
       } else
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Places}/${placeId}`);
@@ -1126,6 +1248,7 @@ function CreateNewPlace() {
               </Form.Item>
               <Form.Item
                 name={formFieldNames.POSTAL_CODE}
+                initialValue={placeData?.address?.postalCode}
                 label={t('dashboard.places.createNew.addPlace.address.postalCode.postalCode')}
                 rules={[
                   {
@@ -1259,7 +1382,7 @@ function CreateNewPlace() {
                 <StyledInput />
               </Form.Item>
               <Form.Item
-                name={formFieldNames.TYPE}
+                name={formFieldNames.REGION}
                 label={taxonomyDetails(
                   allTaxonomyData?.data,
                   user,
