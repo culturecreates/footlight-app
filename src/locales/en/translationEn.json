@@ -548,6 +548,7 @@
             "searchAddressDescription": "Search for the name of place and/or address.",
             "searchAddressPlaceholder": "Search",
             "streetAddress": "Street address",
+            "subheading": "Search for the name of place and/or address.",
             "streetAddressPlaceholder": {
               "english": "Enter street address in English",
               "french": "Enter street address in French"
@@ -575,10 +576,46 @@
               }
             },
             "coordinates": {
-              "cooridinates": "Coordinates",
-              "placeholder": ""
+              "coordinates": "Coordinates"
+            },
+            "openingHours": {
+              "openingHours": "Opening hours link",
+              "tooltip": "Add a link to the opening hours"
             }
           },
+          "containedInPlace": {
+            "containedInPlace": "Contained in place",
+            "subheading": "Add place that contains this place, if appropriate.",
+            "addPlace": "Add a place",
+            "placeholder": "Search a place"
+          },
+          "venueAccessibility": {
+            "venueAccessibility": "Venue accessibility",
+            "subheading": "These accessibility items will be displayed in all the event located at this venue.",
+            "placeAccessibilityNote": {
+              "note": "Note",
+              "placeholder": {
+                "english": "",
+                "french": ""
+              },
+              "tooltip": "Add supplementary accessibility information."
+            }
+          },
+          "disambiguatingDescription": {
+            "disambiguatingDescription": "Disambiguating description",
+            "placeholder": {
+              "english": "Enter Disambiguating description",
+              "french": "Enter Disambiguating description"
+            }
+          },
+          "description": {
+            "description": "Description"
+          },
+          "image": {
+            "image": "Image",
+            "subheading": "Only .jpeg and .png files are accepted."
+          },
+          "addMoreDetails": "Add more details",
           "notification": {
             "addSuccess": "Success! Your place has been created.",
             "editSuccess": "Success! Your place has been updated.",

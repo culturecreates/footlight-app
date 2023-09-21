@@ -278,7 +278,7 @@
             "placeHolderWebsite": "Entrez l'adresse web URL",
             "placeHolderPhoneNumber": "Entrez le numéro de téléphone",
             "placeHolderEmail": "Entrez l’adresse courriel",
-            "contactTooltip": "Ajoutez un contact pour votre événement. Vous pouvez en créer un ou copier les coordonnées de l'Organisateur.",
+            "contactTooltip": "Ajoutez un contact pour votre événement. Vous pouvez en créer un ou copier les données de l'Organisateur.",
             "copyOrganizerContact": "Copier le contact de l’organisateur"
           },
           "eventLanguage": "Langue de l'événement",
@@ -544,6 +544,7 @@
             "searchAddressDescription": "Entrer le nom du lieu et/ou l'adresse.",
             "searchAddressPlaceholder": "Rechercher",
             "streetAddress": "Adresse postale",
+            "subheading": "Entrer le nom du lieu et/ou l'adresse.",
             "streetAddressPlaceholder": {
               "english": "Entrez l’adresse postale en anglais",
               "french": "Entrez l’adresse postale en français"
@@ -569,8 +570,48 @@
                 "english": "Entrer la pays en anglais",
                 "french": "Entrer la pays en français"
               }
+            },
+            "coordinates": {
+              "coordinates": "Coordonnées"
+            },
+            "openingHours": {
+              "openingHours": "Lien des heures d'ouverture",
+              "tooltip": "Ajoutez un lien vers les heures d'ouverture"
             }
           },
+          "containedInPlace": {
+            "containedInPlace": "Contenu dans un lieu",
+            "subheading": "Ajoutez un lieu qui contient ce lieu.",
+            "addPlace": "Ajouter un lieu",
+            "placeholder": "Rechercher un lieu"
+          },
+          "venueAccessibility": {
+            "venueAccessibility": "Accessibilité du site",
+            "subheading": "Ces éléments d'accessibilité seront affichés dans tous les événements se déroulant dans ce lieu.",
+            "placeAccessibilityNote": {
+              "note": "Note",
+              "placeholder": {
+                "english": "",
+                "french": ""
+              },
+              "tooltip": "Ajoutez des informations supplémentaires sur l'accessibilité."
+            }
+          },
+          "disambiguatingDescription": {
+            "disambiguatingDescription": "Description identifiante",
+            "placeholder": {
+              "english": "Entrez la description identifiante",
+              "french": "Entrez la description identifiante"
+            }
+          },
+          "description": {
+            "description": "Description"
+          },
+          "image": {
+            "image": "Image",
+            "subheading": "Only .jpeg and .png files are accepted."
+          },
+          "addMoreDetails": "Ajouter plus de détails",
           "dataSource": "Source de la donnée",
           "notification": {
             "addSuccess": "Succès ! Votre lieu a été créé.",
