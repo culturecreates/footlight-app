@@ -509,7 +509,6 @@ function CreateNewPlace() {
   console.log(artsData);
 
   useEffect(() => {
-    console.log(placeData);
     if (calendarId && placeData && currentCalendarData) {
       let initialAddedFields = [],
         initialPlaceAccessibiltiy = [],
