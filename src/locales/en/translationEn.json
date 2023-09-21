@@ -464,7 +464,13 @@
         "addOrganization": {
           "newOrganization": "New Organization",
           "editOrganization": "Edit Organization",
-          "addMoreDetails": "Add more details to your organization"
+          "addMoreDetails": "Add more details to your organization",
+          "dataSource": "Data source",
+          "question": {
+            "firstPart": "Is this the right organization? If not, ",
+            "secondPart": "create a new organization",
+            "thirdPart": " and do not select this data source."
+          }
         },
         "notification": {
           "addSuccess": "Success! Your organization has been created.",
@@ -525,6 +531,99 @@
           "create": "Create",
           "footlightSectionHeading": "From Footlight",
           "artsDataSectionHeading": "Imports from Artsdata"
+        },
+        "addPlace": {
+          "newPlace": "New place",
+          "editPlace": "Edit place",
+          "question": {
+            "firstPart": "Is this the right place? If not, ",
+            "secondPart": "create a new place",
+            "thirdPart": " and do not select this data source."
+          },
+          "name": "Place Name",
+
+          "dataSource": "Data source",
+          "address": {
+            "address": "Address",
+            "searchAddressDescription": "Search for the name of place and/or address.",
+            "searchAddressPlaceholder": "Search",
+            "streetAddress": "Street address",
+            "subheading": "Search for the name of place and/or address.",
+            "streetAddressPlaceholder": {
+              "english": "Enter street address in English",
+              "french": "Enter street address in French"
+            },
+            "city": {
+              "city": "City",
+              "placeholder": { "french": "Enter city in French", "english": "Enter city in English" }
+            },
+            "postalCode": {
+              "postalCode": "Postal code",
+              "placeholder": "Enter postal code"
+            },
+            "province": {
+              "province": "Province",
+              "placeholder": {
+                "english": "Enter province in English",
+                "french": "Enter province in French"
+              }
+            },
+            "country": {
+              "country": "Country",
+              "placeholder": {
+                "english": "Enter country in English",
+                "french": "Enter country in French"
+              }
+            },
+            "coordinates": {
+              "coordinates": "Coordinates"
+            },
+            "openingHours": {
+              "openingHours": "Opening hours link",
+              "tooltip": "Add a link to the opening hours"
+            }
+          },
+          "containedInPlace": {
+            "containedInPlace": "Contained in place",
+            "subheading": "Add place that contains this place, if appropriate.",
+            "addPlace": "Add a place",
+            "placeholder": "Search a place"
+          },
+          "venueAccessibility": {
+            "venueAccessibility": "Venue accessibility",
+            "subheading": "These accessibility items will be displayed in all the event located at this venue.",
+            "placeAccessibilityNote": {
+              "note": "Note",
+              "placeholder": {
+                "english": "",
+                "french": ""
+              },
+              "tooltip": "Add supplementary accessibility information."
+            }
+          },
+          "disambiguatingDescription": {
+            "disambiguatingDescription": "Disambiguating description",
+            "placeholder": {
+              "english": "Enter Disambiguating description",
+              "french": "Enter Disambiguating description"
+            }
+          },
+          "description": {
+            "description": "Description"
+          },
+          "image": {
+            "image": "Image",
+            "subheading": "Only .jpeg and .png files are accepted."
+          },
+          "addMoreDetails": "Add more details",
+          "notification": {
+            "addSuccess": "Success! Your place has been created.",
+            "editSuccess": "Success! Your place has been updated.",
+            "saveError": "This place needs more information before it can be saved."
+          },
+          "validations": {
+            "nameRequired": "Name is required."
+          }
         }
       }
     },

@@ -49,6 +49,16 @@ export const placesApi = createApi({
         body: data,
       }),
     }),
+    updatePlace: builder.mutation({
+      query: ({ data, calendarId, placeId }) => ({
+        url: `places/${placeId}`,
+        method: 'PATCH',
+        headers: {
+          'calendar-id': calendarId,
+        },
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -59,4 +69,5 @@ export const {
   useLazyGetPlaceQuery,
   useGetPlaceQuery,
   useAddPlaceMutation,
+  useUpdatePlaceMutation,
 } = placesApi;
