@@ -1,0 +1,30 @@
+.settings-wrapper .settings-heading {
+  font-weight: 700;
+  white-space: nowrap;
+  font-size: 34px;
+}
+.settings-wrapper .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  background: rgb(249, 250, 255);
+  color: var(--content-action-default, #1b3de6);
+  line-height: 24px;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  text-shadow: none;
+}
+
+.settings-wrapper .ant-tabs-tab-btn {
+  background: rgb(249, 250, 255);
+  line-height: 24px;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--content-neutral-secondary, #646d7b);
+  line-height: 24px;
+  text-shadow: none;
+}
+
+.settings-wrapper .ant-tabs-ink-bar {
+  border-bottom: 2px solid var(--content-action-darker, #0f0e98);
+  background: var(--background-neutrals-transparent, rgba(255, 255, 255, 0));
+}

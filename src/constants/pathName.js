@@ -12,6 +12,7 @@ export const PathName = {
   AddPerson: '/add-person',
   Taxonomies: '/taxonomies',
   Settings: '/settings',
+  UserManagement: '/user-management',
   AddEvent: '/add-event',
   AcceptInvitation: '/accept',
   Join: '/join',

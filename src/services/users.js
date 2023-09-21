@@ -4,21 +4,38 @@ import { baseQueryWithReauth } from '../utils/services';
 export const usersApi = createApi({
   reducerPath: 'usersApi',
   baseQuery: baseQueryWithReauth,
+  tagTypes: ['Users'],
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getAllUsers: builder.query({
-      query: ({ includeInactiveUsers, includeCalendarFilter, calendarId }) => {
+      query: ({ includeCalenderFilter, calendarId, query = '', page = 1, limit, filters }) => {
         return {
-          url: `users?includeInactiveUsers=${includeInactiveUsers}&includeCalendarFilter=${includeCalendarFilter}`,
+          url: `users?includeCalendarFilter=${includeCalenderFilter}&${filters}&query=${query}&page=${page}&limit=${limit}`,
           method: 'GET',
           headers: {
             'calendar-id': calendarId,
           },
         };
       },
+      providesTags: (result) =>
+        result
+          ? [...result.data.map(({ id }) => ({ type: 'Users', id })), { type: 'Users', id: 'LIST' }]
+          : [{ type: 'Users', id: 'LIST' }],
+      transformResponse: (response) => response,
     }),
     getUserRoles: builder.query({
       query: () => `users/roles`,
+    }),
+    getUserById: builder.query({
+      query: ({ userId, calendarId }) => {
+        return {
+          url: `users/${userId}`,
+          method: 'GET',
+          headers: {
+            'calendar-id': calendarId,
+          },
+        };
+      },
     }),
     getCurrentUser: builder.query({
       query: ({ accessToken, calendarId }) => {
@@ -31,6 +48,36 @@ export const usersApi = createApi({
           },
         };
       },
+    }),
+    deleteUser: builder.mutation({
+      query: ({ id, calendarId }) => ({
+        url: `users/${id}`,
+        method: 'DELETE',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+      invalidatesTags: [{ type: 'Users', id: 'LIST' }],
+    }),
+    activateUser: builder.mutation({
+      query: ({ id, calendarId }) => ({
+        url: `users/${id}/activate`,
+        method: 'PATCH',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+      invalidatesTags: [{ type: 'Users', id: 'LIST' }],
+    }),
+    deactivateUser: builder.mutation({
+      query: ({ id, calendarId }) => ({
+        url: `users/${id}/deactivate`,
+        method: 'PATCH',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+      invalidatesTags: [{ type: 'Users', id: 'LIST' }],
     }),
     updateCurrentUser: builder.mutation({
       query: ({ calendarId, body }) => {
@@ -72,10 +119,15 @@ export const usersApi = createApi({
 // auto-generated based on the defined endpoints
 export const {
   useGetUserRolesQuery,
+  useGetUserByIdQuery,
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useGetAllUsersQuery,
   useGetCurrentUserQuery,
   useUpdateCurrentUserMutation,
   useLazyGetCurrentUserQuery,
+  useLazyGetAllUsersQuery,
+  useDeleteUserMutation,
+  useActivateUserMutation,
+  useDeactivateUserMutation,
 } = usersApi;

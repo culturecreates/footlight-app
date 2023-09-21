@@ -667,6 +667,56 @@
         "emptyFirstName": "Enter your first name",
         "emptyLastName": "Enter your last name"
       }
+    },
+    "settings": {
+      "heading": "Settings",
+      "tab1": "User management",
+      "tab2": "Calendar metadata",
+      "userManagement": {
+        "searchPlaceholder": "Search users",
+        "sort": "Sort by",
+        "status": "Status",
+        "userTypes": "User types",
+        "clear": "Clear",
+        "userName": "Username",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "active": "Active",
+        "inActive": "inActive",
+        "invite": "Invited",
+        "admin": "Admin",
+        "editor": "Editor",
+        "contributor": "Contributor",
+        "guest": "Guest",
+        "superAdmin":"Super Admin",
+        "invitedBy": "Invited By",
+        "tooltip": {
+          "editUser": "Edit user",
+          "sendInvitation": "Send invitation",
+          "copyInvitationLink": "Copy invitation link",
+          "activateOrDeactivate": "Activate/Deactivate",
+          "deleteUser": "Delete user",
+          "modal": {
+            "deleteText": "Are you sure you want to permanently delete this user",
+            "deactivateText": "Are you sure you want to deactivate this user",
+            "activateText": "Are you sure you want to activate this user"
+          }
+        }
+      },
+      "userReadOnly": {
+        "editBtn": "Edit details",
+        "userName": "Username",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "phoneNumber": "Phone Number",
+        "email": "Email",
+        "userType": "User type",
+        "languagePreference": "Langage preference",
+        "memberOf": "Member of",
+        "calendarAccess": "Calendar access",
+        "details": "Details",
+        "breadcrumb": "Back to user list"
+      }
     }
   },
   "errorPage": {

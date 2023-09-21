@@ -18,11 +18,9 @@ function ListItem(props) {
     defaultLogo,
     artsDataLink,
     createdDate,
-    createdByFirstName,
-    createdByLastName,
+    createdByUserName,
     updatedDate,
-    updatedByFirstName,
-    updatedByLastName,
+    updatedByUserName,
     scheduleTimezone,
     listItemHandler,
     actions,
@@ -86,9 +84,9 @@ function ListItem(props) {
                 ?.toUpperCase()}
               &nbsp;
               {t('dashboard.events.list.by')}&nbsp;
-              <Username firstName={createdByFirstName} lastName={createdByLastName} />
+              <Username userName={createdByUserName} />
             </span>
-            {updatedByFirstName && updatedByLastName ? (
+            {updatedByUserName ? (
               <span className="event-list-status-updated-by">
                 {t('dashboard.events.list.updatedBy')}&nbsp;
                 {moment
@@ -98,7 +96,7 @@ function ListItem(props) {
                   ?.toUpperCase()}
                 &nbsp;
                 {t('dashboard.events.list.by')}&nbsp;
-                <Username firstName={updatedByFirstName} lastName={updatedByLastName} />
+                <Username userName={updatedByUserName} />
               </span>
             ) : (
               <></>

@@ -658,6 +658,50 @@
         "emptyFirstName": "Entrez votre prénom",
         "emptyLasttName": "Entrez votre nom"
       }
+    },
+    "settings": {
+      "heading": "Paramètres",
+      "tab2": "User management",
+      "tab1": "Calendar metadata",
+      "userManagement": {
+        "searchPlaceholder": "Recherche d'utilisateurs",
+        "sort": "Trier par",
+        "status": "Statut",
+        "userTypes": "Type",
+        "clear": "Réinitialiser",
+        "userName": "Nom d’utilisateur",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "active": "Actif",
+        "inActive": "Désactivé",
+        "invite": "Invité",
+        "admin": "Administrateur",
+        "editor": "Éditeur",
+        "contributor": "Collaborateur",
+        "guest": "Invité",
+        "superAdmin":"Super Administrateur",
+        "invitedBy": "Invité par",
+        "tooltip": {
+          "editUser": "Modifier l'utilisateur",
+          "sendInvitation": "Envoyer l'invitation",
+          "copyInvitationLink": "Copier le lien de l'invitation",
+          "activateOrDeactivate": "Activé/Désactivé",
+          "deleteUser": "Supprimer l'utilisateur"
+        }
+      },
+      "userReadOnly": {
+        "editBtn": "Éditer l’information",
+        "userName": "Nom d’utilisateur",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "phoneNumber": "Numéro de téléphone",
+        "email": "Courriel",
+        "userType": "Type d’utilisateur",
+        "languagePreference": "Préférence de langue",
+        "calendarAccess": "Accès aux calendriers",
+        "details": "Détails",
+        "breadcrumb": "Retour à la liste des utilisateurs"
+      }
     }
   },
   "errorPage": {
