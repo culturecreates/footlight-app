@@ -683,6 +683,13 @@ function CreateNewPlace() {
           </Card>
           <Card title={t('dashboard.places.createNew.addPlace.address.address')}>
             <>
+              <Row>
+                <Col>
+                  <p className="add-event-date-heading">
+                    {t('dashboard.places.createNew.addPlace.address.subheading')}
+                  </p>
+                </Col>
+              </Row>
               <Form.Item label={t('dashboard.places.createNew.addPlace.address.streetAddress')} required={true}>
                 <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                   <BilingualInput fieldData={placeData?.name}>
@@ -1002,6 +1009,13 @@ function CreateNewPlace() {
           </Card>
           <Card title={t('dashboard.places.createNew.addPlace.containedInPlace.containedInPlace')}>
             <>
+              <Row>
+                <Col>
+                  <p className="add-event-date-heading">
+                    {t('dashboard.places.createNew.addPlace.containedInPlace.subheading')}
+                  </p>
+                </Col>
+              </Row>
               <Form.Item
                 name={formFieldNames.CONTAINED_IN_PLACE}
                 className="subheading-wrap"

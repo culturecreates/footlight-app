@@ -544,6 +544,7 @@
             "searchAddressDescription": "Entrer le nom du lieu et/ou l'adresse.",
             "searchAddressPlaceholder": "Rechercher",
             "streetAddress": "Adresse postale",
+            "subheading": "Entrer le nom du lieu et/ou l'adresse.",
             "streetAddressPlaceholder": {
               "english": "Entrez l’adresse postale en anglais",
               "french": "Entrez l’adresse postale en français"
@@ -580,7 +581,7 @@
           },
           "containedInPlace": {
             "containedInPlace": "Contenu dans un lieu",
-            "subHeading": "Instructions Lorem ipsum si nécessaire.",
+            "subheading": "Ajoutez un lieu qui contient ce lieu.",
             "addPlace": "Ajouter un lieu",
             "placeholder": "Rechercher un lieu"
           },

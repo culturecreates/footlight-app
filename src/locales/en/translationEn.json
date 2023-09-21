@@ -548,6 +548,7 @@
             "searchAddressDescription": "Search for the name of place and/or address.",
             "searchAddressPlaceholder": "Search",
             "streetAddress": "Street address",
+            "subheading": "Search for the name of place and/or address.",
             "streetAddressPlaceholder": {
               "english": "Enter street address in English",
               "french": "Enter street address in French"
@@ -584,7 +585,7 @@
           },
           "containedInPlace": {
             "containedInPlace": "Contained in place",
-            "subHeading": "Lorem ipsum instructions if needed.",
+            "subheading": "Add place that contains this place, if appropriate.",
             "addPlace": "Add a place",
             "placeholder": "Search a place"
           },
