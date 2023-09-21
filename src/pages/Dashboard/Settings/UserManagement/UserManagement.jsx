@@ -303,9 +303,9 @@ const UserManagement = () => {
     }
   };
 
-  // const addEventHandler = () => {
-  //   navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.AddUser}`);
-  // };
+  const addEventHandler = () => {
+    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}`);
+  };
 
   const listItemHandler = (id) => {
     navigate(`${location.pathname}${PathName.UserManagement}/${id}`);
@@ -437,10 +437,7 @@ const UserManagement = () => {
           <Col>
             <Row>
               <Col>
-                <AddEvent
-                  label={t('dashboard.settings.userManagement.addUser')}
-                  // onClick={addEventHandler}
-                />
+                <AddEvent label={t('dashboard.settings.userManagement.addUser')} onClick={addEventHandler} />
               </Col>
             </Row>
           </Col>
