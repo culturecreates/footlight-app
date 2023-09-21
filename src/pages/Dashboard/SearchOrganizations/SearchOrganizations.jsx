@@ -57,7 +57,7 @@ function SearchOrganizations() {
 
   const artsDataClickHandler = async (entity) => {
     navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}`, {
-      data: entity,
+      state: { data: entity },
     });
   };
 
@@ -176,7 +176,7 @@ function SearchOrganizations() {
                     onClick={() => {
                       navigate(
                         `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}`,
-                        { name: quickCreateKeyword },
+                        { state: { name: quickCreateKeyword } },
                       );
                     }}
                   />

@@ -65,35 +65,36 @@ function QuickCreatePlace(props) {
   };
 
   const handleSelect = (address) => {
-    geocodeByAddress(address).then((results) => {
-      form.setFieldsValue({
-        address: results[0]?.formatted_address,
-        addressCountry: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
-        addressCountryEn: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
-        addressLocality: results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
-        addressLocalityEn: results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
-        addressRegion: results[0].address_components.find((item) => item.types.includes('administrative_area_level_1'))
-          ?.short_name,
-        addressRegionEn: results[0].address_components.find((item) =>
-          item.types.includes('administrative_area_level_1'),
-        )?.short_name,
-        postalCode: results[0].address_components.find((item) => item.types.includes('postal_code'))?.long_name,
-      });
-      let streetNumber =
-        results[0].address_components.find((item) => item.types.includes('street_number'))?.long_name ?? null;
-      let streetName = results[0].address_components.find((item) => item.types.includes('route'))?.long_name ?? null;
-      let streetAddress = streetNumber + ' ' + streetName;
-      if (streetNumber && streetName) streetAddress = streetNumber + ' ' + streetName;
-      else if (streetNumber && !streetName) streetAddress = streetNumber;
-      else if (!streetNumber && streetName) streetAddress = streetName;
-      else if (!streetNumber && !streetName) streetAddress = null;
-      form.setFieldsValue({
-        streetAddress: streetAddress,
-        streetAddressEn: streetAddress,
-      });
-      return getLatLng(results[0]);
-    });
-    setDropdownOpen(false)
+    geocodeByAddress(address)
+      .then((results) => {
+        form.setFieldsValue({
+          address: results[0]?.formatted_address,
+          addressCountry: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
+          addressCountryEn: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
+          addressLocality: results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
+          addressLocalityEn: results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
+          addressRegion: results[0].address_components.find((item) =>
+            item.types.includes('administrative_area_level_1'),
+          )?.short_name,
+          addressRegionEn: results[0].address_components.find((item) =>
+            item.types.includes('administrative_area_level_1'),
+          )?.short_name,
+          postalCode: results[0].address_components.find((item) => item.types.includes('postal_code'))?.long_name,
+        });
+        let streetNumber =
+          results[0].address_components.find((item) => item.types.includes('street_number'))?.long_name ?? null;
+        let streetName = results[0].address_components.find((item) => item.types.includes('route'))?.long_name ?? null;
+        let streetAddress = streetNumber + ' ' + streetName;
+        if (streetNumber && streetName) streetAddress = streetNumber + ' ' + streetName;
+        else if (streetNumber && !streetName) streetAddress = streetNumber;
+        else if (!streetNumber && streetName) streetAddress = streetName;
+        else if (!streetNumber && !streetName) streetAddress = null;
+        form.setFieldsValue({
+          streetAddress: streetAddress,
+          streetAddressEn: streetAddress,
+        });
+        return getLatLng(results[0]);
+      })
       .then((latLng) =>
         form.setFieldsValue({
           latitude: '' + latLng.lat,
@@ -101,6 +102,7 @@ function QuickCreatePlace(props) {
         }),
       )
       .catch((error) => console.error(error));
+    setDropdownOpen(false);
   };
 
   const getSelectedPlace = (id) => {

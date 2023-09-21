@@ -542,15 +542,25 @@ function AddEvent() {
                 .unwrap()
                 .then((response) => {
                   // let entityId = response?.data?.original?.entityId;
-                  imageCrop = {
-                    ...imageCrop,
-                    original: {
-                      ...imageCrop?.original,
-                      entityId: response?.data?.original?.entityId,
-                      height: response?.data?.height,
-                      width: response?.data?.width,
-                    },
-                  };
+                  if (featureFlags.imageCropFeature) {
+                    let entityId = response?.data?.original?.entityId;
+                    imageCrop = {
+                      ...imageCrop,
+                      original: {
+                        ...imageCrop?.original,
+                        entityId,
+                      },
+                    };
+                  } else
+                    imageCrop = {
+                      ...imageCrop,
+                      original: {
+                        ...imageCrop?.original,
+                        entityId: response?.data?.original?.entityId,
+                        height: response?.data?.height,
+                        width: response?.data?.width,
+                      },
+                    };
                   eventObj['image'] = imageCrop;
                   addUpdateEventApiHandler(eventObj, toggle)
                     .then((id) => resolve(id))
@@ -1984,7 +1994,7 @@ function AddEvent() {
                       ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio
                       : null
                   }
-                  isCrop={false}
+                  isCrop={featureFlags.imageCropFeature}
                 />
               </Form.Item>
 

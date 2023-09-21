@@ -1,0 +1,102 @@
+.user-read-only-heading-wrapper {
+  height: fit-content;
+}
+
+.user-read-only-heading-wrapper .breadcrumb-container .ant-btn {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: #0f0e98;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+.user-read-only-heading-wrapper .user-status-tag .tags-wrapper {
+  display: flex;
+  padding: 4px 8px;
+  align-items: center;
+  gap: 10px;
+  border-radius: 4px;
+}
+
+.user-read-only-heading-wrapper .read-only-user-heading > h1 {
+  color: var(--content-neutral-primary, #222732);
+  font-size: 34px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 40px;
+  margin-bottom: 0;
+}
+
+.user-read-only-heading-wrapper .read-only-user-status-wrapper {
+  display: grid;
+  place-content: center;
+}
+
+.user-read-only-card .user-read-only-info-label {
+  color: var(--content-neutral-secondary, #646d7b);
+  line-height: 24px;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.user-read-only-card .user-info-details-card-heading {
+  color: var(--content-neutral-primary, #222732);
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 32px;
+  margin-bottom: 0;
+}
+
+.user-read-only-card .user-read-only-info-data {
+  color: var(--content-neutral-primary, #222732);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  padding: 4px 8px 8px 0;
+}
+
+.user-read-only-card .ant-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.user-read-only-card .user-read-only-info-copiable {
+  color: var(--content-action-default, #1b3de6);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  text-decoration-line: underline;
+  cursor: pointer;
+}
+
+.user-read-only-calendar-card .user-info-details-card-heading {
+  color: var(--content-neutral-primary, #222732);
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 28px;
+}
+
+.user-read-only-calendar-card .selection-item-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.user-read-only-calendar-card .ant-list-item-meta {
+  display: flex;
+  align-items: center !important;
+}
+
+.user-read-only-calendar-card .ant-list-item-meta-content {
+  width: 100%;
+}

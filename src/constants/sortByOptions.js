@@ -26,3 +26,18 @@ export const sortByOptionsOrgsPlacesPerson = [
     key: `name`,
   },
 ];
+
+export const sortByOptionsUsers = [
+  {
+    label: <Translation>{(t) => t('dashboard.settings.userManagement.userName')}</Translation>,
+    key: 'userName',
+  },
+  {
+    label: <Translation>{(t) => t('dashboard.settings.userManagement.firstName')}</Translation>,
+    key: `firstName`,
+  },
+  {
+    label: <Translation>{(t) => t('dashboard.settings.userManagement.lastName')}</Translation>,
+    key: 'lastName',
+  },
+];

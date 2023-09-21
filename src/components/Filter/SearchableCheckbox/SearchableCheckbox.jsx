@@ -1,31 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import './searchableCheckbox.css';
 import { Dropdown, Space, Typography, Checkbox } from 'antd';
 import AuthenticationInput from '../../Input/Common/AuthenticationInput';
 import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import NoContent from '../../NoContent/NoContent';
+import LoadingIndicator from '../../LoadingIndicator';
 
 function SearchableCheckbox(props) {
-  const { children, allowSearch, data, onFilterChange, open, value } = props;
+  const { children, allowSearch, data, onFilterChange, open, value, loading = false } = props;
   const { t } = useTranslation();
-  const [searchKey, setSearchKey] = useState();
-  let item = data ?? [];
-
-  const [items, setItems] = useState(item);
+  let items = data ?? [];
 
   useEffect(() => {
-    if (allowSearch)
-      setItems(
-        item?.filter((item) => {
-          if (searchKey == '' || !searchKey) {
-            return true;
-          } else if (item.filtervalue?.toLowerCase().includes(searchKey)) {
-            return true;
-          } else return false;
-        }),
-      );
-  }, [searchKey]);
+    if (allowSearch) {
+      props.searchImplementation();
+    }
+  }, [props.searchKey]);
 
   return (
     <Checkbox.Group onChange={onFilterChange} value={value}>
@@ -43,13 +34,23 @@ function SearchableCheckbox(props) {
               <AuthenticationInput
                 size="small"
                 placeholder={t('dashboard.events.filter.users.placeholderSearch')}
-                onChange={(e) => setSearchKey(e.target.value)}
+                onChange={(e) => props.setSearchKey(e.target.value)}
                 prefix={<SearchOutlined />}
               />
             )}
-            <div className="searchable-checkbox-dropdown-content">
-              {items?.length > 0 ? items?.map((item, index) => <span key={index}>{item.label}</span>) : <NoContent />}
-            </div>
+            {!loading ? (
+              <div className="searchable-checkbox-dropdown-content">
+                {items?.length > 0 ? (
+                  items?.map((item, index) => <span key={item.id || index}>{item.label}</span>)
+                ) : (
+                  <NoContent />
+                )}
+              </div>
+            ) : (
+              <div style={{ padding: 20, display: 'grid', placeContent: 'center' }}>
+                <LoadingIndicator />
+              </div>
+            )}
           </div>
         )}
         placement="bottom"
