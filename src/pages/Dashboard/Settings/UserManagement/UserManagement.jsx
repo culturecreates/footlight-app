@@ -312,11 +312,11 @@ const UserManagement = () => {
   };
 
   return !isUsersLoading ? (
-    <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="user-management-wrapper">
+    <Row gutter={[10, 24]} className="user-management-wrapper">
       <Col span={24}>
-        <Row justify="space-between" gutter={[0, 10]}>
-          <Col flex="700px">
-            <Row gutter={[20, 10]}>
+        <Row justify="space-between" gutter={[24, 16]}>
+          <Col flex="800px">
+            <Row gutter={[20, 16]}>
               <Col flex="400px">
                 <UserSearch
                   placeholder={t('dashboard.settings.userManagement.searchPlaceholder')}
@@ -445,9 +445,10 @@ const UserManagement = () => {
             </Row>
           </Col>
         </Row>
-
+      </Col>
+      <Col span={17}>
         <Row>
-          <Col span={16}>
+          <Col span={24}>
             {userData?.data.length && !isUsersFetching > 0 ? (
               <List
                 className="event-list-wrapper"

@@ -73,6 +73,22 @@
   margin-left: 24px;
 }
 
+.settings-wrapper .ant-tabs-nav{
+  margin-bottom: 0;
+}
+
+.user-management-wrapper {
+  padding-top: 24px;
+}
+
+.user-management-wrapper .invitation-details-text-prologue {
+  color: var(--content-neutral-secondary, #646d7b);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+}
+
 .user-management-wrapper .events-heading {
   font-weight: 700;
   white-space: nowrap;
