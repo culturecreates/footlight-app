@@ -584,6 +584,9 @@ function CreateNewPlace() {
             },
           });
         }
+        if (placeData?.openingHours) initialAddedFields = initialAddedFields?.concat(formFieldNames?.OPENING_HOURS);
+        if (placeData?.accessibilityNote)
+          initialAddedFields = initialAddedFields?.concat(formFieldNames?.ACCESSIBILITY_NOTE_WRAP);
         form.setFieldsValue({
           latitude: placeData.geoCoordinates && '' + placeData.geoCoordinates.latitude,
           longitude: placeData.geoCoordinates && '' + placeData.geoCoordinates.longitude,
