@@ -72,3 +72,63 @@
 .settings-wrapper .users-list-item-wrapper .ant-list-item-action {
   margin-left: 24px;
 }
+
+.user-management-wrapper .events-heading {
+  font-weight: 700;
+  white-space: nowrap;
+  font-size: 34px;
+}
+
+.user-management-wrapper .event-add-button {
+  position: absolute;
+  left: 100%;
+}
+.user-management-wrapper .events-content {
+  padding-top: 24px;
+}
+
+.user-management-wrapper .filter-buttons {
+  background-color: #f9faff;
+  border: 1px solid #b6c1c9;
+  border-radius: 4px;
+  color: #222732;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.user-management-wrapper .filter-sort-button {
+  background-color: #f9faff;
+  border: 1px solid #b6c1c9;
+  border-radius: 4px;
+  color: #222732;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.user-management-wrapper .filter-sort-dropdown-wrapper {
+  filter: drop-shadow(0px 8px 32px rgba(0, 0, 0, 0.2));
+}
+.user-management-wrapper .filter-sort-dropdown-wrapper .ant-dropdown-menu-item-selected {
+  background-color: #eff2ff;
+  color: #0f0e98;
+}
+.user-management-wrapper .filter-sort-dropdown-wrapper .ant-dropdown-menu-item-selected::after {
+  content: '\2713';
+}
+
+.user-management-wrapper .ant-popover-inner {
+  filter: drop-shadow(0px 8px 32px rgba(0, 0, 0, 0.2));
+}
+
+@media only screen and (max-width: 428px) {
+  .user-management-wrapper .events-heading-wrapper .events-heading {
+    font-size: 24px;
+    white-space: normal;
+  }
+  .user-management-wrapper .events-content {
+    padding: 16px;
+  }
+  .user-management-wrapper .events-heading-wrapper {
+    width: 200px;
+  }
+}

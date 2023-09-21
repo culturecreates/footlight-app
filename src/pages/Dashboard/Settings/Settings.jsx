@@ -16,7 +16,7 @@ const Settings = () => {
 
   const items = [
     { label: t('dashboard.settings.tab1'), key: 'tab1', children: <UserManagement /> },
-    { label: t('dashboard.settings.tab2'), key: 'tab2', children: 'Coming soon' },
+    { label: t('dashboard.settings.tab2'), key: 'tab2', children: 'Coming soon', disabled: true },
   ];
 
   return (

@@ -604,13 +604,14 @@
     },
     "settings": {
       "heading": "Paramètres",
-      "tab2": "User management",
-      "tab1": "Calendar metadata",
+      "tab2": "Métadonnées du calendrier",
+      "tab1": "Gestion des utilisateurs",
       "userManagement": {
         "searchPlaceholder": "Recherche d'utilisateurs",
         "sort": "Trier par",
         "status": "Statut",
         "userTypes": "Type",
+        "addUser":"Utilisateur",
         "clear": "Réinitialiser",
         "userName": "Nom d’utilisateur",
         "firstName": "Prénom",
@@ -622,7 +623,7 @@
         "editor": "Éditeur",
         "contributor": "Collaborateur",
         "guest": "Invité",
-        "superAdmin":"Super Administrateur",
+        "superAdmin": "Super Administrateur",
         "invitedBy": "Invité par",
         "tooltip": {
           "editUser": "Modifier l'utilisateur",
