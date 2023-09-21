@@ -586,7 +586,15 @@
           },
           "venueAccessibility": {
             "venueAccessibility": "Accessibilité du site",
-            "subheading": "Ces éléments d'accessibilité seront affichés dans tous les événements se déroulant dans ce lieu."
+            "subheading": "Ces éléments d'accessibilité seront affichés dans tous les événements se déroulant dans ce lieu.",
+            "placeAccessibilityNote": {
+              "note": "Note",
+              "placeholder": {
+                "english": "",
+                "french": ""
+              },
+              "tooltip": "Ajoutez des informations supplémentaires sur l'accessibilité."
+            }
           },
           "disambiguatingDescription": {
             "disambiguatingDescription": "Description identifiante",

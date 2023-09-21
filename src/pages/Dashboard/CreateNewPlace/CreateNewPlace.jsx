@@ -43,6 +43,10 @@ import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import ChangeType from '../../../components/ChangeType';
 import { addressTypeOptions, addressTypeOptionsFieldNames } from '../../../constants/addressTypeOptions';
+import {
+  placeAccessibilityTypeOptions,
+  placeAccessibilityTypeOptionsFieldNames,
+} from '../../../constants/placeAccessibilityTypeOptions';
 
 const { TextArea } = Input;
 
@@ -82,6 +86,9 @@ function CreateNewPlace() {
     DRAGGER_WRAP: 'draggerWrap',
     DYNAMIC_FIELS: 'dynamicFields',
     OPENING_HOURS: 'openingHours',
+    ACCESSIBILITY_NOTE_WRAP: 'accessibilityNotewrap',
+    ACCESSIBILITY_NOTE_ENGLISH: 'englishAccessibilityNotewrap',
+    ACCESSIBILITY_NOTE_FRENCH: 'frenchAccessibilityNotewrap',
   };
   const placeId = searchParams.get('id');
   const artsDataId = location?.state?.data?.id ?? null;
@@ -1117,8 +1124,75 @@ function CreateNewPlace() {
                   }}
                 />
               </Form.Item>
+              <Form.Item
+                label={t('dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.note')}
+                name={placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP}
+                className={formFieldNames.ACCESSIBILITY_NOTE_WRAP}
+                style={{
+                  display:
+                    !addedFields?.includes(placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP) && 'none',
+                }}>
+                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <BilingualInput fieldData={placeData?.accessibilityNote}>
+                    <Form.Item
+                      name={formFieldNames.ACCESSIBILITY_NOTE_FRENCH}
+                      initialValue={placeData?.accessibilityNote?.fr}
+                      key={contentLanguage.FRENCH}>
+                      <TextArea
+                        autoComplete="off"
+                        placeholder={t(
+                          'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityFrenchNote',
+                        )}
+                        style={{
+                          borderRadius: '4px',
+                          border: '4px solid #E8E8E8',
+                          width: '423px',
+                          resize: 'vertical',
+                        }}
+                        size="large"
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name={formFieldNames.ACCESSIBILITY_NOTE_ENGLISH}
+                      initialValue={placeData?.accessibilityNote?.en}
+                      key={contentLanguage.ENGLISH}>
+                      <TextArea
+                        autoComplete="off"
+                        placeholder={t(
+                          'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.tooltip',
+                        )}
+                        style={{
+                          borderRadius: '4px',
+                          border: '4px solid #E8E8E8',
+                          width: '423px',
+                          resize: 'vertical',
+                        }}
+                        size="large"
+                      />
+                    </Form.Item>
+                  </BilingualInput>
+                </ContentLanguageInput>
+              </Form.Item>
             </>
-            <></>
+            <Form.Item label={t('dashboard.places.createNew.addPlace.addMoreDetails')} style={{ lineHeight: '2.5' }}>
+              {addedFields?.includes(placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP) ? (
+                <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+              ) : (
+                placeAccessibilityTypeOptions.map((type) => {
+                  return (
+                    <ChangeType
+                      key={type.type}
+                      primaryIcon={<PlusOutlined />}
+                      disabled={type.disabled}
+                      label={type.label}
+                      promptText={type.tooltip}
+                      secondaryIcon={<InfoCircleOutlined />}
+                      onClick={() => addFieldsHandler(type?.fieldNames)}
+                    />
+                  );
+                })
+              )}
+            </Form.Item>
           </Card>
         </Form>
       </div>

@@ -590,7 +590,15 @@
           },
           "venueAccessibility": {
             "venueAccessibility": "Venue accessibility",
-            "subheading": "These accessibility items will be displayed in all the event located at this venue."
+            "subheading": "These accessibility items will be displayed in all the event located at this venue.",
+            "placeAccessibilityNote": {
+              "note": "Note",
+              "placeholder": {
+                "english": "",
+                "french": ""
+              },
+              "tooltip": "Add supplementary accessibility information."
+            }
           },
           "disambiguatingDescription": {
             "disambiguatingDescription": "Disambiguating description",
