@@ -19,5 +19,6 @@ export const PathName = {
   User: '/user',
   Profile: '/profile',
   Search: '/search',
+  AddUser: '/add-user',
   NotFound: '/*',
 };

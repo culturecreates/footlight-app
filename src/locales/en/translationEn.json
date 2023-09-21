@@ -716,6 +716,7 @@
         "userTypes": "User types",
         "clear": "Clear",
         "userName": "Username",
+        "addUser":"Utilisateur",
         "firstName": "First name",
         "lastName": "Last name",
         "active": "Active",

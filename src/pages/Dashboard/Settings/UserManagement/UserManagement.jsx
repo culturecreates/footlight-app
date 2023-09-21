@@ -31,6 +31,7 @@ import Username from '../../../../components/Username';
 import { PathName } from '../../../../constants/pathName';
 import { roleHandler } from '../../../../utils/roleHandler';
 import { useInviteUserMutation } from '../../../../services/invite';
+import AddEvent from '../../../../components/Button/AddEvent';
 
 const UserManagement = () => {
   const { useBreakpoint } = Grid;
@@ -68,7 +69,8 @@ const UserManagement = () => {
   });
   const [userSearchQuery, setUserSearchQuery] = useState(decodeURIComponent(defaultQuery));
 
-  const [getAllUsers, { currentData: userData, isLoading: isUsersLoading }] = useLazyGetAllUsersQuery();
+  const [getAllUsers, { currentData: userData, isLoading: isUsersLoading, isFetching: isUsersFetching }] =
+    useLazyGetAllUsersQuery();
   const [inviteUserMutation] = useInviteUserMutation();
   const [deleteUser] = useDeleteUserMutation();
   const [activateUser] = useActivateUserMutation();
@@ -77,10 +79,6 @@ const UserManagement = () => {
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
-
-  useEffect(() => {
-    console.log(filter);
-  }, [filter]);
 
   useEffect(() => {
     let sortQuery = new URLSearchParams();
@@ -305,124 +303,153 @@ const UserManagement = () => {
     }
   };
 
+  // const addEventHandler = () => {
+  //   navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.AddUser}`);
+  // };
+
   const listItemHandler = (id) => {
     navigate(`${location.pathname}${PathName.UserManagement}/${id}`);
   };
 
   return !isUsersLoading ? (
-    <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
+    <Row gutter={[10, 24]} className="user-management-wrapper">
       <Col span={24}>
-        <Row gutter={[20, 10]}>
-          <Col xs={24} sm={24} md={12} lg={10} xl={8}>
-            <UserSearch
-              placeholder={t('dashboard.settings.userManagement.searchPlaceholder')}
-              onPressEnter={(e) => onSearchHandler(e)}
-              defaultValue={userSearchQuery}
-              allowClear={true}
-              onChange={onSearchChangeHandler}
-            />
-          </Col>
-          <Col>
-            <Row gutter={[8]} align="middle">
-              <span style={{ fontSize: '16px', fontWeight: 700, marginRight: 8 }}>
-                {t('dashboard.settings.userManagement.sort')}
-              </span>
+        <Row justify="space-between" gutter={[24, 16]}>
+          <Col flex="800px">
+            <Row gutter={[20, 16]}>
+              <Col flex="400px">
+                <UserSearch
+                  placeholder={t('dashboard.settings.userManagement.searchPlaceholder')}
+                  onPressEnter={(e) => onSearchHandler(e)}
+                  defaultValue={userSearchQuery}
+                  allowClear={true}
+                  onChange={onSearchChangeHandler}
+                />
+              </Col>
+              <Col>
+                <Row gutter={[8]} align="middle">
+                  <span style={{ fontSize: '16px', fontWeight: 700, marginRight: 8 }}>
+                    {t('dashboard.settings.userManagement.sort')}
+                  </span>
 
+                  <Col>
+                    <Dropdown
+                      overlayClassName="filter-sort-dropdown-wrapper"
+                      overlayStyle={{ minWidth: '200px' }}
+                      getPopupContainer={(trigger) => trigger.parentNode}
+                      menu={{
+                        items: sortByOptionsUsers,
+                        selectable: true,
+                        defaultSelectedKeys: [filter?.sort],
+                        onSelect: onSortSelect,
+                      }}
+                      trigger={['click']}>
+                      <Button size="large" className="filter-sort-button">
+                        <Space>
+                          {sortByOptionsUsers?.map((sortBy, index) => {
+                            if (sortBy?.key === filter?.sort) return <span key={index}>{sortBy?.label}</span>;
+                          })}
+                          <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
+                        </Space>
+                      </Button>
+                    </Dropdown>
+                  </Col>
+                  <Col>
+                    <Button
+                      className="filter-sort-button"
+                      style={{ borderColor: filter?.order && '#1B3DE6' }}
+                      onClick={handleSortOrderChange}
+                      icon={
+                        filter?.order === sortOrder?.ASC ? (
+                          <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
+                        ) : (
+                          filter?.order === sortOrder?.DESC && (
+                            <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
+                          )
+                        )
+                      }
+                      size={'large'}
+                    />
+                  </Col>
+                </Row>
+              </Col>
               <Col>
                 <Dropdown
                   overlayClassName="filter-sort-dropdown-wrapper"
-                  overlayStyle={{ minWidth: '200px' }}
                   getPopupContainer={(trigger) => trigger.parentNode}
+                  overlayStyle={{ minWidth: '200px' }}
                   menu={{
-                    items: sortByOptionsUsers,
+                    items: userActivityStatus,
                     selectable: true,
-                    defaultSelectedKeys: [filter?.sort],
-                    onSelect: onSortSelect,
+                    defaultSelectedKeys: [filter?.userRole],
+                    onSelect: handleStatusFilterChange,
                   }}
                   trigger={['click']}>
-                  <Button size="large" className="filter-sort-button">
-                    <Space>
-                      {sortByOptionsUsers?.map((sortBy, index) => {
-                        if (sortBy?.key === filter?.sort) return <span key={index}>{sortBy?.label}</span>;
-                      })}
-                      <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
-                    </Space>
-                  </Button>
+                  <Space>
+                    <Button
+                      size="large"
+                      className="filter-buttons"
+                      style={{ borderColor: filter?.userRole && '#607EFC' }}>
+                      {t('dashboard.settings.userManagement.status')}
+                    </Button>
+                  </Space>
                 </Dropdown>
               </Col>
               <Col>
-                <Button
-                  className="filter-sort-button"
-                  style={{ borderColor: filter?.order && '#1B3DE6' }}
-                  onClick={handleSortOrderChange}
-                  icon={
-                    filter?.order === sortOrder?.ASC ? (
-                      <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
-                    ) : (
-                      filter?.order === sortOrder?.DESC && (
-                        <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
-                      )
-                    )
-                  }
-                  size={'large'}
-                />
+                <Dropdown
+                  overlayClassName="filter-sort-dropdown-wrapper"
+                  getPopupContainer={(trigger) => trigger.parentNode}
+                  overlayStyle={{ minWidth: '200px' }}
+                  menu={{
+                    items: userRolesWithTranslation,
+                    selectable: true,
+                    onSelect: userTypeFilterChangeHandler,
+                  }}
+                  trigger={['click']}>
+                  <Space>
+                    <Button
+                      size="large"
+                      className="filter-buttons"
+                      style={{ borderColor: filter?.userRole && '#607EFC' }}>
+                      {t('dashboard.settings.userManagement.userTypes')}
+                    </Button>
+                  </Space>
+                </Dropdown>
+              </Col>
+
+              <Col>
+                {(filter.order !== sortOrder.ASC ||
+                  filter.sort !== sortByOptionsUsers[0].key ||
+                  filter.userRole !== '' ||
+                  filter.userStatus !== '') && (
+                  <Button
+                    size="large"
+                    className="filter-buttons"
+                    style={{ color: '#1B3DE6' }}
+                    onClick={filterClearHandler}>
+                    {t('dashboard.events.filter.clear')}&nbsp;
+                    <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
+                  </Button>
+                )}
               </Col>
             </Row>
           </Col>
           <Col>
-            <Dropdown
-              overlayClassName="filter-sort-dropdown-wrapper"
-              getPopupContainer={(trigger) => trigger.parentNode}
-              overlayStyle={{ minWidth: '200px' }}
-              menu={{
-                items: userActivityStatus,
-                selectable: true,
-                defaultSelectedKeys: [filter?.userRole],
-                onSelect: handleStatusFilterChange,
-              }}
-              trigger={['click']}>
-              <Space>
-                <Button size="large" className="filter-buttons" style={{ borderColor: filter?.userRole && '#607EFC' }}>
-                  {t('dashboard.settings.userManagement.status')}
-                </Button>
-              </Space>
-            </Dropdown>
-          </Col>
-          <Col>
-            <Dropdown
-              overlayClassName="filter-sort-dropdown-wrapper"
-              getPopupContainer={(trigger) => trigger.parentNode}
-              overlayStyle={{ minWidth: '200px' }}
-              menu={{
-                items: userRolesWithTranslation,
-                selectable: true,
-                onSelect: userTypeFilterChangeHandler,
-              }}
-              trigger={['click']}>
-              <Space>
-                <Button size="large" className="filter-buttons" style={{ borderColor: filter?.userRole && '#607EFC' }}>
-                  {t('dashboard.settings.userManagement.userTypes')}
-                </Button>
-              </Space>
-            </Dropdown>
-          </Col>
-
-          <Col>
-            {(filter.order !== sortOrder.ASC ||
-              filter.sort !== sortByOptionsUsers[0].key ||
-              filter.userRole !== '' ||
-              filter.userStatus !== '') && (
-              <Button size="large" className="filter-buttons" style={{ color: '#1B3DE6' }} onClick={filterClearHandler}>
-                {t('dashboard.events.filter.clear')}&nbsp;
-                <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
-              </Button>
-            )}
+            <Row>
+              <Col>
+                <AddEvent
+                  label={t('dashboard.settings.userManagement.addUser')}
+                  // onClick={addEventHandler}
+                />
+              </Col>
+            </Row>
           </Col>
         </Row>
-
+      </Col>
+      <Col span={17}>
         <Row>
-          <Col span={16}>
-            {userData?.data.length > 0 ? (
+          <Col span={24}>
+            {userData?.data.length && !isUsersFetching > 0 ? (
               <List
                 className="event-list-wrapper"
                 itemLayout={screens.xs ? 'vertical' : 'horizontal'}
