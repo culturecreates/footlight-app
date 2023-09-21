@@ -2,8 +2,15 @@ import React, { useRef, useEffect, useState } from 'react';
 import './createNewPlace.css';
 import '../AddEvent/addEvent.css';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
-import { Button, Col, Form, Input, Popover, Row } from 'antd';
-import { LeftOutlined, CloseCircleOutlined, InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Col, Form, Input, Popover, Row, message, notification, Dropdown } from 'antd';
+import {
+  LeftOutlined,
+  CloseCircleOutlined,
+  InfoCircleOutlined,
+  PlusOutlined,
+  ExclamationCircleOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
 import PrimaryButton from '../../../components/Button/Primary';
 import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -12,7 +19,7 @@ import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import { useTranslation } from 'react-i18next';
 import { loadArtsDataEntity } from '../../../services/artsData';
-import { useGetPlaceQuery } from '../../../services/places';
+import { useAddPlaceMutation, useGetPlaceQuery, useUpdatePlaceMutation } from '../../../services/places';
 import { useSelector } from 'react-redux';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import ContentLanguageInput from '../../../components/ContentLanguageInput';
@@ -47,6 +54,11 @@ import {
   placeAccessibilityTypeOptions,
   placeAccessibilityTypeOptionsFieldNames,
 } from '../../../constants/placeAccessibilityTypeOptions';
+// import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
+import { useAddImageMutation } from '../../../services/image';
+import { usePrompt } from '../../../hooks/usePrompt';
+import { useAddPostalAddressMutation } from '../../../services/postalAddress';
+import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 
 const { TextArea } = Input;
 
@@ -66,15 +78,15 @@ function CreateNewPlace() {
     ENGLISH: 'english',
     FRENCH: 'french',
     TYPE: 'type',
-    STREET_ADDRESS_ENGLISH: 'englishStreetAddress',
-    STREET_ADDRESS_FRENCH: 'frenchStreetAddress',
-    CITY_FRENCH: 'frenchCity',
-    CITY_ENGLISH: 'englishCity',
+    STREET_ADDRESS_ENGLISH: 'streetAddressEn',
+    STREET_ADDRESS_FRENCH: 'streetAddress',
+    CITY_FRENCH: 'addressLocality',
+    CITY_ENGLISH: 'addressLocalityEn',
     POSTAL_CODE: 'postalCode',
-    PROVINCE_ENGLISH: 'englishProvince',
-    PROVINCE_FRENCH: 'frenchProvince',
-    COUNTRY_ENGLISH: 'englishCountry',
-    COUNTRY_FRENCH: 'frenchConutry',
+    PROVINCE_ENGLISH: 'addressRegionEn',
+    PROVINCE_FRENCH: 'addressRegion',
+    COUNTRY_ENGLISH: 'addressCountryEn',
+    COUNTRY_FRENCH: 'addressCountry',
     COORDINATES: 'coordinates',
     CONTAINED_IN_PLACE: 'containedInPlace',
     PLACE_ACCESSIBILITY: 'placeAccessibility',
@@ -106,6 +118,10 @@ function CreateNewPlace() {
     sessionId: timestampRef,
   });
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+  const [addImage, { error: isAddImageError, isLoading: addImageLoading }] = useAddImageMutation();
+  const [addPlace, { isLoading: addPlaceLoading }] = useAddPlaceMutation();
+  const [updatePlace, { isLoading: updatePlaceLoading }] = useUpdatePlaceMutation();
+  const [addPostalAddress] = useAddPostalAddressMutation();
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -121,6 +137,284 @@ function CreateNewPlace() {
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [addedFields, setAddedFields] = useState([]);
   const [scrollToSelectedField, setScrollToSelectedField] = useState();
+  const [showDialog, setShowDialog] = useState(false);
+  const [address, setAddress] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  usePrompt(t('common.unsavedChanges'), showDialog);
+
+  const addUpdatePlaceApiHandler = (placeObj) => {
+    var promise = new Promise(function (resolve, reject) {
+      if (!placeId || placeId === '') {
+        if (artsDataId && artsData) {
+          let artsDataSameAs = Array.isArray(artsData?.sameAs);
+          if (artsDataSameAs)
+            placeObj = {
+              ...placeObj,
+              sameAs: artsData?.sameAs,
+            };
+          else
+            placeObj = {
+              ...placeObj,
+              sameAs: [artsData?.sameAs],
+            };
+        }
+        addPlace({
+          data: placeObj,
+          calendarId,
+        })
+          .unwrap()
+          .then((response) => {
+            resolve(response?.id);
+            notification.success({
+              description: t('dashboard.places.createNew.addPlace.notification.addSuccess'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
+          })
+          .catch((errorInfo) => {
+            reject();
+            console.log(errorInfo);
+          });
+      } else {
+        placeObj = {
+          ...placeObj,
+          sameAs: placeObj?.sameAs,
+        };
+        updatePlace({
+          data: placeObj,
+          calendarId,
+          placeId,
+        })
+          .unwrap()
+          .then(() => {
+            resolve(placeId);
+            notification.success({
+              description: t('dashboard.places.createNew.addPlace.notification.editSuccess'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
+          })
+          .catch((error) => {
+            reject();
+            console.log(error);
+          });
+      }
+    });
+    return promise;
+  };
+
+  const onSaveHandler = (event) => {
+    event?.preventDefault();
+    setShowDialog(false);
+    var promise = new Promise(function (resolve, reject) {
+      form
+        .validateFields([
+          ...new Set([
+            formFieldNames.FRENCH,
+            formFieldNames.ENGLISH,
+            formFieldNames.TYPE,
+            formFieldNames.STREET_ADDRESS_ENGLISH,
+            formFieldNames.STREET_ADDRESS_FRENCH,
+          ]),
+        ])
+        .then(() => {
+          var values = form.getFieldsValue(true);
+          let placeObj, languageKey;
+          if (calendarContentLanguage == contentLanguage.ENGLISH) languageKey = 'en';
+          else if (calendarContentLanguage == contentLanguage.FRENCH) languageKey = 'fr';
+          let postalObj = {
+            addressCountry: { [languageKey]: values.addressCountry },
+            addressLocality: { [languageKey]: values.addressLocality },
+            addressRegion: { [languageKey]: values.addressRegion },
+            postalCode: values.postalCode,
+            streetAddress: { [languageKey]: values.streetAddress },
+          };
+
+          if (calendarContentLanguage == contentLanguage.BILINGUAL) {
+            postalObj.addressCountry = {
+              fr: values.addressCountry,
+              en: values.addressCountryEn,
+            };
+            postalObj.addressLocality = {
+              fr: values.addressLocality,
+              en: values.addressLocalityEn,
+            };
+            postalObj.addressRegion = {
+              fr: values.addressRegion,
+              en: values.addressRegionEn,
+            };
+            postalObj.streetAddress = {
+              fr: values.streetAddress,
+              en: values.streetAddressEn,
+            };
+          }
+
+          let imageCrop = form.getFieldValue('imageCrop');
+          imageCrop = {
+            large: {
+              xCoordinate: imageCrop?.large?.x,
+              yCoordinate: imageCrop?.large?.y,
+              height: imageCrop?.large?.height,
+              width: imageCrop?.large?.width,
+            },
+            thumbnail: {
+              xCoordinate: imageCrop?.thumbnail?.x,
+              yCoordinate: imageCrop?.thumbnail?.y,
+              height: imageCrop?.thumbnail?.height,
+              width: imageCrop?.thumbnail?.width,
+            },
+            original: {
+              entityId: imageCrop?.original?.entityId,
+              height: imageCrop?.original?.height,
+              width: imageCrop?.original?.width,
+            },
+          };
+
+          if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
+            const formdata = new FormData();
+            formdata.append('file', values?.dragger[0].originFileObj);
+            formdata &&
+              addImage({ data: formdata, calendarId })
+                .unwrap()
+                .then((response) => {
+                  if (featureFlags.imageCropFeature) {
+                    let entityId = response?.data?.original?.entityId;
+                    imageCrop = {
+                      ...imageCrop,
+                      original: {
+                        ...imageCrop?.original,
+                        entityId,
+                      },
+                    };
+                  } else
+                    imageCrop = {
+                      ...imageCrop,
+                      original: {
+                        ...imageCrop?.original,
+                        entityId: response?.data?.original?.entityId,
+                        height: response?.data?.height,
+                        width: response?.data?.width,
+                      },
+                    };
+                  placeObj['image'] = imageCrop;
+                  addPostalAddress({ data: postalObj, calendarId })
+                    .unwrap()
+                    .then((response) => {
+                      if (response && response?.statusCode == 202) {
+                        addUpdatePlaceApiHandler(placeObj)
+                          .then((id) => resolve(id))
+                          .catch((error) => {
+                            reject();
+                            console.log(error);
+                          });
+                      }
+                    })
+                    .catch((error) => console.log(error));
+                })
+                .catch((error) => {
+                  console.log(error);
+                  const element = document.getElementsByClassName(formFieldNames.DRAGGER_WRAP);
+                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                });
+          } else {
+            if (values?.draggerWrap) {
+              if (values?.dragger && values?.dragger?.length == 0) placeObj['image'] = null;
+              else placeObj['image'] = imageCrop;
+            }
+
+            addPostalAddress({ data: postalObj, calendarId })
+              .unwrap()
+              .then((response) => {
+                if (response && response?.statusCode == 202) {
+                  addUpdatePlaceApiHandler(placeObj)
+                    .then((id) => resolve(id))
+                    .catch((error) => {
+                      reject();
+                      console.log(error);
+                    });
+                }
+              })
+              .catch((error) => console.log(error));
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          message.warning({
+            duration: 10,
+            maxCount: 1,
+            key: 'place-save-as-warning',
+            content: (
+              <>
+                {t('dashboard.places.createNew.addPlace.notification.saveError')} &nbsp;
+                <Button
+                  type="text"
+                  icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                  onClick={() => message.destroy('place-save-as-warning')}
+                />
+              </>
+            ),
+            icon: <ExclamationCircleOutlined />,
+          });
+        });
+    });
+
+    return promise;
+  };
+
+  const handleSelect = (address) => {
+    geocodeByAddress(address)
+      .then((results) => {
+        form.setFieldsValue({
+          address: results[0]?.formatted_address,
+          addressCountry: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
+          addressCountryEn: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
+          addressLocality: results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
+          addressLocalityEn: results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
+          addressRegion: results[0].address_components.find((item) =>
+            item.types.includes('administrative_area_level_1'),
+          )?.short_name,
+          addressRegionEn: results[0].address_components.find((item) =>
+            item.types.includes('administrative_area_level_1'),
+          )?.short_name,
+          postalCode: results[0].address_components.find((item) => item.types.includes('postal_code'))?.long_name,
+        });
+        let streetNumber =
+          results[0].address_components.find((item) => item.types.includes('street_number'))?.long_name ?? null;
+        let streetName = results[0].address_components.find((item) => item.types.includes('route'))?.long_name ?? null;
+        let streetAddress = streetNumber + ' ' + streetName;
+        if (streetNumber && streetName) streetAddress = streetNumber + ' ' + streetName;
+        else if (streetNumber && !streetName) streetAddress = streetNumber;
+        else if (!streetNumber && streetName) streetAddress = streetName;
+        else if (!streetNumber && !streetName) streetAddress = null;
+        form.setFieldsValue({
+          streetAddress: streetAddress,
+          streetAddressEn: streetAddress,
+        });
+        return getLatLng(results[0]);
+      })
+      .then((latLng) => {
+        form.setFieldsValue({
+          latitude: '' + latLng.lat,
+          longitude: '' + latLng.lng,
+          coordinates: latLng.lat + ',' + latLng.lng,
+        });
+      })
+      .catch((error) => console.error(error));
+    setDropdownOpen(false);
+  };
+
+  const handleChange = (address) => {
+    if (address === '') setDropdownOpen(false);
+    else setDropdownOpen(true);
+    setAddress(address);
+  };
 
   const placesSearch = (inputValue = '') => {
     let query = new URLSearchParams();
@@ -227,10 +521,8 @@ function CreateNewPlace() {
                     <Form.Item>
                       <PrimaryButton
                         label={t('dashboard.events.addEditEvent.saveOptions.save')}
-                        // onClick={() => onSaveHandler()}
-                        // disabled={
-                        //   addOrganizationLoading || imageUploadLoading || updateOrganizationLoading ? true : false
-                        // }
+                        onClick={(e) => onSaveHandler(e)}
+                        disabled={addImageLoading || addPlaceLoading || updatePlaceLoading ? true : false}
                       />
                     </Form.Item>
                   </div>
@@ -362,7 +654,8 @@ function CreateNewPlace() {
                 label={taxonomyDetails(allTaxonomyData?.data, user, placeTaxonomyMappedFieldTypes.TYPE, 'name', false)}
                 initialValue={placeData?.additionalType?.map((type) => {
                   return type?.entityId;
-                })}>
+                })}
+                required={true}>
                 <TreeSelectOption
                   placeholder={t('dashboard.events.addEditEvent.language.placeHolderEventType')}
                   allowClear
@@ -590,10 +883,10 @@ function CreateNewPlace() {
                 name={formFieldNames.DRAGGER_WRAP}
                 className="draggerWrap"
                 initialValue={placeData?.image && placeData?.image?.original?.uri}
-                // {...(isAddImageError && {
-                //   help: t('dashboard.events.addEditEvent.validations.errorImage'),
-                //   validateStatus: 'error',
-                // })}
+                {...(isAddImageError && {
+                  help: t('dashboard.events.addEditEvent.validations.errorImage'),
+                  validateStatus: 'error',
+                })}
                 rules={[
                   ({ getFieldValue }) => ({
                     validator() {
@@ -690,6 +983,43 @@ function CreateNewPlace() {
                   </p>
                 </Col>
               </Row>
+              <Form.Item name="addressSearch">
+                <PlacesAutocomplete value={address} onChange={handleChange} onSelect={handleSelect}>
+                  {({ getInputProps, suggestions, getSuggestionItemProps }) => (
+                    <Dropdown
+                      open={dropdownOpen}
+                      overlayClassName="filter-sort-dropdown-wrapper"
+                      getPopupContainer={(trigger) => trigger.parentNode}
+                      menu={{
+                        items: suggestions?.map((suggestion, index) => {
+                          return {
+                            key: index,
+                            label: (
+                              <div {...getSuggestionItemProps(suggestion)} key={index}>
+                                <span>{suggestion.description}</span>
+                              </div>
+                            ),
+                          };
+                        }),
+                        selectable: true,
+                      }}
+                      trigger={['click']}>
+                      <StyledInput
+                        autoComplete="off"
+                        {...getInputProps({
+                          placeholder: t('dashboard.events.addEditEvent.location.quickCreatePlace.searchPlaceholder'),
+                        })}
+                        prefix={
+                          <SearchOutlined
+                            className="events-search-icon"
+                            style={{ color: '#B6C1C9', fontSize: '18px' }}
+                          />
+                        }
+                      />
+                    </Dropdown>
+                  )}
+                </PlacesAutocomplete>
+              </Form.Item>
               <Form.Item label={t('dashboard.places.createNew.addPlace.address.streetAddress')} required={true}>
                 <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                   <BilingualInput fieldData={placeData?.name}>
@@ -869,14 +1199,14 @@ function CreateNewPlace() {
                     <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                       <BilingualInput fieldData={placeData?.name}>
                         <Form.Item
-                          name={formFieldNames.CITY_FRENCH}
+                          name={formFieldNames.COUNTRY_FRENCH}
                           key={contentLanguage.FRENCH}
                           initialValue={placeData?.name?.fr}
-                          dependencies={[formFieldNames.CITY_ENGLISH]}
+                          dependencies={[formFieldNames.COUNTRY_ENGLISH]}
                           rules={[
                             ({ getFieldValue }) => ({
                               validator(_, value) {
-                                if (value || getFieldValue(formFieldNames.CITY_ENGLISH)) {
+                                if (value || getFieldValue(formFieldNames.COUNTRY_ENGLISH)) {
                                   return Promise.resolve();
                                 } else
                                   return Promise.reject(
@@ -894,14 +1224,14 @@ function CreateNewPlace() {
                           />
                         </Form.Item>
                         <Form.Item
-                          name={formFieldNames.CITY_ENGLISH}
+                          name={formFieldNames.COUNTRY_ENGLISH}
                           key={contentLanguage.ENGLISH}
                           initialValue={placeData?.name?.en}
-                          dependencies={[formFieldNames.CITY_FRENCH]}
+                          dependencies={[formFieldNames.COUNTRY_FRENCH]}
                           rules={[
                             ({ getFieldValue }) => ({
                               validator(_, value) {
-                                if (value || getFieldValue(formFieldNames.CITY_FRENCH)) {
+                                if (value || getFieldValue(formFieldNames.COUNTRY_FRENCH)) {
                                   return Promise.resolve();
                                 } else
                                   return Promise.reject(
