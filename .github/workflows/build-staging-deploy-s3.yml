@@ -25,7 +25,7 @@ jobs:
         run: aws s3 sync ./build s3://${{env.WEBHOSTING_BUCKET_NAME}}/ --acl public-read --delete --exclude index.html
       - name: set cache-control on index.html 
         run: aws s3 cp ./build/index.html s3://${{env.WEBHOSTING_BUCKET_NAME}}/index.html --metadata-directive REPLACE --cache-control max-age=0,s-maxage=86400 --acl public-read --content-type text/html
-      # Invalidate CloudFront (this action)
+      # Invalidate CloudFront
       - name: Invalidate CloudFront
         uses: chetan/invalidate-cloudfront-action@v2
         env:
