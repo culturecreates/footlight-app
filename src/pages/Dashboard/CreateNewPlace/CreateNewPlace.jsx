@@ -59,7 +59,7 @@ import {
   placeAccessibilityTypeOptions,
   placeAccessibilityTypeOptionsFieldNames,
 } from '../../../constants/placeAccessibilityTypeOptions';
-// import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
+import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { useAddImageMutation } from '../../../services/image';
 import { usePrompt } from '../../../hooks/usePrompt';
 import { useAddPostalAddressMutation } from '../../../services/postalAddress';
@@ -109,7 +109,6 @@ function CreateNewPlace() {
     REGION: 'region',
   };
   const placeId = searchParams.get('id');
-  console.log(placeId);
   const artsDataId = location?.state?.data?.id ?? null;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -302,7 +301,7 @@ function CreateNewPlace() {
               en: values?.englishEditor,
               fr: values?.frenchEditor,
             },
-            openingHours: { uri: values?.openingHours },
+            openingHours: { uri: urlProtocolCheck(values?.openingHours) },
             containedInPlace: values?.containedInPlace ? { entityId: values?.containedInPlace } : undefined,
             geo: {
               latitude: values?.latitude,
@@ -512,7 +511,6 @@ function CreateNewPlace() {
   useEffect(() => {
     console.log(placeData);
     if (calendarId && placeData && currentCalendarData) {
-      console.log(placeData);
       let initialAddedFields = [],
         initialPlaceAccessibiltiy = [],
         initialPlace;
@@ -521,7 +519,6 @@ function CreateNewPlace() {
           getPlace({ placeId: placeData?.containedInPlace?.entityId, calendarId })
             .unwrap()
             .then((response) => {
-              console.log(response);
               if (response?.accessibility?.length > 0) {
                 getAllTaxonomy({
                   calendarId,
