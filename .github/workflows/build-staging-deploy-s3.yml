@@ -14,8 +14,20 @@ jobs:
     container:
       image: sleavely/node-awscli:14.x
     steps:
-    - uses: actions/checkout@v2
-    - run: npm install
-    - run: npm run build:staging
-    - run: aws s3 sync ./build s3://${{env.WEBHOSTING_BUCKET_NAME}}/ --acl public-read --delete --exclude index.html
-    - run: aws s3 cp ./build/index.html s3://${{env.WEBHOSTING_BUCKET_NAME}}/index.html --metadata-directive REPLACE --cache-control max-age=0,s-maxage=86400 --acl public-read --content-type text/html
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: setup node
+        run: npm install
+      - name: build
+        run: npm run build:staging
+      # Upload to S3
+      - name: sync s3
+        run: aws s3 sync ./build s3://${{env.WEBHOSTING_BUCKET_NAME}}/ --acl public-read --delete --exclude index.html
+      - name: set cache-control on index.html 
+        run: aws s3 cp ./build/index.html s3://${{env.WEBHOSTING_BUCKET_NAME}}/index.html --metadata-directive REPLACE --cache-control max-age=0,s-maxage=86400 --acl public-read --content-type text/html
+      # Invalidate CloudFront (this action)
+      - name: Invalidate CloudFront
+        uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          DISTRIBUTION: E2R70C1WYD9KB
+          PATHS: "/*"
