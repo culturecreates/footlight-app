@@ -59,7 +59,7 @@ import {
   placeAccessibilityTypeOptions,
   placeAccessibilityTypeOptionsFieldNames,
 } from '../../../constants/placeAccessibilityTypeOptions';
-// import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
+import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { useAddImageMutation } from '../../../services/image';
 import { usePrompt } from '../../../hooks/usePrompt';
 import { useAddPostalAddressMutation } from '../../../services/postalAddress';
@@ -109,7 +109,6 @@ function CreateNewPlace() {
     REGION: 'region',
   };
   const placeId = searchParams.get('id');
-  console.log(placeId);
   const artsDataId = location?.state?.data?.id ?? null;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -302,7 +301,7 @@ function CreateNewPlace() {
               en: values?.englishEditor,
               fr: values?.frenchEditor,
             },
-            openingHours: { uri: values?.openingHours },
+            openingHours: { uri: urlProtocolCheck(values?.openingHours) },
             containedInPlace: values?.containedInPlace ? { entityId: values?.containedInPlace } : undefined,
             geo: {
               latitude: values?.latitude,
@@ -510,9 +509,7 @@ function CreateNewPlace() {
   console.log(artsData);
 
   useEffect(() => {
-    console.log(placeData);
     if (calendarId && placeData && currentCalendarData) {
-      console.log(placeData);
       let initialAddedFields = [],
         initialPlaceAccessibiltiy = [],
         initialPlace;
@@ -521,7 +518,6 @@ function CreateNewPlace() {
           getPlace({ placeId: placeData?.containedInPlace?.entityId, calendarId })
             .unwrap()
             .then((response) => {
-              console.log(response);
               if (response?.accessibility?.length > 0) {
                 getAllTaxonomy({
                   calendarId,
@@ -590,7 +586,6 @@ function CreateNewPlace() {
         form.setFieldsValue({
           latitude: placeData.geoCoordinates && '' + placeData.geoCoordinates.latitude,
           longitude: placeData.geoCoordinates && '' + placeData.geoCoordinates.longitude,
-          coordinates: placeData.geoCoordinates.latitude + ',' + placeData.geoCoordinates.longitude,
         });
         setAddedFields(initialAddedFields);
       } else
@@ -807,11 +802,11 @@ function CreateNewPlace() {
               <Form.Item
                 label={t('dashboard.places.createNew.addPlace.disambiguatingDescription.disambiguatingDescription')}>
                 <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                  <BilingualInput fieldData={placeData?.name}>
+                  <BilingualInput fieldData={placeData?.disambiguatingDescription}>
                     <Form.Item
                       name={formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH}
                       key={contentLanguage.FRENCH}
-                      initialValue={placeData?.name?.fr}
+                      initialValue={placeData?.disambiguatingDescription?.fr}
                       dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH]}
                       rules={[
                         ({ getFieldValue }) => ({
@@ -836,7 +831,7 @@ function CreateNewPlace() {
                     <Form.Item
                       name={formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH}
                       key={contentLanguage.ENGLISH}
-                      initialValue={placeData?.name?.en}
+                      initialValue={placeData?.disambiguatingDescription?.en}
                       dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH]}
                       rules={[
                         ({ getFieldValue }) => ({
@@ -1144,11 +1139,11 @@ function CreateNewPlace() {
               </Form.Item>
               <Form.Item label={t('dashboard.places.createNew.addPlace.address.streetAddress')} required={true}>
                 <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                  <BilingualInput fieldData={placeData?.name}>
+                  <BilingualInput fieldData={placeData?.address?.streetAddress}>
                     <Form.Item
                       name={formFieldNames.STREET_ADDRESS_FRENCH}
                       key={contentLanguage.FRENCH}
-                      initialValue={placeData?.name?.fr}
+                      initialValue={placeData?.address?.streetAddress?.fr}
                       dependencies={[formFieldNames.STREET_ADDRESS_ENGLISH]}
                       rules={[
                         ({ getFieldValue }) => ({
@@ -1171,7 +1166,7 @@ function CreateNewPlace() {
                     <Form.Item
                       name={formFieldNames.STREET_ADDRESS_ENGLISH}
                       key={contentLanguage.ENGLISH}
-                      initialValue={placeData?.name?.en}
+                      initialValue={placeData?.address?.streetAddress?.en}
                       dependencies={[formFieldNames.STREET_ADDRESS_FRENCH]}
                       rules={[
                         ({ getFieldValue }) => ({
@@ -1196,11 +1191,11 @@ function CreateNewPlace() {
               </Form.Item>
               <Form.Item label={t('dashboard.places.createNew.addPlace.address.city.city')}>
                 <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                  <BilingualInput fieldData={placeData?.name}>
+                  <BilingualInput fieldData={placeData?.address?.addressLocality}>
                     <Form.Item
                       name={formFieldNames.CITY_FRENCH}
                       key={contentLanguage.FRENCH}
-                      initialValue={placeData?.name?.fr}
+                      initialValue={placeData?.address?.addressLocality?.fr}
                       dependencies={[formFieldNames.CITY_ENGLISH]}
                       rules={[
                         ({ getFieldValue }) => ({
@@ -1223,7 +1218,7 @@ function CreateNewPlace() {
                     <Form.Item
                       name={formFieldNames.CITY_ENGLISH}
                       key={contentLanguage.ENGLISH}
-                      initialValue={placeData?.name?.en}
+                      initialValue={placeData?.address?.addressLocality?.fr}
                       dependencies={[formFieldNames.CITY_FRENCH]}
                       rules={[
                         ({ getFieldValue }) => ({
@@ -1262,11 +1257,11 @@ function CreateNewPlace() {
                 <Col span={12}>
                   <Form.Item label={t('dashboard.places.createNew.addPlace.address.province.province')}>
                     <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                      <BilingualInput fieldData={placeData?.name}>
+                      <BilingualInput fieldData={placeData?.address?.addressRegion}>
                         <Form.Item
                           name={formFieldNames.PROVINCE_FRENCH}
                           key={contentLanguage.FRENCH}
-                          initialValue={placeData?.name?.fr}
+                          initialValue={placeData?.address?.addressRegion?.fr}
                           dependencies={[formFieldNames.PROVINCE_ENGLISH]}
                           rules={[
                             ({ getFieldValue }) => ({
@@ -1291,7 +1286,7 @@ function CreateNewPlace() {
                         <Form.Item
                           name={formFieldNames.PROVINCE_ENGLISH}
                           key={contentLanguage.ENGLISH}
-                          initialValue={placeData?.name?.en}
+                          initialValue={placeData?.address?.addressRegion?.en}
                           dependencies={[formFieldNames.PROVINCE_FRENCH]}
                           rules={[
                             ({ getFieldValue }) => ({
@@ -1320,11 +1315,11 @@ function CreateNewPlace() {
                 <Col span={12}>
                   <Form.Item label={t('dashboard.places.createNew.addPlace.address.country.country')}>
                     <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                      <BilingualInput fieldData={placeData?.name}>
+                      <BilingualInput fieldData={placeData?.address?.addressCountry}>
                         <Form.Item
                           name={formFieldNames.COUNTRY_FRENCH}
                           key={contentLanguage.FRENCH}
-                          initialValue={placeData?.name?.fr}
+                          initialValue={placeData?.address?.addressCountry?.fr}
                           dependencies={[formFieldNames.COUNTRY_ENGLISH]}
                           rules={[
                             ({ getFieldValue }) => ({
@@ -1349,7 +1344,7 @@ function CreateNewPlace() {
                         <Form.Item
                           name={formFieldNames.COUNTRY_ENGLISH}
                           key={contentLanguage.ENGLISH}
-                          initialValue={placeData?.name?.en}
+                          initialValue={placeData?.address?.addressCountry?.en}
                           dependencies={[formFieldNames.COUNTRY_FRENCH]}
                           rules={[
                             ({ getFieldValue }) => ({
@@ -1378,6 +1373,7 @@ function CreateNewPlace() {
               </Row>
               <Form.Item
                 name={formFieldNames.COORDINATES}
+                initialValue={placeData.geoCoordinates.latitude + ',' + placeData.geoCoordinates.longitude}
                 label={t('dashboard.places.createNew.addPlace.address.coordinates.coordinates')}>
                 <StyledInput />
               </Form.Item>
