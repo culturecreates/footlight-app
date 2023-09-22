@@ -64,6 +64,7 @@ import { useAddImageMutation } from '../../../services/image';
 import { usePrompt } from '../../../hooks/usePrompt';
 import { useAddPostalAddressMutation, useUpdatePostalAddressMutation } from '../../../services/postalAddress';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
+import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequiredFieldNames';
 
 const { TextArea } = Input;
 
@@ -111,7 +112,9 @@ function CreateNewPlace() {
   const placeId = searchParams.get('id');
   const artsDataId = location?.state?.data?.id ?? null;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-
+  let requiredFields = currentCalendarData?.formSchema?.filter((form) => form?.formName === 'Place');
+  requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
+  let requiredFieldNames = requiredFields ? requiredFields?.requiredfields?.map((field) => field?.fieldName) : [];
   const { currentData: placeData, isLoading: isPlaceLoading } = useGetPlaceQuery(
     { placeId: placeId, calendarId, sessionId: timestampRef },
     { skip: placeId ? false : true },
@@ -294,6 +297,7 @@ function CreateNewPlace() {
             formFieldNames.TYPE,
             formFieldNames.STREET_ADDRESS_ENGLISH,
             formFieldNames.STREET_ADDRESS_FRENCH,
+            formFieldNames.POSTAL_CODE,
           ]),
         ])
         .then(() => {
@@ -672,7 +676,7 @@ function CreateNewPlace() {
   return !isPlaceLoading && !artsDataLoading && !taxonomyLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <div className="add-edit-wrapper add-organization-wrapper">
-        <Form form={form} layout="vertical" name="organization">
+        <Form form={form} layout="vertical" name="place">
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
               <Row gutter={[32, 2]}>
@@ -715,7 +719,7 @@ function CreateNewPlace() {
             </Col>
             <Card>
               <>
-                {artsDataLinkChecker(placeData?.sameAs) && (
+                {(artsDataLinkChecker(placeData?.sameAs) || artsDataLinkChecker(artsData?.sameAs)) && (
                   <Row>
                     <Col span={24}>
                       <p className="add-entity-label">
@@ -724,16 +728,16 @@ function CreateNewPlace() {
                     </Col>
                     <Col span={24}>
                       <ArtsDataInfo
-                        artsDataLink={artsDataLinkChecker(placeData?.sameAs)}
+                        artsDataLink={artsDataLinkChecker(placeData?.sameAs ?? artsData?.sameAs)}
                         name={contentLanguageBilingual({
-                          en: placeData?.name?.en,
-                          fr: placeData?.name?.fr,
+                          en: placeData?.name?.en ?? artsData?.name?.en,
+                          fr: placeData?.name?.fr ?? artsData?.name?.fr,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                           calendarContentLanguage: calendarContentLanguage,
                         })}
                         disambiguatingDescription={contentLanguageBilingual({
-                          en: placeData?.disambiguatingDescription?.en,
-                          fr: placeData?.disambiguatingDescription?.fr,
+                          en: placeData?.disambiguatingDescription?.en ?? artsData?.disambiguatingDescription?.en,
+                          fr: placeData?.disambiguatingDescription?.fr ?? artsData?.disambiguatingDescription?.fr,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                           calendarContentLanguage: calendarContentLanguage,
                         })}
@@ -838,7 +842,12 @@ function CreateNewPlace() {
                   initialValue={placeData?.additionalType?.map((type) => {
                     return type?.entityId;
                   })}
-                  required={true}>
+                  rules={[
+                    {
+                      required: requiredFieldNames?.includes(placeFormRequiredFieldNames?.PLACE_TYPE),
+                      message: t('dashboard.places.createNew.addPlace.validations.placeTypeRequired'),
+                    },
+                  ]}>
                   <TreeSelectOption
                     placeholder={t('dashboard.places.createNew.addPlace.placeType.placeholder')}
                     allowClear
@@ -1231,7 +1240,9 @@ function CreateNewPlace() {
                               if (value || getFieldValue(formFieldNames.STREET_ADDRESS_ENGLISH)) {
                                 return Promise.resolve();
                               } else
-                                return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                                return Promise.reject(
+                                  new Error(t('dashboard.places.createNew.addPlace.validations.streetAddressRequired')),
+                                );
                             },
                           }),
                         ]}>
@@ -1254,7 +1265,9 @@ function CreateNewPlace() {
                               if (value || getFieldValue(formFieldNames.STREET_ADDRESS_FRENCH)) {
                                 return Promise.resolve();
                               } else
-                                return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                                return Promise.reject(
+                                  new Error(t('dashboard.places.createNew.addPlace.validations.streetAddressRequired')),
+                                );
                             },
                           }),
                         ]}>
@@ -1330,8 +1343,8 @@ function CreateNewPlace() {
                   label={t('dashboard.places.createNew.addPlace.address.postalCode.postalCode')}
                   rules={[
                     {
-                      type: 'url',
-                      message: t('dashboard.events.addEditEvent.validations.url'),
+                      required: true,
+                      message: t('dashboard.places.createNew.addPlace.validations.postalCodeRequired'),
                     },
                   ]}>
                   <StyledInput placeholder={t('dashboard.places.createNew.addPlace.address.postalCode.placeholder')} />
@@ -1346,19 +1359,7 @@ function CreateNewPlace() {
                             name={formFieldNames.PROVINCE_FRENCH}
                             key={contentLanguage.FRENCH}
                             initialValue={placeData?.address?.addressRegion?.fr ?? artsData?.address?.addressRegion?.fr}
-                            dependencies={[formFieldNames.PROVINCE_ENGLISH]}
-                            rules={[
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  if (value || getFieldValue(formFieldNames.PROVINCE_ENGLISH)) {
-                                    return Promise.resolve();
-                                  } else
-                                    return Promise.reject(
-                                      new Error(t('dashboard.events.addEditEvent.validations.title')),
-                                    );
-                                },
-                              }),
-                            ]}>
+                            dependencies={[formFieldNames.PROVINCE_ENGLISH]}>
                             <TextArea
                               autoSize
                               autoComplete="off"
@@ -1371,19 +1372,7 @@ function CreateNewPlace() {
                             name={formFieldNames.PROVINCE_ENGLISH}
                             key={contentLanguage.ENGLISH}
                             initialValue={placeData?.address?.addressRegion?.en ?? artsData?.address?.addressRegion?.en}
-                            dependencies={[formFieldNames.PROVINCE_FRENCH]}
-                            rules={[
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  if (value || getFieldValue(formFieldNames.PROVINCE_FRENCH)) {
-                                    return Promise.resolve();
-                                  } else
-                                    return Promise.reject(
-                                      new Error(t('dashboard.events.addEditEvent.validations.title')),
-                                    );
-                                },
-                              }),
-                            ]}>
+                            dependencies={[formFieldNames.PROVINCE_FRENCH]}>
                             <TextArea
                               autoSize
                               autoComplete="off"
@@ -1409,19 +1398,7 @@ function CreateNewPlace() {
                             initialValue={
                               placeData?.address?.addressCountry?.fr ?? artsData?.address?.addressCountry?.fr
                             }
-                            dependencies={[formFieldNames.COUNTRY_ENGLISH]}
-                            rules={[
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  if (value || getFieldValue(formFieldNames.COUNTRY_ENGLISH)) {
-                                    return Promise.resolve();
-                                  } else
-                                    return Promise.reject(
-                                      new Error(t('dashboard.events.addEditEvent.validations.title')),
-                                    );
-                                },
-                              }),
-                            ]}>
+                            dependencies={[formFieldNames.COUNTRY_ENGLISH]}>
                             <TextArea
                               autoSize
                               autoComplete="off"
@@ -1436,19 +1413,7 @@ function CreateNewPlace() {
                             initialValue={
                               placeData?.address?.addressCountry?.en ?? artsData?.address?.addressCountry?.en
                             }
-                            dependencies={[formFieldNames.COUNTRY_FRENCH]}
-                            rules={[
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  if (value || getFieldValue(formFieldNames.COUNTRY_FRENCH)) {
-                                    return Promise.resolve();
-                                  } else
-                                    return Promise.reject(
-                                      new Error(t('dashboard.events.addEditEvent.validations.title')),
-                                    );
-                                },
-                              }),
-                            ]}>
+                            dependencies={[formFieldNames.COUNTRY_FRENCH]}>
                             <TextArea
                               autoSize
                               autoComplete="off"

@@ -633,7 +633,10 @@
             "saveError": "Cet lieu a besoin de plus d'informations avant d'être enregistré."
           },
           "validations": {
-            "nameRequired": "Le nom est requis."
+            "nameRequired": "Le nom est requis.",
+            "placeTypeRequired": "Un minimum d'un type est requis.",
+            "streetAddressRequired": "L'adresse postale est requise.",
+            "postalCodeRequired": "Le code postal est requis."
           }
         }
       }
@@ -723,7 +726,7 @@
         "sort": "Trier par",
         "status": "Statut",
         "userTypes": "Type",
-        "addUser":"Utilisateur",
+        "addUser": "Utilisateur",
         "clear": "Réinitialiser",
         "userName": "Nom d’utilisateur",
         "firstName": "Prénom",
