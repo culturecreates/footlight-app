@@ -838,7 +838,12 @@ function CreateNewPlace() {
                   initialValue={placeData?.additionalType?.map((type) => {
                     return type?.entityId;
                   })}
-                  required={true}>
+                  rules={[
+                    {
+                      required: true,
+                      message: t('dashboard.places.createNew.addPlace.validations.placeTypeRequired'),
+                    },
+                  ]}>
                   <TreeSelectOption
                     placeholder={t('dashboard.places.createNew.addPlace.placeType.placeholder')}
                     allowClear
@@ -1231,7 +1236,9 @@ function CreateNewPlace() {
                               if (value || getFieldValue(formFieldNames.STREET_ADDRESS_ENGLISH)) {
                                 return Promise.resolve();
                               } else
-                                return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                                return Promise.reject(
+                                  new Error(t('dashboard.places.createNew.addPlace.validations.streetAddressRequired')),
+                                );
                             },
                           }),
                         ]}>
@@ -1254,7 +1261,9 @@ function CreateNewPlace() {
                               if (value || getFieldValue(formFieldNames.STREET_ADDRESS_FRENCH)) {
                                 return Promise.resolve();
                               } else
-                                return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                                return Promise.reject(
+                                  new Error(t('dashboard.places.createNew.addPlace.validations.streetAddressRequired')),
+                                );
                             },
                           }),
                         ]}>
@@ -1330,8 +1339,8 @@ function CreateNewPlace() {
                   label={t('dashboard.places.createNew.addPlace.address.postalCode.postalCode')}
                   rules={[
                     {
-                      type: 'url',
-                      message: t('dashboard.events.addEditEvent.validations.url'),
+                      required: true,
+                      message: t('dashboard.places.createNew.addPlace.validations.postalCodeRequired'),
                     },
                   ]}>
                   <StyledInput placeholder={t('dashboard.places.createNew.addPlace.address.postalCode.placeholder')} />
@@ -1346,19 +1355,7 @@ function CreateNewPlace() {
                             name={formFieldNames.PROVINCE_FRENCH}
                             key={contentLanguage.FRENCH}
                             initialValue={placeData?.address?.addressRegion?.fr ?? artsData?.address?.addressRegion?.fr}
-                            dependencies={[formFieldNames.PROVINCE_ENGLISH]}
-                            rules={[
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  if (value || getFieldValue(formFieldNames.PROVINCE_ENGLISH)) {
-                                    return Promise.resolve();
-                                  } else
-                                    return Promise.reject(
-                                      new Error(t('dashboard.events.addEditEvent.validations.title')),
-                                    );
-                                },
-                              }),
-                            ]}>
+                            dependencies={[formFieldNames.PROVINCE_ENGLISH]}>
                             <TextArea
                               autoSize
                               autoComplete="off"
@@ -1371,19 +1368,7 @@ function CreateNewPlace() {
                             name={formFieldNames.PROVINCE_ENGLISH}
                             key={contentLanguage.ENGLISH}
                             initialValue={placeData?.address?.addressRegion?.en ?? artsData?.address?.addressRegion?.en}
-                            dependencies={[formFieldNames.PROVINCE_FRENCH]}
-                            rules={[
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  if (value || getFieldValue(formFieldNames.PROVINCE_FRENCH)) {
-                                    return Promise.resolve();
-                                  } else
-                                    return Promise.reject(
-                                      new Error(t('dashboard.events.addEditEvent.validations.title')),
-                                    );
-                                },
-                              }),
-                            ]}>
+                            dependencies={[formFieldNames.PROVINCE_FRENCH]}>
                             <TextArea
                               autoSize
                               autoComplete="off"
@@ -1409,19 +1394,7 @@ function CreateNewPlace() {
                             initialValue={
                               placeData?.address?.addressCountry?.fr ?? artsData?.address?.addressCountry?.fr
                             }
-                            dependencies={[formFieldNames.COUNTRY_ENGLISH]}
-                            rules={[
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  if (value || getFieldValue(formFieldNames.COUNTRY_ENGLISH)) {
-                                    return Promise.resolve();
-                                  } else
-                                    return Promise.reject(
-                                      new Error(t('dashboard.events.addEditEvent.validations.title')),
-                                    );
-                                },
-                              }),
-                            ]}>
+                            dependencies={[formFieldNames.COUNTRY_ENGLISH]}>
                             <TextArea
                               autoSize
                               autoComplete="off"
@@ -1436,19 +1409,7 @@ function CreateNewPlace() {
                             initialValue={
                               placeData?.address?.addressCountry?.en ?? artsData?.address?.addressCountry?.en
                             }
-                            dependencies={[formFieldNames.COUNTRY_FRENCH]}
-                            rules={[
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  if (value || getFieldValue(formFieldNames.COUNTRY_FRENCH)) {
-                                    return Promise.resolve();
-                                  } else
-                                    return Promise.reject(
-                                      new Error(t('dashboard.events.addEditEvent.validations.title')),
-                                    );
-                                },
-                              }),
-                            ]}>
+                            dependencies={[formFieldNames.COUNTRY_FRENCH]}>
                             <TextArea
                               autoSize
                               autoComplete="off"

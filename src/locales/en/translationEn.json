@@ -636,7 +636,10 @@
             "saveError": "This place needs more information before it can be saved."
           },
           "validations": {
-            "nameRequired": "Name is required."
+            "nameRequired": "Name is required.",
+            "placeTypeRequired": "A minimum of one type is requred.",
+            "streetAddressRequired": "Street address is required.",
+            "postalCodeRequired": "Postal code is required."
           }
         }
       }
@@ -730,7 +733,7 @@
         "userTypes": "User types",
         "clear": "Clear",
         "userName": "Username",
-        "addUser":"Utilisateur",
+        "addUser": "Utilisateur",
         "firstName": "First name",
         "lastName": "Last name",
         "active": "Active",
@@ -740,7 +743,7 @@
         "editor": "Editor",
         "contributor": "Contributor",
         "guest": "Guest",
-        "superAdmin":"Super Admin",
+        "superAdmin": "Super Admin",
         "invitedBy": "Invited By",
         "tooltip": {
           "editUser": "Edit user",
