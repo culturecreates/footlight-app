@@ -713,7 +713,7 @@ function CreateNewPlace() {
                   </Col>
                 </Row>
               )}
-              <Form.Item label={t('dashboard.places.createNew.addPlace.name')} required={true}>
+              <Form.Item label={t('dashboard.places.createNew.addPlace.name.name')} required={true}>
                 <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                   <BilingualInput fieldData={placeData?.name}>
                     <Form.Item
@@ -734,7 +734,7 @@ function CreateNewPlace() {
                       <TextArea
                         autoSize
                         autoComplete="off"
-                        placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
+                        placeholder={t('dashboard.places.createNew.addPlace.name.placeholder.french')}
                         style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                         size="large"
                       />
@@ -757,7 +757,7 @@ function CreateNewPlace() {
                       <TextArea
                         autoSize
                         autoComplete="off"
-                        placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
+                        placeholder={t('dashboard.places.createNew.addPlace.name.placeholder.english')}
                         style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                         size="large"
                       />
@@ -774,7 +774,7 @@ function CreateNewPlace() {
                 })}
                 required={true}>
                 <TreeSelectOption
-                  placeholder={t('dashboard.events.addEditEvent.language.placeHolderEventType')}
+                  placeholder={t('dashboard.places.createNew.addPlace.placeType.placeholder')}
                   allowClear
                   treeDefaultExpandAll
                   notFoundContent={<NoContent />}
@@ -1373,7 +1373,10 @@ function CreateNewPlace() {
               </Row>
               <Form.Item
                 name={formFieldNames.COORDINATES}
-                initialValue={placeData.geoCoordinates.latitude + ',' + placeData.geoCoordinates.longitude}
+                initialValue={
+                  (placeData?.geoCoordinates?.latitude || placeData?.geoCoordinates?.longitude) &&
+                  placeData?.geoCoordinates?.latitude + ',' + placeData?.geoCoordinates?.longitude
+                }
                 label={t('dashboard.places.createNew.addPlace.address.coordinates.coordinates')}>
                 <StyledInput />
               </Form.Item>
@@ -1390,7 +1393,7 @@ function CreateNewPlace() {
                   return type?.entityId;
                 })}>
                 <TreeSelectOption
-                  placeholder={t('dashboard.events.addEditEvent.language.placeHolderEventType')}
+                  placeholder={t('dashboard.places.createNew.addPlace.address.region.placeholder')}
                   allowClear
                   treeDefaultExpandAll
                   notFoundContent={<NoContent />}
@@ -1432,7 +1435,7 @@ function CreateNewPlace() {
                 <StyledInput
                   addonBefore="https://"
                   autoComplete="off"
-                  placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
+                  placeholder={t('dashboard.places.createNew.addPlace.address.openingHours.placeholder')}
                 />
               </Form.Item>
             </>
@@ -1562,7 +1565,7 @@ function CreateNewPlace() {
                   return type?.entityId;
                 })}>
                 <TreeSelectOption
-                  placeholder={t('dashboard.events.addEditEvent.language.placeHolderEventType')}
+                  placeholder={t('dashboard.places.createNew.addPlace.venueAccessibility.placeholder')}
                   allowClear
                   treeDefaultExpandAll
                   notFoundContent={<NoContent />}
@@ -1604,7 +1607,7 @@ function CreateNewPlace() {
                       <TextArea
                         autoComplete="off"
                         placeholder={t(
-                          'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityFrenchNote',
+                          'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.placeholder.french',
                         )}
                         style={{
                           borderRadius: '4px',
@@ -1622,7 +1625,7 @@ function CreateNewPlace() {
                       <TextArea
                         autoComplete="off"
                         placeholder={t(
-                          'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.tooltip',
+                          'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.placeholder.english',
                         )}
                         style={{
                           borderRadius: '4px',
