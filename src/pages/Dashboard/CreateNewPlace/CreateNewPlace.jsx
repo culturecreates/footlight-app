@@ -294,6 +294,7 @@ function CreateNewPlace() {
             formFieldNames.TYPE,
             formFieldNames.STREET_ADDRESS_ENGLISH,
             formFieldNames.STREET_ADDRESS_FRENCH,
+            formFieldNames.POSTAL_CODE,
           ]),
         ])
         .then(() => {
