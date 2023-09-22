@@ -715,7 +715,7 @@ function CreateNewPlace() {
             </Col>
             <Card>
               <>
-                {artsDataLinkChecker(placeData?.sameAs) && (
+                {(artsDataLinkChecker(placeData?.sameAs) || artsDataLinkChecker(artsData?.sameAs)) && (
                   <Row>
                     <Col span={24}>
                       <p className="add-entity-label">
@@ -724,16 +724,16 @@ function CreateNewPlace() {
                     </Col>
                     <Col span={24}>
                       <ArtsDataInfo
-                        artsDataLink={artsDataLinkChecker(placeData?.sameAs)}
+                        artsDataLink={artsDataLinkChecker(placeData?.sameAs ?? artsData?.sameAs)}
                         name={contentLanguageBilingual({
-                          en: placeData?.name?.en,
-                          fr: placeData?.name?.fr,
+                          en: placeData?.name?.en ?? artsData?.name?.en,
+                          fr: placeData?.name?.fr ?? artsData?.name?.fr,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                           calendarContentLanguage: calendarContentLanguage,
                         })}
                         disambiguatingDescription={contentLanguageBilingual({
-                          en: placeData?.disambiguatingDescription?.en,
-                          fr: placeData?.disambiguatingDescription?.fr,
+                          en: placeData?.disambiguatingDescription?.en ?? artsData?.disambiguatingDescription?.en,
+                          fr: placeData?.disambiguatingDescription?.fr ?? artsData?.disambiguatingDescription?.fr,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                           calendarContentLanguage: calendarContentLanguage,
                         })}

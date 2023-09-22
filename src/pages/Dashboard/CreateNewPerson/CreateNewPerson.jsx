@@ -349,58 +349,61 @@ function CreateNewPerson() {
               return (
                 <Card title={section[0]?.category !== formCategory.PRIMARY && section[0]?.category} key={index}>
                   <>
-                    {artsDataLinkChecker(personData?.sameAs) && section[0]?.category === formCategory.PRIMARY && (
-                      <Row>
-                        <Col span={24}>
-                          <p className="add-entity-label">{t('dashboard.people.createNew.addPerson.dataSource')}</p>
-                        </Col>
-                        <Col span={24}>
-                          <ArtsDataInfo
-                            artsDataLink={artsDataLinkChecker(personData?.sameAs)}
-                            name={contentLanguageBilingual({
-                              en: personData?.name?.en,
-                              fr: personData?.name?.fr,
-                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              calendarContentLanguage: calendarContentLanguage,
-                            })}
-                            disambiguatingDescription={contentLanguageBilingual({
-                              en: personData?.disambiguatingDescription?.en,
-                              fr: personData?.disambiguatingDescription?.fr,
-                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              calendarContentLanguage: calendarContentLanguage,
-                            })}
-                          />
-                        </Col>
-                        <Col span={24}>
-                          <div style={{ display: 'inline' }}>
-                            <span className="add-event-date-heading">
-                              {t('dashboard.people.createNew.addPerson.question.firstPart')}
-                            </span>
-                            <span
-                              className="add-event-date-heading"
-                              style={{
-                                color: '#1b3de6',
-                                textDecoration: 'underline',
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                              }}
-                              onClick={() => {
-                                navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
-                              }}>
-                              {t('dashboard.people.createNew.addPerson.question.secondPart')}
-                            </span>
-                            <span className="add-event-date-heading">
-                              {t('dashboard.people.createNew.addPerson.question.thirdPart')}
-                            </span>
-                          </div>
-                        </Col>
-                        <Col span={24}>
-                          <div>
-                            <br />
-                          </div>
-                        </Col>
-                      </Row>
-                    )}
+                    {(artsDataLinkChecker(personData?.sameAs) || artsDataLinkChecker(artsData?.sameAs)) &&
+                      section[0]?.category === formCategory.PRIMARY && (
+                        <Row>
+                          <Col span={24}>
+                            <p className="add-entity-label">{t('dashboard.people.createNew.addPerson.dataSource')}</p>
+                          </Col>
+                          <Col span={24}>
+                            <ArtsDataInfo
+                              artsDataLink={artsDataLinkChecker(personData?.sameAs ?? artsData?.sameAs)}
+                              name={contentLanguageBilingual({
+                                en: personData?.name?.en ?? artsData?.name?.en,
+                                fr: personData?.name?.fr ?? artsData?.name?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              })}
+                              disambiguatingDescription={contentLanguageBilingual({
+                                en:
+                                  personData?.disambiguatingDescription?.en ?? artsData?.disambiguatingDescription?.en,
+                                fr:
+                                  personData?.disambiguatingDescription?.fr ?? artsData?.disambiguatingDescription?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              })}
+                            />
+                          </Col>
+                          <Col span={24}>
+                            <div style={{ display: 'inline' }}>
+                              <span className="add-event-date-heading">
+                                {t('dashboard.people.createNew.addPerson.question.firstPart')}
+                              </span>
+                              <span
+                                className="add-event-date-heading"
+                                style={{
+                                  color: '#1b3de6',
+                                  textDecoration: 'underline',
+                                  fontWeight: 700,
+                                  cursor: 'pointer',
+                                }}
+                                onClick={() => {
+                                  navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
+                                }}>
+                                {t('dashboard.people.createNew.addPerson.question.secondPart')}
+                              </span>
+                              <span className="add-event-date-heading">
+                                {t('dashboard.people.createNew.addPerson.question.thirdPart')}
+                              </span>
+                            </div>
+                          </Col>
+                          <Col span={24}>
+                            <div>
+                              <br />
+                            </div>
+                          </Col>
+                        </Row>
+                      )}
                     {section?.map((field) => {
                       return formFieldValue?.map((formField, index) => {
                         if (formField?.type === field.type) {
