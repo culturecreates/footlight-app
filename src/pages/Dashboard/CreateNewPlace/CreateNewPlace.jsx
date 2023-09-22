@@ -62,7 +62,7 @@ import {
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { useAddImageMutation } from '../../../services/image';
 import { usePrompt } from '../../../hooks/usePrompt';
-import { useAddPostalAddressMutation } from '../../../services/postalAddress';
+import { useAddPostalAddressMutation, useUpdatePostalAddressMutation } from '../../../services/postalAddress';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 
 const { TextArea } = Input;
@@ -130,6 +130,7 @@ function CreateNewPlace() {
   const [addPostalAddress] = useAddPostalAddressMutation();
   const [getPlace] = useLazyGetPlaceQuery();
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
+  const [updatePostalAddress] = useUpdatePostalAddressMutation();
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -151,7 +152,7 @@ function CreateNewPlace() {
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
-  const addUpdatePlaceApiHandler = (placeObj) => {
+  const addUpdatePlaceApiHandler = (placeObj, postalObj) => {
     var promise = new Promise(function (resolve, reject) {
       if (!placeId || placeId === '') {
         if (artsDataId && artsData) {
@@ -167,52 +168,115 @@ function CreateNewPlace() {
               sameAs: [artsData?.sameAs],
             };
         }
-        addPlace({
-          data: placeObj,
-          calendarId,
-        })
+        addPostalAddress({ data: postalObj, calendarId })
           .unwrap()
           .then((response) => {
-            resolve(response?.id);
-            notification.success({
-              description: t('dashboard.places.createNew.addPlace.notification.addSuccess'),
-              placement: 'top',
-              closeIcon: <></>,
-              maxCount: 1,
-              duration: 3,
-            });
-            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
+            if (response && response?.statusCode == 202) {
+              placeObj = {
+                ...placeObj,
+                postalAddressId: {
+                  entityId: response?.data?.id,
+                },
+              };
+              addPlace({
+                data: placeObj,
+                calendarId,
+              })
+                .unwrap()
+                .then((response) => {
+                  resolve(response?.id);
+                  notification.success({
+                    description: t('dashboard.places.createNew.addPlace.notification.addSuccess'),
+                    placement: 'top',
+                    closeIcon: <></>,
+                    maxCount: 1,
+                    duration: 3,
+                  });
+                  navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
+                })
+                .catch((errorInfo) => {
+                  reject();
+                  console.log(errorInfo);
+                });
+            }
           })
-          .catch((errorInfo) => {
-            reject();
-            console.log(errorInfo);
-          });
+          .catch((error) => console.log(error));
       } else {
         placeObj = {
           ...placeObj,
           sameAs: placeData?.sameAs,
         };
-        updatePlace({
-          data: placeObj,
-          calendarId,
-          placeId,
-        })
-          .unwrap()
-          .then(() => {
-            resolve(placeId);
-            notification.success({
-              description: t('dashboard.places.createNew.addPlace.notification.editSuccess'),
-              placement: 'top',
-              closeIcon: <></>,
-              maxCount: 1,
-              duration: 3,
-            });
-            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
-          })
-          .catch((error) => {
-            reject();
-            console.log(error);
-          });
+        if (!placeData?.address) {
+          addPostalAddress({ data: postalObj, calendarId })
+            .unwrap()
+            .then((response) => {
+              if (response && response?.statusCode == 202) {
+                placeObj = {
+                  ...placeObj,
+                  postalAddressId: {
+                    entityId: response?.data?.id,
+                  },
+                };
+                updatePlace({
+                  data: placeObj,
+                  calendarId,
+                  placeId,
+                })
+                  .unwrap()
+                  .then(() => {
+                    resolve(placeId);
+                    notification.success({
+                      description: t('dashboard.places.createNew.addPlace.notification.editSuccess'),
+                      placement: 'top',
+                      closeIcon: <></>,
+                      maxCount: 1,
+                      duration: 3,
+                    });
+                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
+                  })
+                  .catch((error) => {
+                    reject();
+                    console.log(error);
+                  });
+              }
+            })
+            .catch((error) => console.log(error));
+        } else {
+          updatePostalAddress({ data: postalObj, calendarId, id: placeData?.address?.id })
+            .unwrap()
+            .then((response) => {
+              if (response && response?.statusCode == 202) {
+                placeObj = {
+                  ...placeObj,
+                  postalAddressId: {
+                    entityId: placeData?.address?.id,
+                  },
+                };
+                updatePlace({
+                  data: placeObj,
+                  calendarId,
+                  placeId,
+                })
+                  .unwrap()
+                  .then(() => {
+                    resolve(placeId);
+                    notification.success({
+                      description: t('dashboard.places.createNew.addPlace.notification.editSuccess'),
+                      placement: 'top',
+                      closeIcon: <></>,
+                      maxCount: 1,
+                      duration: 3,
+                    });
+                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
+                  })
+                  .catch((error) => {
+                    reject();
+                    console.log(error);
+                  });
+              }
+            })
+            .catch((error) => console.log(error));
+        }
       }
     });
     return promise;
@@ -369,19 +433,12 @@ function CreateNewPlace() {
                       },
                     };
                   placeObj['image'] = imageCrop;
-                  addPostalAddress({ data: postalObj, calendarId })
-                    .unwrap()
-                    .then((response) => {
-                      if (response && response?.statusCode == 202) {
-                        addUpdatePlaceApiHandler(placeObj)
-                          .then((id) => resolve(id))
-                          .catch((error) => {
-                            reject();
-                            console.log(error);
-                          });
-                      }
-                    })
-                    .catch((error) => console.log(error));
+                  addUpdatePlaceApiHandler(placeObj, postalObj)
+                    .then((id) => resolve(id))
+                    .catch((error) => {
+                      reject();
+                      console.log(error);
+                    });
                 })
                 .catch((error) => {
                   console.log(error);
@@ -394,19 +451,12 @@ function CreateNewPlace() {
               else placeObj['image'] = imageCrop;
             }
 
-            addPostalAddress({ data: postalObj, calendarId })
-              .unwrap()
-              .then((response) => {
-                if (response && response?.statusCode == 202) {
-                  addUpdatePlaceApiHandler(placeObj)
-                    .then((id) => resolve(id))
-                    .catch((error) => {
-                      reject();
-                      console.log(error);
-                    });
-                }
-              })
-              .catch((error) => console.log(error));
+            addUpdatePlaceApiHandler(placeObj, postalObj)
+              .then((id) => resolve(id))
+              .catch((error) => {
+                reject();
+                console.log(error);
+              });
           }
         })
         .catch((error) => {
@@ -713,7 +763,7 @@ function CreateNewPlace() {
                   </Col>
                 </Row>
               )}
-              <Form.Item label={t('dashboard.places.createNew.addPlace.name')} required={true}>
+              <Form.Item label={t('dashboard.places.createNew.addPlace.name.name')} required={true}>
                 <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                   <BilingualInput fieldData={placeData?.name}>
                     <Form.Item
@@ -727,14 +777,16 @@ function CreateNewPlace() {
                             if (value || getFieldValue(formFieldNames.ENGLISH)) {
                               return Promise.resolve();
                             } else
-                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                              return Promise.reject(
+                                new Error(t('dashboard.places.createNew.addPlace.validations.nameRequired')),
+                              );
                           },
                         }),
                       ]}>
                       <TextArea
                         autoSize
                         autoComplete="off"
-                        placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
+                        placeholder={t('dashboard.places.createNew.addPlace.name.placeholder.french')}
                         style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                         size="large"
                       />
@@ -750,14 +802,16 @@ function CreateNewPlace() {
                             if (value || getFieldValue(formFieldNames.FRENCH)) {
                               return Promise.resolve();
                             } else
-                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                              return Promise.reject(
+                                new Error(t('dashboard.places.createNew.addPlace.validations.nameRequired')),
+                              );
                           },
                         }),
                       ]}>
                       <TextArea
                         autoSize
                         autoComplete="off"
-                        placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
+                        placeholder={t('dashboard.places.createNew.addPlace.name.placeholder.english')}
                         style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                         size="large"
                       />
@@ -774,7 +828,7 @@ function CreateNewPlace() {
                 })}
                 required={true}>
                 <TreeSelectOption
-                  placeholder={t('dashboard.events.addEditEvent.language.placeHolderEventType')}
+                  placeholder={t('dashboard.places.createNew.addPlace.placeType.placeholder')}
                   allowClear
                   treeDefaultExpandAll
                   notFoundContent={<NoContent />}
@@ -1373,7 +1427,10 @@ function CreateNewPlace() {
               </Row>
               <Form.Item
                 name={formFieldNames.COORDINATES}
-                initialValue={placeData.geoCoordinates.latitude + ',' + placeData.geoCoordinates.longitude}
+                initialValue={
+                  (placeData?.geoCoordinates?.latitude || placeData?.geoCoordinates?.longitude) &&
+                  placeData?.geoCoordinates?.latitude + ',' + placeData?.geoCoordinates?.longitude
+                }
                 label={t('dashboard.places.createNew.addPlace.address.coordinates.coordinates')}>
                 <StyledInput />
               </Form.Item>
@@ -1390,7 +1447,7 @@ function CreateNewPlace() {
                   return type?.entityId;
                 })}>
                 <TreeSelectOption
-                  placeholder={t('dashboard.events.addEditEvent.language.placeHolderEventType')}
+                  placeholder={t('dashboard.places.createNew.addPlace.address.region.placeholder')}
                   allowClear
                   treeDefaultExpandAll
                   notFoundContent={<NoContent />}
@@ -1432,7 +1489,7 @@ function CreateNewPlace() {
                 <StyledInput
                   addonBefore="https://"
                   autoComplete="off"
-                  placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
+                  placeholder={t('dashboard.places.createNew.addPlace.address.openingHours.placeholder')}
                 />
               </Form.Item>
             </>
@@ -1562,7 +1619,7 @@ function CreateNewPlace() {
                   return type?.entityId;
                 })}>
                 <TreeSelectOption
-                  placeholder={t('dashboard.events.addEditEvent.language.placeHolderEventType')}
+                  placeholder={t('dashboard.places.createNew.addPlace.venueAccessibility.placeholder')}
                   allowClear
                   treeDefaultExpandAll
                   notFoundContent={<NoContent />}
@@ -1604,7 +1661,7 @@ function CreateNewPlace() {
                       <TextArea
                         autoComplete="off"
                         placeholder={t(
-                          'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityFrenchNote',
+                          'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.placeholder.french',
                         )}
                         style={{
                           borderRadius: '4px',
@@ -1622,7 +1679,7 @@ function CreateNewPlace() {
                       <TextArea
                         autoComplete="off"
                         placeholder={t(
-                          'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.tooltip',
+                          'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.placeholder.english',
                         )}
                         style={{
                           borderRadius: '4px',

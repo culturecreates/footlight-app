@@ -133,7 +133,7 @@ function CreateNewOrganization() {
       } else {
         organizationObj = {
           ...organizationObj,
-          sameAs: organizationObj?.sameAs,
+          sameAs: organizationData?.sameAs,
         };
         updateOrganization({
           data: organizationObj,
