@@ -727,7 +727,9 @@ function CreateNewPlace() {
                             if (value || getFieldValue(formFieldNames.ENGLISH)) {
                               return Promise.resolve();
                             } else
-                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                              return Promise.reject(
+                                new Error(t('dashboard.places.createNew.addPlace.validations.nameRequired')),
+                              );
                           },
                         }),
                       ]}>
@@ -750,7 +752,9 @@ function CreateNewPlace() {
                             if (value || getFieldValue(formFieldNames.FRENCH)) {
                               return Promise.resolve();
                             } else
-                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                              return Promise.reject(
+                                new Error(t('dashboard.places.createNew.addPlace.validations.nameRequired')),
+                              );
                           },
                         }),
                       ]}>
