@@ -672,7 +672,7 @@ function CreateNewPlace() {
   return !isPlaceLoading && !artsDataLoading && !taxonomyLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <div className="add-edit-wrapper add-organization-wrapper">
-        <Form form={form} layout="vertical" name="organization">
+        <Form form={form} layout="vertical" name="place">
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
               <Row gutter={[32, 2]}>
