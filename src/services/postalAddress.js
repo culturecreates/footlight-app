@@ -16,7 +16,17 @@ export const postalAddressApi = createApi({
         body: data,
       }),
     }),
+    updatePostalAddress: builder.mutation({
+      query: ({ data, calendarId, id }) => ({
+        url: `postal-addresses/${id}`,
+        method: 'PATCH',
+        headers: {
+          'calendar-id': calendarId,
+        },
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useAddPostalAddressMutation } = postalAddressApi;
+export const { useAddPostalAddressMutation, useUpdatePostalAddressMutation } = postalAddressApi;

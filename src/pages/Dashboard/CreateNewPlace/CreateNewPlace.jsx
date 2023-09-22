@@ -62,7 +62,7 @@ import {
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { useAddImageMutation } from '../../../services/image';
 import { usePrompt } from '../../../hooks/usePrompt';
-import { useAddPostalAddressMutation } from '../../../services/postalAddress';
+import { useAddPostalAddressMutation, useUpdatePostalAddressMutation } from '../../../services/postalAddress';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 
 const { TextArea } = Input;
@@ -130,6 +130,7 @@ function CreateNewPlace() {
   const [addPostalAddress] = useAddPostalAddressMutation();
   const [getPlace] = useLazyGetPlaceQuery();
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
+  const [updatePostalAddress] = useUpdatePostalAddressMutation();
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -151,7 +152,7 @@ function CreateNewPlace() {
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
-  const addUpdatePlaceApiHandler = (placeObj) => {
+  const addUpdatePlaceApiHandler = (placeObj, postalObj) => {
     var promise = new Promise(function (resolve, reject) {
       if (!placeId || placeId === '') {
         if (artsDataId && artsData) {
@@ -167,52 +168,115 @@ function CreateNewPlace() {
               sameAs: [artsData?.sameAs],
             };
         }
-        addPlace({
-          data: placeObj,
-          calendarId,
-        })
+        addPostalAddress({ data: postalObj, calendarId })
           .unwrap()
           .then((response) => {
-            resolve(response?.id);
-            notification.success({
-              description: t('dashboard.places.createNew.addPlace.notification.addSuccess'),
-              placement: 'top',
-              closeIcon: <></>,
-              maxCount: 1,
-              duration: 3,
-            });
-            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
+            if (response && response?.statusCode == 202) {
+              placeObj = {
+                ...placeObj,
+                postalAddressId: {
+                  entityId: response?.data?.id,
+                },
+              };
+              addPlace({
+                data: placeObj,
+                calendarId,
+              })
+                .unwrap()
+                .then((response) => {
+                  resolve(response?.id);
+                  notification.success({
+                    description: t('dashboard.places.createNew.addPlace.notification.addSuccess'),
+                    placement: 'top',
+                    closeIcon: <></>,
+                    maxCount: 1,
+                    duration: 3,
+                  });
+                  navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
+                })
+                .catch((errorInfo) => {
+                  reject();
+                  console.log(errorInfo);
+                });
+            }
           })
-          .catch((errorInfo) => {
-            reject();
-            console.log(errorInfo);
-          });
+          .catch((error) => console.log(error));
       } else {
         placeObj = {
           ...placeObj,
           sameAs: placeData?.sameAs,
         };
-        updatePlace({
-          data: placeObj,
-          calendarId,
-          placeId,
-        })
-          .unwrap()
-          .then(() => {
-            resolve(placeId);
-            notification.success({
-              description: t('dashboard.places.createNew.addPlace.notification.editSuccess'),
-              placement: 'top',
-              closeIcon: <></>,
-              maxCount: 1,
-              duration: 3,
-            });
-            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
-          })
-          .catch((error) => {
-            reject();
-            console.log(error);
-          });
+        if (!placeData?.address) {
+          addPostalAddress({ data: postalObj, calendarId })
+            .unwrap()
+            .then((response) => {
+              if (response && response?.statusCode == 202) {
+                placeObj = {
+                  ...placeObj,
+                  postalAddressId: {
+                    entityId: response?.data?.id,
+                  },
+                };
+                updatePlace({
+                  data: placeObj,
+                  calendarId,
+                  placeId,
+                })
+                  .unwrap()
+                  .then(() => {
+                    resolve(placeId);
+                    notification.success({
+                      description: t('dashboard.places.createNew.addPlace.notification.editSuccess'),
+                      placement: 'top',
+                      closeIcon: <></>,
+                      maxCount: 1,
+                      duration: 3,
+                    });
+                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
+                  })
+                  .catch((error) => {
+                    reject();
+                    console.log(error);
+                  });
+              }
+            })
+            .catch((error) => console.log(error));
+        } else {
+          updatePostalAddress({ data: postalObj, calendarId, id: placeData?.address?.id })
+            .unwrap()
+            .then((response) => {
+              if (response && response?.statusCode == 202) {
+                placeObj = {
+                  ...placeObj,
+                  postalAddressId: {
+                    entityId: placeData?.address?.id,
+                  },
+                };
+                updatePlace({
+                  data: placeObj,
+                  calendarId,
+                  placeId,
+                })
+                  .unwrap()
+                  .then(() => {
+                    resolve(placeId);
+                    notification.success({
+                      description: t('dashboard.places.createNew.addPlace.notification.editSuccess'),
+                      placement: 'top',
+                      closeIcon: <></>,
+                      maxCount: 1,
+                      duration: 3,
+                    });
+                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
+                  })
+                  .catch((error) => {
+                    reject();
+                    console.log(error);
+                  });
+              }
+            })
+            .catch((error) => console.log(error));
+        }
       }
     });
     return promise;
@@ -369,19 +433,12 @@ function CreateNewPlace() {
                       },
                     };
                   placeObj['image'] = imageCrop;
-                  addPostalAddress({ data: postalObj, calendarId })
-                    .unwrap()
-                    .then((response) => {
-                      if (response && response?.statusCode == 202) {
-                        addUpdatePlaceApiHandler(placeObj)
-                          .then((id) => resolve(id))
-                          .catch((error) => {
-                            reject();
-                            console.log(error);
-                          });
-                      }
-                    })
-                    .catch((error) => console.log(error));
+                  addUpdatePlaceApiHandler(placeObj, postalObj)
+                    .then((id) => resolve(id))
+                    .catch((error) => {
+                      reject();
+                      console.log(error);
+                    });
                 })
                 .catch((error) => {
                   console.log(error);
@@ -394,19 +451,12 @@ function CreateNewPlace() {
               else placeObj['image'] = imageCrop;
             }
 
-            addPostalAddress({ data: postalObj, calendarId })
-              .unwrap()
-              .then((response) => {
-                if (response && response?.statusCode == 202) {
-                  addUpdatePlaceApiHandler(placeObj)
-                    .then((id) => resolve(id))
-                    .catch((error) => {
-                      reject();
-                      console.log(error);
-                    });
-                }
-              })
-              .catch((error) => console.log(error));
+            addUpdatePlaceApiHandler(placeObj, postalObj)
+              .then((id) => resolve(id))
+              .catch((error) => {
+                reject();
+                console.log(error);
+              });
           }
         })
         .catch((error) => {
