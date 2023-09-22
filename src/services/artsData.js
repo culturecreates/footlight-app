@@ -19,3 +19,8 @@ export async function loadArtsDataEntity({ entityId }) {
   const url = `${baseUrl}/${query}`;
   return fetchData(url);
 }
+export async function loadArtsDataPlaceEntity({ entityId }) {
+  const query = `query?adid=${entityId}&format=json&frame=ranked_place_footlight&sparql=ranked_place_footlight`;
+  const url = `${baseUrl}/${query}`;
+  return fetchData(url);
+}

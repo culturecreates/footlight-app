@@ -54,7 +54,7 @@ function SearchPlaces() {
   // handlers
 
   const artsDataClickHandler = async (entity) => {
-    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`, { state: { data: entity } });
+    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}`, { state: { data: entity } });
   };
 
   const searchHandler = (value) => {
@@ -185,7 +185,9 @@ function SearchPlaces() {
                     quickCreateKeyword={quickCreateKeyword}
                     onClick={() => {
                       navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}`, {
-                        name: quickCreateKeyword,
+                        state: {
+                          name: quickCreateKeyword,
+                        },
                       });
                     }}
                   />
