@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Button } from 'antd';
-import Icon, { CalendarOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { CalendarOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import moment from 'moment-timezone';
 import './eventReadOnly.css';
 import { useTranslation } from 'react-i18next';
@@ -27,9 +27,8 @@ import SelectOption from '../../../components/Select/SelectOption';
 import { offerTypes } from '../../../constants/ticketOffers';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
 import { entitiesClass } from '../../../constants/entitiesClass';
-import { useGetEntitiesQuery } from '../../../services/entities';
+// import { useGetEntitiesQuery } from '../../../services/entities';
 import SelectionItem from '../../../components/List/SelectionItem';
-import { ReactComponent as Organizations } from '../../../assets/icons/organisations.svg';
 import Alert from '../../../components/Alert';
 import { eventPublishState, eventPublishStateOptions } from '../../../constants/eventPublishState';
 import { pluralize } from '../../../utils/pluralise';
@@ -61,17 +60,20 @@ function EventReadOnly() {
   query.append('classes', entitiesClass.organization);
   query.append('classes', entitiesClass.person);
 
-  const { currentData: initialEntities, isLoading: initialEntityLoading } = useGetEntitiesQuery({
-    calendarId,
-    searchKey: '',
-    classes: decodeURIComponent(query.toString()),
-    sessionId: timestampRef,
-  });
+  // const { currentData: initialEntities, isLoading: initialEntityLoading } = useGetEntitiesQuery({
+  //   calendarId,
+  //   searchKey: '',
+  //   classes: decodeURIComponent(query.toString()),
+  //   sessionId: timestampRef,
+  // });
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
 
   const { user } = useSelector(getUserDetails);
   const [dateType, setDateType] = useState();
   const [locationPlace, setLocationPlace] = useState();
+  const [selectedOrganizers, setSelectedOrganizers] = useState([]);
+  const [selectedPerformers, setSelectedPerformers] = useState([]);
+  const [selectedSupporters, setSelectedSupporters] = useState([]);
 
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
@@ -96,7 +98,45 @@ function EventReadOnly() {
       setDateType(
         dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
       );
-
+    if (eventData?.organizer) {
+      let initialOrganizers = eventData?.organizer?.map((organizer) => {
+        return {
+          disambiguatingDescription: organizer?.entity?.disambiguatingDescription,
+          id: organizer?.entityId,
+          name: organizer?.entity?.name,
+          type: organizer?.type,
+          logo: organizer?.entity?.logo,
+          image: organizer?.entity?.image,
+        };
+      });
+      setSelectedOrganizers(treeEntitiesOption(initialOrganizers, user, calendarContentLanguage));
+    }
+    if (eventData?.performer) {
+      let initialPerformers = eventData?.performer?.map((performer) => {
+        return {
+          disambiguatingDescription: performer?.entity?.disambiguatingDescription,
+          id: performer?.entityId,
+          name: performer?.entity?.name,
+          type: performer?.type,
+          logo: performer?.entity?.logo,
+          image: performer?.entity?.image,
+        };
+      });
+      setSelectedPerformers(treeEntitiesOption(initialPerformers, user, calendarContentLanguage));
+    }
+    if (eventData?.collaborators) {
+      let initialSupporters = eventData?.collaborators?.map((supporter) => {
+        return {
+          disambiguatingDescription: supporter?.entity?.disambiguatingDescription,
+          id: supporter?.entityId,
+          name: supporter?.entity?.name,
+          type: supporter?.type,
+          logo: supporter?.entity?.logo,
+          image: supporter?.entity?.image,
+        };
+      });
+      setSelectedSupporters(treeEntitiesOption(initialSupporters, user, calendarContentLanguage));
+    }
     if (initialPlace && initialPlace?.length > 0) {
       initialPlace[0] = {
         ...initialPlace[0],
@@ -143,8 +183,7 @@ function EventReadOnly() {
 
   return (
     !isLoading &&
-    !taxonomyLoading &&
-    !initialEntityLoading && (
+    !taxonomyLoading && (
       <div>
         <Row gutter={[32, 24]} className="read-only-wrapper">
           <Col span={24}>
@@ -243,6 +282,7 @@ function EventReadOnly() {
                       <TreeSelectOption
                         style={{ marginBottom: '1rem' }}
                         bordered={false}
+                        showArrow={false}
                         open={false}
                         disabled
                         treeData={treeTaxonomyOptions(
@@ -279,6 +319,7 @@ function EventReadOnly() {
                         style={{ marginBottom: '1rem' }}
                         bordered={false}
                         open={false}
+                        showArrow={false}
                         disabled
                         treeData={treeTaxonomyOptions(
                           allTaxonomyData,
@@ -328,6 +369,7 @@ function EventReadOnly() {
                               key={index}
                               style={{ marginBottom: '1rem' }}
                               bordered={false}
+                              showArrow={false}
                               open={false}
                               disabled
                               defaultValue={initialValues}
@@ -647,46 +689,19 @@ function EventReadOnly() {
                         {t('dashboard.events.addEditEvent.otherInformation.organizer.title')}
                       </p>
 
-                      <TreeSelectOption
-                        filterTreeNode={false}
-                        defaultValue={eventData?.organizer?.map((organizer) => organizer?.entityId)}
-                        disabled={true}
-                        bordered={false}
-                        treeData={treeEntitiesOption(initialEntities, user, calendarContentLanguage)}
-                        tagRender={(props) => {
-                          const { value } = props;
-                          let entity = initialEntities?.filter((entity) => entity?.id == value);
-                          return (
-                            entity &&
-                            entity[0] && (
-                              <SelectionItem
-                                icon={
-                                  entity[0]?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
-                                    <Icon component={Organizations} style={{ color: '#607EFC' }} />
-                                  ) : (
-                                    entity[0]?.type?.toUpperCase() == taxonomyClass.PERSON && (
-                                      <UserOutlined style={{ color: '#607EFC' }} />
-                                    )
-                                  )
-                                }
-                                name={contentLanguageBilingual({
-                                  en: entity[0]?.name?.en,
-                                  fr: entity[0]?.name?.fr,
-                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                  calendarContentLanguage: calendarContentLanguage,
-                                })}
-                                description={contentLanguageBilingual({
-                                  en: entity[0]?.disambiguatingDescription?.en,
-                                  fr: entity[0]?.disambiguatingDescription?.fr,
-                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                  calendarContentLanguage: calendarContentLanguage,
-                                })}
-                                bordered
-                              />
-                            )
-                          );
-                        }}
-                      />
+                      {selectedOrganizers?.map((organizer, index) => {
+                        return (
+                          <SelectionItem
+                            key={index}
+                            icon={organizer?.label?.props?.icon}
+                            name={organizer?.name}
+                            description={organizer?.description}
+                            bordered
+                            closable={false}
+                            itemWidth="100%"
+                          />
+                        );
+                      })}
                     </>
                   )}
                   {eventData?.contactPoint && (
@@ -752,46 +767,19 @@ function EventReadOnly() {
                         {t('dashboard.events.addEditEvent.otherInformation.performer.title')}
                       </p>
 
-                      <TreeSelectOption
-                        filterTreeNode={false}
-                        defaultValue={eventData?.performer?.map((performer) => performer?.entityId)}
-                        disabled={true}
-                        bordered={false}
-                        treeData={treeEntitiesOption(initialEntities, user, calendarContentLanguage)}
-                        tagRender={(props) => {
-                          const { value } = props;
-                          let entity = initialEntities?.filter((entity) => entity?.id == value);
-                          return (
-                            entity &&
-                            entity[0] && (
-                              <SelectionItem
-                                icon={
-                                  entity[0]?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
-                                    <Icon component={Organizations} style={{ color: '#607EFC' }} />
-                                  ) : (
-                                    entity[0]?.type?.toUpperCase() == taxonomyClass.PERSON && (
-                                      <UserOutlined style={{ color: '#607EFC' }} />
-                                    )
-                                  )
-                                }
-                                name={contentLanguageBilingual({
-                                  en: entity[0]?.name?.en,
-                                  fr: entity[0]?.name?.fr,
-                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                  calendarContentLanguage: calendarContentLanguage,
-                                })}
-                                description={contentLanguageBilingual({
-                                  en: entity[0]?.disambiguatingDescription?.en,
-                                  fr: entity[0]?.disambiguatingDescription?.fr,
-                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                  calendarContentLanguage: calendarContentLanguage,
-                                })}
-                                bordered
-                              />
-                            )
-                          );
-                        }}
-                      />
+                      {selectedPerformers?.map((performer, index) => {
+                        return (
+                          <SelectionItem
+                            key={index}
+                            icon={performer?.label?.props?.icon}
+                            name={performer?.name}
+                            description={performer?.description}
+                            bordered
+                            closable={false}
+                            itemWidth="100%"
+                          />
+                        );
+                      })}
                     </>
                   )}
                   {eventData?.collaborators?.length > 0 && (
@@ -800,46 +788,19 @@ function EventReadOnly() {
                         {t('dashboard.events.addEditEvent.otherInformation.supporter.title')}
                       </p>
 
-                      <TreeSelectOption
-                        filterTreeNode={false}
-                        defaultValue={eventData?.collaborators?.map((collaborator) => collaborator?.entityId)}
-                        disabled={true}
-                        bordered={false}
-                        treeData={treeEntitiesOption(initialEntities, user, calendarContentLanguage)}
-                        tagRender={(props) => {
-                          const { value } = props;
-                          let entity = initialEntities?.filter((entity) => entity?.id == value);
-                          return (
-                            entity &&
-                            entity[0] && (
-                              <SelectionItem
-                                icon={
-                                  entity[0]?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
-                                    <Icon component={Organizations} style={{ color: '#607EFC' }} />
-                                  ) : (
-                                    entity[0]?.type?.toUpperCase() == taxonomyClass.PERSON && (
-                                      <UserOutlined style={{ color: '#607EFC' }} />
-                                    )
-                                  )
-                                }
-                                name={contentLanguageBilingual({
-                                  en: entity[0]?.name?.en,
-                                  fr: entity[0]?.name?.fr,
-                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                  calendarContentLanguage: calendarContentLanguage,
-                                })}
-                                description={contentLanguageBilingual({
-                                  en: entity[0]?.disambiguatingDescription?.en,
-                                  fr: entity[0]?.disambiguatingDescription?.fr,
-                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                  calendarContentLanguage: calendarContentLanguage,
-                                })}
-                                bordered
-                              />
-                            )
-                          );
-                        }}
-                      />
+                      {selectedSupporters?.map((supporter, index) => {
+                        return (
+                          <SelectionItem
+                            key={index}
+                            icon={supporter?.label?.props?.icon}
+                            name={supporter?.name}
+                            description={supporter?.description}
+                            bordered
+                            itemWidth="100%"
+                            closable={false}
+                          />
+                        );
+                      })}
                     </>
                   )}
                   {eventData?.url && eventData?.url?.uri && (
@@ -911,6 +872,7 @@ function EventReadOnly() {
                         style={{ marginBottom: '1rem' }}
                         bordered={false}
                         open={false}
+                        showArrow={false}
                         disabled
                         treeData={treeTaxonomyOptions(
                           allTaxonomyData,
@@ -953,6 +915,7 @@ function EventReadOnly() {
                           style={{ marginBottom: '1rem' }}
                           bordered={false}
                           open={false}
+                          showArrow={false}
                           disabled
                           treeData={treeTaxonomyOptions(
                             allTaxonomyData,

@@ -670,1050 +670,1070 @@ function CreateNewPlace() {
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <div className="add-edit-wrapper add-organization-wrapper">
         <Form form={form} layout="vertical" name="organization">
-          <Row gutter={[32, 2]}>
+          <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
-              <Row justify="space-between">
-                <Col>
-                  <div className="button-container">
-                    <Button
-                      type="link"
-                      onClick={() => navigate(-1)}
-                      icon={<LeftOutlined style={{ marginRight: '17px' }} />}>
-                      {t('dashboard.places.createNew.search.breadcrumb')}
-                    </Button>
-                  </div>
+              <Row gutter={[32, 2]}>
+                <Col span={24}>
+                  <Row justify="space-between">
+                    <Col>
+                      <div className="button-container">
+                        <Button
+                          type="link"
+                          onClick={() => navigate(-1)}
+                          icon={<LeftOutlined style={{ marginRight: '17px' }} />}>
+                          {t('dashboard.places.createNew.search.breadcrumb')}
+                        </Button>
+                      </div>
+                    </Col>
+                    <Col>
+                      <div className="add-event-button-wrap">
+                        <Form.Item>
+                          <PrimaryButton
+                            label={t('dashboard.events.addEditEvent.saveOptions.save')}
+                            onClick={(e) => onSaveHandler(e)}
+                            disabled={addImageLoading || addPlaceLoading || updatePlaceLoading ? true : false}
+                          />
+                        </Form.Item>
+                      </div>
+                    </Col>
+                  </Row>
                 </Col>
+
                 <Col>
-                  <div className="add-event-button-wrap">
-                    <Form.Item>
-                      <PrimaryButton
-                        label={t('dashboard.events.addEditEvent.saveOptions.save')}
-                        onClick={(e) => onSaveHandler(e)}
-                        disabled={addImageLoading || addPlaceLoading || updatePlaceLoading ? true : false}
-                      />
-                    </Form.Item>
+                  <div className="add-edit-event-heading">
+                    <h4>
+                      {placeId
+                        ? t('dashboard.places.createNew.addPlace.editPlace')
+                        : t('dashboard.places.createNew.addPlace.newPlace')}
+                    </h4>
                   </div>
                 </Col>
               </Row>
             </Col>
-
-            <Col>
-              <div className="add-edit-event-heading">
-                <h4>
-                  {placeId
-                    ? t('dashboard.places.createNew.addPlace.editPlace')
-                    : t('dashboard.places.createNew.addPlace.newPlace')}
-                </h4>
-              </div>
-            </Col>
-          </Row>
-          <Card>
-            <>
-              {artsDataLinkChecker(placeData?.sameAs) && (
-                <Row>
-                  <Col span={24}>
-                    <p className="add-entity-label">
-                      {t('dashboard.organization.createNew.addOrganization.dataSource')}
-                    </p>
-                  </Col>
-                  <Col span={24}>
-                    <ArtsDataInfo
-                      artsDataLink={artsDataLinkChecker(placeData?.sameAs)}
-                      name={contentLanguageBilingual({
-                        en: placeData?.name?.en,
-                        fr: placeData?.name?.fr,
-                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                        calendarContentLanguage: calendarContentLanguage,
-                      })}
-                      disambiguatingDescription={contentLanguageBilingual({
-                        en: placeData?.disambiguatingDescription?.en,
-                        fr: placeData?.disambiguatingDescription?.fr,
-                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                        calendarContentLanguage: calendarContentLanguage,
-                      })}
-                    />
-                  </Col>
-                  <Col span={24}>
-                    <div style={{ display: 'inline' }}>
-                      <span className="add-event-date-heading">
-                        {t('dashboard.places.createNew.addPlace.question.firstPart')}
-                      </span>
-                      <span
-                        className="add-event-date-heading"
-                        style={{
-                          color: '#1b3de6',
-                          textDecoration: 'underline',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => {
-                          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`);
-                        }}>
-                        {t('dashboard.places.createNew.addPlace.question.secondPart')}
-                      </span>
-                      <span className="add-event-date-heading">
-                        {t('dashboard.places.createNew.addPlace.question.thirdPart')}
-                      </span>
-                    </div>
-                  </Col>
-                  <Col span={24}>
-                    <div>
-                      <br />
-                    </div>
-                  </Col>
-                </Row>
-              )}
-              <Form.Item label={t('dashboard.places.createNew.addPlace.name.name')} required={true}>
-                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                  <BilingualInput fieldData={placeData?.name}>
-                    <Form.Item
-                      name={formFieldNames.FRENCH}
-                      key={contentLanguage.FRENCH}
-                      initialValue={placeData?.name?.fr}
-                      dependencies={[formFieldNames.ENGLISH]}
-                      rules={[
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (value || getFieldValue(formFieldNames.ENGLISH)) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(
-                                new Error(t('dashboard.places.createNew.addPlace.validations.nameRequired')),
-                              );
-                          },
-                        }),
-                      ]}>
-                      <TextArea
-                        autoSize
-                        autoComplete="off"
-                        placeholder={t('dashboard.places.createNew.addPlace.name.placeholder.french')}
-                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                        size="large"
+            <Card>
+              <>
+                {artsDataLinkChecker(placeData?.sameAs) && (
+                  <Row>
+                    <Col span={24}>
+                      <p className="add-entity-label">
+                        {t('dashboard.organization.createNew.addOrganization.dataSource')}
+                      </p>
+                    </Col>
+                    <Col span={24}>
+                      <ArtsDataInfo
+                        artsDataLink={artsDataLinkChecker(placeData?.sameAs)}
+                        name={contentLanguageBilingual({
+                          en: placeData?.name?.en,
+                          fr: placeData?.name?.fr,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                          calendarContentLanguage: calendarContentLanguage,
+                        })}
+                        disambiguatingDescription={contentLanguageBilingual({
+                          en: placeData?.disambiguatingDescription?.en,
+                          fr: placeData?.disambiguatingDescription?.fr,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                          calendarContentLanguage: calendarContentLanguage,
+                        })}
                       />
-                    </Form.Item>
-                    <Form.Item
-                      name={formFieldNames.ENGLISH}
-                      key={contentLanguage.ENGLISH}
-                      initialValue={placeData?.name?.en}
-                      dependencies={[formFieldNames.FRENCH]}
-                      rules={[
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (value || getFieldValue(formFieldNames.FRENCH)) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(
-                                new Error(t('dashboard.places.createNew.addPlace.validations.nameRequired')),
-                              );
-                          },
-                        }),
-                      ]}>
-                      <TextArea
-                        autoSize
-                        autoComplete="off"
-                        placeholder={t('dashboard.places.createNew.addPlace.name.placeholder.english')}
-                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                        size="large"
-                      />
-                    </Form.Item>
-                  </BilingualInput>
-                </ContentLanguageInput>
-              </Form.Item>
+                    </Col>
+                    <Col span={24}>
+                      <div style={{ display: 'inline' }}>
+                        <span className="add-event-date-heading">
+                          {t('dashboard.places.createNew.addPlace.question.firstPart')}
+                        </span>
+                        <span
+                          className="add-event-date-heading"
+                          style={{
+                            color: '#1b3de6',
+                            textDecoration: 'underline',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                          }}
+                          onClick={() => {
+                            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`);
+                          }}>
+                          {t('dashboard.places.createNew.addPlace.question.secondPart')}
+                        </span>
+                        <span className="add-event-date-heading">
+                          {t('dashboard.places.createNew.addPlace.question.thirdPart')}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col span={24}>
+                      <div>
+                        <br />
+                      </div>
+                    </Col>
+                  </Row>
+                )}
+                <Form.Item label={t('dashboard.places.createNew.addPlace.name.name')} required={true}>
+                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                    <BilingualInput fieldData={placeData?.name}>
+                      <Form.Item
+                        name={formFieldNames.FRENCH}
+                        key={contentLanguage.FRENCH}
+                        initialValue={placeData?.name?.fr}
+                        dependencies={[formFieldNames.ENGLISH]}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (value || getFieldValue(formFieldNames.ENGLISH)) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(
+                                  new Error(t('dashboard.places.createNew.addPlace.validations.nameRequired')),
+                                );
+                            },
+                          }),
+                        ]}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          placeholder={t('dashboard.places.createNew.addPlace.name.placeholder.french')}
+                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          size="large"
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        name={formFieldNames.ENGLISH}
+                        key={contentLanguage.ENGLISH}
+                        initialValue={placeData?.name?.en}
+                        dependencies={[formFieldNames.FRENCH]}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (value || getFieldValue(formFieldNames.FRENCH)) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(
+                                  new Error(t('dashboard.places.createNew.addPlace.validations.nameRequired')),
+                                );
+                            },
+                          }),
+                        ]}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          placeholder={t('dashboard.places.createNew.addPlace.name.placeholder.english')}
+                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          size="large"
+                        />
+                      </Form.Item>
+                    </BilingualInput>
+                  </ContentLanguageInput>
+                </Form.Item>
 
-              <Form.Item
-                name={formFieldNames.TYPE}
-                label={taxonomyDetails(allTaxonomyData?.data, user, placeTaxonomyMappedFieldTypes.TYPE, 'name', false)}
-                initialValue={placeData?.additionalType?.map((type) => {
-                  return type?.entityId;
-                })}
-                required={true}>
-                <TreeSelectOption
-                  placeholder={t('dashboard.places.createNew.addPlace.placeType.placeholder')}
-                  allowClear
-                  treeDefaultExpandAll
-                  notFoundContent={<NoContent />}
-                  clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                  treeData={treeTaxonomyOptions(
-                    allTaxonomyData,
+                <Form.Item
+                  name={formFieldNames.TYPE}
+                  label={taxonomyDetails(
+                    allTaxonomyData?.data,
                     user,
                     placeTaxonomyMappedFieldTypes.TYPE,
+                    'name',
                     false,
-                    calendarContentLanguage,
                   )}
-                  tagRender={(props) => {
-                    const { label, closable, onClose } = props;
-                    return (
-                      <Tags
-                        closable={closable}
-                        onClose={onClose}
-                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                        {label}
-                      </Tags>
-                    );
-                  }}
-                />
-              </Form.Item>
-              <Form.Item
-                label={t('dashboard.places.createNew.addPlace.disambiguatingDescription.disambiguatingDescription')}>
-                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                  <BilingualInput fieldData={placeData?.disambiguatingDescription}>
-                    <Form.Item
-                      name={formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH}
-                      key={contentLanguage.FRENCH}
-                      initialValue={placeData?.disambiguatingDescription?.fr}
-                      dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH]}
-                      rules={[
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (value || getFieldValue(formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH)) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
-                          },
-                        }),
-                      ]}>
-                      <TextArea
-                        autoSize
-                        autoComplete="off"
-                        placeholder={t(
-                          'dashboard.places.createNew.addPlace.disambiguatingDescription.placeholder.french',
-                        )}
-                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                        size="large"
+                  initialValue={placeData?.additionalType?.map((type) => {
+                    return type?.entityId;
+                  })}
+                  required={true}>
+                  <TreeSelectOption
+                    placeholder={t('dashboard.places.createNew.addPlace.placeType.placeholder')}
+                    allowClear
+                    treeDefaultExpandAll
+                    notFoundContent={<NoContent />}
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    treeData={treeTaxonomyOptions(
+                      allTaxonomyData,
+                      user,
+                      placeTaxonomyMappedFieldTypes.TYPE,
+                      false,
+                      calendarContentLanguage,
+                    )}
+                    tagRender={(props) => {
+                      const { label, closable, onClose } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label={t('dashboard.places.createNew.addPlace.disambiguatingDescription.disambiguatingDescription')}>
+                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                    <BilingualInput fieldData={placeData?.disambiguatingDescription}>
+                      <Form.Item
+                        name={formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH}
+                        key={contentLanguage.FRENCH}
+                        initialValue={placeData?.disambiguatingDescription?.fr}
+                        dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH]}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (value || getFieldValue(formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH)) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                            },
+                          }),
+                        ]}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          placeholder={t(
+                            'dashboard.places.createNew.addPlace.disambiguatingDescription.placeholder.french',
+                          )}
+                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          size="large"
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        name={formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH}
+                        key={contentLanguage.ENGLISH}
+                        initialValue={placeData?.disambiguatingDescription?.en}
+                        dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH]}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (value || getFieldValue(formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH)) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                            },
+                          }),
+                        ]}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          placeholder={t(
+                            'dashboard.places.createNew.addPlace.disambiguatingDescription.placeholder.english',
+                          )}
+                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          size="large"
+                        />
+                      </Form.Item>
+                    </BilingualInput>
+                  </ContentLanguageInput>
+                </Form.Item>
+                <Form.Item label={t('dashboard.places.createNew.addPlace.description.description')}>
+                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                    <BilingualInput fieldData={placeData?.description}>
+                      <TextEditor
+                        formName={formFieldNames.EDITOR_FRENCH}
+                        key={contentLanguage.FRENCH}
+                        calendarContentLanguage={calendarContentLanguage}
+                        initialValue={placeData?.description?.fr}
+                        dependencies={[formFieldNames.EDITOR_ENGLISH]}
+                        currentReactQuillRef={reactQuillRefFr}
+                        editorLanguage={'fr'}
+                        placeholder={t('dashboard.events.addEditEvent.otherInformation.description.frenchPlaceholder')}
+                        descriptionMinimumWordCount={descriptionMinimumWordCount}
+                        rules={[
+                          () => ({
+                            validator() {
+                              if (
+                                reactQuillRefFr?.current?.unprivilegedEditor?.getLength() > 1 ||
+                                reactQuillRefEn?.current?.unprivilegedEditor?.getLength() > 1
+                              ) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(
+                                  new Error(
+                                    calendarContentLanguage === contentLanguage.ENGLISH ||
+                                    calendarContentLanguage === contentLanguage.FRENCH
+                                      ? t(
+                                          'dashboard.events.addEditEvent.validations.otherInformation.unilingualEmptyDescription',
+                                        )
+                                      : calendarContentLanguage === contentLanguage.BILINGUAL &&
+                                        t(
+                                          'dashboard.events.addEditEvent.validations.otherInformation.emptyDescription',
+                                          {
+                                            wordCount: descriptionMinimumWordCount,
+                                          },
+                                        ),
+                                  ),
+                                );
+                            },
+                          }),
+                          () => ({
+                            validator() {
+                              if (
+                                reactQuillRefFr?.current?.unprivilegedEditor
+                                  ?.getText()
+                                  .split(' ')
+                                  ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
+                              ) {
+                                return Promise.resolve();
+                              } else if (
+                                reactQuillRefEn?.current?.unprivilegedEditor
+                                  ?.getText()
+                                  .split(' ')
+                                  ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
+                              )
+                                return Promise.resolve();
+                              else
+                                return Promise.reject(
+                                  new Error(
+                                    calendarContentLanguage === contentLanguage.ENGLISH ||
+                                    calendarContentLanguage === contentLanguage.FRENCH
+                                      ? t(
+                                          'dashboard.events.addEditEvent.validations.otherInformation.unilingualDescriptionShort',
+                                        )
+                                      : calendarContentLanguage === contentLanguage.BILINGUAL &&
+                                        t('dashboard.events.addEditEvent.validations.otherInformation.frenchShort'),
+                                  ),
+                                );
+                            },
+                          }),
+                        ]}
                       />
-                    </Form.Item>
-                    <Form.Item
-                      name={formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH}
-                      key={contentLanguage.ENGLISH}
-                      initialValue={placeData?.disambiguatingDescription?.en}
-                      dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH]}
-                      rules={[
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (value || getFieldValue(formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH)) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
-                          },
-                        }),
-                      ]}>
-                      <TextArea
-                        autoSize
-                        autoComplete="off"
-                        placeholder={t(
-                          'dashboard.places.createNew.addPlace.disambiguatingDescription.placeholder.english',
-                        )}
-                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                        size="large"
-                      />
-                    </Form.Item>
-                  </BilingualInput>
-                </ContentLanguageInput>
-              </Form.Item>
-              <Form.Item label={t('dashboard.places.createNew.addPlace.description.description')}>
-                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                  <BilingualInput fieldData={placeData?.description}>
-                    <TextEditor
-                      formName={formFieldNames.EDITOR_FRENCH}
-                      key={contentLanguage.FRENCH}
-                      calendarContentLanguage={calendarContentLanguage}
-                      initialValue={placeData?.description?.fr}
-                      dependencies={[formFieldNames.EDITOR_ENGLISH]}
-                      currentReactQuillRef={reactQuillRefFr}
-                      editorLanguage={'fr'}
-                      placeholder={t('dashboard.events.addEditEvent.otherInformation.description.frenchPlaceholder')}
-                      descriptionMinimumWordCount={descriptionMinimumWordCount}
-                      rules={[
-                        () => ({
-                          validator() {
-                            if (
-                              reactQuillRefFr?.current?.unprivilegedEditor?.getLength() > 1 ||
-                              reactQuillRefEn?.current?.unprivilegedEditor?.getLength() > 1
-                            ) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(
-                                new Error(
-                                  calendarContentLanguage === contentLanguage.ENGLISH ||
-                                  calendarContentLanguage === contentLanguage.FRENCH
-                                    ? t(
-                                        'dashboard.events.addEditEvent.validations.otherInformation.unilingualEmptyDescription',
-                                      )
-                                    : calendarContentLanguage === contentLanguage.BILINGUAL &&
-                                      t('dashboard.events.addEditEvent.validations.otherInformation.emptyDescription', {
-                                        wordCount: descriptionMinimumWordCount,
-                                      }),
-                                ),
-                              );
-                          },
-                        }),
-                        () => ({
-                          validator() {
-                            if (
-                              reactQuillRefFr?.current?.unprivilegedEditor
-                                ?.getText()
-                                .split(' ')
-                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
-                            ) {
-                              return Promise.resolve();
-                            } else if (
-                              reactQuillRefEn?.current?.unprivilegedEditor
-                                ?.getText()
-                                .split(' ')
-                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
-                            )
-                              return Promise.resolve();
-                            else
-                              return Promise.reject(
-                                new Error(
-                                  calendarContentLanguage === contentLanguage.ENGLISH ||
-                                  calendarContentLanguage === contentLanguage.FRENCH
-                                    ? t(
-                                        'dashboard.events.addEditEvent.validations.otherInformation.unilingualDescriptionShort',
-                                      )
-                                    : calendarContentLanguage === contentLanguage.BILINGUAL &&
-                                      t('dashboard.events.addEditEvent.validations.otherInformation.frenchShort'),
-                                ),
-                              );
-                          },
-                        }),
-                      ]}
-                    />
 
-                    <TextEditor
-                      formName={formFieldNames.EDITOR_ENGLISH}
-                      key={contentLanguage.ENGLISH}
-                      initialValue={placeData?.description?.en}
-                      calendarContentLanguage={calendarContentLanguage}
-                      dependencies={[formFieldNames.EDITOR_FRENCH]}
-                      currentReactQuillRef={reactQuillRefEn}
-                      editorLanguage={'en'}
-                      placeholder={t('dashboard.events.addEditEvent.otherInformation.description.englishPlaceholder')}
-                      descriptionMinimumWordCount={descriptionMinimumWordCount}
-                      rules={[
-                        () => ({
-                          validator() {
-                            if (
-                              reactQuillRefFr?.current?.unprivilegedEditor?.getLength() > 1 ||
-                              reactQuillRefEn?.current?.unprivilegedEditor?.getLength() > 1
-                            ) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(
-                                new Error(
-                                  calendarContentLanguage === contentLanguage.ENGLISH ||
-                                  calendarContentLanguage === contentLanguage.FRENCH
-                                    ? t(
-                                        'dashboard.events.addEditEvent.validations.otherInformation.unilingualEmptyDescription',
-                                      )
-                                    : calendarContentLanguage === contentLanguage.BILINGUAL &&
-                                      t('dashboard.events.addEditEvent.validations.otherInformation.emptyDescription', {
-                                        wordCount: descriptionMinimumWordCount,
-                                      }),
-                                ),
-                              );
-                          },
-                        }),
-                        () => ({
-                          validator() {
-                            if (
-                              reactQuillRefEn?.current?.unprivilegedEditor
-                                ?.getText()
-                                .split(' ')
-                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
-                            ) {
-                              return Promise.resolve();
-                            } else if (
-                              reactQuillRefFr?.current?.unprivilegedEditor
-                                ?.getText()
-                                .split(' ')
-                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
-                            )
-                              return Promise.resolve();
-                            else
-                              return Promise.reject(
-                                new Error(
-                                  calendarContentLanguage === contentLanguage.ENGLISH ||
-                                  calendarContentLanguage === contentLanguage.FRENCH
-                                    ? t(
-                                        'dashboard.events.addEditEvent.validations.otherInformation.unilingualDescriptionShort',
-                                      )
-                                    : calendarContentLanguage === contentLanguage.BILINGUAL &&
-                                      t('dashboard.events.addEditEvent.validations.otherInformation.englishShort'),
-                                ),
-                              );
-                          },
-                        }),
-                      ]}
-                    />
-                  </BilingualInput>
-                </ContentLanguageInput>
-              </Form.Item>
-              <Form.Item
-                label={t('dashboard.places.createNew.addPlace.image.image')}
-                name={formFieldNames.DRAGGER_WRAP}
-                className="draggerWrap"
-                initialValue={placeData?.image && placeData?.image?.original?.uri}
-                {...(isAddImageError && {
-                  help: t('dashboard.events.addEditEvent.validations.errorImage'),
-                  validateStatus: 'error',
+                      <TextEditor
+                        formName={formFieldNames.EDITOR_ENGLISH}
+                        key={contentLanguage.ENGLISH}
+                        initialValue={placeData?.description?.en}
+                        calendarContentLanguage={calendarContentLanguage}
+                        dependencies={[formFieldNames.EDITOR_FRENCH]}
+                        currentReactQuillRef={reactQuillRefEn}
+                        editorLanguage={'en'}
+                        placeholder={t('dashboard.events.addEditEvent.otherInformation.description.englishPlaceholder')}
+                        descriptionMinimumWordCount={descriptionMinimumWordCount}
+                        rules={[
+                          () => ({
+                            validator() {
+                              if (
+                                reactQuillRefFr?.current?.unprivilegedEditor?.getLength() > 1 ||
+                                reactQuillRefEn?.current?.unprivilegedEditor?.getLength() > 1
+                              ) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(
+                                  new Error(
+                                    calendarContentLanguage === contentLanguage.ENGLISH ||
+                                    calendarContentLanguage === contentLanguage.FRENCH
+                                      ? t(
+                                          'dashboard.events.addEditEvent.validations.otherInformation.unilingualEmptyDescription',
+                                        )
+                                      : calendarContentLanguage === contentLanguage.BILINGUAL &&
+                                        t(
+                                          'dashboard.events.addEditEvent.validations.otherInformation.emptyDescription',
+                                          {
+                                            wordCount: descriptionMinimumWordCount,
+                                          },
+                                        ),
+                                  ),
+                                );
+                            },
+                          }),
+                          () => ({
+                            validator() {
+                              if (
+                                reactQuillRefEn?.current?.unprivilegedEditor
+                                  ?.getText()
+                                  .split(' ')
+                                  ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
+                              ) {
+                                return Promise.resolve();
+                              } else if (
+                                reactQuillRefFr?.current?.unprivilegedEditor
+                                  ?.getText()
+                                  .split(' ')
+                                  ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
+                              )
+                                return Promise.resolve();
+                              else
+                                return Promise.reject(
+                                  new Error(
+                                    calendarContentLanguage === contentLanguage.ENGLISH ||
+                                    calendarContentLanguage === contentLanguage.FRENCH
+                                      ? t(
+                                          'dashboard.events.addEditEvent.validations.otherInformation.unilingualDescriptionShort',
+                                        )
+                                      : calendarContentLanguage === contentLanguage.BILINGUAL &&
+                                        t('dashboard.events.addEditEvent.validations.otherInformation.englishShort'),
+                                  ),
+                                );
+                            },
+                          }),
+                        ]}
+                      />
+                    </BilingualInput>
+                  </ContentLanguageInput>
+                </Form.Item>
+                <Form.Item
+                  label={t('dashboard.places.createNew.addPlace.image.image')}
+                  name={formFieldNames.DRAGGER_WRAP}
+                  className="draggerWrap"
+                  initialValue={placeData?.image && placeData?.image?.original?.uri}
+                  {...(isAddImageError && {
+                    help: t('dashboard.events.addEditEvent.validations.errorImage'),
+                    validateStatus: 'error',
+                  })}
+                  rules={[
+                    ({ getFieldValue }) => ({
+                      validator() {
+                        if (
+                          (getFieldValue(formFieldNames.DRAGGER) != undefined &&
+                            getFieldValue(formFieldNames.DRAGGER)?.length > 0) ||
+                          (placeData?.image?.original?.uri && !getFieldValue(formFieldNames.DRAGGER)) ||
+                          (placeData?.image?.original?.uri && getFieldValue(formFieldNames.DRAGGER)?.length > 0)
+                        ) {
+                          return Promise.resolve();
+                        } else
+                          return Promise.reject(
+                            new Error(t('dashboard.events.addEditEvent.validations.otherInformation.emptyImage')),
+                          );
+                      },
+                    }),
+                  ]}>
+                  <Row>
+                    <Col>
+                      <p className="add-event-date-heading">
+                        {t('dashboard.places.createNew.addPlace.image.subheading')}
+                      </p>
+                    </Col>
+                  </Row>
+                  <ImageUpload
+                    imageUrl={placeData?.image?.large?.uri}
+                    originalImageUrl={placeData?.image?.original?.uri}
+                    imageReadOnly={false}
+                    preview={true}
+                    setImageCropOpen={setImageCropOpen}
+                    imageCropOpen={imageCropOpen}
+                    form={form}
+                    eventImageData={placeData?.image}
+                    largeAspectRatio={
+                      currentCalendarData?.imageConfig?.length > 0
+                        ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio
+                        : null
+                    }
+                    thumbnailAspectRatio={
+                      currentCalendarData?.imageConfig?.length > 0
+                        ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio
+                        : null
+                    }
+                    isCrop={featureFlags.imageCropFeature}
+                  />
+                </Form.Item>
+                {allTaxonomyData?.data?.map((taxonomy, index) => {
+                  if (taxonomy?.isDynamicField) {
+                    let initialValues;
+                    placeData?.dynamicFields?.forEach((dynamicField) => {
+                      if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
+                    });
+                    return (
+                      <Form.Item
+                        key={index}
+                        name={[formFieldNames.DYNAMIC_FIELS, taxonomy?.id]}
+                        label={bilingual({
+                          en: taxonomy?.name?.en,
+                          fr: taxonomy?.name?.fr,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                        })}
+                        initialValue={initialValues}>
+                        <TreeSelectOption
+                          allowClear
+                          treeDefaultExpandAll
+                          notFoundContent={<NoContent />}
+                          clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                          treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
+                          tagRender={(props) => {
+                            const { label, closable, onClose } = props;
+                            return (
+                              <Tags
+                                closable={closable}
+                                onClose={onClose}
+                                closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                                {label}
+                              </Tags>
+                            );
+                          }}
+                        />
+                      </Form.Item>
+                    );
+                  }
                 })}
-                rules={[
-                  ({ getFieldValue }) => ({
-                    validator() {
-                      if (
-                        (getFieldValue(formFieldNames.DRAGGER) != undefined &&
-                          getFieldValue(formFieldNames.DRAGGER)?.length > 0) ||
-                        (placeData?.image?.original?.uri && !getFieldValue(formFieldNames.DRAGGER)) ||
-                        (placeData?.image?.original?.uri && getFieldValue(formFieldNames.DRAGGER)?.length > 0)
-                      ) {
-                        return Promise.resolve();
-                      } else
-                        return Promise.reject(
-                          new Error(t('dashboard.events.addEditEvent.validations.otherInformation.emptyImage')),
-                        );
-                    },
-                  }),
-                ]}>
+              </>
+              <></>
+            </Card>
+            <Card title={t('dashboard.places.createNew.addPlace.address.address')}>
+              <>
                 <Row>
                   <Col>
                     <p className="add-event-date-heading">
-                      {t('dashboard.places.createNew.addPlace.image.subheading')}
+                      {t('dashboard.places.createNew.addPlace.address.subheading')}
                     </p>
                   </Col>
                 </Row>
-                <ImageUpload
-                  imageUrl={placeData?.image?.large?.uri}
-                  originalImageUrl={placeData?.image?.original?.uri}
-                  imageReadOnly={false}
-                  preview={true}
-                  setImageCropOpen={setImageCropOpen}
-                  imageCropOpen={imageCropOpen}
-                  form={form}
-                  eventImageData={placeData?.image}
-                  largeAspectRatio={
-                    currentCalendarData?.imageConfig?.length > 0
-                      ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio
-                      : null
-                  }
-                  thumbnailAspectRatio={
-                    currentCalendarData?.imageConfig?.length > 0
-                      ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio
-                      : null
-                  }
-                  isCrop={featureFlags.imageCropFeature}
-                />
-              </Form.Item>
-              {allTaxonomyData?.data?.map((taxonomy, index) => {
-                if (taxonomy?.isDynamicField) {
-                  let initialValues;
-                  placeData?.dynamicFields?.forEach((dynamicField) => {
-                    if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
-                  });
-                  return (
-                    <Form.Item
-                      key={index}
-                      name={[formFieldNames.DYNAMIC_FIELS, taxonomy?.id]}
-                      label={bilingual({
-                        en: taxonomy?.name?.en,
-                        fr: taxonomy?.name?.fr,
-                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                      })}
-                      initialValue={initialValues}>
-                      <TreeSelectOption
-                        allowClear
-                        treeDefaultExpandAll
-                        notFoundContent={<NoContent />}
-                        clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                        treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
-                        tagRender={(props) => {
-                          const { label, closable, onClose } = props;
-                          return (
-                            <Tags
-                              closable={closable}
-                              onClose={onClose}
-                              closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                              {label}
-                            </Tags>
-                          );
+                <Form.Item name="addressSearch">
+                  <PlacesAutocomplete value={address} onChange={handleChange} onSelect={handleSelect}>
+                    {({ getInputProps, suggestions, getSuggestionItemProps }) => (
+                      <Dropdown
+                        open={dropdownOpen}
+                        overlayClassName="filter-sort-dropdown-wrapper"
+                        getPopupContainer={(trigger) => trigger.parentNode}
+                        menu={{
+                          items: suggestions?.map((suggestion, index) => {
+                            return {
+                              key: index,
+                              label: (
+                                <div {...getSuggestionItemProps(suggestion)} key={index}>
+                                  <span>{suggestion.description}</span>
+                                </div>
+                              ),
+                            };
+                          }),
+                          selectable: true,
                         }}
-                      />
+                        trigger={['click']}>
+                        <StyledInput
+                          autoComplete="off"
+                          {...getInputProps({
+                            placeholder: t('dashboard.events.addEditEvent.location.quickCreatePlace.searchPlaceholder'),
+                          })}
+                          prefix={
+                            <SearchOutlined
+                              className="events-search-icon"
+                              style={{ color: '#B6C1C9', fontSize: '18px' }}
+                            />
+                          }
+                        />
+                      </Dropdown>
+                    )}
+                  </PlacesAutocomplete>
+                </Form.Item>
+                <Form.Item label={t('dashboard.places.createNew.addPlace.address.streetAddress')} required={true}>
+                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                    <BilingualInput fieldData={placeData?.address?.streetAddress}>
+                      <Form.Item
+                        name={formFieldNames.STREET_ADDRESS_FRENCH}
+                        key={contentLanguage.FRENCH}
+                        initialValue={placeData?.address?.streetAddress?.fr}
+                        dependencies={[formFieldNames.STREET_ADDRESS_ENGLISH]}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (value || getFieldValue(formFieldNames.STREET_ADDRESS_ENGLISH)) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                            },
+                          }),
+                        ]}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          placeholder={t('dashboard.places.createNew.addPlace.address.streetAddressPlaceholder.french')}
+                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          size="large"
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        name={formFieldNames.STREET_ADDRESS_ENGLISH}
+                        key={contentLanguage.ENGLISH}
+                        initialValue={placeData?.address?.streetAddress?.en}
+                        dependencies={[formFieldNames.STREET_ADDRESS_FRENCH]}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (value || getFieldValue(formFieldNames.STREET_ADDRESS_FRENCH)) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                            },
+                          }),
+                        ]}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          placeholder={t(
+                            'dashboard.places.createNew.addPlace.address.streetAddressPlaceholder.english',
+                          )}
+                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          size="large"
+                        />
+                      </Form.Item>
+                    </BilingualInput>
+                  </ContentLanguageInput>
+                </Form.Item>
+                <Form.Item label={t('dashboard.places.createNew.addPlace.address.city.city')}>
+                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                    <BilingualInput fieldData={placeData?.address?.addressLocality}>
+                      <Form.Item
+                        name={formFieldNames.CITY_FRENCH}
+                        key={contentLanguage.FRENCH}
+                        initialValue={placeData?.address?.addressLocality?.fr}
+                        dependencies={[formFieldNames.CITY_ENGLISH]}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (value || getFieldValue(formFieldNames.CITY_ENGLISH)) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                            },
+                          }),
+                        ]}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          placeholder={t('dashboard.places.createNew.addPlace.address.city.placeholder.french')}
+                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          size="large"
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        name={formFieldNames.CITY_ENGLISH}
+                        key={contentLanguage.ENGLISH}
+                        initialValue={placeData?.address?.addressLocality?.fr}
+                        dependencies={[formFieldNames.CITY_FRENCH]}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (value || getFieldValue(formFieldNames.CITY_FRENCH)) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                            },
+                          }),
+                        ]}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          placeholder={t('dashboard.places.createNew.addPlace.address.city.placeholder.english')}
+                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          size="large"
+                        />
+                      </Form.Item>
+                    </BilingualInput>
+                  </ContentLanguageInput>
+                </Form.Item>
+                <Form.Item
+                  name={formFieldNames.POSTAL_CODE}
+                  initialValue={placeData?.address?.postalCode}
+                  label={t('dashboard.places.createNew.addPlace.address.postalCode.postalCode')}
+                  rules={[
+                    {
+                      type: 'url',
+                      message: t('dashboard.events.addEditEvent.validations.url'),
+                    },
+                  ]}>
+                  <StyledInput placeholder={t('dashboard.places.createNew.addPlace.address.postalCode.placeholder')} />
+                </Form.Item>
+                <Row gutter={[16, 0]}>
+                  <Col span={12}>
+                    <Form.Item label={t('dashboard.places.createNew.addPlace.address.province.province')}>
+                      <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                        <BilingualInput fieldData={placeData?.address?.addressRegion}>
+                          <Form.Item
+                            name={formFieldNames.PROVINCE_FRENCH}
+                            key={contentLanguage.FRENCH}
+                            initialValue={placeData?.address?.addressRegion?.fr}
+                            dependencies={[formFieldNames.PROVINCE_ENGLISH]}
+                            rules={[
+                              ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                  if (value || getFieldValue(formFieldNames.PROVINCE_ENGLISH)) {
+                                    return Promise.resolve();
+                                  } else
+                                    return Promise.reject(
+                                      new Error(t('dashboard.events.addEditEvent.validations.title')),
+                                    );
+                                },
+                              }),
+                            ]}>
+                            <TextArea
+                              autoSize
+                              autoComplete="off"
+                              placeholder={t('dashboard.places.createNew.addPlace.address.province.placeholder.french')}
+                              style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                              size="large"
+                            />
+                          </Form.Item>
+                          <Form.Item
+                            name={formFieldNames.PROVINCE_ENGLISH}
+                            key={contentLanguage.ENGLISH}
+                            initialValue={placeData?.address?.addressRegion?.en}
+                            dependencies={[formFieldNames.PROVINCE_FRENCH]}
+                            rules={[
+                              ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                  if (value || getFieldValue(formFieldNames.PROVINCE_FRENCH)) {
+                                    return Promise.resolve();
+                                  } else
+                                    return Promise.reject(
+                                      new Error(t('dashboard.events.addEditEvent.validations.title')),
+                                    );
+                                },
+                              }),
+                            ]}>
+                            <TextArea
+                              autoSize
+                              autoComplete="off"
+                              placeholder={t(
+                                'dashboard.places.createNew.addPlace.address.province.placeholder.english',
+                              )}
+                              style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                              size="large"
+                            />
+                          </Form.Item>
+                        </BilingualInput>
+                      </ContentLanguageInput>
                     </Form.Item>
-                  );
-                }
-              })}
-            </>
-            <></>
-          </Card>
-          <Card title={t('dashboard.places.createNew.addPlace.address.address')}>
-            <>
-              <Row>
-                <Col>
-                  <p className="add-event-date-heading">
-                    {t('dashboard.places.createNew.addPlace.address.subheading')}
-                  </p>
-                </Col>
-              </Row>
-              <Form.Item name="addressSearch">
-                <PlacesAutocomplete value={address} onChange={handleChange} onSelect={handleSelect}>
-                  {({ getInputProps, suggestions, getSuggestionItemProps }) => (
-                    <Dropdown
-                      open={dropdownOpen}
-                      overlayClassName="filter-sort-dropdown-wrapper"
-                      getPopupContainer={(trigger) => trigger.parentNode}
-                      menu={{
-                        items: suggestions?.map((suggestion, index) => {
-                          return {
-                            key: index,
-                            label: (
-                              <div {...getSuggestionItemProps(suggestion)} key={index}>
-                                <span>{suggestion.description}</span>
-                              </div>
-                            ),
-                          };
-                        }),
-                        selectable: true,
-                      }}
-                      trigger={['click']}>
-                      <StyledInput
-                        autoComplete="off"
-                        {...getInputProps({
-                          placeholder: t('dashboard.events.addEditEvent.location.quickCreatePlace.searchPlaceholder'),
-                        })}
-                        prefix={
-                          <SearchOutlined
-                            className="events-search-icon"
-                            style={{ color: '#B6C1C9', fontSize: '18px' }}
-                          />
-                        }
-                      />
-                    </Dropdown>
-                  )}
-                </PlacesAutocomplete>
-              </Form.Item>
-              <Form.Item label={t('dashboard.places.createNew.addPlace.address.streetAddress')} required={true}>
-                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                  <BilingualInput fieldData={placeData?.address?.streetAddress}>
-                    <Form.Item
-                      name={formFieldNames.STREET_ADDRESS_FRENCH}
-                      key={contentLanguage.FRENCH}
-                      initialValue={placeData?.address?.streetAddress?.fr}
-                      dependencies={[formFieldNames.STREET_ADDRESS_ENGLISH]}
-                      rules={[
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (value || getFieldValue(formFieldNames.STREET_ADDRESS_ENGLISH)) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
-                          },
-                        }),
-                      ]}>
-                      <TextArea
-                        autoSize
-                        autoComplete="off"
-                        placeholder={t('dashboard.places.createNew.addPlace.address.streetAddressPlaceholder.french')}
-                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                        size="large"
-                      />
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item label={t('dashboard.places.createNew.addPlace.address.country.country')}>
+                      <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                        <BilingualInput fieldData={placeData?.address?.addressCountry}>
+                          <Form.Item
+                            name={formFieldNames.COUNTRY_FRENCH}
+                            key={contentLanguage.FRENCH}
+                            initialValue={placeData?.address?.addressCountry?.fr}
+                            dependencies={[formFieldNames.COUNTRY_ENGLISH]}
+                            rules={[
+                              ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                  if (value || getFieldValue(formFieldNames.COUNTRY_ENGLISH)) {
+                                    return Promise.resolve();
+                                  } else
+                                    return Promise.reject(
+                                      new Error(t('dashboard.events.addEditEvent.validations.title')),
+                                    );
+                                },
+                              }),
+                            ]}>
+                            <TextArea
+                              autoSize
+                              autoComplete="off"
+                              placeholder={t('dashboard.places.createNew.addPlace.address.country.placeholder.french')}
+                              style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                              size="large"
+                            />
+                          </Form.Item>
+                          <Form.Item
+                            name={formFieldNames.COUNTRY_ENGLISH}
+                            key={contentLanguage.ENGLISH}
+                            initialValue={placeData?.address?.addressCountry?.en}
+                            dependencies={[formFieldNames.COUNTRY_FRENCH]}
+                            rules={[
+                              ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                  if (value || getFieldValue(formFieldNames.COUNTRY_FRENCH)) {
+                                    return Promise.resolve();
+                                  } else
+                                    return Promise.reject(
+                                      new Error(t('dashboard.events.addEditEvent.validations.title')),
+                                    );
+                                },
+                              }),
+                            ]}>
+                            <TextArea
+                              autoSize
+                              autoComplete="off"
+                              placeholder={t('dashboard.places.createNew.addPlace.address.country.placeholder.english')}
+                              style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                              size="large"
+                            />
+                          </Form.Item>
+                        </BilingualInput>
+                      </ContentLanguageInput>
                     </Form.Item>
-                    <Form.Item
-                      name={formFieldNames.STREET_ADDRESS_ENGLISH}
-                      key={contentLanguage.ENGLISH}
-                      initialValue={placeData?.address?.streetAddress?.en}
-                      dependencies={[formFieldNames.STREET_ADDRESS_FRENCH]}
-                      rules={[
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (value || getFieldValue(formFieldNames.STREET_ADDRESS_FRENCH)) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
-                          },
-                        }),
-                      ]}>
-                      <TextArea
-                        autoSize
-                        autoComplete="off"
-                        placeholder={t('dashboard.places.createNew.addPlace.address.streetAddressPlaceholder.english')}
-                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                        size="large"
-                      />
-                    </Form.Item>
-                  </BilingualInput>
-                </ContentLanguageInput>
-              </Form.Item>
-              <Form.Item label={t('dashboard.places.createNew.addPlace.address.city.city')}>
-                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                  <BilingualInput fieldData={placeData?.address?.addressLocality}>
-                    <Form.Item
-                      name={formFieldNames.CITY_FRENCH}
-                      key={contentLanguage.FRENCH}
-                      initialValue={placeData?.address?.addressLocality?.fr}
-                      dependencies={[formFieldNames.CITY_ENGLISH]}
-                      rules={[
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (value || getFieldValue(formFieldNames.CITY_ENGLISH)) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
-                          },
-                        }),
-                      ]}>
-                      <TextArea
-                        autoSize
-                        autoComplete="off"
-                        placeholder={t('dashboard.places.createNew.addPlace.address.city.placeholder.french')}
-                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                        size="large"
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      name={formFieldNames.CITY_ENGLISH}
-                      key={contentLanguage.ENGLISH}
-                      initialValue={placeData?.address?.addressLocality?.fr}
-                      dependencies={[formFieldNames.CITY_FRENCH]}
-                      rules={[
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (value || getFieldValue(formFieldNames.CITY_FRENCH)) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
-                          },
-                        }),
-                      ]}>
-                      <TextArea
-                        autoSize
-                        autoComplete="off"
-                        placeholder={t('dashboard.places.createNew.addPlace.address.city.placeholder.english')}
-                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                        size="large"
-                      />
-                    </Form.Item>
-                  </BilingualInput>
-                </ContentLanguageInput>
-              </Form.Item>
-              <Form.Item
-                name={formFieldNames.POSTAL_CODE}
-                initialValue={placeData?.address?.postalCode}
-                label={t('dashboard.places.createNew.addPlace.address.postalCode.postalCode')}
-                rules={[
-                  {
-                    type: 'url',
-                    message: t('dashboard.events.addEditEvent.validations.url'),
-                  },
-                ]}>
-                <StyledInput placeholder={t('dashboard.places.createNew.addPlace.address.postalCode.placeholder')} />
-              </Form.Item>
-              <Row gutter={[16, 0]}>
-                <Col span={12}>
-                  <Form.Item label={t('dashboard.places.createNew.addPlace.address.province.province')}>
-                    <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                      <BilingualInput fieldData={placeData?.address?.addressRegion}>
-                        <Form.Item
-                          name={formFieldNames.PROVINCE_FRENCH}
-                          key={contentLanguage.FRENCH}
-                          initialValue={placeData?.address?.addressRegion?.fr}
-                          dependencies={[formFieldNames.PROVINCE_ENGLISH]}
-                          rules={[
-                            ({ getFieldValue }) => ({
-                              validator(_, value) {
-                                if (value || getFieldValue(formFieldNames.PROVINCE_ENGLISH)) {
-                                  return Promise.resolve();
-                                } else
-                                  return Promise.reject(
-                                    new Error(t('dashboard.events.addEditEvent.validations.title')),
-                                  );
-                              },
-                            }),
-                          ]}>
-                          <TextArea
-                            autoSize
-                            autoComplete="off"
-                            placeholder={t('dashboard.places.createNew.addPlace.address.province.placeholder.french')}
-                            style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                            size="large"
-                          />
-                        </Form.Item>
-                        <Form.Item
-                          name={formFieldNames.PROVINCE_ENGLISH}
-                          key={contentLanguage.ENGLISH}
-                          initialValue={placeData?.address?.addressRegion?.en}
-                          dependencies={[formFieldNames.PROVINCE_FRENCH]}
-                          rules={[
-                            ({ getFieldValue }) => ({
-                              validator(_, value) {
-                                if (value || getFieldValue(formFieldNames.PROVINCE_FRENCH)) {
-                                  return Promise.resolve();
-                                } else
-                                  return Promise.reject(
-                                    new Error(t('dashboard.events.addEditEvent.validations.title')),
-                                  );
-                              },
-                            }),
-                          ]}>
-                          <TextArea
-                            autoSize
-                            autoComplete="off"
-                            placeholder={t('dashboard.places.createNew.addPlace.address.province.placeholder.english')}
-                            style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                            size="large"
-                          />
-                        </Form.Item>
-                      </BilingualInput>
-                    </ContentLanguageInput>
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item label={t('dashboard.places.createNew.addPlace.address.country.country')}>
-                    <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                      <BilingualInput fieldData={placeData?.address?.addressCountry}>
-                        <Form.Item
-                          name={formFieldNames.COUNTRY_FRENCH}
-                          key={contentLanguage.FRENCH}
-                          initialValue={placeData?.address?.addressCountry?.fr}
-                          dependencies={[formFieldNames.COUNTRY_ENGLISH]}
-                          rules={[
-                            ({ getFieldValue }) => ({
-                              validator(_, value) {
-                                if (value || getFieldValue(formFieldNames.COUNTRY_ENGLISH)) {
-                                  return Promise.resolve();
-                                } else
-                                  return Promise.reject(
-                                    new Error(t('dashboard.events.addEditEvent.validations.title')),
-                                  );
-                              },
-                            }),
-                          ]}>
-                          <TextArea
-                            autoSize
-                            autoComplete="off"
-                            placeholder={t('dashboard.places.createNew.addPlace.address.country.placeholder.french')}
-                            style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                            size="large"
-                          />
-                        </Form.Item>
-                        <Form.Item
-                          name={formFieldNames.COUNTRY_ENGLISH}
-                          key={contentLanguage.ENGLISH}
-                          initialValue={placeData?.address?.addressCountry?.en}
-                          dependencies={[formFieldNames.COUNTRY_FRENCH]}
-                          rules={[
-                            ({ getFieldValue }) => ({
-                              validator(_, value) {
-                                if (value || getFieldValue(formFieldNames.COUNTRY_FRENCH)) {
-                                  return Promise.resolve();
-                                } else
-                                  return Promise.reject(
-                                    new Error(t('dashboard.events.addEditEvent.validations.title')),
-                                  );
-                              },
-                            }),
-                          ]}>
-                          <TextArea
-                            autoSize
-                            autoComplete="off"
-                            placeholder={t('dashboard.places.createNew.addPlace.address.country.placeholder.english')}
-                            style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                            size="large"
-                          />
-                        </Form.Item>
-                      </BilingualInput>
-                    </ContentLanguageInput>
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Form.Item
-                name={formFieldNames.COORDINATES}
-                initialValue={
-                  (placeData?.geoCoordinates?.latitude || placeData?.geoCoordinates?.longitude) &&
-                  placeData?.geoCoordinates?.latitude + ',' + placeData?.geoCoordinates?.longitude
-                }
-                label={t('dashboard.places.createNew.addPlace.address.coordinates.coordinates')}>
-                <StyledInput />
-              </Form.Item>
-              <Form.Item
-                name={formFieldNames.REGION}
-                label={taxonomyDetails(
-                  allTaxonomyData?.data,
-                  user,
-                  placeTaxonomyMappedFieldTypes.REGION,
-                  'name',
-                  false,
-                )}
-                initialValue={placeData?.regions?.map((type) => {
-                  return type?.entityId;
-                })}>
-                <TreeSelectOption
-                  placeholder={t('dashboard.places.createNew.addPlace.address.region.placeholder')}
-                  allowClear
-                  treeDefaultExpandAll
-                  notFoundContent={<NoContent />}
-                  clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                  treeData={treeTaxonomyOptions(
-                    allTaxonomyData,
+                  </Col>
+                </Row>
+                <Form.Item
+                  name={formFieldNames.COORDINATES}
+                  initialValue={
+                    (placeData?.geoCoordinates?.latitude || placeData?.geoCoordinates?.longitude) &&
+                    placeData?.geoCoordinates?.latitude + ',' + placeData?.geoCoordinates?.longitude
+                  }
+                  label={t('dashboard.places.createNew.addPlace.address.coordinates.coordinates')}>
+                  <StyledInput />
+                </Form.Item>
+                <Form.Item
+                  name={formFieldNames.REGION}
+                  label={taxonomyDetails(
+                    allTaxonomyData?.data,
                     user,
                     placeTaxonomyMappedFieldTypes.REGION,
+                    'name',
                     false,
-                    calendarContentLanguage,
                   )}
-                  tagRender={(props) => {
-                    const { label, closable, onClose } = props;
-                    return (
-                      <Tags
-                        closable={closable}
-                        onClose={onClose}
-                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                        {label}
-                      </Tags>
-                    );
+                  initialValue={placeData?.regions?.map((type) => {
+                    return type?.entityId;
+                  })}>
+                  <TreeSelectOption
+                    placeholder={t('dashboard.places.createNew.addPlace.address.region.placeholder')}
+                    allowClear
+                    treeDefaultExpandAll
+                    notFoundContent={<NoContent />}
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    treeData={treeTaxonomyOptions(
+                      allTaxonomyData,
+                      user,
+                      placeTaxonomyMappedFieldTypes.REGION,
+                      false,
+                      calendarContentLanguage,
+                    )}
+                    tagRender={(props) => {
+                      const { label, closable, onClose } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                  />
+                </Form.Item>
+                <Form.Item
+                  name={formFieldNames.OPENING_HOURS}
+                  className={`${formFieldNames.OPENING_HOURS} subheading-wrap`}
+                  label={t('dashboard.places.createNew.addPlace.address.openingHours.openingHours')}
+                  initialValue={placeData?.openingHours?.uri}
+                  style={{
+                    display: !addedFields?.includes(addressTypeOptionsFieldNames.OPENING_HOURS) && 'none',
                   }}
-                />
+                  rules={[
+                    {
+                      type: 'url',
+                      message: t('dashboard.events.addEditEvent.validations.url'),
+                    },
+                  ]}>
+                  <StyledInput
+                    addonBefore="https://"
+                    autoComplete="off"
+                    placeholder={t('dashboard.places.createNew.addPlace.address.openingHours.placeholder')}
+                  />
+                </Form.Item>
+              </>
+              <Form.Item label={t('dashboard.places.createNew.addPlace.addMoreDetails')} style={{ lineHeight: '2.5' }}>
+                {addedFields?.includes(addressTypeOptionsFieldNames.OPENING_HOURS) ? (
+                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                ) : (
+                  addressTypeOptions.map((type) => {
+                    return (
+                      <ChangeType
+                        key={type.type}
+                        primaryIcon={<PlusOutlined />}
+                        disabled={type.disabled}
+                        label={type.label}
+                        promptText={type.tooltip}
+                        secondaryIcon={<InfoCircleOutlined />}
+                        onClick={() => addFieldsHandler(type?.fieldNames)}
+                      />
+                    );
+                  })
+                )}
               </Form.Item>
-              <Form.Item
-                name={formFieldNames.OPENING_HOURS}
-                className={`${formFieldNames.OPENING_HOURS} subheading-wrap`}
-                label={t('dashboard.places.createNew.addPlace.address.openingHours.openingHours')}
-                initialValue={placeData?.openingHours?.uri}
-                style={{
-                  display: !addedFields?.includes(addressTypeOptionsFieldNames.OPENING_HOURS) && 'none',
-                }}
-                rules={[
-                  {
-                    type: 'url',
-                    message: t('dashboard.events.addEditEvent.validations.url'),
-                  },
-                ]}>
-                <StyledInput
-                  addonBefore="https://"
-                  autoComplete="off"
-                  placeholder={t('dashboard.places.createNew.addPlace.address.openingHours.placeholder')}
-                />
-              </Form.Item>
-            </>
-            <Form.Item label={t('dashboard.places.createNew.addPlace.addMoreDetails')} style={{ lineHeight: '2.5' }}>
-              {addedFields?.includes(addressTypeOptionsFieldNames.OPENING_HOURS) ? (
-                <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
-              ) : (
-                addressTypeOptions.map((type) => {
-                  return (
-                    <ChangeType
-                      key={type.type}
-                      primaryIcon={<PlusOutlined />}
-                      disabled={type.disabled}
-                      label={type.label}
-                      promptText={type.tooltip}
-                      secondaryIcon={<InfoCircleOutlined />}
-                      onClick={() => addFieldsHandler(type?.fieldNames)}
-                    />
-                  );
-                })
-              )}
-            </Form.Item>
-          </Card>
-          <Card title={t('dashboard.places.createNew.addPlace.containedInPlace.containedInPlace')}>
-            <>
-              <Row>
-                <Col>
-                  <p className="add-event-date-heading">
-                    {t('dashboard.places.createNew.addPlace.containedInPlace.subheading')}
-                  </p>
-                </Col>
-              </Row>
-              <Form.Item
-                name={formFieldNames.CONTAINED_IN_PLACE}
-                className="subheading-wrap"
-                // initialValue={initialPlace && initialPlace[0]?.id}
-                label={t('dashboard.places.createNew.addPlace.containedInPlace.addPlace')}>
-                <Popover
-                  open={isPopoverOpen.containedInPlace}
-                  onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, containedInPlace: open })}
-                  overlayClassName="event-popover"
-                  placement="bottom"
-                  autoAdjustOverflow={false}
-                  getPopupContainer={(trigger) => trigger.parentNode}
-                  trigger={['click']}
-                  content={
-                    <div>
-                      <div className="search-scrollable-content">
-                        {allPlacesList?.length > 0 ? (
-                          allPlacesList?.map((place, index) => (
-                            <div
-                              key={index}
-                              className={`event-popover-options ${
-                                containedInPlace?.value == place?.value ? 'event-popover-options-active' : null
-                              }`}
-                              onClick={() => {
-                                setContainedInPlace(place);
-                                form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.value);
-                                setIsPopoverOpen({
-                                  ...isPopoverOpen,
-                                  containedInPlace: false,
-                                });
-                              }}>
-                              {place?.label}
-                            </div>
-                          ))
-                        ) : (
-                          <NoContent />
-                        )}
+            </Card>
+            <Card title={t('dashboard.places.createNew.addPlace.containedInPlace.containedInPlace')}>
+              <>
+                <Row>
+                  <Col>
+                    <p className="add-event-date-heading">
+                      {t('dashboard.places.createNew.addPlace.containedInPlace.subheading')}
+                    </p>
+                  </Col>
+                </Row>
+                <Form.Item
+                  name={formFieldNames.CONTAINED_IN_PLACE}
+                  className="subheading-wrap"
+                  // initialValue={initialPlace && initialPlace[0]?.id}
+                  label={t('dashboard.places.createNew.addPlace.containedInPlace.addPlace')}>
+                  <Popover
+                    open={isPopoverOpen.containedInPlace}
+                    onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, containedInPlace: open })}
+                    overlayClassName="event-popover"
+                    placement="bottom"
+                    autoAdjustOverflow={false}
+                    getPopupContainer={(trigger) => trigger.parentNode}
+                    trigger={['click']}
+                    content={
+                      <div>
+                        <div className="search-scrollable-content">
+                          {allPlacesList?.length > 0 ? (
+                            allPlacesList?.map((place, index) => (
+                              <div
+                                key={index}
+                                className={`event-popover-options ${
+                                  containedInPlace?.value == place?.value ? 'event-popover-options-active' : null
+                                }`}
+                                onClick={() => {
+                                  setContainedInPlace(place);
+                                  form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.value);
+                                  setIsPopoverOpen({
+                                    ...isPopoverOpen,
+                                    containedInPlace: false,
+                                  });
+                                }}>
+                                {place?.label}
+                              </div>
+                            ))
+                          ) : (
+                            <NoContent />
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  }>
-                  <EventsSearch
-                    style={{ borderRadius: '4px', width: '423px' }}
-                    placeholder={t('dashboard.places.createNew.addPlace.containedInPlace.placeholder')}
-                    onChange={(e) => {
-                      placesSearch(e.target.value);
-                      setIsPopoverOpen({ ...isPopoverOpen, containedInPlace: true });
-                    }}
-                    onClick={() => {
-                      setIsPopoverOpen({ ...isPopoverOpen, containedInPlace: true });
-                    }}
-                  />
-                </Popover>
-                {containedInPlace && (
-                  <SelectionItem
-                    icon={containedInPlace?.label?.props?.icon}
-                    name={containedInPlace?.name}
-                    description={containedInPlace?.description}
-                    itemWidth="100%"
-                    postalAddress={containedInPlace?.postalAddress}
-                    accessibility={containedInPlace?.accessibility}
-                    openingHours={containedInPlace?.openingHours}
-                    calendarContentLanguage={calendarContentLanguage}
-                    bordered
-                    closable
-                    onClose={() => {
-                      setContainedInPlace();
-                      form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, undefined);
-                    }}
-                  />
-                )}
-              </Form.Item>
-            </>
-            <></>
-          </Card>
-          <Card title={t('dashboard.places.createNew.addPlace.venueAccessibility.venueAccessibility')}>
-            <>
-              <Row>
-                <Col>
-                  <p className="add-event-date-heading">
-                    {t('dashboard.places.createNew.addPlace.venueAccessibility.subheading')}
-                  </p>
-                </Col>
-              </Row>
-              <Form.Item
-                name={formFieldNames.PLACE_ACCESSIBILITY}
-                style={{ width: '423px' }}
-                label={taxonomyDetails(
-                  allTaxonomyData?.data,
-                  user,
-                  placeTaxonomyMappedFieldTypes.PLACE_ACCESSIBILITY,
-                  'name',
-                  false,
-                )}
-                initialValue={placeData?.accessibility?.map((type) => {
-                  return type?.entityId;
-                })}>
-                <TreeSelectOption
-                  placeholder={t('dashboard.places.createNew.addPlace.venueAccessibility.placeholder')}
-                  allowClear
-                  treeDefaultExpandAll
-                  notFoundContent={<NoContent />}
-                  clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                  treeData={treeTaxonomyOptions(
-                    allTaxonomyData,
+                    }>
+                    <EventsSearch
+                      style={{ borderRadius: '4px', width: '423px' }}
+                      placeholder={t('dashboard.places.createNew.addPlace.containedInPlace.placeholder')}
+                      onChange={(e) => {
+                        placesSearch(e.target.value);
+                        setIsPopoverOpen({ ...isPopoverOpen, containedInPlace: true });
+                      }}
+                      onClick={() => {
+                        setIsPopoverOpen({ ...isPopoverOpen, containedInPlace: true });
+                      }}
+                    />
+                  </Popover>
+                  {containedInPlace && (
+                    <SelectionItem
+                      icon={containedInPlace?.label?.props?.icon}
+                      name={containedInPlace?.name}
+                      description={containedInPlace?.description}
+                      itemWidth="100%"
+                      postalAddress={containedInPlace?.postalAddress}
+                      accessibility={containedInPlace?.accessibility}
+                      openingHours={containedInPlace?.openingHours}
+                      calendarContentLanguage={calendarContentLanguage}
+                      bordered
+                      closable
+                      onClose={() => {
+                        setContainedInPlace();
+                        form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, undefined);
+                      }}
+                    />
+                  )}
+                </Form.Item>
+              </>
+              <></>
+            </Card>
+            <Card title={t('dashboard.places.createNew.addPlace.venueAccessibility.venueAccessibility')}>
+              <>
+                <Row>
+                  <Col>
+                    <p className="add-event-date-heading">
+                      {t('dashboard.places.createNew.addPlace.venueAccessibility.subheading')}
+                    </p>
+                  </Col>
+                </Row>
+                <Form.Item
+                  name={formFieldNames.PLACE_ACCESSIBILITY}
+                  style={{ width: '423px' }}
+                  label={taxonomyDetails(
+                    allTaxonomyData?.data,
                     user,
                     placeTaxonomyMappedFieldTypes.PLACE_ACCESSIBILITY,
+                    'name',
                     false,
-                    calendarContentLanguage,
                   )}
-                  tagRender={(props) => {
-                    const { label, closable, onClose } = props;
+                  initialValue={placeData?.accessibility?.map((type) => {
+                    return type?.entityId;
+                  })}>
+                  <TreeSelectOption
+                    placeholder={t('dashboard.places.createNew.addPlace.venueAccessibility.placeholder')}
+                    allowClear
+                    treeDefaultExpandAll
+                    notFoundContent={<NoContent />}
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    treeData={treeTaxonomyOptions(
+                      allTaxonomyData,
+                      user,
+                      placeTaxonomyMappedFieldTypes.PLACE_ACCESSIBILITY,
+                      false,
+                      calendarContentLanguage,
+                    )}
+                    tagRender={(props) => {
+                      const { label, closable, onClose } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label={t('dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.note')}
+                  name={placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP}
+                  className={formFieldNames.ACCESSIBILITY_NOTE_WRAP}
+                  style={{
+                    display:
+                      !addedFields?.includes(placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP) && 'none',
+                  }}>
+                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                    <BilingualInput fieldData={placeData?.accessibilityNote}>
+                      <Form.Item
+                        name={formFieldNames.ACCESSIBILITY_NOTE_FRENCH}
+                        initialValue={placeData?.accessibilityNote?.fr}
+                        key={contentLanguage.FRENCH}>
+                        <TextArea
+                          autoComplete="off"
+                          placeholder={t(
+                            'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.placeholder.french',
+                          )}
+                          style={{
+                            borderRadius: '4px',
+                            border: '4px solid #E8E8E8',
+                            width: '423px',
+                            resize: 'vertical',
+                          }}
+                          size="large"
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        name={formFieldNames.ACCESSIBILITY_NOTE_ENGLISH}
+                        initialValue={placeData?.accessibilityNote?.en}
+                        key={contentLanguage.ENGLISH}>
+                        <TextArea
+                          autoComplete="off"
+                          placeholder={t(
+                            'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.placeholder.english',
+                          )}
+                          style={{
+                            borderRadius: '4px',
+                            border: '4px solid #E8E8E8',
+                            width: '423px',
+                            resize: 'vertical',
+                          }}
+                          size="large"
+                        />
+                      </Form.Item>
+                    </BilingualInput>
+                  </ContentLanguageInput>
+                </Form.Item>
+              </>
+              <Form.Item label={t('dashboard.places.createNew.addPlace.addMoreDetails')} style={{ lineHeight: '2.5' }}>
+                {addedFields?.includes(placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP) ? (
+                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                ) : (
+                  placeAccessibilityTypeOptions.map((type) => {
                     return (
-                      <Tags
-                        closable={closable}
-                        onClose={onClose}
-                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                        {label}
-                      </Tags>
+                      <ChangeType
+                        key={type.type}
+                        primaryIcon={<PlusOutlined />}
+                        disabled={type.disabled}
+                        label={type.label}
+                        promptText={type.tooltip}
+                        secondaryIcon={<InfoCircleOutlined />}
+                        onClick={() => addFieldsHandler(type?.fieldNames)}
+                      />
                     );
-                  }}
-                />
+                  })
+                )}
               </Form.Item>
-              <Form.Item
-                label={t('dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.note')}
-                name={placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP}
-                className={formFieldNames.ACCESSIBILITY_NOTE_WRAP}
-                style={{
-                  display:
-                    !addedFields?.includes(placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP) && 'none',
-                }}>
-                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                  <BilingualInput fieldData={placeData?.accessibilityNote}>
-                    <Form.Item
-                      name={formFieldNames.ACCESSIBILITY_NOTE_FRENCH}
-                      initialValue={placeData?.accessibilityNote?.fr}
-                      key={contentLanguage.FRENCH}>
-                      <TextArea
-                        autoComplete="off"
-                        placeholder={t(
-                          'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.placeholder.french',
-                        )}
-                        style={{
-                          borderRadius: '4px',
-                          border: '4px solid #E8E8E8',
-                          width: '423px',
-                          resize: 'vertical',
-                        }}
-                        size="large"
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      name={formFieldNames.ACCESSIBILITY_NOTE_ENGLISH}
-                      initialValue={placeData?.accessibilityNote?.en}
-                      key={contentLanguage.ENGLISH}>
-                      <TextArea
-                        autoComplete="off"
-                        placeholder={t(
-                          'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.placeholder.english',
-                        )}
-                        style={{
-                          borderRadius: '4px',
-                          border: '4px solid #E8E8E8',
-                          width: '423px',
-                          resize: 'vertical',
-                        }}
-                        size="large"
-                      />
-                    </Form.Item>
-                  </BilingualInput>
-                </ContentLanguageInput>
-              </Form.Item>
-            </>
-            <Form.Item label={t('dashboard.places.createNew.addPlace.addMoreDetails')} style={{ lineHeight: '2.5' }}>
-              {addedFields?.includes(placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP) ? (
-                <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
-              ) : (
-                placeAccessibilityTypeOptions.map((type) => {
-                  return (
-                    <ChangeType
-                      key={type.type}
-                      primaryIcon={<PlusOutlined />}
-                      disabled={type.disabled}
-                      label={type.label}
-                      promptText={type.tooltip}
-                      secondaryIcon={<InfoCircleOutlined />}
-                      onClick={() => addFieldsHandler(type?.fieldNames)}
-                    />
-                  );
-                })
-              )}
-            </Form.Item>
-          </Card>
+            </Card>
+          </Row>
         </Form>
       </div>
     </FeatureFlag>
