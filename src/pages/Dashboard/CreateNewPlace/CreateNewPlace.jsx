@@ -64,6 +64,7 @@ import { useAddImageMutation } from '../../../services/image';
 import { usePrompt } from '../../../hooks/usePrompt';
 import { useAddPostalAddressMutation, useUpdatePostalAddressMutation } from '../../../services/postalAddress';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
+import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequiredFieldNames';
 
 const { TextArea } = Input;
 
@@ -111,7 +112,9 @@ function CreateNewPlace() {
   const placeId = searchParams.get('id');
   const artsDataId = location?.state?.data?.id ?? null;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-
+  let requiredFields = currentCalendarData?.formSchema?.filter((form) => form?.formName === 'Place');
+  requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
+  let requiredFieldNames = requiredFields ? requiredFields?.requiredfields?.map((field) => field?.fieldName) : [];
   const { currentData: placeData, isLoading: isPlaceLoading } = useGetPlaceQuery(
     { placeId: placeId, calendarId, sessionId: timestampRef },
     { skip: placeId ? false : true },
@@ -841,7 +844,7 @@ function CreateNewPlace() {
                   })}
                   rules={[
                     {
-                      required: true,
+                      required: requiredFieldNames?.includes(placeFormRequiredFieldNames?.PLACE_TYPE),
                       message: t('dashboard.places.createNew.addPlace.validations.placeTypeRequired'),
                     },
                   ]}>
