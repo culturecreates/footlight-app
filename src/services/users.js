@@ -91,6 +91,29 @@ export const usersApi = createApi({
         };
       },
     }),
+    currentUserLeaveCalendar: builder.mutation({
+      query: ({ calendarId }) => {
+        return {
+          url: `users/current/leave-calendar`,
+          method: 'PATCH',
+          headers: {
+            'calendar-id': calendarId,
+          },
+        };
+      },
+    }),
+    updateUserById: builder.mutation({
+      query: ({ calendarId, id, body }) => {
+        return {
+          url: `users/${id}`,
+          method: 'PATCH',
+          headers: {
+            'calendar-id': calendarId,
+          },
+          body,
+        };
+      },
+    }),
     forgotPassword: builder.mutation({
       query: ({ email, language }) => {
         return {
@@ -123,6 +146,7 @@ export const {
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useGetAllUsersQuery,
+  useLazyGetUserByIdQuery,
   useGetCurrentUserQuery,
   useUpdateCurrentUserMutation,
   useLazyGetCurrentUserQuery,
@@ -130,4 +154,6 @@ export const {
   useDeleteUserMutation,
   useActivateUserMutation,
   useDeactivateUserMutation,
+  useCurrentUserLeaveCalendarMutation,
+  useUpdateUserByIdMutation,
 } = usersApi;
