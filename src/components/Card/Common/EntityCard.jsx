@@ -13,14 +13,16 @@ const EntityCard = (props) => {
         <div className="description">{description}</div>
       </div>
       <div className="link-container">
-        <ArtsDataLink
-          onClick={(e) => {
-            e.stopPropagation();
-            window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer');
-          }}>
-          <span style={{ textDecoration: 'underline' }}>{linkText}</span>
-          <LinkOutlined />
-        </ArtsDataLink>
+        {artsDataLink && (
+          <ArtsDataLink
+            onClick={(e) => {
+              e.stopPropagation();
+              window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer');
+            }}>
+            <span style={{ textDecoration: 'underline' }}>{linkText}</span>
+            <LinkOutlined />
+          </ArtsDataLink>
+        )}
       </div>
     </div>
   );
