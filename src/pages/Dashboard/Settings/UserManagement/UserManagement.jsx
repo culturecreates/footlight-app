@@ -91,7 +91,7 @@ const UserManagement = () => {
     if (filter.userRole !== '') {
       optionalFilters.append('userRole', encodeURIComponent(`${filter?.userRole && filter?.userRole}`));
     }
-
+    console.log(decodeURIComponent(optionalFilters.toString()), 'filters', filter);
     const filtersDecoded =
       decodeURIComponent(sortQuery.toString()) + '&' + decodeURIComponent(optionalFilters.toString());
 
@@ -114,7 +114,7 @@ const UserManagement = () => {
       order: filter?.order,
       sortBy: filter?.sort,
       ...(filter.userRole !== '' && { userRole: filter.userRole }),
-      ...(filter.userStatus !== '' && { userRole: filter.userStatus }),
+      ...(filter.userStatus !== '' && { userStatus: filter.userStatus }),
       ...(userSearchQuery !== '' && { query: userSearchQuery }),
     };
     setSearchParams(createSearchParams(params));
