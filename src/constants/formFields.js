@@ -8,7 +8,7 @@ import { contentLanguage } from './contentLanguage';
 import ContentLanguageInput from '../components/ContentLanguageInput/ContentLanguageInput';
 import BilingualInput from '../components/BilingualInput/BilingualInput';
 import ImageUpload from '../components/ImageUpload/ImageUpload';
-import { contentLanguageBilingual } from '../utils/bilingual';
+import { bilingual, contentLanguageBilingual } from '../utils/bilingual';
 import { Translation } from 'react-i18next';
 import StyledInput from '../components/Input/Common';
 import { formInitialValueHandler } from '../utils/formInitialValueHandler';
@@ -447,17 +447,15 @@ export const returnFormDataWithFields = ({
       calendarContentLanguage,
       name: [field?.mappedField],
       preview: true,
-      placeholder: contentLanguageBilingual({
+      placeholder: bilingual({
         en: field?.placeholder?.en,
         fr: field?.placeholder?.fr,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-        calendarContentLanguage: calendarContentLanguage,
       }),
-      validations: contentLanguageBilingual({
+      validations: bilingual({
         en: field?.validations?.en,
         fr: field?.validations?.fr,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-        calendarContentLanguage: calendarContentLanguage,
       }),
       largeUrl:
         field?.mappedField === mappedFieldTypes.IMAGE
@@ -469,7 +467,7 @@ export const returnFormDataWithFields = ({
           : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo?.original?.uri,
       required: field?.isRequiredField,
       t: t,
-      userTips: contentLanguageBilingual({
+      userTips: bilingual({
         en: field?.userTips?.text?.en,
         fr: field?.userTips?.text?.fr,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
@@ -500,13 +498,12 @@ export const returnFormDataWithFields = ({
     }),
     key: index,
     initialValue: formInitialValueHandler(field?.type, field?.mappedField, field?.datatype, entityData),
-    label: contentLanguageBilingual({
+    label: bilingual({
       en: field?.label?.en,
       fr: field?.label?.fr,
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-      calendarContentLanguage: calendarContentLanguage,
     }),
-    userTips: contentLanguageBilingual({
+    userTips: bilingual({
       en: field?.userTips?.text?.en,
       fr: field?.userTips?.text?.fr,
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
