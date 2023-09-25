@@ -776,6 +776,7 @@
         "languagePreference": "Préférence de langue",
         "organization": "Organisation",
         "organizationDescription": "Ajouter une organisation qui sera liée à ce profile d’utilisateur.",
+        "searchOrganizations": "Recherchez des Organisations",
         "dropDownOptions": {
           "langagePreference": {
             "en": "Anglais",
@@ -788,6 +789,7 @@
         "calendars": "Calendriers",
         "calendarsDescription": "Sélectionnez des calendriers disponibles auxquels cet utilisateur peut se joindre.",
         "calendarSearchHeading": "Accès aux calendriers",
+        "searchCalendars": "Rechercher des calendriers",
         "leave": "Quitter",
         "role": "Role",
         "passwordModal": {

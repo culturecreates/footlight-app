@@ -1,6 +1,16 @@
 import React, { useRef } from 'react';
 import { LeftOutlined, CalendarOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Dropdown, Form, Row, Typography } from 'antd';
+import {
+  Button,
+  Card,
+  Col,
+  Dropdown,
+  Form,
+  notification,
+  //  notification,
+  Row,
+  Typography,
+} from 'antd';
 import PrimaryButton from '../../../components/Button/Primary';
 import { createSearchParams, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import OutlinedButton from '../../..//components/Button/Outlined';
@@ -121,20 +131,27 @@ const AddUser = () => {
   }, [userId]);
 
   useEffect(() => {
-    if (calendarData?.data && isUserFetchSuccess && userData) {
+    if (calendarData?.data && userData?.calendars) {
       // for edit user
-      const subscribedCalendars = calendarData?.data.filter((item) => {
-        return userData?.calendars?.some((i) => item.id === i.calendarId);
+      const calendarIds = userData?.calendars?.map((item) => item.calendarId);
+      const subscribedCalendars = calendarData?.data.map((item) => {
+        if (calendarIds.includes(item.id)) {
+          return {
+            ...item,
+            role: userData?.calendars.find((calendar) => calendar.calendarId === item.id)?.role,
+          };
+        }
       });
 
-      setSelectedCalendars([...subscribedCalendars]);
+      const filteredCalendars = subscribedCalendars.filter((calendar) => calendar !== undefined);
+      setSelectedCalendars([...filteredCalendars]);
 
       setFilteredCalendarData([...calendarData.data]);
     } else if (calendarData?.data && !userId) {
       // for new users
       setFilteredCalendarData([...calendarData.data]);
     }
-  }, [calendarData, isUserFetchSuccess]);
+  }, [calendarData, isUserFetchSuccess, userData?.calendars]);
 
   useEffect(() => {
     if (userId) {
@@ -199,21 +216,68 @@ const AddUser = () => {
       formInstance
         .validateFields()
         .then((values) => {
-          selectedCalendars.map((item) => {
-            inviteUser({
-              firstName: values.firstName,
-              lastName: values.lastName,
-              email: values.email,
-              role: values.userType,
-              calendarId: item.id,
+          userId &&
+            selectedCalendars.map((item) => {
+              inviteUser({
+                firstName: values.firstName,
+                lastName: values.lastName,
+                email: values.email,
+                role: values.userType,
+                calendarId: item.id,
+              });
             });
+          inviteUser({
+            firstName: values.firstName,
+            lastName: values.lastName,
+            email: values.email,
+            role: values.userType,
+            calendarId,
           });
+        })
+        .then((res) => {
+          setTimeout(() => {
+            notification.success({
+              description: res.message,
+              key: res.message,
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+          }, 3000);
+          navigate(-2);
         })
         .catch((errors) => {
           console.error('Validation errors:', errors);
         });
     }
     if (isCurrentUser) {
+      !isCurrentUser &&
+        formInstance
+          .validateFields()
+          .then((values) => {
+            adminCheckHandler()
+              ? updateUserById({
+                  id: userId,
+                  calendarId,
+                  body: {
+                    firstName: values.firstName,
+                    lastName: values.lastName,
+                    email: values.email,
+                    interfaceLanguage: values.languagePreference,
+                    modifyRole: {
+                      userId: userId,
+                      role: values.userType,
+                      calendarId,
+                    },
+                  },
+                })
+              : console.log(values, selectedCalendars);
+          })
+          .catch((errors) => {
+            console.error('Validation errors:', errors);
+          });
+    } else {
       formInstance
         .validateFields()
         .then((values) => {
@@ -232,6 +296,20 @@ const AddUser = () => {
               },
             },
           });
+        })
+        .unwrap()
+        .then((res) => {
+          setTimeout(() => {
+            notification.success({
+              description: res.message,
+              key: res.message,
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+          }, 3000);
+          navigate(-2);
         })
         .catch((errors) => {
           console.error('Validation errors:', errors);
@@ -252,7 +330,7 @@ const AddUser = () => {
 
     if (isCurrentUser) {
       currentUserLeaveCalendar({ calendarId });
-    } else {
+    } else if (userId) {
       deleteUser({ id: userId, calendarId: calendarId });
     }
   };
@@ -331,16 +409,16 @@ const AddUser = () => {
             </Col>
             <Col span={24}>
               <Row>
-                <Col span={16}>
-                  <Card>
+                <Col flex={'780px'}>
+                  <Card style={{ border: 'none' }}>
                     <Row gutter={[0, 24]}>
                       <Col>
                         <div className="details-card-description">
                           {isCurrentUser
                             ? t('dashboard.settings.addUser.detailsCardDescriptionCurrentUser')
                             : userId
-                            ? t('dashboard.settings.addUser.detailsCardDescriptionAddPage')
-                            : t('dashboard.settings.addUser.detailsCardDescriptionEditPage')}
+                            ? t('dashboard.settings.addUser.detailsCardDescriptionEditPage')
+                            : t('dashboard.settings.addUser.detailsCardDescriptionAddPage')}
                         </div>
                       </Col>
                       <Col>
@@ -354,7 +432,7 @@ const AddUser = () => {
                             },
                           ]}>
                           <Row>
-                            <Col span={19}>
+                            <Col flex={'423px'}>
                               <AuthenticationInput
                                 size="small"
                                 placeholder={t('dashboard.events.filter.users.placeholderSearch')}
@@ -375,7 +453,7 @@ const AddUser = () => {
                             },
                           ]}>
                           <Row>
-                            <Col span={19}>
+                            <Col flex={'423px'}>
                               <AuthenticationInput
                                 size="small"
                                 placeholder={t('dashboard.events.filter.users.placeholderSearch')}
@@ -387,7 +465,7 @@ const AddUser = () => {
                         </Form.Item>
                         <Form.Item name="phoneNumber" label={t('dashboard.settings.addUser.phoneNumber')}>
                           <Row>
-                            <Col span={19}>
+                            <Col flex={'423px'}>
                               <AuthenticationInput
                                 size="small"
                                 placeholder={t('dashboard.events.filter.users.placeholderSearch')}
@@ -408,7 +486,7 @@ const AddUser = () => {
                             },
                           ]}>
                           <Row>
-                            <Col span={19}>
+                            <Col flex={'423px'}>
                               <AuthenticationInput
                                 size="small"
                                 placeholder={t('dashboard.events.filter.users.placeholderSearch')}
@@ -430,7 +508,7 @@ const AddUser = () => {
                               },
                             ]}>
                             <Row>
-                              <Col span={19}>
+                              <Col flex={'423px'}>
                                 <Dropdown
                                   overlayClassName="add-user-form-field-dropdown-wrapper"
                                   getPopupContainer={(trigger) => trigger.parentNode}
@@ -466,7 +544,7 @@ const AddUser = () => {
                             },
                           ]}>
                           <Row>
-                            <Col span={19}>
+                            <Col flex={'423px'}>
                               <Dropdown
                                 overlayClassName="add-user-form-field-dropdown-wrapper"
                                 getPopupContainer={(trigger) => trigger.parentNode}
@@ -495,12 +573,12 @@ const AddUser = () => {
 
                         <Form.Item label={t('dashboard.settings.addUser.organization')}>
                           <Row gutter={[0, 4]}>
-                            <Col span={19}>
+                            <Col flex={'423px'}>
                               <div className="details-card-description">
                                 {t('dashboard.settings.addUser.organizationSearchDescription')}
                               </div>
                             </Col>
-                            <Col span={19} className="organization-search">
+                            <Col flex={'423px'} className="organization-search">
                               <div className="search-bar-organization">
                                 <Popover
                                   open={isPopoverOpen.organization}
@@ -577,7 +655,7 @@ const AddUser = () => {
                                   }>
                                   <EventsSearch
                                     style={{ borderRadius: '4px' }}
-                                    placeholder="Search organizations"
+                                    placeholder={t('dashboard.settings.addUser.searchOrganizations')}
                                     onClick={(e) => {
                                       setOrganizationSearchQuery(e.target.value);
                                       setIsPopoverOpen({ ...isPopoverOpen, organization: true });
@@ -590,7 +668,7 @@ const AddUser = () => {
                                 </Popover>
                               </div>
                             </Col>
-                            <Col span={19}>
+                            <Col flex={'423px'}>
                               {selectedOrganization?.length > 0 &&
                                 selectedOrganization.map((item, index) => (
                                   <SelectionItem
@@ -658,24 +736,24 @@ const AddUser = () => {
             </Col>
             <Col span={24}>
               <Row>
-                <Col span={16}>
-                  <Card>
+                <Col flex={'780px'}>
+                  <Card style={{ border: 'none' }}>
                     <Row>
                       <Col span={24} className="card-heading-container">
                         <h5>{t(`dashboard.settings.addUser.calendars`)}</h5>
                       </Col>
                     </Row>
                     <Row>
-                      <Col span={24} className="calendar-search">
+                      <Col flex={'423px'} className="calendar-search">
                         <Row gutter={[0, 4]}>
-                          <Col span={24}>
+                          <Col flex={'423px'}>
                             <Form.Item label={t('dashboard.settings.addUser.calendarSearchHeading')}>
-                              <Col span={24}>
+                              <Col>
                                 <div className="details-card-description">
                                   {t('dashboard.settings.addUser.calendarsDescription')}
                                 </div>
                               </Col>
-                              <Col span={19} className="organization-search">
+                              <Col className="organization-search">
                                 <div className="search-bar-organization">
                                   <Popover
                                     open={isPopoverOpen.calendar}
@@ -748,7 +826,7 @@ const AddUser = () => {
                                     }>
                                     <EventsSearch
                                       style={{ borderRadius: '4px' }}
-                                      placeholder="Search organizations"
+                                      placeholder={t('dashboard.settings.addUser.searchCalendars')}
                                       onClick={(e) => {
                                         const value = e.target.value;
                                         setCalendarSearchQuery(value);
@@ -763,7 +841,7 @@ const AddUser = () => {
                                   </Popover>
                                 </div>
                               </Col>
-                              <Col span={19}>
+                              <Col>
                                 {selectedCalendars?.length > 0 &&
                                   selectedCalendars.map((item, index) => (
                                     <CalendarSelect
