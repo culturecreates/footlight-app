@@ -2,11 +2,13 @@ import { Avatar, Button, Dropdown, List } from 'antd';
 // import useSelection from 'antd/lib/table/hooks/useSelection';
 import { PlusOutlined, DownOutlined } from '@ant-design/icons';
 import React from 'react';
-import { userRolesWithTranslation } from '../../../../constants/userRoles';
+import { userRoles, userRolesWithTranslation } from '../../../../constants/userRoles';
 import { useTranslation } from 'react-i18next';
 import './calendarSelect.css';
 
-// import { getUserDetails } from '../../../../redux/reducer/userSlice';
+import { getUserDetails } from '../../../../redux/reducer/userSlice';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 const CalendarSelect = (props) => {
   const {
@@ -18,9 +20,11 @@ const CalendarSelect = (props) => {
     calenderItem,
     selectedCalendars,
     setSelectedCalendars,
-    isRoleOptionHidden,
+    // isRoleOptionHidden,
   } = props;
   const { t } = useTranslation();
+  const { user } = useSelector(getUserDetails);
+  const { calendarId } = useParams();
 
   const userTypeFilterChangeHandler = ({ selectedKeys }) => {
     const updatedSelectedData = selectedCalendars.map((item) => {
@@ -30,7 +34,17 @@ const CalendarSelect = (props) => {
         return item;
       }
     });
+    console.log(updatedSelectedData, 'hel');
     setSelectedCalendars([...updatedSelectedData]);
+  };
+
+  const calendar = user?.roles.filter((calendar) => {
+    return calendar.calendarId === calendarId;
+  });
+
+  const adminCheckHandler = () => {
+    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
+    else return false;
   };
 
   return (
@@ -61,7 +75,7 @@ const CalendarSelect = (props) => {
           }
           title={<span className="selection-item-title">{name}</span>}
         />
-        {!isRoleOptionHidden && (
+        {adminCheckHandler() && (
           <div>
             {calenderItem?.role ? (
               <Dropdown

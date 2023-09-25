@@ -787,6 +787,7 @@
         "languagePreference": "Language preference",
         "organization": "Organization",
         "organizationDescription": "Add organization that will be linked to this user profile.",
+        "searchOrganizations": "Search Organizations",
         "dropDownOptions": {
           "langagePreference": {
             "en": "English",
@@ -799,6 +800,7 @@
         "calendars": "Calendars",
         "calendarsDescription": "Select available calendar for this user to join.",
         "calendarSearchHeading": "Calendar access",
+        "searchCalendars": "Search calendars",
         "leave": "Leave",
         "role": "Role",
         "passwordModal": {
