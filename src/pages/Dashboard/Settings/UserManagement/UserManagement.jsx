@@ -69,8 +69,7 @@ const UserManagement = () => {
   });
   const [userSearchQuery, setUserSearchQuery] = useState(decodeURIComponent(defaultQuery));
 
-  const [getAllUsers, { currentData: userData, isLoading: isUsersLoading, isFetching: isUsersFetching }] =
-    useLazyGetAllUsersQuery();
+  const [getAllUsers, { currentData: userData, isFetching: isUsersLoading }] = useLazyGetAllUsersQuery();
   const [inviteUserMutation] = useInviteUserMutation();
   const [deleteUser] = useDeleteUserMutation();
   const [activateUser] = useActivateUserMutation();
@@ -446,7 +445,7 @@ const UserManagement = () => {
       <Col span={17}>
         <Row>
           <Col span={24}>
-            {userData?.data.length && !isUsersFetching > 0 ? (
+            {userData?.data.length && !isUsersLoading > 0 ? (
               <List
                 className="event-list-wrapper"
                 itemLayout={screens.xs ? 'vertical' : 'horizontal'}
