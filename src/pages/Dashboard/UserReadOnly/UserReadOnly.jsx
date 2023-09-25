@@ -132,8 +132,8 @@ const UserReadOnly = () => {
           </Col>
           <Col span={24}>
             <Row>
-              <Col lg={16} sm={24} xs={24}>
-                <Card className="user-read-only-card">
+              <Col lg={24} sm={24} xs={24}>
+                <Card className="user-read-only-card" style={{ border: 'none' }}>
                   <Row gutter={[0, 4]}>
                     <Col>
                       <h2 className="user-info-details-card-heading">{t('dashboard.settings.userReadOnly.details')}</h2>
@@ -189,8 +189,8 @@ const UserReadOnly = () => {
           </Col>
           <Col span={24}>
             <Row>
-              <Col lg={16} sm={24} xs={24}>
-                <Card className="user-read-only-calendar-card">
+              <Col lg={24} sm={24} xs={24}>
+                <Card className="user-read-only-calendar-card" style={{ border: 'none' }}>
                   <Row>
                     <Col>
                       <h2 className="user-info-details-card-heading">
