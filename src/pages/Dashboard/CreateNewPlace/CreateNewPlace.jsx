@@ -178,7 +178,7 @@ function CreateNewPlace() {
               placeObj = {
                 ...placeObj,
                 postalAddressId: {
-                  entityId: response?.data?.id,
+                  entityId: response?.id,
                 },
               };
               addPlace({
@@ -217,7 +217,7 @@ function CreateNewPlace() {
                 placeObj = {
                   ...placeObj,
                   postalAddressId: {
-                    entityId: response?.data?.id,
+                    entityId: response?.id,
                   },
                 };
                 updatePlace({
@@ -365,21 +365,27 @@ function CreateNewPlace() {
               en: values?.english,
               fr: values?.french,
             },
-            description: {
-              en: values?.englishEditor,
-              fr: values?.frenchEditor,
-            },
-            openingHours: { uri: urlProtocolCheck(values?.openingHours) },
-            containedInPlace: values?.containedInPlace ? { entityId: values?.containedInPlace } : undefined,
+            ...((values?.frenchEditor || values?.englishEditor) && {
+              description: {
+                en: values?.englishEditor,
+                fr: values?.frenchEditor,
+              },
+            }),
+            ...(values?.openingHours && { openingHours: { uri: urlProtocolCheck(values?.openingHours) } }),
+            ...(values?.containedInPlace && {
+              containedInPlace: values?.containedInPlace ? { entityId: values?.containedInPlace } : undefined,
+            }),
             geo: {
               latitude: values?.latitude,
               longitude: values?.longitude,
             },
 
-            accessibilityNote: {
-              fr: values?.frenchAccessibilityNote,
-              en: values?.englishAccessibilityNote,
-            },
+            ...((values?.frenchAccessibilityNote || values?.englishAccessibilityNote) && {
+              accessibilityNote: {
+                fr: values?.frenchAccessibilityNote,
+                en: values?.englishAccessibilityNote,
+              },
+            }),
             accessibility: values?.placeAccessibility
               ? values?.placeAccessibility.map((item) => {
                   const obj = {
@@ -404,10 +410,13 @@ function CreateNewPlace() {
                   return obj;
                 })
               : undefined,
-            disambiguatingDescription: {
-              fr: values.frenchDisambiguatingDescription,
-              en: values.englishDisambiguatingDescription,
-            },
+
+            ...((values.frenchDisambiguatingDescription || values.englishDisambiguatingDescription) && {
+              disambiguatingDescription: {
+                fr: values.frenchDisambiguatingDescription,
+                en: values.englishDisambiguatingDescription,
+              },
+            }),
             ...(values?.dynamicFields && { dynamicFields }),
           };
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {

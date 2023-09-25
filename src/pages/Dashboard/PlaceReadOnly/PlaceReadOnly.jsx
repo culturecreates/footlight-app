@@ -132,6 +132,11 @@ function PlaceReadOnly() {
                         label={t('dashboard.places.readOnly.edit')}
                         size="middle"
                         style={{ height: '40px', width: '60px' }}
+                        onClick={() =>
+                          navigate(
+                            `${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${placeData?.id}`,
+                          )
+                        }
                       />
                     </div>
                   </ReadOnlyProtectedComponent>
