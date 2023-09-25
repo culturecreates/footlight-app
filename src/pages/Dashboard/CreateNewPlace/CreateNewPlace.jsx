@@ -894,17 +894,7 @@ function CreateNewPlace() {
                         initialValue={
                           placeData?.disambiguatingDescription?.fr ?? artsData?.disambiguatingDescription?.fr
                         }
-                        dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH]}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (value || getFieldValue(formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH)) {
-                                return Promise.resolve();
-                              } else
-                                return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
-                            },
-                          }),
-                        ]}>
+                        dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH]}>
                         <TextArea
                           autoSize
                           autoComplete="off"
@@ -921,17 +911,7 @@ function CreateNewPlace() {
                         initialValue={
                           placeData?.disambiguatingDescription?.en ?? artsData?.disambiguatingDescription?.en
                         }
-                        dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH]}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (value || getFieldValue(formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH)) {
-                                return Promise.resolve();
-                              } else
-                                return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
-                            },
-                          }),
-                        ]}>
+                        dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH]}>
                         <TextArea
                           autoSize
                           autoComplete="off"
@@ -961,64 +941,6 @@ function CreateNewPlace() {
                         editorLanguage={'fr'}
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.description.frenchPlaceholder')}
                         descriptionMinimumWordCount={descriptionMinimumWordCount}
-                        rules={[
-                          () => ({
-                            validator() {
-                              if (
-                                reactQuillRefFr?.current?.unprivilegedEditor?.getLength() > 1 ||
-                                reactQuillRefEn?.current?.unprivilegedEditor?.getLength() > 1
-                              ) {
-                                return Promise.resolve();
-                              } else
-                                return Promise.reject(
-                                  new Error(
-                                    calendarContentLanguage === contentLanguage.ENGLISH ||
-                                    calendarContentLanguage === contentLanguage.FRENCH
-                                      ? t(
-                                          'dashboard.events.addEditEvent.validations.otherInformation.unilingualEmptyDescription',
-                                        )
-                                      : calendarContentLanguage === contentLanguage.BILINGUAL &&
-                                        t(
-                                          'dashboard.events.addEditEvent.validations.otherInformation.emptyDescription',
-                                          {
-                                            wordCount: descriptionMinimumWordCount,
-                                          },
-                                        ),
-                                  ),
-                                );
-                            },
-                          }),
-                          () => ({
-                            validator() {
-                              if (
-                                reactQuillRefFr?.current?.unprivilegedEditor
-                                  ?.getText()
-                                  .split(' ')
-                                  ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
-                              ) {
-                                return Promise.resolve();
-                              } else if (
-                                reactQuillRefEn?.current?.unprivilegedEditor
-                                  ?.getText()
-                                  .split(' ')
-                                  ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
-                              )
-                                return Promise.resolve();
-                              else
-                                return Promise.reject(
-                                  new Error(
-                                    calendarContentLanguage === contentLanguage.ENGLISH ||
-                                    calendarContentLanguage === contentLanguage.FRENCH
-                                      ? t(
-                                          'dashboard.events.addEditEvent.validations.otherInformation.unilingualDescriptionShort',
-                                        )
-                                      : calendarContentLanguage === contentLanguage.BILINGUAL &&
-                                        t('dashboard.events.addEditEvent.validations.otherInformation.frenchShort'),
-                                  ),
-                                );
-                            },
-                          }),
-                        ]}
                       />
 
                       <TextEditor
@@ -1031,64 +953,6 @@ function CreateNewPlace() {
                         editorLanguage={'en'}
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.description.englishPlaceholder')}
                         descriptionMinimumWordCount={descriptionMinimumWordCount}
-                        rules={[
-                          () => ({
-                            validator() {
-                              if (
-                                reactQuillRefFr?.current?.unprivilegedEditor?.getLength() > 1 ||
-                                reactQuillRefEn?.current?.unprivilegedEditor?.getLength() > 1
-                              ) {
-                                return Promise.resolve();
-                              } else
-                                return Promise.reject(
-                                  new Error(
-                                    calendarContentLanguage === contentLanguage.ENGLISH ||
-                                    calendarContentLanguage === contentLanguage.FRENCH
-                                      ? t(
-                                          'dashboard.events.addEditEvent.validations.otherInformation.unilingualEmptyDescription',
-                                        )
-                                      : calendarContentLanguage === contentLanguage.BILINGUAL &&
-                                        t(
-                                          'dashboard.events.addEditEvent.validations.otherInformation.emptyDescription',
-                                          {
-                                            wordCount: descriptionMinimumWordCount,
-                                          },
-                                        ),
-                                  ),
-                                );
-                            },
-                          }),
-                          () => ({
-                            validator() {
-                              if (
-                                reactQuillRefEn?.current?.unprivilegedEditor
-                                  ?.getText()
-                                  .split(' ')
-                                  ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
-                              ) {
-                                return Promise.resolve();
-                              } else if (
-                                reactQuillRefFr?.current?.unprivilegedEditor
-                                  ?.getText()
-                                  .split(' ')
-                                  ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
-                              )
-                                return Promise.resolve();
-                              else
-                                return Promise.reject(
-                                  new Error(
-                                    calendarContentLanguage === contentLanguage.ENGLISH ||
-                                    calendarContentLanguage === contentLanguage.FRENCH
-                                      ? t(
-                                          'dashboard.events.addEditEvent.validations.otherInformation.unilingualDescriptionShort',
-                                        )
-                                      : calendarContentLanguage === contentLanguage.BILINGUAL &&
-                                        t('dashboard.events.addEditEvent.validations.otherInformation.englishShort'),
-                                  ),
-                                );
-                            },
-                          }),
-                        ]}
                       />
                     </BilingualInput>
                   </ContentLanguageInput>
@@ -1301,17 +1165,7 @@ function CreateNewPlace() {
                         name={formFieldNames.CITY_FRENCH}
                         key={contentLanguage.FRENCH}
                         initialValue={placeData?.address?.addressLocality?.fr ?? artsData?.address?.addressLocality?.fr}
-                        dependencies={[formFieldNames.CITY_ENGLISH]}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (value || getFieldValue(formFieldNames.CITY_ENGLISH)) {
-                                return Promise.resolve();
-                              } else
-                                return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
-                            },
-                          }),
-                        ]}>
+                        dependencies={[formFieldNames.CITY_ENGLISH]}>
                         <TextArea
                           autoSize
                           autoComplete="off"
@@ -1324,17 +1178,7 @@ function CreateNewPlace() {
                         name={formFieldNames.CITY_ENGLISH}
                         key={contentLanguage.ENGLISH}
                         initialValue={placeData?.address?.addressLocality?.fr ?? artsData?.address?.addressLocality?.en}
-                        dependencies={[formFieldNames.CITY_FRENCH]}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (value || getFieldValue(formFieldNames.CITY_FRENCH)) {
-                                return Promise.resolve();
-                              } else
-                                return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
-                            },
-                          }),
-                        ]}>
+                        dependencies={[formFieldNames.CITY_FRENCH]}>
                         <TextArea
                           autoSize
                           autoComplete="off"
