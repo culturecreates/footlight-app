@@ -21,7 +21,7 @@ import {
   useUpdateOrganizationMutation,
 } from '../../../services/organization';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
-import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
+import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 import NoContent from '../../../components/NoContent/NoContent';
 import { treeDynamicTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
@@ -39,6 +39,7 @@ import { useAddImageMutation } from '../../../services/image';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import { useLazyGetPlaceQuery } from '../../../services/places';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -66,6 +67,8 @@ function CreateNewOrganization() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
+  const [getPlace] = useLazyGetPlaceQuery();
+  const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
   const [addOrganization, { isLoading: addOrganizationLoading }] = useAddOrganizationMutation();
   const [updateOrganization, { isLoading: updateOrganizationLoading }] = useUpdateOrganizationMutation();
@@ -445,6 +448,8 @@ function CreateNewOrganization() {
 
   useEffect(() => {
     if (calendarId && organizationData && currentCalendarData) {
+      let initialPlaceAccessibiltiy = [],
+        initialPlace;
       if (routinghandler(user, calendarId, organizationData?.createdByUserId, null, true)) {
         if (organizationData?.image) {
           form.setFieldsValue({
@@ -468,6 +473,49 @@ function CreateNewOrganization() {
               },
             },
           });
+        }
+        if (organizationData?.place?.entityId) {
+          getPlace({ placeId: organizationData?.place?.entityId, calendarId })
+            .unwrap()
+            .then((response) => {
+              if (response?.accessibility?.length > 0) {
+                getAllTaxonomy({
+                  calendarId,
+                  search: '',
+                  taxonomyClass: taxonomyClass.PLACE,
+                  includeConcepts: true,
+                  sessionId: timestampRef,
+                })
+                  .unwrap()
+                  .then((res) => {
+                    res?.data?.forEach((taxonomy) => {
+                      if (taxonomy?.mappedToField === 'PlaceAccessibility') {
+                        response?.accessibility?.forEach((accessibility) => {
+                          taxonomy?.concept?.forEach((concept) => {
+                            if (concept?.id == accessibility?.entityId) {
+                              initialPlaceAccessibiltiy = initialPlaceAccessibiltiy?.concat([concept]);
+                            }
+                          });
+                        });
+                      }
+                    });
+                    initialPlace = {
+                      ...response,
+                      ['accessibility']: initialPlaceAccessibiltiy,
+                    };
+                    setLocationPlace(placesOptions([initialPlace], user, calendarContentLanguage)[0]);
+                  })
+                  .catch((error) => console.log(error));
+              } else {
+                initialPlace = {
+                  ...response,
+                  ['accessibility']: [],
+                };
+                setLocationPlace(placesOptions([response], user, calendarContentLanguage)[0]);
+              }
+            })
+            .catch((error) => console.log(error));
+          form.setFieldValue('place', organizationData?.place?.entityId);
         }
         let organizationKeys = Object.keys(organizationData);
         if (organizationKeys?.length > 0) setAddedFields(organizationKeys);
