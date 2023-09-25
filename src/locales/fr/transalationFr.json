@@ -709,7 +709,7 @@
         "sort": "Trier par",
         "status": "Statut",
         "userTypes": "Type",
-        "addUser":"Utilisateur",
+        "addUser": "Utilisateur",
         "clear": "Réinitialiser",
         "userName": "Nom d’utilisateur",
         "firstName": "Prénom",
@@ -743,6 +743,49 @@
         "calendarAccess": "Accès aux calendriers",
         "details": "Détails",
         "breadcrumb": "Retour à la liste des utilisateurs"
+      },
+      "addUser": {
+        "newUser": "Nouvel utilisateur",
+        "editUser": "Modifier l'utilisateur",
+        "userProfile": "Profil de l'utilisateur",
+        "detailsCardDescriptionAddPage": "Fill user details to add this person to your calendar.",
+        "detailsCardDescriptionEditPage": "Veuillez ajouter les nouvelles informations d'identification de l'utilisateur.",
+        "detailsCardDescriptionCurrentUser": "Modifiez vos paramètres d'utilisateur ici.",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "phoneNumber": "Numéro de téléphone",
+        "email": "Courriel",
+        "userType": "Type d’utilisateur",
+        "languagePreference": "Préférence de langue",
+        "organization": "Organisation",
+        "organizationDescription": "Ajouter une organisation qui sera liée à ce profile d’utilisateur.",
+        "dropDownOptions": {
+          "langagePreference": {
+            "en": "Anglais",
+            "fr": "Français"
+          }
+        },
+        "organizationSearchHeading": "Organisation",
+        "organizationSearchDescription": "Ajouter une organisation qui sera liée à ce profile d’utilisateur.",
+        "changePassWord": "Changer le mot de passe",
+        "calendars": "Calendriers",
+        "calendarsDescription": "Sélectionnez des calendriers disponibles auxquels cet utilisateur peut se joindre.",
+        "calendarSearchHeading": "Accès aux calendriers",
+        "leave": "Quitter",
+        "role": "Role",
+        "passwordModal": {
+          "btnText": "Changer le mot de passe",
+          "Password": "Mot de passe",
+          "newPassword": "Nouveau mot de passe",
+          "confirmNewPassword": "Confirmer votre nouveau mot de passe",
+          "changePassword": "Changer le mot de passe",
+          "Cancel": "Annuler",
+          "placeHolder": {
+            "current": "Entrez votre mot de passe",
+            "new": "Entrez nouveau mot de passe",
+            "confirm": "Confirmez nouveau mot de passe"
+          }
+        }
       }
     }
   },

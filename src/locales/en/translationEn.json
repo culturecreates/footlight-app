@@ -716,7 +716,7 @@
         "userTypes": "User types",
         "clear": "Clear",
         "userName": "Username",
-        "addUser":"Utilisateur",
+        "addUser": "Utilisateur",
         "firstName": "First name",
         "lastName": "Last name",
         "active": "Active",
@@ -726,7 +726,7 @@
         "editor": "Editor",
         "contributor": "Contributor",
         "guest": "Guest",
-        "superAdmin":"Super Admin",
+        "superAdmin": "Super Admin",
         "invitedBy": "Invited By",
         "tooltip": {
           "editUser": "Edit user",
@@ -754,6 +754,49 @@
         "calendarAccess": "Calendar access",
         "details": "Details",
         "breadcrumb": "Back to user list"
+      },
+      "addUser": {
+        "detailsCardDescriptionAddPage": "Fill user details to add this person to your calendar.",
+        "detailsCardDescriptionEditPage": "Please add the new user credentials.",
+        "detailsCardDescriptionCurrentUser": "Edit your user settings here.",
+        "newUser": "New user",
+        "editUser": "Edit user",
+        "userProfile": "User profile",
+        "firstName": "First name",
+        "lastName": "Last Name",
+        "phoneNumber": "Phone number",
+        "email": "Email",
+        "userType": "User type",
+        "languagePreference": "Language preference",
+        "organization": "Organization",
+        "organizationDescription": "Add organization that will be linked to this user profile.",
+        "dropDownOptions": {
+          "langagePreference": {
+            "en": "English",
+            "fr": "French"
+          }
+        },
+        "organizationSearchHeading": "Organization",
+        "organizationSearchDescription": "Add organization that will be linked to this user profile.",
+        "changePassWord": "Change Password",
+        "calendars": "Calendars",
+        "calendarsDescription": "Select available calendar for this user to join.",
+        "calendarSearchHeading": "Calendar access",
+        "leave": "Leave",
+        "role": "Role",
+        "passwordModal": {
+          "btnText": "Change password",
+          "Password": "Password",
+          "newPassword": "New Password",
+          "confirmNewPassword": "Confirm New Password",
+          "changePassword": "Change password",
+          "Cancel": "Cancel",
+          "placeHolder": {
+            "current": "Enter password",
+            "new": "Enter new password",
+            "confirm": "Confirm new password"
+          }
+        }
       }
     }
   },
