@@ -314,8 +314,8 @@ const UserManagement = () => {
   return !isUsersLoading ? (
     <Row gutter={[10, 24]} className="user-management-wrapper">
       <Col span={24}>
-        <Row justify="space-between" gutter={[24, 16]}>
-          <Col flex="800px">
+        <Row justify="space-between" gutter={[24, 16]} wrap={screens.xl && false}>
+          <Col xl={17}>
             <Row gutter={[20, 16]}>
               <Col flex="400px">
                 <UserSearch
