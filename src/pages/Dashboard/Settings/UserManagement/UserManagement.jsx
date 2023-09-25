@@ -32,6 +32,7 @@ import { PathName } from '../../../../constants/pathName';
 import { roleHandler } from '../../../../utils/roleHandler';
 import { useInviteUserMutation } from '../../../../services/invite';
 import AddEvent from '../../../../components/Button/AddEvent';
+import { copyText } from '../../../../utils/copyText';
 
 const UserManagement = () => {
   const { useBreakpoint } = Grid;
@@ -178,7 +179,7 @@ const UserManagement = () => {
   const tooltipItemDisplayHandler = ({ item }) => {
     const dropdownItems = [{ key: 'editUser', label: t('dashboard.settings.userManagement.tooltip.editUser') }];
 
-    if (!item?.isSuperAdmin && item.userStatus === userActivityStatus[2].key) {
+    if (!item?.isSuperAdmin) {
       dropdownItems.push({
         key: 'copyInvitationLink',
         label: t('dashboard.settings.userManagement.tooltip.copyInvitationLink'),
@@ -229,6 +230,7 @@ const UserManagement = () => {
   };
 
   const tooltipItemClickHandler = ({ key, item }) => {
+    let invitationLink;
     switch (key) {
       case 'editUser':
         console.log('edit screen navigation');
@@ -249,7 +251,9 @@ const UserManagement = () => {
         break;
 
       case 'copyInvitationLink':
-        // Code to handle 'copyInvitationLink' case
+        if (item?.userStatus === 'ACTIVE') invitationLink = process.env.REACT_APP_ACCEPT_URL + item?.invitationId;
+        else if (item?.userStatus === 'INVITED') invitationLink = process.env.REACT_APP_INVITE_URL + item?.invitationId;
+        copyText({ textToCopy: invitationLink });
         break;
 
       case 'activateOrDeactivate':
