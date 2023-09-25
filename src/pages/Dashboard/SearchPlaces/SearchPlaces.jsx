@@ -160,7 +160,7 @@ function SearchPlaces() {
                             <EntityCard
                               title={place?.name}
                               description={place?.description}
-                              artsDataLink={`${process.env.REACT_APP_ARTS_DATA_URI}${place?.id}`}
+                              artsDataLink={`${process.env.REACT_APP_ARTS_DATA_PAGE_URI}${place?.id}`}
                               Logo={
                                 place.logo ? (
                                   place.logo?.thumbnail?.uri
