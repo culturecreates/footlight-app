@@ -538,7 +538,16 @@
             "secondPart": "créez une nouvelle lieu",
             "thirdPart": " et ne sélectionnez pas cette source de données."
           },
-          "name": "Nom du lieu",
+          "name": {
+            "name": "Nom du lieu",
+            "placeholder": {
+              "english": "Entrez le nom du lieu",
+              "french": "Entrez le nom du lieu"
+            }
+          },
+          "placeType": {
+            "placeholder": "Sélectionnez le type de lieu"
+          },
           "address": {
             "address": "Adresse",
             "searchAddressDescription": "Entrer le nom du lieu et/ou l'adresse.",
@@ -574,9 +583,13 @@
             "coordinates": {
               "coordinates": "Coordonnées"
             },
+            "region": {
+              "placeholder": "Sélectionnez le région"
+            },
             "openingHours": {
               "openingHours": "Lien des heures d'ouverture",
-              "tooltip": "Ajoutez un lien vers les heures d'ouverture"
+              "tooltip": "Ajoutez un lien vers les heures d'ouverture",
+              "placeholder": "Entrez l'url des heures d'ouverture"
             }
           },
           "containedInPlace": {
@@ -587,12 +600,13 @@
           },
           "venueAccessibility": {
             "venueAccessibility": "Accessibilité du site",
+            "placeholder": "Sélectionner un élément",
             "subheading": "Ces éléments d'accessibilité seront affichés dans tous les événements se déroulant dans ce lieu.",
             "placeAccessibilityNote": {
               "note": "Note",
               "placeholder": {
-                "english": "",
-                "french": ""
+                "english": "Ajouter une note",
+                "french": "Ajouter une note"
               },
               "tooltip": "Ajoutez des informations supplémentaires sur l'accessibilité."
             }
@@ -609,7 +623,7 @@
           },
           "image": {
             "image": "Image",
-            "subheading": "Only .jpeg and .png files are accepted."
+            "subheading": "Uniquement les fichiers .jpeg et .png sont acceptés."
           },
           "addMoreDetails": "Ajouter plus de détails",
           "dataSource": "Source de la donnée",
@@ -619,7 +633,10 @@
             "saveError": "Cet lieu a besoin de plus d'informations avant d'être enregistré."
           },
           "validations": {
-            "nameRequired": "Le nom est requis."
+            "nameRequired": "Le nom est requis.",
+            "placeTypeRequired": "Un minimum d'un type est requis.",
+            "streetAddressRequired": "L'adresse postale est requise.",
+            "postalCodeRequired": "Le code postal est requis."
           }
         }
       }

@@ -540,7 +540,16 @@
             "secondPart": "create a new place",
             "thirdPart": " and do not select this data source."
           },
-          "name": "Place Name",
+          "name": {
+            "name": "Place Name",
+            "placeholder": {
+              "english": "Enter place name",
+              "french": "Enter place name"
+            }
+          },
+          "placeType": {
+            "placeholder": "Select place type"
+          },
 
           "dataSource": "Data source",
           "address": {
@@ -578,9 +587,13 @@
             "coordinates": {
               "coordinates": "Coordinates"
             },
+            "region": {
+              "placeholder": "Select region"
+            },
             "openingHours": {
               "openingHours": "Opening hours link",
-              "tooltip": "Add a link to the opening hours"
+              "tooltip": "Add a link to the opening hours",
+              "placeholder": "Enter opening hours URL"
             }
           },
           "containedInPlace": {
@@ -592,11 +605,12 @@
           "venueAccessibility": {
             "venueAccessibility": "Venue accessibility",
             "subheading": "These accessibility items will be displayed in all the event located at this venue.",
+            "placeholder": "Select accessibility items",
             "placeAccessibilityNote": {
               "note": "Note",
               "placeholder": {
-                "english": "",
-                "french": ""
+                "english": "Enter a note",
+                "french": "Enter a note"
               },
               "tooltip": "Add supplementary accessibility information."
             }
@@ -622,7 +636,10 @@
             "saveError": "This place needs more information before it can be saved."
           },
           "validations": {
-            "nameRequired": "Name is required."
+            "nameRequired": "Name is required.",
+            "placeTypeRequired": "A minimum of one type is requred.",
+            "streetAddressRequired": "Street address is required.",
+            "postalCodeRequired": "Postal code is required."
           }
         }
       }
