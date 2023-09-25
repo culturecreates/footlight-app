@@ -18,9 +18,7 @@ export const usersApi = createApi({
         };
       },
       providesTags: (result) =>
-        result
-          ? [...result.data.map(({ id }) => ({ type: 'Users', id })), { type: 'Users', id: 'LIST' }]
-          : [{ type: 'Users', id: 'LIST' }],
+        result ? [...result.data.map(({ _id }) => ({ type: 'Users', id: _id })), 'Users'] : ['Users'],
       transformResponse: (response) => response,
     }),
     getUserRoles: builder.query({
@@ -57,7 +55,7 @@ export const usersApi = createApi({
           'calendar-id': calendarId,
         },
       }),
-      invalidatesTags: [{ type: 'Users', id: 'LIST' }],
+      invalidatesTags: (result, error, arg) => [{ type: 'Users', id: arg.id }],
     }),
     activateUser: builder.mutation({
       query: ({ id, calendarId }) => ({
@@ -67,7 +65,7 @@ export const usersApi = createApi({
           'calendar-id': calendarId,
         },
       }),
-      invalidatesTags: [{ type: 'Users', id: 'LIST' }],
+      invalidatesTags: (result, error, arg) => [{ type: 'Users', id: arg.id }],
     }),
     deactivateUser: builder.mutation({
       query: ({ id, calendarId }) => ({
@@ -77,7 +75,7 @@ export const usersApi = createApi({
           'calendar-id': calendarId,
         },
       }),
-      invalidatesTags: [{ type: 'Users', id: 'LIST' }],
+      invalidatesTags: (result, error, arg) => [{ type: 'Users', id: arg.id }],
     }),
     updateCurrentUser: builder.mutation({
       query: ({ calendarId, body }) => {
