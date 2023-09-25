@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import OutlinedButton from '../../..//components/Button/Outlined';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { Button, Card, Col, Row } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
 import './userReadOnly.css';
@@ -16,10 +16,12 @@ import { useGetAllCalendarsQuery } from '../../../services/calendar';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
+import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
+import { featureFlags } from '../../../utils/featureFlags';
+import { PathName } from '../../../constants/pathName';
 
 const UserReadOnly = () => {
   const { t } = useTranslation();
-  const location = useLocation();
   const navigate = useNavigate();
   const timestampRef = useRef(Date.now()).current;
   const { userId, calendarId } = useParams();
@@ -55,7 +57,6 @@ const UserReadOnly = () => {
         });
       });
       setUserSubscribedCalenders([...filteredCalendarItem]);
-      console.log(userSubscribedCalenders);
     }
   }, [calendarLoading, userLoading]);
 
@@ -81,138 +82,148 @@ const UserReadOnly = () => {
   };
 
   return (
-    !userLoading &&
-    !calendarLoading && (
-      <Row className="user-read-only-wrapper" gutter={[0, 32]}>
-        <Col span={24}>
-          <Row gutter={[32, 24]} className="user-read-only-heading-wrapper">
-            <Col span={24} style={{ paddingRight: '0' }}>
-              <Row>
-                <Col flex="auto">
-                  <div className="breadcrumb-container">
-                    <Button type="link" onClick={() => navigate(-1)}>
-                      <LeftOutlined style={{ fontSize: '12px', paddingRight: '5px' }} />
-                      {t('dashboard.settings.userReadOnly.breadcrumb')}
-                    </Button>
-                  </div>
-                </Col>
-                <Col flex="60px">
-                  <ReadOnlyProtectedComponent>
-                    <div className="button-container">
-                      <OutlinedButton
-                        label={t('dashboard.settings.userReadOnly.editBtn')}
-                        size="middle"
-                        style={{ height: '40px', width: '112px' }}
-                        onClick={() => navigate(location.pathname)}
-                      />
+    <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
+      {!userLoading && !calendarLoading && (
+        <Row className="user-read-only-wrapper" gutter={[0, 32]}>
+          <Col span={24}>
+            <Row gutter={[32, 24]} className="user-read-only-heading-wrapper">
+              <Col span={24} style={{ paddingRight: '0' }}>
+                <Row>
+                  <Col flex="auto">
+                    <div className="breadcrumb-container">
+                      <Button type="link" onClick={() => navigate(-1)}>
+                        <LeftOutlined style={{ fontSize: '12px', paddingRight: '5px' }} />
+                        {t('dashboard.settings.userReadOnly.breadcrumb')}
+                      </Button>
                     </div>
-                  </ReadOnlyProtectedComponent>
-                </Col>
-              </Row>
-            </Col>
-            <Col span={24}>
-              <Row gutter={16}>
-                <Col>
-                  <div className="read-only-user-heading">
-                    <h1>{userInfo?.firstName + ' ' + userInfo?.lastName}</h1>
-                  </div>
-                </Col>
-                <Col className="read-only-user-status-wrapper">
-                  <StatusTag activityStatus={userInfo?.userStatus} />
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-        </Col>
-        <Col span={24}>
-          <Row>
-            <Col lg={16} sm={24} xs={24}>
-              <Card className="user-read-only-card">
-                <Row gutter={[0, 4]}>
-                  <Col>
-                    <h2 className="user-info-details-card-heading">{t('dashboard.settings.userReadOnly.details')}</h2>
+                  </Col>
+                  <Col flex="60px">
+                    <ReadOnlyProtectedComponent>
+                      <div className="button-container">
+                        <OutlinedButton
+                          label={t('dashboard.settings.userReadOnly.editBtn')}
+                          size="middle"
+                          style={{ height: '40px', width: '112px' }}
+                          onClick={() =>
+                            navigate(
+                              `${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}`,
+                              { state: { data: userInfo } },
+                            )
+                          }
+                        />
+                      </div>
+                    </ReadOnlyProtectedComponent>
                   </Col>
                 </Row>
-                {(userInfo?.lastName || userInfo?.firstName) &&
-                  createUserInfoRowItem({
-                    isCopiableText: false,
-                    infoType: 'userName',
-                    infoText: userInfo.firstName[0].toLowerCase() + userInfo.lastName.toLowerCase(),
-                  })}
-
-                {userInfo?.firstName &&
-                  createUserInfoRowItem({ isCopiableText: false, infoType: 'firstName', infoText: userInfo.firstName })}
-
-                {userInfo?.phoneNumber &&
-                  createUserInfoRowItem({
-                    isCopiableText: true,
-                    infoType: 'phoneNumber',
-                    infoText: userInfo.phoneNumber,
-                  })}
-
-                {userInfo?.email &&
-                  createUserInfoRowItem({
-                    isCopiableText: true,
-                    infoType: 'email',
-                    infoText: userInfo.email,
-                    onClick: (e) => {
-                      copyText({ textToCopy: e.target.textContent });
-                    },
-                  })}
-
-                {userInfo?.roles &&
-                  createUserInfoRowItem({
-                    isCopiableText: false,
-                    infoType: 'userType',
-                    infoText: roleHandler({ roles: userInfo.roles, calendarId }),
-                  })}
-
-                {userInfo?.interfaceLanguage &&
-                  createUserInfoRowItem({
-                    isCopiableText: false,
-                    infoType: 'languagePreference',
-                    infoText: userInfo?.interfaceLanguage ? t('common.tabEnglish') : t('common.tabFrench'),
-                  })}
-              </Card>
-            </Col>
-          </Row>
-        </Col>
-        <Col span={24}>
-          <Row>
-            <Col lg={16} sm={24} xs={24}>
-              <Card className="user-read-only-calendar-card">
-                <Row>
+              </Col>
+              <Col span={24}>
+                <Row gutter={16}>
                   <Col>
-                    <h2 className="user-info-details-card-heading">
-                      {t('dashboard.settings.userReadOnly.calendarAccess')}
-                    </h2>
+                    <div className="read-only-user-heading">
+                      <h1>{userInfo?.firstName + ' ' + userInfo?.lastName}</h1>
+                    </div>
+                  </Col>
+                  <Col className="read-only-user-status-wrapper">
+                    <StatusTag activityStatus={userInfo?.userStatus} />
                   </Col>
                 </Row>
-                <Row>
-                  {userSubscribedCalenders?.map((item, index) => {
-                    return (
-                      <SelectionItem
-                        key={index}
-                        icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
-                        name={contentLanguageBilingual({
-                          en: item?.name?.en,
-                          fr: item?.name?.fr,
-                          interfaceLanguage: currentUser?.interfaceLanguage?.toLowerCase(),
-                          calendarContentLanguage: calendarContentLanguage,
-                        })}
-                        itemWidth="423px"
-                        bordered
-                        calendarContentLanguage={calendarContentLanguage}
-                      />
-                    );
-                  })}
-                </Row>
-              </Card>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-    )
+              </Col>
+            </Row>
+          </Col>
+          <Col span={24}>
+            <Row>
+              <Col lg={16} sm={24} xs={24}>
+                <Card className="user-read-only-card">
+                  <Row gutter={[0, 4]}>
+                    <Col>
+                      <h2 className="user-info-details-card-heading">{t('dashboard.settings.userReadOnly.details')}</h2>
+                    </Col>
+                  </Row>
+                  {(userInfo?.lastName || userInfo?.firstName) &&
+                    createUserInfoRowItem({
+                      isCopiableText: false,
+                      infoType: 'userName',
+                      infoText: userInfo.firstName[0].toLowerCase() + userInfo.lastName.toLowerCase(),
+                    })}
+
+                  {userInfo?.firstName &&
+                    createUserInfoRowItem({
+                      isCopiableText: false,
+                      infoType: 'firstName',
+                      infoText: userInfo.firstName,
+                    })}
+
+                  {userInfo?.phoneNumber &&
+                    createUserInfoRowItem({
+                      isCopiableText: true,
+                      infoType: 'phoneNumber',
+                      infoText: userInfo.phoneNumber,
+                    })}
+
+                  {userInfo?.email &&
+                    createUserInfoRowItem({
+                      isCopiableText: true,
+                      infoType: 'email',
+                      infoText: userInfo.email,
+                      onClick: (e) => {
+                        copyText({ textToCopy: e.target.textContent });
+                      },
+                    })}
+
+                  {userInfo?.roles &&
+                    createUserInfoRowItem({
+                      isCopiableText: false,
+                      infoType: 'userType',
+                      infoText: roleHandler({ roles: userInfo.roles, calendarId }),
+                    })}
+
+                  {userInfo?.interfaceLanguage &&
+                    createUserInfoRowItem({
+                      isCopiableText: false,
+                      infoType: 'languagePreference',
+                      infoText: userInfo?.interfaceLanguage ? t('common.tabEnglish') : t('common.tabFrench'),
+                    })}
+                </Card>
+              </Col>
+            </Row>
+          </Col>
+          <Col span={24}>
+            <Row>
+              <Col lg={16} sm={24} xs={24}>
+                <Card className="user-read-only-calendar-card">
+                  <Row>
+                    <Col>
+                      <h2 className="user-info-details-card-heading">
+                        {t('dashboard.settings.userReadOnly.calendarAccess')}
+                      </h2>
+                    </Col>
+                  </Row>
+                  <Row>
+                    {userSubscribedCalenders?.map((item, index) => {
+                      return (
+                        <SelectionItem
+                          key={index}
+                          icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
+                          name={contentLanguageBilingual({
+                            en: item?.name?.en,
+                            fr: item?.name?.fr,
+                            interfaceLanguage: currentUser?.interfaceLanguage?.toLowerCase(),
+                            calendarContentLanguage: calendarContentLanguage,
+                          })}
+                          itemWidth="423px"
+                          bordered
+                          calendarContentLanguage={calendarContentLanguage}
+                        />
+                      );
+                    })}
+                  </Row>
+                </Card>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      )}
+    </FeatureFlag>
   );
 };
 

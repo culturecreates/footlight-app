@@ -440,12 +440,12 @@ function Events() {
                               onChange={(e) => onCheckboxChange(e)}>
                               {user?.id == userDetail?._id
                                 ? t('dashboard.events.filter.users.myEvents')
-                                : userDetail?.username}
+                                : userDetail?.userName}
                             </Checkbox>
                             {user?.id == userDetail?._id && <Divider style={{ margin: 8 }} />}
                           </>
                         ),
-                        filtervalue: userDetail?.username,
+                        filtervalue: userDetail?.userName,
                       };
                     })}
                     value={userFilter}>

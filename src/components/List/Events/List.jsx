@@ -221,9 +221,9 @@ function Lists(props) {
                     ?.toUpperCase()}
                   &nbsp;
                   {t('dashboard.events.list.by')}&nbsp;
-                  <Username userName={eventItem?.creator?.username} />
+                  <Username userName={eventItem?.creator?.userName} />
                 </span>
-                {eventItem?.modifier?.firstName && eventItem?.modifier?.lastName ? (
+                {eventItem?.modifier?.userName ? (
                   <span className="event-list-status-updated-by">
                     {t('dashboard.events.list.updatedBy')}&nbsp;
                     {moment
@@ -233,7 +233,7 @@ function Lists(props) {
                       ?.toUpperCase()}
                     &nbsp;
                     {t('dashboard.events.list.by')}&nbsp;
-                    <Username userName={eventItem?.modifier?.username} />
+                    <Username userName={eventItem?.modifier?.userName} />
                   </span>
                 ) : (
                   <></>

@@ -69,8 +69,7 @@ const UserManagement = () => {
   });
   const [userSearchQuery, setUserSearchQuery] = useState(decodeURIComponent(defaultQuery));
 
-  const [getAllUsers, { currentData: userData, isLoading: isUsersLoading, isFetching: isUsersFetching }] =
-    useLazyGetAllUsersQuery();
+  const [getAllUsers, { currentData: userData, isFetching: isUsersLoading }] = useLazyGetAllUsersQuery();
   const [inviteUserMutation] = useInviteUserMutation();
   const [deleteUser] = useDeleteUserMutation();
   const [activateUser] = useActivateUserMutation();
@@ -92,7 +91,7 @@ const UserManagement = () => {
     if (filter.userRole !== '') {
       optionalFilters.append('userRole', encodeURIComponent(`${filter?.userRole && filter?.userRole}`));
     }
-
+    console.log(decodeURIComponent(optionalFilters.toString()), 'filters', filter);
     const filtersDecoded =
       decodeURIComponent(sortQuery.toString()) + '&' + decodeURIComponent(optionalFilters.toString());
 
@@ -115,7 +114,7 @@ const UserManagement = () => {
       order: filter?.order,
       sortBy: filter?.sort,
       ...(filter.userRole !== '' && { userRole: filter.userRole }),
-      ...(filter.userStatus !== '' && { userRole: filter.userStatus }),
+      ...(filter.userStatus !== '' && { userStatus: filter.userStatus }),
       ...(userSearchQuery !== '' && { query: userSearchQuery }),
     };
     setSearchParams(createSearchParams(params));
@@ -303,9 +302,9 @@ const UserManagement = () => {
     }
   };
 
-  // const addEventHandler = () => {
-  //   navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.AddUser}`);
-  // };
+  const addEventHandler = () => {
+    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}`);
+  };
 
   const listItemHandler = (id) => {
     navigate(`${location.pathname}${PathName.UserManagement}/${id}`);
@@ -314,8 +313,8 @@ const UserManagement = () => {
   return !isUsersLoading ? (
     <Row gutter={[10, 24]} className="user-management-wrapper">
       <Col span={24}>
-        <Row justify="space-between" gutter={[24, 16]}>
-          <Col flex="800px">
+        <Row justify="space-between" gutter={[24, 16]} wrap={screens.xl && false}>
+          <Col xl={17}>
             <Row gutter={[20, 16]}>
               <Col flex="400px">
                 <UserSearch
@@ -437,10 +436,7 @@ const UserManagement = () => {
           <Col>
             <Row>
               <Col>
-                <AddEvent
-                  label={t('dashboard.settings.userManagement.addUser')}
-                  // onClick={addEventHandler}
-                />
+                <AddEvent label={t('dashboard.settings.userManagement.addUser')} onClick={addEventHandler} />
               </Col>
             </Row>
           </Col>
@@ -449,7 +445,7 @@ const UserManagement = () => {
       <Col span={17}>
         <Row>
           <Col span={24}>
-            {userData?.data.length && !isUsersFetching > 0 ? (
+            {userData?.data.length && !isUsersLoading > 0 ? (
               <List
                 className="event-list-wrapper"
                 itemLayout={screens.xs ? 'vertical' : 'horizontal'}
@@ -475,7 +471,7 @@ const UserManagement = () => {
                     id={index}
                     key={index}
                     listItemHandler={() => listItemHandler(item?._id)}
-                    title={createTitleHandler(item?.firstName, item?.lastName, item?.username)}
+                    title={createTitleHandler(item?.firstName, item?.lastName, item?.userName)}
                     description={roleHandler({ roles: item?.roles, calendarId })}
                     activityStatus={item?.userStatus}
                     invitedBy={item?.invitedBy && <Username userName={item?.invitedBy} />}

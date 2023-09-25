@@ -15,4 +15,4 @@ export const calendarApi = createApi({
   }),
 });
 
-export const { useGetAllCalendarsQuery, useLazyGetCalendarQuery } = calendarApi;
+export const { useGetAllCalendarsQuery, useLazyGetCalendarQuery, useLazyGetAllCalendarsQuery } = calendarApi;
