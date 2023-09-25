@@ -192,9 +192,9 @@ function People() {
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                     createdDate={item?.creator?.date}
-                    createdByUserName={item?.creator?.username}
+                    createdByUserName={item?.creator?.userName}
                     updatedDate={item?.modifier?.date}
-                    updatedByUserName={item?.modifier?.username}
+                    updatedByUserName={item?.modifier?.userName}
                     artsDataLink={artsDataLinkChecker(item?.sameAs)}
                     listItemHandler={() => listItemHandler(item?.id)}
                     actions={[

@@ -472,7 +472,7 @@ const UserManagement = () => {
                     id={index}
                     key={index}
                     listItemHandler={() => listItemHandler(item?._id)}
-                    title={createTitleHandler(item?.firstName, item?.lastName, item?.username)}
+                    title={createTitleHandler(item?.firstName, item?.lastName, item?.userName)}
                     description={roleHandler({ roles: item?.roles, calendarId })}
                     activityStatus={item?.userStatus}
                     invitedBy={item?.invitedBy && <Username userName={item?.invitedBy} />}
