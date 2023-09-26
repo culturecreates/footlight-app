@@ -562,6 +562,10 @@ function CreateNewPlace() {
     setScrollToSelectedField(array?.at(-1));
   };
 
+  const onValuesChangHandler = () => {
+    setShowDialog(true);
+  };
+
   useEffect(() => {
     if (addedFields?.length > 0) {
       const element = document.getElementsByClassName(scrollToSelectedField);
@@ -685,7 +689,7 @@ function CreateNewPlace() {
   return !isPlaceLoading && !artsDataLoading && !taxonomyLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <div className="add-edit-wrapper add-organization-wrapper">
-        <Form form={form} layout="vertical" name="place">
+        <Form form={form} layout="vertical" name="place" onValuesChange={onValuesChangHandler}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
               <Row gutter={[32, 2]}>
