@@ -17,6 +17,7 @@ import './searchPlaces.css';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
 import { getArtsDataEntities } from '../../../services/artsData';
+import { routinghandler } from '../../../utils/roleRoutingHandler';
 
 function SearchPlaces() {
   const { t } = useTranslation();
@@ -130,11 +131,13 @@ function SearchPlaces() {
                             )
                           }
                           linkText={t('dashboard.places.createNew.search.linkText')}
-                          onClick={() =>
-                            navigate(
-                              `${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${place?.id}`,
-                            )
-                          }
+                          onClick={() => {
+                            if (routinghandler(user, calendarId, place?.creator?.userId, null, true)) {
+                              navigate(
+                                `${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${place?.id}`,
+                              );
+                            } else navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}/${place?.id}`);
+                          }}
                         />
                       </div>
                     ))

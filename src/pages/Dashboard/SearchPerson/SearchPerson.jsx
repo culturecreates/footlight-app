@@ -17,6 +17,7 @@ import { UserOutlined } from '@ant-design/icons';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import './searchPerson.css';
 import { getArtsDataEntities } from '../../../services/artsData';
+import { routinghandler } from '../../../utils/roleRoutingHandler';
 
 function SearchPerson() {
   const { t } = useTranslation();
@@ -131,11 +132,13 @@ function SearchPerson() {
                           )
                         }
                         linkText={t('dashboard.people.createNew.search.linkText')}
-                        onClick={() =>
-                          navigate(
-                            `${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${person?.id}`,
-                          )
-                        }
+                        onClick={() => {
+                          if (routinghandler(user, calendarId, person?.creator?.userId, null, true)) {
+                            navigate(
+                              `${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${person?.id}`,
+                            );
+                          } else navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}/${person?.id}`);
+                        }}
                       />
                     </div>
                   ))
@@ -162,7 +165,7 @@ function SearchPerson() {
                           <EntityCard
                             title={person?.name}
                             description={person?.description}
-                            artsDataLink={`${process.env.REACT_APP_ARTS_DATA_URI}${person?.id}`}
+                            artsDataLink={`${process.env.REACT_APP_ARTS_DATA_PAGE_URI}${person?.id}`}
                             Logo={
                               person.logo ? (
                                 person.logo?.thumbnail?.uri

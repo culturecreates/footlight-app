@@ -775,7 +775,7 @@ function AddEvent() {
     setScrollToSelectedField(array?.at(-1));
   };
 
-  const onValuesChangHandler = () => {
+  const onValuesChangeHandler = () => {
     setShowDialog(true);
   };
 
@@ -1125,7 +1125,7 @@ function AddEvent() {
         form={form}
         layout="vertical"
         name="event"
-        onValuesChange={onValuesChangHandler}
+        onValuesChange={onValuesChangeHandler}
         onFieldsChange={() => {
           setFormValue(form.getFieldsValue(true));
         }}>
