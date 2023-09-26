@@ -1,16 +1,6 @@
 import React, { useRef } from 'react';
-import { LeftOutlined, CalendarOutlined } from '@ant-design/icons';
-import {
-  Button,
-  Card,
-  Col,
-  Dropdown,
-  Form,
-  notification,
-  //  notification,
-  Row,
-  Typography,
-} from 'antd';
+import { LeftOutlined, CalendarOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Button, Card, Col, Dropdown, Form, message, Modal, notification, Row, Typography } from 'antd';
 import PrimaryButton from '../../../components/Button/Primary';
 import { createSearchParams, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import OutlinedButton from '../../..//components/Button/Outlined';
@@ -18,50 +8,45 @@ import { useTranslation } from 'react-i18next';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import './addUser.css';
+import i18n from 'i18next';
 import { DownOutlined } from '@ant-design/icons';
 import {
   useCurrentUserLeaveCalendarMutation,
   useDeleteUserMutation,
   useLazyGetUserByIdQuery,
+  useUpdateCurrentUserMutation,
   useUpdateUserByIdMutation,
 } from '../../../services/users';
 import AuthenticationInput from '../../../components/Input/Common/AuthenticationInput';
 import { userLanguages } from '../../../constants/userLanguagesÏ';
 import { useState, useEffect } from 'react';
 import { userRoles, userRolesWithTranslation } from '../../../constants/userRoles';
-import { useLazyGetAllOrganizationQuery } from '../../../services/organization';
-import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
-import { useSelector } from 'react-redux';
-import { getUserDetails } from '../../../redux/reducer/userSlice';
-import { Popover } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserDetails, setUser } from '../../../redux/reducer/userSlice';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useOutletContext } from 'react-router-dom';
-import NoContent from '../../../components/NoContent/NoContent';
-import ListCard from '../../../components/Card/User/ListCard';
-import EventsSearch from '../../../components/Search/Events/EventsSearch';
-import LoadingIndicator from '../../../components/LoadingIndicator';
-import SelectionItem from '../../../components/List/SelectionItem';
-import { useLazyGetAllCalendarsQuery } from '../../../services/calendar';
 import CalendarSelect from '../../../components/List/User/CalenderSelect/CalendarSelect';
 import ChangePassword from '../../../components/Modal/ChangePassword/ChangePassword';
 import { useInviteUserMutation } from '../../../services/invite';
 
 const AddUser = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { t } = useTranslation();
   const { calendarId } = useParams();
   const location = useLocation();
   let [searchParams, setSearchParams] = useSearchParams();
   const [formInstance] = Form.useForm();
-  const timestampRef = useRef(Date.now()).current;
   const [currentCalendarData] = useOutletContext();
+  const userId = searchParams.get('id');
+  const timestampRef = useRef(Date.now()).current;
+  const { confirm } = Modal;
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
-  const { user } = useSelector(getUserDetails);
+  const { accessToken, expiredTime, refreshToken, user } = useSelector(getUserDetails);
 
   const [isPopoverOpen, setIsPopoverOpen] = useState({ organization: false, calendar: false, password: false });
-  const [selectedOrganization, setSelectedOrganization] = useState([]);
   const [selectedCalendars, setSelectedCalendars] = useState([]);
   const [userData, setUserData] = useState({
     firstName: '',
@@ -69,25 +54,17 @@ const AddUser = () => {
     phoneNumber: '',
     email: '',
     userType: '',
-    languagePreference: '',
+    languagePreference: { key: '', label: '' },
   });
-  const [filteredCalendarData, setFilteredCalendarData] = useState([]);
-  const [organizationSearchQuery, setOrganizationSearchQuery] = useState('');
-  const [calendarSearchQuery, setCalendarSearchQuery] = useState('');
+
   const [isCurrentUser, setIsCurrentUser] = useState(false);
 
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
-  const userId = searchParams.get('id');
 
   const [getUser, { isFetching: isLoading, isSuccess: isUserFetchSuccess }] = useLazyGetUserByIdQuery();
-  const [getOrganizations, { currentData: organizationData, isFetching: isOrganizationsLoading }] =
-    useLazyGetAllOrganizationQuery();
-  const [
-    getAllCalendars,
-    { currentData: calendarData, isFetching: isCalendarsLoading, isSuccess: isCalendarFetchSuccess },
-  ] = useLazyGetAllCalendarsQuery();
+
   const [
     currentUserLeaveCalendar,
     // { isSuccess: isCurrentUserLeaveCalendarSuccess, isError: isCurrentUserLeaveCalendarError },
@@ -95,17 +72,20 @@ const AddUser = () => {
   const [deleteUser] = useDeleteUserMutation();
   const [inviteUser] = useInviteUserMutation();
   const [updateUserById] = useUpdateUserByIdMutation();
+  const [updateCurrentUser] = useUpdateCurrentUserMutation();
 
   useEffect(() => {
     if (userId) {
       userId === user?.id && setIsCurrentUser(true);
 
-      getUser({ userId, calendarId })
+      getUser({ userId, calendarId, sessionId: timestampRef })
         .unwrap()
         .then((response) => {
+          setSelectedCalendars(response.roles);
           const requiredRole = response?.roles.filter((r) => {
             return r.calendarId === calendarId;
           });
+          const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
 
           setUserData({
             firstName: response?.firstName,
@@ -113,45 +93,17 @@ const AddUser = () => {
             phoneNumber: response?.phoneNumber,
             email: response?.email,
             userType: requiredRole[0]?.role,
-            languagePreference: response.interfaceLanguage,
+            languagePreference: {
+              key: response.interfaceLanguage,
+              label: selectedLanguage?.label ? selectedLanguage?.label : '',
+            },
             calendars: response.roles,
           });
         });
     } else if (location.state?.data) {
       setSearchParams(createSearchParams({ id: location.state.data.id }));
     }
-
-    getOrganizations({
-      calendarId,
-      sessionId: timestampRef,
-      query: '',
-      sort: `sort=asc(name.${user?.interfaceLanguage.toLowerCase()})`,
-    });
-    getAllCalendars();
   }, [userId]);
-
-  useEffect(() => {
-    if (calendarData?.data && userData?.calendars) {
-      // for edit user
-      const calendarIds = userData?.calendars?.map((item) => item.calendarId);
-      const subscribedCalendars = calendarData?.data.map((item) => {
-        if (calendarIds.includes(item.id)) {
-          return {
-            ...item,
-            role: userData?.calendars.find((calendar) => calendar.calendarId === item.id)?.role,
-          };
-        }
-      });
-
-      const filteredCalendars = subscribedCalendars.filter((calendar) => calendar !== undefined);
-      setSelectedCalendars([...filteredCalendars]);
-
-      setFilteredCalendarData([...calendarData.data]);
-    } else if (calendarData?.data && !userId) {
-      // for new users
-      setFilteredCalendarData([...calendarData.data]);
-    }
-  }, [calendarData, isUserFetchSuccess, userData?.calendars]);
 
   useEffect(() => {
     if (userId) {
@@ -164,43 +116,14 @@ const AddUser = () => {
         languagePreference: userData.languagePreference,
       });
     }
+    console.log(selectedCalendars, 'lasx');
   }, [userData]);
-
-  useEffect(() => {
-    if (organizationSearchQuery !== '') {
-      getOrganizations({
-        calendarId,
-        sessionId: timestampRef,
-        query: organizationSearchQuery,
-        sort: `sort=asc(name.${user?.interfaceLanguage.toLowerCase()})`,
-      });
-    }
-  }, [organizationSearchQuery]);
-
-  useEffect(() => {
-    const filteredData = calendarData?.data.filter((item) => {
-      const name = contentLanguageBilingual({
-        en: item?.name?.en,
-        fr: item?.name?.fr,
-        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-        calendarContentLanguage: calendarContentLanguage,
-      });
-      if (name.toLowerCase().includes(calendarSearchQuery.toLowerCase())) {
-        return item;
-      }
-    });
-    if (filteredData) {
-      setFilteredCalendarData([...filteredData]);
-    } else {
-      setFilteredCalendarData([]);
-    }
-  }, [calendarSearchQuery]);
 
   // handlers
 
-  const validateNotEmpty = (_, value) => {
+  const validateNotEmpty = (_, value, message) => {
     if (value === '') {
-      return Promise.reject(new Error('This field is required.'));
+      return Promise.reject(new Error(message));
     } else {
       return Promise.resolve();
     }
@@ -216,68 +139,115 @@ const AddUser = () => {
       formInstance
         .validateFields()
         .then((values) => {
-          userId &&
-            selectedCalendars.map((item) => {
-              inviteUser({
-                firstName: values.firstName,
-                lastName: values.lastName,
-                email: values.email,
-                role: values.userType,
-                calendarId: item.id,
-              });
-            });
           inviteUser({
             firstName: values.firstName,
             lastName: values.lastName,
             email: values.email,
             role: values.userType,
             calendarId,
-          });
-        })
-        .then((res) => {
-          setTimeout(() => {
+          }).then((res) => {
             notification.success({
-              description: res.message,
+              description: t(`dashboard.settings.addUser.notification.invitation`),
               key: res.message,
               placement: 'top',
               closeIcon: <></>,
               maxCount: 1,
               duration: 3,
             });
-          }, 3000);
-          navigate(-2);
+            navigate(-2);
+          });
         })
         .catch((errors) => {
           console.error('Validation errors:', errors);
         });
     }
     if (isCurrentUser) {
-      !isCurrentUser &&
-        formInstance
-          .validateFields()
-          .then((values) => {
-            adminCheckHandler()
-              ? updateUserById({
-                  id: userId,
-                  calendarId,
-                  body: {
-                    firstName: values.firstName,
-                    lastName: values.lastName,
-                    email: values.email,
-                    interfaceLanguage: values.languagePreference,
-                    modifyRole: {
-                      userId: userId,
-                      role: values.userType,
-                      calendarId,
-                    },
-                  },
-                })
-              : console.log(values, selectedCalendars);
+      formInstance
+        .validateFields()
+        .then((values) => {
+          updateCurrentUser({
+            calendarId,
+            body: {
+              firstName: values?.firstName,
+              lastName: values?.lastName,
+              email: values?.email,
+              interfaceLanguage: values?.languagePreference?.key,
+            },
           })
-          .catch((errors) => {
-            console.error('Validation errors:', errors);
-          });
-    } else {
+            .unwrap()
+            .then((response) => {
+              if (response?.statusCode == 202) {
+                i18n.changeLanguage(values?.languagePreference?.key?.toLowerCase());
+                getUser({ userId, calendarId })
+                  .unwrap()
+                  .then((response) => {
+                    const requiredRole = response?.roles.filter((r) => {
+                      return r.calendarId === calendarId;
+                    });
+
+                    const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
+
+                    setUserData({
+                      firstName: response?.firstName,
+                      lastName: response?.lastName,
+                      phoneNumber: response?.phoneNumber,
+                      email: response?.email,
+                      userType: requiredRole[0]?.role,
+                      languagePreference: { key: response.interfaceLanguage, label: selectedLanguage },
+                      calendars: response.roles,
+                    });
+                  });
+                notification.success({
+                  description: t('dashboard.userProfile.notification.profileUpdate'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+                let userDetails = {
+                  accessToken,
+                  expiredTime,
+                  refreshToken,
+                  user: {
+                    id: user?.id,
+                    firstName: values?.firstName,
+                    lastName: values?.lastName,
+                    email: values?.email,
+                    profileImage: user?.profileImage,
+                    roles: user?.roles,
+                    isSuperAdmin: user?.isSuperAdmin,
+                    interfaceLanguage: values?.languagePreference?.key,
+                  },
+                };
+                dispatch(setUser(userDetails));
+
+                navigate(-1);
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+              message.warning({
+                duration: 10,
+                maxCount: 1,
+                key: 'udpate-user-warning',
+                content: (
+                  <>
+                    {error?.data?.message} &nbsp;
+                    <Button
+                      type="text"
+                      icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                      onClick={() => message.destroy('udpate-user-warning')}
+                    />
+                  </>
+                ),
+                icon: <ExclamationCircleOutlined />,
+              });
+            });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else if (userId) {
       formInstance
         .validateFields()
         .then((values) => {
@@ -288,29 +258,47 @@ const AddUser = () => {
               firstName: values.firstName,
               lastName: values.lastName,
               email: values.email,
-              interfaceLanguage: values.languagePreference,
+              interfaceLanguage: values?.languagePreference?.key,
               modifyRole: {
                 userId: userId,
                 role: values.userType,
                 calendarId,
               },
             },
-          });
-        })
-        .unwrap()
-        .then((res) => {
-          setTimeout(() => {
-            notification.success({
-              description: res.message,
-              key: res.message,
-              placement: 'top',
-              closeIcon: <></>,
-              maxCount: 1,
-              duration: 3,
+          })
+            .unwrap()
+            .then((res) => {
+              notification.success({
+                description: t(`dashboard.settings.addUser.notification.updateUser`),
+                key: res.message,
+                placement: 'top',
+                closeIcon: <></>,
+                maxCount: 1,
+                duration: 3,
+              });
+              navigate(-2);
+            })
+            .catch((error) => {
+              console.log(error);
+              message.warning({
+                duration: 10,
+                maxCount: 1,
+                key: 'udpate-user-warning',
+                content: (
+                  <>
+                    {error?.data?.message} &nbsp;
+                    <Button
+                      type="text"
+                      icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                      onClick={() => message.destroy('udpate-user-warning')}
+                    />
+                  </>
+                ),
+                icon: <ExclamationCircleOutlined />,
+              });
             });
-          }, 3000);
-          navigate(-2);
         })
+
         .catch((errors) => {
           console.error('Validation errors:', errors);
         });
@@ -322,16 +310,42 @@ const AddUser = () => {
   };
 
   const removeCalendarHandler = (index) => {
-    setSelectedCalendars((prevState) => {
-      const updatedArray = prevState.filter((_, i) => index !== i);
-      return updatedArray;
-    });
-    formInstance.setFieldValue('calendars', selectedCalendars);
+    // formInstance.setFieldValue('calendars', selectedCalendars);
 
     if (isCurrentUser) {
-      currentUserLeaveCalendar({ calendarId });
+      confirm({
+        title: t('dashboard.events.deleteEvent.title'),
+        icon: <ExclamationCircleOutlined />,
+        content: t('dashboard.settings.addUser.leaveCalender'),
+        okText: t('dashboard.settings.addUser.leave'),
+        okType: 'danger',
+        cancelText: t('dashboard.events.deleteEvent.cancel'),
+        className: 'delete-modal-container',
+        onOk() {
+          currentUserLeaveCalendar({ calendarId });
+          setSelectedCalendars((prevState) => {
+            const updatedArray = prevState.filter((_, i) => index !== i);
+            return updatedArray;
+          });
+        },
+      });
     } else if (userId) {
-      deleteUser({ id: userId, calendarId: calendarId });
+      confirm({
+        title: t('dashboard.events.deleteEvent.title'),
+        icon: <ExclamationCircleOutlined />,
+        content: t('dashboard.settings.addUser.notification.deleteUser'),
+        okType: 'danger',
+        okText: t('dashboard.settings.addUser.delete'),
+        cancelText: t('dashboard.settings.addUser.cancel'),
+        className: 'delete-modal-container',
+        onOk() {
+          deleteUser({ id: userId, calendarId: calendarId });
+          setSelectedCalendars((prevState) => {
+            const updatedArray = prevState.filter((_, i) => index !== i);
+            return updatedArray;
+          });
+        },
+      });
     }
   };
 
@@ -407,440 +421,222 @@ const AddUser = () => {
                 </Col>
               </Row>
             </Col>
-            <Col span={24}>
-              <Row>
-                <Col flex={'780px'}>
-                  <Card style={{ border: 'none' }}>
-                    <Row gutter={[0, 24]}>
-                      <Col>
-                        <div className="details-card-description">
-                          {isCurrentUser
-                            ? t('dashboard.settings.addUser.detailsCardDescriptionCurrentUser')
-                            : userId
-                            ? t('dashboard.settings.addUser.detailsCardDescriptionEditPage')
-                            : t('dashboard.settings.addUser.detailsCardDescriptionAddPage')}
-                        </div>
-                      </Col>
-                      <Col>
-                        <Form.Item
-                          name="firstName"
-                          required
-                          label={t('dashboard.settings.addUser.firstName')}
-                          rules={[
-                            {
-                              validator: validateNotEmpty,
-                            },
-                          ]}>
-                          <Row>
-                            <Col flex={'423px'}>
-                              <AuthenticationInput
-                                size="small"
-                                placeholder={t('dashboard.events.filter.users.placeholderSearch')}
-                                onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'firstName' })}
-                                value={userData.firstName}
-                              />
-                            </Col>
-                          </Row>
-                        </Form.Item>
+            <Col flex={'780px'}>
+              <Card style={{ border: 'none', width: '100%' }}>
+                <Row gutter={[0, 24]}>
+                  <Col flex={'423px'}>
+                    <div className="details-card-description">
+                      {isCurrentUser
+                        ? t('dashboard.settings.addUser.detailsCardDescriptionCurrentUser')
+                        : userId
+                        ? t('dashboard.settings.addUser.detailsCardDescriptionEditPage')
+                        : t('dashboard.settings.addUser.detailsCardDescriptionAddPage')}
+                    </div>
+                  </Col>
+                  <Col flex={'423px'}>
+                    <Form.Item
+                      name="firstName"
+                      required
+                      label={t('dashboard.settings.addUser.firstName')}
+                      rules={[
+                        {
+                          validator: (_, value) =>
+                            validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.firstName')),
+                        },
+                      ]}>
+                      <Row>
+                        <Col flex={'423px'}>
+                          <AuthenticationInput
+                            size="small"
+                            placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
+                            onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'firstName' })}
+                            value={userData.firstName}
+                          />
+                        </Col>
+                      </Row>
+                    </Form.Item>
 
-                        <Form.Item
-                          name="lastName"
-                          required
-                          label={t('dashboard.settings.addUser.lastName')}
-                          rules={[
-                            {
-                              validator: validateNotEmpty,
-                            },
-                          ]}>
-                          <Row>
-                            <Col flex={'423px'}>
-                              <AuthenticationInput
-                                size="small"
-                                placeholder={t('dashboard.events.filter.users.placeholderSearch')}
-                                onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'lastName' })}
-                                value={userData.lastName}
-                              />
-                            </Col>
-                          </Row>
-                        </Form.Item>
-                        <Form.Item name="phoneNumber" label={t('dashboard.settings.addUser.phoneNumber')}>
-                          <Row>
-                            <Col flex={'423px'}>
-                              <AuthenticationInput
-                                size="small"
-                                placeholder={t('dashboard.events.filter.users.placeholderSearch')}
-                                onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'phoneNumber' })}
-                                value={userData.phoneNumber}
-                              />
-                            </Col>
-                          </Row>
-                        </Form.Item>
+                    <Form.Item
+                      name="lastName"
+                      required
+                      label={t('dashboard.settings.addUser.lastName')}
+                      rules={[
+                        {
+                          validator: (_, value) =>
+                            validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.lastName')),
+                        },
+                      ]}>
+                      <Row>
+                        <Col flex={'423px'}>
+                          <AuthenticationInput
+                            size="small"
+                            placeholder={t('dashboard.settings.addUser.placeHolder.lastName')}
+                            onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'lastName' })}
+                            value={userData.lastName}
+                          />
+                        </Col>
+                      </Row>
+                    </Form.Item>
+                    <Form.Item name="phoneNumber" label={t('dashboard.settings.addUser.phoneNumber')}>
+                      <Row>
+                        <Col flex={'423px'}>
+                          <AuthenticationInput
+                            size="small"
+                            placeholder={t('dashboard.settings.addUser.placeHolder.phoneNumber')}
+                            onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'phoneNumber' })}
+                            value={userData.phoneNumber}
+                          />
+                        </Col>
+                      </Row>
+                    </Form.Item>
 
-                        <Form.Item
-                          name="email"
-                          required
-                          label={t('dashboard.settings.addUser.email')}
-                          rules={[
-                            {
-                              validator: validateNotEmpty,
-                            },
-                          ]}>
-                          <Row>
-                            <Col flex={'423px'}>
-                              <AuthenticationInput
-                                size="small"
-                                placeholder={t('dashboard.events.filter.users.placeholderSearch')}
-                                onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'email' })}
-                                value={userData.email}
-                              />
-                            </Col>
-                          </Row>
-                        </Form.Item>
+                    <Form.Item
+                      name="email"
+                      required
+                      label={t('dashboard.settings.addUser.email')}
+                      rules={[
+                        {
+                          validator: (_, value) =>
+                            validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.email')),
+                        },
+                      ]}>
+                      <Row>
+                        <Col flex={'423px'}>
+                          <AuthenticationInput
+                            size="small"
+                            placeholder={t('dashboard.settings.addUser.placeHolder.email')}
+                            onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'email' })}
+                            value={userData.email}
+                          />
+                        </Col>
+                      </Row>
+                    </Form.Item>
 
-                        {adminCheckHandler() && (
-                          <Form.Item
-                            name="userType"
-                            required
-                            label={t('dashboard.settings.addUser.userType')}
-                            rules={[
-                              {
-                                validator: validateNotEmpty,
-                              },
-                            ]}>
-                            <Row>
-                              <Col flex={'423px'}>
-                                <Dropdown
-                                  overlayClassName="add-user-form-field-dropdown-wrapper"
-                                  getPopupContainer={(trigger) => trigger.parentNode}
-                                  overlayStyle={{ minWidth: '100%' }}
-                                  menu={{
-                                    items: userRolesWithTranslation,
-                                    selectable: true,
-                                    onSelect: ({ selectedKeys }) => {
-                                      setFormItemValues({ value: selectedKeys[0], fieldType: 'userType' });
-                                    },
-                                  }}
-                                  trigger={['click']}>
-                                  <div
-                                    style={{
-                                      padding: userData?.userType === '' && '15px',
-                                    }}>
-                                    <Typography.Text>{userData?.userType}</Typography.Text>
-                                    <DownOutlined style={{ fontSize: '16px' }} />
-                                  </div>
-                                </Dropdown>
-                              </Col>
-                            </Row>
-                          </Form.Item>
-                        )}
+                    {adminCheckHandler() ? (
+                      <Form.Item
+                        name="userType"
+                        required
+                        label={t('dashboard.settings.addUser.userType')}
+                        rules={[
+                          {
+                            validator: (_, value) =>
+                              validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.userType')),
+                          },
+                        ]}>
+                        <Row>
+                          <Col flex={'423px'}>
+                            <Dropdown
+                              overlayClassName="add-user-form-field-dropdown-wrapper"
+                              getPopupContainer={(trigger) => trigger.parentNode}
+                              overlayStyle={{ minWidth: '100%' }}
+                              menu={{
+                                items: userRolesWithTranslation,
+                                selectable: true,
+                                onSelect: ({ selectedKeys }) => {
+                                  setFormItemValues({ value: selectedKeys[0], fieldType: 'userType' });
+                                },
+                              }}
+                              trigger={['click']}>
+                              <div>
+                                <Typography.Text>
+                                  {userData?.userType !== ''
+                                    ? userData?.userType
+                                    : t('dashboard.settings.addUser.placeHolder.userType')}
+                                </Typography.Text>
+                                <DownOutlined style={{ fontSize: '16px' }} />
+                              </div>
+                            </Dropdown>
+                          </Col>
+                        </Row>
+                      </Form.Item>
+                    ) : (
+                      <div>
+                        <Typography.Text>
+                          {userData?.userType !== ''
+                            ? userData?.userType
+                            : t('dashboard.settings.addUser.placeHolder.userType')}
+                        </Typography.Text>
+                        <DownOutlined style={{ fontSize: '16px' }} />
+                      </div>
+                    )}
 
-                        <Form.Item
-                          name="languagePreference"
-                          required
-                          label={t('dashboard.settings.addUser.languagePreference')}
-                          rules={[
-                            {
-                              validator: validateNotEmpty,
-                            },
-                          ]}>
-                          <Row>
-                            <Col flex={'423px'}>
-                              <Dropdown
-                                overlayClassName="add-user-form-field-dropdown-wrapper"
-                                getPopupContainer={(trigger) => trigger.parentNode}
-                                overlayStyle={{
-                                  minWidth: '100%',
-                                }}
-                                menu={{
-                                  items: userLanguages,
-                                  selectable: true,
-                                  onSelect: ({ selectedKeys }) => {
-                                    setFormItemValues({ value: selectedKeys[0], fieldType: 'languagePreference' });
+                    <Form.Item
+                      name="languagePreference"
+                      required
+                      label={t('dashboard.settings.addUser.languagePreference')}
+                      rules={[
+                        {
+                          validator: (_, value) =>
+                            validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.language')),
+                        },
+                      ]}>
+                      <Row>
+                        <Col flex={'423px'}>
+                          <Dropdown
+                            overlayClassName="add-user-form-field-dropdown-wrapper"
+                            getPopupContainer={(trigger) => trigger.parentNode}
+                            overlayStyle={{
+                              minWidth: '100%',
+                            }}
+                            menu={{
+                              items: userLanguages,
+                              selectable: true,
+                              onSelect: ({ selectedKeys }) => {
+                                const selectedLanguage = userLanguages.find((item) => item.key === selectedKeys[0]);
+                                setFormItemValues({
+                                  value: {
+                                    key: selectedKeys[0],
+                                    label: selectedLanguage.label,
                                   },
-                                }}
-                                trigger={['click']}>
-                                <div
-                                  style={{
-                                    padding: userData?.languagePreference === '' && '15px',
-                                  }}>
-                                  <Typography.Text>{userData?.languagePreference}</Typography.Text>
-                                  <DownOutlined style={{ fontSize: '16px' }} />
-                                </div>
-                              </Dropdown>
-                            </Col>
-                          </Row>
-                        </Form.Item>
+                                  fieldType: 'languagePreference',
+                                });
+                              },
+                            }}
+                            trigger={['click']}>
+                            <div>
+                              <Typography.Text>
+                                {userData?.languagePreference?.label !== ''
+                                  ? userData?.languagePreference?.label
+                                  : t('dashboard.settings.addUser.placeHolder.language')}
+                              </Typography.Text>
+                              <DownOutlined style={{ fontSize: '16px' }} />
+                            </div>
+                          </Dropdown>
+                        </Col>
+                      </Row>
+                    </Form.Item>
 
-                        <Form.Item label={t('dashboard.settings.addUser.organization')}>
+                    {isCurrentUser && (
+                      <div className="password-modal">
+                        <div className="button-container">
+                          <OutlinedButton
+                            label={t('dashboard.settings.addUser.passwordModal.btnText')}
+                            size="middle"
+                            style={{ height: '40px' }}
+                            onClick={() => setIsPopoverOpen({ ...isPopoverOpen, password: true })}
+                          />
+                        </div>
+                        <ChangePassword isPopoverOpen={isPopoverOpen} setIsPopoverOpen={setIsPopoverOpen} />
+                      </div>
+                    )}
+                  </Col>
+                </Row>
+              </Card>
+            </Col>
+            {userId && (
+              <Col span={24}>
+                <Row>
+                  <Col flex={'780px'}>
+                    <Card style={{ border: 'none' }}>
+                      <Row>
+                        <Col span={24} className="card-heading-container">
+                          <h5>{t(`dashboard.settings.addUser.calendars`)}</h5>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col flex={'423px'} className="calendar-search">
                           <Row gutter={[0, 4]}>
                             <Col flex={'423px'}>
-                              <div className="details-card-description">
-                                {t('dashboard.settings.addUser.organizationSearchDescription')}
-                              </div>
-                            </Col>
-                            <Col flex={'423px'} className="organization-search">
-                              <div className="search-bar-organization">
-                                <Popover
-                                  open={isPopoverOpen.organization}
-                                  arrow={false}
-                                  overlayClassName="entity-popover"
-                                  placement="bottom"
-                                  onOpenChange={(open) => {
-                                    setIsPopoverOpen({ ...isPopoverOpen, organization: open });
-                                  }}
-                                  autoAdjustOverflow={false}
-                                  getPopupContainer={(trigger) => trigger.parentNode}
-                                  trigger={['click']}
-                                  content={
-                                    <div>
-                                      {!isOrganizationsLoading ? (
-                                        <div className="search-scrollable-content">
-                                          {organizationData?.data?.length > 0 ? (
-                                            organizationData?.data?.map((item, index) => (
-                                              <div
-                                                key={index}
-                                                className="search-popover-options"
-                                                onClick={() => {
-                                                  setIsPopoverOpen({ ...isPopoverOpen, organization: false });
-                                                }}>
-                                                <ListCard
-                                                  title={contentLanguageBilingual({
-                                                    en: item?.name?.en,
-                                                    fr: item?.name?.fr,
-                                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                                    calendarContentLanguage: calendarContentLanguage,
-                                                  })}
-                                                  description={contentLanguageBilingual({
-                                                    en: item?.disambiguatingDescription?.en,
-                                                    fr: item?.disambiguatingDescription?.fr,
-                                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                                    calendarContentLanguage: calendarContentLanguage,
-                                                  })}
-                                                  onClick={() => {
-                                                    let flag = false;
-                                                    selectedCalendars.map((i) => {
-                                                      if (i.id === item.id) {
-                                                        flag = true;
-                                                      }
-                                                    });
-                                                    !flag && setSelectedOrganization([...selectedOrganization, item]);
-                                                  }}
-                                                  Logo={
-                                                    item?.logo ? (
-                                                      <div className="image-container">
-                                                        <img src={item?.logo?.thumbnail?.uri} />
-                                                      </div>
-                                                    ) : (
-                                                      <div className="image-container">
-                                                        <OrganizationLogo />
-                                                      </div>
-                                                    )
-                                                  }
-                                                />
-                                              </div>
-                                            ))
-                                          ) : (
-                                            <NoContent />
-                                          )}
-                                        </div>
-                                      ) : (
-                                        <Row
-                                          justify="center"
-                                          align="middle"
-                                          style={{ height: '96px', padding: '12px' }}>
-                                          <LoadingIndicator />
-                                        </Row>
-                                      )}
-                                    </div>
-                                  }>
-                                  <EventsSearch
-                                    style={{ borderRadius: '4px' }}
-                                    placeholder={t('dashboard.settings.addUser.searchOrganizations')}
-                                    onClick={(e) => {
-                                      setOrganizationSearchQuery(e.target.value);
-                                      setIsPopoverOpen({ ...isPopoverOpen, organization: true });
-                                    }}
-                                    onChange={(e) => {
-                                      setOrganizationSearchQuery(e.target.value);
-                                      setIsPopoverOpen({ ...isPopoverOpen, organization: true });
-                                    }}
-                                  />
-                                </Popover>
-                              </div>
-                            </Col>
-                            <Col flex={'423px'}>
-                              {selectedOrganization?.length > 0 &&
-                                selectedOrganization.map((item, index) => (
-                                  <SelectionItem
-                                    key={index}
-                                    icon={
-                                      item?.logo ? (
-                                        <div className="image-container">
-                                          <img src={item?.logo?.thumbnail?.uri} />
-                                        </div>
-                                      ) : (
-                                        <div className="image-container">
-                                          <OrganizationLogo />
-                                        </div>
-                                      )
-                                    }
-                                    name={contentLanguageBilingual({
-                                      en: item?.name?.en,
-                                      fr: item?.name?.fr,
-                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                      calendarContentLanguage: calendarContentLanguage,
-                                    })}
-                                    description={
-                                      contentLanguageBilingual({
-                                        en: item?.disambiguatingDescription?.en,
-                                        fr: item?.disambiguatingDescription?.fr,
-                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                        calendarContentLanguage: calendarContentLanguage,
-                                      }) || ''
-                                    }
-                                    itemWidth="100%"
-                                    calendarContentLanguage={calendarContentLanguage}
-                                    bordered
-                                    closable
-                                    onClose={() => {
-                                      setSelectedOrganization((prevState) => {
-                                        const updatedArray = prevState.filter((_, i) => index !== i);
-                                        return updatedArray;
-                                      });
-                                      formInstance.setFieldValue('organizations', selectedOrganization);
-                                    }}
-                                  />
-                                ))}
-                            </Col>
-                          </Row>
-                        </Form.Item>
-
-                        {isCurrentUser && (
-                          <div className="password-modal">
-                            <div className="button-container">
-                              <OutlinedButton
-                                label={t('dashboard.settings.addUser.passwordModal.btnText')}
-                                size="middle"
-                                style={{ height: '40px' }}
-                                onClick={() => setIsPopoverOpen({ ...isPopoverOpen, password: true })}
-                              />
-                            </div>
-                            <ChangePassword isPopoverOpen={isPopoverOpen} setIsPopoverOpen={setIsPopoverOpen} />
-                          </div>
-                        )}
-                      </Col>
-                    </Row>
-                  </Card>
-                </Col>
-              </Row>
-            </Col>
-            <Col span={24}>
-              <Row>
-                <Col flex={'780px'}>
-                  <Card style={{ border: 'none' }}>
-                    <Row>
-                      <Col span={24} className="card-heading-container">
-                        <h5>{t(`dashboard.settings.addUser.calendars`)}</h5>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col flex={'423px'} className="calendar-search">
-                        <Row gutter={[0, 4]}>
-                          <Col flex={'423px'}>
-                            <Form.Item label={t('dashboard.settings.addUser.calendarSearchHeading')}>
-                              <Col>
-                                <div className="details-card-description">
-                                  {t('dashboard.settings.addUser.calendarsDescription')}
-                                </div>
-                              </Col>
-                              <Col className="organization-search">
-                                <div className="search-bar-organization">
-                                  <Popover
-                                    open={isPopoverOpen.calendar}
-                                    arrow={false}
-                                    overlayClassName="entity-popover"
-                                    placement="bottom"
-                                    onOpenChange={(open) => {
-                                      setIsPopoverOpen({ ...isPopoverOpen, calendar: open });
-                                    }}
-                                    autoAdjustOverflow={false}
-                                    getPopupContainer={(trigger) => trigger.parentNode}
-                                    trigger={['click']}
-                                    content={
-                                      <div>
-                                        {!isCalendarsLoading || isCalendarFetchSuccess ? (
-                                          <div className="search-scrollable-content">
-                                            {filteredCalendarData?.length > 0 ? (
-                                              filteredCalendarData?.map((item, index) => (
-                                                <div
-                                                  key={index}
-                                                  className="search-popover-options"
-                                                  onClick={() => {
-                                                    setIsPopoverOpen({ ...isPopoverOpen, calendar: false });
-                                                  }}>
-                                                  <ListCard
-                                                    title={contentLanguageBilingual({
-                                                      en: item?.name?.en,
-                                                      fr: item?.name?.fr,
-                                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                                      calendarContentLanguage: calendarContentLanguage,
-                                                    })}
-                                                    onClick={() => {
-                                                      let flag = false;
-                                                      selectedCalendars.map((i) => {
-                                                        if (i.id === item.id) {
-                                                          flag = true;
-                                                        }
-                                                      });
-                                                      !flag && setSelectedCalendars([...selectedCalendars, item]);
-                                                    }}
-                                                    Logo={
-                                                      item?.image ? (
-                                                        <div className="image-container">
-                                                          <img src={item?.image.uri} />
-                                                        </div>
-                                                      ) : (
-                                                        <div className="icon-container">
-                                                          <CalendarOutlined
-                                                            style={{ color: '#607EFC', fontSize: '21px' }}
-                                                          />
-                                                        </div>
-                                                      )
-                                                    }
-                                                  />
-                                                </div>
-                                              ))
-                                            ) : (
-                                              <NoContent />
-                                            )}
-                                          </div>
-                                        ) : (
-                                          <Row
-                                            justify="center"
-                                            align="middle"
-                                            style={{ height: '96px', padding: '12px' }}>
-                                            <LoadingIndicator />
-                                          </Row>
-                                        )}
-                                      </div>
-                                    }>
-                                    <EventsSearch
-                                      style={{ borderRadius: '4px' }}
-                                      placeholder={t('dashboard.settings.addUser.searchCalendars')}
-                                      onClick={(e) => {
-                                        const value = e.target.value;
-                                        setCalendarSearchQuery(value);
-                                        setIsPopoverOpen({ ...isPopoverOpen, calendar: true });
-                                      }}
-                                      onChange={(e) => {
-                                        const value = e.target.value;
-                                        setCalendarSearchQuery(value);
-                                        setIsPopoverOpen({ ...isPopoverOpen, calendar: true });
-                                      }}
-                                    />
-                                  </Popover>
-                                </div>
-                              </Col>
                               <Col>
                                 {selectedCalendars?.length > 0 &&
                                   selectedCalendars.map((item, index) => (
@@ -863,6 +659,7 @@ const AddUser = () => {
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })}
+                                      currentUser={isCurrentUser}
                                       itemWidth="100%"
                                       calendarContentLanguage={calendarContentLanguage}
                                       selectedCalendars={selectedCalendars}
@@ -879,15 +676,15 @@ const AddUser = () => {
                                     />
                                   ))}
                               </Col>
-                            </Form.Item>
-                          </Col>
-                        </Row>
-                      </Col>
-                    </Row>
-                  </Card>
-                </Col>
-              </Row>
-            </Col>
+                            </Col>
+                          </Row>
+                        </Col>
+                      </Row>
+                    </Card>
+                  </Col>
+                </Row>
+              </Col>
+            )}
           </Row>
         )}
       </Form>

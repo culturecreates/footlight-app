@@ -47,6 +47,7 @@
 .add-user-wrapper .calendar-search .calender-card-item .role-added-button {
   display: flex;
   flex-direction: row-reverse;
+  align-items: center;
   gap: 4px;
   border-radius: 4px;
   background: var(--content-alert-informative, #2196f3);

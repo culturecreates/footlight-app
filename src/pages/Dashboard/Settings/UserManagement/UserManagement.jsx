@@ -176,8 +176,17 @@ const UserManagement = () => {
     setFilter({ ...filter, userStatus: selectedKeys[0] });
   };
 
+  const adminCheckHandler = () => {
+    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
+    else return false;
+  };
+
   const tooltipItemDisplayHandler = ({ item }) => {
-    const dropdownItems = [{ key: 'editUser', label: t('dashboard.settings.userManagement.tooltip.editUser') }];
+    const dropdownItems = [];
+
+    if (adminCheckHandler()) {
+      dropdownItems.push({ key: 'editUser', label: t('dashboard.settings.userManagement.tooltip.editUser') });
+    }
 
     if (!item?.isSuperAdmin) {
       dropdownItems.push({
@@ -210,11 +219,6 @@ const UserManagement = () => {
     return dropdownItems;
   };
 
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
-  };
-
   const onSearchChangeHandler = (event) => {
     if (event.target.value === '') setUserSearchQuery('');
   };
@@ -233,7 +237,9 @@ const UserManagement = () => {
     let invitationLink;
     switch (key) {
       case 'editUser':
-        console.log('edit screen navigation');
+        navigate(
+          `${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}?id=${item._id}`,
+        );
         break;
 
       case 'sendInvitation':
@@ -258,31 +264,31 @@ const UserManagement = () => {
 
       case 'activateOrDeactivate':
         if (item.userStatus === userActivityStatus[0].key) {
-          confirm({
-            title: t('dashboard.events.deleteEvent.title'),
-            icon: <ExclamationCircleOutlined />,
-            content: t('dashboard.settings.userManagement.tooltip.modal.deactivateText'),
-            okText: t('dashboard.events.deleteEvent.ok'),
-            okType: 'danger',
-            cancelText: t('dashboard.events.deleteEvent.cancel'),
-            className: 'delete-modal-container',
-            onOk() {
-              deActivateUser({ id: item._id, calendarId: calendarId });
-            },
-          });
+          // confirm({
+          //   title: t('dashboard.events.deleteEvent.title'),
+          //   icon: <ExclamationCircleOutlined />,
+          //   content: t('dashboard.settings.userManagement.tooltip.modal.copyText'),
+          //   okText: t('dashboard.settings.addUser.deactivate'),
+          //   okType: 'danger',
+          //   cancelText: t('dashboard.settings.addUser.cancel'),
+          //   className: 'delete-modal-container',
+          //   onOk() {
+          //   },
+          // });
+          deActivateUser({ id: item._id, calendarId: calendarId });
         } else if (item.userStatus === userActivityStatus[1].key) {
-          confirm({
-            title: t('dashboard.events.deleteEvent.title'),
-            icon: <ExclamationCircleOutlined />,
-            content: t('dashboard.settings.userManagement.tooltip.modal.activateText'),
-            okText: t('dashboard.events.deleteEvent.ok'),
-            okType: 'danger',
-            cancelText: t('dashboard.events.deleteEvent.cancel'),
-            className: 'delete-modal-container',
-            onOk() {
-              activateUser({ id: item._id, calendarId: calendarId });
-            },
-          });
+          // confirm({
+          //   title: t('dashboard.events.deleteEvent.title'),
+          //   icon: <ExclamationCircleOutlined />,
+          //   content: t('dashboard.settings.userManagement.tooltip.modal.activateText'),
+          //   okText: t('dashboard.settings.addUser.activate'),
+          //   okType: 'danger',
+          //   cancelText: t('dashboard.settings.addUser.cancel'),
+          //   className: 'delete-modal-container',
+          //   onOk() {
+          //   },
+          // });
+          activateUser({ id: item._id, calendarId: calendarId });
         }
         break;
 
@@ -290,10 +296,10 @@ const UserManagement = () => {
         confirm({
           title: t('dashboard.events.deleteEvent.title'),
           icon: <ExclamationCircleOutlined />,
-          content: t('dashboard.settings.userManagement.tooltip.modal.deleteText'),
-          okText: t('dashboard.events.deleteEvent.ok'),
+          content: t('dashboard.settings.addUser.notification.deleteUser'),
           okType: 'danger',
-          cancelText: t('dashboard.events.deleteEvent.cancel'),
+          okText: t('dashboard.settings.addUser.delete'),
+          cancelText: t('dashboard.settings.addUser.cancel'),
           className: 'delete-modal-container',
           onOk() {
             deleteUser({ id: item._id, calendarId: calendarId });
@@ -342,8 +348,8 @@ const UserManagement = () => {
                       getPopupContainer={(trigger) => trigger.parentNode}
                       menu={{
                         items: sortByOptionsUsers,
-                        selectable: true,
                         defaultSelectedKeys: [filter?.sort],
+                        selectable: true,
                         onSelect: onSortSelect,
                       }}
                       trigger={['click']}>
@@ -383,8 +389,8 @@ const UserManagement = () => {
                   overlayStyle={{ minWidth: '200px' }}
                   menu={{
                     items: userActivityStatus,
-                    selectable: true,
                     defaultSelectedKeys: [filter?.userRole],
+                    selectable: true,
                     onSelect: handleStatusFilterChange,
                   }}
                   trigger={['click']}>
@@ -392,7 +398,7 @@ const UserManagement = () => {
                     <Button
                       size="large"
                       className="filter-buttons"
-                      style={{ borderColor: filter?.userRole && '#607EFC' }}>
+                      style={{ borderColor: filter?.userStatus && '#607EFC' }}>
                       {t('dashboard.settings.userManagement.status')}
                     </Button>
                   </Space>
@@ -446,7 +452,7 @@ const UserManagement = () => {
           </Col>
         </Row>
       </Col>
-      <Col span={17}>
+      <Col flex={'832px'}>
         <Row>
           <Col span={24}>
             {userData?.data.length && !isUsersLoading > 0 ? (

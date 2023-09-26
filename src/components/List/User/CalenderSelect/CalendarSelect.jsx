@@ -1,51 +1,11 @@
-import { Avatar, Button, Dropdown, List } from 'antd';
-// import useSelection from 'antd/lib/table/hooks/useSelection';
-import { PlusOutlined, DownOutlined } from '@ant-design/icons';
+import { Avatar, Button, List } from 'antd';
 import React from 'react';
-import { userRoles, userRolesWithTranslation } from '../../../../constants/userRoles';
 import { useTranslation } from 'react-i18next';
 import './calendarSelect.css';
 
-import { getUserDetails } from '../../../../redux/reducer/userSlice';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-
 const CalendarSelect = (props) => {
-  const {
-    bordered,
-    itemWidth,
-    onButtonClick,
-    icon,
-    name,
-    calenderItem,
-    selectedCalendars,
-    setSelectedCalendars,
-    // isRoleOptionHidden,
-  } = props;
+  const { bordered, itemWidth, onButtonClick, icon, name, calenderItem, currentUser } = props;
   const { t } = useTranslation();
-  const { user } = useSelector(getUserDetails);
-  const { calendarId } = useParams();
-
-  const userTypeFilterChangeHandler = ({ selectedKeys }) => {
-    const updatedSelectedData = selectedCalendars.map((item) => {
-      if (item.id === calenderItem.id) {
-        return { ...item, role: selectedKeys[0] };
-      } else {
-        return item;
-      }
-    });
-    console.log(updatedSelectedData, 'hel');
-    setSelectedCalendars([...updatedSelectedData]);
-  };
-
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
-
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
-  };
 
   return (
     <div
@@ -54,11 +14,15 @@ const CalendarSelect = (props) => {
       <List.Item
         className="selection-item-list-wrapper"
         actions={[
-          <div key={name} className="button-container">
-            <Button type="text" key="list-loadmore-close" onClick={onButtonClick} style={{ padding: '0px' }}>
-              {t('dashboard.settings.addUser.leave')}
-            </Button>
-          </div>,
+          <>
+            {currentUser && (
+              <div key={name} className="button-container">
+                <Button type="text" key="list-loadmore-close" onClick={onButtonClick} style={{ padding: '0px' }}>
+                  {t('dashboard.settings.addUser.leave')}
+                </Button>
+              </div>
+            )}
+          </>,
         ]}>
         <List.Item.Meta
           style={{ alignItems: 'flex-start' }}
@@ -75,55 +39,10 @@ const CalendarSelect = (props) => {
           }
           title={<span className="selection-item-title">{name}</span>}
         />
-        {adminCheckHandler() && (
-          <div>
-            {calenderItem?.role ? (
-              <Dropdown
-                overlayClassName="filter-sort-dropdown-wrapper"
-                getPopupContainer={(trigger) => trigger.parentNode}
-                overlayStyle={{ minWidth: '200px' }}
-                menu={{
-                  items: userRolesWithTranslation,
-                  selectable: true,
-                  onSelect: userTypeFilterChangeHandler,
-                }}
-                trigger={['click']}>
-                <Button
-                  size="large"
-                  className="filter-buttons role-added-button"
-                  icon={
-                    <DownOutlined
-                      style={{ color: 'white', fontSize: '16px', display: 'grid', placeContent: 'center' }}
-                    />
-                  }>
-                  {calenderItem.role}
-                </Button>
-              </Dropdown>
-            ) : (
-              <Dropdown
-                overlayClassName="filter-sort-dropdown-wrapper"
-                getPopupContainer={(trigger) => trigger.parentNode}
-                overlayStyle={{ minWidth: '200px' }}
-                menu={{
-                  items: userRolesWithTranslation,
-                  selectable: true,
-                  onSelect: userTypeFilterChangeHandler,
-                }}
-                trigger={['click']}>
-                <Button
-                  size="large"
-                  className="filter-buttons"
-                  icon={
-                    <PlusOutlined
-                      style={{ color: '#0F0E98', fontSize: '21px', display: 'grid', placeContent: 'center' }}
-                    />
-                  }>
-                  {t('dashboard.settings.addUser.role')}
-                </Button>
-              </Dropdown>
-            )}
-          </div>
-        )}
+
+        <Button size="large" className="filter-buttons role-added-button">
+          {calenderItem.role}
+        </Button>
       </List.Item>
     </div>
   );
