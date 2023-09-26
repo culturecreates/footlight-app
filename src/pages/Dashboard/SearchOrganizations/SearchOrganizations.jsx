@@ -18,6 +18,7 @@ import { PathName } from '../../../constants/pathName';
 import { artsDataDuplicateFilter } from '../../../utils/artsDataEntityFilter';
 import { Popover } from 'antd';
 import { getArtsDataEntities } from '../../../services/artsData';
+import { routinghandler } from '../../../utils/roleRoutingHandler';
 
 function SearchOrganizations() {
   const { t } = useTranslation();
@@ -128,11 +129,14 @@ function SearchOrganizations() {
                           artsDataLink={artsDataLinkChecker(organizer?.uri)}
                           Logo={organizer.logo ? <img src={organizer.logo?.thumbnail?.uri} /> : <Logo />}
                           linkText={t('dashboard.organization.createNew.search.linkText')}
-                          onClick={() =>
-                            navigate(
-                              `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizer?.id}`,
-                            )
-                          }
+                          onClick={() => {
+                            if (routinghandler(user, calendarId, organizer?.creator?.userId, null, true)) {
+                              navigate(
+                                `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizer?.id}`,
+                              );
+                            } else
+                              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${organizer?.id}`);
+                          }}
                         />
                       </div>
                     ))
