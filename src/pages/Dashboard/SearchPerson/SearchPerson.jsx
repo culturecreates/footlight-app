@@ -162,7 +162,7 @@ function SearchPerson() {
                           <EntityCard
                             title={person?.name}
                             description={person?.description}
-                            artsDataLink={`${process.env.REACT_APP_ARTS_DATA_URI}${person?.id}`}
+                            artsDataLink={`${process.env.REACT_APP_ARTS_DATA_PAGE_URI}${person?.id}`}
                             Logo={
                               person.logo ? (
                                 person.logo?.thumbnail?.uri
