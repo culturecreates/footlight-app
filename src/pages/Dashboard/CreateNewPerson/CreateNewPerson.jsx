@@ -288,7 +288,9 @@ function CreateNewPerson() {
           });
         }
       } else
-        window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.People}/${personId}`);
+        window.location.replace(
+          `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.People}/${personId}`,
+        );
     }
   }, [personLoading, currentCalendarData]);
 

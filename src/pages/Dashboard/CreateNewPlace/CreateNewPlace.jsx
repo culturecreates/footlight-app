@@ -654,7 +654,9 @@ function CreateNewPlace() {
         });
         setAddedFields(initialAddedFields);
       } else
-        window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Places}/${placeId}`);
+        window.location.replace(
+          `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Places}/${placeId}`,
+        );
     }
   }, [isPlaceLoading, currentCalendarData]);
 

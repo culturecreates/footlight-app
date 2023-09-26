@@ -531,7 +531,7 @@ function CreateNewOrganization() {
         if (organizationKeys?.length > 0) setAddedFields(organizationKeys);
       } else
         window.location.replace(
-          `${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${organizationId}`,
+          `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${organizationId}`,
         );
     }
   }, [organizationLoading, currentCalendarData]);
