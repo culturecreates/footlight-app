@@ -257,7 +257,7 @@ function CreateNewPerson() {
       });
   };
 
-  const onValuesChangHandler = () => {
+  const onValuesChangeHandler = () => {
     setShowDialog(true);
   };
 
@@ -317,7 +317,7 @@ function CreateNewPerson() {
   return fields && !personLoading && !taxonomyLoading && !artsDataLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <div className="add-edit-wrapper add-organization-wrapper">
-        <Form form={form} layout="vertical" name="person" onValuesChange={onValuesChangHandler}>
+        <Form form={form} layout="vertical" name="person" onValuesChange={onValuesChangeHandler}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
               <Row gutter={[32, 2]}>
