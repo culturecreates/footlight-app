@@ -745,7 +745,13 @@
           "sendInvitation": "Envoyer l'invitation",
           "copyInvitationLink": "Copier le lien de l'invitation",
           "activateOrDeactivate": "Activé/Désactivé",
-          "deleteUser": "Supprimer l'utilisateur"
+          "deleteUser": "Supprimer l'utilisateur",
+          "modal": {
+            "deleteText": "Are you sure you want to permanently delete this user",
+            "deactivateText": "Are you sure you want to deactivate this user",
+            "activateText": "Êtes-vous sûr de vouloir activer cet utilisateur ?",
+            "copyText": "Lien d'invitation copié.."
+          }
         }
       },
       "userReadOnly": {
@@ -773,6 +779,14 @@
         "phoneNumber": "Numéro de téléphone",
         "email": "Courriel",
         "userType": "Type d’utilisateur",
+        "placeHolder": {
+          "firstName": "Entrez le prénom",
+          "lastName": "Entrez le nom de famille",
+          "phoneNumber": "Entrez le numéro du téléphone",
+          "email": "Entrez l'adresse courriel",
+          "userType": "Sélectionnez le type d'utilisateur",
+          "language": "Sélectionner la langue de l'interface"
+        },
         "languagePreference": "Préférence de langue",
         "organization": "Organisation",
         "organizationDescription": "Ajouter une organisation qui sera liée à ce profile d’utilisateur.",
@@ -804,7 +818,24 @@
             "new": "Entrez nouveau mot de passe",
             "confirm": "Confirmez nouveau mot de passe"
           }
-        }
+        },
+        "validationTexts": {
+          "firstName": "Le prénom est requis.",
+          "lastName": "Le nom est requis.",
+          "email": "Entrez une adresse courriel.",
+          "userType": "Sélectionnez le type d'utilisateur.",
+          "language": "Sélectionnez la langue préférée"
+        },
+        "notification": {
+          "invitation": "L'invitation a été envoyée avec succès",
+          "updateUser": "Succès ! Le profil de l'utilisateur a été mis à jour.",
+          "deleteUser": "Êtes-vous sûr de vouloir supprimer définitivement cet utilisateur?"
+        },
+        "delete": "Supprimer",
+        "cancel": "Annuler",
+        "activate": "Activé",
+        "deactivate": "Désactivé",
+        "leaveCalender": "Êtes-vous sûr de vouloir quitter définitivement ce calendrier?"
       }
     }
   },

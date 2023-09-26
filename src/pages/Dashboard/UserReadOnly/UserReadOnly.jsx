@@ -12,7 +12,6 @@ import { roleHandler } from '../../../utils/roleHandler';
 import { EnvironmentOutlined } from '@ant-design/icons';
 import { copyText } from '../../../utils/copyText';
 import SelectionItem from '../../../components/List/SelectionItem';
-import { useGetAllCalendarsQuery } from '../../../services/calendar';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -38,27 +37,11 @@ const UserReadOnly = () => {
     isLoading: userLoading,
   } = useGetUserByIdQuery({ userId, calendarId, sessionId: timestampRef }, { skip: userId ? false : true });
 
-  const {
-    data: calendarData,
-    isLoading: calendarLoading,
-    isSuccess: calendarSuccess,
-  } = useGetAllCalendarsQuery({ sessionId: timestampRef });
-
   useEffect(() => {
-    if (calendarSuccess && userSuccess) {
-      let filteredCalendarItem = [];
-      const allUserSubscribedCalendarId = userInfo?.roles.map((item) => item.calendarId);
-
-      calendarData?.data?.map((item) => {
-        allUserSubscribedCalendarId.map((userSubscribedCalendarId) => {
-          if (item?.id === userSubscribedCalendarId) {
-            return filteredCalendarItem.push(item);
-          }
-        });
-      });
-      setUserSubscribedCalenders([...filteredCalendarItem]);
+    if (userSuccess) {
+      setUserSubscribedCalenders(userInfo.roles);
     }
-  }, [calendarLoading, userLoading]);
+  }, [userLoading]);
 
   const createUserInfoRowItem = ({ isCopiableText, infoType, infoText, onClick }) => {
     return (
@@ -83,7 +66,7 @@ const UserReadOnly = () => {
 
   return (
     <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
-      {!userLoading && !calendarLoading && (
+      {!userLoading && (
         <Row className="user-read-only-wrapper" gutter={[0, 32]}>
           <Col span={24}>
             <Row gutter={[32, 24]} className="user-read-only-heading-wrapper">
@@ -103,7 +86,7 @@ const UserReadOnly = () => {
                         <OutlinedButton
                           label={t('dashboard.settings.userReadOnly.editBtn')}
                           size="middle"
-                          style={{ height: '40px', width: '112px' }}
+                          style={{ height: '40px' }}
                           onClick={() =>
                             navigate(
                               `${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}`,
@@ -132,7 +115,7 @@ const UserReadOnly = () => {
           </Col>
           <Col span={24}>
             <Row>
-              <Col lg={24} sm={24} xs={24}>
+              <Col flex={'780px'}>
                 <Card className="user-read-only-card" style={{ border: 'none' }}>
                   <Row gutter={[0, 4]}>
                     <Col>
@@ -189,7 +172,7 @@ const UserReadOnly = () => {
           </Col>
           <Col span={24}>
             <Row>
-              <Col lg={24} sm={24} xs={24}>
+              <Col flex={'780px'}>
                 <Card className="user-read-only-calendar-card" style={{ border: 'none' }}>
                   <Row>
                     <Col>
@@ -203,7 +186,18 @@ const UserReadOnly = () => {
                       return (
                         <SelectionItem
                           key={index}
-                          icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
+                          icon={
+                            item?.image?.uri ? (
+                              <div style={{ height: '40px', width: '40px' }}>
+                                <img
+                                  style={{ objectFit: 'cover', height: '100%', width: '100%' }}
+                                  src={item.image.uri}
+                                />
+                              </div>
+                            ) : (
+                              <EnvironmentOutlined style={{ color: '#607EFC' }} />
+                            )
+                          }
                           name={contentLanguageBilingual({
                             en: item?.name?.en,
                             fr: item?.name?.fr,

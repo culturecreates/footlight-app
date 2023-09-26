@@ -754,7 +754,8 @@
           "modal": {
             "deleteText": "Are you sure you want to permanently delete this user",
             "deactivateText": "Are you sure you want to deactivate this user",
-            "activateText": "Are you sure you want to activate this user"
+            "activateText": "Are you sure you want to activate this user",
+            "copyText":"Invitation link copied."
           }
         }
       },
@@ -784,6 +785,14 @@
         "phoneNumber": "Phone number",
         "email": "Email",
         "userType": "User type",
+        "placeHolder": {
+          "firstName": "Enter first name",
+          "lastName": "Enter last name",
+          "phoneNumber": "Enter phone number",
+          "email": "Enter email",
+          "userType": "Select user type",
+          "language": "Select interface language"
+        },
         "languagePreference": "Language preference",
         "organization": "Organization",
         "organizationDescription": "Add organization that will be linked to this user profile.",
@@ -815,7 +824,24 @@
             "new": "Enter new password",
             "confirm": "Confirm new password"
           }
-        }
+        },
+        "validationTexts": {
+          "firstName": "First name is required.",
+          "lastName": "Last name is required.",
+          "email": "Enter an email address.",
+          "userType": "Select a user type.",
+          "language": "Select preferred language."
+        },
+        "notification": {
+          "invitation": "Invitation send successfully",
+          "updateUser": "Success! User profile has been updated.",
+          "deleteUser": "Are you sure you want to permanently delete this user?"
+        },
+        "delete": "Delete",
+        "cancel": "Cancel",
+        "activate":"Activate",
+        "deactivate":"Deactivate",
+        "leaveCalender":"Are you sure you want to leave this calendar?"
       }
     }
   },

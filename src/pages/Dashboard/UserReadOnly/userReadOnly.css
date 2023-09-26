@@ -100,3 +100,7 @@
 .user-read-only-calendar-card .ant-list-item-meta-content {
   width: 100%;
 }
+
+.user-read-only-card .details-wrapper {
+  padding: 24px 0;
+}

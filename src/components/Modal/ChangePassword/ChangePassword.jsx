@@ -1,6 +1,7 @@
 import React from 'react';
-import { Form, Modal } from 'antd';
+import { Button, Form, message, Modal, notification } from 'antd';
 import PasswordInput from '../../Input/Password';
+import { CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
@@ -32,9 +33,39 @@ const ChangePassword = ({ isPopoverOpen, setIsPopoverOpen }) => {
           },
         },
         calendarId,
-      });
-
-      setIsPopoverOpen({ ...isPopoverOpen, password: false });
+      })
+        .unwrap()
+        .then((response) => {
+          if (response?.statusCode == 202) {
+            notification.success({
+              description: t('resetPassword.successNotification'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+            setIsPopoverOpen({ ...isPopoverOpen, password: false });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          message.warning({
+            duration: 10,
+            maxCount: 1,
+            key: 'udpate-user-warning',
+            content: (
+              <>
+                {error?.data?.message} &nbsp;
+                <Button
+                  type="text"
+                  icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                  onClick={() => message.destroy('udpate-user-warning')}
+                />
+              </>
+            ),
+            icon: <ExclamationCircleOutlined />,
+          });
+        });
     } catch (errorInfo) {
       console.error('Validation Failed:', errorInfo);
     }
