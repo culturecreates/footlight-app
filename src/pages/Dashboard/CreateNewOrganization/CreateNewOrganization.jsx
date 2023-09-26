@@ -40,6 +40,7 @@ import { routinghandler } from '../../../utils/roleRoutingHandler';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { useLazyGetPlaceQuery } from '../../../services/places';
+import { usePrompt } from '../../../hooks/usePrompt';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -83,6 +84,9 @@ function CreateNewOrganization() {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [addedFields, setAddedFields] = useState([]);
   const [scrollToSelectedField, setScrollToSelectedField] = useState();
+  const [showDialog, setShowDialog] = useState(false);
+
+  usePrompt(t('common.unsavedChanges'), showDialog);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
@@ -153,7 +157,7 @@ function CreateNewOrganization() {
               maxCount: 1,
               duration: 3,
             });
-            navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}`);
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}`);
           })
           .catch((error) => {
             reject();
@@ -164,7 +168,9 @@ function CreateNewOrganization() {
     return promise;
   };
 
-  const onSaveHandler = () => {
+  const onSaveHandler = (event) => {
+    event?.preventDefault();
+    setShowDialog(false);
     form
       .validateFields([
         ['name', 'fr'],
@@ -439,6 +445,10 @@ function CreateNewOrganization() {
     setScrollToSelectedField(array?.at(-1));
   };
 
+  const onValuesChangeHandler = () => {
+    setShowDialog(true);
+  };
+
   useEffect(() => {
     if (addedFields?.length > 0) {
       const element = document.getElementsByClassName(scrollToSelectedField);
@@ -521,7 +531,7 @@ function CreateNewOrganization() {
         if (organizationKeys?.length > 0) setAddedFields(organizationKeys);
       } else
         window.location.replace(
-          `${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${organizationId}`,
+          `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${organizationId}`,
         );
     }
   }, [organizationLoading, currentCalendarData]);
@@ -552,7 +562,7 @@ function CreateNewOrganization() {
   return fields && !organizationLoading && !taxonomyLoading && !artsDataLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <div className="add-edit-wrapper add-organization-wrapper">
-        <Form form={form} layout="vertical" name="organization">
+        <Form form={form} layout="vertical" name="organization" onValuesChange={onValuesChangeHandler}>
           <Row gutter={[32, 24]}>
             <Col span={24}>
               <Row gutter={[32, 2]}>

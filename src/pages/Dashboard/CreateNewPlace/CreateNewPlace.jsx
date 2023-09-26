@@ -562,6 +562,10 @@ function CreateNewPlace() {
     setScrollToSelectedField(array?.at(-1));
   };
 
+  const onValuesChangeHandler = () => {
+    setShowDialog(true);
+  };
+
   useEffect(() => {
     if (addedFields?.length > 0) {
       const element = document.getElementsByClassName(scrollToSelectedField);
@@ -650,7 +654,9 @@ function CreateNewPlace() {
         });
         setAddedFields(initialAddedFields);
       } else
-        window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Places}/${placeId}`);
+        window.location.replace(
+          `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Places}/${placeId}`,
+        );
     }
   }, [isPlaceLoading, currentCalendarData]);
 
@@ -685,7 +691,7 @@ function CreateNewPlace() {
   return !isPlaceLoading && !artsDataLoading && !taxonomyLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <div className="add-edit-wrapper add-organization-wrapper">
-        <Form form={form} layout="vertical" name="place">
+        <Form form={form} layout="vertical" name="place" onValuesChange={onValuesChangeHandler}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
               <Row gutter={[32, 2]}>
