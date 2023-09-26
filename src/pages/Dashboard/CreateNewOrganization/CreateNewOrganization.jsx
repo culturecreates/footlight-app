@@ -157,7 +157,7 @@ function CreateNewOrganization() {
               maxCount: 1,
               duration: 3,
             });
-            navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}`);
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}`);
           })
           .catch((error) => {
             reject();
