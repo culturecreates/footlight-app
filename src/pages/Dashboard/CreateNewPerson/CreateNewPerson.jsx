@@ -31,6 +31,7 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import { userRoles } from '../../../constants/userRoles';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
+import { usePrompt } from '../../../hooks/usePrompt';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -66,6 +67,9 @@ function CreateNewPerson() {
   const [newEntityData, setNewEntityData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
   const [imageCropOpen, setImageCropOpen] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+
+  usePrompt(t('common.unsavedChanges'), showDialog);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.people);
@@ -148,7 +152,9 @@ function CreateNewPerson() {
     return promise;
   };
 
-  const onSaveHandler = () => {
+  const onSaveHandler = (event) => {
+    event?.preventDefault();
+    setShowDialog(false);
     form
       .validateFields([
         ['name', 'fr'],
@@ -250,6 +256,11 @@ function CreateNewPerson() {
         });
       });
   };
+
+  const onValuesChangHandler = () => {
+    setShowDialog(true);
+  };
+
   useEffect(() => {
     if (calendarId && personData && currentCalendarData) {
       if (routinghandler(user, calendarId, personData?.createdByUserId, null, true)) {
@@ -306,7 +317,7 @@ function CreateNewPerson() {
   return fields && !personLoading && !taxonomyLoading && !artsDataLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <div className="add-edit-wrapper add-organization-wrapper">
-        <Form form={form} layout="vertical" name="person">
+        <Form form={form} layout="vertical" name="person" onValuesChange={onValuesChangHandler}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
               <Row gutter={[32, 2]}>
@@ -327,7 +338,7 @@ function CreateNewPerson() {
                         <Form.Item>
                           <PrimaryButton
                             label={t('dashboard.events.addEditEvent.saveOptions.save')}
-                            onClick={() => onSaveHandler()}
+                            onClick={(e) => onSaveHandler(e)}
                             disabled={addPersonLoading || imageUploadLoading || updatePersonLoading ? true : false}
                           />
                         </Form.Item>
