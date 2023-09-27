@@ -691,7 +691,7 @@ function CreateNewOrganization() {
                               currentCalendarData,
                               imageCropOpen,
                               setImageCropOpen,
-                              placesSearch: { debounceSearchPlace },
+                              placesSearch: () => debounceSearchPlace(),
                               allPlacesList,
                               locationPlace,
                               setLocationPlace,
