@@ -835,7 +835,8 @@
         "cancel": "Annuler",
         "activate": "Activé",
         "deactivate": "Désactivé",
-        "leaveCalender": "Êtes-vous sûr de vouloir quitter définitivement ce calendrier?"
+        "leaveCalender": "Êtes-vous sûr de vouloir quitter définitivement ce calendrier?",
+        "confirmLeave":"confirmer le congé"
       }
     }
   },
@@ -854,6 +855,7 @@
     "unsavedChanges": "Vous avez des modifications non sauvegardées. Etes-vous sûr de vouloir les jeter ?",
     "keepEditing": "Poursuivre l'édition",
     "discard": "Jeter",
+    "copied": "Copié dans le presse-papiers",
     "server": {
       "status": {
         "503": {

@@ -841,7 +841,8 @@
         "cancel": "Cancel",
         "activate":"Activate",
         "deactivate":"Deactivate",
-        "leaveCalender":"Are you sure you want to leave this calendar?"
+        "leaveCalender":"Are you sure you want to leave this calendar?",
+        "confirmLeave":"confirm leave"
       }
     }
   },
@@ -859,6 +860,7 @@
     "noneFound": "None Found",
     "unsavedChanges": "You have unsaved changes. Are you sure you want to discard them?",
     "keepEditing": "Keep editing",
+    "copied":"Copied to clipboard",
     "discard": "Discard",
     "server": {
       "status": {
