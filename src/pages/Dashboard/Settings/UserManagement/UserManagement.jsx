@@ -43,7 +43,6 @@ const UserManagement = () => {
   const screens = useBreakpoint();
 
   const [pageNumber, setPageNumber] = useState(1);
-  const [totalCount, setTotalCount] = useState();
 
   const sortByParam = searchParams.get('sortBy');
   const orderParam = searchParams.get('order');
@@ -76,19 +75,7 @@ const UserManagement = () => {
   });
 
   useEffect(() => {
-    let sortQuery = new URLSearchParams();
-    let optionalFilters = new URLSearchParams();
-
-    sortQuery.append('sort', encodeURIComponent(`${filter?.order}(${filter?.sort})`));
-
-    if (filter.userStatus !== '') {
-      optionalFilters.append('userStatus', encodeURIComponent(`${filter?.userStatus && filter?.userStatus}`));
-    }
-    if (filter.userRole !== '') {
-      optionalFilters.append('userRole', encodeURIComponent(`${filter?.userRole && filter?.userRole}`));
-    }
-    const filtersDecoded =
-      decodeURIComponent(sortQuery.toString()) + '&' + decodeURIComponent(optionalFilters.toString());
+    const filtersDecoded = setFiletrsForApiCall();
 
     getAllUsers({
       page: pageNumber,
@@ -98,11 +85,7 @@ const UserManagement = () => {
       sessionId: timestampRef,
       calendarId: calendarId,
       includeCalenderFilter: true,
-    })
-      .unwrap()
-      .then((response) => {
-        setTotalCount(response?.count);
-      });
+    });
 
     let params = {
       page: pageNumber,
@@ -125,6 +108,23 @@ const UserManagement = () => {
   const onSearchHandler = (event) => {
     setPageNumber(1);
     setUserSearchQuery(event.target.value);
+  };
+
+  const setFiletrsForApiCall = () => {
+    let sortQuery = new URLSearchParams();
+    let optionalFilters = new URLSearchParams();
+
+    sortQuery.append('sort', encodeURIComponent(`${filter?.order}(${filter?.sort})`));
+
+    if (filter.userStatus !== '') {
+      optionalFilters.append('userStatus', encodeURIComponent(`${filter?.userStatus && filter?.userStatus}`));
+    }
+    if (filter.userRole !== '') {
+      optionalFilters.append('userRole', encodeURIComponent(`${filter?.userRole && filter?.userRole}`));
+    }
+    const filtersDecoded =
+      decodeURIComponent(sortQuery.toString()) + '&' + decodeURIComponent(optionalFilters.toString());
+    return filtersDecoded;
   };
 
   const handleSortOrderChange = () => {
@@ -252,7 +252,22 @@ const UserManagement = () => {
           email: item.email,
           role: userRole[0]?.role,
           calendarId,
-        });
+        })
+          .unwrap()
+          .then((res) => {
+            if (res.statusCode == 202) {
+              const filtersDecoded = setFiletrsForApiCall();
+              getAllUsers({
+                page: pageNumber,
+                limit: 10,
+                filters: filtersDecoded,
+                query: userSearchQuery,
+                sessionId: timestampRef,
+                calendarId: calendarId,
+                includeCalenderFilter: true,
+              });
+            }
+          });
         break;
 
       case 'copyInvitationLink':
@@ -449,7 +464,7 @@ const UserManagement = () => {
                   },
                   pageSize: 10,
                   hideOnSinglePage: true,
-                  total: totalCount,
+                  total: userData?.count,
                   current: Number(pageNumber),
                   showSizeChanger: false,
                 }}
