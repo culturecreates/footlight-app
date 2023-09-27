@@ -292,7 +292,7 @@ const UserManagement = () => {
   };
 
   const listItemHandler = (id) => {
-    navigate(`${location.pathname}${PathName.UserManagement}/${id}`);
+    adminCheckHandler() && navigate(`${location.pathname}${PathName.UserManagement}/${id}`);
   };
 
   return !isUsersLoading ? (
