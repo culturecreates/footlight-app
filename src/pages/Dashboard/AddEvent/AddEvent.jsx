@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import './addEvent.css';
 import { Form, Row, Col, Input, Popover, message, Button, notification } from 'antd';
 import {
@@ -81,6 +81,8 @@ import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import QuickCreatePerson from '../../../components/Modal/QuickCreatePerson';
 import QuickCreatePlace from '../../../components/Modal/QuickCreatePlace';
+import { useDebounce } from '../../../hooks/debounce';
+import { SEARCH_DELAY } from '../../../constants/search';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -767,6 +769,9 @@ function AddEvent() {
       })
       .catch((error) => console.log(error));
   };
+
+  const debounceSearchPlace = useCallback(useDebounce(placesSearch, SEARCH_DELAY), []);
+  const debounceSearchOrganizationPersonSearch = useCallback(useDebounce(organizationPersonSearch, SEARCH_DELAY), []);
 
   const addFieldsHandler = (fieldNames) => {
     let array = addedFields?.concat(fieldNames);
@@ -1661,7 +1666,7 @@ function AddEvent() {
                     placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
                     onChange={(e) => {
                       setQuickCreateKeyword(e.target.value);
-                      placesSearch(e.target.value);
+                      debounceSearchPlace(e.target.value);
                       setIsPopoverOpen({ ...isPopoverOpen, locationPlace: true });
                     }}
                     onClick={(e) => {
@@ -2058,7 +2063,7 @@ function AddEvent() {
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
                       onChange={(e) => {
                         setQuickCreateKeyword(e.target.value);
-                        organizationPersonSearch(e.target.value, 'organizers');
+                        debounceSearchOrganizationPersonSearch(e.target.value, 'organizers');
                         setIsPopoverOpen({ ...isPopoverOpen, organizer: true });
                       }}
                       onClick={(e) => {
@@ -2289,7 +2294,7 @@ function AddEvent() {
                       style={{ borderRadius: '4px' }}
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.performer.searchPlaceholder')}
                       onChange={(e) => {
-                        organizationPersonSearch(e.target.value, 'performers');
+                        debounceSearchOrganizationPersonSearch(e.target.value, 'performers');
                         setIsPopoverOpen({ ...isPopoverOpen, performer: true });
                         setQuickCreateKeyword(e.target.value);
                       }}
@@ -2386,7 +2391,7 @@ function AddEvent() {
                       style={{ borderRadius: '4px' }}
                       placeholder={t('dashboard.events.addEditEvent.otherInformation.supporter.searchPlaceholder')}
                       onChange={(e) => {
-                        organizationPersonSearch(e.target.value, 'supporters');
+                        debounceSearchOrganizationPersonSearch(e.target.value, 'supporters');
                         setIsPopoverOpen({ ...isPopoverOpen, supporter: true });
                         setQuickCreateKeyword(e.target.value);
                       }}

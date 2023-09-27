@@ -1,5 +1,5 @@
 import { Popover } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
@@ -18,6 +18,8 @@ import { contentLanguageBilingual } from '../../../utils/bilingual';
 import './searchPerson.css';
 import { getArtsDataEntities } from '../../../services/artsData';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
+import { useDebounce } from '../../../hooks/debounce';
+import { SEARCH_DELAY } from '../../../constants/search';
 
 function SearchPerson() {
   const { t } = useTranslation();
@@ -76,6 +78,8 @@ function SearchPerson() {
       })
       .catch((error) => console.log(error));
   };
+
+  const debounceSearch = useCallback(useDebounce(searchHandler, SEARCH_DELAY), []);
 
   return (
     <NewEntityLayout
@@ -208,7 +212,7 @@ function SearchPerson() {
             }}
             onChange={(e) => {
               setQuickCreateKeyword(e.target.value);
-              searchHandler(e.target.value);
+              debounceSearch(e.target.value);
               setIsPopoverOpen(true);
             }}
           />
