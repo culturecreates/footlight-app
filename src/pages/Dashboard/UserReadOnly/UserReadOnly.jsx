@@ -149,7 +149,10 @@ const UserReadOnly = () => {
                       infoType: 'email',
                       infoText: userInfo.email,
                       onClick: (e) => {
-                        copyText({ textToCopy: e.target.textContent });
+                        copyText({
+                          textToCopy: e.target.textContent,
+                          message: t(`common.copied`),
+                        });
                       },
                     })}
 
