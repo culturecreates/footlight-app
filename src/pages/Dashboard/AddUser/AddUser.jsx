@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { LeftOutlined, CalendarOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Dropdown, Form, message, Modal, notification, Row, Typography } from 'antd';
+import { Button, Card, Col, Dropdown, Form, message, notification, Row, Typography } from 'antd';
 import PrimaryButton from '../../../components/Button/Primary';
 import { createSearchParams, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import OutlinedButton from '../../..//components/Button/Outlined';
@@ -12,7 +12,7 @@ import i18n from 'i18next';
 import { DownOutlined } from '@ant-design/icons';
 import {
   useCurrentUserLeaveCalendarMutation,
-  useDeleteUserMutation,
+  // useDeleteUserMutation,
   useLazyGetUserByIdQuery,
   useUpdateCurrentUserMutation,
   useUpdateUserByIdMutation,
@@ -28,6 +28,8 @@ import { useOutletContext } from 'react-router-dom';
 import CalendarSelect from '../../../components/List/User/CalenderSelect/CalendarSelect';
 import ChangePassword from '../../../components/Modal/ChangePassword/ChangePassword';
 import { useInviteUserMutation } from '../../../services/invite';
+import { Confirm } from '../../../components/Modal/Confirm/Confirm';
+import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
 
 const AddUser = () => {
   const navigate = useNavigate();
@@ -40,7 +42,6 @@ const AddUser = () => {
   const [currentCalendarData] = useOutletContext();
   const userId = searchParams.get('id');
   const timestampRef = useRef(Date.now()).current;
-  const { confirm } = Modal;
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -69,7 +70,7 @@ const AddUser = () => {
     currentUserLeaveCalendar,
     // { isSuccess: isCurrentUserLeaveCalendarSuccess, isError: isCurrentUserLeaveCalendarError },
   ] = useCurrentUserLeaveCalendarMutation();
-  const [deleteUser] = useDeleteUserMutation();
+  // const [deleteUser] = useDeleteUserMutation();
   const [inviteUser] = useInviteUserMutation();
   const [updateUserById] = useUpdateUserByIdMutation();
   const [updateCurrentUser] = useUpdateCurrentUserMutation();
@@ -106,6 +107,12 @@ const AddUser = () => {
   }, [userId]);
 
   useEffect(() => {
+    if (!adminCheckHandler()) {
+      dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Forbidden resource.' }));
+    }
+  }, []);
+
+  useEffect(() => {
     if (userId) {
       formInstance.setFieldsValue({
         firstName: userData.firstName,
@@ -116,7 +123,6 @@ const AddUser = () => {
         languagePreference: userData.languagePreference,
       });
     }
-    console.log(selectedCalendars, 'lasx');
   }, [userData]);
 
   // handlers
@@ -225,7 +231,6 @@ const AddUser = () => {
               }
             })
             .catch((error) => {
-              console.log(error);
               message.warning({
                 duration: 10,
                 maxCount: 1,
@@ -310,41 +315,33 @@ const AddUser = () => {
   };
 
   const removeCalendarHandler = (index) => {
-    // formInstance.setFieldValue('calendars', selectedCalendars);
-
     if (isCurrentUser) {
-      confirm({
-        title: t('dashboard.events.deleteEvent.title'),
-        icon: <ExclamationCircleOutlined />,
-        content: t('dashboard.settings.addUser.leaveCalender'),
-        okText: t('dashboard.settings.addUser.leave'),
-        okType: 'danger',
-        cancelText: t('dashboard.events.deleteEvent.cancel'),
-        className: 'delete-modal-container',
-        onOk() {
+      Confirm({
+        title: t('dashboard.settings.addUser.confirmLeave'),
+        onAction: () => {
           currentUserLeaveCalendar({ calendarId });
           setSelectedCalendars((prevState) => {
             const updatedArray = prevState.filter((_, i) => index !== i);
             return updatedArray;
           });
         },
+        content: t('dashboard.settings.addUser.leaveCalender'),
+        okText: t('dashboard.settings.addUser.leave'),
+        cancelText: t('dashboard.events.deleteEvent.cancel'),
       });
     } else if (userId) {
-      confirm({
-        title: t('dashboard.events.deleteEvent.title'),
-        icon: <ExclamationCircleOutlined />,
-        content: t('dashboard.settings.addUser.notification.deleteUser'),
-        okType: 'danger',
-        okText: t('dashboard.settings.addUser.delete'),
-        cancelText: t('dashboard.settings.addUser.cancel'),
-        className: 'delete-modal-container',
-        onOk() {
-          deleteUser({ id: userId, calendarId: calendarId });
+      Confirm({
+        title: t('dashboard.settings.addUser.confirmLeave'),
+        onAction: () => {
+          currentUserLeaveCalendar({ calendarId });
           setSelectedCalendars((prevState) => {
             const updatedArray = prevState.filter((_, i) => index !== i);
             return updatedArray;
           });
         },
+        content: t('dashboard.settings.addUser.leaveCalender'),
+        okText: t('dashboard.settings.addUser.leave'),
+        cancelText: t('dashboard.events.deleteEvent.cancel'),
       });
     }
   };
@@ -512,53 +509,43 @@ const AddUser = () => {
                       </Row>
                     </Form.Item>
 
-                    {adminCheckHandler() ? (
-                      <Form.Item
-                        name="userType"
-                        required
-                        label={t('dashboard.settings.addUser.userType')}
-                        rules={[
-                          {
-                            validator: (_, value) =>
-                              validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.userType')),
-                          },
-                        ]}>
-                        <Row>
-                          <Col flex={'423px'}>
-                            <Dropdown
-                              overlayClassName="add-user-form-field-dropdown-wrapper"
-                              getPopupContainer={(trigger) => trigger.parentNode}
-                              overlayStyle={{ minWidth: '100%' }}
-                              menu={{
-                                items: userRolesWithTranslation,
-                                selectable: true,
-                                onSelect: ({ selectedKeys }) => {
-                                  setFormItemValues({ value: selectedKeys[0], fieldType: 'userType' });
-                                },
-                              }}
-                              trigger={['click']}>
-                              <div>
-                                <Typography.Text>
-                                  {userData?.userType !== ''
-                                    ? userData?.userType
-                                    : t('dashboard.settings.addUser.placeHolder.userType')}
-                                </Typography.Text>
-                                <DownOutlined style={{ fontSize: '16px' }} />
-                              </div>
-                            </Dropdown>
-                          </Col>
-                        </Row>
-                      </Form.Item>
-                    ) : (
-                      <div>
-                        <Typography.Text>
-                          {userData?.userType !== ''
-                            ? userData?.userType
-                            : t('dashboard.settings.addUser.placeHolder.userType')}
-                        </Typography.Text>
-                        <DownOutlined style={{ fontSize: '16px' }} />
-                      </div>
-                    )}
+                    <Form.Item
+                      name="userType"
+                      required
+                      label={t('dashboard.settings.addUser.userType')}
+                      rules={[
+                        {
+                          validator: (_, value) =>
+                            validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.userType')),
+                        },
+                      ]}>
+                      <Row>
+                        <Col flex={'423px'}>
+                          <Dropdown
+                            overlayClassName="add-user-form-field-dropdown-wrapper"
+                            getPopupContainer={(trigger) => trigger.parentNode}
+                            overlayStyle={{ minWidth: '100%' }}
+                            disabled={!adminCheckHandler()}
+                            menu={{
+                              items: userRolesWithTranslation,
+                              selectable: true,
+                              onSelect: ({ selectedKeys }) => {
+                                setFormItemValues({ value: selectedKeys[0], fieldType: 'userType' });
+                              },
+                            }}
+                            trigger={['click']}>
+                            <div>
+                              <Typography.Text>
+                                {userData?.userType !== ''
+                                  ? userData?.userType
+                                  : t('dashboard.settings.addUser.placeHolder.userType')}
+                              </Typography.Text>
+                              <DownOutlined style={{ fontSize: '16px' }} />
+                            </div>
+                          </Dropdown>
+                        </Col>
+                      </Row>
+                    </Form.Item>
 
                     <Form.Item
                       name="languagePreference"
@@ -623,7 +610,7 @@ const AddUser = () => {
                 </Row>
               </Card>
             </Col>
-            {userId && (
+            {userId && selectedCalendars?.length > 0 && (
               <Col span={24}>
                 <Row>
                   <Col flex={'780px'}>

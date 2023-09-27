@@ -15,17 +15,11 @@ import { MoreOutlined } from '@ant-design/icons';
 import NoContent from '../../../../components/NoContent/NoContent';
 import './userManagement.css';
 import { userRoles, userRolesWithTranslation } from '../../../../constants/userRoles';
-import { Button, Col, Dropdown, Grid, List, Modal, Row, Space } from 'antd';
+import { Button, Col, Dropdown, Grid, List, Row, Space } from 'antd';
 import ListCard from '../../../../components/List/User/ListCard';
 import bulletIcon from '../../../../assets/icons/dot-bullet.svg';
 import { userActivityStatus } from '../../../../constants/userActivityStatus';
-import {
-  SortAscendingOutlined,
-  SortDescendingOutlined,
-  DownOutlined,
-  CloseCircleOutlined,
-  ExclamationCircleOutlined,
-} from '@ant-design/icons';
+import { SortAscendingOutlined, SortDescendingOutlined, DownOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { sortByOptionsUsers, sortOrder } from '../../../../constants/sortByOptions';
 import Username from '../../../../components/Username';
 import { PathName } from '../../../../constants/pathName';
@@ -33,10 +27,11 @@ import { roleHandler } from '../../../../utils/roleHandler';
 import { useInviteUserMutation } from '../../../../services/invite';
 import AddEvent from '../../../../components/Button/AddEvent';
 import { copyText } from '../../../../utils/copyText';
+import ReadOnlyProtectedComponent from '../../../../layout/ReadOnlyProtectedComponent';
+import { Confirm } from '../../../../components/Modal/Confirm/Confirm';
 
 const UserManagement = () => {
   const { useBreakpoint } = Grid;
-  const { confirm } = Modal;
 
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
@@ -48,7 +43,6 @@ const UserManagement = () => {
   const screens = useBreakpoint();
 
   const [pageNumber, setPageNumber] = useState(1);
-  const [totalCount, setTotalCount] = useState();
 
   const sortByParam = searchParams.get('sortBy');
   const orderParam = searchParams.get('order');
@@ -81,20 +75,7 @@ const UserManagement = () => {
   });
 
   useEffect(() => {
-    let sortQuery = new URLSearchParams();
-    let optionalFilters = new URLSearchParams();
-
-    sortQuery.append('sort', encodeURIComponent(`${filter?.order}(${filter?.sort})`));
-
-    if (filter.userStatus !== '') {
-      optionalFilters.append('userStatus', encodeURIComponent(`${filter?.userStatus && filter?.userStatus}`));
-    }
-    if (filter.userRole !== '') {
-      optionalFilters.append('userRole', encodeURIComponent(`${filter?.userRole && filter?.userRole}`));
-    }
-    console.log(decodeURIComponent(optionalFilters.toString()), 'filters', filter);
-    const filtersDecoded =
-      decodeURIComponent(sortQuery.toString()) + '&' + decodeURIComponent(optionalFilters.toString());
+    const filtersDecoded = setFiletrsForApiCall();
 
     getAllUsers({
       page: pageNumber,
@@ -104,11 +85,7 @@ const UserManagement = () => {
       sessionId: timestampRef,
       calendarId: calendarId,
       includeCalenderFilter: true,
-    })
-      .unwrap()
-      .then((response) => {
-        setTotalCount(response?.count);
-      });
+    });
 
     let params = {
       page: pageNumber,
@@ -131,6 +108,23 @@ const UserManagement = () => {
   const onSearchHandler = (event) => {
     setPageNumber(1);
     setUserSearchQuery(event.target.value);
+  };
+
+  const setFiletrsForApiCall = () => {
+    let sortQuery = new URLSearchParams();
+    let optionalFilters = new URLSearchParams();
+
+    sortQuery.append('sort', encodeURIComponent(`${filter?.order}(${filter?.sort})`));
+
+    if (filter.userStatus !== '') {
+      optionalFilters.append('userStatus', encodeURIComponent(`${filter?.userStatus && filter?.userStatus}`));
+    }
+    if (filter.userRole !== '') {
+      optionalFilters.append('userRole', encodeURIComponent(`${filter?.userRole && filter?.userRole}`));
+    }
+    const filtersDecoded =
+      decodeURIComponent(sortQuery.toString()) + '&' + decodeURIComponent(optionalFilters.toString());
+    return filtersDecoded;
   };
 
   const handleSortOrderChange = () => {
@@ -183,7 +177,11 @@ const UserManagement = () => {
 
   const tooltipItemDisplayHandler = ({ item }) => {
     const dropdownItems = [];
-
+    const userStatus = item.roles.filter((i) => {
+      if (i.calendarId === calendarId) {
+        return i.role;
+      }
+    });
     if (adminCheckHandler()) {
       dropdownItems.push({ key: 'editUser', label: t('dashboard.settings.userManagement.tooltip.editUser') });
     }
@@ -195,7 +193,7 @@ const UserManagement = () => {
       });
     }
 
-    if (item.userStatus === userActivityStatus[2].key && !adminCheckHandler()) {
+    if (userStatus[0]?.status === 'REMOVED' && adminCheckHandler()) {
       dropdownItems.push({
         key: 'sendInvitation',
         label: t('dashboard.settings.userManagement.tooltip.sendInvitation'),
@@ -235,6 +233,11 @@ const UserManagement = () => {
 
   const tooltipItemClickHandler = ({ key, item }) => {
     let invitationLink;
+    const userRole = item.roles.filter((i) => {
+      if (i.calendarId === calendarId) {
+        return i.role;
+      }
+    });
     switch (key) {
       case 'editUser':
         navigate(
@@ -247,63 +250,50 @@ const UserManagement = () => {
           firstName: item.firstName,
           lastName: item.lastName,
           email: item.email,
-          role: 'GUEST',
+          role: userRole[0]?.role,
           calendarId,
         })
           .unwrap()
-          .then((response) => {
-            console.log(response);
+          .then((res) => {
+            if (res.statusCode == 202) {
+              const filtersDecoded = setFiletrsForApiCall();
+              getAllUsers({
+                page: pageNumber,
+                limit: 10,
+                filters: filtersDecoded,
+                query: userSearchQuery,
+                sessionId: timestampRef,
+                calendarId: calendarId,
+                includeCalenderFilter: true,
+              });
+            }
           });
         break;
 
       case 'copyInvitationLink':
         if (item?.userStatus === 'ACTIVE') invitationLink = process.env.REACT_APP_ACCEPT_URL + item?.invitationId;
         else if (item?.userStatus === 'INVITED') invitationLink = process.env.REACT_APP_INVITE_URL + item?.invitationId;
-        copyText({ textToCopy: invitationLink });
+        copyText({
+          textToCopy: invitationLink,
+          message: t('dashboard.settings.userManagement.tooltip.modal.copyText'),
+        });
         break;
 
       case 'activateOrDeactivate':
         if (item.userStatus === userActivityStatus[0].key) {
-          // confirm({
-          //   title: t('dashboard.events.deleteEvent.title'),
-          //   icon: <ExclamationCircleOutlined />,
-          //   content: t('dashboard.settings.userManagement.tooltip.modal.copyText'),
-          //   okText: t('dashboard.settings.addUser.deactivate'),
-          //   okType: 'danger',
-          //   cancelText: t('dashboard.settings.addUser.cancel'),
-          //   className: 'delete-modal-container',
-          //   onOk() {
-          //   },
-          // });
           deActivateUser({ id: item._id, calendarId: calendarId });
         } else if (item.userStatus === userActivityStatus[1].key) {
-          // confirm({
-          //   title: t('dashboard.events.deleteEvent.title'),
-          //   icon: <ExclamationCircleOutlined />,
-          //   content: t('dashboard.settings.userManagement.tooltip.modal.activateText'),
-          //   okText: t('dashboard.settings.addUser.activate'),
-          //   okType: 'danger',
-          //   cancelText: t('dashboard.settings.addUser.cancel'),
-          //   className: 'delete-modal-container',
-          //   onOk() {
-          //   },
-          // });
           activateUser({ id: item._id, calendarId: calendarId });
         }
         break;
 
       case 'deleteUser':
-        confirm({
-          title: t('dashboard.events.deleteEvent.title'),
-          icon: <ExclamationCircleOutlined />,
-          content: t('dashboard.settings.addUser.notification.deleteUser'),
-          okType: 'danger',
+        Confirm({
+          title: t('dashboard.settings.userManagement.tooltip.deleteUser'),
+          onAction: () => deleteUser({ id: item._id, calendarId: calendarId }),
           okText: t('dashboard.settings.addUser.delete'),
           cancelText: t('dashboard.settings.addUser.cancel'),
-          className: 'delete-modal-container',
-          onOk() {
-            deleteUser({ id: item._id, calendarId: calendarId });
-          },
+          content: t('dashboard.settings.addUser.notification.deleteUser'),
         });
         break;
 
@@ -317,7 +307,7 @@ const UserManagement = () => {
   };
 
   const listItemHandler = (id) => {
-    navigate(`${location.pathname}${PathName.UserManagement}/${id}`);
+    adminCheckHandler() && navigate(`${location.pathname}${PathName.UserManagement}/${id}`);
   };
 
   return !isUsersLoading ? (
@@ -446,7 +436,9 @@ const UserManagement = () => {
           <Col>
             <Row>
               <Col>
-                <AddEvent label={t('dashboard.settings.userManagement.addUser')} onClick={addEventHandler} />
+                <ReadOnlyProtectedComponent>
+                  <AddEvent label={t('dashboard.settings.userManagement.addUser')} onClick={addEventHandler} />
+                </ReadOnlyProtectedComponent>
               </Col>
             </Row>
           </Col>
@@ -472,7 +464,7 @@ const UserManagement = () => {
                   },
                   pageSize: 10,
                   hideOnSinglePage: true,
-                  total: totalCount,
+                  total: userData?.count,
                   current: Number(pageNumber),
                   showSizeChanger: false,
                 }}
