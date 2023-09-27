@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import EntityCard from '../../../components/Card/Common/EntityCard';
 import NoContent from '../../../components/NoContent/NoContent';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
@@ -19,6 +19,8 @@ import { artsDataDuplicateFilter } from '../../../utils/artsDataEntityFilter';
 import { Popover } from 'antd';
 import { getArtsDataEntities } from '../../../services/artsData';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
+import { useDebounce } from '../../../hooks/debounce';
+import { SEARCH_DELAY } from '../../../constants/search';
 
 function SearchOrganizations() {
   const { t } = useTranslation();
@@ -79,6 +81,8 @@ function SearchOrganizations() {
       })
       .catch((error) => console.log(error));
   };
+
+  const debounceSearch = useCallback(useDebounce(searchHandler, SEARCH_DELAY), []);
 
   return (
     !initialOrganizersLoading && (
@@ -196,7 +200,7 @@ function SearchOrganizations() {
               }}
               onChange={(e) => {
                 setQuickCreateKeyword(e.target.value);
-                searchHandler(e.target.value);
+                debounceSearch(e.target.value);
                 setIsPopoverOpen(true);
               }}
             />

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import './createNewPlace.css';
 import '../AddEvent/addEvent.css';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
@@ -65,6 +65,8 @@ import { usePrompt } from '../../../hooks/usePrompt';
 import { useAddPostalAddressMutation, useUpdatePostalAddressMutation } from '../../../services/postalAddress';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequiredFieldNames';
+import { useDebounce } from '../../../hooks/debounce';
+import { SEARCH_DELAY } from '../../../constants/search';
 
 const { TextArea } = Input;
 
@@ -554,6 +556,8 @@ function CreateNewPlace() {
       })
       .catch((error) => console.log(error));
   };
+
+  const debounceSearchPlace = useCallback(useDebounce(placesSearch, SEARCH_DELAY), []);
 
   const addFieldsHandler = (fieldNames) => {
     let array = addedFields?.concat(fieldNames);
@@ -1434,7 +1438,7 @@ function CreateNewPlace() {
                       style={{ borderRadius: '4px', width: '423px' }}
                       placeholder={t('dashboard.places.createNew.addPlace.containedInPlace.placeholder')}
                       onChange={(e) => {
-                        placesSearch(e.target.value);
+                        debounceSearchPlace(e.target.value);
                         setIsPopoverOpen({ ...isPopoverOpen, containedInPlace: true });
                       }}
                       onClick={() => {
