@@ -4,6 +4,7 @@ export const inviteApi = createApi({
   reducerPath: 'inviteApi',
   baseQuery: baseQueryWithReauth,
   keepUnusedDataFor: 10,
+  tagTypes: ['Users'],
   endpoints: (builder) => ({
     getInviteDetails: builder.query({
       query: ({ id }) => {
@@ -26,6 +27,7 @@ export const inviteApi = createApi({
           body: { firstName, lastName, email, role },
         };
       },
+      invalidatesTags: (result, error, arg) => [{ type: 'Users', id: arg._id }],
     }),
 
     acceptInvite: builder.mutation({
