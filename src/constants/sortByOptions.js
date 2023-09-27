@@ -11,7 +11,7 @@ export const sortByOptions = [
   },
   {
     label: <Translation>{(t) => t('dashboard.events.filter.sort.eventDate')}</Translation>,
-    key: 'startDateTime',
+    key: 'upcomingEventDate',
   },
 ];
 
