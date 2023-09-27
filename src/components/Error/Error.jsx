@@ -49,8 +49,6 @@ function ErrorAlert(props) {
     heading = t('errorPage.heading');
   }
 
-  console.error(message, new Date().toISOString());
-
   return (
     <div className="error-page">
       <div className="content">
