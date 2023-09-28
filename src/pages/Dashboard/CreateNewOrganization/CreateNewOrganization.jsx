@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import './createNewOrganization.css';
 import '../AddEvent/addEvent.css';
 import { Form, Row, Col, Button, message, notification } from 'antd';
@@ -41,6 +41,8 @@ import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { useLazyGetPlaceQuery } from '../../../services/places';
 import { usePrompt } from '../../../hooks/usePrompt';
+import { useDebounce } from '../../../hooks/debounce';
+import { SEARCH_DELAY } from '../../../constants/search';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -438,6 +440,8 @@ function CreateNewOrganization() {
       .catch((error) => console.log(error));
   };
 
+  const debounceSearchPlace = useCallback(useDebounce(placesSearch, SEARCH_DELAY), []);
+
   const addFieldsHandler = (fieldNames) => {
     let array = addedFields?.concat(fieldNames);
     array = [...new Set(array)];
@@ -687,7 +691,7 @@ function CreateNewOrganization() {
                               currentCalendarData,
                               imageCropOpen,
                               setImageCropOpen,
-                              placesSearch,
+                              placesSearch: () => debounceSearchPlace(),
                               allPlacesList,
                               locationPlace,
                               setLocationPlace,
