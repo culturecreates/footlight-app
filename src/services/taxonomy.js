@@ -7,8 +7,8 @@ export const taxonomyApi = createApi({
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getAllTaxonomy: builder.query({
-      query: ({ calendarId, search = '', taxonomyClass, includeConcepts }) => ({
-        url: `taxonomy?search=${search}&taxonomy-class=${taxonomyClass}&include-concepts=${includeConcepts}`,
+      query: ({ calendarId, search = '', taxonomyClass, includeConcepts, page = 1, limit = 200 }) => ({
+        url: `taxonomy?search=${search}&taxonomy-class=${taxonomyClass}&include-concepts=${includeConcepts}&page=${page}&limit=${limit}`,
         headers: {
           'calendar-id': calendarId,
         },
