@@ -9,5 +9,6 @@ export const featureFlags = {
   quickCreatePersonPlace: process.env.REACT_APP_FEATURE_FLAG_QUICK_CREATE_PEOPLE_PLACE,
   editScreenPeoplePlaceOrganization: process.env.REACT_APP_FEATURE_FLAG_EDIT_SCREEN_PEOPLE_PLACE_ORGANIZATION,
   settingsScreenUsers: process.env.REACT_APP_FEATURE_FLAG_USERS,
+  taxonomy: process.env.REACT_APP_FEATURE_FLAG_TAXONOMY,
   imageCropFeature: checkFeatureFlag(process.env.REACT_APP_FEATURE_FLAG_IMAGE_CROP),
 };
