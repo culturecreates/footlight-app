@@ -310,13 +310,13 @@ const UserManagement = () => {
     adminCheckHandler() && navigate(`${location.pathname}${PathName.UserManagement}/${id}`);
   };
 
-  return !isUsersLoading ? (
+  return (
     <Row gutter={[10, 24]} className="user-management-wrapper">
       <Col span={24}>
-        <Row justify="space-between" gutter={[24, 16]} wrap={screens.xl && false}>
-          <Col xl={17}>
-            <Row gutter={[20, 16]}>
-              <Col flex="400px">
+        <Row justify="space-between" gutter={[24, 16]} style={{ marginBottom: 16 }}>
+          <Col flex={'auto'}>
+            <Row gutter={[8, 8]} align="middle">
+              <Col flex={'auto'} style={{ marginRight: '24px', maxWidth: 400 }}>
                 <UserSearch
                   placeholder={t('dashboard.settings.userManagement.searchPlaceholder')}
                   onPressEnter={(e) => onSearchHandler(e)}
@@ -326,190 +326,182 @@ const UserManagement = () => {
                 />
               </Col>
               <Col>
-                <Row gutter={[8]} align="middle">
+                <Row align="middle" className="sort-option-row">
                   <span style={{ fontSize: '16px', fontWeight: 700, marginRight: 8 }}>
                     {t('dashboard.settings.userManagement.sort')}
                   </span>
 
-                  <Col>
-                    <Dropdown
-                      overlayClassName="filter-sort-dropdown-wrapper"
-                      overlayStyle={{ minWidth: '200px' }}
-                      getPopupContainer={(trigger) => trigger.parentNode}
-                      menu={{
-                        items: sortByOptionsUsers,
-                        defaultSelectedKeys: [filter?.sort],
-                        selectable: true,
-                        onSelect: onSortSelect,
-                      }}
-                      trigger={['click']}>
-                      <Button size="large" className="filter-sort-button">
-                        <Space>
-                          {sortByOptionsUsers?.map((sortBy, index) => {
-                            if (sortBy?.key === filter?.sort) return <span key={index}>{sortBy?.label}</span>;
-                          })}
-                          <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
-                        </Space>
-                      </Button>
-                    </Dropdown>
-                  </Col>
-                  <Col>
-                    <Button
-                      className="filter-sort-button"
-                      style={{ borderColor: filter?.order && '#1B3DE6' }}
-                      onClick={handleSortOrderChange}
-                      icon={
-                        filter?.order === sortOrder?.ASC ? (
-                          <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
-                        ) : (
-                          filter?.order === sortOrder?.DESC && (
-                            <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
-                          )
+                  <Dropdown
+                    overlayClassName="filter-sort-dropdown-wrapper"
+                    overlayStyle={{ minWidth: '200px' }}
+                    getPopupContainer={(trigger) => trigger.parentNode}
+                    menu={{
+                      items: sortByOptionsUsers,
+                      defaultSelectedKeys: [filter?.sort],
+                      selectable: true,
+                      onSelect: onSortSelect,
+                    }}
+                    trigger={['click']}>
+                    <Button size="large" className="filter-sort-button">
+                      <Space>
+                        {sortByOptionsUsers?.map((sortBy, index) => {
+                          if (sortBy?.key === filter?.sort) return <span key={index}>{sortBy?.label}</span>;
+                        })}
+                        <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
+                      </Space>
+                    </Button>
+                  </Dropdown>
+                  <Button
+                    className="filter-sort-button"
+                    style={{ borderColor: filter?.order && '#1B3DE6' }}
+                    onClick={handleSortOrderChange}
+                    icon={
+                      filter?.order === sortOrder?.ASC ? (
+                        <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
+                      ) : (
+                        filter?.order === sortOrder?.DESC && (
+                          <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
                         )
-                      }
-                      size={'large'}
-                    />
-                  </Col>
+                      )
+                    }
+                    size={'large'}
+                  />
                 </Row>
               </Col>
-              <Col>
-                <Dropdown
-                  overlayClassName="filter-sort-dropdown-wrapper"
-                  getPopupContainer={(trigger) => trigger.parentNode}
-                  overlayStyle={{ minWidth: '200px' }}
-                  menu={{
-                    items: userActivityStatus,
-                    defaultSelectedKeys: [filter?.userRole],
-                    selectable: true,
-                    onSelect: handleStatusFilterChange,
-                  }}
-                  trigger={['click']}>
-                  <Space>
-                    <Button
-                      size="large"
-                      className="filter-buttons"
-                      style={{ borderColor: filter?.userStatus && '#607EFC' }}>
-                      {t('dashboard.settings.userManagement.status')}
-                    </Button>
-                  </Space>
-                </Dropdown>
-              </Col>
-              <Col>
-                <Dropdown
-                  overlayClassName="filter-sort-dropdown-wrapper"
-                  getPopupContainer={(trigger) => trigger.parentNode}
-                  overlayStyle={{ minWidth: '200px' }}
-                  menu={{
-                    items: userRolesWithTranslation,
-                    selectable: true,
-                    onSelect: userTypeFilterChangeHandler,
-                  }}
-                  trigger={['click']}>
-                  <Space>
-                    <Button
-                      size="large"
-                      className="filter-buttons"
-                      style={{ borderColor: filter?.userRole && '#607EFC' }}>
-                      {t('dashboard.settings.userManagement.userTypes')}
-                    </Button>
-                  </Space>
-                </Dropdown>
-              </Col>
-
-              <Col>
-                {(filter.order !== sortOrder.ASC ||
-                  filter.sort !== sortByOptionsUsers[0].key ||
-                  filter.userRole !== '' ||
-                  filter.userStatus !== '') && (
-                  <Button
-                    size="large"
-                    className="filter-buttons"
-                    style={{ color: '#1B3DE6' }}
-                    onClick={filterClearHandler}>
-                    {t('dashboard.events.filter.clear')}&nbsp;
-                    <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
-                  </Button>
-                )}
-              </Col>
             </Row>
           </Col>
-          <Col>
-            <Row>
-              <Col>
-                <ReadOnlyProtectedComponent>
-                  <AddEvent label={t('dashboard.settings.userManagement.addUser')} onClick={addEventHandler} />
-                </ReadOnlyProtectedComponent>
-              </Col>
-            </Row>
+
+          <Col flex={'140px'} className="add-btn-container">
+            <ReadOnlyProtectedComponent>
+              <AddEvent label={t('dashboard.settings.userManagement.addUser')} onClick={addEventHandler} />
+            </ReadOnlyProtectedComponent>
           </Col>
         </Row>
-      </Col>
-      <Col flex={'832px'}>
-        <Row>
-          <Col span={24}>
-            {userData?.data.length && !isUsersLoading > 0 ? (
-              <List
-                className="event-list-wrapper"
-                itemLayout={screens.xs ? 'vertical' : 'horizontal'}
-                dataSource={userData?.data}
-                bordered={false}
-                pagination={{
-                  onChange: (page) => {
-                    setPageNumber(page);
-                    window.scrollTo({
-                      top: 0,
-                      left: 0,
-                      behavior: 'smooth',
-                    });
-                  },
-                  pageSize: 10,
-                  hideOnSinglePage: true,
-                  total: userData?.count,
-                  current: Number(pageNumber),
-                  showSizeChanger: false,
-                }}
-                renderItem={(item, index) => (
-                  <ListCard
-                    id={index}
-                    key={index}
-                    listItemHandler={() => listItemHandler(item?._id)}
-                    title={createTitleHandler(item?.firstName, item?.lastName, item?.userName)}
-                    description={roleHandler({ roles: item?.roles, calendarId })}
-                    activityStatus={item?.userStatus}
-                    invitedBy={item?.invitedBy && <Username userName={item?.invitedBy} />}
-                    actions={[
-                      adminCheckHandler() && (
-                        <Dropdown
-                          overlayClassName="filter-sort-dropdown-wrapper"
-                          overlayStyle={{ minWidth: '200px' }}
-                          getPopupContainer={(trigger) => trigger.parentNode}
-                          menu={{
-                            items: tooltipItemDisplayHandler({ item }),
-                            onClick: ({ key }) => {
-                              tooltipItemClickHandler({ key, item });
-                            },
-                          }}
-                          trigger={['click']}>
-                          <span>
-                            <MoreOutlined className="event-list-more-icon" key={index} />
-                          </span>
-                        </Dropdown>
-                      ),
-                    ]}
-                  />
-                )}
-              />
-            ) : (
-              <NoContent style={{ height: '200px' }} />
+
+        <Row gutter={[8]} align="middle">
+          <Col>
+            <Dropdown
+              overlayClassName="filter-sort-dropdown-wrapper"
+              getPopupContainer={(trigger) => trigger.parentNode}
+              overlayStyle={{ minWidth: '200px' }}
+              menu={{
+                items: userActivityStatus,
+                defaultSelectedKeys: [filter?.userRole],
+                selectable: true,
+                onSelect: handleStatusFilterChange,
+              }}
+              trigger={['click']}>
+              <Space>
+                <Button
+                  size="large"
+                  className="filter-buttons"
+                  style={{ borderColor: filter?.userStatus && '#607EFC' }}>
+                  {t('dashboard.settings.userManagement.status')}
+                </Button>
+              </Space>
+            </Dropdown>
+          </Col>
+          <Col>
+            <Dropdown
+              overlayClassName="filter-sort-dropdown-wrapper"
+              getPopupContainer={(trigger) => trigger.parentNode}
+              overlayStyle={{ minWidth: '200px' }}
+              menu={{
+                items: userRolesWithTranslation,
+                selectable: true,
+                onSelect: userTypeFilterChangeHandler,
+              }}
+              trigger={['click']}>
+              <Space>
+                <Button size="large" className="filter-buttons" style={{ borderColor: filter?.userRole && '#607EFC' }}>
+                  {t('dashboard.settings.userManagement.userTypes')}
+                </Button>
+              </Space>
+            </Dropdown>
+          </Col>
+
+          <Col>
+            {(filter.order !== sortOrder.ASC ||
+              filter.sort !== sortByOptionsUsers[0].key ||
+              filter.userRole !== '' ||
+              filter.userStatus !== '') && (
+              <Button size="large" className="filter-buttons" style={{ color: '#1B3DE6' }} onClick={filterClearHandler}>
+                {t('dashboard.events.filter.clear')}&nbsp;
+                <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
+              </Button>
             )}
           </Col>
         </Row>
       </Col>
+      {!isUsersLoading ? (
+        <Col flex={'832px'}>
+          <Row>
+            <Col span={24}>
+              {userData?.data.length && !isUsersLoading > 0 ? (
+                <List
+                  className="event-list-wrapper"
+                  itemLayout={screens.xs ? 'vertical' : 'horizontal'}
+                  dataSource={userData?.data}
+                  bordered={false}
+                  pagination={{
+                    onChange: (page) => {
+                      setPageNumber(page);
+                      window.scrollTo({
+                        top: 0,
+                        left: 0,
+                        behavior: 'smooth',
+                      });
+                    },
+                    pageSize: 10,
+                    hideOnSinglePage: true,
+                    total: userData?.count,
+                    current: Number(pageNumber),
+                    showSizeChanger: false,
+                  }}
+                  renderItem={(item, index) => (
+                    <ListCard
+                      id={index}
+                      key={index}
+                      listItemHandler={() => listItemHandler(item?._id)}
+                      title={createTitleHandler(item?.firstName, item?.lastName, item?.userName)}
+                      description={roleHandler({ roles: item?.roles, calendarId })}
+                      activityStatus={item?.userStatus}
+                      invitedBy={item?.invitedBy && <Username userName={item?.invitedBy} />}
+                      actions={[
+                        adminCheckHandler() && (
+                          <Dropdown
+                            overlayClassName="filter-sort-dropdown-wrapper"
+                            overlayStyle={{ minWidth: '200px' }}
+                            getPopupContainer={(trigger) => trigger.parentNode}
+                            menu={{
+                              items: tooltipItemDisplayHandler({ item }),
+                              onClick: ({ key }) => {
+                                tooltipItemClickHandler({ key, item });
+                              },
+                            }}
+                            trigger={['click']}>
+                            <span>
+                              <MoreOutlined className="event-list-more-icon" key={index} />
+                            </span>
+                          </Dropdown>
+                        ),
+                      ]}
+                    />
+                  )}
+                />
+              ) : (
+                <NoContent style={{ height: '200px' }} />
+              )}
+            </Col>
+          </Row>
+        </Col>
+      ) : (
+        <div
+          style={{ height: '400px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <LoadingIndicator />
+        </div>
+      )}
     </Row>
-  ) : (
-    <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <LoadingIndicator />
-    </div>
   );
 };
 
