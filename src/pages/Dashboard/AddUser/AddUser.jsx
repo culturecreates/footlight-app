@@ -383,7 +383,7 @@ const AddUser = () => {
               <Row gutter={[0, 16]}>
                 <Col span={24}>
                   <Row justify="space-between">
-                    <Col>
+                    <Col className="breadcrumb">
                       <div className="button-container">
                         <Button
                           type="link"

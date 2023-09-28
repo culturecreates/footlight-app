@@ -22,7 +22,10 @@ const CalendarSelect = (props) => {
                 </Button>
               </div>
             ) : (
-              <Button size="large" className="filter-buttons role-added-button">
+              <Button
+                size="large"
+                className="filter-buttons role-added-button"
+                style={{ padding: '4px 8px', height: 'auto' }}>
                 {calenderItem?.role}
               </Button>
             )}
@@ -45,7 +48,10 @@ const CalendarSelect = (props) => {
         />
 
         {currentUser && (
-          <Button size="large" className="filter-buttons role-added-button">
+          <Button
+            size="large"
+            className="filter-buttons role-added-button"
+            style={{ padding: '4px 8px', height: 'auto' }}>
             {calenderItem?.role}
           </Button>
         )}
