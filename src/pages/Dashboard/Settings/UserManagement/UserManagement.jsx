@@ -386,7 +386,7 @@ const UserManagement = () => {
               overlayStyle={{ minWidth: '200px' }}
               menu={{
                 items: userActivityStatus,
-                defaultSelectedKeys: [filter?.userRole],
+                defaultSelectedKeys: [filter?.userStatus],
                 selectable: true,
                 onSelect: handleStatusFilterChange,
               }}
@@ -408,6 +408,7 @@ const UserManagement = () => {
               overlayStyle={{ minWidth: '200px' }}
               menu={{
                 items: userRolesWithTranslation,
+                defaultSelectedKeys: [filter?.userRole],
                 selectable: true,
                 onSelect: userTypeFilterChangeHandler,
               }}

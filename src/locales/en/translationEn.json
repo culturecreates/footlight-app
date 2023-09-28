@@ -744,7 +744,7 @@
         "contributor": "Contributor",
         "guest": "Guest",
         "superAdmin": "Super Admin",
-        "invitedBy": "Invited By",
+        "invitedBy": "Invited by",
         "tooltip": {
           "editUser": "Edit user",
           "sendInvitation": "Send invitation",

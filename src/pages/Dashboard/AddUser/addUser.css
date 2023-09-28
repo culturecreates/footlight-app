@@ -1,12 +1,3 @@
-.add-user-wrapper .button-container .ant-btn {
-  color: #0f0e98;
-  border: none;
-  box-shadow: none;
-  background: transparent;
-  padding: 0;
-  font-weight: 600;
-}
-
 .add-user-wrapper .details-card-description {
   color: var(--content-neutral-secondary, #646d7b);
   font-size: 16px;
