@@ -7,8 +7,17 @@
   padding: 0;
 }
 
+.add-user-wrapper .search-popover-options {
+  padding: 7px 1px;
+  height: 40px;
+}
+
+.add-user-wrapper .search-popover-options p {
+  margin-bottom: 0;
+}
+
 .add-user-wrapper .search-popover-options:hover {
-  background-color: #9196a3;
+  background-color: #ededed;
 }
 
 .add-user-wrapper .details-card-description {
@@ -51,6 +60,16 @@
 .add-user-wrapper .search-bar-organization .events-search {
   display: flex;
   align-items: center;
+  border: none;
+  border-radius: 4px;
+  border: 1px solid var(--content-neutral-stroke, #b6c1c9);
+  background: var(--background-neutrals-ground, #fff);
+  padding: 8px;
+  color: var(--content-neutral-primary, #222732);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px; /* 150% */
 }
 
 .add-user-wrapper .ant-popover-inner {

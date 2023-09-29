@@ -67,13 +67,14 @@ const AddUser = () => {
   });
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [userSearchKeyword, setUserSearchKeyword] = useState('');
+  const [userSearchData, setUserSearchData] = useState([]);
 
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
 
   const [getUser, { isFetching: isLoading, isSuccess: isUserFetchSuccess }] = useLazyGetUserByIdQuery();
-  const [getUserSearch, { currentData: userSearchData }] = useLazyGetAllUsersQuery();
+  const [getUserSearch, { isFetching: isUsersearchFeatching }] = useLazyGetAllUsersQuery();
 
   const [
     currentUserLeaveCalendar,
@@ -144,6 +145,17 @@ const AddUser = () => {
     }
   };
 
+  const onSearchCardClick = (item) => {
+    setUserSearchKeyword(item?.firstName);
+    setUserData({
+      ...userData,
+      firstName: item?.firstName,
+      lastName: item?.lastName,
+      phoneNumber: item?.phoneNumber,
+      email: item?.email,
+    });
+  };
+
   const adminCheckHandler = () => {
     if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
     else return false;
@@ -161,19 +173,28 @@ const AddUser = () => {
             role: values.userType,
             calendarId,
           }).then((res) => {
-            notification.success({
-              description: t(`dashboard.settings.addUser.notification.invitation`),
-              key: res.message,
-              placement: 'top',
-              closeIcon: <></>,
-              maxCount: 1,
-              duration: 3,
-            });
+            if (res.statusCode == 202) {
+              notification.success({
+                description: t(`dashboard.settings.addUser.notification.invitation`),
+                key: res.message,
+                placement: 'top',
+                closeIcon: <></>,
+                maxCount: 1,
+                duration: 3,
+              });
+            }
             navigate(-2);
           });
         })
         .catch((errors) => {
-          console.error('Validation errors:', errors);
+          notification.success({
+            description: errors.message,
+            key: errors.message,
+            placement: 'top',
+            closeIcon: <></>,
+            maxCount: 1,
+            duration: 3,
+          });
         });
     }
     if (isCurrentUser) {
@@ -324,7 +345,19 @@ const AddUser = () => {
   };
 
   const searchHandlerUserSearch = (value) => {
-    getUserSearch({ includeCalenderFilter: false, calendarId, query: value, page: 1, limit: 10, filters: '' });
+    console.log(value, 'val', userSearchKeyword);
+
+    value != ''
+      ? getUserSearch({ includeCalenderFilter: false, calendarId, query: value, page: 1, limit: 10, filters: '' })
+          .unwrap()
+          .then((res) => {
+            setUserSearchKeyword(value);
+            setUserSearchData(res);
+            if (res?.data.length > 0) {
+              setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
+            }
+          })
+      : setUserSearchData([]);
   };
 
   const debounceSearch = useCallback(useDebounce(searchHandlerUserSearch, SEARCH_DELAY), []);
@@ -469,37 +502,77 @@ const AddUser = () => {
                             <>
                               <div className="search-bar-organization">
                                 <Popover
-                                  open={userSearchData?.data?.length > 0 && isPopoverOpen?.searchUserFirstName}
+                                  open={
+                                    (userSearchData?.data?.length > 0 &&
+                                      isPopoverOpen?.searchUserFirstName &&
+                                      userSearchKeyword != '') ||
+                                    (isUsersearchFeatching &&
+                                      userSearchData?.data?.length > 0 &&
+                                      userSearchKeyword != '')
+                                  }
                                   arrow={false}
                                   overlayClassName="entity-popover"
                                   placement="bottom"
                                   onOpenChange={(open) => {
-                                    setIsPopoverOpen(setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: open }));
-                                    // debounceSearch(userSearchKeyword);
+                                    if (userSearchData?.data?.length > 0) {
+                                      setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: open });
+                                      debounceSearch(userSearchKeyword);
+                                    }
                                   }}
                                   autoAdjustOverflow={false}
                                   getPopupContainer={(trigger) => trigger.parentNode}
-                                  trigger={['click']}
+                                  trigger={['focus']}
                                   content={
                                     <div>
-                                      {
-                                        <div className="search-scrollable-content">
-                                          {userSearchData?.data?.map((item, index) => (
-                                            <div key={index} className="search-popover-options">
-                                              <p>{item.firstName + ' ' + item.lastName}</p>
-                                            </div>
-                                          ))}
-                                        </div>
-                                      }
+                                      <div className="search-scrollable-content">
+                                        {userSearchData?.data?.map((item, index) => (
+                                          <div
+                                            key={index}
+                                            className="search-popover-options"
+                                            onClick={() => {
+                                              setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: false });
+                                              onSearchCardClick(item);
+                                            }}>
+                                            <p>{item.firstName + ' ' + item.lastName}</p>
+                                          </div>
+                                        ))}
+                                      </div>
                                     </div>
                                   }>
                                   <Input
                                     style={{ borderRadius: '4px' }}
                                     placeholder="Search organizations"
                                     value={userSearchKeyword}
+                                    onFocus={(e) => {
+                                      console.log(e.target.value, 'onfoucus');
+
+                                      if (e.target.value != '') {
+                                        if (userSearchData?.data?.length > 0) {
+                                          setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
+                                        }
+                                        debounceSearch(e.target.value);
+                                      }
+                                    }}
+                                    onClick={(e) => {
+                                      if (e.target.value != '') {
+                                        console.log(e.target.value, 'onclick');
+
+                                        if (userSearchData?.data?.length > 0) {
+                                          setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
+                                        }
+                                        debounceSearch(e.target.value);
+                                      }
+                                    }}
                                     onChange={(e) => {
+                                      setFormItemValues({ value: e.target.value, fieldType: 'firstName' });
+                                      console.log(e.target.value, 'onchange');
                                       setUserSearchKeyword(e.target.value);
-                                      debounceSearch(e.target.value);
+
+                                      if (e.target.value == '') {
+                                        setUserSearchData([]);
+                                      } else {
+                                        debounceSearch(e.target.value);
+                                      }
                                     }}
                                     className="events-search"
                                   />
