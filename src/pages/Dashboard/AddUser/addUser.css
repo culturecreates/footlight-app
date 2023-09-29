@@ -10,6 +10,7 @@
 .add-user-wrapper .search-popover-options {
   padding: 7px 1px;
   height: 40px;
+  font-weight: 500;
 }
 
 .add-user-wrapper .search-popover-options p {

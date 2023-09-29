@@ -23,7 +23,7 @@ import { userLanguages } from '../../../constants/userLanguagesÏ';
 import { useState, useEffect } from 'react';
 import { userRoles, userRolesWithTranslation } from '../../../constants/userRoles';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUserDetails, setUser } from '../../../redux/reducer/userSlice';
+import { clearUser, getUserDetails, setUser } from '../../../redux/reducer/userSlice';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useOutletContext } from 'react-router-dom';
 import CalendarSelect from '../../../components/List/User/CalenderSelect/CalendarSelect';
@@ -33,6 +33,7 @@ import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
+import { PathName } from '../../../constants/pathName';
 
 const AddUser = () => {
   const navigate = useNavigate();
@@ -345,11 +346,11 @@ const AddUser = () => {
   };
 
   const searchHandlerUserSearch = (value) => {
+    setUserSearchKeyword(value);
     value != ''
       ? getUserSearch({ includeCalenderFilter: false, calendarId, query: value, page: 1, limit: 10, filters: '' })
           .unwrap()
           .then((res) => {
-            setUserSearchKeyword(value);
             setUserSearchData(res);
             if (res?.data.length > 0) {
               setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
@@ -360,16 +361,27 @@ const AddUser = () => {
 
   const debounceSearch = useCallback(useDebounce(searchHandlerUserSearch, SEARCH_DELAY), []);
 
-  const removeCalendarHandler = (index) => {
+  const removeCalendarHandler = ({ item, index }) => {
     if (isCurrentUser) {
       Confirm({
         title: t('dashboard.settings.addUser.confirmLeave'),
         onAction: () => {
-          currentUserLeaveCalendar({ calendarId });
-          setSelectedCalendars((prevState) => {
-            const updatedArray = prevState.filter((_, i) => index !== i);
-            return updatedArray;
-          });
+          isCurrentUser &&
+            currentUserLeaveCalendar({ calendarId: item?.calendarId })
+              .unwrap()
+              .then(() => {
+                setSelectedCalendars((prevState) => {
+                  const updatedArray = prevState.filter((_, i) => index !== i);
+                  if (selectedCalendars.length <= 1) {
+                    dispatch(clearUser());
+                    navigate(PathName.Login, { state: { previousPath: 'logout' } });
+                  } else if (calendarId === item.calendarId) {
+                    const newcalendar = userData.calendars.filter((i) => i.calendarId != item.calendarId);
+                    navigate(`${PathName.Dashboard}/${newcalendar[0].calendarId}${PathName.Events}`);
+                  }
+                  return updatedArray;
+                });
+              });
         },
         content: t('dashboard.settings.addUser.leaveCalender'),
         okText: t('dashboard.settings.addUser.leave'),
@@ -782,7 +794,7 @@ const AddUser = () => {
                                       isRoleOptionHidden={userId || isCurrentUser ? true : false}
                                       isCurrentUser
                                       onButtonClick={() => {
-                                        removeCalendarHandler(index);
+                                        removeCalendarHandler({ item, index });
                                       }}
                                     />
                                   ))}
