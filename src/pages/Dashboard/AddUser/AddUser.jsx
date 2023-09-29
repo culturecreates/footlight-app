@@ -345,8 +345,6 @@ const AddUser = () => {
   };
 
   const searchHandlerUserSearch = (value) => {
-    console.log(value, 'val', userSearchKeyword);
-
     value != ''
       ? getUserSearch({ includeCalenderFilter: false, calendarId, query: value, page: 1, limit: 10, filters: '' })
           .unwrap()
@@ -544,8 +542,6 @@ const AddUser = () => {
                                     placeholder="Search organizations"
                                     value={userSearchKeyword}
                                     onFocus={(e) => {
-                                      console.log(e.target.value, 'onfoucus');
-
                                       if (e.target.value != '') {
                                         if (userSearchData?.data?.length > 0) {
                                           setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
@@ -555,8 +551,6 @@ const AddUser = () => {
                                     }}
                                     onClick={(e) => {
                                       if (e.target.value != '') {
-                                        console.log(e.target.value, 'onclick');
-
                                         if (userSearchData?.data?.length > 0) {
                                           setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
                                         }
@@ -565,7 +559,6 @@ const AddUser = () => {
                                     }}
                                     onChange={(e) => {
                                       setFormItemValues({ value: e.target.value, fieldType: 'firstName' });
-                                      console.log(e.target.value, 'onchange');
                                       setUserSearchKeyword(e.target.value);
 
                                       if (e.target.value == '') {
