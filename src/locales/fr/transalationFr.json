@@ -278,7 +278,7 @@
             "placeHolderWebsite": "Entrez l'adresse web URL",
             "placeHolderPhoneNumber": "Entrez le numéro de téléphone",
             "placeHolderEmail": "Entrez l’adresse courriel",
-            "contactTooltip": "Ajoutez un contact pour votre événement. Vous pouvez en créer un ou copier les coordonnées de l'Organisateur.",
+            "contactTooltip": "Ajoutez un contact pour votre événement. Vous pouvez en créer un ou copier les données de l'Organisateur.",
             "copyOrganizerContact": "Copier le contact de l’organisateur"
           },
           "eventLanguage": "Langue de l'événement",
@@ -397,7 +397,7 @@
 
       "publishOptions": {
         "publishEvent": "Publier l'événement",
-        "unpublishEvent": "Dépublier l'événement",
+        "unpublishEvent": "Passer en brouillon",
         "deleteEvent": "Supprimer l'événement",
         "duplicateEvent": "Dupliquer l’événement"
       },
@@ -462,7 +462,27 @@
         },
         "addOrganization": {
           "newOrganization": "Nouvelle organisation",
-          "editOrganization": "Modifier l’organisation"
+          "editOrganization": "Modifier l’organisation",
+          "addMoreDetails": "Ajouter des détails à votre organisation",
+          "dataSource": "Data source",
+          "question": {
+            "firstPart": "Est-ce la bonne organisation ? Si non, ",
+            "secondPart": "créez une nouvelle organisation",
+            "thirdPart": " et ne sélectionnez pas cette source de données."
+          }
+        },
+        "notification": {
+          "addSuccess": "Succès ! Votre organisation a été créé.",
+          "editSuccess": "Succès ! Votre organisation a été mis à jour.",
+          "saveError": "Cet organisation a besoin de plus d'informations avant d'être enregistré."
+        },
+        "validations": {
+          "nameRequired": "Le nom est requis.",
+          "emptyDescription": "Une description est requise ({{wordCount}} mots minimum).",
+          "unilingualEmptyDescription": "Une description est requise.",
+          "englishShort": "La description en anglais est trop courte.",
+          "frenchShort": "La description française est trop courte.",
+          "unilingualDescriptionShort": "La description est trop courte"
         }
       }
     },
@@ -509,6 +529,115 @@
           "linkText": "Artsdata",
           "footlightSectionHeading": "From Footlight",
           "artsDataSectionHeading": "Imports from Artsdata"
+        },
+        "addPlace": {
+          "newPlace": "Nouveau lieu",
+          "editPlace": "Modifier lieu",
+          "question": {
+            "firstPart": "S'agit-il de la bonne lieu ? Si non, ",
+            "secondPart": "créez une nouvelle lieu",
+            "thirdPart": " et ne sélectionnez pas cette source de données."
+          },
+          "name": {
+            "name": "Nom du lieu",
+            "placeholder": {
+              "english": "Entrez le nom du lieu",
+              "french": "Entrez le nom du lieu"
+            }
+          },
+          "placeType": {
+            "placeholder": "Sélectionnez le type de lieu"
+          },
+          "address": {
+            "address": "Adresse",
+            "searchAddressDescription": "Entrer le nom du lieu et/ou l'adresse.",
+            "searchAddressPlaceholder": "Rechercher",
+            "streetAddress": "Adresse postale",
+            "subheading": "Entrer le nom du lieu et/ou l'adresse.",
+            "streetAddressPlaceholder": {
+              "english": "Entrez l’adresse postale en anglais",
+              "french": "Entrez l’adresse postale en français"
+            },
+            "city": {
+              "city": "Ville",
+              "placeholder": { "french": "Entrer la ville en français", "english": "Entrer la ville en anglais" }
+            },
+            "postalCode": {
+              "postalCode": "Code postal",
+              "placeholder": "Entrez le code postal"
+            },
+            "province": {
+              "province": "Province",
+              "placeholder": {
+                "english": "Entrer la province en anglais",
+                "french": "Entrer la province en français"
+              }
+            },
+            "country": {
+              "country": "Pays",
+              "placeholder": {
+                "english": "Entrer la pays en anglais",
+                "french": "Entrer la pays en français"
+              }
+            },
+            "coordinates": {
+              "coordinates": "Coordonnées"
+            },
+            "region": {
+              "placeholder": "Sélectionnez le région"
+            },
+            "openingHours": {
+              "openingHours": "Lien des heures d'ouverture",
+              "tooltip": "Ajoutez un lien vers les heures d'ouverture",
+              "placeholder": "Entrez l'url des heures d'ouverture"
+            }
+          },
+          "containedInPlace": {
+            "containedInPlace": "Contenu dans un lieu",
+            "subheading": "Ajoutez un lieu qui contient ce lieu.",
+            "addPlace": "Ajouter un lieu",
+            "placeholder": "Rechercher un lieu"
+          },
+          "venueAccessibility": {
+            "venueAccessibility": "Accessibilité du site",
+            "placeholder": "Sélectionner un élément",
+            "subheading": "Ces éléments d'accessibilité seront affichés dans tous les événements se déroulant dans ce lieu.",
+            "placeAccessibilityNote": {
+              "note": "Note",
+              "placeholder": {
+                "english": "Ajouter une note",
+                "french": "Ajouter une note"
+              },
+              "tooltip": "Ajoutez des informations supplémentaires sur l'accessibilité."
+            }
+          },
+          "disambiguatingDescription": {
+            "disambiguatingDescription": "Description identifiante",
+            "placeholder": {
+              "english": "Entrez la description identifiante",
+              "french": "Entrez la description identifiante"
+            }
+          },
+          "description": {
+            "description": "Description"
+          },
+          "image": {
+            "image": "Image",
+            "subheading": "Uniquement les fichiers .jpeg et .png sont acceptés."
+          },
+          "addMoreDetails": "Ajouter plus de détails",
+          "dataSource": "Source de la donnée",
+          "notification": {
+            "addSuccess": "Succès ! Votre lieu a été créé.",
+            "editSuccess": "Succès ! Votre lieu a été mis à jour.",
+            "saveError": "Cet lieu a besoin de plus d'informations avant d'être enregistré."
+          },
+          "validations": {
+            "nameRequired": "Le nom est requis.",
+            "placeTypeRequired": "Un minimum d'un type est requis.",
+            "streetAddressRequired": "L'adresse postale est requise.",
+            "postalCodeRequired": "Le code postal est requis."
+          }
         }
       }
     },
@@ -546,9 +675,19 @@
         "addPerson": {
           "newPerson": "Nouvelle personne",
           "editPerson": "Modifier personne",
+          "question": {
+            "firstPart": "S'agit-il de la bonne personne ? Si non, ",
+            "secondPart": "créez une nouvelle personne",
+            "thirdPart": " et ne sélectionnez pas cette source de données."
+          },
+          "dataSource": "Source de la donnée",
           "notification": {
             "addSuccess": "Succès ! Votre personne a été créé.",
-            "editSuccess": "Succès ! Votre personne a été mis à jour."
+            "editSuccess": "Succès ! Votre personne a été mis à jour.",
+            "saveError": "Cet personne a besoin de plus d'informations avant d'être enregistré."
+          },
+          "validations": {
+            "nameRequired": "Le nom est requis."
           }
         }
       }
@@ -577,6 +716,128 @@
         "emptyFirstName": "Entrez votre prénom",
         "emptyLasttName": "Entrez votre nom"
       }
+    },
+    "settings": {
+      "heading": "Paramètres",
+      "tab2": "Métadonnées du calendrier",
+      "tab1": "Gestion des utilisateurs",
+      "userManagement": {
+        "searchPlaceholder": "Recherche d'utilisateurs",
+        "sort": "Trier par",
+        "status": "Statut",
+        "userTypes": "Type",
+        "addUser": "Utilisateur",
+        "clear": "Réinitialiser",
+        "userName": "Nom d’utilisateur",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "active": "Actif",
+        "inActive": "Désactivé",
+        "invite": "Invité",
+        "admin": "Administrateur",
+        "editor": "Éditeur",
+        "contributor": "Collaborateur",
+        "guest": "Invité",
+        "superAdmin": "Super Administrateur",
+        "invitedBy": "Invité par",
+        "tooltip": {
+          "editUser": "Modifier l'utilisateur",
+          "sendInvitation": "Envoyer l'invitation",
+          "copyInvitationLink": "Copier le lien de l'invitation",
+          "activateOrDeactivate": "Activé/Désactivé",
+          "deleteUser": "Supprimer l'utilisateur",
+          "modal": {
+            "deleteText": "Are you sure you want to permanently delete this user",
+            "deactivateText": "Are you sure you want to deactivate this user",
+            "activateText": "Êtes-vous sûr de vouloir activer cet utilisateur ?",
+            "copyText": "Lien d'invitation copié.."
+          }
+        }
+      },
+      "userReadOnly": {
+        "editBtn": "Éditer l’information",
+        "userName": "Nom d’utilisateur",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "phoneNumber": "Numéro de téléphone",
+        "email": "Courriel",
+        "userType": "Type d’utilisateur",
+        "languagePreference": "Préférence de langue",
+        "calendarAccess": "Accès aux calendriers",
+        "details": "Détails",
+        "breadcrumb": "Retour à la liste des utilisateurs"
+      },
+      "addUser": {
+        "newUser": "Nouvel utilisateur",
+        "editUser": "Modifier l'utilisateur",
+        "userProfile": "Profil de l'utilisateur",
+        "detailsCardDescriptionAddPage": "Fill user details to add this person to your calendar.",
+        "detailsCardDescriptionEditPage": "Veuillez ajouter les nouvelles informations d'identification de l'utilisateur.",
+        "detailsCardDescriptionCurrentUser": "Modifiez vos paramètres d'utilisateur ici.",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "phoneNumber": "Numéro de téléphone",
+        "email": "Courriel",
+        "userType": "Type d’utilisateur",
+        "placeHolder": {
+          "firstName": "Entrez le prénom",
+          "lastName": "Entrez le nom de famille",
+          "phoneNumber": "Entrez le numéro du téléphone",
+          "email": "Entrez l'adresse courriel",
+          "userType": "Sélectionnez le type d'utilisateur",
+          "language": "Sélectionner la langue de l'interface"
+        },
+        "languagePreference": "Préférence de langue",
+        "organization": "Organisation",
+        "organizationDescription": "Ajouter une organisation qui sera liée à ce profile d’utilisateur.",
+        "searchOrganizations": "Recherchez des Organisations",
+        "dropDownOptions": {
+          "langagePreference": {
+            "en": "Anglais",
+            "fr": "Français"
+          }
+        },
+        "organizationSearchHeading": "Organisation",
+        "organizationSearchDescription": "Ajouter une organisation qui sera liée à ce profile d’utilisateur.",
+        "changePassWord": "Changer le mot de passe",
+        "calendars": "Calendriers",
+        "calendarsDescription": "Sélectionnez des calendriers disponibles auxquels cet utilisateur peut se joindre.",
+        "calendarSearchHeading": "Accès aux calendriers",
+        "searchCalendars": "Rechercher des calendriers",
+        "leave": "Quitter",
+        "role": "Role",
+        "passwordModal": {
+          "btnText": "Changer le mot de passe",
+          "Password": "Mot de passe",
+          "newPassword": "Nouveau mot de passe",
+          "confirmNewPassword": "Confirmer votre nouveau mot de passe",
+          "changePassword": "Changer le mot de passe",
+          "Cancel": "Annuler",
+          "placeHolder": {
+            "current": "Entrez votre mot de passe",
+            "new": "Entrez nouveau mot de passe",
+            "confirm": "Confirmez nouveau mot de passe"
+          }
+        },
+        "validationTexts": {
+          "firstName": "Le prénom est requis.",
+          "lastName": "Le nom est requis.",
+          "email": "Entrez une adresse courriel.",
+          "userType": "Sélectionnez le type d'utilisateur.",
+          "language": "Sélectionnez la langue préférée"
+        },
+        "notification": {
+          "invitation": "L'invitation a été envoyée avec succès",
+          "updateUser": "Succès ! Le profil de l'utilisateur a été mis à jour.",
+          "deleteUser": "Êtes-vous sûr de vouloir supprimer définitivement cet utilisateur?"
+        },
+        "delete": "Supprimer",
+        "cancel": "Annuler",
+        "activate": "Activé",
+        "deactivate": "Désactivé",
+        "leaveCalender": "Êtes-vous sûr de vouloir quitter définitivement ce calendrier?",
+        "confirmLeave":"confirmer le congé"
+      }
     }
   },
   "errorPage": {
@@ -594,6 +855,7 @@
     "unsavedChanges": "Vous avez des modifications non sauvegardées. Etes-vous sûr de vouloir les jeter ?",
     "keepEditing": "Poursuivre l'édition",
     "discard": "Jeter",
+    "copied": "Copié dans le presse-papiers",
     "server": {
       "status": {
         "503": {

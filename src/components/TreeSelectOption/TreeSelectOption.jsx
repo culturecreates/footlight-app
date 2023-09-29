@@ -15,7 +15,7 @@ function TreeSelectOption(props) {
       showSearch
       treeNodeFilterProp={'title'}
       {...props}
-      showArrow
+      showArrow={props?.showArrow ?? true}
     />
   );
 }

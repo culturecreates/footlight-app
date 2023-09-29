@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import EntityCard from '../../../components/Card/Common/EntityCard';
 import NoContent from '../../../components/NoContent/NoContent';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
@@ -18,6 +18,9 @@ import { PathName } from '../../../constants/pathName';
 import { artsDataDuplicateFilter } from '../../../utils/artsDataEntityFilter';
 import { Popover } from 'antd';
 import { getArtsDataEntities } from '../../../services/artsData';
+import { routinghandler } from '../../../utils/roleRoutingHandler';
+import { useDebounce } from '../../../hooks/debounce';
+import { SEARCH_DELAY } from '../../../constants/search';
 
 function SearchOrganizations() {
   const { t } = useTranslation();
@@ -57,7 +60,7 @@ function SearchOrganizations() {
 
   const artsDataClickHandler = async (entity) => {
     navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}`, {
-      data: entity,
+      state: { data: entity },
     });
   };
 
@@ -78,6 +81,8 @@ function SearchOrganizations() {
       })
       .catch((error) => console.log(error));
   };
+
+  const debounceSearch = useCallback(useDebounce(searchHandler, SEARCH_DELAY), []);
 
   return (
     !initialOrganizersLoading && (
@@ -128,11 +133,14 @@ function SearchOrganizations() {
                           artsDataLink={artsDataLinkChecker(organizer?.uri)}
                           Logo={organizer.logo ? <img src={organizer.logo?.thumbnail?.uri} /> : <Logo />}
                           linkText={t('dashboard.organization.createNew.search.linkText')}
-                          onClick={() =>
-                            navigate(
-                              `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizer?.id}`,
-                            )
-                          }
+                          onClick={() => {
+                            if (routinghandler(user, calendarId, organizer?.creator?.userId, null, true)) {
+                              navigate(
+                                `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizer?.id}`,
+                              );
+                            } else
+                              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${organizer?.id}`);
+                          }}
                         />
                       </div>
                     ))
@@ -157,7 +165,7 @@ function SearchOrganizations() {
                             <EntityCard
                               title={organizer?.name}
                               description={organizer?.description}
-                              artsDataLink={`${process.env.REACT_APP_ARTS_DATA_URI}${organizer?.id}`}
+                              artsDataLink={`${process.env.REACT_APP_ARTS_DATA_PAGE_URI}${organizer?.id}`}
                               Logo={organizer.logo ? <img src={organizer?.logo?.thumbnail?.uri} /> : <Logo />}
                               linkText={t('dashboard.organization.createNew.search.linkText')}
                               onClick={() => artsDataClickHandler(organizer)}
@@ -176,7 +184,7 @@ function SearchOrganizations() {
                     onClick={() => {
                       navigate(
                         `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}`,
-                        { name: quickCreateKeyword },
+                        { state: { name: quickCreateKeyword } },
                       );
                     }}
                   />
@@ -192,7 +200,7 @@ function SearchOrganizations() {
               }}
               onChange={(e) => {
                 setQuickCreateKeyword(e.target.value);
-                searchHandler(e.target.value);
+                debounceSearch(e.target.value);
                 setIsPopoverOpen(true);
               }}
             />

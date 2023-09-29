@@ -194,11 +194,9 @@ function Organizations() {
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                     createdDate={item?.creator?.date}
-                    createdByFirstName={item?.creator?.firstName}
-                    createdByLastName={item?.creator?.lastName}
+                    createdByUserName={item?.creator?.userName}
                     updatedDate={item?.modifier?.date}
-                    updatedByFirstName={item?.modifier?.firstName}
-                    updatedByLastName={item?.modifier?.lastName}
+                    updatedByUserName={item?.modifier?.userName}
                     artsDataLink={artsDataLinkChecker(item?.sameAs)}
                     listItemHandler={() => listItemHandler(item?.id)}
                     actions={[

@@ -1,0 +1,118 @@
+.add-user-wrapper .button-container .ant-btn {
+  color: #0f0e98;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
+  font-weight: 600;
+}
+
+.add-user-wrapper .details-card-description {
+  color: var(--content-neutral-secondary, #646d7b);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.add-user-wrapper .ant-input {
+  border-radius: 4px;
+  border: 1px solid var(--content-neutral-stroke, #b6c1c9);
+  background: var(--background-neutrals-ground, #fff);
+  padding: 8px;
+}
+
+.add-user-wrapper .ant-dropdown-trigger {
+  border-radius: 4px;
+  border: 1px solid var(--content-neutral-stroke, #b6c1c9);
+  background: var(--background-neutrals-ground, #fff);
+  display: flex;
+  padding: 8px;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+
+  color: var(--content-neutral-primary, #222732);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px; /* 150% */
+}
+
+.add-user-wrapper .organization-search .ant-input {
+  border: none;
+  height: 24px;
+}
+
+.add-user-wrapper .search-bar-organization .events-search {
+  display: flex;
+  align-items: center;
+}
+
+.add-user-wrapper .ant-popover-inner {
+  border-radius: 4px;
+  border: 1px solid var(--content-neutral-tertiary, #9196a3);
+  background: var(--background-neutrals-ground, #fff);
+}
+
+.add-user-wrapper .selection-item-list-wrapper .image-container {
+  height: 100%;
+}
+
+.add-user-wrapper .selection-item-list-wrapper img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.add-user-wrapper .add-event-button-wrap .ant-form-item {
+  margin-bottom: 0;
+}
+
+.add-user-wrapper .add-edit-event-heading h4 {
+  margin-bottom: 0;
+}
+
+.add-user-wrapper .card-heading-container h5 {
+  color: var(--content-neutral-primary, #222732);
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 32px;
+  margin-bottom: 24px;
+}
+
+.add-user-wrapper .calendar-search .icon-container {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 4px;
+  background: var(--background-highlight-medium, #e3e8ff);
+}
+
+.add-user-wrapper .calendar-search .details-card-description {
+  margin-bottom: 4px;
+}
+
+.add-user-wrapper .calendar-search .ant-list-item-meta {
+  align-items: center !important;
+}
+
+.add-user-wrapper .password-modal {
+  border-radius: 4px;
+  border: 2px solid var(--content-action-lighter, #607efc);
+  background: var(--background-neutrals-transparent, rgba(255, 255, 255, 0));
+  width: fit-content;
+}
+
+.add-user-wrapper .password-modal .ant-btn {
+  display: flex;
+  padding: 8px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}

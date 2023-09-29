@@ -177,7 +177,7 @@ function People() {
                   <ListItem
                     key={index}
                     id={index}
-                    logo={item?.logo?.thumbnail?.uri}
+                    logo={item?.image?.thumbnail?.uri}
                     defaultLogo={<UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />}
                     title={contentLanguageBilingual({
                       en: item?.name?.en,
@@ -192,11 +192,9 @@ function People() {
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                     createdDate={item?.creator?.date}
-                    createdByFirstName={item?.creator?.firstName}
-                    createdByLastName={item?.creator?.lastName}
+                    createdByUserName={item?.creator?.userName}
                     updatedDate={item?.modifier?.date}
-                    updatedByFirstName={item?.modifier?.firstName}
-                    updatedByLastName={item?.modifier?.lastName}
+                    updatedByUserName={item?.modifier?.userName}
                     artsDataLink={artsDataLinkChecker(item?.sameAs)}
                     listItemHandler={() => listItemHandler(item?.id)}
                     actions={[

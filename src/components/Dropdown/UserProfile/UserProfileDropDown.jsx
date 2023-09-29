@@ -25,7 +25,9 @@ const UserProfileDropDown = () => {
   const onClick = ({ key }) => {
     switch (key) {
       case 'userProfile':
-        navigate(`${PathName.Dashboard}/${calendarId}${PathName.Profile}/${user?.id}`);
+        navigate(
+          `${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}?id=${user.id}`,
+        );
         break;
       case 'help':
         if (i18n.language === 'en')

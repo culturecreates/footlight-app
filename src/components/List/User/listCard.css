@@ -1,0 +1,14 @@
+.users-list-item-wrapper {
+  display: flex;
+  padding: 24px;
+  align-items: center;
+  gap: 4px;
+  flex: 1 0 0;
+}
+
+.users-list-item-wrapper .user-item-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}

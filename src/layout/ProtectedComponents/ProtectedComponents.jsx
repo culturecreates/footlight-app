@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../redux/reducer/userSlice';
 import { userRoles } from '../../constants/userRoles';
 
-function ProtectedComponents({ children, creator }) {
+function ProtectedComponents({ children, creator, isEntity }) {
   let { calendarId } = useParams();
   const { user } = useSelector(getUserDetails);
   const calendar = user?.roles.filter((calendar) => {
@@ -12,7 +12,10 @@ function ProtectedComponents({ children, creator }) {
 
   switch (calendar[0]?.role) {
     case userRoles.GUEST:
-      return;
+      if (isEntity == true) {
+        if (user?.id === creator?.userId) return children;
+      } else return;
+      break;
     case userRoles.CONTRIBUTOR:
       if (user?.id === creator?.userId) return children;
       else return;

@@ -4,6 +4,7 @@ export const inviteApi = createApi({
   reducerPath: 'inviteApi',
   baseQuery: baseQueryWithReauth,
   keepUnusedDataFor: 10,
+  tagTypes: ['Users'],
   endpoints: (builder) => ({
     getInviteDetails: builder.query({
       query: ({ id }) => {
@@ -13,6 +14,20 @@ export const inviteApi = createApi({
         };
       },
       transformResponse: (response) => response.data,
+    }),
+
+    inviteUser: builder.mutation({
+      query: ({ firstName, lastName, email, role, calendarId }) => {
+        return {
+          url: `invite`,
+          method: 'POST',
+          headers: {
+            'calendar-id': calendarId,
+          },
+          body: { firstName, lastName, email, role },
+        };
+      },
+      invalidatesTags: (result, error, arg) => [{ type: 'Users', id: arg._id }],
     }),
 
     acceptInvite: builder.mutation({
@@ -27,4 +42,9 @@ export const inviteApi = createApi({
   }),
 });
 
-export const { useGetInviteDetailsQuery, useAcceptInviteMutation, useLazyGetInviteDetailsQuery } = inviteApi;
+export const {
+  useGetInviteDetailsQuery,
+  useAcceptInviteMutation,
+  useLazyGetInviteDetailsQuery,
+  useInviteUserMutation,
+} = inviteApi;

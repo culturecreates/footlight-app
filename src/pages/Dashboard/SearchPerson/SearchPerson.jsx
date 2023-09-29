@@ -1,5 +1,5 @@
 import { Popover } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
@@ -17,6 +17,9 @@ import { UserOutlined } from '@ant-design/icons';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import './searchPerson.css';
 import { getArtsDataEntities } from '../../../services/artsData';
+import { routinghandler } from '../../../utils/roleRoutingHandler';
+import { useDebounce } from '../../../hooks/debounce';
+import { SEARCH_DELAY } from '../../../constants/search';
 
 function SearchPerson() {
   const { t } = useTranslation();
@@ -56,7 +59,7 @@ function SearchPerson() {
   // handlers
 
   const artsDataClickHandler = async (entity) => {
-    navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`, { data: entity });
+    navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}`, { state: { data: entity } });
   };
 
   const searchHandler = (value) => {
@@ -75,6 +78,8 @@ function SearchPerson() {
       })
       .catch((error) => console.log(error));
   };
+
+  const debounceSearch = useCallback(useDebounce(searchHandler, SEARCH_DELAY), []);
 
   return (
     <NewEntityLayout
@@ -131,9 +136,13 @@ function SearchPerson() {
                           )
                         }
                         linkText={t('dashboard.people.createNew.search.linkText')}
-                        onClick={() =>
-                          navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`)
-                        }
+                        onClick={() => {
+                          if (routinghandler(user, calendarId, person?.creator?.userId, null, true)) {
+                            navigate(
+                              `${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${person?.id}`,
+                            );
+                          } else navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}/${person?.id}`);
+                        }}
                       />
                     </div>
                   ))
@@ -160,7 +169,7 @@ function SearchPerson() {
                           <EntityCard
                             title={person?.name}
                             description={person?.description}
-                            artsDataLink={`${process.env.REACT_APP_ARTS_DATA_URI}${person?.id}`}
+                            artsDataLink={`${process.env.REACT_APP_ARTS_DATA_PAGE_URI}${person?.id}`}
                             Logo={
                               person.logo ? (
                                 person.logo?.thumbnail?.uri
@@ -184,7 +193,11 @@ function SearchPerson() {
                 <CreateEntityButton
                   quickCreateKeyword={quickCreateKeyword}
                   onClick={() => {
-                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
+                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}`, {
+                      state: {
+                        name: quickCreateKeyword,
+                      },
+                    });
                   }}
                 />
               )}
@@ -199,7 +212,7 @@ function SearchPerson() {
             }}
             onChange={(e) => {
               setQuickCreateKeyword(e.target.value);
-              searchHandler(e.target.value);
+              debounceSearch(e.target.value);
               setIsPopoverOpen(true);
             }}
           />

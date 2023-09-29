@@ -1,16 +1,16 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import '../AddEvent/addEvent.css';
-import { Form, Row, Col, Button, notification } from 'antd';
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { Form, Row, Col, Button, notification, message } from 'antd';
+import { CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { LeftOutlined } from '@ant-design/icons';
 import PrimaryButton from '../../../components/Button/Primary';
 import { featureFlags } from '../../../utils/featureFlags';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import Card from '../../../components/Card/Common/Event';
-import { formCategory, formFieldValue, renderFormFields } from '../../../constants/formFields';
+import { formCategory, formFieldValue, returnFormDataWithFields } from '../../../constants/formFields';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
@@ -22,22 +22,30 @@ import { treeDynamicTaxonomyOptions } from '../../../components/TreeSelectOption
 import Tags from '../../../components/Tags/Common/Tags';
 import { formFieldsHandler } from '../../../utils/formFieldsHandler';
 import { formPayloadHandler } from '../../../utils/formPayloadHandler';
-import { formInitialValueHandler } from '../../../utils/formInitialValueHandler';
 import { useAddPersonMutation, useGetPersonQuery, useUpdatePersonMutation } from '../../../services/people';
 import { useAddImageMutation } from '../../../services/image';
 import { PathName } from '../../../constants/pathName';
+import { loadArtsDataEntity } from '../../../services/artsData';
+import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
+import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
+import { userRoles } from '../../../constants/userRoles';
+import { routinghandler } from '../../../utils/roleRoutingHandler';
+import { usePrompt } from '../../../hooks/usePrompt';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentCalendarData] = useOutletContext();
   const { user } = useSelector(getUserDetails);
   const { calendarId } = useParams();
   let [searchParams] = useSearchParams();
 
   const personId = searchParams.get('id');
+  const artsDataId = location?.state?.data?.id ?? null;
 
   const { data: personData, isLoading: personLoading } = useGetPersonQuery(
     { personId, calendarId, sessionId: timestampRef },
@@ -51,18 +59,48 @@ function CreateNewPerson() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
-  const [addPerson] = useAddPersonMutation();
-  const [addImage] = useAddImageMutation();
-  const [updatePerson] = useUpdatePersonMutation();
+  const [addPerson, { isLoading: addPersonLoading }] = useAddPersonMutation();
+  const [addImage, { isLoading: imageUploadLoading }] = useAddImageMutation();
+  const [updatePerson, { isLoading: updatePersonLoading }] = useUpdatePersonMutation();
+
+  const [artsData, setArtsData] = useState(null);
+  const [newEntityData, setNewEntityData] = useState(null);
+  const [artsDataLoading, setArtsDataLoading] = useState(false);
+  const [imageCropOpen, setImageCropOpen] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+
+  usePrompt(t('common.unsavedChanges'), showDialog);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.people);
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.people);
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
 
+  const calendar = user?.roles.filter((calendar) => {
+    return calendar.calendarId === calendarId;
+  });
+
+  const adminCheckHandler = () => {
+    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
+    else return false;
+  };
+
   const addUpdatePersonApiHandler = (personObj) => {
     var promise = new Promise(function (resolve, reject) {
       if (!personId || personId === '') {
+        if (artsDataId && artsData) {
+          let artsDataSameAs = Array.isArray(artsData?.sameAs);
+          if (artsDataSameAs)
+            personObj = {
+              ...personObj,
+              sameAs: artsData?.sameAs,
+            };
+          else
+            personObj = {
+              ...personObj,
+              sameAs: [artsData?.sameAs],
+            };
+        }
         addPerson({
           data: personObj,
           calendarId,
@@ -70,7 +108,6 @@ function CreateNewPerson() {
           .unwrap()
           .then((response) => {
             resolve(response?.id);
-            //Add the notification msg for adding person
             notification.success({
               description: t('dashboard.people.createNew.addPerson.notification.addSuccess'),
               placement: 'top',
@@ -97,7 +134,6 @@ function CreateNewPerson() {
           .unwrap()
           .then(() => {
             resolve(personId);
-            //Add success msg for updating a person
             notification.success({
               description: t('dashboard.people.createNew.addPerson.notification.editSuccess'),
               placement: 'top',
@@ -116,9 +152,14 @@ function CreateNewPerson() {
     return promise;
   };
 
-  const onSaveHandler = () => {
+  const onSaveHandler = (event) => {
+    event?.preventDefault();
+    setShowDialog(false);
     form
-      .validateFields([])
+      .validateFields([
+        ['name', 'fr'],
+        ['name', 'en'],
+      ])
       .then(() => {
         var values = form.getFieldsValue(true);
         let personPayload = {};
@@ -126,22 +167,32 @@ function CreateNewPerson() {
           let payload = formPayloadHandler(values[object], object, formFields);
           if (payload) {
             let newKeys = Object.keys(payload);
-            let childKeys = Object.keys(payload[newKeys[0]]);
-
             personPayload = {
               ...personPayload,
-              ...(newKeys?.length > 0 && {
-                [newKeys[0]]: {
-                  ...personPayload[newKeys[0]],
-                  ...(childKeys?.length > 0 && { [childKeys[0]]: payload[newKeys[0]][childKeys[0]] }),
-                  ...(childKeys?.length > 1 && {
-                    [childKeys[childKeys?.length - 1]]: payload[newKeys[0]][childKeys[childKeys?.length - 1]],
-                  }),
-                },
-              }),
+              ...(newKeys?.length > 0 && { [newKeys[0]]: payload[newKeys[0]] }),
             };
           }
         });
+        let imageCrop = form.getFieldValue('imageCrop');
+        imageCrop = {
+          large: {
+            xCoordinate: imageCrop?.large?.x,
+            yCoordinate: imageCrop?.large?.y,
+            height: imageCrop?.large?.height,
+            width: imageCrop?.large?.width,
+          },
+          thumbnail: {
+            xCoordinate: imageCrop?.thumbnail?.x,
+            yCoordinate: imageCrop?.thumbnail?.y,
+            height: imageCrop?.thumbnail?.height,
+            width: imageCrop?.thumbnail?.width,
+          },
+          original: {
+            entityId: imageCrop?.original?.entityId,
+            height: imageCrop?.original?.height,
+            width: imageCrop?.original?.width,
+          },
+        };
         if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
           const formdata = new FormData();
           formdata.append('file', values?.image[0].originFileObj);
@@ -149,15 +200,27 @@ function CreateNewPerson() {
             addImage({ data: formdata, calendarId })
               .unwrap()
               .then((response) => {
-                personPayload['image'] = {
-                  original: {
-                    entityId: response?.data?.original?.entityId,
-                    height: response?.data?.height,
-                    width: response?.data?.width,
-                  },
-                  large: {},
-                  thumbnail: {},
-                };
+                if (featureFlags.imageCropFeature) {
+                  imageCrop = {
+                    ...imageCrop,
+                    original: {
+                      ...imageCrop?.original,
+                      entityId: response?.data?.original?.entityId,
+                      height: response?.data?.height,
+                      width: response?.data?.width,
+                    },
+                  };
+                } else
+                  imageCrop = {
+                    ...imageCrop,
+                    original: {
+                      ...imageCrop?.original,
+                      entityId: response?.data?.original?.entityId,
+                      height: response?.data?.height,
+                      width: response?.data?.width,
+                    },
+                  };
+                personPayload['image'] = imageCrop;
                 addUpdatePersonApiHandler(personPayload);
               })
               .catch((error) => {
@@ -168,108 +231,214 @@ function CreateNewPerson() {
         } else {
           if (values?.image) {
             if (values?.image && values?.image?.length == 0) personPayload['image'] = null;
-            else personPayload['image'] = personData?.image;
+            else personPayload['image'] = imageCrop;
           }
           addUpdatePersonApiHandler(personPayload);
         }
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error);
+        message.warning({
+          duration: 10,
+          maxCount: 1,
+          key: 'person-save-as-warning',
+          content: (
+            <>
+              {t('dashboard.people.createNew.addPerson.notification.saveError')} &nbsp;
+              <Button
+                type="text"
+                icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                onClick={() => message.destroy('person-save-as-warning')}
+              />
+            </>
+          ),
+          icon: <ExclamationCircleOutlined />,
+        });
+      });
   };
 
-  // console.log(fields);
-  // console.log(personData);
-  return (
-    fields &&
-    !personLoading &&
-    !taxonomyLoading && (
-      <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-        <div className="add-edit-wrapper add-organization-wrapper">
-          <Form form={form} layout="vertical" name="organization">
-            <Row gutter={[32, 2]}>
-              <Col span={24}>
-                <Row justify="space-between">
-                  <Col>
-                    <div className="button-container">
-                      <Button
-                        type="link"
-                        onClick={() => navigate(-1)}
-                        icon={<LeftOutlined style={{ marginRight: '17px' }} />}>
-                        {t('dashboard.organization.createNew.search.breadcrumb')}
-                      </Button>
-                    </div>
-                  </Col>
-                  <Col>
-                    <div className="add-event-button-wrap">
-                      <Form.Item>
-                        <PrimaryButton
-                          label={t('dashboard.events.addEditEvent.saveOptions.save')}
-                          onClick={() => onSaveHandler()}
-                        />
-                      </Form.Item>
-                    </div>
-                  </Col>
-                </Row>
-              </Col>
+  const onValuesChangeHandler = () => {
+    setShowDialog(true);
+  };
 
-              <Col>
-                <div className="add-edit-event-heading">
-                  <h4>
-                    {personId
-                      ? t('dashboard.people.createNew.addPerson.editPerson')
-                      : t('dashboard.people.createNew.addPerson.newPerson')}
-                  </h4>
-                </div>
-              </Col>
-            </Row>
+  useEffect(() => {
+    if (calendarId && personData && currentCalendarData) {
+      if (routinghandler(user, calendarId, personData?.createdByUserId, null, true)) {
+        if (personData?.image) {
+          form.setFieldsValue({
+            imageCrop: {
+              large: {
+                x: personData?.image?.large?.xCoordinate,
+                y: personData?.image?.large?.yCoordinate,
+                height: personData?.image?.large?.height,
+                width: personData?.image?.large?.width,
+              },
+              original: {
+                entityId: personData?.image?.original?.entityId ?? null,
+                height: personData?.image?.original?.height,
+                width: personData?.image?.original?.width,
+              },
+              thumbnail: {
+                x: personData?.image?.thumbnail?.xCoordinate,
+                y: personData?.image?.thumbnail?.yCoordinate,
+                height: personData?.image?.thumbnail?.height,
+                width: personData?.image?.thumbnail?.width,
+              },
+            },
+          });
+        }
+      } else
+        window.location.replace(
+          `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.People}/${personId}`,
+        );
+    }
+  }, [personLoading, currentCalendarData]);
+
+  useEffect(() => {
+    if (artsDataId) {
+      setArtsDataLoading(true);
+      loadArtsDataEntity({ entityId: artsDataId })
+        .then((response) => {
+          setArtsData(response?.data[0]);
+          setArtsDataLoading(false);
+        })
+        .catch((error) => {
+          setArtsDataLoading(false);
+          console.log(error);
+        });
+    } else if (location?.state?.name) {
+      setNewEntityData({
+        name: {
+          fr: location?.state?.name,
+          en: location?.state?.name,
+        },
+      });
+    }
+  }, []);
+
+  return fields && !personLoading && !taxonomyLoading && !artsDataLoading ? (
+    <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+      <div className="add-edit-wrapper add-organization-wrapper">
+        <Form form={form} layout="vertical" name="person" onValuesChange={onValuesChangeHandler}>
+          <Row gutter={[32, 24]} className="add-edit-wrapper">
+            <Col span={24}>
+              <Row gutter={[32, 2]}>
+                <Col span={24}>
+                  <Row justify="space-between">
+                    <Col>
+                      <div className="button-container">
+                        <Button
+                          type="link"
+                          onClick={() => navigate(-1)}
+                          icon={<LeftOutlined style={{ marginRight: '17px' }} />}>
+                          {t('dashboard.organization.createNew.search.breadcrumb')}
+                        </Button>
+                      </div>
+                    </Col>
+                    <Col>
+                      <div className="add-event-button-wrap">
+                        <Form.Item>
+                          <PrimaryButton
+                            label={t('dashboard.events.addEditEvent.saveOptions.save')}
+                            onClick={(e) => onSaveHandler(e)}
+                            disabled={addPersonLoading || imageUploadLoading || updatePersonLoading ? true : false}
+                          />
+                        </Form.Item>
+                      </div>
+                    </Col>
+                  </Row>
+                </Col>
+
+                <Col>
+                  <div className="add-edit-event-heading">
+                    <h4>
+                      {personId
+                        ? t('dashboard.people.createNew.addPerson.editPerson')
+                        : t('dashboard.people.createNew.addPerson.newPerson')}
+                    </h4>
+                  </div>
+                </Col>
+              </Row>
+            </Col>
             {fields?.map((section, index) => {
               if (section?.length > 0)
                 return (
                   <Card title={section[0]?.category !== formCategory.PRIMARY && section[0]?.category} key={index}>
                     <>
+                      {(artsDataLinkChecker(personData?.sameAs) || artsDataLinkChecker(artsData?.sameAs)) &&
+                        section[0]?.category === formCategory.PRIMARY && (
+                          <Row>
+                            <Col span={24}>
+                              <p className="add-entity-label">{t('dashboard.people.createNew.addPerson.dataSource')}</p>
+                            </Col>
+                            <Col span={24}>
+                              <ArtsDataInfo
+                                artsDataLink={artsDataLinkChecker(personData?.sameAs ?? artsData?.sameAs)}
+                                name={contentLanguageBilingual({
+                                  en: personData?.name?.en ?? artsData?.name?.en,
+                                  fr: personData?.name?.fr ?? artsData?.name?.fr,
+                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  calendarContentLanguage: calendarContentLanguage,
+                                })}
+                                disambiguatingDescription={contentLanguageBilingual({
+                                  en:
+                                    personData?.disambiguatingDescription?.en ??
+                                    artsData?.disambiguatingDescription?.en,
+                                  fr:
+                                    personData?.disambiguatingDescription?.fr ??
+                                    artsData?.disambiguatingDescription?.fr,
+                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  calendarContentLanguage: calendarContentLanguage,
+                                })}
+                              />
+                            </Col>
+                            <Col span={24}>
+                              <div style={{ display: 'inline' }}>
+                                <span className="add-event-date-heading">
+                                  {t('dashboard.people.createNew.addPerson.question.firstPart')}
+                                </span>
+                                <span
+                                  className="add-event-date-heading"
+                                  style={{
+                                    color: '#1b3de6',
+                                    textDecoration: 'underline',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                  }}
+                                  onClick={() => {
+                                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
+                                  }}>
+                                  {t('dashboard.people.createNew.addPerson.question.secondPart')}
+                                </span>
+                                <span className="add-event-date-heading">
+                                  {t('dashboard.people.createNew.addPerson.question.thirdPart')}
+                                </span>
+                              </div>
+                            </Col>
+                            <Col span={24}>
+                              <div>
+                                <br />
+                              </div>
+                            </Col>
+                          </Row>
+                        )}
                       {section?.map((field) => {
                         return formFieldValue?.map((formField, index) => {
                           if (formField?.type === field.type) {
-                            return renderFormFields({
-                              name: [field?.mappedField],
-                              type: field?.type,
-                              datatype: field?.datatype,
-                              element: formField?.element({
-                                datatype: field?.datatype,
-                                taxonomyData: allTaxonomyData,
-                                user: user,
-                                type: field?.mappedField,
-                                isDynamicField: false,
-                                calendarContentLanguage,
-                                name: [field?.mappedField],
-                                preview: true,
-                                placeholder: contentLanguageBilingual({
-                                  en: field?.placeholder?.en,
-                                  fr: field?.placeholder?.fr,
-                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                  calendarContentLanguage: calendarContentLanguage,
-                                }),
-                                largeUrl: personData?.image?.large?.uri,
-                              }),
-                              key: index,
-                              initialValue: formInitialValueHandler(
-                                field?.type,
-                                field?.mappedField,
-                                field?.datatype,
-                                personData,
-                              ),
-                              label: contentLanguageBilingual({
-                                en: field?.label?.en,
-                                fr: field?.label?.fr,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                calendarContentLanguage: calendarContentLanguage,
-                              }),
-                              userTips: contentLanguageBilingual({
-                                en: field?.userTips?.text?.en,
-                                fr: field?.userTips?.text?.fr,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                calendarContentLanguage: calendarContentLanguage,
-                              }),
-                              position: field?.userTips?.position,
+                            return returnFormDataWithFields({
+                              field,
+                              formField,
+                              allTaxonomyData,
+                              user,
+                              calendarContentLanguage,
+                              entityData: personData ? personData : artsData ? artsData : newEntityData,
+                              index,
+                              t,
+                              adminCheckHandler,
+                              currentCalendarData,
+                              imageCropOpen,
+                              setImageCropOpen,
+                              form,
                             });
                           }
                         });
@@ -324,10 +493,14 @@ function CreateNewPerson() {
                   </Card>
                 );
             })}
-          </Form>
-        </div>
-      </FeatureFlag>
-    )
+          </Row>
+        </Form>
+      </div>
+    </FeatureFlag>
+  ) : (
+    <div style={{ height: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <LoadingIndicator />
+    </div>
   );
 }
 

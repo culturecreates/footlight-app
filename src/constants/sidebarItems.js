@@ -53,6 +53,6 @@ export const sidebarItems = [
     path: '/settings',
     component: <div>settings</div>,
     icon: <SettingOutlined style={iconStyle} />,
-    disabled: true,
+    disabled: false,
   },
 ];

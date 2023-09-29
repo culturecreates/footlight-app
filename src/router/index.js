@@ -22,7 +22,11 @@ import CreateNewOrganization from '../pages/Dashboard/CreateNewOrganization';
 import SearchOrganizations from '../pages/Dashboard/SearchOrganizations';
 import SearchPerson from '../pages/Dashboard/SearchPerson';
 import SearchPlaces from '../pages/Dashboard/SearchPlaces';
+import Settings from '../pages/Dashboard/Settings';
 import CreateNewPerson from '../pages/Dashboard/CreateNewPerson';
+import UserReadOnly from '../pages/Dashboard/UserReadOnly';
+import CreateNewPlace from '../pages/Dashboard/CreateNewPlace';
+import AddUser from '../pages/Dashboard/AddUser/AddUser';
 
 export const router = createBrowserRouter([
   {
@@ -92,6 +96,10 @@ export const router = createBrowserRouter([
         },
       },
       {
+        path: `:calendarId${PathName.Places}${PathName.AddPlace}`,
+        element: <CreateNewPlace />,
+      },
+      {
         path: `:calendarId${PathName.Organizations}`,
         element: <Organizations />,
       },
@@ -135,7 +143,15 @@ export const router = createBrowserRouter([
       },
       {
         path: `:calendarId${PathName.Settings}`,
-        element: <div>Settings</div>,
+        element: <Settings />,
+      },
+      {
+        path: `:calendarId${PathName.Settings}${PathName.UserManagement}/:userId`,
+        element: <UserReadOnly />,
+      },
+      {
+        path: `:calendarId${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}`,
+        element: <AddUser />,
       },
     ],
   },

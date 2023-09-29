@@ -1,5 +1,5 @@
 import { Popover } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
@@ -17,6 +17,9 @@ import './searchPlaces.css';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
 import { getArtsDataEntities } from '../../../services/artsData';
+import { routinghandler } from '../../../utils/roleRoutingHandler';
+import { useDebounce } from '../../../hooks/debounce';
+import { SEARCH_DELAY } from '../../../constants/search';
 
 function SearchPlaces() {
   const { t } = useTranslation();
@@ -54,7 +57,7 @@ function SearchPlaces() {
   // handlers
 
   const artsDataClickHandler = async (entity) => {
-    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`, { data: entity });
+    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}`, { state: { data: entity } });
   };
 
   const searchHandler = (value) => {
@@ -73,6 +76,8 @@ function SearchPlaces() {
       })
       .catch((error) => console.log(error));
   };
+
+  const debounceSearch = useCallback(useDebounce(searchHandler, SEARCH_DELAY), []);
 
   return (
     !initialPlacesLoading && (
@@ -130,9 +135,13 @@ function SearchPlaces() {
                             )
                           }
                           linkText={t('dashboard.places.createNew.search.linkText')}
-                          onClick={() =>
-                            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`)
-                          }
+                          onClick={() => {
+                            if (routinghandler(user, calendarId, place?.creator?.userId, null, true)) {
+                              navigate(
+                                `${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${place?.id}`,
+                              );
+                            } else navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}/${place?.id}`);
+                          }}
                         />
                       </div>
                     ))
@@ -158,7 +167,7 @@ function SearchPlaces() {
                             <EntityCard
                               title={place?.name}
                               description={place?.description}
-                              artsDataLink={`${process.env.REACT_APP_ARTS_DATA_URI}${place?.id}`}
+                              artsDataLink={`${process.env.REACT_APP_ARTS_DATA_PAGE_URI}${place?.id}`}
                               Logo={
                                 place.logo ? (
                                   place.logo?.thumbnail?.uri
@@ -182,8 +191,10 @@ function SearchPlaces() {
                   <CreateEntityButton
                     quickCreateKeyword={quickCreateKeyword}
                     onClick={() => {
-                      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`, {
-                        name: quickCreateKeyword,
+                      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}`, {
+                        state: {
+                          name: quickCreateKeyword,
+                        },
                       });
                     }}
                   />
@@ -199,7 +210,7 @@ function SearchPlaces() {
               }}
               onChange={(e) => {
                 setQuickCreateKeyword(e.target.value);
-                searchHandler(e.target.value);
+                debounceSearch(e.target.value);
                 setIsPopoverOpen(true);
               }}
             />
