@@ -8,6 +8,7 @@ import { userNameItems } from '../../../constants/userNameItems';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import i18n from 'i18next';
+import { featureFlags } from '../../../utils/featureFlags';
 
 const UserProfileDropDown = () => {
   const navigate = useNavigate();
@@ -25,9 +26,11 @@ const UserProfileDropDown = () => {
   const onClick = ({ key }) => {
     switch (key) {
       case 'userProfile':
-        navigate(
-          `${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}?id=${user.id}`,
-        );
+        if (featureFlags.settingsScreenUsers === 'true')
+          navigate(
+            `${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}?id=${user.id}`,
+          );
+        else navigate(`${PathName.Dashboard}/${calendarId}${PathName.Profile}/${user?.id}`);
         break;
       case 'help':
         if (i18n.language === 'en')
