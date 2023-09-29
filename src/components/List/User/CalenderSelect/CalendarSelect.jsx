@@ -9,18 +9,25 @@ const CalendarSelect = (props) => {
 
   return (
     <div
-      className="selection-item-wrapper calender-card-item"
+      className="selection-item-wrapper-calendar selection-item-wrapper calender-card-item"
       style={{ border: bordered && '1px solid#607EFC', width: itemWidth && itemWidth }}>
       <List.Item
         className="selection-item-list-wrapper"
         actions={[
           <>
-            {currentUser && (
+            {currentUser ? (
               <div key={name} className="button-container">
                 <Button type="text" key="list-loadmore-close" onClick={onButtonClick} style={{ padding: '0px' }}>
                   {t('dashboard.settings.addUser.leave')}
                 </Button>
               </div>
+            ) : (
+              <Button
+                size="large"
+                className="filter-buttons role-added-button"
+                style={{ padding: '4px 8px', height: 'auto' }}>
+                {calenderItem?.role}
+              </Button>
             )}
           </>,
         ]}>
@@ -40,9 +47,14 @@ const CalendarSelect = (props) => {
           title={<span className="selection-item-title">{name}</span>}
         />
 
-        <Button size="large" className="filter-buttons role-added-button">
-          {calenderItem.role}
-        </Button>
+        {currentUser && (
+          <Button
+            size="large"
+            className="filter-buttons role-added-button"
+            style={{ padding: '4px 8px', height: 'auto' }}>
+            {calenderItem?.role}
+          </Button>
+        )}
       </List.Item>
     </div>
   );
