@@ -1,6 +1,6 @@
-import React, { useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { LeftOutlined, CalendarOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Dropdown, Form, message, notification, Row, Typography } from 'antd';
+import { Button, Card, Col, Dropdown, Form, Input, message, notification, Popover, Row, Typography } from 'antd';
 import PrimaryButton from '../../../components/Button/Primary';
 import { createSearchParams, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import OutlinedButton from '../../..//components/Button/Outlined';
@@ -12,6 +12,7 @@ import i18n from 'i18next';
 import { DownOutlined } from '@ant-design/icons';
 import {
   useCurrentUserLeaveCalendarMutation,
+  useLazyGetAllUsersQuery,
   // useDeleteUserMutation,
   useLazyGetUserByIdQuery,
   useUpdateCurrentUserMutation,
@@ -30,6 +31,8 @@ import ChangePassword from '../../../components/Modal/ChangePassword/ChangePassw
 import { useInviteUserMutation } from '../../../services/invite';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
+import { useDebounce } from '../../../hooks/debounce';
+import { SEARCH_DELAY } from '../../../constants/search';
 
 const AddUser = () => {
   const navigate = useNavigate();
@@ -47,7 +50,12 @@ const AddUser = () => {
 
   const { accessToken, expiredTime, refreshToken, user } = useSelector(getUserDetails);
 
-  const [isPopoverOpen, setIsPopoverOpen] = useState({ organization: false, calendar: false, password: false });
+  const [isPopoverOpen, setIsPopoverOpen] = useState({
+    organization: false,
+    calendar: false,
+    password: false,
+    searchUserFirstName: false,
+  });
   const [selectedCalendars, setSelectedCalendars] = useState([]);
   const [userData, setUserData] = useState({
     firstName: '',
@@ -57,14 +65,15 @@ const AddUser = () => {
     userType: '',
     languagePreference: { key: '', label: '' },
   });
-
   const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const [userSearchKeyword, setUserSearchKeyword] = useState('');
 
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
 
   const [getUser, { isFetching: isLoading, isSuccess: isUserFetchSuccess }] = useLazyGetUserByIdQuery();
+  const [getUserSearch, { currentData: userSearchData }] = useLazyGetAllUsersQuery();
 
   const [
     currentUserLeaveCalendar,
@@ -314,6 +323,12 @@ const AddUser = () => {
     setUserData({ ...userData, [fieldType]: value });
   };
 
+  const searchHandlerUserSearch = (value) => {
+    getUserSearch({ includeCalenderFilter: false, calendarId, query: value, page: 1, limit: 10, filters: '' });
+  };
+
+  const debounceSearch = useCallback(useDebounce(searchHandlerUserSearch, SEARCH_DELAY), []);
+
   const removeCalendarHandler = (index) => {
     if (isCurrentUser) {
       Confirm({
@@ -443,12 +458,55 @@ const AddUser = () => {
                       ]}>
                       <Row>
                         <Col flex={'423px'}>
-                          <AuthenticationInput
-                            size="small"
-                            placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
-                            onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'firstName' })}
-                            value={userData.firstName}
-                          />
+                          {userId ? (
+                            <AuthenticationInput
+                              size="small"
+                              placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
+                              onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'firstName' })}
+                              value={userData.firstName}
+                            />
+                          ) : (
+                            <>
+                              <div className="search-bar-organization">
+                                <Popover
+                                  open={userSearchData?.data?.length > 0 && isPopoverOpen?.searchUserFirstName}
+                                  arrow={false}
+                                  overlayClassName="entity-popover"
+                                  placement="bottom"
+                                  onOpenChange={(open) => {
+                                    setIsPopoverOpen(setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: open }));
+                                    // debounceSearch(userSearchKeyword);
+                                  }}
+                                  autoAdjustOverflow={false}
+                                  getPopupContainer={(trigger) => trigger.parentNode}
+                                  trigger={['click']}
+                                  content={
+                                    <div>
+                                      {
+                                        <div className="search-scrollable-content">
+                                          {userSearchData?.data?.map((item, index) => (
+                                            <div key={index} className="search-popover-options">
+                                              <p>{item.firstName + ' ' + item.lastName}</p>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      }
+                                    </div>
+                                  }>
+                                  <Input
+                                    style={{ borderRadius: '4px' }}
+                                    placeholder="Search organizations"
+                                    value={userSearchKeyword}
+                                    onChange={(e) => {
+                                      setUserSearchKeyword(e.target.value);
+                                      debounceSearch(e.target.value);
+                                    }}
+                                    className="events-search"
+                                  />
+                                </Popover>
+                              </div>
+                            </>
+                          )}
                         </Col>
                       </Row>
                     </Form.Item>

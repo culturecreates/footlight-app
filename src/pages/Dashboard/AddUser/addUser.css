@@ -7,6 +7,10 @@
   padding: 0;
 }
 
+.add-user-wrapper .search-popover-options:hover {
+  background-color: #9196a3;
+}
+
 .add-user-wrapper .details-card-description {
   color: var(--content-neutral-secondary, #646d7b);
   font-size: 16px;
