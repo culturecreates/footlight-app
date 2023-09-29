@@ -725,7 +725,8 @@ function CreateNewOrganization() {
                                   fr: taxonomy?.name?.fr,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                 })}
-                                initialValue={initialValues}>
+                                initialValue={initialValues}
+                                hidden={taxonomy?.isAdminOnly ? (adminCheckHandler() ? false : true) : false}>
                                 <TreeSelectOption
                                   allowClear
                                   treeDefaultExpandAll
