@@ -337,7 +337,7 @@ const UserManagement = () => {
                     getPopupContainer={(trigger) => trigger.parentNode}
                     menu={{
                       items: sortByOptionsUsers,
-                      defaultSelectedKeys: [filter?.sort],
+                      selectedKeys: [filter?.sort],
                       selectable: true,
                       onSelect: onSortSelect,
                     }}
@@ -386,7 +386,7 @@ const UserManagement = () => {
               overlayStyle={{ minWidth: '200px' }}
               menu={{
                 items: userActivityStatus,
-                defaultSelectedKeys: [filter?.userStatus],
+                selectedKeys: [filter?.userStatus],
                 selectable: true,
                 onSelect: handleStatusFilterChange,
               }}
@@ -408,7 +408,7 @@ const UserManagement = () => {
               overlayStyle={{ minWidth: '200px' }}
               menu={{
                 items: userRolesWithTranslation,
-                defaultSelectedKeys: [filter?.userRole],
+                selectedKeys: [filter?.userRole],
                 selectable: true,
                 onSelect: userTypeFilterChangeHandler,
               }}
