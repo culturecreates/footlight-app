@@ -11,13 +11,13 @@ import StatusTag from '../../../components/Tags/UserStatus/StatusTag';
 import { roleHandler } from '../../../utils/roleHandler';
 import { EnvironmentOutlined } from '@ant-design/icons';
 import { copyText } from '../../../utils/copyText';
-import SelectionItem from '../../../components/List/SelectionItem';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import { PathName } from '../../../constants/pathName';
+import CalendarSelect from '../../../components/List/User/CalenderSelect/CalendarSelect';
 
 const UserReadOnly = () => {
   const { t } = useTranslation();
@@ -167,7 +167,7 @@ const UserReadOnly = () => {
                     createUserInfoRowItem({
                       isCopiableText: false,
                       infoType: 'languagePreference',
-                      infoText: userInfo?.interfaceLanguage ? t('common.tabEnglish') : t('common.tabFrench'),
+                      infoText: userInfo?.interfaceLanguage === 'EN' ? t('common.tabEnglish') : t('common.tabFrench'),
                     })}
                 </Card>
               </Col>
@@ -187,7 +187,7 @@ const UserReadOnly = () => {
                   <Row>
                     {userSubscribedCalenders?.map((item, index) => {
                       return (
-                        <SelectionItem
+                        <CalendarSelect
                           key={index}
                           icon={
                             item?.image?.uri ? (
@@ -207,6 +207,8 @@ const UserReadOnly = () => {
                             interfaceLanguage: currentUser?.interfaceLanguage?.toLowerCase(),
                             calendarContentLanguage: calendarContentLanguage,
                           })}
+                          calenderItem={item}
+                          currentUser={false} // to hide leave button
                           itemWidth="423px"
                           bordered
                           calendarContentLanguage={calendarContentLanguage}
