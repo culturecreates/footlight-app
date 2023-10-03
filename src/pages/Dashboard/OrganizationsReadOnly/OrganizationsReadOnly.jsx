@@ -278,7 +278,20 @@ function OrganizationsReadOnly() {
                     </p>
                   </Col>
                 )}
-
+                {organizationData?.socialMediaLinks?.length > 0 && (
+                  <Col span={24}>
+                    <p className="read-only-event-content-sub-title-primary">
+                      {t('dashboard.organization.readOnly.socialMediaLinks')}
+                    </p>
+                    {organizationData?.socialMediaLinks?.map((link, index) => (
+                      <p key={index}>
+                        <a href={link} target="_blank" rel="noopener noreferrer" className="url-links">
+                          {link}
+                        </a>
+                      </p>
+                    ))}
+                  </Col>
+                )}
                 {organizationData?.contactPoint && (
                   <Col span={24}>
                     <p className="read-only-event-content-sub-title-primary">

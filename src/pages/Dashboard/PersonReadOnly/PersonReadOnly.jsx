@@ -290,6 +290,20 @@ function PersonReadOnly() {
                     </p>
                   </Col>
                 )}
+                {personData?.socialMediaLinks?.length > 0 && (
+                  <Col span={24}>
+                    <p className="read-only-event-content-sub-title-primary">
+                      {t('dashboard.people.readOnly.socialMediaLinks')}
+                    </p>
+                    {personData?.socialMediaLinks?.map((link, index) => (
+                      <p key={index}>
+                        <a href={link} target="_blank" rel="noopener noreferrer" className="url-links">
+                          {link}
+                        </a>
+                      </p>
+                    ))}
+                  </Col>
+                )}
               </Row>
             </Col>
             <Col>
