@@ -41,3 +41,14 @@ export const sortByOptionsUsers = [
     key: 'lastName',
   },
 ];
+
+export const sortByOptionsTaxonomy = [
+  {
+    label: <Translation>{(t) => t('dashboard.taxonomy.listing.sort.name')}</Translation>,
+    key: 'name',
+  },
+  {
+    label: <Translation>{(t) => t('dashboard.taxonomy.listing.sort.createdDate')}</Translation>,
+    key: 'metadata.createdAt',
+  },
+];

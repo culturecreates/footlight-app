@@ -733,7 +733,9 @@
         "lastName": "Nom",
         "active": "Actif",
         "inActive": "Désactivé",
+        "inActiveStatus": "Désactivé",
         "invite": "Invité",
+        "pending": "Invité",
         "admin": "Administrateur",
         "editor": "Éditeur",
         "contributor": "Collaborateur",
@@ -842,7 +844,7 @@
     "taxonomy": {
       "listing": {
         "heading": "Taxonomies",
-        "addNew":"Taxonomy",
+        "addNew": "Taxonomy",
         "sort": {
           "sortBy": "Trier par",
           "name": "Nom",
