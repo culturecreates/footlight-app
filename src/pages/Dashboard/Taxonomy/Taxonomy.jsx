@@ -15,6 +15,7 @@ import AddEvent from '../../../components/Button/AddEvent';
 import { SortAscendingOutlined, SortDescendingOutlined, DownOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
+import './taxonomy.css';
 
 const Taxonomy = () => {
   const { useBreakpoint } = Grid;
@@ -134,23 +135,21 @@ const Taxonomy = () => {
 
   return (
     <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
-      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="user-management-wrapper">
+      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="taxonomy-listing-wrapper">
         <Col span={24}>
-          <Col style={{ paddingLeft: 0 }}>
-            <Row justify="space-between">
-              <Col>
-                <div className="events-heading-wrapper">
-                  <h4 className="events-heading">{t('dashboard.taxonomy.listing.heading')}</h4>
-                </div>
-              </Col>
+          <Row justify="space-between" align="top">
+            <Col>
+              <div className="events-heading-wrapper">
+                <h4 className="events-heading">{t('dashboard.taxonomy.listing.heading')}</h4>
+              </div>
+            </Col>
 
-              <Col flex={'140px'} className="add-btn-container">
-                <ReadOnlyProtectedComponent creator={user?.id}>
-                  <AddEvent label={t('dashboard.taxonomy.listing.addNew')} onClick={addTaxonomyHandler} />
-                </ReadOnlyProtectedComponent>
-              </Col>
-            </Row>
-          </Col>
+            <Col flex={'140px'} className="add-btn-container">
+              <ReadOnlyProtectedComponent creator={user?.id}>
+                <AddEvent label={t('dashboard.taxonomy.listing.addNew')} onClick={addTaxonomyHandler} />
+              </ReadOnlyProtectedComponent>
+            </Col>
+          </Row>
           <Row justify="space-between" gutter={[24, 16]} style={{ marginBottom: 16 }}>
             <Col flex={'auto'}>
               <Row gutter={[8, 8]} align="middle">
@@ -204,19 +203,19 @@ const Taxonomy = () => {
                       }
                       size={'large'}
                     />
-                    <Col>
-                      {(filters.order !== sortOrder.ASC || filters.sort !== `${sortByOptionsTaxonomy[0].key}`) && (
-                        <Button
-                          size="large"
-                          className="filter-buttons"
-                          style={{ color: '#1B3DE6' }}
-                          onClick={filterClearHandler}>
-                          {t('dashboard.events.filter.clear')}&nbsp;
-                          <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
-                        </Button>
-                      )}
-                    </Col>
                   </Row>
+                </Col>
+                <Col>
+                  {(filters.order !== sortOrder.ASC || filters.sort !== `${sortByOptionsTaxonomy[0].key}`) && (
+                    <Button
+                      size="large"
+                      className="filter-buttons"
+                      style={{ color: '#1B3DE6' }}
+                      onClick={filterClearHandler}>
+                      {t('dashboard.events.filter.clear')}&nbsp;
+                      <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
+                    </Button>
+                  )}
                 </Col>
               </Row>
             </Col>
