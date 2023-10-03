@@ -161,9 +161,9 @@ export const formFieldValue = [
             })}
           />
         );
-      else if (datatype === dataTypes.URI_STRING_ARRAY)
+      else if (datatype === dataTypes.URI_STRING_ARRAY) {
         return (
-          <Form.List name={name} initialValue={data ?? [undefined]}>
+          <Form.List name={name} initialValue={data?.length > 0 ? data : [undefined]}>
             {(fields, { add, remove }) => (
               <>
                 {fields.map((field) => (
@@ -200,7 +200,7 @@ export const formFieldValue = [
             )}
           </Form.List>
         );
-      else
+      } else
         return (
           <StyledInput
             placeholder={contentLanguageBilingual({
@@ -429,7 +429,9 @@ export const renderFormFields = ({
         label={label}
         name={name}
         key={key}
-        initialValue={initialValue}
+        initialValue={
+          Array.isArray(initialValue) ? (initialValue?.length > 0 ? initialValue : [undefined]) : initialValue
+        }
         required={required}
         hidden={hidden}
         style={style}
