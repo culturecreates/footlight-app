@@ -36,6 +36,7 @@ import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { PathName } from '../../../constants/pathName';
 import { userActivityStatus } from '../../../constants/userActivityStatus';
+import LoadingIndicator from '../../../components/LoadingIndicator';
 
 const AddUser = () => {
   const navigate = useNavigate();
@@ -76,7 +77,7 @@ const AddUser = () => {
     return calendar.calendarId === calendarId;
   });
 
-  const [getUser, { isFetching: isLoading, isSuccess: isUserFetchSuccess }] = useLazyGetUserByIdQuery();
+  const [getUser, { isSuccess: isUserFetchSuccess }] = useLazyGetUserByIdQuery();
   const [getUserSearch, { isFetching: isUsersearchFeatching }] = useLazyGetAllUsersQuery();
 
   const [
@@ -87,7 +88,7 @@ const AddUser = () => {
   const [inviteUser] = useInviteUserMutation();
   const [updateUserById] = useUpdateUserByIdMutation();
   const [updateCurrentUser] = useUpdateCurrentUserMutation();
-  const [getCurrentUserDetails] = useLazyGetCurrentUserQuery();
+  const [getCurrentUserDetails, { isSuccess: isCurrentUserSuccess }] = useLazyGetCurrentUserQuery();
 
   useEffect(() => {
     if (userId !== user?.id) {
@@ -466,7 +467,7 @@ const AddUser = () => {
           },
           { name: ['languagePreference'], value: userData.languagePreference },
         ]}>
-        {(!isLoading || isUserFetchSuccess) && (
+        {isUserFetchSuccess || isCurrentUserSuccess ? (
           <Row gutter={[0, 32]} className="add-edit-wrapper add-user-wrapper">
             <Col span={24}>
               <Row gutter={[0, 16]}>
@@ -851,6 +852,10 @@ const AddUser = () => {
               </Col>
             )}
           </Row>
+        ) : (
+          <div style={{ height: 400, width: '100%', display: 'grid', placeContent: 'center' }}>
+            <LoadingIndicator />
+          </div>
         )}
       </Form>
     </FeatureFlag>
