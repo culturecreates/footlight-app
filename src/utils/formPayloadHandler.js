@@ -40,6 +40,11 @@ export const formPayloadHandler = (value, mappedField, formFields) => {
       case dataTypes.IDENTITY_STRING:
         return write({}, currentMappedField?.concat(['entityId']), value ?? '');
 
+      case dataTypes.URI_STRING_ARRAY:
+        if (value?.length > 0) {
+          payload = value?.filter((link) => link != undefined);
+          return { [mappedField]: payload };
+        } else return { [mappedField]: [] };
       default:
         break;
     }

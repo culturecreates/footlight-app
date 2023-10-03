@@ -469,7 +469,8 @@
             "firstPart": "Est-ce la bonne organisation ? Si non, ",
             "secondPart": "créez une nouvelle organisation",
             "thirdPart": " et ne sélectionnez pas cette source de données."
-          }
+          },
+          "addSocialMediaLinks": "Ajouter un lien"
         },
         "notification": {
           "addSuccess": "Succès ! Votre organisation a été créé.",
@@ -838,6 +839,7 @@
         "activate": "Activé",
         "deactivate": "Désactivé",
         "leaveCalender": "Êtes-vous sûr de vouloir quitter définitivement ce calendrier?",
+        "confirmLeave": "confirmer le congé"
         "confirmLeave": "confirmer le congé"
       }
     },
