@@ -1,6 +1,6 @@
-import { Form, Input, Popover } from 'antd';
+import { Col, Form, Input, Popover, Row } from 'antd';
 import NoContent from '../components/NoContent/NoContent';
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import Tags from '../components/Tags/Common/Tags';
 import TreeSelectOption from '../components/TreeSelectOption/TreeSelectOption';
 import { treeTaxonomyOptions } from '../components/TreeSelectOption/treeSelectOption.settings';
@@ -16,6 +16,7 @@ import { featureFlags } from '../utils/featureFlags';
 import EventsSearch from '../components/Search/Events/EventsSearch';
 import SelectionItem from '../components/List/SelectionItem';
 import BilingualTextEditor from '../components/BilingualTextEditor';
+import Outlined from '../components/Button/Outlined';
 
 const { TextArea } = Input;
 
@@ -40,6 +41,7 @@ export const dataTypes = {
   URI_STRING: 'URIString',
   IMAGE: 'Image',
   EMAIL: 'Email',
+  URI_STRING_ARRAY: 'URIString[]',
 };
 
 export const mappedFieldTypes = {
@@ -55,6 +57,7 @@ export const mappedFieldTypes = {
   CONTACT_TELEPHONE: 'contactPoint.telephone',
   CONTACT_EMAIL: 'contactPoint.email',
   PLACE: 'place',
+  SOCIAL_MEDIA_LINKS: 'socialMediaLinks',
 };
 
 const rules = [
@@ -158,7 +161,46 @@ export const formFieldValue = [
             })}
           />
         );
-      else
+      else if (datatype === dataTypes.URI_STRING_ARRAY) {
+        return (
+          <Form.List name={name} initialValue={data?.length > 0 ? data : [undefined]}>
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map((field) => (
+                  <Form.Item key={field.key}>
+                    <Row gutter={[12, 0]} align={'middle'}>
+                      <Col span={22}>
+                        <Form.Item {...field} validateTrigger={['onChange', 'onBlur']} noStyle>
+                          <StyledInput
+                            addonBefore="https://"
+                            autoComplete="off"
+                            placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={2}>
+                        {fields?.length > 0 ? (
+                          <DeleteOutlined
+                            style={{ color: '#1B3DE6', fontSize: '16px' }}
+                            onClick={() => remove(field.name)}
+                          />
+                        ) : null}
+                      </Col>
+                    </Row>
+                  </Form.Item>
+                ))}
+                <Form.Item>
+                  <Outlined
+                    size="large"
+                    label={t('dashboard.organization.createNew.addOrganization.addSocialMediaLinks')}
+                    onClick={() => add()}
+                  />
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
+        );
+      } else
         return (
           <StyledInput
             placeholder={contentLanguageBilingual({
@@ -387,7 +429,9 @@ export const renderFormFields = ({
         label={label}
         name={name}
         key={key}
-        initialValue={initialValue}
+        initialValue={
+          Array.isArray(initialValue) ? (initialValue?.length > 0 ? initialValue : [undefined]) : initialValue
+        }
         required={required}
         hidden={hidden}
         style={style}

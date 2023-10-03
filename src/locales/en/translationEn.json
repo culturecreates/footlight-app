@@ -470,7 +470,8 @@
             "firstPart": "Is this the right organization? If not, ",
             "secondPart": "create a new organization",
             "thirdPart": " and do not select this data source."
-          }
+          },
+          "addSocialMediaLinks": "Add media link"
         },
         "notification": {
           "addSuccess": "Success! Your organization has been created.",
@@ -755,7 +756,7 @@
             "deleteText": "Are you sure you want to permanently delete this user",
             "deactivateText": "Are you sure you want to deactivate this user",
             "activateText": "Are you sure you want to activate this user",
-            "copyText":"Invitation link copied."
+            "copyText": "Invitation link copied."
           }
         }
       },
@@ -839,10 +840,10 @@
         },
         "delete": "Delete",
         "cancel": "Cancel",
-        "activate":"Activate",
-        "deactivate":"Deactivate",
-        "leaveCalender":"Are you sure you want to leave this calendar?",
-        "confirmLeave":"confirm leave"
+        "activate": "Activate",
+        "deactivate": "Deactivate",
+        "leaveCalender": "Are you sure you want to leave this calendar?",
+        "confirmLeave": "confirm leave"
       }
     }
   },
@@ -860,7 +861,7 @@
     "noneFound": "None Found",
     "unsavedChanges": "You have unsaved changes. Are you sure you want to discard them?",
     "keepEditing": "Keep editing",
-    "copied":"Copied to clipboard",
+    "copied": "Copied to clipboard",
     "discard": "Discard",
     "server": {
       "status": {
