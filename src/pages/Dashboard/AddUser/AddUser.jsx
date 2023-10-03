@@ -1,6 +1,6 @@
-import React, { useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { LeftOutlined, CalendarOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Dropdown, Form, message, notification, Row, Typography } from 'antd';
+import { Button, Card, Col, Dropdown, Form, Input, message, notification, Popover, Row, Typography } from 'antd';
 import PrimaryButton from '../../../components/Button/Primary';
 import { createSearchParams, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import OutlinedButton from '../../..//components/Button/Outlined';
@@ -12,6 +12,8 @@ import i18n from 'i18next';
 import { DownOutlined } from '@ant-design/icons';
 import {
   useCurrentUserLeaveCalendarMutation,
+  useLazyGetAllUsersQuery,
+  useLazyGetCurrentUserQuery,
   // useDeleteUserMutation,
   useLazyGetUserByIdQuery,
   useUpdateCurrentUserMutation,
@@ -22,7 +24,7 @@ import { userLanguages } from '../../../constants/userLanguagesÏ';
 import { useState, useEffect } from 'react';
 import { userRoles, userRolesWithTranslation } from '../../../constants/userRoles';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUserDetails, setUser } from '../../../redux/reducer/userSlice';
+import { clearUser, getUserDetails, setUser } from '../../../redux/reducer/userSlice';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useOutletContext } from 'react-router-dom';
 import CalendarSelect from '../../../components/List/User/CalenderSelect/CalendarSelect';
@@ -30,6 +32,10 @@ import ChangePassword from '../../../components/Modal/ChangePassword/ChangePassw
 import { useInviteUserMutation } from '../../../services/invite';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
+import { useDebounce } from '../../../hooks/debounce';
+import { SEARCH_DELAY } from '../../../constants/search';
+import { PathName } from '../../../constants/pathName';
+import { userActivityStatus } from '../../../constants/userActivityStatus';
 
 const AddUser = () => {
   const navigate = useNavigate();
@@ -47,7 +53,12 @@ const AddUser = () => {
 
   const { accessToken, expiredTime, refreshToken, user } = useSelector(getUserDetails);
 
-  const [isPopoverOpen, setIsPopoverOpen] = useState({ organization: false, calendar: false, password: false });
+  const [isPopoverOpen, setIsPopoverOpen] = useState({
+    organization: false,
+    calendar: false,
+    password: false,
+    searchUserFirstName: false,
+  });
   const [selectedCalendars, setSelectedCalendars] = useState([]);
   const [userData, setUserData] = useState({
     firstName: '',
@@ -57,14 +68,16 @@ const AddUser = () => {
     userType: '',
     languagePreference: { key: '', label: '' },
   });
-
   const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const [userSearchKeyword, setUserSearchKeyword] = useState('');
+  const [userSearchData, setUserSearchData] = useState([]);
 
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
 
   const [getUser, { isFetching: isLoading, isSuccess: isUserFetchSuccess }] = useLazyGetUserByIdQuery();
+  const [getUserSearch, { isFetching: isUsersearchFeatching }] = useLazyGetAllUsersQuery();
 
   const [
     currentUserLeaveCalendar,
@@ -74,15 +87,24 @@ const AddUser = () => {
   const [inviteUser] = useInviteUserMutation();
   const [updateUserById] = useUpdateUserByIdMutation();
   const [updateCurrentUser] = useUpdateCurrentUserMutation();
+  const [getCurrentUserDetails] = useLazyGetCurrentUserQuery();
 
   useEffect(() => {
-    if (userId) {
-      userId === user?.id && setIsCurrentUser(true);
+    if (userId !== user?.id) {
+      !adminCheckHandler() &&
+        dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Forbidden resource.' }));
+    } else {
+      setIsCurrentUser(true);
+    }
 
+    if (userId && userId !== user?.id) {
       getUser({ userId, calendarId, sessionId: timestampRef })
         .unwrap()
         .then((response) => {
-          setSelectedCalendars(response.roles);
+          const activeCalendars = response?.roles.filter((r) => {
+            return r.status == userActivityStatus[0].key;
+          });
+          setSelectedCalendars(activeCalendars);
           const requiredRole = response?.roles.filter((r) => {
             return r.calendarId === calendarId;
           });
@@ -101,16 +123,35 @@ const AddUser = () => {
             calendars: response.roles,
           });
         });
+    } else if (userId && userId === user?.id) {
+      getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
+        .unwrap()
+        .then((response) => {
+          const activeCalendars = response?.roles.filter((r) => {
+            return r.status == userActivityStatus[0].key;
+          });
+          setSelectedCalendars(activeCalendars);
+          const requiredRole = response?.roles.filter((r) => {
+            return r.calendarId === calendarId;
+          });
+          const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
+          setUserData({
+            firstName: response?.firstName,
+            lastName: response?.lastName,
+            phoneNumber: response?.phoneNumber,
+            email: response?.email,
+            userType: requiredRole[0]?.role,
+            languagePreference: {
+              key: response.interfaceLanguage,
+              label: selectedLanguage?.label ? selectedLanguage?.label : '',
+            },
+            calendars: response.roles,
+          });
+        });
     } else if (location.state?.data) {
       setSearchParams(createSearchParams({ id: location.state.data.id }));
     }
   }, [userId]);
-
-  useEffect(() => {
-    if (!adminCheckHandler()) {
-      dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Forbidden resource.' }));
-    }
-  }, []);
 
   useEffect(() => {
     if (userId) {
@@ -135,6 +176,17 @@ const AddUser = () => {
     }
   };
 
+  const onSearchCardClick = (item) => {
+    setUserSearchKeyword(item?.firstName);
+    setUserData({
+      ...userData,
+      firstName: item?.firstName,
+      lastName: item?.lastName,
+      phoneNumber: item?.phoneNumber,
+      email: item?.email,
+    });
+  };
+
   const adminCheckHandler = () => {
     if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
     else return false;
@@ -152,19 +204,28 @@ const AddUser = () => {
             role: values.userType,
             calendarId,
           }).then((res) => {
-            notification.success({
-              description: t(`dashboard.settings.addUser.notification.invitation`),
-              key: res.message,
-              placement: 'top',
-              closeIcon: <></>,
-              maxCount: 1,
-              duration: 3,
-            });
+            if (res.statusCode == 202) {
+              notification.success({
+                description: t(`dashboard.settings.addUser.notification.invitation`),
+                key: res.message,
+                placement: 'top',
+                closeIcon: <></>,
+                maxCount: 1,
+                duration: 3,
+              });
+            }
             navigate(-2);
           });
         })
         .catch((errors) => {
-          console.error('Validation errors:', errors);
+          notification.success({
+            description: errors.message,
+            key: errors.message,
+            placement: 'top',
+            closeIcon: <></>,
+            maxCount: 1,
+            duration: 3,
+          });
         });
     }
     if (isCurrentUser) {
@@ -184,7 +245,7 @@ const AddUser = () => {
             .then((response) => {
               if (response?.statusCode == 202) {
                 i18n.changeLanguage(values?.languagePreference?.key?.toLowerCase());
-                getUser({ userId, calendarId })
+                getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
                   .unwrap()
                   .then((response) => {
                     const requiredRole = response?.roles.filter((r) => {
@@ -314,16 +375,44 @@ const AddUser = () => {
     setUserData({ ...userData, [fieldType]: value });
   };
 
-  const removeCalendarHandler = (index) => {
+  const searchHandlerUserSearch = (value) => {
+    setUserSearchKeyword(value);
+    value != ''
+      ? getUserSearch({ includeCalenderFilter: false, calendarId, query: value, page: 1, limit: 10, filters: '' })
+          .unwrap()
+          .then((res) => {
+            setUserSearchData(res);
+            if (res?.data.length > 0) {
+              setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
+            }
+          })
+      : setUserSearchData([]);
+  };
+
+  const debounceSearch = useCallback(useDebounce(searchHandlerUserSearch, SEARCH_DELAY), []);
+
+  const removeCalendarHandler = ({ item, index }) => {
     if (isCurrentUser) {
       Confirm({
         title: t('dashboard.settings.addUser.confirmLeave'),
         onAction: () => {
-          currentUserLeaveCalendar({ calendarId });
-          setSelectedCalendars((prevState) => {
-            const updatedArray = prevState.filter((_, i) => index !== i);
-            return updatedArray;
-          });
+          isCurrentUser &&
+            currentUserLeaveCalendar({ calendarId: item?.calendarId })
+              .unwrap()
+              .then(() => {
+                if (selectedCalendars.length <= 1) {
+                  dispatch(clearUser());
+                  navigate(PathName.Login, { state: { previousPath: 'logout' } });
+                }
+                setSelectedCalendars((prevState) => {
+                  const updatedArray = prevState.filter((_, i) => index !== i);
+                  if (calendarId === item.calendarId) {
+                    const newcalendar = userData.calendars.filter((i) => i.calendarId != item.calendarId);
+                    navigate(`${PathName.Dashboard}/${newcalendar[0].calendarId}${PathName.Events}`);
+                  }
+                  return updatedArray;
+                });
+              });
         },
         content: t('dashboard.settings.addUser.leaveCalender'),
         okText: t('dashboard.settings.addUser.leave'),
@@ -383,7 +472,7 @@ const AddUser = () => {
               <Row gutter={[0, 16]}>
                 <Col span={24}>
                   <Row justify="space-between">
-                    <Col>
+                    <Col className="breadcrumb">
                       <div className="button-container">
                         <Button
                           type="link"
@@ -443,12 +532,90 @@ const AddUser = () => {
                       ]}>
                       <Row>
                         <Col flex={'423px'}>
-                          <AuthenticationInput
-                            size="small"
-                            placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
-                            onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'firstName' })}
-                            value={userData.firstName}
-                          />
+                          {userId ? (
+                            <AuthenticationInput
+                              size="small"
+                              placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
+                              onChange={(e) => setFormItemValues({ value: e.target.value, fieldType: 'firstName' })}
+                              value={userData.firstName}
+                            />
+                          ) : (
+                            <>
+                              <div className="search-bar-organization">
+                                <Popover
+                                  open={
+                                    (userSearchData?.data?.length > 0 &&
+                                      isPopoverOpen?.searchUserFirstName &&
+                                      userSearchKeyword != '') ||
+                                    (isUsersearchFeatching &&
+                                      userSearchData?.data?.length > 0 &&
+                                      userSearchKeyword != '')
+                                  }
+                                  arrow={false}
+                                  overlayClassName="entity-popover"
+                                  placement="bottom"
+                                  onOpenChange={(open) => {
+                                    if (userSearchData?.data?.length > 0) {
+                                      setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: open });
+                                      debounceSearch(userSearchKeyword);
+                                    }
+                                  }}
+                                  autoAdjustOverflow={false}
+                                  getPopupContainer={(trigger) => trigger.parentNode}
+                                  trigger={['focus']}
+                                  content={
+                                    <div>
+                                      <div className="search-scrollable-content">
+                                        {userSearchData?.data?.map((item, index) => (
+                                          <div
+                                            key={index}
+                                            className="search-popover-options"
+                                            onClick={() => {
+                                              setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: false });
+                                              onSearchCardClick(item);
+                                            }}>
+                                            <p>{item.firstName + ' ' + item.lastName}</p>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  }>
+                                  <Input
+                                    style={{ borderRadius: '4px' }}
+                                    placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
+                                    value={userSearchKeyword}
+                                    onFocus={(e) => {
+                                      if (e.target.value != '') {
+                                        if (userSearchData?.data?.length > 0) {
+                                          setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
+                                        }
+                                        debounceSearch(e.target.value);
+                                      }
+                                    }}
+                                    onClick={(e) => {
+                                      if (e.target.value != '') {
+                                        if (userSearchData?.data?.length > 0) {
+                                          setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
+                                        }
+                                        debounceSearch(e.target.value);
+                                      }
+                                    }}
+                                    onChange={(e) => {
+                                      setFormItemValues({ value: e.target.value, fieldType: 'firstName' });
+                                      setUserSearchKeyword(e.target.value);
+
+                                      if (e.target.value == '') {
+                                        setUserSearchData([]);
+                                      } else {
+                                        debounceSearch(e.target.value);
+                                      }
+                                    }}
+                                    className="events-search"
+                                  />
+                                </Popover>
+                              </div>
+                            </>
+                          )}
                         </Col>
                       </Row>
                     </Form.Item>
@@ -474,7 +641,15 @@ const AddUser = () => {
                         </Col>
                       </Row>
                     </Form.Item>
-                    <Form.Item name="phoneNumber" label={t('dashboard.settings.addUser.phoneNumber')}>
+                    <Form.Item
+                      name="phoneNumber"
+                      label={t('dashboard.settings.addUser.phoneNumber')}
+                      rules={[
+                        {
+                          pattern: /^\d+$/,
+                          message: 'Phone number must be a number!',
+                        },
+                      ]}>
                       <Row>
                         <Col flex={'423px'}>
                           <AuthenticationInput
@@ -554,7 +729,7 @@ const AddUser = () => {
                       rules={[
                         {
                           validator: (_, value) =>
-                            validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.language')),
+                            validateNotEmpty(_, value?.key, t('dashboard.settings.addUser.validationTexts.language')),
                         },
                       ]}>
                       <Row>
@@ -598,7 +773,7 @@ const AddUser = () => {
                         <div className="button-container">
                           <OutlinedButton
                             label={t('dashboard.settings.addUser.passwordModal.btnText')}
-                            size="middle"
+                            size="large"
                             style={{ height: '40px' }}
                             onClick={() => setIsPopoverOpen({ ...isPopoverOpen, password: true })}
                           />
@@ -626,42 +801,45 @@ const AddUser = () => {
                             <Col flex={'423px'}>
                               <Col>
                                 {selectedCalendars?.length > 0 &&
-                                  selectedCalendars.map((item, index) => (
-                                    <CalendarSelect
-                                      key={index}
-                                      icon={
-                                        item?.image ? (
-                                          <div className="image-container">
-                                            <img src={item?.image.uri} />
-                                          </div>
-                                        ) : (
-                                          <div className="icon-container">
-                                            <CalendarOutlined style={{ color: '#607EFC', fontSize: '21px' }} />
-                                          </div>
-                                        )
-                                      }
-                                      name={contentLanguageBilingual({
-                                        en: item?.name?.en,
-                                        fr: item?.name?.fr,
-                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                        calendarContentLanguage: calendarContentLanguage,
-                                      })}
-                                      currentUser={isCurrentUser}
-                                      itemWidth="100%"
-                                      calendarContentLanguage={calendarContentLanguage}
-                                      selectedCalendars={selectedCalendars}
-                                      calenderItem={item}
-                                      setSelectedCalendars={setSelectedCalendars}
-                                      bordered
-                                      closable
-                                      userId={userId}
-                                      isRoleOptionHidden={userId || isCurrentUser ? true : false}
-                                      isCurrentUser
-                                      onButtonClick={() => {
-                                        removeCalendarHandler(index);
-                                      }}
-                                    />
-                                  ))}
+                                  selectedCalendars.map(
+                                    (item, index) =>
+                                      item.status == userActivityStatus[0].key && (
+                                        <CalendarSelect
+                                          key={index}
+                                          icon={
+                                            item?.image ? (
+                                              <div className="image-container">
+                                                <img src={item?.image.uri} />
+                                              </div>
+                                            ) : (
+                                              <div className="icon-container">
+                                                <CalendarOutlined style={{ color: '#607EFC', fontSize: '21px' }} />
+                                              </div>
+                                            )
+                                          }
+                                          name={contentLanguageBilingual({
+                                            en: item?.name?.en,
+                                            fr: item?.name?.fr,
+                                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                            calendarContentLanguage: calendarContentLanguage,
+                                          })}
+                                          currentUser={isCurrentUser}
+                                          itemWidth="100%"
+                                          calendarContentLanguage={calendarContentLanguage}
+                                          selectedCalendars={selectedCalendars}
+                                          calenderItem={item}
+                                          setSelectedCalendars={setSelectedCalendars}
+                                          bordered
+                                          closable
+                                          userId={userId}
+                                          isRoleOptionHidden={userId || isCurrentUser ? true : false}
+                                          isCurrentUser
+                                          onButtonClick={() => {
+                                            removeCalendarHandler({ item, index });
+                                          }}
+                                        />
+                                      ),
+                                  )}
                               </Col>
                             </Col>
                           </Row>

@@ -1,10 +1,24 @@
-.add-user-wrapper .button-container .ant-btn {
-  color: #0f0e98;
+.add-user-wrapper .breadcrumb .button-container .ant-btn {
+  background: transparent;
   border: none;
   box-shadow: none;
-  background: transparent;
-  padding: 0;
+  color: #0f0e98;
   font-weight: 600;
+  padding: 0;
+}
+
+.add-user-wrapper .search-popover-options {
+  padding: 7px 1px;
+  height: 40px;
+  font-weight: 500;
+}
+
+.add-user-wrapper .search-popover-options p {
+  margin-bottom: 0;
+}
+
+.add-user-wrapper .search-popover-options:hover {
+  background-color: #ededed;
 }
 
 .add-user-wrapper .details-card-description {
@@ -47,6 +61,16 @@
 .add-user-wrapper .search-bar-organization .events-search {
   display: flex;
   align-items: center;
+  border: none;
+  border-radius: 4px;
+  border: 1px solid var(--content-neutral-stroke, #b6c1c9);
+  background: var(--background-neutrals-ground, #fff);
+  padding: 8px;
+  color: var(--content-neutral-primary, #222732);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px; /* 150% */
 }
 
 .add-user-wrapper .ant-popover-inner {
@@ -102,17 +126,3 @@
   align-items: center !important;
 }
 
-.add-user-wrapper .password-modal {
-  border-radius: 4px;
-  border: 2px solid var(--content-action-lighter, #607efc);
-  background: var(--background-neutrals-transparent, rgba(255, 255, 255, 0));
-  width: fit-content;
-}
-
-.add-user-wrapper .password-modal .ant-btn {
-  display: flex;
-  padding: 8px 16px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-}
