@@ -13,6 +13,8 @@ import { useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import UserSearch from '../../../components/Search/Events/EventsSearch';
 import AddEvent from '../../../components/Button/AddEvent';
 import { SortAscendingOutlined, SortDescendingOutlined, DownOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
+import { featureFlags } from '../../../utils/featureFlags';
 
 const Taxonomy = () => {
   const { useBreakpoint } = Grid;
@@ -131,134 +133,136 @@ const Taxonomy = () => {
   };
 
   return (
-    <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="user-management-wrapper">
-      <Col span={24}>
-        <Col style={{ paddingLeft: 0 }}>
-          <Row justify="space-between">
-            <Col>
-              <div className="events-heading-wrapper">
-                <h4 className="events-heading">{t('dashboard.taxonomy.listing.heading')}</h4>
-              </div>
-            </Col>
-
-            <Col flex={'140px'} className="add-btn-container">
-              <ReadOnlyProtectedComponent creator={user?.id}>
-                <AddEvent label={t('dashboard.taxonomy.listing.addNew')} onClick={addTaxonomyHandler} />
-              </ReadOnlyProtectedComponent>
-            </Col>
-          </Row>
-        </Col>
-        <Row justify="space-between" gutter={[24, 16]} style={{ marginBottom: 16 }}>
-          <Col flex={'auto'}>
-            <Row gutter={[8, 8]} align="middle">
-              <Col flex={'auto'} style={{ marginRight: '24px', maxWidth: 400 }}>
-                <UserSearch
-                  placeholder={t('dashboard.settings.userManagement.searchPlaceholder')}
-                  onPressEnter={(e) => onSearchHandler(e)}
-                  defaultValue={filters.query}
-                  allowClear={true}
-                  onChange={onSearchChangeHandler}
-                />
-              </Col>
+    <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
+      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="user-management-wrapper">
+        <Col span={24}>
+          <Col style={{ paddingLeft: 0 }}>
+            <Row justify="space-between">
               <Col>
-                <Row align="middle" className="sort-option-row">
-                  <span style={{ fontSize: '16px', fontWeight: 700, marginRight: 8 }}>
-                    {t('dashboard.settings.userManagement.sort')}
-                  </span>
+                <div className="events-heading-wrapper">
+                  <h4 className="events-heading">{t('dashboard.taxonomy.listing.heading')}</h4>
+                </div>
+              </Col>
 
-                  <Dropdown
-                    overlayClassName="filter-sort-dropdown-wrapper"
-                    overlayStyle={{ minWidth: '200px' }}
-                    getPopupContainer={(trigger) => trigger.parentNode}
-                    menu={{
-                      items: sortByOptionsTaxonomy,
-                      selectedKeys: [filters?.sort],
-                      selectable: true,
-                      onSelect: onSortSelect,
-                    }}
-                    trigger={['click']}>
-                    <Button size="large" className="filter-sort-button">
-                      <Space>
-                        {sortByOptionsTaxonomy?.map((sortBy, index) => {
-                          if (sortBy?.key === filters?.sort) return <span key={index}>{sortBy?.label}</span>;
-                        })}
-                        <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
-                      </Space>
-                    </Button>
-                  </Dropdown>
-                  <Button
-                    className="filter-sort-button"
-                    style={{ borderColor: filters?.order && '#1B3DE6' }}
-                    onClick={handleSortOrderChange}
-                    icon={
-                      filters?.order === sortOrder?.ASC ? (
-                        <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
-                      ) : (
-                        filters?.order === sortOrder?.DESC && (
-                          <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
-                        )
-                      )
-                    }
-                    size={'large'}
-                  />
-                  <Col>
-                    {(filters.order !== sortOrder.ASC || filters.sort !== `${sortByOptionsTaxonomy[0].key}`) && (
-                      <Button
-                        size="large"
-                        className="filter-buttons"
-                        style={{ color: '#1B3DE6' }}
-                        onClick={filterClearHandler}>
-                        {t('dashboard.events.filter.clear')}&nbsp;
-                        <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
-                      </Button>
-                    )}
-                  </Col>
-                </Row>
+              <Col flex={'140px'} className="add-btn-container">
+                <ReadOnlyProtectedComponent creator={user?.id}>
+                  <AddEvent label={t('dashboard.taxonomy.listing.addNew')} onClick={addTaxonomyHandler} />
+                </ReadOnlyProtectedComponent>
               </Col>
             </Row>
           </Col>
-        </Row>
-      </Col>
-      {!isTaxonomyFetching ? (
-        <Col flex={'832px'}>
-          <Row>
-            <Col span={24}>
-              {allTaxonomy?.data.length && !isTaxonomyFetching > 0 ? (
-                <List
-                  className="event-list-wrapper"
-                  itemLayout={screens.xs ? 'vertical' : 'horizontal'}
-                  dataSource={allTaxonomy?.data}
-                  bordered={false}
-                  pagination={{
-                    onChange: (page) => {
-                      setPageNumber(page);
-                      window.scrollTo({
-                        top: 0,
-                        left: 0,
-                        behavior: 'smooth',
-                      });
-                    },
-                    pageSize: 10,
-                    hideOnSinglePage: true,
-                    total: allTaxonomy?.count,
-                    current: Number(pageNumber),
-                    showSizeChanger: false,
-                  }}
-                  renderItem={(item, index) => <p>item{index}</p>}
-                />
-              ) : (
-                <NoContent style={{ height: '200px' }} />
-              )}
+          <Row justify="space-between" gutter={[24, 16]} style={{ marginBottom: 16 }}>
+            <Col flex={'auto'}>
+              <Row gutter={[8, 8]} align="middle">
+                <Col flex={'auto'} style={{ marginRight: '24px', maxWidth: 400 }}>
+                  <UserSearch
+                    placeholder={t('dashboard.settings.userManagement.searchPlaceholder')}
+                    onPressEnter={(e) => onSearchHandler(e)}
+                    defaultValue={filters.query}
+                    allowClear={true}
+                    onChange={onSearchChangeHandler}
+                  />
+                </Col>
+                <Col>
+                  <Row align="middle" className="sort-option-row">
+                    <span style={{ fontSize: '16px', fontWeight: 700, marginRight: 8 }}>
+                      {t('dashboard.settings.userManagement.sort')}
+                    </span>
+
+                    <Dropdown
+                      overlayClassName="filter-sort-dropdown-wrapper"
+                      overlayStyle={{ minWidth: '200px' }}
+                      getPopupContainer={(trigger) => trigger.parentNode}
+                      menu={{
+                        items: sortByOptionsTaxonomy,
+                        selectedKeys: [filters?.sort],
+                        selectable: true,
+                        onSelect: onSortSelect,
+                      }}
+                      trigger={['click']}>
+                      <Button size="large" className="filter-sort-button">
+                        <Space>
+                          {sortByOptionsTaxonomy?.map((sortBy, index) => {
+                            if (sortBy?.key === filters?.sort) return <span key={index}>{sortBy?.label}</span>;
+                          })}
+                          <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
+                        </Space>
+                      </Button>
+                    </Dropdown>
+                    <Button
+                      className="filter-sort-button"
+                      style={{ borderColor: filters?.order && '#1B3DE6' }}
+                      onClick={handleSortOrderChange}
+                      icon={
+                        filters?.order === sortOrder?.ASC ? (
+                          <SortAscendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
+                        ) : (
+                          filters?.order === sortOrder?.DESC && (
+                            <SortDescendingOutlined style={{ color: '#1B3DE6', fontSize: '24px' }} />
+                          )
+                        )
+                      }
+                      size={'large'}
+                    />
+                    <Col>
+                      {(filters.order !== sortOrder.ASC || filters.sort !== `${sortByOptionsTaxonomy[0].key}`) && (
+                        <Button
+                          size="large"
+                          className="filter-buttons"
+                          style={{ color: '#1B3DE6' }}
+                          onClick={filterClearHandler}>
+                          {t('dashboard.events.filter.clear')}&nbsp;
+                          <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
+                        </Button>
+                      )}
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
             </Col>
           </Row>
         </Col>
-      ) : (
-        <div
-          style={{ height: '400px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <LoadingIndicator />
-        </div>
-      )}
-    </Row>
+        {!isTaxonomyFetching ? (
+          <Col flex={'832px'}>
+            <Row>
+              <Col span={24}>
+                {allTaxonomy?.data.length && !isTaxonomyFetching > 0 ? (
+                  <List
+                    className="event-list-wrapper"
+                    itemLayout={screens.xs ? 'vertical' : 'horizontal'}
+                    dataSource={allTaxonomy?.data}
+                    bordered={false}
+                    pagination={{
+                      onChange: (page) => {
+                        setPageNumber(page);
+                        window.scrollTo({
+                          top: 0,
+                          left: 0,
+                          behavior: 'smooth',
+                        });
+                      },
+                      pageSize: 10,
+                      hideOnSinglePage: true,
+                      total: allTaxonomy?.count,
+                      current: Number(pageNumber),
+                      showSizeChanger: false,
+                    }}
+                    renderItem={(item, index) => <p>item{index}</p>}
+                  />
+                ) : (
+                  <NoContent style={{ height: '200px' }} />
+                )}
+              </Col>
+            </Row>
+          </Col>
+        ) : (
+          <div
+            style={{ height: '400px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <LoadingIndicator />
+          </div>
+        )}
+      </Row>
+    </FeatureFlag>
   );
 };
 
