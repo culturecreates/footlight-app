@@ -67,6 +67,7 @@ import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-au
 import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequiredFieldNames';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
+import { userRoles } from '../../../constants/userRoles';
 
 const { TextArea } = Input;
 
@@ -157,6 +158,13 @@ function CreateNewPlace() {
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
+  const calendar = user?.roles.filter((calendar) => {
+    return calendar.calendarId === calendarId;
+  });
+  const adminCheckHandler = () => {
+    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
+    else return false;
+  };
   const addUpdatePlaceApiHandler = (placeObj, postalObj) => {
     var promise = new Promise(function (resolve, reject) {
       if (!placeId || placeId === '') {
@@ -1037,7 +1045,8 @@ function CreateNewPlace() {
                           fr: taxonomy?.name?.fr,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                         })}
-                        initialValue={initialValues}>
+                        initialValue={initialValues}
+                        hidden={taxonomy?.isAdminOnly ? (adminCheckHandler() ? false : true) : false}>
                         <TreeSelectOption
                           allowClear
                           treeDefaultExpandAll
