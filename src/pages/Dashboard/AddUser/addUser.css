@@ -126,20 +126,3 @@
   align-items: center !important;
 }
 
-.add-user-wrapper .password-modal {
-  border-radius: 4px;
-  border: 2px solid var(--content-action-lighter, #607efc);
-  background: var(--background-neutrals-transparent, rgba(255, 255, 255, 0));
-  width: fit-content;
-}
-
-.add-user-wrapper .password-modal .button-container .ant-btn {
-  display: flex;
-  padding: 8px 16px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border-radius: 4px;
-  border: 2px solid var(--content-action-lighter, #607efc);
-  background: var(--background-neutrals-transparent, rgba(255, 255, 255, 0));
-}
