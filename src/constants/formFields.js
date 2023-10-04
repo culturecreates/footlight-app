@@ -439,7 +439,13 @@ export const renderFormFields = ({
         name={name}
         key={key}
         initialValue={
-          Array.isArray(initialValue) ? (initialValue?.length > 0 ? initialValue : [undefined]) : initialValue
+          Array.isArray(initialValue)
+            ? initialValue?.length > 0
+              ? initialValue
+              : datatype === dataTypes.URI_STRING_ARRAY
+              ? [undefined]
+              : []
+            : initialValue
         }
         required={required}
         hidden={hidden}
