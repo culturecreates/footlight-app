@@ -13,6 +13,7 @@ import { DownOutlined } from '@ant-design/icons';
 import {
   useCurrentUserLeaveCalendarMutation,
   useLazyGetAllUsersQuery,
+  useLazyGetCurrentUserQuery,
   // useDeleteUserMutation,
   useLazyGetUserByIdQuery,
   useUpdateCurrentUserMutation,
@@ -34,6 +35,8 @@ import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { PathName } from '../../../constants/pathName';
+import { userActivityStatus } from '../../../constants/userActivityStatus';
+import LoadingIndicator from '../../../components/LoadingIndicator';
 
 const AddUser = () => {
   const navigate = useNavigate();
@@ -74,7 +77,7 @@ const AddUser = () => {
     return calendar.calendarId === calendarId;
   });
 
-  const [getUser, { isFetching: isLoading, isSuccess: isUserFetchSuccess }] = useLazyGetUserByIdQuery();
+  const [getUser, { isSuccess: isUserFetchSuccess }] = useLazyGetUserByIdQuery();
   const [getUserSearch, { isFetching: isUsersearchFeatching }] = useLazyGetAllUsersQuery();
 
   const [
@@ -85,15 +88,24 @@ const AddUser = () => {
   const [inviteUser] = useInviteUserMutation();
   const [updateUserById] = useUpdateUserByIdMutation();
   const [updateCurrentUser] = useUpdateCurrentUserMutation();
+  const [getCurrentUserDetails, { isSuccess: isCurrentUserSuccess }] = useLazyGetCurrentUserQuery();
 
   useEffect(() => {
-    if (userId) {
-      userId === user?.id && setIsCurrentUser(true);
+    if (userId !== user?.id) {
+      !adminCheckHandler() &&
+        dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Forbidden resource.' }));
+    } else {
+      setIsCurrentUser(true);
+    }
 
+    if (userId && userId !== user?.id) {
       getUser({ userId, calendarId, sessionId: timestampRef })
         .unwrap()
         .then((response) => {
-          setSelectedCalendars(response.roles);
+          const activeCalendars = response?.roles.filter((r) => {
+            return r.status == userActivityStatus[0].key;
+          });
+          setSelectedCalendars(activeCalendars);
           const requiredRole = response?.roles.filter((r) => {
             return r.calendarId === calendarId;
           });
@@ -112,16 +124,35 @@ const AddUser = () => {
             calendars: response.roles,
           });
         });
+    } else if (userId && userId === user?.id) {
+      getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
+        .unwrap()
+        .then((response) => {
+          const activeCalendars = response?.roles.filter((r) => {
+            return r.status == userActivityStatus[0].key;
+          });
+          setSelectedCalendars(activeCalendars);
+          const requiredRole = response?.roles.filter((r) => {
+            return r.calendarId === calendarId;
+          });
+          const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
+          setUserData({
+            firstName: response?.firstName,
+            lastName: response?.lastName,
+            phoneNumber: response?.phoneNumber,
+            email: response?.email,
+            userType: requiredRole[0]?.role,
+            languagePreference: {
+              key: response.interfaceLanguage,
+              label: selectedLanguage?.label ? selectedLanguage?.label : '',
+            },
+            calendars: response.roles,
+          });
+        });
     } else if (location.state?.data) {
       setSearchParams(createSearchParams({ id: location.state.data.id }));
     }
   }, [userId]);
-
-  useEffect(() => {
-    if (!adminCheckHandler()) {
-      dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Forbidden resource.' }));
-    }
-  }, []);
 
   useEffect(() => {
     if (userId) {
@@ -215,7 +246,7 @@ const AddUser = () => {
             .then((response) => {
               if (response?.statusCode == 202) {
                 i18n.changeLanguage(values?.languagePreference?.key?.toLowerCase());
-                getUser({ userId, calendarId })
+                getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
                   .unwrap()
                   .then((response) => {
                     const requiredRole = response?.roles.filter((r) => {
@@ -370,12 +401,13 @@ const AddUser = () => {
             currentUserLeaveCalendar({ calendarId: item?.calendarId })
               .unwrap()
               .then(() => {
+                if (selectedCalendars.length <= 1) {
+                  dispatch(clearUser());
+                  navigate(PathName.Login, { state: { previousPath: 'logout' } });
+                }
                 setSelectedCalendars((prevState) => {
                   const updatedArray = prevState.filter((_, i) => index !== i);
-                  if (selectedCalendars.length <= 1) {
-                    dispatch(clearUser());
-                    navigate(PathName.Login, { state: { previousPath: 'logout' } });
-                  } else if (calendarId === item.calendarId) {
+                  if (calendarId === item.calendarId) {
                     const newcalendar = userData.calendars.filter((i) => i.calendarId != item.calendarId);
                     navigate(`${PathName.Dashboard}/${newcalendar[0].calendarId}${PathName.Events}`);
                   }
@@ -435,7 +467,7 @@ const AddUser = () => {
           },
           { name: ['languagePreference'], value: userData.languagePreference },
         ]}>
-        {(!isLoading || isUserFetchSuccess) && (
+        {isUserFetchSuccess || isCurrentUserSuccess ? (
           <Row gutter={[0, 32]} className="add-edit-wrapper add-user-wrapper">
             <Col span={24}>
               <Row gutter={[0, 16]}>
@@ -551,7 +583,7 @@ const AddUser = () => {
                                   }>
                                   <Input
                                     style={{ borderRadius: '4px' }}
-                                    placeholder="Search organizations"
+                                    placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
                                     value={userSearchKeyword}
                                     onFocus={(e) => {
                                       if (e.target.value != '') {
@@ -610,7 +642,15 @@ const AddUser = () => {
                         </Col>
                       </Row>
                     </Form.Item>
-                    <Form.Item name="phoneNumber" label={t('dashboard.settings.addUser.phoneNumber')}>
+                    <Form.Item
+                      name="phoneNumber"
+                      label={t('dashboard.settings.addUser.phoneNumber')}
+                      rules={[
+                        {
+                          pattern: /^\d+$/,
+                          message: 'Phone number must be a number!',
+                        },
+                      ]}>
                       <Row>
                         <Col flex={'423px'}>
                           <AuthenticationInput
@@ -690,7 +730,7 @@ const AddUser = () => {
                       rules={[
                         {
                           validator: (_, value) =>
-                            validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.language')),
+                            validateNotEmpty(_, value?.key, t('dashboard.settings.addUser.validationTexts.language')),
                         },
                       ]}>
                       <Row>
@@ -734,7 +774,7 @@ const AddUser = () => {
                         <div className="button-container">
                           <OutlinedButton
                             label={t('dashboard.settings.addUser.passwordModal.btnText')}
-                            size="middle"
+                            size="large"
                             style={{ height: '40px' }}
                             onClick={() => setIsPopoverOpen({ ...isPopoverOpen, password: true })}
                           />
@@ -762,42 +802,45 @@ const AddUser = () => {
                             <Col flex={'423px'}>
                               <Col>
                                 {selectedCalendars?.length > 0 &&
-                                  selectedCalendars.map((item, index) => (
-                                    <CalendarSelect
-                                      key={index}
-                                      icon={
-                                        item?.image ? (
-                                          <div className="image-container">
-                                            <img src={item?.image.uri} />
-                                          </div>
-                                        ) : (
-                                          <div className="icon-container">
-                                            <CalendarOutlined style={{ color: '#607EFC', fontSize: '21px' }} />
-                                          </div>
-                                        )
-                                      }
-                                      name={contentLanguageBilingual({
-                                        en: item?.name?.en,
-                                        fr: item?.name?.fr,
-                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                        calendarContentLanguage: calendarContentLanguage,
-                                      })}
-                                      currentUser={isCurrentUser}
-                                      itemWidth="100%"
-                                      calendarContentLanguage={calendarContentLanguage}
-                                      selectedCalendars={selectedCalendars}
-                                      calenderItem={item}
-                                      setSelectedCalendars={setSelectedCalendars}
-                                      bordered
-                                      closable
-                                      userId={userId}
-                                      isRoleOptionHidden={userId || isCurrentUser ? true : false}
-                                      isCurrentUser
-                                      onButtonClick={() => {
-                                        removeCalendarHandler({ item, index });
-                                      }}
-                                    />
-                                  ))}
+                                  selectedCalendars.map(
+                                    (item, index) =>
+                                      item.status == userActivityStatus[0].key && (
+                                        <CalendarSelect
+                                          key={index}
+                                          icon={
+                                            item?.image ? (
+                                              <div className="image-container">
+                                                <img src={item?.image.uri} />
+                                              </div>
+                                            ) : (
+                                              <div className="icon-container">
+                                                <CalendarOutlined style={{ color: '#607EFC', fontSize: '21px' }} />
+                                              </div>
+                                            )
+                                          }
+                                          name={contentLanguageBilingual({
+                                            en: item?.name?.en,
+                                            fr: item?.name?.fr,
+                                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                            calendarContentLanguage: calendarContentLanguage,
+                                          })}
+                                          currentUser={isCurrentUser}
+                                          itemWidth="100%"
+                                          calendarContentLanguage={calendarContentLanguage}
+                                          selectedCalendars={selectedCalendars}
+                                          calenderItem={item}
+                                          setSelectedCalendars={setSelectedCalendars}
+                                          bordered
+                                          closable
+                                          userId={userId}
+                                          isRoleOptionHidden={userId || isCurrentUser ? true : false}
+                                          isCurrentUser
+                                          onButtonClick={() => {
+                                            removeCalendarHandler({ item, index });
+                                          }}
+                                        />
+                                      ),
+                                  )}
                               </Col>
                             </Col>
                           </Row>
@@ -809,6 +852,10 @@ const AddUser = () => {
               </Col>
             )}
           </Row>
+        ) : (
+          <div style={{ height: 400, width: '100%', display: 'grid', placeContent: 'center' }}>
+            <LoadingIndicator />
+          </div>
         )}
       </Form>
     </FeatureFlag>

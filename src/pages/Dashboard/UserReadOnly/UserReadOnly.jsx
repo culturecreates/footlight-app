@@ -18,6 +18,7 @@ import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import { PathName } from '../../../constants/pathName';
 import CalendarSelect from '../../../components/List/User/CalenderSelect/CalendarSelect';
+import { userActivityStatus } from '../../../constants/userActivityStatus';
 
 const UserReadOnly = () => {
   const { t } = useTranslation();
@@ -39,7 +40,10 @@ const UserReadOnly = () => {
 
   useEffect(() => {
     if (userSuccess) {
-      setUserSubscribedCalenders(userInfo.roles);
+      const activeCalendars = userInfo?.roles.filter((r) => {
+        return r.status == userActivityStatus[0].key;
+      });
+      setUserSubscribedCalenders(activeCalendars);
     }
   }, [userLoading]);
 
@@ -173,53 +177,55 @@ const UserReadOnly = () => {
               </Col>
             </Row>
           </Col>
-          <Col span={24}>
-            <Row>
-              <Col flex={'780px'}>
-                <Card className="user-read-only-calendar-card" style={{ border: 'none' }}>
-                  <Row>
-                    <Col>
-                      <h2 className="user-info-details-card-heading">
-                        {t('dashboard.settings.userReadOnly.calendarAccess')}
-                      </h2>
-                    </Col>
-                  </Row>
-                  <Row>
-                    {userSubscribedCalenders?.map((item, index) => {
-                      return (
-                        <CalendarSelect
-                          key={index}
-                          icon={
-                            item?.image?.uri ? (
-                              <div style={{ height: '40px', width: '40px' }}>
-                                <img
-                                  style={{ objectFit: 'cover', height: '100%', width: '100%' }}
-                                  src={item.image.uri}
-                                />
-                              </div>
-                            ) : (
-                              <EnvironmentOutlined style={{ color: '#607EFC' }} />
-                            )
-                          }
-                          name={contentLanguageBilingual({
-                            en: item?.name?.en,
-                            fr: item?.name?.fr,
-                            interfaceLanguage: currentUser?.interfaceLanguage?.toLowerCase(),
-                            calendarContentLanguage: calendarContentLanguage,
-                          })}
-                          calenderItem={item}
-                          currentUser={false} // to hide leave button
-                          itemWidth="423px"
-                          bordered
-                          calendarContentLanguage={calendarContentLanguage}
-                        />
-                      );
-                    })}
-                  </Row>
-                </Card>
-              </Col>
-            </Row>
-          </Col>
+          {userSubscribedCalenders?.length > 0 && (
+            <Col span={24}>
+              <Row>
+                <Col flex={'780px'}>
+                  <Card className="user-read-only-calendar-card" style={{ border: 'none' }}>
+                    <Row>
+                      <Col>
+                        <h2 className="user-info-details-card-heading">
+                          {t('dashboard.settings.userReadOnly.calendarAccess')}
+                        </h2>
+                      </Col>
+                    </Row>
+                    <Row>
+                      {userSubscribedCalenders?.map((item, index) => {
+                        return (
+                          <CalendarSelect
+                            key={index}
+                            icon={
+                              item?.image?.uri ? (
+                                <div style={{ height: '40px', width: '40px' }}>
+                                  <img
+                                    style={{ objectFit: 'cover', height: '100%', width: '100%' }}
+                                    src={item.image.uri}
+                                  />
+                                </div>
+                              ) : (
+                                <EnvironmentOutlined style={{ color: '#607EFC' }} />
+                              )
+                            }
+                            name={contentLanguageBilingual({
+                              en: item?.name?.en,
+                              fr: item?.name?.fr,
+                              interfaceLanguage: currentUser?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            })}
+                            calenderItem={item}
+                            currentUser={false} // to hide leave button
+                            itemWidth="423px"
+                            bordered
+                            calendarContentLanguage={calendarContentLanguage}
+                          />
+                        );
+                      })}
+                    </Row>
+                  </Card>
+                </Col>
+              </Row>
+            </Col>
+          )}
         </Row>
       )}
     </FeatureFlag>

@@ -736,7 +736,9 @@
         "lastName": "Nom",
         "active": "Actif",
         "inActive": "Désactivé",
+        "inActiveStatus": "Désactivé",
         "invite": "Invité",
+        "pending": "Invité",
         "admin": "Administrateur",
         "editor": "Éditeur",
         "contributor": "Collaborateur",
@@ -840,6 +842,17 @@
         "deactivate": "Désactivé",
         "leaveCalender": "Êtes-vous sûr de vouloir quitter définitivement ce calendrier?",
         "confirmLeave": "confirmer le congé"
+      }
+    },
+    "taxonomy": {
+      "listing": {
+        "heading": "Taxonomies",
+        "addNew": "Taxonomy",
+        "sort": {
+          "sortBy": "Trier par",
+          "name": "Nom",
+          "createdDate": "Date de création"
+        }
       }
     }
   },

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { userActivityStatus } from '../../../constants/userActivityStatus';
 import Tags from '../Common/Tags';
 
@@ -6,6 +7,8 @@ const StatusTag = ({ activityStatus }) => {
   const [activityStatusStyle, setActivityStatusStyle] = useState();
   const [activityStatusTextColor, setActivityStatusTextColor] = useState();
   const [activityStatusText, setActivityStatusText] = useState();
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     handleStatusTagStyles();
@@ -19,14 +22,14 @@ const StatusTag = ({ activityStatus }) => {
         setActivityStatusText(userActivityStatus[0].label);
         break;
       case userActivityStatus[1].key:
-        setActivityStatusStyle({ color: '#222732' });
-        setActivityStatusTextColor(' #E8E8E8');
-        setActivityStatusText(userActivityStatus[1].label);
+        setActivityStatusStyle({ color: '#0F0E98' });
+        setActivityStatusTextColor('#EFF2FF');
+        setActivityStatusText(t('dashboard.settings.userManagement.inActiveStatus'));
         break;
       case userActivityStatus[2].key:
-        setActivityStatusStyle({ color: '#B59800 ' });
+        setActivityStatusStyle({ color: '#B59800' });
         setActivityStatusTextColor('#FFF7CC');
-        setActivityStatusText(userActivityStatus[2].label);
+        setActivityStatusText(t('dashboard.settings.userManagement.pending'));
         break;
       default:
         break;

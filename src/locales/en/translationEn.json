@@ -740,8 +740,10 @@
         "firstName": "First name",
         "lastName": "Last name",
         "active": "Active",
-        "inActive": "inActive",
+        "inActive": "Deactivated",
+        "inActiveStatus": "Inactive",
         "invite": "Invited",
+        "pending": "Pending",
         "admin": "Admin",
         "editor": "Editor",
         "contributor": "Contributor",
@@ -846,6 +848,17 @@
         "deactivate": "Deactivate",
         "leaveCalender": "Are you sure you want to leave this calendar?",
         "confirmLeave": "confirm leave"
+      }
+    },
+    "taxonomy": {
+      "listing": {
+        "heading": "Taxonomies",
+        "addNew":"Taxonomy",
+        "sort": {
+          "sortBy": "Sort by",
+          "name": "Name",
+          "createdDate": "Created Date"
+        }
       }
     }
   },

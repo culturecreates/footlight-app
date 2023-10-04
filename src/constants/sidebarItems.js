@@ -46,7 +46,7 @@ export const sidebarItems = [
     path: '/taxonomies',
     component: <div>taxonomies</div>,
     icon: <TagOutlined style={iconStyle} />,
-    disabled: true,
+    disabled: featureFlags.taxonomy === 'true' ? false : true,
   },
   {
     name: 'dashboard.sidebar.settings',

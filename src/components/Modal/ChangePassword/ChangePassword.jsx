@@ -81,6 +81,7 @@ const ChangePassword = ({ isPopoverOpen, setIsPopoverOpen }) => {
       wrapClassName="change-password-modal"
       open={isPopoverOpen.password}
       onOk={handleFormSubmit}
+      bodyStyle={{ padding: 32 }}
       onCancel={() => {
         form.resetFields();
         setIsPopoverOpen({ ...isPopoverOpen, password: false });
@@ -92,7 +93,7 @@ const ChangePassword = ({ isPopoverOpen, setIsPopoverOpen }) => {
           rules={[
             {
               required: true,
-              message: 'Please enter your password!',
+              message: t('resetPassword.validations.emptyPassword'),
             },
           ]}>
           <PasswordInput placeholder={t('dashboard.settings.addUser.passwordModal.placeHolder.current')} />
@@ -103,7 +104,7 @@ const ChangePassword = ({ isPopoverOpen, setIsPopoverOpen }) => {
           rules={[
             {
               required: true,
-              message: 'Please enter your new password!',
+              message: t('resetPassword.validations.emptyPassword'),
             },
           ]}>
           <PasswordInput placeholder={t('dashboard.settings.addUser.passwordModal.placeHolder.new')} />
@@ -115,14 +116,14 @@ const ChangePassword = ({ isPopoverOpen, setIsPopoverOpen }) => {
           rules={[
             {
               required: true,
-              message: 'Please confirm your new password!',
+              message: t('resetPassword.validations.emptyPassword'),
             },
             ({ getFieldValue }) => ({
               validator(_, value) {
                 if (!value || getFieldValue('newPassword') === value) {
                   return Promise.resolve();
                 }
-                return Promise.reject(new Error('The two passwords do not match!'));
+                return Promise.reject(new Error(t('resetPassword.validations.passwordMatch')));
               },
             }),
           ]}>
