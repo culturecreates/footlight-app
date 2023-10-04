@@ -176,9 +176,10 @@ const UserManagement = () => {
   };
 
   const handleListCardStyles = (item) => {
-    const listCardStyles = !(calendar.role === userRoles.GUEST && item._id != user.id)
-      ? { style: { cursor: 'initial', padding: '24px' } }
-      : { style: { padding: '24px' } };
+    const listCardStyles =
+      calendar[0].role === userRoles.GUEST && item._id != user.id
+        ? { style: { cursor: 'initial', padding: '24px' } }
+        : { style: { padding: '24px' } };
     return listCardStyles;
   };
 

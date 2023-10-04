@@ -7,7 +7,6 @@ import './listCard.css';
 const ListCard = (props) => {
   const { id, actions, listItemHandler, title, description, activityStatus, invitedBy, styles } = props;
   const { t } = useTranslation();
-  console.log(styles);
   return (
     <List.Item className="users-list-item-wrapper" key={id} actions={actions} {...styles}>
       <List.Item.Meta className="user-item-meta" title={title} description={description} onClick={listItemHandler} />
