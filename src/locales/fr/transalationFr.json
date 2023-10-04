@@ -445,7 +445,8 @@
         "email": "Courriel",
         "memberOf": "Membre de",
         "location": "Endroit",
-        "Edit": "Edit"
+        "Edit": "Edit",
+        "socialMediaLinks": "Liens vers les réseaux sociaux"
       },
       "createNew": {
         "search": {
@@ -660,7 +661,8 @@
         "disambiguatingDescription": "Description identifiante",
         "description": "Description",
         "website": "Site web",
-        "edit": "Edit"
+        "edit": "Edit",
+        "socialMediaLinks": "Liens vers les réseaux sociaux"
       },
       "createNew": {
         "search": {

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './personReadOnly.css';
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +26,7 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
+import { loadArtsDataEntity } from '../../../services/artsData';
 
 function PersonReadOnly() {
   const { t } = useTranslation();
@@ -52,14 +53,37 @@ function PersonReadOnly() {
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
+  const [artsData, setArtsData] = useState(null);
+  const [artsDataLoading, setArtsDataLoading] = useState(false);
+
+  const getArtsData = (id) => {
+    setArtsDataLoading(true);
+    loadArtsDataEntity({ entityId: id })
+      .then((response) => {
+        setArtsData(response?.data[0]);
+        setArtsDataLoading(false);
+      })
+      .catch((error) => {
+        setArtsDataLoading(false);
+        console.log(error);
+      });
+  };
+
   useEffect(() => {
     if (personError) navigate(`${PathName.NotFound}`);
   }, [personError]);
 
+  useEffect(() => {
+    if (personData) {
+      if (personData?.sourceId) getArtsData(personData?.sourceId);
+    }
+  }, [personLoading]);
+
   return (
     personSuccess &&
     !personLoading &&
-    !taxonomyLoading && (
+    !taxonomyLoading &&
+    !artsDataLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Row gutter={[32, 24]} className="read-only-wrapper">
           <Col span={24} style={{ paddingRight: '0' }}>
@@ -124,16 +148,16 @@ function PersonReadOnly() {
               <Row>
                 <Col span={16}>
                   <ArtsDataInfo
-                    artsDataLink={artsDataLinkChecker(personData?.sameAs)}
+                    artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
                     name={contentLanguageBilingual({
-                      en: personData?.name?.en,
-                      fr: personData?.name?.fr,
+                      en: artsData?.name?.en,
+                      fr: artsData?.name?.fr,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                     disambiguatingDescription={contentLanguageBilingual({
-                      en: personData?.disambiguatingDescription?.en,
-                      fr: personData?.disambiguatingDescription?.fr,
+                      en: artsData?.disambiguatingDescription?.en,
+                      fr: artsData?.disambiguatingDescription?.fr,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
@@ -288,6 +312,20 @@ function PersonReadOnly() {
                         {personData?.url?.uri}
                       </a>
                     </p>
+                  </Col>
+                )}
+                {personData?.socialMediaLinks?.length > 0 && (
+                  <Col span={24}>
+                    <p className="read-only-event-content-sub-title-primary">
+                      {t('dashboard.people.readOnly.socialMediaLinks')}
+                    </p>
+                    {personData?.socialMediaLinks?.map((link, index) => (
+                      <p key={index}>
+                        <a href={link} target="_blank" rel="noopener noreferrer" className="url-links">
+                          {link}
+                        </a>
+                      </p>
+                    ))}
                   </Col>
                 )}
               </Row>

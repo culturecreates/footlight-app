@@ -446,7 +446,8 @@
         "email": "Email",
         "memberOf": "Member of",
         "location": "Location",
-        "edit": "Edit"
+        "edit": "Edit",
+        "socialMediaLinks": "Social media links"
       },
       "createNew": {
         "search": {
@@ -663,7 +664,8 @@
         "disambiguatingDescription": "Disambiguating description",
         "description": "Description",
         "website": "Website",
-        "edit": "Edit"
+        "edit": "Edit",
+        "socialMediaLinks": "Social media links"
       },
       "createNew": {
         "search": {

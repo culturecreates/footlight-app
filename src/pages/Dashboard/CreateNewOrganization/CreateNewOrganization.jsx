@@ -453,6 +453,19 @@ function CreateNewOrganization() {
     setShowDialog(true);
   };
 
+  const getArtsData = (id) => {
+    setArtsDataLoading(true);
+    loadArtsDataEntity({ entityId: id })
+      .then((response) => {
+        setArtsData(response?.data[0]);
+        setArtsDataLoading(false);
+      })
+      .catch((error) => {
+        setArtsDataLoading(false);
+        console.log(error);
+      });
+  };
+
   useEffect(() => {
     if (addedFields?.length > 0) {
       const element = document.getElementsByClassName(scrollToSelectedField);
@@ -488,6 +501,7 @@ function CreateNewOrganization() {
             },
           });
         }
+        if (organizationData?.sourceId) getArtsData(organizationData?.sourceId);
         if (organizationData?.place?.entityId) {
           getPlace({ placeId: organizationData?.place?.entityId, calendarId })
             .unwrap()
@@ -542,16 +556,7 @@ function CreateNewOrganization() {
 
   useEffect(() => {
     if (artsDataId) {
-      setArtsDataLoading(true);
-      loadArtsDataEntity({ entityId: artsDataId })
-        .then((response) => {
-          setArtsData(response?.data[0]);
-          setArtsDataLoading(false);
-        })
-        .catch((error) => {
-          setArtsDataLoading(false);
-          console.log(error);
-        });
+      getArtsData(artsDataId);
     } else if (location?.state?.name)
       setNewEntityData({
         name: {
@@ -624,20 +629,16 @@ function CreateNewOrganization() {
                             </Col>
                             <Col span={24}>
                               <ArtsDataInfo
-                                artsDataLink={artsDataLinkChecker(organizationData?.sameAs ?? artsData?.sameAs)}
+                                artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
                                 name={contentLanguageBilingual({
-                                  en: organizationData?.name?.en ?? artsData?.name?.en,
-                                  fr: organizationData?.name?.fr ?? artsData?.name?.fr,
+                                  en: artsData?.name?.en,
+                                  fr: artsData?.name?.fr,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
                                 disambiguatingDescription={contentLanguageBilingual({
-                                  en:
-                                    organizationData?.disambiguatingDescription?.en ??
-                                    artsData?.disambiguatingDescription?.en,
-                                  fr:
-                                    organizationData?.disambiguatingDescription?.fr ??
-                                    artsData?.disambiguatingDescription?.fr,
+                                  en: artsData?.disambiguatingDescription?.en,
+                                  fr: artsData?.disambiguatingDescription?.fr,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
@@ -684,7 +685,7 @@ function CreateNewOrganization() {
                               allTaxonomyData,
                               user,
                               calendarContentLanguage,
-                              entityData: organizationData ? organizationData : artsData ? artsData : newEntityData,
+                              entityData: organizationData ? organizationData : artsDataId ? artsData : newEntityData,
                               index,
                               t,
                               adminCheckHandler,

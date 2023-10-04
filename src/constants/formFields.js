@@ -170,7 +170,16 @@ export const formFieldValue = [
                   <Form.Item key={field.key}>
                     <Row gutter={[12, 0]} align={'middle'}>
                       <Col span={22}>
-                        <Form.Item {...field} validateTrigger={['onChange', 'onBlur']} noStyle>
+                        <Form.Item
+                          {...field}
+                          validateTrigger={['onChange', 'onBlur']}
+                          noStyle
+                          rules={[
+                            {
+                              type: 'url',
+                              message: t('dashboard.events.addEditEvent.validations.url'),
+                            },
+                          ]}>
                           <StyledInput
                             addonBefore="https://"
                             autoComplete="off"
@@ -430,7 +439,13 @@ export const renderFormFields = ({
         name={name}
         key={key}
         initialValue={
-          Array.isArray(initialValue) ? (initialValue?.length > 0 ? initialValue : [undefined]) : initialValue
+          Array.isArray(initialValue)
+            ? initialValue?.length > 0
+              ? initialValue
+              : datatype === dataTypes.URI_STRING_ARRAY
+              ? [undefined]
+              : []
+            : initialValue
         }
         required={required}
         hidden={hidden}

@@ -261,6 +261,19 @@ function CreateNewPerson() {
     setShowDialog(true);
   };
 
+  const getArtsData = (id) => {
+    setArtsDataLoading(true);
+    loadArtsDataEntity({ entityId: id })
+      .then((response) => {
+        setArtsData(response?.data[0]);
+        setArtsDataLoading(false);
+      })
+      .catch((error) => {
+        setArtsDataLoading(false);
+        console.log(error);
+      });
+  };
+
   useEffect(() => {
     if (calendarId && personData && currentCalendarData) {
       if (routinghandler(user, calendarId, personData?.createdByUserId, null, true)) {
@@ -287,6 +300,7 @@ function CreateNewPerson() {
             },
           });
         }
+        if (personData?.sourceId) getArtsData(personData?.sourceId);
       } else
         window.location.replace(
           `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.People}/${personId}`,
@@ -296,16 +310,7 @@ function CreateNewPerson() {
 
   useEffect(() => {
     if (artsDataId) {
-      setArtsDataLoading(true);
-      loadArtsDataEntity({ entityId: artsDataId })
-        .then((response) => {
-          setArtsData(response?.data[0]);
-          setArtsDataLoading(false);
-        })
-        .catch((error) => {
-          setArtsDataLoading(false);
-          console.log(error);
-        });
+      getArtsData(artsDataId);
     } else if (location?.state?.name) {
       setNewEntityData({
         name: {
@@ -373,20 +378,16 @@ function CreateNewPerson() {
                             </Col>
                             <Col span={24}>
                               <ArtsDataInfo
-                                artsDataLink={artsDataLinkChecker(personData?.sameAs ?? artsData?.sameAs)}
+                                artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
                                 name={contentLanguageBilingual({
-                                  en: personData?.name?.en ?? artsData?.name?.en,
-                                  fr: personData?.name?.fr ?? artsData?.name?.fr,
+                                  en: artsData?.name?.en,
+                                  fr: artsData?.name?.fr,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
                                 disambiguatingDescription={contentLanguageBilingual({
-                                  en:
-                                    personData?.disambiguatingDescription?.en ??
-                                    artsData?.disambiguatingDescription?.en,
-                                  fr:
-                                    personData?.disambiguatingDescription?.fr ??
-                                    artsData?.disambiguatingDescription?.fr,
+                                  en: artsData?.disambiguatingDescription?.en,
+                                  fr: artsData?.disambiguatingDescription?.fr,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
@@ -431,7 +432,7 @@ function CreateNewPerson() {
                               allTaxonomyData,
                               user,
                               calendarContentLanguage,
-                              entityData: personData ? personData : artsData ? artsData : newEntityData,
+                              entityData: personData ? personData : artsDataId ? artsData : newEntityData,
                               index,
                               t,
                               adminCheckHandler,
