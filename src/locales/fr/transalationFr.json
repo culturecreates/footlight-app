@@ -738,6 +738,8 @@
         "inActive": "Désactivé",
         "inActiveStatus": "Désactivé",
         "invite": "Invité",
+        "removed": "REMOVED",
+        "left": "LEFT",
         "pending": "Invité",
         "admin": "Administrateur",
         "editor": "Éditeur",

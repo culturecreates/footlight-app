@@ -22,6 +22,8 @@ const StatusTag = ({ activityStatus }) => {
         setActivityStatusText(userActivityStatus[0].label);
         break;
       case userActivityStatus[1].key:
+      case userActivityStatus[3].key:
+      case userActivityStatus[4].key:
         setActivityStatusStyle({ color: '#0F0E98' });
         setActivityStatusTextColor('#EFF2FF');
         setActivityStatusText(t('dashboard.settings.userManagement.inActiveStatus'));

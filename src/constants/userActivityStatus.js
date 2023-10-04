@@ -13,4 +13,12 @@ export const userActivityStatus = [
     label: <Translation>{(t) => t('dashboard.settings.userManagement.invite')}</Translation>,
     key: 'INVITED',
   },
+  {
+    label: <Translation>{(t) => t('dashboard.settings.userManagement.removed')}</Translation>,
+    key: 'REMOVED',
+  },
+  {
+    label: <Translation>{(t) => t('dashboard.settings.userManagement.left')}</Translation>,
+    key: 'LEFT',
+  },
 ];

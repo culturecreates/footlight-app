@@ -467,7 +467,7 @@ const AddUser = () => {
           },
           { name: ['languagePreference'], value: userData.languagePreference },
         ]}>
-        {isUserFetchSuccess || isCurrentUserSuccess ? (
+        {isUserFetchSuccess || isCurrentUserSuccess || !userId ? (
           <Row gutter={[0, 32]} className="add-edit-wrapper add-user-wrapper">
             <Col span={24}>
               <Row gutter={[0, 16]}>

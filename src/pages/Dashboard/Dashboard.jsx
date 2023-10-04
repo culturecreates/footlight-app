@@ -26,10 +26,11 @@ function Dashboard() {
   const { accessToken, user } = useSelector(getUserDetails);
   const [getCalendar, { currentData: currentCalendarData }] = useLazyGetCalendarQuery();
 
-  const { currentData: allCalendarsData, isLoading } = useGetAllCalendarsQuery(
-    { sessionId: timestampRef },
-    { skip: accessToken ? false : true },
-  );
+  const {
+    currentData: allCalendarsData,
+    isLoading,
+    isSuccess,
+  } = useGetAllCalendarsQuery({ sessionId: timestampRef }, { skip: accessToken ? false : true });
 
   const [getCurrentUserDetails] = useLazyGetCurrentUserQuery();
 
@@ -67,20 +68,39 @@ function Dashboard() {
   }, [accessToken]);
 
   useEffect(() => {
-    if (calendarId && accessToken) {
-      getCalendar({ id: calendarId, sessionId: timestampRef });
-      dispatch(setSelectedCalendar(String(calendarId)));
-    } else {
-      let activeCalendarId = Cookies.get('calendarId');
-      if (activeCalendarId && accessToken) {
-        navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
-      } else if (!isLoading && allCalendarsData?.data) {
-        activeCalendarId = allCalendarsData?.data[0]?.id;
-        Cookies.set('calendarId', activeCalendarId);
-        navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
+    if (isSuccess) {
+      const checkedCalendarId = findActiveCalendar();
+      if (checkedCalendarId != null) {
+        Cookies.set('calendarId', checkedCalendarId);
+      }
+
+      if (calendarId && accessToken) {
+        getCalendar({ id: calendarId, sessionId: timestampRef });
+        dispatch(setSelectedCalendar(String(calendarId)));
+      } else {
+        let activeCalendarId = Cookies.get('calendarId');
+        if (activeCalendarId && accessToken) {
+          navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
+        } else if (!isLoading && allCalendarsData?.data) {
+          activeCalendarId = allCalendarsData?.data[0]?.id;
+          Cookies.set('calendarId', activeCalendarId);
+          navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
+        }
       }
     }
-  }, [calendarId, isLoading, allCalendarsData]);
+  }, [calendarId, isLoading, allCalendarsData, isSuccess]);
+
+  const findActiveCalendar = () => {
+    const currentCalendar = allCalendarsData.data.filter((item) => {
+      if (item.id === calendarId) {
+        return item;
+      }
+    });
+    if (currentCalendar.length < 1) {
+      return allCalendarsData.data[0].id;
+    }
+    return null;
+  };
 
   return (
     <ErrorLayout>
