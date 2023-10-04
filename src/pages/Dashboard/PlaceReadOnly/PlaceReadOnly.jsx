@@ -28,6 +28,7 @@ import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
+import { loadArtsDataPlaceEntity } from '../../../services/artsData';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -55,8 +56,25 @@ function PlaceReadOnly() {
   const { user } = useSelector(getUserDetails);
 
   const [locationPlace, setLocationPlace] = useState();
+  const [artsDataLoading, setArtsDataLoading] = useState(false);
+  const [artsData, setArtsData] = useState(null);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
+
+  const getArtsDataPlace = (id) => {
+    setArtsDataLoading(true);
+    loadArtsDataPlaceEntity({ entityId: id })
+      .then((response) => {
+        if (response?.data?.length > 0) {
+          setArtsData(response?.data[0]);
+        }
+        setArtsDataLoading(false);
+      })
+      .catch((error) => {
+        setArtsDataLoading(false);
+        console.log(error);
+      });
+  };
 
   useEffect(() => {
     if (placeError) navigate(`${PathName.NotFound}`);
@@ -67,6 +85,8 @@ function PlaceReadOnly() {
       if (placeData?.containedInPlace?.entityId) {
         let initialPlace = [];
         let initialPlaceAccessibiltiy = [];
+        if (placeData?.sourceId) getArtsDataPlace(placeData?.sourceId);
+
         getPlace({ placeId: placeData?.containedInPlace?.entityId, calendarId })
           .unwrap()
           .then((response) => {
@@ -109,6 +129,7 @@ function PlaceReadOnly() {
   return (
     placeSuccess &&
     !placeLoading &&
+    !artsDataLoading &&
     !taxonomyLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Row gutter={[32, 24]} className="read-only-wrapper">
@@ -174,16 +195,16 @@ function PlaceReadOnly() {
               <Row>
                 <Col span={16}>
                   <ArtsDataInfo
-                    artsDataLink={artsDataLinkChecker(placeData?.sameAs)}
+                    artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
                     name={contentLanguageBilingual({
-                      en: placeData?.name?.en,
-                      fr: placeData?.name?.fr,
+                      en: artsData?.name?.en,
+                      fr: artsData?.name?.fr,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                     disambiguatingDescription={contentLanguageBilingual({
-                      en: placeData?.disambiguatingDescription?.en,
-                      fr: placeData?.disambiguatingDescription?.fr,
+                      en: artsData?.disambiguatingDescription?.en,
+                      fr: artsData?.disambiguatingDescription?.fr,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
