@@ -175,6 +175,20 @@ const UserManagement = () => {
     else return false;
   };
 
+  const handleListCardStyles = (item) => {
+    const listCardStyles = !(calendar.role === userRoles.GUEST && item._id != user.id)
+      ? { style: { cursor: 'initial', padding: '24px' } }
+      : { style: { padding: '24px' } };
+    return listCardStyles;
+  };
+
+  const currentCalendarUserStatus = (item) => {
+    const activeCalendar = item?.roles.filter((r) => {
+      return r.calendarId == calendarId;
+    });
+    return activeCalendar[0].status;
+  };
+
   const tooltipItemDisplayHandler = ({ item }) => {
     const dropdownItems = [];
     const userStatus = item.roles.filter((i) => {
@@ -182,32 +196,41 @@ const UserManagement = () => {
         return i.role;
       }
     });
+
+    const isUserInactiveInThisCalendar =
+      userStatus[0]?.status === userActivityStatus[1].key ||
+      userStatus[0]?.status === userActivityStatus[3].key ||
+      userStatus[0]?.status === userActivityStatus[4].key;
+
     if (adminCheckHandler()) {
       dropdownItems.push({ key: 'editUser', label: t('dashboard.settings.userManagement.tooltip.editUser') });
     }
 
-    if (!item?.isSuperAdmin) {
+    if (!item?.isSuperAdmin && !isUserInactiveInThisCalendar) {
       dropdownItems.push({
         key: 'copyInvitationLink',
         label: t('dashboard.settings.userManagement.tooltip.copyInvitationLink'),
       });
     }
 
-    if (userStatus[0]?.status === 'REMOVED' && adminCheckHandler()) {
+    if (isUserInactiveInThisCalendar && adminCheckHandler()) {
       dropdownItems.push({
         key: 'sendInvitation',
         label: t('dashboard.settings.userManagement.tooltip.sendInvitation'),
       });
     }
 
-    if (item.userStatus !== userActivityStatus[2].key && !item?.isSuperAdmin) {
+    if (
+      !(userStatus[0]?.status === userActivityStatus[4].key || userStatus[0]?.status === userActivityStatus[2].key) &&
+      !item?.isSuperAdmin
+    ) {
       dropdownItems.push({
         key: 'activateOrDeactivate',
         label: t('dashboard.settings.userManagement.tooltip.activateOrDeactivate'),
       });
     }
 
-    if (item.userStatus === userActivityStatus[1].key) {
+    if (!(userStatus[0]?.status === userActivityStatus[0].key || userStatus[0]?.status === userActivityStatus[2].key)) {
       dropdownItems.push({
         key: 'deleteUser',
         label: t('dashboard.settings.userManagement.tooltip.deleteUser'),
@@ -238,6 +261,16 @@ const UserManagement = () => {
         return i.role;
       }
     });
+
+    const userStatus = item.roles.filter((i) => {
+      if (i.calendarId === calendarId) {
+        return i.role;
+      }
+    });
+
+    const isUserInactiveInThisCalendar =
+      userStatus[0]?.status === userActivityStatus[1].key || userActivityStatus[3].key || userActivityStatus[4].key;
+
     switch (key) {
       case 'editUser':
         navigate(
@@ -280,9 +313,9 @@ const UserManagement = () => {
         break;
 
       case 'activateOrDeactivate':
-        if (item.userStatus === userActivityStatus[0].key) {
+        if (userStatus[0]?.status === userActivityStatus[0].key) {
           deActivateUser({ id: item._id, calendarId: calendarId });
-        } else if (item.userStatus === userActivityStatus[1].key) {
+        } else if (isUserInactiveInThisCalendar) {
           activateUser({ id: item._id, calendarId: calendarId });
         }
         break;
@@ -385,7 +418,7 @@ const UserManagement = () => {
               getPopupContainer={(trigger) => trigger.parentNode}
               overlayStyle={{ minWidth: '200px' }}
               menu={{
-                items: userActivityStatus,
+                items: userActivityStatus.slice(0, 3),
                 selectedKeys: [filter?.userStatus],
                 selectable: true,
                 onSelect: handleStatusFilterChange,
@@ -463,10 +496,13 @@ const UserManagement = () => {
                     <ListCard
                       id={index}
                       key={index}
-                      listItemHandler={() => listItemHandler(item?._id)}
+                      listItemHandler={() => {
+                        return listItemHandler(item?._id);
+                      }}
                       title={createTitleHandler(item?.firstName, item?.lastName, item?.userName)}
                       description={roleHandler({ roles: item?.roles, calendarId })}
-                      activityStatus={item?.userStatus}
+                      activityStatus={currentCalendarUserStatus(item)}
+                      styles={handleListCardStyles(item)}
                       invitedBy={item?.invitedBy && <Username userName={item?.invitedBy} />}
                       actions={[
                         adminCheckHandler() && (
