@@ -741,6 +741,8 @@
         "inActive": "Deactivated",
         "inActiveStatus": "Inactive",
         "invite": "Invited",
+        "removed": "REMOVED",
+        "left": "LEFT",
         "pending": "Pending",
         "admin": "Admin",
         "editor": "Editor",
@@ -851,7 +853,7 @@
     "taxonomy": {
       "listing": {
         "heading": "Taxonomies",
-        "addNew":"Taxonomy",
+        "addNew": "Taxonomy",
         "sort": {
           "sortBy": "Sort by",
           "name": "Name",
