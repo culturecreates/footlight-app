@@ -24,6 +24,7 @@ import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
+import { loadArtsDataEntity } from '../../../services/artsData';
 
 function OrganizationsReadOnly() {
   const { t } = useTranslation();
@@ -54,8 +55,23 @@ function OrganizationsReadOnly() {
   const { user } = useSelector(getUserDetails);
 
   const [locationPlace, setLocationPlace] = useState();
+  const [artsData, setArtsData] = useState(null);
+  const [artsDataLoading, setArtsDataLoading] = useState(false);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
+
+  const getArtsData = (id) => {
+    setArtsDataLoading(true);
+    loadArtsDataEntity({ entityId: id })
+      .then((response) => {
+        setArtsData(response?.data[0]);
+        setArtsDataLoading(false);
+      })
+      .catch((error) => {
+        setArtsDataLoading(false);
+        console.log(error);
+      });
+  };
 
   useEffect(() => {
     if (organizationError) navigate(`${PathName.NotFound}`);
@@ -63,6 +79,7 @@ function OrganizationsReadOnly() {
 
   useEffect(() => {
     if (organizationSuccess) {
+      if (organizationData?.sourceId) getArtsData(organizationData?.sourceId);
       if (organizationData?.place?.entityId) {
         let initialPlace = [];
         let initialPlaceAccessibiltiy = [];
@@ -108,7 +125,8 @@ function OrganizationsReadOnly() {
   return (
     organizationSuccess &&
     !organizationLoading &&
-    !taxonomyLoading && (
+    !taxonomyLoading &&
+    !artsDataLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Row gutter={[32, 24]} className="read-only-wrapper">
           <Col span={24} style={{ paddingRight: '0' }}>
@@ -173,16 +191,16 @@ function OrganizationsReadOnly() {
               <Row>
                 <Col span={16}>
                   <ArtsDataInfo
-                    artsDataLink={artsDataLinkChecker(organizationData?.sameAs)}
+                    artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
                     name={contentLanguageBilingual({
-                      en: organizationData?.name?.en,
-                      fr: organizationData?.name?.fr,
+                      en: artsData?.name?.en,
+                      fr: artsData?.name?.fr,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                     disambiguatingDescription={contentLanguageBilingual({
-                      en: organizationData?.disambiguatingDescription?.en,
-                      fr: organizationData?.disambiguatingDescription?.fr,
+                      en: artsData?.disambiguatingDescription?.en,
+                      fr: artsData?.disambiguatingDescription?.fr,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
