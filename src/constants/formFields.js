@@ -170,7 +170,16 @@ export const formFieldValue = [
                   <Form.Item key={field.key}>
                     <Row gutter={[12, 0]} align={'middle'}>
                       <Col span={22}>
-                        <Form.Item {...field} validateTrigger={['onChange', 'onBlur']} noStyle>
+                        <Form.Item
+                          {...field}
+                          validateTrigger={['onChange', 'onBlur']}
+                          noStyle
+                          rules={[
+                            {
+                              type: 'url',
+                              message: t('dashboard.events.addEditEvent.validations.url'),
+                            },
+                          ]}>
                           <StyledInput
                             addonBefore="https://"
                             autoComplete="off"
