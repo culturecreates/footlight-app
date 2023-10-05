@@ -1,7 +1,7 @@
 import { notification } from 'antd';
 
-export const copyText = ({ textToCopy, message }) => {
-  navigator.clipboard.writeText(textToCopy);
+export const copyText = async ({ textToCopy, message }) => {
+  await navigator.clipboard.writeText(textToCopy);
   notification.success({
     key: 'copyTextNotification',
     description: message,

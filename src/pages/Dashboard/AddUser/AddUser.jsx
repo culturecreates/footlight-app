@@ -585,7 +585,7 @@ const AddUser = () => {
                                     placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
                                     value={userSearchKeyword}
                                     onPressEnter={(e) => {
-                                      e.stopPropagation();
+                                      e.preventDefault();
                                       setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: false });
                                     }}
                                     onFocus={(e) => {
