@@ -860,6 +860,10 @@
           "sortBy": "Sort by",
           "name": "Name",
           "createdDate": "Created Date"
+        },
+        "modal": {
+          "titleDelete": "Confirm delete",
+          "contentDelete": "Are you sure you want to permanently delete this taxonomy? This action will also delete all its associated data and everywhere it was used, including in events."
         }
       }
     }

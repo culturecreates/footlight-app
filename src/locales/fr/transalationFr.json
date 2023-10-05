@@ -849,11 +849,15 @@
     "taxonomy": {
       "listing": {
         "heading": "Taxonomies",
-        "addNew": "Taxonomy",
+        "addNew": "Personne",
         "sort": {
           "sortBy": "Trier par",
           "name": "Nom",
           "createdDate": "Date de création"
+        },
+        "modal": {
+          "titleDelete": "Confirmer la suppression",
+          "contentDelete": "Êtes-vous sûr de vouloir supprimer définitivement cette taxonomie? Cette action supprimera également toutes les données qui lui sont associées et tous les endroits où elle a été utilisée"
         }
       }
     }
