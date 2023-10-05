@@ -25,15 +25,15 @@ function ImageCrop(props) {
       type: 'THUMBNAIL',
     },
   };
-  const [largeCrop, onLargeCropChange] = useState(cropValues?.large);
-  const [thumbnailCrop, onThumbnailCropChange] = useState(cropValues?.thumbnail);
+  const [largeCrop, onLargeCropChange] = useState({ x: 0, y: 0 });
+  const [thumbnailCrop, onThumbnailCropChange] = useState({ x: 0, y: 0 });
 
   const [largeZoom, onLargeZoomChange] = useState(1);
   const [thumbnailZoom, onThumbnailZoomChange] = useState(1);
 
   const [aspectRatioType, setAspectRatioType] = useState(ASPECT_RATIO_TYPE.large.type);
-  // const [initialLargeCroppedArea, setInitialLargeCroppedArea] = useState(cropValues?.large);
-  // const [initialThumbnailCroppedArea, setInitialThumbnailCroppedArea] = useState(cropValues?.thumbnail);
+  const [initialLargeCroppedArea, setInitialLargeCroppedArea] = useState(undefined);
+  const [initialThumbnailCroppedArea, setInitialThumbnailCroppedArea] = useState(undefined);
 
   const onCropAreaChange = (croppedArea, croppedAreaPixel) => {
     if (
@@ -85,13 +85,12 @@ function ImageCrop(props) {
   };
 
   const saveCropHandler = () => {
-    console.log(cropValues);
     form.setFieldsValue({
       imageCrop: cropValues,
     });
     showCroppedImage();
-    // setInitialLargeCroppedArea(cropValues?.large);
-    // setInitialThumbnailCroppedArea(cropValues?.thumbnail);
+    setInitialLargeCroppedArea(cropValues?.large);
+    setInitialThumbnailCroppedArea(cropValues?.thumbnail);
     setAspectRatioType(ASPECT_RATIO_TYPE.large.type);
   };
 
@@ -99,12 +98,12 @@ function ImageCrop(props) {
     setOpen(false);
     let imageCrop = form.getFieldValue('imageCrop');
     if (imageCrop) {
-      // setInitialLargeCroppedArea(imageCrop?.large);
-      // setInitialThumbnailCroppedArea(imageCrop?.thumbnail);
+      setInitialLargeCroppedArea(imageCrop?.large);
+      setInitialThumbnailCroppedArea(imageCrop?.thumbnail);
     }
     setAspectRatioType(ASPECT_RATIO_TYPE.large.type);
-    onLargeCropChange(imageCrop?.large);
-    onThumbnailCropChange(imageCrop?.thumbnail);
+    onLargeCropChange({ x: 0, y: 0 });
+    onThumbnailCropChange({ x: 0, y: 0 });
   };
 
   const showCroppedImage = useCallback(async () => {
@@ -237,7 +236,7 @@ function ImageCrop(props) {
                   onCropChange={onLargeCropChange}
                   onZoomChange={onLargeZoomChange}
                   onCropComplete={onCropAreaChange}
-                  initialCroppedAreaPixels={cropValues?.large}
+                  initialCroppedAreaPixels={initialLargeCroppedArea}
                 />
               )}
               {aspectRatioType === ASPECT_RATIO_TYPE.thumbnail.type && (
@@ -253,7 +252,7 @@ function ImageCrop(props) {
                   onCropChange={onThumbnailCropChange}
                   onZoomChange={onThumbnailZoomChange}
                   onCropComplete={onCropAreaChange}
-                  initialCroppedAreaPixels={cropValues?.thumbnail}
+                  initialCroppedAreaPixels={initialThumbnailCroppedArea}
                 />
               )}
             </div>
