@@ -3,19 +3,30 @@ import i18next from 'i18next';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { createSearchParams, useParams, useSearchParams } from 'react-router-dom';
+import { createSearchParams, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import NoContent from '../../../components/NoContent/NoContent';
 import { sortByOptionsTaxonomy, sortOrder } from '../../../constants/sortByOptions';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
-import { useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
+import { useDeleteTaxonomyMutation, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import UserSearch from '../../../components/Search/Events/EventsSearch';
 import AddEvent from '../../../components/Button/AddEvent';
-import { SortAscendingOutlined, SortDescendingOutlined, DownOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import {
+  SortAscendingOutlined,
+  SortDescendingOutlined,
+  DownOutlined,
+  CloseCircleOutlined,
+  DeleteOutlined,
+  TagOutlined,
+} from '@ant-design/icons';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import './taxonomy.css';
+import { contentLanguageBilingual } from '../../../utils/bilingual';
+import ListItem from '../../../components/List/ListItem.jsx/ListItem';
+import { userRoles } from '../../../constants/userRoles';
+import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 
 const Taxonomy = () => {
   const { useBreakpoint } = Grid;
@@ -26,13 +37,20 @@ const Taxonomy = () => {
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
   const screens = useBreakpoint();
+  const [currentCalendarData] = useOutletContext();
 
   const [getAllTaxonomy, { currentData: allTaxonomy, isFetching: isTaxonomyFetching }] =
     useLazyGetAllTaxonomyQuery(timestampRef);
+  const [deleteTaxonomy] = useDeleteTaxonomyMutation();
 
   const sortByParam = searchParams.get('sortBy');
   const orderParam = searchParams.get('order');
   const queryParam = searchParams.get('query');
+  const totalCount = allTaxonomy?.totalCount;
+  const calendarContentLanguage = currentCalendarData?.contentLanguage;
+  const calendar = user?.roles.filter((calendar) => {
+    return calendar.calendarId === calendarId;
+  });
 
   const defaultSort = sortByParam || sessionStorage.getItem('sortByTaxonomy') || `${sortByOptionsTaxonomy[0].key}`;
   const defaultOrder = orderParam || sessionStorage.getItem('orderTaxonomy') || sortOrder?.ASC;
@@ -47,12 +65,13 @@ const Taxonomy = () => {
 
   useEffect(() => {
     const filtersDecoded = setFiletrsForApiCall();
-    setPageNumber(1);
     getAllTaxonomy({
       calendarId,
       query: filters.query,
       filters: filtersDecoded,
-      page: 1,
+      taxonomyClass: '',
+      includeConcepts: false,
+      page: pageNumber,
       limit: 10,
       sessionId: timestampRef,
     });
@@ -132,6 +151,24 @@ const Taxonomy = () => {
   const addTaxonomyHandler = () => {
     // navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}`);
   };
+  const listItemHandler = (id) => {
+    // navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}`);
+    console.log(id);
+  };
+  const deleteOrganizationHandler = (id) => {
+    Confirm({
+      title: t('dashboard.taxonomy.listing.modal.titleDelete'),
+      onAction: () => deleteTaxonomy({ id: id, calendarId: calendarId }),
+      okText: t('dashboard.settings.addUser.delete'),
+      cancelText: t('dashboard.settings.addUser.cancel'),
+      content: t('dashboard.taxonomy.listing.modal.contentDelete'),
+    });
+  };
+
+  const adminCheckHandler = () => {
+    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
+    else return false;
+  };
 
   return (
     <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
@@ -163,7 +200,7 @@ const Taxonomy = () => {
                   />
                 </Col>
                 <Col>
-                  <Row align="middle" className="sort-option-row">
+                  <Row align="middle" className="sort-option-row" gutter={8}>
                     <span style={{ fontSize: '16px', fontWeight: 700, marginRight: 8 }}>
                       {t('dashboard.settings.userManagement.sort')}
                     </span>
@@ -233,6 +270,7 @@ const Taxonomy = () => {
                     bordered={false}
                     pagination={{
                       onChange: (page) => {
+                        console.log(page);
                         setPageNumber(page);
                         window.scrollTo({
                           top: 0,
@@ -242,11 +280,42 @@ const Taxonomy = () => {
                       },
                       pageSize: 10,
                       hideOnSinglePage: true,
-                      total: allTaxonomy?.count,
+                      total: totalCount,
                       current: Number(pageNumber),
                       showSizeChanger: false,
                     }}
-                    renderItem={(item, index) => <p>item{index}</p>}
+                    renderItem={(item, index) => (
+                      <ListItem
+                        key={index}
+                        id={index}
+                        logo={item?.logo?.thumbnail?.uri}
+                        defaultLogo={<TagOutlined style={{ color: '#607EFC', fontSize: '18px' }} />}
+                        title={contentLanguageBilingual({
+                          en: item?.name?.en,
+                          fr: item?.name?.fr,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                          calendarContentLanguage: calendarContentLanguage,
+                        })}
+                        description={item.taxonomyClass}
+                        createdDate={item?.creator?.date}
+                        createdByUserName={item?.creator?.userName}
+                        updatedDate={item?.modifier?.date}
+                        updatedByUserName={item?.modifier?.userName}
+                        listItemHandler={() => listItemHandler(item?.id)}
+                        actions={[
+                          adminCheckHandler() && (
+                            <DeleteOutlined
+                              key={'delete-icon'}
+                              style={{ color: '#222732', fontSize: '24px' }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteOrganizationHandler(item?.id);
+                              }}
+                            />
+                          ),
+                        ]}
+                      />
+                    )}
                   />
                 ) : (
                   <NoContent style={{ height: '200px' }} />
