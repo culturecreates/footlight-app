@@ -15,7 +15,7 @@ const handleMultilevelTreeSelect = (children, user, calendarContentLanguage) => 
       }),
       value: child?.id,
       ...(child?.children && {
-        children: handleMultilevelTreeSelect(child?.children),
+        children: handleMultilevelTreeSelect(child?.children, user, calendarContentLanguage),
       }),
     };
   });
