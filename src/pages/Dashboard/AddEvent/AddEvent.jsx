@@ -138,6 +138,7 @@ function AddEvent() {
   const [performerArtsdataList, setPerformerArtsdataList] = useState([]);
   const [supporterArtsdataList, setSupporterArtsdataList] = useState([]);
   const [allPlacesList, setAllPlacesList] = useState([]);
+  const [allPlacesArtsdataList, setAllPlacesArtsdataList] = useState([]);
   const [locationPlace, setLocationPlace] = useState();
   const [selectedOrganizers, setSelectedOrganizers] = useState([]);
   const [selectedPerformers, setSelectedPerformers] = useState([]);
@@ -355,10 +356,17 @@ function AddEvent() {
             });
           }
           if (values?.locationPlace || values?.locationPlace?.length > 0) {
-            locationId = {
-              place: {
+            let place;
+            if (locationPlace?.source === sourceOptions.CMS)
+              place = {
                 entityId: values?.locationPlace,
-              },
+              };
+            else if (locationPlace?.source === sourceOptions.ARTSDATA)
+              place = {
+                url: values?.locationPlace,
+              };
+            locationId = {
+              place,
             };
           }
           if (values?.frenchVirtualLocation || values?.englishVirtualLocation || values?.virtualLocationOnlineLink) {
@@ -775,7 +783,10 @@ function AddEvent() {
     })
       .unwrap()
       .then((response) => {
-        setAllPlacesList(placesOptions(response?.cms, user, calendarContentLanguage));
+        setAllPlacesList(placesOptions(response?.cms, user, calendarContentLanguage, sourceOptions.CMS));
+        setAllPlacesArtsdataList(
+          placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+        );
       })
       .catch((error) => console.log(error));
   };
@@ -925,7 +936,7 @@ function AddEvent() {
                   ...initialPlace[0],
                   ['accessibility']: initialPlaceAccessibiltiy,
                 };
-                setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0]);
+                setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0], sourceOptions.CMS);
               })
               .catch((error) => console.log(error));
           } else {
@@ -933,7 +944,7 @@ function AddEvent() {
               ...initialPlace[0],
               ['accessibility']: [],
             };
-            setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0]);
+            setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0], sourceOptions.CMS);
           }
         }
         if (eventData?.locations?.filter((location) => location?.isVirtualLocation == true)?.length > 0)
@@ -1654,7 +1665,7 @@ function AddEvent() {
               ]}>
               <Form.Item
                 name="locationPlace"
-                className="subheading-wrap"
+                // className="subheading-wrap"
                 initialValue={initialPlace && initialPlace[0]?.id}
                 label={t('dashboard.events.addEditEvent.location.title')}
                 hidden={
@@ -1675,26 +1686,59 @@ function AddEvent() {
                   content={
                     <div>
                       <div className="search-scrollable-content">
-                        {allPlacesList?.length > 0 ? (
-                          allPlacesList?.map((place, index) => (
-                            <div
-                              key={index}
-                              className={`event-popover-options ${
-                                locationPlace?.value == place?.value ? 'event-popover-options-active' : null
-                              }`}
-                              onClick={() => {
-                                setLocationPlace(place);
-                                form.setFieldValue('locationPlace', place?.value);
-                                setIsPopoverOpen({
-                                  ...isPopoverOpen,
-                                  locationPlace: false,
-                                });
-                              }}>
-                              {place?.label}
+                        <>
+                          <div className="popover-section-header">
+                            {t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                          </div>
+                          {allPlacesList?.length > 0 ? (
+                            allPlacesList?.map((place, index) => (
+                              <div
+                                key={index}
+                                className={`event-popover-options ${
+                                  locationPlace?.value == place?.value ? 'event-popover-options-active' : null
+                                }`}
+                                onClick={() => {
+                                  setLocationPlace(place);
+                                  form.setFieldValue('locationPlace', place?.value);
+                                  setIsPopoverOpen({
+                                    ...isPopoverOpen,
+                                    locationPlace: false,
+                                  });
+                                }}>
+                                {place?.label}
+                              </div>
+                            ))
+                          ) : (
+                            <NoContent />
+                          )}
+                        </>
+                        {quickCreateKeyword !== '' && (
+                          <>
+                            <div className="popover-section-header">
+                              {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
                             </div>
-                          ))
-                        ) : (
-                          <NoContent />
+                            <div className="search-scrollable-content">
+                              {allPlacesArtsdataList?.length > 0 ? (
+                                allPlacesArtsdataList?.map((place, index) => (
+                                  <div
+                                    key={index}
+                                    className="event-popover-options"
+                                    onClick={() => {
+                                      setLocationPlace(place);
+                                      form.setFieldValue('locationPlace', place?.uri);
+                                      setIsPopoverOpen({
+                                        ...isPopoverOpen,
+                                        locationPlace: false,
+                                      });
+                                    }}>
+                                    {place?.label}
+                                  </div>
+                                ))
+                              ) : (
+                                <NoContent />
+                              )}
+                            </div>
+                          </>
                         )}
                       </div>
                       <FeatureFlag isFeatureEnabled={featureFlags.quickCreatePersonPlace}>
