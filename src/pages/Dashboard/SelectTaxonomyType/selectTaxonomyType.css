@@ -21,6 +21,9 @@
   font-style: normal;
   font-weight: 700;
   line-height: 24px;
+  display: flex;
+  flex-direction: row-reverse;
+  width: fit-content;
 }
 
 .select-taxonomy-type-wrapper .classType .ant-dropdown-trigger {
