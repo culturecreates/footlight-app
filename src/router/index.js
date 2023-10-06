@@ -27,7 +27,7 @@ import CreateNewPerson from '../pages/Dashboard/CreateNewPerson';
 import UserReadOnly from '../pages/Dashboard/UserReadOnly';
 import CreateNewPlace from '../pages/Dashboard/CreateNewPlace';
 import AddUser from '../pages/Dashboard/AddUser/AddUser';
-import Taxonomy from '../pages/Dashboard/Taxonomy';
+import Taxonomy from '../pages/Dashboard/Taxonomy/Taxonomy';
 
 export const router = createBrowserRouter([
   {

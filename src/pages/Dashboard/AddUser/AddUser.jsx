@@ -377,7 +377,6 @@ const AddUser = () => {
   };
 
   const searchHandlerUserSearch = (value) => {
-    setUserSearchKeyword(value);
     value != ''
       ? getUserSearch({ includeCalenderFilter: false, calendarId, query: value, page: 1, limit: 10, filters: '' })
           .unwrap()
@@ -585,6 +584,10 @@ const AddUser = () => {
                                     style={{ borderRadius: '4px' }}
                                     placeholder={t('dashboard.settings.addUser.placeHolder.firstName')}
                                     value={userSearchKeyword}
+                                    onPressEnter={(e) => {
+                                      e.preventDefault();
+                                      setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: false });
+                                    }}
                                     onFocus={(e) => {
                                       if (e.target.value != '') {
                                         if (userSearchData?.data?.length > 0) {
