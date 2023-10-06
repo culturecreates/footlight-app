@@ -1,4 +1,4 @@
-.taxonomy-listing-wrapper .events-heading{
+.taxonomy-listing-wrapper .events-heading {
   color: var(--content-neutral-primary, #222732);
   font-size: 34px;
   font-style: normal;
@@ -6,15 +6,23 @@
   line-height: 40px;
 }
 
-.settings-wrapper .event-list-description-place {
+.taxonomy-listing-wrapper .event-list-description-place {
   color: var(--content-neutral-secondary, #646d7b);
-  font-size: 12px;
+  font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 16px;
+  line-height: 24px;
 }
 
-.settings-wrapper .title-wrapper {
+.taxonomy-listing-wrapper .event-list-description-name {
+  color: var(--content-neutral-primary, #222732);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.taxonomy-listing-wrapper .title-wrapper {
   display: flex;
   gap: 8px;
   color: var(--content-neutral-primary, #222732);
@@ -24,64 +32,11 @@
   line-height: 24px;
 }
 
-.settings-wrapper .users-list-item-wrapper .invitation-details {
-  display: flex;
-  gap: 6px;
-  justify-content: flex-start;
-}
-
-.settings-wrapper .users-list-item-wrapper .invitation-details .invitation-details-text-prolouge {
-  color: var(--content-neutral-secondary, #646d7b);
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 16px;
-}
-
-.settings-wrapper .users-list-item-wrapper .invitation-details .invitation-details-username {
-  color: var(--content-neutral-secondary, #646d7b);
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 16px;
-  text-decoration-line: underline;
-  display: flex;
-  align-items: center;
-}
-
-.settings-wrapper .users-list-item-wrapper .user-item-content .tags-wrapper {
-  display: flex;
-  padding: 4px 8px;
-  align-items: center;
-  border-radius: 4px;
-  width: fit-content;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 16px;
-}
-
-.settings-wrapper .users-list-item-wrapper .ant-list-item-meta-description {
-  color: var(--content-neutral-secondary, #646d7b);
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 16px;
-}
-
-.settings-wrapper .ant-list-split .ant-list-item {
+.taxonomy-listing-wrapper .ant-list-split .ant-list-item {
   border-bottom: none;
 }
 
-.settings-wrapper .users-list-item-wrapper .ant-tag {
-  margin-right: 0;
-}
-
-.settings-wrapper .users-list-item-wrapper .ant-list-item-action {
-  margin-left: 24px;
-}
-
-.settings-wrapper .ant-tabs-nav {
+.taxonomy-listing-wrapper .ant-tabs-nav {
   margin-bottom: 0;
 }
 
