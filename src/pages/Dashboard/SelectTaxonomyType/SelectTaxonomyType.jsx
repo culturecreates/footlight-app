@@ -48,7 +48,13 @@ const SelectTaxonomyType = () => {
       </Row>
       <Row>
         <Col flex="736px">
-          <Card style={{ height: 368, borderRadius: 4, background: 'var(--background-neutrals-ground, #FFF)' }}>
+          <Card
+            style={{
+              height: 368,
+              borderRadius: 4,
+              background: 'var(--background-neutrals-ground, #FFF)',
+              border: 'none',
+            }}>
             <Form name="selectTaxonomyType" form={formInstance} onFinish={onSaveHandler} layout="vertical">
               <Row className="classType">
                 <Col flex="423px">
