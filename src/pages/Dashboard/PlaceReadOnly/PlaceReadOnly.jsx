@@ -82,10 +82,10 @@ function PlaceReadOnly() {
 
   useEffect(() => {
     if (placeSuccess) {
+      if (placeData?.sourceId) getArtsDataPlace(placeData?.sourceId);
       if (placeData?.containedInPlace?.entityId) {
         let initialPlace = [];
         let initialPlaceAccessibiltiy = [];
-        if (placeData?.sourceId) getArtsDataPlace(placeData?.sourceId);
 
         getPlace({ placeId: placeData?.containedInPlace?.entityId, calendarId })
           .unwrap()
