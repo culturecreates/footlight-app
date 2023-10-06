@@ -21,6 +21,7 @@ import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import NoContent from '../../NoContent/NoContent';
 import TreeSelectOption from '../../TreeSelectOption/TreeSelectOption';
 import Tags from '../../Tags/Common/Tags';
+import { sourceOptions } from '../../../constants/sourceOptions';
 
 const { TextArea } = Input;
 
@@ -71,7 +72,7 @@ function QuickCreatePerson(props) {
             image: response?.image,
           },
         ];
-        createdPerson = treeEntitiesOption(createdPerson, user, calendarContentLanguage);
+        createdPerson = treeEntitiesOption(createdPerson, user, calendarContentLanguage, sourceOptions.CMS);
         if (createdPerson?.length === 1) {
           switch (selectedOrganizerPerformerSupporterType) {
             case organizerPerformerSupporterTypes.organizer:
