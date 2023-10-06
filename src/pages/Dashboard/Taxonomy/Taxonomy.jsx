@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { createSearchParams, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
+import { createSearchParams, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import NoContent from '../../../components/NoContent/NoContent';
 import { sortByOptionsTaxonomy, sortOrder } from '../../../constants/sortByOptions';
@@ -11,6 +11,7 @@ import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedCompone
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useDeleteTaxonomyMutation, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import UserSearch from '../../../components/Search/Events/EventsSearch';
+import { PathName } from '../../../constants/pathName';
 import AddEvent from '../../../components/Button/AddEvent';
 import {
   SortAscendingOutlined,
@@ -38,6 +39,7 @@ const Taxonomy = () => {
   const { t } = useTranslation();
   const screens = useBreakpoint();
   const [currentCalendarData] = useOutletContext();
+  const navigate = useNavigate();
 
   const [getAllTaxonomy, { currentData: allTaxonomy, isFetching: isTaxonomyFetching }] =
     useLazyGetAllTaxonomyQuery(timestampRef);
@@ -149,7 +151,7 @@ const Taxonomy = () => {
   };
 
   const addTaxonomyHandler = () => {
-    // navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}`);
+    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomySelectType}`);
   };
   const listItemHandler = (id) => {
     // navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}`);
@@ -181,11 +183,13 @@ const Taxonomy = () => {
               </div>
             </Col>
 
-            <Col flex={'140px'} className="add-btn-container">
-              <ReadOnlyProtectedComponent creator={user?.id}>
-                <AddEvent label={t('dashboard.taxonomy.listing.addNew')} onClick={addTaxonomyHandler} />
-              </ReadOnlyProtectedComponent>
-            </Col>
+            {adminCheckHandler() && (
+              <Col flex={'140px'} className="add-btn-container">
+                <ReadOnlyProtectedComponent creator={user?.id}>
+                  <AddEvent label={t('dashboard.taxonomy.listing.addNew')} onClick={addTaxonomyHandler} />
+                </ReadOnlyProtectedComponent>
+              </Col>
+            )}
           </Row>
           <Row justify="space-between" gutter={[24, 16]} style={{ marginBottom: 16 }}>
             <Col flex={'auto'}>
@@ -264,7 +268,7 @@ const Taxonomy = () => {
               <Col span={24}>
                 {allTaxonomy?.data.length && !isTaxonomyFetching > 0 ? (
                   <List
-                    className="event-list-wrapper"
+                    className={`event-list-wrapper ${adminCheckHandler() ? '' : 'non-admin-class'}`}
                     itemLayout={screens.xs ? 'vertical' : 'horizontal'}
                     dataSource={allTaxonomy?.data}
                     bordered={false}
