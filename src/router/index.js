@@ -28,6 +28,7 @@ import UserReadOnly from '../pages/Dashboard/UserReadOnly';
 import CreateNewPlace from '../pages/Dashboard/CreateNewPlace';
 import AddUser from '../pages/Dashboard/AddUser/AddUser';
 import Taxonomy from '../pages/Dashboard/Taxonomy/Taxonomy';
+import SelectTaxonomyType from '../pages/Dashboard/SelectTaxonomyType/SelectTaxonomyType';
 
 export const router = createBrowserRouter([
   {
@@ -140,6 +141,14 @@ export const router = createBrowserRouter([
       },
       {
         path: `:calendarId${PathName.Taxonomies}`,
+        element: <Taxonomy />,
+      },
+      {
+        path: `:calendarId${PathName.Taxonomies}${PathName.AddTaxonomySelectType}`,
+        element: <SelectTaxonomyType />,
+      },
+      {
+        path: `:calendarId${PathName.AddTaxonomy}`,
         element: <Taxonomy />,
       },
       {

@@ -859,6 +859,24 @@
           "titleDelete": "Confirmer la suppression",
           "contentDelete": "Êtes-vous sûr de vouloir supprimer définitivement cette taxonomie? Cette action supprimera également toutes les données qui lui sont associées et tous les endroits où elle a été utilisée"
         }
+      },
+      "selectType": {
+        "heading": "Nouvelle taxonomie",
+        "class": "Classe",
+        "classDropdownOptions": {
+          "event": "Event",
+          "place": "Place",
+          "person": "Person",
+          "organization": "Organization",
+          "virtualLocation": "Virtual location"
+        },
+        "classPlaceHolder": "Sélectionner une classe",
+        "destinationHeading": "Sélectionnez la destination de votre taxonomie.",
+        "inputType": "Type de données",
+        "inputTypeDescription": "Utilisez un champ de saisie existant ou créez-en un nouveau.",
+        "newField": "Nouveau champ",
+        "existingField": "Champ existant",
+        "noFieldAvailable": "Aucun champ existant n'est actuellement disponible."
       }
     }
   },

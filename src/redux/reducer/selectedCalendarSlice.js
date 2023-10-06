@@ -13,7 +13,6 @@ export const selectedCalendarSlice = createSlice({
       state.id = action.payload;
     },
     setReloadCalendar: (state, action) => {
-      console.log(action.payload, 'reload');
       state.reload = action.payload;
     },
   },
