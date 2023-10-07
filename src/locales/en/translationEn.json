@@ -883,6 +883,23 @@
         "newField": "New field",
         "existingField": "Existing field",
         "noFieldAvailable": "No existing fields are currently available."
+      },
+      "addNew": {
+        "heading": "New taxonomy",
+        "save": "Save",
+        "class": "Class",
+        "destinationHeading": "Select the destination for your taxonomy.",
+        "name": "Taxonomy name",
+        "frNamePlaceHolder": "Enter taxon my name in French",
+        "enNamePlaceHolder": "Enter taxonomy name in English",
+        "nameDescription": "This name is used to label the associated input field.",
+        "description": "Disambiguating description",
+        "frDescriptionPlaceHolder": "Enter French disambiguating description",
+        "enDescriptionPlaceHolder": "Enter English disambiguating description",
+        "descriptionExplation": "Add to differentiate taxonomy in search results.",
+        "userAccess": "Restrict user access",
+        "userAccessPlaceHolder": "Select",
+        "adminOnly": "Admin only"
       }
     }
   },

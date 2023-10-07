@@ -1,0 +1,7 @@
+.add-taxonomy-wrapper .add-Taxonomy-heading > h4 {
+  color: var(--content-neutral-primary, #222732);
+  font-size: 34px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 40px;
+}

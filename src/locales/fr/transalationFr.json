@@ -877,6 +877,23 @@
         "newField": "Nouveau champ",
         "existingField": "Champ existant",
         "noFieldAvailable": "Aucun champ existant n'est actuellement disponible."
+      },
+      "addNew": {
+        "heading": "Nouvelle taxonomie",
+        "save": "Sauvegarder",
+        "class": "Classe",
+        "destinationHeading": "Sélectionnez la destination de votre taxonomie.",
+        "name": "Nom de la taxonomie",
+        "frNamePlaceHolder": "Entrez le nom de la taxonomie en français",
+        "enNamePlaceHolder": "entrez le nom de la taxonomie en anglais",
+        "nameDescription": "Ce nom est utilisé pour étiqueter le champ de saisie associé.",
+        "description": "Description identifiante",
+        "frDescriptionPlaceHolder": "Entrez la description identifiante en français",
+        "enDescriptionPlaceHolder": "Entrez la description identifiante en anglais",
+        "descriptionExplation": "Ajouter pour différencier la taxonomie dans les résultats de recherche.",
+        "userAccess": "Restreindre l'accès aux utilisateurs",
+        "userAccessPlaceHolder": "Sélectionnez",
+        "adminOnly": "Administrateur uniquement"
       }
     }
   },
