@@ -2,16 +2,18 @@ import { Button, Card, Col, Dropdown, Form, Row, Typography } from 'antd';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LeftOutlined, DownOutlined, PlusOutlined, DatabaseOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import './selectTaxonomyType.css';
 import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
 import DateAction from '../../../components/Button/DateAction/DateAction';
 import { standardFieldsForTaxonomy } from '../../../utils/standardFields';
+import { PathName } from '../../../constants/pathName';
 
 const SelectTaxonomyType = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [formInstance] = Form.useForm();
+  const { calendarId } = useParams();
 
   const [selectedClass, setSelectedClass] = useState('');
   const [standardFields, setStandardFields] = useState([]);
@@ -24,6 +26,10 @@ const SelectTaxonomyType = () => {
 
   const onSaveHandler = () => {
     console.log('clicked field option');
+  };
+
+  const navigationHandler = () => {
+    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomy}`);
   };
 
   const setTaxonomyClass = ({ value, fieldType }) => {
@@ -119,7 +125,7 @@ const SelectTaxonomyType = () => {
                           iconrender={<PlusOutlined style={{ fontSize: '24px' }} />}
                           label={t('dashboard.taxonomy.selectType.newField')}
                           style={{ width: '203.5px', height: '104px', padding: 16 }}
-                          //   onClick={() => setDateType(dateTypes.SINGLE)}
+                          onClick={() => navigationHandler()}
                         />
                       </Col>
                       <Col>
