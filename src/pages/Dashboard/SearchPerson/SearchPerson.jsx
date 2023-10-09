@@ -16,7 +16,6 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { UserOutlined } from '@ant-design/icons';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import './searchPerson.css';
-import { getArtsDataEntities } from '../../../services/artsData';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
@@ -46,13 +45,15 @@ function SearchPerson() {
     searchKey: '',
     classes: decodeURIComponent(query.toString()),
     sessionId: timestampRef,
+    includeArtsdata: true,
   });
 
   // effects
 
   useEffect(() => {
     if (initialEntities && currentCalendarData) {
-      setPeopleList(initialEntities);
+      setPeopleList(initialEntities?.cms);
+      setPeopleListArtsData(initialEntities?.artsdata);
     }
   }, [initialPersonLoading]);
 
@@ -65,16 +66,11 @@ function SearchPerson() {
   const searchHandler = (value) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.person);
-    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
+    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId, includeArtsdata: true })
       .unwrap()
       .then((response) => {
-        setPeopleList(response);
-      })
-      .catch((error) => console.log(error));
-
-    getArtsDataEntities({ searchKeyword: value, entityType: entitiesClass.person })
-      .then((response) => {
-        setPeopleListArtsData(response?.result);
+        setPeopleList(response?.cms);
+        setPeopleListArtsData(response?.artsdata);
       })
       .catch((error) => console.log(error));
   };
@@ -167,7 +163,12 @@ function SearchPerson() {
                             setIsPopoverOpen(false);
                           }}>
                           <EntityCard
-                            title={person?.name}
+                            title={contentLanguageBilingual({
+                              en: person?.name?.en,
+                              fr: person?.name?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            })}
                             description={person?.description}
                             artsDataLink={`${process.env.REACT_APP_ARTS_DATA_PAGE_URI}${person?.id}`}
                             Logo={

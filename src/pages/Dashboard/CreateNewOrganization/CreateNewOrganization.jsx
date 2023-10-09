@@ -43,6 +43,7 @@ import { useLazyGetPlaceQuery } from '../../../services/places';
 import { usePrompt } from '../../../hooks/usePrompt';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
+import { sourceOptions } from '../../../constants/sourceOptions';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -81,6 +82,7 @@ function CreateNewOrganization() {
   const [newEntityData, setNewEntityData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
   const [allPlacesList, setAllPlacesList] = useState([]);
+  const [allPlacesArtsdataList, setAllPlacesArtsdataList] = useState([]);
   const [locationPlace, setLocationPlace] = useState();
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -198,6 +200,21 @@ function CreateNewOrganization() {
             };
           }
         });
+        if (locationPlace?.source === sourceOptions.ARTSDATA) {
+          organizationPayload = {
+            ...organizationPayload,
+            place: {
+              uri: locationPlace?.uri,
+            },
+          };
+        } else {
+          organizationPayload = {
+            ...organizationPayload,
+            place: {
+              entityId: locationPlace?.value,
+            },
+          };
+        }
         let imageCrop = form.getFieldValue('imageCrop');
         imageCrop = {
           large: {
@@ -432,10 +449,18 @@ function CreateNewOrganization() {
   const placesSearch = (inputValue = '') => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
-    getEntities({ searchKey: inputValue, classes: decodeURIComponent(query.toString()), calendarId })
+    getEntities({
+      searchKey: inputValue,
+      classes: decodeURIComponent(query.toString()),
+      calendarId,
+      includeArtsdata: true,
+    })
       .unwrap()
       .then((response) => {
-        setAllPlacesList(placesOptions(response, user, calendarContentLanguage));
+        setAllPlacesList(placesOptions(response?.cms, user, calendarContentLanguage, sourceOptions.CMS));
+        setAllPlacesArtsdataList(
+          placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+        );
       })
       .catch((error) => console.log(error));
   };
@@ -531,7 +556,10 @@ function CreateNewOrganization() {
                       ...response,
                       ['accessibility']: initialPlaceAccessibiltiy,
                     };
-                    setLocationPlace(placesOptions([initialPlace], user, calendarContentLanguage)[0]);
+                    setLocationPlace(
+                      placesOptions([initialPlace], user, calendarContentLanguage)[0],
+                      sourceOptions.CMS,
+                    );
                   })
                   .catch((error) => console.log(error));
               } else {
@@ -539,7 +567,7 @@ function CreateNewOrganization() {
                   ...response,
                   ['accessibility']: [],
                 };
-                setLocationPlace(placesOptions([response], user, calendarContentLanguage)[0]);
+                setLocationPlace(placesOptions([response], user, calendarContentLanguage)[0], sourceOptions.CMS);
               }
             })
             .catch((error) => console.log(error));
@@ -694,6 +722,7 @@ function CreateNewOrganization() {
                               setImageCropOpen,
                               placesSearch: debounceSearchPlace,
                               allPlacesList,
+                              allPlacesArtsdataList,
                               locationPlace,
                               setLocationPlace,
                               setIsPopoverOpen,

@@ -83,6 +83,7 @@ import QuickCreatePerson from '../../../components/Modal/QuickCreatePerson';
 import QuickCreatePlace from '../../../components/Modal/QuickCreatePlace';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
+import { sourceOptions } from '../../../constants/sourceOptions';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -119,6 +120,7 @@ function AddEvent() {
     searchKey: '',
     classes: decodeURIComponent(query.toString()),
     sessionId: timestampRef,
+    includeArtsdata: true,
   });
   const [addEvent, { isLoading: addEventLoading }] = useAddEventMutation();
   const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
@@ -132,7 +134,11 @@ function AddEvent() {
   const [organizersList, setOrganizersList] = useState([]);
   const [performerList, setPerformerList] = useState([]);
   const [supporterList, setSupporterList] = useState([]);
+  const [organizersArtsdataList, setOrganizersArtsdataList] = useState([]);
+  const [performerArtsdataList, setPerformerArtsdataList] = useState([]);
+  const [supporterArtsdataList, setSupporterArtsdataList] = useState([]);
   const [allPlacesList, setAllPlacesList] = useState([]);
+  const [allPlacesArtsdataList, setAllPlacesArtsdataList] = useState([]);
   const [locationPlace, setLocationPlace] = useState();
   const [selectedOrganizers, setSelectedOrganizers] = useState([]);
   const [selectedPerformers, setSelectedPerformers] = useState([]);
@@ -350,10 +356,17 @@ function AddEvent() {
             });
           }
           if (values?.locationPlace || values?.locationPlace?.length > 0) {
-            locationId = {
-              place: {
+            let place;
+            if (locationPlace?.source === sourceOptions.CMS)
+              place = {
                 entityId: values?.locationPlace,
-              },
+              };
+            else if (locationPlace?.source === sourceOptions.ARTSDATA)
+              place = {
+                uri: values?.locationPlace,
+              };
+            locationId = {
+              place,
             };
           }
           if (values?.frenchVirtualLocation || values?.englishVirtualLocation || values?.virtualLocationOnlineLink) {
@@ -440,28 +453,46 @@ function AddEvent() {
 
           if (values?.organizers) {
             organizers = values?.organizers?.map((organizer) => {
-              return {
-                entityId: organizer?.value,
-                type: organizer?.type,
-              };
+              if (organizer?.source === sourceOptions.CMS)
+                return {
+                  entityId: organizer?.value,
+                  type: organizer?.type,
+                };
+              else if (organizer?.source === sourceOptions.ARTSDATA)
+                return {
+                  uri: organizer?.uri,
+                  type: organizer?.type,
+                };
             });
           }
 
           if (values?.performers) {
             performers = values?.performers?.map((performer) => {
-              return {
-                entityId: performer?.value,
-                type: performer?.type,
-              };
+              if (performer?.source === sourceOptions.CMS)
+                return {
+                  entityId: performer?.value,
+                  type: performer?.type,
+                };
+              else if (performer?.source === sourceOptions.ARTSDATA)
+                return {
+                  uri: performer?.uri,
+                  type: performer?.type,
+                };
             });
           }
 
           if (values?.supporters) {
             collaborators = values?.supporters?.map((supporter) => {
-              return {
-                entityId: supporter?.value,
-                type: supporter?.type,
-              };
+              if (supporter?.source === sourceOptions.CMS)
+                return {
+                  entityId: supporter?.value,
+                  type: supporter?.type,
+                };
+              else if (supporter?.source === sourceOptions.ARTSDATA)
+                return {
+                  uri: supporter?.uri,
+                  type: supporter?.type,
+                };
             });
           }
           if (values?.dynamicFields) {
@@ -744,10 +775,18 @@ function AddEvent() {
   const placesSearch = (inputValue = '') => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
-    getEntities({ searchKey: inputValue, classes: decodeURIComponent(query.toString()), calendarId })
+    getEntities({
+      searchKey: inputValue,
+      classes: decodeURIComponent(query.toString()),
+      calendarId,
+      includeArtsdata: true,
+    })
       .unwrap()
       .then((response) => {
-        setAllPlacesList(placesOptions(response, user, calendarContentLanguage));
+        setAllPlacesList(placesOptions(response?.cms, user, calendarContentLanguage, sourceOptions.CMS));
+        setAllPlacesArtsdataList(
+          placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+        );
       })
       .catch((error) => console.log(error));
   };
@@ -756,15 +795,24 @@ function AddEvent() {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.organization);
     query.append('classes', entitiesClass.person);
-    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
+    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId, includeArtsdata: true })
       .unwrap()
       .then((response) => {
         if (type == 'organizers') {
-          setOrganizersList(treeEntitiesOption(response, user, calendarContentLanguage));
+          setOrganizersList(treeEntitiesOption(response?.cms, user, calendarContentLanguage, sourceOptions.CMS));
+          setOrganizersArtsdataList(
+            treeEntitiesOption(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+          );
         } else if (type == 'performers') {
-          setPerformerList(treeEntitiesOption(response, user, calendarContentLanguage));
+          setPerformerList(treeEntitiesOption(response?.cms, user, calendarContentLanguage, sourceOptions.CMS));
+          setPerformerArtsdataList(
+            treeEntitiesOption(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+          );
         } else if (type == 'supporters') {
-          setSupporterList(treeEntitiesOption(response, user, calendarContentLanguage));
+          setSupporterList(treeEntitiesOption(response?.cms, user, calendarContentLanguage, sourceOptions.CMS));
+          setSupporterArtsdataList(
+            treeEntitiesOption(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+          );
         }
       })
       .catch((error) => console.log(error));
@@ -888,7 +936,7 @@ function AddEvent() {
                   ...initialPlace[0],
                   ['accessibility']: initialPlaceAccessibiltiy,
                 };
-                setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0]);
+                setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0], sourceOptions.CMS);
               })
               .catch((error) => console.log(error));
           } else {
@@ -896,7 +944,7 @@ function AddEvent() {
               ...initialPlace[0],
               ['accessibility']: [],
             };
-            setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0]);
+            setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0], sourceOptions.CMS);
           }
         }
         if (eventData?.locations?.filter((location) => location?.isVirtualLocation == true)?.length > 0)
@@ -920,7 +968,9 @@ function AddEvent() {
               image: organizer?.entity?.image,
             };
           });
-          setSelectedOrganizers(treeEntitiesOption(initialOrganizers, user, calendarContentLanguage));
+          setSelectedOrganizers(
+            treeEntitiesOption(initialOrganizers, user, calendarContentLanguage, sourceOptions.CMS),
+          );
         }
         if (eventData?.performer) {
           let initialPerformers = eventData?.performer?.map((performer) => {
@@ -933,7 +983,9 @@ function AddEvent() {
               image: performer?.entity?.image,
             };
           });
-          setSelectedPerformers(treeEntitiesOption(initialPerformers, user, calendarContentLanguage));
+          setSelectedPerformers(
+            treeEntitiesOption(initialPerformers, user, calendarContentLanguage, sourceOptions.CMS),
+          );
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.performerWrap);
         }
         if (eventData?.collaborators) {
@@ -947,7 +999,9 @@ function AddEvent() {
               image: supporter?.entity?.image,
             };
           });
-          setSelectedSupporters(treeEntitiesOption(initialSupporters, user, calendarContentLanguage));
+          setSelectedSupporters(
+            treeEntitiesOption(initialSupporters, user, calendarContentLanguage, sourceOptions.CMS),
+          );
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.supporterWrap);
         }
         if (eventData?.url?.uri) initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.eventLink);
@@ -1111,10 +1165,19 @@ function AddEvent() {
 
   useEffect(() => {
     if (initialEntities && currentCalendarData) {
-      setOrganizersList(treeEntitiesOption(initialEntities, user, calendarContentLanguage));
-      setPerformerList(treeEntitiesOption(initialEntities, user, calendarContentLanguage));
-      setSupporterList(treeEntitiesOption(initialEntities, user, calendarContentLanguage));
-      placesSearch();
+      setOrganizersList(treeEntitiesOption(initialEntities?.cms, user, calendarContentLanguage, sourceOptions.CMS));
+      setPerformerList(treeEntitiesOption(initialEntities?.cms, user, calendarContentLanguage, sourceOptions.CMS));
+      setSupporterList(treeEntitiesOption(initialEntities?.cms, user, calendarContentLanguage, sourceOptions.CMS));
+      setPerformerArtsdataList(
+        treeEntitiesOption(initialEntities?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+      );
+      setSupporterArtsdataList(
+        treeEntitiesOption(initialEntities?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+      );
+      setOrganizersArtsdataList(
+        treeEntitiesOption(initialEntities?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+      ),
+        placesSearch();
     }
   }, [initialEntityLoading, currentCalendarData]);
 
@@ -1602,7 +1665,7 @@ function AddEvent() {
               ]}>
               <Form.Item
                 name="locationPlace"
-                className="subheading-wrap"
+                // className="subheading-wrap"
                 initialValue={initialPlace && initialPlace[0]?.id}
                 label={t('dashboard.events.addEditEvent.location.title')}
                 hidden={
@@ -1623,26 +1686,59 @@ function AddEvent() {
                   content={
                     <div>
                       <div className="search-scrollable-content">
-                        {allPlacesList?.length > 0 ? (
-                          allPlacesList?.map((place, index) => (
-                            <div
-                              key={index}
-                              className={`event-popover-options ${
-                                locationPlace?.value == place?.value ? 'event-popover-options-active' : null
-                              }`}
-                              onClick={() => {
-                                setLocationPlace(place);
-                                form.setFieldValue('locationPlace', place?.value);
-                                setIsPopoverOpen({
-                                  ...isPopoverOpen,
-                                  locationPlace: false,
-                                });
-                              }}>
-                              {place?.label}
+                        <>
+                          <div className="popover-section-header">
+                            {t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                          </div>
+                          {allPlacesList?.length > 0 ? (
+                            allPlacesList?.map((place, index) => (
+                              <div
+                                key={index}
+                                className={`event-popover-options ${
+                                  locationPlace?.value == place?.value ? 'event-popover-options-active' : null
+                                }`}
+                                onClick={() => {
+                                  setLocationPlace(place);
+                                  form.setFieldValue('locationPlace', place?.value);
+                                  setIsPopoverOpen({
+                                    ...isPopoverOpen,
+                                    locationPlace: false,
+                                  });
+                                }}>
+                                {place?.label}
+                              </div>
+                            ))
+                          ) : (
+                            <NoContent />
+                          )}
+                        </>
+                        {quickCreateKeyword !== '' && (
+                          <>
+                            <div className="popover-section-header">
+                              {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
                             </div>
-                          ))
-                        ) : (
-                          <NoContent />
+                            <div className="search-scrollable-content">
+                              {allPlacesArtsdataList?.length > 0 ? (
+                                allPlacesArtsdataList?.map((place, index) => (
+                                  <div
+                                    key={index}
+                                    className="event-popover-options"
+                                    onClick={() => {
+                                      setLocationPlace(place);
+                                      form.setFieldValue('locationPlace', place?.uri);
+                                      setIsPopoverOpen({
+                                        ...isPopoverOpen,
+                                        locationPlace: false,
+                                      });
+                                    }}>
+                                    {place?.label}
+                                  </div>
+                                ))
+                              ) : (
+                                <NoContent />
+                              )}
+                            </div>
+                          </>
                         )}
                       </div>
                       <FeatureFlag isFeatureEnabled={featureFlags.quickCreatePersonPlace}>
@@ -2023,23 +2119,55 @@ function AddEvent() {
                     content={
                       <div>
                         <div className="search-scrollable-content">
-                          {organizersList?.length > 0 ? (
-                            organizersList?.map((organizer, index) => (
-                              <div
-                                key={index}
-                                className="event-popover-options"
-                                onClick={() => {
-                                  setSelectedOrganizers([...selectedOrganizers, organizer]);
-                                  setIsPopoverOpen({
-                                    ...isPopoverOpen,
-                                    organizer: false,
-                                  });
-                                }}>
-                                {organizer?.label}
+                          <>
+                            <div className="popover-section-header">
+                              {t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                            </div>
+                            {organizersList?.length > 0 ? (
+                              organizersList?.map((organizer, index) => (
+                                <div
+                                  key={index}
+                                  className="event-popover-options"
+                                  onClick={() => {
+                                    setSelectedOrganizers([...selectedOrganizers, organizer]);
+                                    setIsPopoverOpen({
+                                      ...isPopoverOpen,
+                                      organizer: false,
+                                    });
+                                  }}>
+                                  {organizer?.label}
+                                </div>
+                              ))
+                            ) : (
+                              <NoContent />
+                            )}
+                          </>
+                          {quickCreateKeyword !== '' && (
+                            <>
+                              <div className="popover-section-header">
+                                {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
                               </div>
-                            ))
-                          ) : (
-                            <NoContent />
+                              <div className="search-scrollable-content">
+                                {organizersArtsdataList?.length > 0 ? (
+                                  organizersArtsdataList?.map((organizer, index) => (
+                                    <div
+                                      key={index}
+                                      className="event-popover-options"
+                                      onClick={() => {
+                                        setSelectedOrganizers([...selectedOrganizers, organizer]);
+                                        setIsPopoverOpen({
+                                          ...isPopoverOpen,
+                                          organizer: false,
+                                        });
+                                      }}>
+                                      {organizer?.label}
+                                    </div>
+                                  ))
+                                ) : (
+                                  <NoContent />
+                                )}
+                              </div>
+                            </>
                           )}
                         </div>
                         <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>
@@ -2254,26 +2382,59 @@ function AddEvent() {
                     getPopupContainer={(trigger) => trigger.parentNode}
                     content={
                       <div>
-                        <div className="search-scrollable-content">
-                          {performerList?.length > 0 ? (
-                            performerList?.map((performer, index) => (
-                              <div
-                                key={index}
-                                className="event-popover-options"
-                                onClick={() => {
-                                  setSelectedPerformers([...selectedPerformers, performer]);
-                                  setIsPopoverOpen({
-                                    ...isPopoverOpen,
-                                    performer: false,
-                                  });
-                                }}>
-                                {performer?.label}
-                              </div>
-                            ))
-                          ) : (
-                            <NoContent />
-                          )}
-                        </div>
+                        <>
+                          <div className="popover-section-header">
+                            {t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                          </div>
+                          <div className="search-scrollable-content">
+                            {performerList?.length > 0 ? (
+                              performerList?.map((performer, index) => (
+                                <div
+                                  key={index}
+                                  className="event-popover-options"
+                                  onClick={() => {
+                                    setSelectedPerformers([...selectedPerformers, performer]);
+                                    setIsPopoverOpen({
+                                      ...isPopoverOpen,
+                                      performer: false,
+                                    });
+                                  }}>
+                                  {performer?.label}
+                                </div>
+                              ))
+                            ) : (
+                              <NoContent />
+                            )}
+                          </div>
+                        </>
+
+                        {quickCreateKeyword !== '' && (
+                          <>
+                            <div className="popover-section-header">
+                              {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                            </div>
+                            <div className="search-scrollable-content">
+                              {performerArtsdataList?.length > 0 ? (
+                                performerArtsdataList?.map((performer, index) => (
+                                  <div
+                                    key={index}
+                                    className="event-popover-options"
+                                    onClick={() => {
+                                      setSelectedPerformers([...selectedPerformers, performer]);
+                                      setIsPopoverOpen({
+                                        ...isPopoverOpen,
+                                        performer: false,
+                                      });
+                                    }}>
+                                    {performer?.label}
+                                  </div>
+                                ))
+                              ) : (
+                                <NoContent />
+                              )}
+                            </div>
+                          </>
+                        )}
                         <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>
                           {quickCreateKeyword?.length > 0 && (
                             <div
@@ -2352,23 +2513,56 @@ function AddEvent() {
                     content={
                       <div>
                         <div className="search-scrollable-content">
-                          {supporterList?.length > 0 ? (
-                            supporterList?.map((supporter, index) => (
-                              <div
-                                key={index}
-                                className="event-popover-options"
-                                onClick={() => {
-                                  setSelectedSupporters([...selectedSupporters, supporter]);
-                                  setIsPopoverOpen({
-                                    ...isPopoverOpen,
-                                    supporter: false,
-                                  });
-                                }}>
-                                {supporter?.label}
+                          <>
+                            <div className="popover-section-header">
+                              {t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                            </div>
+                            {supporterList?.length > 0 ? (
+                              supporterList?.map((supporter, index) => (
+                                <div
+                                  key={index}
+                                  className="event-popover-options"
+                                  onClick={() => {
+                                    setSelectedSupporters([...selectedSupporters, supporter]);
+                                    setIsPopoverOpen({
+                                      ...isPopoverOpen,
+                                      supporter: false,
+                                    });
+                                  }}>
+                                  {supporter?.label}
+                                </div>
+                              ))
+                            ) : (
+                              <NoContent />
+                            )}
+                          </>
+
+                          {quickCreateKeyword !== '' && (
+                            <>
+                              <div className="popover-section-header">
+                                {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
                               </div>
-                            ))
-                          ) : (
-                            <NoContent />
+                              <div className="search-scrollable-content">
+                                {supporterArtsdataList?.length > 0 ? (
+                                  supporterArtsdataList?.map((supporter, index) => (
+                                    <div
+                                      key={index}
+                                      className="event-popover-options"
+                                      onClick={() => {
+                                        setSelectedSupporters([...selectedSupporters, supporter]);
+                                        setIsPopoverOpen({
+                                          ...isPopoverOpen,
+                                          supporter: false,
+                                        });
+                                      }}>
+                                      {supporter?.label}
+                                    </div>
+                                  ))
+                                ) : (
+                                  <NoContent />
+                                )}
+                              </div>
+                            </>
                           )}
                         </div>
                         <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>

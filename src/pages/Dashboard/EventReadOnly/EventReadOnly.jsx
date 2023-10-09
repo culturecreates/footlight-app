@@ -38,6 +38,7 @@ import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequire
 import { contentLanguage } from '../../../constants/contentLanguage';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
+import { sourceOptions } from '../../../constants/sourceOptions';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -109,7 +110,7 @@ function EventReadOnly() {
           image: organizer?.entity?.image,
         };
       });
-      setSelectedOrganizers(treeEntitiesOption(initialOrganizers, user, calendarContentLanguage));
+      setSelectedOrganizers(treeEntitiesOption(initialOrganizers, user, calendarContentLanguage, sourceOptions.CMS));
     }
     if (eventData?.performer) {
       let initialPerformers = eventData?.performer?.map((performer) => {
@@ -122,7 +123,7 @@ function EventReadOnly() {
           image: performer?.entity?.image,
         };
       });
-      setSelectedPerformers(treeEntitiesOption(initialPerformers, user, calendarContentLanguage));
+      setSelectedPerformers(treeEntitiesOption(initialPerformers, user, calendarContentLanguage, sourceOptions.CMS));
     }
     if (eventData?.collaborators) {
       let initialSupporters = eventData?.collaborators?.map((supporter) => {
@@ -135,7 +136,7 @@ function EventReadOnly() {
           image: supporter?.entity?.image,
         };
       });
-      setSelectedSupporters(treeEntitiesOption(initialSupporters, user, calendarContentLanguage));
+      setSelectedSupporters(treeEntitiesOption(initialSupporters, user, calendarContentLanguage, sourceOptions.CMS));
     }
     if (initialPlace && initialPlace?.length > 0) {
       initialPlace[0] = {

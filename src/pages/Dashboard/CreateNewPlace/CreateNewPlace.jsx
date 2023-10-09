@@ -557,10 +557,15 @@ function CreateNewPlace() {
   const placesSearch = (inputValue = '') => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
-    getEntities({ searchKey: inputValue, classes: decodeURIComponent(query.toString()), calendarId })
+    getEntities({
+      searchKey: inputValue,
+      classes: decodeURIComponent(query.toString()),
+      calendarId,
+      includeArtsdata: true,
+    })
       .unwrap()
       .then((response) => {
-        setAllPlacesList(placesOptions(response, user, calendarContentLanguage));
+        setAllPlacesList(placesOptions(response?.cms, user, calendarContentLanguage));
       })
       .catch((error) => console.log(error));
   };

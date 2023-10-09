@@ -1,6 +1,6 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
-// import storage from 'redux-persist/lib/storage';
+import storage from 'redux-persist/lib/storage';
 import { persistStore, persistReducer } from 'redux-persist';
 import userReducer from './reducer/userSlice';
 import interfaceLanguageReducer from './reducer/interfaceLanguageSlice';
@@ -18,11 +18,11 @@ import { organizationApi } from '../services/organization';
 import { peopleApi } from '../services/people';
 import { postalAddressApi } from '../services/postalAddress';
 import ErrorSliceReducer from './reducer/ErrorSlice';
-import localforage from 'localforage';
+// import localforage from 'localforage';
 
 const persistConfig = {
   key: 'root',
-  storage: localforage,
+  storage,
 };
 const middlewares = [
   loginApi.middleware,
