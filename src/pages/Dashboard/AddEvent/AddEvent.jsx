@@ -363,7 +363,7 @@ function AddEvent() {
               };
             else if (locationPlace?.source === sourceOptions.ARTSDATA)
               place = {
-                url: values?.locationPlace,
+                uri: values?.locationPlace,
               };
             locationId = {
               place,
@@ -460,7 +460,7 @@ function AddEvent() {
                 };
               else if (organizer?.source === sourceOptions.ARTSDATA)
                 return {
-                  url: organizer?.uri,
+                  uri: organizer?.uri,
                   type: organizer?.type,
                 };
             });
@@ -475,7 +475,7 @@ function AddEvent() {
                 };
               else if (performer?.source === sourceOptions.ARTSDATA)
                 return {
-                  url: performer?.uri,
+                  uri: performer?.uri,
                   type: performer?.type,
                 };
             });
@@ -490,7 +490,7 @@ function AddEvent() {
                 };
               else if (supporter?.source === sourceOptions.ARTSDATA)
                 return {
-                  url: supporter?.uri,
+                  uri: supporter?.uri,
                   type: supporter?.type,
                 };
             });
