@@ -565,7 +565,11 @@ function CreateNewPlace() {
     })
       .unwrap()
       .then((response) => {
-        setAllPlacesList(placesOptions(response?.cms, user, calendarContentLanguage));
+        let containedInPlaceFilter = [];
+        if (placeId) containedInPlaceFilter = response?.cms?.filter((place) => place?.id != placeId);
+        else containedInPlaceFilter = response?.cms;
+
+        setAllPlacesList(placesOptions(containedInPlaceFilter, user, calendarContentLanguage));
       })
       .catch((error) => console.log(error));
   };
