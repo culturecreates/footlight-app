@@ -320,6 +320,7 @@ export const formFieldValue = [
       name,
       placesSearch,
       calendarContentLanguage,
+      allPlacesArtsdataList,
     }) => {
       return (
         <>
@@ -333,25 +334,54 @@ export const formFieldValue = [
             trigger={['click']}
             content={
               <div>
-                <div className="search-scrollable-content">
-                  {allPlacesList?.length > 0 ? (
-                    allPlacesList?.map((place, index) => (
-                      <div
-                        key={index}
-                        className={`event-popover-options ${
-                          locationPlace?.value == place?.value ? 'event-popover-options-active' : null
-                        }`}
-                        onClick={() => {
-                          setLocationPlace(place);
-                          form.setFieldValue(name, place?.value);
-                          setIsPopoverOpen(false);
-                        }}>
-                        {place?.label}
-                      </div>
-                    ))
-                  ) : (
-                    <NoContent />
-                  )}
+                <div>
+                  <>
+                    <div className="popover-section-header">
+                      {t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                    </div>
+                    <div className="search-scrollable-content">
+                      {allPlacesList?.length > 0 ? (
+                        allPlacesList?.map((place, index) => (
+                          <div
+                            key={index}
+                            className={`event-popover-options ${
+                              locationPlace?.value == place?.value ? 'event-popover-options-active' : null
+                            }`}
+                            onClick={() => {
+                              setLocationPlace(place);
+                              form.setFieldValue(name, place?.value);
+                              setIsPopoverOpen(false);
+                            }}>
+                            {place?.label}
+                          </div>
+                        ))
+                      ) : (
+                        <NoContent />
+                      )}
+                    </div>
+                  </>
+
+                  <div className="popover-section-header">
+                    {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                  </div>
+                  <div className="search-scrollable-content">
+                    {allPlacesArtsdataList?.length > 0 ? (
+                      allPlacesArtsdataList?.map((place, index) => (
+                        <div
+                          key={index}
+                          className="event-popover-options"
+                          onClick={() => {
+                            setLocationPlace(place);
+                            form.setFieldValue(name, place?.uri);
+                            setIsPopoverOpen(false);
+                          }}>
+                          {place?.label}
+                        </div>
+                      ))
+                    ) : (
+                      <NoContent />
+                    )}
+                  </div>
                 </div>
               </div>
             }>
@@ -483,6 +513,7 @@ export const returnFormDataWithFields = ({
   setImageCropOpen,
   placesSearch,
   allPlacesList,
+  allPlacesArtsdataList,
   locationPlace,
   setLocationPlace,
   setIsPopoverOpen,
@@ -548,6 +579,7 @@ export const returnFormDataWithFields = ({
           : null,
       placesSearch,
       allPlacesList,
+      allPlacesArtsdataList,
       locationPlace,
       setLocationPlace,
       setIsPopoverOpen,

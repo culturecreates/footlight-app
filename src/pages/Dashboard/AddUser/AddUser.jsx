@@ -37,6 +37,7 @@ import { SEARCH_DELAY } from '../../../constants/search';
 import { PathName } from '../../../constants/pathName';
 import { userActivityStatus } from '../../../constants/userActivityStatus';
 import LoadingIndicator from '../../../components/LoadingIndicator';
+import { setReloadCalendar } from '../../../redux/reducer/selectedCalendarSlice';
 
 const AddUser = () => {
   const navigate = useNavigate();
@@ -412,6 +413,7 @@ const AddUser = () => {
                   }
                   return updatedArray;
                 });
+                dispatch(setReloadCalendar(true));
               });
         },
         content: t('dashboard.settings.addUser.leaveCalender'),

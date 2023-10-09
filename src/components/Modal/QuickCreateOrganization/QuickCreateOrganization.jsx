@@ -16,6 +16,7 @@ import { treeEntitiesOption } from '../../TreeSelectOption/treeSelectOption.sett
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { entitiesClass } from '../../../constants/entitiesClass';
+import { sourceOptions } from '../../../constants/sourceOptions';
 
 const { TextArea } = Input;
 
@@ -59,7 +60,7 @@ function QuickCreateOrganization(props) {
             logo: response?.logo,
           },
         ];
-        createdOrganizer = treeEntitiesOption(createdOrganizer, user, calendarContentLanguage);
+        createdOrganizer = treeEntitiesOption(createdOrganizer, user, calendarContentLanguage, sourceOptions.CMS);
         if (createdOrganizer?.length === 1) {
           switch (selectedOrganizerPerformerSupporterType) {
             case organizerPerformerSupporterTypes.organizer:

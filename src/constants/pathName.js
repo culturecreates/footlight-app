@@ -11,6 +11,8 @@ export const PathName = {
   People: '/people',
   AddPerson: '/add-person',
   Taxonomies: '/taxonomies',
+  AddTaxonomy: '/add-taxonomy',
+  AddTaxonomySelectType: '/select-taxonomy-type',
   Settings: '/settings',
   UserManagement: '/user-management',
   AddEvent: '/add-event',

@@ -1,0 +1,60 @@
+.select-taxonomy-type-wrapper .button-container .ant-btn {
+  color: #0f0e98;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
+  font-weight: 600;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.select-taxonomy-type-wrapper .heading {
+  font-size: 34px;
+  font-weight: 700;
+  padding-top: 16px;
+}
+
+.select-taxonomy-type-wrapper .ant-form-item-label > label {
+  color: var(--content-neutral-primary, #222732);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  display: flex;
+  flex-direction: row-reverse;
+  width: fit-content;
+}
+
+.select-taxonomy-type-wrapper .classType .ant-dropdown-trigger {
+  border-radius: 4px;
+  border: 1px solid var(--content-neutral-stroke, #b6c1c9);
+  background: var(--background-neutrals-ground, #fff);
+  display: flex;
+  padding: 8px;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+  color: var(--content-neutral-primary, #222732);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.select-taxonomy-type-wrapper .destination-discription {
+  color: var(--content-neutral-secondary, #646d7b);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.select-taxonomy-type-wrapper .info-message {
+  color: var(--content-alert-error-darker, #ce1111);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  margin-top: 8px;
+}

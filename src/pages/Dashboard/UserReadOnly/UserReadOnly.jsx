@@ -140,6 +140,13 @@ const UserReadOnly = () => {
                       infoText: userInfo.firstName,
                     })}
 
+                  {userInfo?.lastName &&
+                    createUserInfoRowItem({
+                      isCopiableText: false,
+                      infoType: 'lastName',
+                      infoText: userInfo.lastName,
+                    })}
+
                   {userInfo?.phoneNumber &&
                     createUserInfoRowItem({
                       isCopiableText: true,

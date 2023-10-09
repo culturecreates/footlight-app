@@ -9,7 +9,11 @@ import { PathName } from '../../constants/pathName';
 import { useSelector, useDispatch } from 'react-redux';
 import { getUserDetails, setUser } from '../../redux/reducer/userSlice';
 import { useLazyGetCalendarQuery, useGetAllCalendarsQuery } from '../../services/calendar';
-import { setSelectedCalendar } from '../../redux/reducer/selectedCalendarSlice';
+import {
+  getReloadStatusForCalendar,
+  setReloadCalendar,
+  setSelectedCalendar,
+} from '../../redux/reducer/selectedCalendarSlice';
 import { setInterfaceLanguage } from '../../redux/reducer/interfaceLanguageSlice';
 import i18n from 'i18next';
 import Cookies from 'js-cookie';
@@ -25,11 +29,13 @@ function Dashboard() {
   const timestampRef = useRef(Date.now()).current;
   const { accessToken, user } = useSelector(getUserDetails);
   const [getCalendar, { currentData: currentCalendarData }] = useLazyGetCalendarQuery();
+  const reloadStatus = useSelector(getReloadStatusForCalendar);
 
   const {
     currentData: allCalendarsData,
     isLoading,
     isSuccess,
+    refetch,
   } = useGetAllCalendarsQuery({ sessionId: timestampRef }, { skip: accessToken ? false : true });
 
   const [getCurrentUserDetails] = useLazyGetCurrentUserQuery();
@@ -89,6 +95,13 @@ function Dashboard() {
       }
     }
   }, [calendarId, isLoading, allCalendarsData, isSuccess]);
+
+  useEffect(() => {
+    if (reloadStatus) {
+      refetch();
+      dispatch(setReloadCalendar(false));
+    }
+  }, [reloadStatus, dispatch]);
 
   const findActiveCalendar = () => {
     const currentCalendar = allCalendarsData.data.filter((item) => {
