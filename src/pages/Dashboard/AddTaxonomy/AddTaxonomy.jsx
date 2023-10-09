@@ -269,6 +269,22 @@ const AddTaxonomy = () => {
             </Card>
           </div>
         </Col>
+        <Col flex="736px" style={{ marginTop: '32px' }} className="concept-card">
+          <Card bordered={false}>
+            <Row justify="space-between">
+              <Col flex="423px">
+                <Row gutter={[24, 24]}>
+                  <Col className="heading-concepts">{t('dashboard.taxonomy.addNew.concepts.heading')}</Col>
+                  <Col className="text-concepts">{t('dashboard.taxonomy.addNew.concepts.description')}</Col>
+                  <Col flex="423px" style={{ display: 'flex' }}>
+                    <Form.Item style={{ width: '50%' }}></Form.Item>
+                    <Form.Item style={{ width: '50%' }}></Form.Item>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
       </Row>
     </Form>
   );
