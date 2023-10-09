@@ -884,8 +884,11 @@
         "class": "Classe",
         "destinationHeading": "Sélectionnez la destination de votre taxonomie.",
         "name": "Nom de la taxonomie",
+        "nameCheckbox": "Use the taxonomy name to rename the field.",
         "frNamePlaceHolder": "Entrez le nom de la taxonomie en français",
         "enNamePlaceHolder": "entrez le nom de la taxonomie en anglais",
+        "mapToField":"Map to existing field",
+        "mapToFieldDescription":"Select an input field for the taxonomy.",
         "nameDescription": "Ce nom est utilisé pour étiqueter le champ de saisie associé.",
         "description": "Description identifiante",
         "frDescriptionPlaceHolder": "Entrez la description identifiante en français",
@@ -893,6 +896,7 @@
         "descriptionExplation": "Ajouter pour différencier la taxonomie dans les résultats de recherche.",
         "userAccess": "Restreindre l'accès aux utilisateurs",
         "userAccessPlaceHolder": "Sélectionnez",
+        "userAccessDescription":"Select who has permission to see and use this field.",
         "adminOnly": "Administrateur uniquement"
       }
     }

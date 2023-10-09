@@ -890,8 +890,11 @@
         "class": "Class",
         "destinationHeading": "Select the destination for your taxonomy.",
         "name": "Taxonomy name",
-        "frNamePlaceHolder": "Enter taxon my name in French",
+        "nameCheckbox": "Use the taxonomy name to rename the field.",
+        "frNamePlaceHolder": "Enter taxonomy my name in French",
         "enNamePlaceHolder": "Enter taxonomy name in English",
+        "mapToField":"Map to existing field",
+        "mapToFieldDescription":"Select an input field for the taxonomy.",
         "nameDescription": "This name is used to label the associated input field.",
         "description": "Disambiguating description",
         "frDescriptionPlaceHolder": "Enter French disambiguating description",
@@ -899,6 +902,7 @@
         "descriptionExplation": "Add to differentiate taxonomy in search results.",
         "userAccess": "Restrict user access",
         "userAccessPlaceHolder": "Select",
+        "userAccessDescription": "Select who has permission to see and use this field.",
         "adminOnly": "Admin only"
       }
     }
