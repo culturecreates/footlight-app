@@ -316,29 +316,25 @@ function CreateNewPlace() {
           if (calendarContentLanguage == contentLanguage.ENGLISH) languageKey = 'en';
           else if (calendarContentLanguage == contentLanguage.FRENCH) languageKey = 'fr';
           let postalObj = {
-            addressCountry: { [languageKey]: values.addressCountry },
-            addressLocality: { [languageKey]: values.addressLocality },
-            addressRegion: { [languageKey]: values.addressRegion },
-            postalCode: values.postalCode,
-            streetAddress: { [languageKey]: values.streetAddress },
+            ...(values?.addressCountry && { addressCountry: { [languageKey]: values?.addressCountry } }),
+            ...(values?.addressLocality && { addressLocality: { [languageKey]: values?.addressLocality } }),
+            ...(values?.addressRegion && { addressRegion: { [languageKey]: values?.addressRegion } }),
+            postalCode: values?.postalCode,
+            ...(values?.streetAddress && { streetAddress: { [languageKey]: values?.streetAddress } }),
           };
 
           if (calendarContentLanguage == contentLanguage.BILINGUAL) {
             postalObj.addressCountry = {
-              fr: values.addressCountry,
-              en: values.addressCountryEn,
+              ...(values?.addressCountry && { fr: values.addressCountry, en: values.addressCountryEn }),
             };
             postalObj.addressLocality = {
-              fr: values.addressLocality,
-              en: values.addressLocalityEn,
+              ...(values?.addressLocality && { fr: values.addressLocality, en: values.addressLocalityEn }),
             };
             postalObj.addressRegion = {
-              fr: values.addressRegion,
-              en: values.addressRegionEn,
+              ...(values?.values.addressRegion && { fr: values.addressRegion, en: values.addressRegionEn }),
             };
             postalObj.streetAddress = {
-              fr: values.streetAddress,
-              en: values.streetAddressEn,
+              ...(values?.streetAddress && { fr: values.streetAddress, en: values.streetAddressEn }),
             };
           }
 
@@ -372,8 +368,8 @@ function CreateNewPlace() {
           };
           placeObj = {
             name: {
-              en: values?.english,
-              fr: values?.french,
+              ...(values?.english && { en: values?.english }),
+              ...(values?.french && { fr: values?.french }),
             },
             ...((values?.frenchEditor || values?.englishEditor) && {
               description: {
