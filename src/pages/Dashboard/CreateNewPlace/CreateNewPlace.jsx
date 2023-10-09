@@ -331,7 +331,7 @@ function CreateNewPlace() {
               ...(values?.addressLocality && { fr: values.addressLocality, en: values.addressLocalityEn }),
             };
             postalObj.addressRegion = {
-              ...(values?.values.addressRegion && { fr: values.addressRegion, en: values.addressRegionEn }),
+              ...(values?.addressRegion && { fr: values.addressRegion, en: values.addressRegionEn }),
             };
             postalObj.streetAddress = {
               ...(values?.streetAddress && { fr: values.streetAddress, en: values.streetAddressEn }),
