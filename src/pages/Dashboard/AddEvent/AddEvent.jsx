@@ -1685,32 +1685,34 @@ function AddEvent() {
                   trigger={['click']}
                   content={
                     <div>
-                      <div className="search-scrollable-content">
+                      <div>
                         <>
                           <div className="popover-section-header">
                             {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                           </div>
-                          {allPlacesList?.length > 0 ? (
-                            allPlacesList?.map((place, index) => (
-                              <div
-                                key={index}
-                                className={`event-popover-options ${
-                                  locationPlace?.value == place?.value ? 'event-popover-options-active' : null
-                                }`}
-                                onClick={() => {
-                                  setLocationPlace(place);
-                                  form.setFieldValue('locationPlace', place?.value);
-                                  setIsPopoverOpen({
-                                    ...isPopoverOpen,
-                                    locationPlace: false,
-                                  });
-                                }}>
-                                {place?.label}
-                              </div>
-                            ))
-                          ) : (
-                            <NoContent />
-                          )}
+                          <div className="search-scrollable-content">
+                            {allPlacesList?.length > 0 ? (
+                              allPlacesList?.map((place, index) => (
+                                <div
+                                  key={index}
+                                  className={`event-popover-options ${
+                                    locationPlace?.value == place?.value ? 'event-popover-options-active' : null
+                                  }`}
+                                  onClick={() => {
+                                    setLocationPlace(place);
+                                    form.setFieldValue('locationPlace', place?.value);
+                                    setIsPopoverOpen({
+                                      ...isPopoverOpen,
+                                      locationPlace: false,
+                                    });
+                                  }}>
+                                  {place?.label}
+                                </div>
+                              ))
+                            ) : (
+                              <NoContent />
+                            )}
+                          </div>
                         </>
                         {quickCreateKeyword !== '' && (
                           <>
@@ -2118,29 +2120,32 @@ function AddEvent() {
                     trigger={['click']}
                     content={
                       <div>
-                        <div className="search-scrollable-content">
+                        <div>
                           <>
                             <div className="popover-section-header">
                               {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                             </div>
-                            {organizersList?.length > 0 ? (
-                              organizersList?.map((organizer, index) => (
-                                <div
-                                  key={index}
-                                  className="event-popover-options"
-                                  onClick={() => {
-                                    setSelectedOrganizers([...selectedOrganizers, organizer]);
-                                    setIsPopoverOpen({
-                                      ...isPopoverOpen,
-                                      organizer: false,
-                                    });
-                                  }}>
-                                  {organizer?.label}
-                                </div>
-                              ))
-                            ) : (
-                              <NoContent />
-                            )}
+                            <div className="search-scrollable-content">
+                              {' '}
+                              {organizersList?.length > 0 ? (
+                                organizersList?.map((organizer, index) => (
+                                  <div
+                                    key={index}
+                                    className="event-popover-options"
+                                    onClick={() => {
+                                      setSelectedOrganizers([...selectedOrganizers, organizer]);
+                                      setIsPopoverOpen({
+                                        ...isPopoverOpen,
+                                        organizer: false,
+                                      });
+                                    }}>
+                                    {organizer?.label}
+                                  </div>
+                                ))
+                              ) : (
+                                <NoContent />
+                              )}
+                            </div>
                           </>
                           {quickCreateKeyword !== '' && (
                             <>
@@ -2512,29 +2517,31 @@ function AddEvent() {
                     getPopupContainer={(trigger) => trigger.parentNode}
                     content={
                       <div>
-                        <div className="search-scrollable-content">
+                        <div>
                           <>
                             <div className="popover-section-header">
                               {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                             </div>
-                            {supporterList?.length > 0 ? (
-                              supporterList?.map((supporter, index) => (
-                                <div
-                                  key={index}
-                                  className="event-popover-options"
-                                  onClick={() => {
-                                    setSelectedSupporters([...selectedSupporters, supporter]);
-                                    setIsPopoverOpen({
-                                      ...isPopoverOpen,
-                                      supporter: false,
-                                    });
-                                  }}>
-                                  {supporter?.label}
-                                </div>
-                              ))
-                            ) : (
-                              <NoContent />
-                            )}
+                            <div className="search-scrollable-content">
+                              {supporterList?.length > 0 ? (
+                                supporterList?.map((supporter, index) => (
+                                  <div
+                                    key={index}
+                                    className="event-popover-options"
+                                    onClick={() => {
+                                      setSelectedSupporters([...selectedSupporters, supporter]);
+                                      setIsPopoverOpen({
+                                        ...isPopoverOpen,
+                                        supporter: false,
+                                      });
+                                    }}>
+                                    {supporter?.label}
+                                  </div>
+                                ))
+                              ) : (
+                                <NoContent />
+                              )}
+                            </div>
                           </>
 
                           {quickCreateKeyword !== '' && (

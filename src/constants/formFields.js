@@ -334,29 +334,31 @@ export const formFieldValue = [
             trigger={['click']}
             content={
               <div>
-                <div className="search-scrollable-content">
+                <div>
                   <>
                     <div className="popover-section-header">
                       {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                     </div>
-                    {allPlacesList?.length > 0 ? (
-                      allPlacesList?.map((place, index) => (
-                        <div
-                          key={index}
-                          className={`event-popover-options ${
-                            locationPlace?.value == place?.value ? 'event-popover-options-active' : null
-                          }`}
-                          onClick={() => {
-                            setLocationPlace(place);
-                            form.setFieldValue(name, place?.value);
-                            setIsPopoverOpen(false);
-                          }}>
-                          {place?.label}
-                        </div>
-                      ))
-                    ) : (
-                      <NoContent />
-                    )}
+                    <div className="search-scrollable-content">
+                      {allPlacesList?.length > 0 ? (
+                        allPlacesList?.map((place, index) => (
+                          <div
+                            key={index}
+                            className={`event-popover-options ${
+                              locationPlace?.value == place?.value ? 'event-popover-options-active' : null
+                            }`}
+                            onClick={() => {
+                              setLocationPlace(place);
+                              form.setFieldValue(name, place?.value);
+                              setIsPopoverOpen(false);
+                            }}>
+                            {place?.label}
+                          </div>
+                        ))
+                      ) : (
+                        <NoContent />
+                      )}
+                    </div>
                   </>
 
                   <div className="popover-section-header">
