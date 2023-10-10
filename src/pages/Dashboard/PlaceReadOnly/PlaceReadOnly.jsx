@@ -558,6 +558,7 @@ function PlaceReadOnly() {
                         name={locationPlace?.name}
                         description={locationPlace?.description}
                         artsDataLink={artsDataLinkChecker(locationPlace?.sameAs)}
+                        artsDataDetails={true}
                         itemWidth="423px"
                         calendarContentLanguage={calendarContentLanguage}
                         bordered

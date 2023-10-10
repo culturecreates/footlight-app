@@ -50,6 +50,8 @@ export const placesOptions = (data, user, calendarContentLanguage, source = sour
                 })
               : typeof place?.disambiguatingDescription === 'string' && place?.disambiguatingDescription
           }
+          artsDataLink={place?.uri}
+          showExternalSourceLink={true}
         />
       ),
       value: place?.id,

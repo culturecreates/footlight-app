@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
+import ArtsDataLink from '../../Tags/ArtsDataLink/ArtsDataLink';
 
 function SelectionItem(props) {
   const {
@@ -21,6 +22,8 @@ function SelectionItem(props) {
     openingHours,
     calendarContentLanguage,
     artsDataLink,
+    artsDataDetails,
+    showExternalSourceLink,
   } = props;
   const { t } = useTranslation();
   const { user } = useSelector(getUserDetails);
@@ -31,6 +34,16 @@ function SelectionItem(props) {
       <List.Item
         className="selection-item-list-wrapper"
         actions={[
+          showExternalSourceLink && artsDataLink && (
+            <ArtsDataLink
+              onClick={(e) => {
+                e.stopPropagation();
+                window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer');
+              }}>
+              <span style={{ textDecoration: 'underline' }}>Artsdata</span>
+              <LinkOutlined />
+            </ArtsDataLink>
+          ),
           closable && (
             <Button type="text" key="list-loadmore-close" onClick={onClose} style={{ padding: '0px' }}>
               <CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '21px' }} />
@@ -156,7 +169,7 @@ function SelectionItem(props) {
           )}
         </Row>
       )}
-      {artsDataLink && (
+      {artsDataLink && artsDataDetails && (
         <div className="arts-data-link">
           <div className="arts-data-link-content">
             <div className="arts-data-link-first-line">
