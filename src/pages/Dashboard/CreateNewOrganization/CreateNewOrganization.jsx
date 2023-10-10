@@ -44,6 +44,7 @@ import { usePrompt } from '../../../hooks/usePrompt';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { sourceOptions } from '../../../constants/sourceOptions';
+import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -526,7 +527,10 @@ function CreateNewOrganization() {
             },
           });
         }
-        if (organizationData?.sourceId) getArtsData(organizationData?.sourceId);
+        if (organizationData?.derivedFrom?.uri) {
+          let sourceId = getExternalSourceId(organizationData?.derivedFrom?.uri);
+          getArtsData(sourceId);
+        }
         if (organizationData?.place?.entityId) {
           getPlace({ placeId: organizationData?.place?.entityId, calendarId })
             .unwrap()

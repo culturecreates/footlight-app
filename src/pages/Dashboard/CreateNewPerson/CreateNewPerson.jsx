@@ -32,6 +32,7 @@ import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndica
 import { userRoles } from '../../../constants/userRoles';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { usePrompt } from '../../../hooks/usePrompt';
+import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -300,7 +301,10 @@ function CreateNewPerson() {
             },
           });
         }
-        if (personData?.sourceId) getArtsData(personData?.sourceId);
+        if (personData?.derivedFrom?.uri) {
+          let sourceId = getExternalSourceId(personData?.derivedFrom?.uri);
+          getArtsData(sourceId);
+        }
       } else
         window.location.replace(
           `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.People}/${personId}`,

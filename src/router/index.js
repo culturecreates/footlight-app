@@ -29,7 +29,7 @@ import CreateNewPlace from '../pages/Dashboard/CreateNewPlace';
 import AddUser from '../pages/Dashboard/AddUser/AddUser';
 import Taxonomy from '../pages/Dashboard/Taxonomy/Taxonomy';
 import SelectTaxonomyType from '../pages/Dashboard/SelectTaxonomyType/SelectTaxonomyType';
-import AddTaxonomy from '../pages/Dashboard/AddTaxonomy';
+import AddTaxonomy from '../pages/Dashboard/AddTaxonomy/AddTaxonomy';
 
 export const router = createBrowserRouter([
   {
