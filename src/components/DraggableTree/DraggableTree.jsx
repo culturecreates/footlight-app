@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Tree, Modal } from 'antd';
+import { Form, Tree, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
+import CustomModal from '../Modal/Common/CustomModal';
+import PrimaryButton from '../../components/Button/Primary';
+import { HolderOutlined } from '@ant-design/icons';
+import TextButton from '../../components/Button/Text';
+import { useOutletContext } from 'react-router-dom';
+import { contentLanguage } from '../../constants/contentLanguage';
+import ContentLanguageInput from '../ContentLanguageInput';
+import BilingualInput from '../BilingualInput';
+import './draggableTree.css';
 
 const formatTreeData = (data, language) => {
   const formattedData = [];
@@ -11,6 +20,7 @@ const formatTreeData = (data, language) => {
     const formattedNode = {
       key,
       title: node.name[language],
+      icon: <HolderOutlined />,
     };
 
     if (node.children && node.children.length > 0) {
@@ -28,11 +38,20 @@ const formatTreeData = (data, language) => {
 };
 
 const DraggableTree = ({ data }) => {
+  const { TextArea } = Input;
+
+  const [currentCalendarData] = useOutletContext();
+  //   const timestampRef = useRef(Date.now()).current;
+
+  const calendarContentLanguage = currentCalendarData?.contentLanguage;
+
   const [engGData, setEngGData] = useState(formatTreeData(data, 'en'));
   const [frenchGData, setFrenchGData] = useState(formatTreeData(data, 'fr'));
-  const [expandedKeys] = useState(['0-0', '0-0-0', '0-0-0-0']);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [expandedKeys, setExpandedKeys] = useState(['0-0', '0-0-0', '0-0-0-0']);
+  const [addChildModalVisible, setAddChildModalVisible] = useState(false);
   const [selectedNode, setSelectedNode] = useState(null);
+  const [newConceptName, setNewConceptName] = useState('');
+
   const { t } = useTranslation();
 
   const updateTreeData = (dragKey, dropKey, dropPos, language) => {
@@ -56,7 +75,7 @@ const DraggableTree = ({ data }) => {
   };
 
   const onDragEnter = (info) => {
-    console.log(info);
+    setExpandedKeys(info.expandedKeys);
   };
 
   const onDrop = (info) => {
@@ -77,11 +96,47 @@ const DraggableTree = ({ data }) => {
 
   const handleClick = (node) => {
     setSelectedNode(node);
-    setModalVisible(true);
+    setAddChildModalVisible(true);
   };
 
-  const handleModalClose = () => {
-    setModalVisible(false);
+  const handleAddChildModalClose = () => {
+    setNewConceptName('');
+    setAddChildModalVisible(false);
+  };
+
+  const handleAddChild = () => {
+    const newChildNode = {
+      id: Date.now(),
+      name: { en: newConceptName, fr: newConceptName },
+      children: [],
+    };
+
+    const updatedData = [...data.concepts];
+    const parentKey = selectedNode.key.split('-').slice(0, -1).join('-');
+    const parentNode = findNode(updatedData, parentKey);
+
+    if (parentNode) {
+      parentNode.children = parentNode.children || [];
+      parentNode.children.push(newChildNode);
+    }
+
+    setEngGData(formatTreeData(updatedData, 'en'));
+    setFrenchGData(formatTreeData(updatedData, 'fr'));
+
+    handleAddChildModalClose();
+  };
+
+  const findNode = (data, key) => {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].key === key) {
+        return data[i];
+      }
+      if (data[i].children) {
+        const foundNode = findNode(data[i].children, key);
+        if (foundNode) return foundNode;
+      }
+    }
+    return null;
   };
 
   useEffect(() => {
@@ -90,42 +145,115 @@ const DraggableTree = ({ data }) => {
   }, [data]);
 
   return (
-    <>
+    <div className="draggable-tree">
       <Form.Item style={{ width: '50%' }}>
         <span className="tag-header">{t('dashboard.taxonomy.addNew.concepts.english')}</span>
-        <Tree
-          className="draggable-tree"
-          defaultExpandedKeys={expandedKeys}
-          draggable
-          blockNode
-          onDragEnter={onDragEnter}
-          onDrop={onDrop}
-          treeData={engGData}
-          onSelect={(selectedKeys, { node }) => handleClick(node)}
-        />
+        <div className="tree-item">
+          <Tree
+            className="draggable-tree"
+            defaultExpandedKeys={expandedKeys}
+            draggable
+            blockNode
+            onDragEnter={onDragEnter}
+            onDrop={onDrop}
+            treeData={engGData}
+            onSelect={(selectedKeys, { node }) => handleClick(node)}
+          />
+        </div>
       </Form.Item>
       <Form.Item style={{ width: '50%' }}>
         <span className="tag-header">{t('dashboard.taxonomy.addNew.concepts.french')}</span>
-        <Tree
-          className="draggable-tree"
-          defaultExpandedKeys={expandedKeys}
-          draggable
-          blockNode
-          onDragEnter={onDragEnter}
-          onDrop={onDrop}
-          treeData={frenchGData}
-          onSelect={(selectedKeys, { node }) => handleClick(node)}
-        />
+        <div className="tree-item" style={{ borderRight: 'solid 4px #eff2ff' }}>
+          <Tree
+            className="draggable-tree"
+            defaultExpandedKeys={expandedKeys}
+            draggable
+            blockNode
+            onDragEnter={onDragEnter}
+            onDrop={onDrop}
+            treeData={frenchGData}
+            onSelect={(selectedKeys, { node }) => handleClick(node)}
+          />
+        </div>
       </Form.Item>
-      <Modal title="Node Details" open={modalVisible} onCancel={handleModalClose} footer={null}>
-        {selectedNode && (
-          <>
-            <p>{`Key: ${selectedNode.key}`}</p>
-            <p>{`Title: ${selectedNode.title}`}</p>
-          </>
-        )}
-      </Modal>
-    </>
+
+      <div className="addmodal">
+        <CustomModal
+          open={addChildModalVisible}
+          destroyOnClose
+          centered
+          title={
+            <span className="quick-create-organization-modal-title">{t('dashboard.taxonomy.addNew.concepts.add')}</span>
+          }
+          onCancel={() => handleAddChildModalClose()}
+          footer={[
+            <TextButton
+              key="cancel"
+              size="large"
+              label={t('dashboard.events.addEditEvent.quickCreate.cancel')}
+              onClick={() => handleAddChildModalClose()}
+            />,
+            <PrimaryButton
+              key="add-dates"
+              label={t('dashboard.events.addEditEvent.quickCreate.create')}
+              onClick={handleAddChild}
+            />,
+          ]}>
+          <Form.Item label={t('dashboard.taxonomy.addNew.concepts.conceptName')}>
+            <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+              <BilingualInput fieldData={newConceptName}>
+                <Form.Item
+                  name="french"
+                  key={contentLanguage.FRENCH}
+                  dependencies={['english']}
+                  //   rules={[
+                  //     ({ getFieldValue }) => ({
+                  //       validator(_, value) {
+                  //         if (value || getFieldValue('english')) {
+                  //           return Promise.resolve();
+                  //         } else return Promise.reject(new Error(t('dashboard.taxonomy.addNew.')));
+                  //       },
+                  //     }),
+                  //   ]}
+                >
+                  <TextArea
+                    autoSize
+                    autoComplete="off"
+                    placeholder={t('dashboard.taxonomy.addNew.frDescriptionPlaceHolder')}
+                    onChange={(e) => setNewConceptName(e.target.value)}
+                    style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                    size="large"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="english"
+                  key={contentLanguage.ENGLISH}
+                  dependencies={['french']}
+                  //   rules={[
+                  //     ({ getFieldValue }) => ({
+                  //       validator(_, value) {
+                  //         if (value || getFieldValue('french')) {
+                  //           return Promise.resolve();
+                  //         } else return Promise.reject(new Error(t('dashboard.taxonomy.addNew.')));
+                  //       },
+                  //     }),
+                  //   ]}
+                >
+                  <TextArea
+                    autoSize
+                    autoComplete="off"
+                    placeholder={t('dashboard.taxonomy.addNew.enDescriptionPlaceHolder')}
+                    onChange={(e) => setNewConceptName(e.target.value)}
+                    style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                    size="large"
+                  />
+                </Form.Item>
+              </BilingualInput>
+            </ContentLanguageInput>
+          </Form.Item>
+        </CustomModal>
+      </div>
+    </div>
   );
 };
 

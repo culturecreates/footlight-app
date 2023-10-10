@@ -903,7 +903,10 @@
           "description": "Gérer une liste hiérarchique de concepts pour la taxonomie, dans toutes les langues du calendrier. Les concepts peuvent être sélectionnés à partir du champ de saisie correspondant. Faites glisser les concepts pour les réorganiser et/ou les imbriquer. Lorsque vous déplacez un concept dans une langue, il est déplacé dans toutes les langues.",
           "item": "Item",
           "french": "Français",
-          "english": "Anglais"
+          "english": "Anglais",
+          "add": "Ajouteréditer un concept.",
+          "edit": "Editer un concept.",
+          "conceptName": "Concept name"
         }
       }
     }
