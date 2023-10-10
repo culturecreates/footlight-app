@@ -68,6 +68,7 @@ import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequire
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { userRoles } from '../../../constants/userRoles';
+import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 const { TextArea } = Input;
 
@@ -614,7 +615,10 @@ function CreateNewPlace() {
         initialPlaceAccessibiltiy = [],
         initialPlace;
       if (routinghandler(user, calendarId, placeData?.createdByUserId, null, true)) {
-        if (placeData?.sourceId) getArtsDataPlace(placeData?.sourceId);
+        if (placeData?.derivedFrom?.uri) {
+          let sourceId = getExternalSourceId(placeData?.derivedFrom?.uri);
+          getArtsDataPlace(sourceId);
+        }
         if (placeData?.containedInPlace?.entityId) {
           getPlace({ placeId: placeData?.containedInPlace?.entityId, calendarId })
             .unwrap()
