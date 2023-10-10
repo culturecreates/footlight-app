@@ -83,6 +83,11 @@ function ImageUpload(props) {
       return;
     }
     if (info.file.status === 'done') {
+      setCropValues({
+        ...cropValues,
+        large: undefined,
+        thumbnail: undefined,
+      });
       getBase64(info.file.originFileObj, (url) => {
         setLoading(false);
         setImageUrl(url);
@@ -198,7 +203,7 @@ function ImageUpload(props) {
         </Upload.Dragger>
       </Form.Item>
 
-      {isCrop && (
+      {isCrop && imageCropOpen && (
         <ImageCrop
           setOpen={setImageCropOpen}
           open={imageCropOpen}

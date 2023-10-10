@@ -19,10 +19,12 @@ function ImageCrop(props) {
     large: {
       value: largeAspectRatio ? ratioChecker(largeAspectRatio) : 16 / 9,
       type: 'LARGE',
+      initial: cropValues?.large ?? undefined,
     },
     thumbnail: {
       value: thumbnailAspectRatio ? ratioChecker(thumbnailAspectRatio) : 3 / 2,
       type: 'THUMBNAIL',
+      initial: cropValues?.thumbnail ?? undefined,
     },
   };
   const [largeCrop, onLargeCropChange] = useState({ x: 0, y: 0 });
@@ -32,8 +34,8 @@ function ImageCrop(props) {
   const [thumbnailZoom, onThumbnailZoomChange] = useState(1);
 
   const [aspectRatioType, setAspectRatioType] = useState(ASPECT_RATIO_TYPE.large.type);
-  const [initialLargeCroppedArea, setInitialLargeCroppedArea] = useState(undefined);
-  const [initialThumbnailCroppedArea, setInitialThumbnailCroppedArea] = useState(undefined);
+  const [initialLargeCroppedArea, setInitialLargeCroppedArea] = useState(ASPECT_RATIO_TYPE.large.initial);
+  const [initialThumbnailCroppedArea, setInitialThumbnailCroppedArea] = useState(ASPECT_RATIO_TYPE.thumbnail.initial);
 
   const onCropAreaChange = (croppedArea, croppedAreaPixel) => {
     if (
@@ -91,7 +93,6 @@ function ImageCrop(props) {
     showCroppedImage();
     setInitialLargeCroppedArea(cropValues?.large);
     setInitialThumbnailCroppedArea(cropValues?.thumbnail);
-    setAspectRatioType(ASPECT_RATIO_TYPE.large.type);
   };
 
   const onCancel = () => {
