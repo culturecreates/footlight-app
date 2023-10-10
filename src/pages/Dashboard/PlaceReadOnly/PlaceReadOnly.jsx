@@ -29,6 +29,7 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { loadArtsDataPlaceEntity } from '../../../services/artsData';
+import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -82,7 +83,10 @@ function PlaceReadOnly() {
 
   useEffect(() => {
     if (placeSuccess) {
-      if (placeData?.sourceId) getArtsDataPlace(placeData?.sourceId);
+      if (placeData?.derivedFrom?.uri) {
+        let sourceId = getExternalSourceId(placeData?.derivedFrom?.uri);
+        getArtsDataPlace(sourceId);
+      }
       if (placeData?.containedInPlace?.entityId) {
         let initialPlace = [];
         let initialPlaceAccessibiltiy = [];

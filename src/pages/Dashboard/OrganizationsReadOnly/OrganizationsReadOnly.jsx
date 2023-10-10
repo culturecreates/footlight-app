@@ -25,6 +25,7 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { loadArtsDataEntity } from '../../../services/artsData';
+import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 function OrganizationsReadOnly() {
   const { t } = useTranslation();
@@ -79,7 +80,10 @@ function OrganizationsReadOnly() {
 
   useEffect(() => {
     if (organizationSuccess) {
-      if (organizationData?.sourceId) getArtsData(organizationData?.sourceId);
+      if (organizationData?.derivedFrom?.uri) {
+        let sourceId = getExternalSourceId(organizationData?.derivedFrom?.uri);
+        getArtsData(sourceId);
+      }
       if (organizationData?.place?.entityId) {
         let initialPlace = [];
         let initialPlaceAccessibiltiy = [];
