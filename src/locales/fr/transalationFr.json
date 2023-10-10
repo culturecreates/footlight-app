@@ -877,6 +877,34 @@
         "newField": "Nouveau champ",
         "existingField": "Champ existant",
         "noFieldAvailable": "Aucun champ existant n'est actuellement disponible."
+      },
+      "addNew": {
+        "heading": "Nouvelle taxonomie",
+        "save": "Sauvegarder",
+        "class": "Classe",
+        "destinationHeading": "Sélectionnez la destination de votre taxonomie.",
+        "name": "Nom de la taxonomie",
+        "nameCheckbox": "Use the taxonomy name to rename the field.",
+        "frNamePlaceHolder": "Entrez le nom de la taxonomie en français",
+        "enNamePlaceHolder": "entrez le nom de la taxonomie en anglais",
+        "mapToField": "Map to existing field",
+        "mapToFieldDescription": "Select an input field for the taxonomy.",
+        "nameDescription": "Ce nom est utilisé pour étiqueter le champ de saisie associé.",
+        "description": "Description identifiante",
+        "frDescriptionPlaceHolder": "Entrez la description identifiante en français",
+        "enDescriptionPlaceHolder": "Entrez la description identifiante en anglais",
+        "descriptionExplation": "Ajouter pour différencier la taxonomie dans les résultats de recherche.",
+        "userAccess": "Restreindre l'accès aux utilisateurs",
+        "userAccessPlaceHolder": "Sélectionnez",
+        "userAccessDescription": "Select who has permission to see and use this field.",
+        "adminOnly": "Administrateur uniquement",
+        "concepts": {
+          "heading": "Liste de concepts",
+          "description": "Gérer une liste hiérarchique de concepts pour la taxonomie, dans toutes les langues du calendrier. Les concepts peuvent être sélectionnés à partir du champ de saisie correspondant. Faites glisser les concepts pour les réorganiser et/ou les imbriquer. Lorsque vous déplacez un concept dans une langue, il est déplacé dans toutes les langues.",
+          "item": "Item",
+          "french": "Français",
+          "english": "Anglais"
+        }
       }
     }
   },

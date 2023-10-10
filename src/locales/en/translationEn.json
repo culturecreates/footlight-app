@@ -883,6 +883,34 @@
         "newField": "New field",
         "existingField": "Existing field",
         "noFieldAvailable": "No existing fields are currently available."
+      },
+      "addNew": {
+        "heading": "New taxonomy",
+        "save": "Save",
+        "class": "Class",
+        "destinationHeading": "Select the destination for your taxonomy.",
+        "name": "Taxonomy name",
+        "nameCheckbox": "Use the taxonomy name to rename the field.",
+        "frNamePlaceHolder": "Enter taxonomy my name in French",
+        "enNamePlaceHolder": "Enter taxonomy name in English",
+        "mapToField": "Map to existing field",
+        "mapToFieldDescription": "Select an input field for the taxonomy.",
+        "nameDescription": "This name is used to label the associated input field.",
+        "description": "Disambiguating description",
+        "frDescriptionPlaceHolder": "Enter French disambiguating description",
+        "enDescriptionPlaceHolder": "Enter English disambiguating description",
+        "descriptionExplation": "Add to differentiate taxonomy in search results.",
+        "userAccess": "Restrict user access",
+        "userAccessPlaceHolder": "Select",
+        "userAccessDescription": "Select who has permission to see and use this field.",
+        "adminOnly": "Admin only",
+        "concepts": {
+          "heading": "Concept list",
+          "description": "Manage a hierarchical list of concepts for the taxonomy, in all calendar language(s). Concepts are available for selection from the mapped input field. Drag concepts to rearrange and/or nest them. When you move a concept in one language, it is moved in all languages.",
+          "item": "Item",
+          "french": "French",
+          "english": "English"
+        }
       }
     }
   },

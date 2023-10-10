@@ -154,8 +154,7 @@ const Taxonomy = () => {
     navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomySelectType}`);
   };
   const listItemHandler = (id) => {
-    // navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}`);
-    console.log(id);
+    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomy}?id=${id}`);
   };
   const deleteOrganizationHandler = (id) => {
     Confirm({
