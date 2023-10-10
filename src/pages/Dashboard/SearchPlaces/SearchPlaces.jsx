@@ -168,7 +168,7 @@ function SearchPlaces() {
                                 calendarContentLanguage: calendarContentLanguage,
                               })}
                               description={place?.description}
-                              artsDataLink={`${process.env.REACT_APP_ARTS_DATA_PAGE_URI}${place?.id}`}
+                              artsDataLink={place?.uri}
                               Logo={
                                 place.logo ? (
                                   place.logo?.thumbnail?.uri

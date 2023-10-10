@@ -170,7 +170,7 @@ function SearchPerson() {
                               calendarContentLanguage: calendarContentLanguage,
                             })}
                             description={person?.description}
-                            artsDataLink={`${process.env.REACT_APP_ARTS_DATA_PAGE_URI}${person?.id}`}
+                            artsDataLink={person?.uri}
                             Logo={
                               person.logo ? (
                                 person.logo?.thumbnail?.uri
