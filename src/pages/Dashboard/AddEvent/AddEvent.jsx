@@ -265,6 +265,10 @@ function AddEvent() {
             'dateRangePicker',
             'datePickerWrapper',
             'startDateRecur',
+            'contactWebsiteUrl',
+            'eventLink',
+            'videoLink',
+            'facebookLink',
             ...(eventData?.publishState === eventPublishState.PUBLISHED ? validateFields : []),
           ]),
         ])

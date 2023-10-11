@@ -176,11 +176,26 @@ function CreateNewOrganization() {
   const onSaveHandler = (event) => {
     event?.preventDefault();
     setShowDialog(false);
+    let validateFieldList = [
+      ['name', 'fr'],
+      ['name', 'en'],
+    ];
+    if (
+      form.getFieldValue('socialMediaLinks')?.filter((link) => {
+        if (link) return true;
+      })?.length > 0
+    ) {
+      validateFieldList = validateFieldList?.concat(
+        form
+          .getFieldValue('socialMediaLinks')
+          ?.filter((link) => {
+            if (link) return true;
+          })
+          ?.map((link, index) => ['socialMediaLinks', index]),
+      );
+    }
     form
-      .validateFields([
-        ['name', 'fr'],
-        ['name', 'en'],
-      ])
+      .validateFields(validateFieldList)
       .then(() => {
         var values = form.getFieldsValue(true);
         let organizationPayload = {};
@@ -236,153 +251,52 @@ function CreateNewOrganization() {
             width: imageCrop?.original?.width,
           },
         };
-        if ((values?.image || (values?.image && values?.image?.length > 0)) && !values?.logo) {
-          if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
-            const formdata = new FormData();
-            formdata.append('file', values?.image[0].originFileObj);
-            formdata &&
-              addImage({ data: formdata, calendarId })
-                .unwrap()
-                .then((response) => {
-                  if (featureFlags.imageCropFeature) {
-                    imageCrop = {
-                      ...imageCrop,
-                      original: {
-                        ...imageCrop?.original,
-                        entityId: response?.data?.original?.entityId,
-                        height: response?.data?.height,
-                        width: response?.data?.width,
-                      },
-                    };
-                  } else
-                    imageCrop = {
-                      ...imageCrop,
-                      original: {
-                        ...imageCrop?.original,
-                        entityId: response?.data?.original?.entityId,
-                        height: response?.data?.height,
-                        width: response?.data?.width,
-                      },
-                    };
-                  organizationPayload['image'] = imageCrop;
-                  addUpdateOrganizationApiHandler(organizationPayload);
-                })
-                .catch((error) => {
-                  console.log(error);
-                  const element = document.getElementsByClassName('image');
-                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                });
-          } else {
-            if (values?.image) {
-              if (values?.image && values?.image?.length == 0) organizationPayload['image'] = null;
-              else organizationPayload['image'] = imageCrop;
-            }
-            addUpdateOrganizationApiHandler(organizationPayload);
-          }
-        } else if ((values?.logo || (values?.logo && values?.logo?.length > 0)) && !values?.image) {
-          if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
-            const formdata = new FormData();
-            formdata.append('file', values?.logo[0].originFileObj);
-            formdata &&
-              addImage({ data: formdata, calendarId })
-                .unwrap()
-                .then((response) => {
-                  organizationPayload['logo'] = {
-                    original: {
-                      entityId: response?.data?.original?.entityId,
-                      height: response?.data?.height,
-                      width: response?.data?.width,
-                    },
-                    large: {},
-                    thumbnail: {},
-                  };
-                  addUpdateOrganizationApiHandler(organizationPayload);
-                })
-                .catch((error) => {
-                  console.log(error);
-                  const element = document.getElementsByClassName('logo');
-                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                });
-          } else {
-            if (values?.logo) {
-              if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
-              else organizationPayload['logo'] = organizationData?.logo;
-            }
-            addUpdateOrganizationApiHandler(organizationPayload);
-          }
-        } else if (
-          (values?.image || (values?.image && values?.image?.length > 0)) &&
-          (values?.logo || (values?.logo && values?.logo?.length > 0))
-        ) {
-          if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
-            const formdata = new FormData();
-            formdata.append('file', values?.image[0].originFileObj);
-            formdata &&
-              addImage({ data: formdata, calendarId })
-                .unwrap()
-                .then((response) => {
-                  if (featureFlags.imageCropFeature) {
-                    imageCrop = {
-                      ...imageCrop,
-                      original: {
-                        ...imageCrop?.original,
-                        entityId: response?.data?.original?.entityId,
-                        height: response?.data?.height,
-                        width: response?.data?.width,
-                      },
-                    };
-                  } else
-                    imageCrop = {
-                      ...imageCrop,
-                      original: {
-                        ...imageCrop?.original,
-                        entityId: response?.data?.original?.entityId,
-                        height: response?.data?.height,
-                        width: response?.data?.width,
-                      },
-                    };
-                  organizationPayload['image'] = imageCrop;
-                  if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
-                    const formdata = new FormData();
-                    formdata.append('file', values?.logo[0].originFileObj);
-                    formdata &&
-                      addImage({ data: formdata, calendarId })
-                        .unwrap()
-                        .then((response) => {
-                          organizationPayload['logo'] = {
-                            original: {
-                              entityId: response?.data?.original?.entityId,
-                              height: response?.data?.height,
-                              width: response?.data?.width,
-                            },
-                            large: {},
-                            thumbnail: {},
-                          };
-                          addUpdateOrganizationApiHandler(organizationPayload);
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                          const element = document.getElementsByClassName('logo');
-                          element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                        });
-                  } else {
-                    if (values?.logo) {
-                      if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
-                      else organizationPayload['logo'] = organizationData?.logo;
-                    }
+        let check = false;
+        if (check) {
+          if ((values?.image || (values?.image && values?.image?.length > 0)) && !values?.logo) {
+            if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
+              const formdata = new FormData();
+              formdata.append('file', values?.image[0].originFileObj);
+              formdata &&
+                addImage({ data: formdata, calendarId })
+                  .unwrap()
+                  .then((response) => {
+                    if (featureFlags.imageCropFeature) {
+                      imageCrop = {
+                        ...imageCrop,
+                        original: {
+                          ...imageCrop?.original,
+                          entityId: response?.data?.original?.entityId,
+                          height: response?.data?.height,
+                          width: response?.data?.width,
+                        },
+                      };
+                    } else
+                      imageCrop = {
+                        ...imageCrop,
+                        original: {
+                          ...imageCrop?.original,
+                          entityId: response?.data?.original?.entityId,
+                          height: response?.data?.height,
+                          width: response?.data?.width,
+                        },
+                      };
+                    organizationPayload['image'] = imageCrop;
                     addUpdateOrganizationApiHandler(organizationPayload);
-                  }
-                })
-                .catch((error) => {
-                  console.log(error);
-                  const element = document.getElementsByClassName('image');
-                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                });
-          } else {
-            if (values?.image) {
-              if (values?.image && values?.image?.length == 0) organizationPayload['image'] = null;
-              else organizationPayload['image'] = imageCrop;
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    const element = document.getElementsByClassName('image');
+                    element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                  });
+            } else {
+              if (values?.image) {
+                if (values?.image && values?.image?.length == 0) organizationPayload['image'] = null;
+                else organizationPayload['image'] = imageCrop;
+              }
+              addUpdateOrganizationApiHandler(organizationPayload);
             }
+          } else if ((values?.logo || (values?.logo && values?.logo?.length > 0)) && !values?.image) {
             if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
               const formdata = new FormData();
               formdata.append('file', values?.logo[0].originFileObj);
@@ -413,17 +327,121 @@ function CreateNewOrganization() {
               }
               addUpdateOrganizationApiHandler(organizationPayload);
             }
+          } else if (
+            (values?.image || (values?.image && values?.image?.length > 0)) &&
+            (values?.logo || (values?.logo && values?.logo?.length > 0))
+          ) {
+            if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
+              const formdata = new FormData();
+              formdata.append('file', values?.image[0].originFileObj);
+              formdata &&
+                addImage({ data: formdata, calendarId })
+                  .unwrap()
+                  .then((response) => {
+                    if (featureFlags.imageCropFeature) {
+                      imageCrop = {
+                        ...imageCrop,
+                        original: {
+                          ...imageCrop?.original,
+                          entityId: response?.data?.original?.entityId,
+                          height: response?.data?.height,
+                          width: response?.data?.width,
+                        },
+                      };
+                    } else
+                      imageCrop = {
+                        ...imageCrop,
+                        original: {
+                          ...imageCrop?.original,
+                          entityId: response?.data?.original?.entityId,
+                          height: response?.data?.height,
+                          width: response?.data?.width,
+                        },
+                      };
+                    organizationPayload['image'] = imageCrop;
+                    if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
+                      const formdata = new FormData();
+                      formdata.append('file', values?.logo[0].originFileObj);
+                      formdata &&
+                        addImage({ data: formdata, calendarId })
+                          .unwrap()
+                          .then((response) => {
+                            organizationPayload['logo'] = {
+                              original: {
+                                entityId: response?.data?.original?.entityId,
+                                height: response?.data?.height,
+                                width: response?.data?.width,
+                              },
+                              large: {},
+                              thumbnail: {},
+                            };
+                            addUpdateOrganizationApiHandler(organizationPayload);
+                          })
+                          .catch((error) => {
+                            console.log(error);
+                            const element = document.getElementsByClassName('logo');
+                            element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                          });
+                    } else {
+                      if (values?.logo) {
+                        if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
+                        else organizationPayload['logo'] = organizationData?.logo;
+                      }
+                      addUpdateOrganizationApiHandler(organizationPayload);
+                    }
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    const element = document.getElementsByClassName('image');
+                    element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                  });
+            } else {
+              if (values?.image) {
+                if (values?.image && values?.image?.length == 0) organizationPayload['image'] = null;
+                else organizationPayload['image'] = imageCrop;
+              }
+              if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
+                const formdata = new FormData();
+                formdata.append('file', values?.logo[0].originFileObj);
+                formdata &&
+                  addImage({ data: formdata, calendarId })
+                    .unwrap()
+                    .then((response) => {
+                      organizationPayload['logo'] = {
+                        original: {
+                          entityId: response?.data?.original?.entityId,
+                          height: response?.data?.height,
+                          width: response?.data?.width,
+                        },
+                        large: {},
+                        thumbnail: {},
+                      };
+                      addUpdateOrganizationApiHandler(organizationPayload);
+                    })
+                    .catch((error) => {
+                      console.log(error);
+                      const element = document.getElementsByClassName('logo');
+                      element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                    });
+              } else {
+                if (values?.logo) {
+                  if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
+                  else organizationPayload['logo'] = organizationData?.logo;
+                }
+                addUpdateOrganizationApiHandler(organizationPayload);
+              }
+            }
+          } else {
+            if (values?.logo) {
+              if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
+              else organizationPayload['logo'] = organizationData?.logo;
+            }
+            if (values?.image) {
+              if (values?.image && values?.image?.length == 0) organizationPayload['image'] = null;
+              else organizationPayload['image'] = imageCrop;
+            }
+            addUpdateOrganizationApiHandler(organizationPayload);
           }
-        } else {
-          if (values?.logo) {
-            if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
-            else organizationPayload['logo'] = organizationData?.logo;
-          }
-          if (values?.image) {
-            if (values?.image && values?.image?.length == 0) organizationPayload['image'] = null;
-            else organizationPayload['image'] = imageCrop;
-          }
-          addUpdateOrganizationApiHandler(organizationPayload);
         }
       })
       .catch((error) => {
