@@ -92,6 +92,8 @@ export const treeEntitiesOption = (data, user, calendarContentLanguage, source =
                 })
               : typeof entity?.disambiguatingDescription === 'string' && entity?.disambiguatingDescription
           }
+          artsDataLink={entity?.uri}
+          showExternalSourceLink={true}
         />
       ),
       value: entity?.id,

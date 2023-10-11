@@ -27,6 +27,7 @@ import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { loadArtsDataEntity } from '../../../services/artsData';
+import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 function PersonReadOnly() {
   const { t } = useTranslation();
@@ -75,7 +76,10 @@ function PersonReadOnly() {
 
   useEffect(() => {
     if (personData) {
-      if (personData?.sourceId) getArtsData(personData?.sourceId);
+      if (personData?.derivedFrom?.uri) {
+        let sourceId = getExternalSourceId(personData?.derivedFrom?.uri);
+        getArtsData(sourceId);
+      }
     }
   }, [personLoading]);
 
