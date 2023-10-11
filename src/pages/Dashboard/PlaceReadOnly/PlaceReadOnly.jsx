@@ -182,7 +182,7 @@ function PlaceReadOnly() {
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                   </h4>
-                  <p className="read-only-event-content-sub-title-secondary">
+                  <p className="read-only-event-content-sub-title-primary">
                     {contentLanguageBilingual({
                       en: placeData?.disambiguatingDescription?.en,
                       fr: placeData?.disambiguatingDescription?.fr,

@@ -135,7 +135,7 @@ function PersonReadOnly() {
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                   </h4>
-                  <p className="read-only-event-content-sub-title-secondary">
+                  <p className="read-only-event-content-sub-title-primary">
                     {contentLanguageBilingual({
                       en: personData?.disambiguatingDescription?.en,
                       fr: personData?.disambiguatingDescription?.fr,
