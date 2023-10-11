@@ -178,7 +178,7 @@ function OrganizationsReadOnly() {
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                   </h4>
-                  <p className="read-only-event-content-sub-title-secondary">
+                  <p className="read-only-event-content-sub-title-primary">
                     {contentLanguageBilingual({
                       en: organizationData?.disambiguatingDescription?.en,
                       fr: organizationData?.disambiguatingDescription?.fr,
