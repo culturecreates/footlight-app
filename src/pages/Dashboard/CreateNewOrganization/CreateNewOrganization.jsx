@@ -251,7 +251,6 @@ function CreateNewOrganization() {
             width: imageCrop?.original?.width,
           },
         };
-
         if ((values?.image || (values?.image && values?.image?.length > 0)) && !values?.logo) {
           if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
             const formdata = new FormData();
