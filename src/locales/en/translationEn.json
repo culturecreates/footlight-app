@@ -446,7 +446,8 @@
         "email": "Email",
         "memberOf": "Member of",
         "location": "Location",
-        "edit": "Edit"
+        "edit": "Edit",
+        "socialMediaLinks": "Social media links"
       },
       "createNew": {
         "search": {
@@ -470,7 +471,8 @@
             "firstPart": "Is this the right organization? If not, ",
             "secondPart": "create a new organization",
             "thirdPart": " and do not select this data source."
-          }
+          },
+          "addSocialMediaLinks": "Add media link"
         },
         "notification": {
           "addSuccess": "Success! Your organization has been created.",
@@ -662,7 +664,8 @@
         "disambiguatingDescription": "Disambiguating description",
         "description": "Description",
         "website": "Website",
-        "edit": "Edit"
+        "edit": "Edit",
+        "socialMediaLinks": "Social media links"
       },
       "createNew": {
         "search": {
@@ -737,8 +740,12 @@
         "firstName": "First name",
         "lastName": "Last name",
         "active": "Active",
-        "inActive": "inActive",
+        "inActive": "Deactivated",
+        "inActiveStatus": "Inactive",
         "invite": "Invited",
+        "removed": "REMOVED",
+        "left": "LEFT",
+        "pending": "Pending",
         "admin": "Admin",
         "editor": "Editor",
         "contributor": "Contributor",
@@ -755,7 +762,7 @@
             "deleteText": "Are you sure you want to permanently delete this user",
             "deactivateText": "Are you sure you want to deactivate this user",
             "activateText": "Are you sure you want to activate this user",
-            "copyText":"Invitation link copied."
+            "copyText": "Invitation link copied."
           }
         }
       },
@@ -839,10 +846,71 @@
         },
         "delete": "Delete",
         "cancel": "Cancel",
-        "activate":"Activate",
-        "deactivate":"Deactivate",
-        "leaveCalender":"Are you sure you want to leave this calendar?",
-        "confirmLeave":"confirm leave"
+        "activate": "Activate",
+        "deactivate": "Deactivate",
+        "leaveCalender": "Are you sure you want to leave this calendar?",
+        "confirmLeave": "confirm leave"
+      }
+    },
+    "taxonomy": {
+      "listing": {
+        "heading": "Taxonomies",
+        "addNew": "Taxonomy",
+        "sort": {
+          "sortBy": "Sort by",
+          "name": "Name",
+          "createdDate": "Created Date"
+        },
+        "modal": {
+          "titleDelete": "Confirm delete",
+          "contentDelete": "Are you sure you want to permanently delete this taxonomy? This action will also delete all its associated data and everywhere it was used, including in events."
+        }
+      },
+      "selectType": {
+        "heading": "New taxonomy",
+        "class": "Class",
+        "classDropdownOptions": {
+          "event": "Event",
+          "place": "Place",
+          "person": "Person",
+          "organization": "Organization",
+          "virtualLocation": "Virtual location"
+        },
+        "classPlaceHolder": "Select class",
+        "destinationHeading": "Select the destination for your taxonomy.",
+        "inputType": "Input type",
+        "inputTypeDescription": "Use an existing input field or create a new one.",
+        "newField": "New field",
+        "existingField": "Existing field",
+        "noFieldAvailable": "No existing fields are currently available."
+      },
+      "addNew": {
+        "heading": "New taxonomy",
+        "save": "Save",
+        "class": "Class",
+        "destinationHeading": "Select the destination for your taxonomy.",
+        "name": "Taxonomy name",
+        "nameCheckbox": "Use the taxonomy name to rename the field.",
+        "frNamePlaceHolder": "Enter taxonomy my name in French",
+        "enNamePlaceHolder": "Enter taxonomy name in English",
+        "mapToField": "Map to existing field",
+        "mapToFieldDescription": "Select an input field for the taxonomy.",
+        "nameDescription": "This name is used to label the associated input field.",
+        "description": "Disambiguating description",
+        "frDescriptionPlaceHolder": "Enter French disambiguating description",
+        "enDescriptionPlaceHolder": "Enter English disambiguating description",
+        "descriptionExplation": "Add to differentiate taxonomy in search results.",
+        "userAccess": "Restrict user access",
+        "userAccessPlaceHolder": "Select",
+        "userAccessDescription": "Select who has permission to see and use this field.",
+        "adminOnly": "Admin only",
+        "concepts": {
+          "heading": "Concept list",
+          "description": "Manage a hierarchical list of concepts for the taxonomy, in all calendar language(s). Concepts are available for selection from the mapped input field. Drag concepts to rearrange and/or nest them. When you move a concept in one language, it is moved in all languages.",
+          "item": "Item",
+          "french": "French",
+          "english": "English"
+        }
       }
     }
   },
@@ -860,7 +928,7 @@
     "noneFound": "None Found",
     "unsavedChanges": "You have unsaved changes. Are you sure you want to discard them?",
     "keepEditing": "Keep editing",
-    "copied":"Copied to clipboard",
+    "copied": "Copied to clipboard",
     "discard": "Discard",
     "server": {
       "status": {

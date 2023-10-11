@@ -3,6 +3,7 @@ import SelectionItem from '../List/SelectionItem';
 import Icon, { UserOutlined } from '@ant-design/icons';
 import { ReactComponent as Organizations } from '../../assets/icons/organisations.svg';
 import { taxonomyClass } from '../../constants/taxonomyClass';
+import { sourceOptions } from '../../constants/sourceOptions';
 
 const handleMultilevelTreeSelect = (children, user, calendarContentLanguage) => {
   return children?.map((child) => {
@@ -15,7 +16,7 @@ const handleMultilevelTreeSelect = (children, user, calendarContentLanguage) => 
       }),
       value: child?.id,
       ...(child?.children && {
-        children: handleMultilevelTreeSelect(child?.children),
+        children: handleMultilevelTreeSelect(child?.children, user, calendarContentLanguage),
       }),
     };
   });
@@ -49,7 +50,7 @@ export const treeTaxonomyOptions = (data, user, mappedToField, isDynamicField, c
   return options;
 };
 
-export const treeEntitiesOption = (data, user, calendarContentLanguage) => {
+export const treeEntitiesOption = (data, user, calendarContentLanguage, source = sourceOptions.CMS) => {
   let options = data?.map((entity) => {
     return {
       label: (
@@ -72,48 +73,52 @@ export const treeEntitiesOption = (data, user, calendarContentLanguage) => {
             )
           }
           name={
-            (entity?.name || entity?.name?.en || entity?.name?.fr) &&
-            contentLanguageBilingual({
-              en: entity?.name?.en,
-              fr: entity?.name?.fr,
-              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-              calendarContentLanguage: calendarContentLanguage,
-            })
+            entity?.name?.en || entity?.name?.fr
+              ? contentLanguageBilingual({
+                  en: entity?.name?.en,
+                  fr: entity?.name?.fr,
+                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                  calendarContentLanguage: calendarContentLanguage,
+                })
+              : typeof entity?.name === 'string' && entity?.name
           }
           description={
-            (entity?.disambiguatingDescription ||
-              entity?.disambiguatingDescription?.en ||
-              entity?.disambiguatingDescription?.en) &&
-            contentLanguageBilingual({
-              en: entity?.disambiguatingDescription?.en,
-              fr: entity?.disambiguatingDescription?.fr,
-              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-              calendarContentLanguage: calendarContentLanguage,
-            })
+            entity?.disambiguatingDescription?.en || entity?.disambiguatingDescription?.fr
+              ? contentLanguageBilingual({
+                  en: entity?.disambiguatingDescription?.en,
+                  fr: entity?.disambiguatingDescription?.fr,
+                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                  calendarContentLanguage: calendarContentLanguage,
+                })
+              : typeof entity?.disambiguatingDescription === 'string' && entity?.disambiguatingDescription
           }
+          artsDataLink={entity?.uri}
+          showExternalSourceLink={true}
         />
       ),
       value: entity?.id,
       type: entity?.type,
       name:
-        (entity?.name || entity?.name?.en || entity?.name?.fr) &&
-        contentLanguageBilingual({
-          en: entity?.name?.en,
-          fr: entity?.name?.fr,
-          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-          calendarContentLanguage: calendarContentLanguage,
-        }),
+        entity?.name?.en || entity?.name?.fr
+          ? contentLanguageBilingual({
+              en: entity?.name?.en,
+              fr: entity?.name?.fr,
+              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+              calendarContentLanguage: calendarContentLanguage,
+            })
+          : typeof entity?.name === 'string' && entity?.name,
       description:
-        (entity?.disambiguatingDescription ||
-          entity?.disambiguatingDescription?.en ||
-          entity?.disambiguatingDescription?.en) &&
-        contentLanguageBilingual({
-          en: entity?.disambiguatingDescription?.en,
-          fr: entity?.disambiguatingDescription?.fr,
-          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-          calendarContentLanguage: calendarContentLanguage,
-        }),
+        entity?.disambiguatingDescription?.en || entity?.disambiguatingDescription?.fr
+          ? contentLanguageBilingual({
+              en: entity?.disambiguatingDescription?.en,
+              fr: entity?.disambiguatingDescription?.fr,
+              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+              calendarContentLanguage: calendarContentLanguage,
+            })
+          : typeof entity?.disambiguatingDescription === 'string' && entity?.disambiguatingDescription,
       contact: entity?.contactPoint,
+      uri: entity?.uri,
+      source: source,
     };
   });
   return options;

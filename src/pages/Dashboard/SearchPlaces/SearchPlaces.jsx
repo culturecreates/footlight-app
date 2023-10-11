@@ -16,7 +16,6 @@ import { EnvironmentOutlined } from '@ant-design/icons';
 import './searchPlaces.css';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
-import { getArtsDataEntities } from '../../../services/artsData';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
@@ -46,11 +45,13 @@ function SearchPlaces() {
     searchKey: '',
     classes: decodeURIComponent(query.toString()),
     sessionId: timestampRef,
+    includeArtsdata: true,
   });
 
   useEffect(() => {
     if (initialEntities && currentCalendarData) {
-      setPlacesList(initialEntities);
+      setPlacesList(initialEntities?.cms);
+      setPlacesListArtsData(initialEntities?.artsdata);
     }
   }, [initialPlacesLoading]);
 
@@ -63,16 +64,11 @@ function SearchPlaces() {
   const searchHandler = (value) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
-    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
+    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId, includeArtsdata: true })
       .unwrap()
       .then((response) => {
-        setPlacesList(response);
-      })
-      .catch((error) => console.log(error));
-
-    getArtsDataEntities({ searchKeyword: value, entityType: entitiesClass.place })
-      .then((response) => {
-        setPlacesListArtsData(response?.result);
+        setPlacesList(response?.cms);
+        setPlacesListArtsData(response?.artsdata);
       })
       .catch((error) => console.log(error));
   };
@@ -165,9 +161,14 @@ function SearchPlaces() {
                               setIsPopoverOpen(false);
                             }}>
                             <EntityCard
-                              title={place?.name}
+                              title={contentLanguageBilingual({
+                                en: place?.name?.en,
+                                fr: place?.name?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              })}
                               description={place?.description}
-                              artsDataLink={`${process.env.REACT_APP_ARTS_DATA_PAGE_URI}${place?.id}`}
+                              artsDataLink={place?.uri}
                               Logo={
                                 place.logo ? (
                                   place.logo?.thumbnail?.uri

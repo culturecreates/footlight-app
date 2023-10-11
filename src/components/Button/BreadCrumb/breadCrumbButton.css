@@ -1,0 +1,10 @@
+.breadcrumb-btn-container .ant-btn {
+  color: #0f0e98;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
+  font-weight: 600;
+  width: fit-content;
+  cursor: pointer;
+}

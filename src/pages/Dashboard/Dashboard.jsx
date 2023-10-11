@@ -9,7 +9,11 @@ import { PathName } from '../../constants/pathName';
 import { useSelector, useDispatch } from 'react-redux';
 import { getUserDetails, setUser } from '../../redux/reducer/userSlice';
 import { useLazyGetCalendarQuery, useGetAllCalendarsQuery } from '../../services/calendar';
-import { setSelectedCalendar } from '../../redux/reducer/selectedCalendarSlice';
+import {
+  getReloadStatusForCalendar,
+  setReloadCalendar,
+  setSelectedCalendar,
+} from '../../redux/reducer/selectedCalendarSlice';
 import { setInterfaceLanguage } from '../../redux/reducer/interfaceLanguageSlice';
 import i18n from 'i18next';
 import Cookies from 'js-cookie';
@@ -25,11 +29,14 @@ function Dashboard() {
   const timestampRef = useRef(Date.now()).current;
   const { accessToken, user } = useSelector(getUserDetails);
   const [getCalendar, { currentData: currentCalendarData }] = useLazyGetCalendarQuery();
+  const reloadStatus = useSelector(getReloadStatusForCalendar);
 
-  const { currentData: allCalendarsData, isLoading } = useGetAllCalendarsQuery(
-    { sessionId: timestampRef },
-    { skip: accessToken ? false : true },
-  );
+  const {
+    currentData: allCalendarsData,
+    isLoading,
+    isSuccess,
+    refetch,
+  } = useGetAllCalendarsQuery({ sessionId: timestampRef }, { skip: accessToken ? false : true });
 
   const [getCurrentUserDetails] = useLazyGetCurrentUserQuery();
 
@@ -67,20 +74,46 @@ function Dashboard() {
   }, [accessToken]);
 
   useEffect(() => {
-    if (calendarId && accessToken) {
-      getCalendar({ id: calendarId, sessionId: timestampRef });
-      dispatch(setSelectedCalendar(String(calendarId)));
-    } else {
-      let activeCalendarId = Cookies.get('calendarId');
-      if (activeCalendarId && accessToken) {
-        navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
-      } else if (!isLoading && allCalendarsData?.data) {
-        activeCalendarId = allCalendarsData?.data[0]?.id;
-        Cookies.set('calendarId', activeCalendarId);
-        navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
+    if (isSuccess) {
+      const checkedCalendarId = findActiveCalendar();
+      if (checkedCalendarId != null) {
+        Cookies.set('calendarId', checkedCalendarId);
+      }
+
+      if (calendarId && accessToken) {
+        getCalendar({ id: calendarId, sessionId: timestampRef });
+        dispatch(setSelectedCalendar(String(calendarId)));
+      } else {
+        let activeCalendarId = Cookies.get('calendarId');
+        if (activeCalendarId && accessToken) {
+          navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
+        } else if (!isLoading && allCalendarsData?.data) {
+          activeCalendarId = allCalendarsData?.data[0]?.id;
+          Cookies.set('calendarId', activeCalendarId);
+          navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
+        }
       }
     }
-  }, [calendarId, isLoading, allCalendarsData]);
+  }, [calendarId, isLoading, allCalendarsData, isSuccess]);
+
+  useEffect(() => {
+    if (reloadStatus) {
+      refetch();
+      dispatch(setReloadCalendar(false));
+    }
+  }, [reloadStatus, dispatch]);
+
+  const findActiveCalendar = () => {
+    const currentCalendar = allCalendarsData.data.filter((item) => {
+      if (item.id === calendarId) {
+        return item;
+      }
+    });
+    if (currentCalendar.length < 1) {
+      return allCalendarsData.data[0].id;
+    }
+    return null;
+  };
 
   return (
     <ErrorLayout>

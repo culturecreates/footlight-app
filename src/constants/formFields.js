@@ -1,6 +1,6 @@
-import { Form, Input, Popover } from 'antd';
+import { Col, Form, Input, Popover, Row } from 'antd';
 import NoContent from '../components/NoContent/NoContent';
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import Tags from '../components/Tags/Common/Tags';
 import TreeSelectOption from '../components/TreeSelectOption/TreeSelectOption';
 import { treeTaxonomyOptions } from '../components/TreeSelectOption/treeSelectOption.settings';
@@ -16,6 +16,7 @@ import { featureFlags } from '../utils/featureFlags';
 import EventsSearch from '../components/Search/Events/EventsSearch';
 import SelectionItem from '../components/List/SelectionItem';
 import BilingualTextEditor from '../components/BilingualTextEditor';
+import Outlined from '../components/Button/Outlined';
 
 const { TextArea } = Input;
 
@@ -40,6 +41,7 @@ export const dataTypes = {
   URI_STRING: 'URIString',
   IMAGE: 'Image',
   EMAIL: 'Email',
+  URI_STRING_ARRAY: 'URIString[]',
 };
 
 export const mappedFieldTypes = {
@@ -55,6 +57,7 @@ export const mappedFieldTypes = {
   CONTACT_TELEPHONE: 'contactPoint.telephone',
   CONTACT_EMAIL: 'contactPoint.email',
   PLACE: 'place',
+  SOCIAL_MEDIA_LINKS: 'socialMediaLinks',
 };
 
 const rules = [
@@ -158,7 +161,55 @@ export const formFieldValue = [
             })}
           />
         );
-      else
+      else if (datatype === dataTypes.URI_STRING_ARRAY) {
+        return (
+          <Form.List name={name} initialValue={data?.length > 0 ? data : [undefined]}>
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map((field) => (
+                  <Form.Item key={field.key}>
+                    <Row gutter={[12, 0]} align={'middle'}>
+                      <Col span={22}>
+                        <Form.Item
+                          {...field}
+                          validateTrigger={['onChange', 'onBlur']}
+                          noStyle
+                          rules={[
+                            {
+                              type: 'url',
+                              message: t('dashboard.events.addEditEvent.validations.url'),
+                            },
+                          ]}>
+                          <StyledInput
+                            addonBefore="https://"
+                            autoComplete="off"
+                            placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={2}>
+                        {fields?.length > 0 ? (
+                          <DeleteOutlined
+                            style={{ color: '#1B3DE6', fontSize: '16px' }}
+                            onClick={() => remove(field.name)}
+                          />
+                        ) : null}
+                      </Col>
+                    </Row>
+                  </Form.Item>
+                ))}
+                <Form.Item>
+                  <Outlined
+                    size="large"
+                    label={t('dashboard.organization.createNew.addOrganization.addSocialMediaLinks')}
+                    onClick={() => add()}
+                  />
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
+        );
+      } else
         return (
           <StyledInput
             placeholder={contentLanguageBilingual({
@@ -269,6 +320,7 @@ export const formFieldValue = [
       name,
       placesSearch,
       calendarContentLanguage,
+      allPlacesArtsdataList,
     }) => {
       return (
         <>
@@ -282,25 +334,54 @@ export const formFieldValue = [
             trigger={['click']}
             content={
               <div>
-                <div className="search-scrollable-content">
-                  {allPlacesList?.length > 0 ? (
-                    allPlacesList?.map((place, index) => (
-                      <div
-                        key={index}
-                        className={`event-popover-options ${
-                          locationPlace?.value == place?.value ? 'event-popover-options-active' : null
-                        }`}
-                        onClick={() => {
-                          setLocationPlace(place);
-                          form.setFieldValue(name, place?.value);
-                          setIsPopoverOpen(false);
-                        }}>
-                        {place?.label}
-                      </div>
-                    ))
-                  ) : (
-                    <NoContent />
-                  )}
+                <div>
+                  <>
+                    <div className="popover-section-header">
+                      {t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                    </div>
+                    <div className="search-scrollable-content">
+                      {allPlacesList?.length > 0 ? (
+                        allPlacesList?.map((place, index) => (
+                          <div
+                            key={index}
+                            className={`event-popover-options ${
+                              locationPlace?.value == place?.value ? 'event-popover-options-active' : null
+                            }`}
+                            onClick={() => {
+                              setLocationPlace(place);
+                              form.setFieldValue(name, place?.value);
+                              setIsPopoverOpen(false);
+                            }}>
+                            {place?.label}
+                          </div>
+                        ))
+                      ) : (
+                        <NoContent />
+                      )}
+                    </div>
+                  </>
+
+                  <div className="popover-section-header">
+                    {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                  </div>
+                  <div className="search-scrollable-content">
+                    {allPlacesArtsdataList?.length > 0 ? (
+                      allPlacesArtsdataList?.map((place, index) => (
+                        <div
+                          key={index}
+                          className="event-popover-options"
+                          onClick={() => {
+                            setLocationPlace(place);
+                            form.setFieldValue(name, place?.uri);
+                            setIsPopoverOpen(false);
+                          }}>
+                          {place?.label}
+                        </div>
+                      ))
+                    ) : (
+                      <NoContent />
+                    )}
+                  </div>
                 </div>
               </div>
             }>
@@ -387,7 +468,15 @@ export const renderFormFields = ({
         label={label}
         name={name}
         key={key}
-        initialValue={initialValue}
+        initialValue={
+          Array.isArray(initialValue)
+            ? initialValue?.length > 0
+              ? initialValue
+              : datatype === dataTypes.URI_STRING_ARRAY
+              ? [undefined]
+              : []
+            : initialValue
+        }
         required={required}
         hidden={hidden}
         style={style}
@@ -424,6 +513,7 @@ export const returnFormDataWithFields = ({
   setImageCropOpen,
   placesSearch,
   allPlacesList,
+  allPlacesArtsdataList,
   locationPlace,
   setLocationPlace,
   setIsPopoverOpen,
@@ -489,6 +579,7 @@ export const returnFormDataWithFields = ({
           : null,
       placesSearch,
       allPlacesList,
+      allPlacesArtsdataList,
       locationPlace,
       setLocationPlace,
       setIsPopoverOpen,

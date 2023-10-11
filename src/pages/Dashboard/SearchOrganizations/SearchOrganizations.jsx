@@ -15,9 +15,7 @@ import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import CreateEntityButton from '../../../components/Card/Common/CreateEntityButton';
 import { PathName } from '../../../constants/pathName';
-import { artsDataDuplicateFilter } from '../../../utils/artsDataEntityFilter';
 import { Popover } from 'antd';
-import { getArtsDataEntities } from '../../../services/artsData';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
@@ -45,6 +43,7 @@ function SearchOrganizations() {
     calendarId,
     searchKey: '',
     classes: decodeURIComponent(query.toString()),
+    includeArtsdata: true,
     sessionId: timestampRef,
   });
 
@@ -52,7 +51,8 @@ function SearchOrganizations() {
 
   useEffect(() => {
     if (initialEntities && currentCalendarData) {
-      setOrganizationList(initialEntities);
+      setOrganizationList(initialEntities?.cms);
+      setOrganizationListArtsData(initialEntities?.artsdata);
     }
   }, [initialOrganizersLoading]);
 
@@ -67,17 +67,11 @@ function SearchOrganizations() {
   const searchHandler = (value) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.organization);
-    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
+    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId, includeArtsdata: true })
       .unwrap()
       .then((response) => {
-        setOrganizationList(response);
-      })
-      .catch((error) => console.log(error));
-
-    getArtsDataEntities({ searchKeyword: value, entityType: entitiesClass.organization })
-      .then((response) => {
-        const filteredArtsData = artsDataDuplicateFilter({ artsData: response?.result, data: organizationList });
-        setOrganizationListArtsData(filteredArtsData);
+        setOrganizationList(response?.cms);
+        setOrganizationListArtsData(response?.artsdata);
       })
       .catch((error) => console.log(error));
   };
@@ -163,9 +157,14 @@ function SearchOrganizations() {
                               setIsPopoverOpen(false);
                             }}>
                             <EntityCard
-                              title={organizer?.name}
+                              title={contentLanguageBilingual({
+                                en: organizer?.name?.en,
+                                fr: organizer?.name?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              })}
                               description={organizer?.description}
-                              artsDataLink={`${process.env.REACT_APP_ARTS_DATA_PAGE_URI}${organizer?.id}`}
+                              artsDataLink={organizer?.uri}
                               Logo={organizer.logo ? <img src={organizer?.logo?.thumbnail?.uri} /> : <Logo />}
                               linkText={t('dashboard.organization.createNew.search.linkText')}
                               onClick={() => artsDataClickHandler(organizer)}

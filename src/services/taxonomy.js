@@ -7,12 +7,15 @@ export const taxonomyApi = createApi({
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getAllTaxonomy: builder.query({
-      query: ({ calendarId, search = '', taxonomyClass, includeConcepts, page = 1, limit = 200 }) => ({
-        url: `taxonomy?search=${search}&taxonomy-class=${taxonomyClass}&include-concepts=${includeConcepts}&page=${page}&limit=${limit}`,
+      query: ({ calendarId, query = '', filters, page = 1, limit = 200, taxonomyClass, includeConcepts }) => ({
+        url: `taxonomy?query=${query}&${filters}&page=${page}&limit=${limit}&taxonomy-class=${taxonomyClass}&include-concepts=${includeConcepts}`,
         headers: {
           'calendar-id': calendarId,
         },
       }),
+      providesTags: (result) =>
+        result ? [...result.data.map(({ id }) => ({ type: 'taxonomy', id: id })), 'taxonomy'] : ['taxonomy'],
+      transformResponse: (response) => response,
     }),
     getTaxonomy: builder.query({
       query: ({ id, includeConcepts, calendarId }) => ({
@@ -22,8 +25,23 @@ export const taxonomyApi = createApi({
         },
       }),
     }),
+    deleteTaxonomy: builder.mutation({
+      query: ({ id, calendarId }) => ({
+        url: `taxonomy/${id}`,
+        method: 'DELETE',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: 'taxonomy', id: arg.id }],
+    }),
   }),
 });
 
-export const { useGetAllTaxonomyQuery, useGetTaxonomyQuery, useLazyGetAllTaxonomyQuery, useLazyGetTaxonomyQuery } =
-  taxonomyApi;
+export const {
+  useGetAllTaxonomyQuery,
+  useGetTaxonomyQuery,
+  useLazyGetAllTaxonomyQuery,
+  useLazyGetTaxonomyQuery,
+  useDeleteTaxonomyMutation,
+} = taxonomyApi;

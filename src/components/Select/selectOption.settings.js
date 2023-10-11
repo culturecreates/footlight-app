@@ -1,3 +1,4 @@
+import { sourceOptions } from '../../constants/sourceOptions';
 import { contentLanguageBilingual } from '../../utils/bilingual';
 import SelectionItem from '../List/SelectionItem';
 import { EnvironmentOutlined } from '@ant-design/icons';
@@ -22,45 +23,63 @@ export const taxonomyOptions = (data, user, mappedToField, calendarContentLangua
   return options;
 };
 
-export const placesOptions = (data, user, calendarContentLanguage) => {
+export const placesOptions = (data, user, calendarContentLanguage, source = sourceOptions.CMS) => {
   let options = data?.map((place) => {
     return {
       label: (
         <SelectionItem
           itemWidth="100%"
           icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
-          name={contentLanguageBilingual({
-            en: place?.name?.en,
-            fr: place?.name?.fr,
-            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-            calendarContentLanguage: calendarContentLanguage,
-          })}
-          description={contentLanguageBilingual({
-            en: place?.disambiguatingDescription?.en,
-            fr: place?.disambiguatingDescription?.fr,
-            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-            calendarContentLanguage: calendarContentLanguage,
-          })}
+          name={
+            place?.name?.en || place?.name?.fr
+              ? contentLanguageBilingual({
+                  en: place?.name?.en,
+                  fr: place?.name?.fr,
+                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                  calendarContentLanguage: calendarContentLanguage,
+                })
+              : typeof place?.name === 'string' && place?.name
+          }
+          description={
+            place?.disambiguatingDescription?.en || place?.disambiguatingDescription?.fr
+              ? contentLanguageBilingual({
+                  en: place?.disambiguatingDescription?.en,
+                  fr: place?.disambiguatingDescription?.fr,
+                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                  calendarContentLanguage: calendarContentLanguage,
+                })
+              : typeof place?.disambiguatingDescription === 'string' && place?.disambiguatingDescription
+          }
+          artsDataLink={place?.uri}
+          showExternalSourceLink={true}
         />
       ),
       value: place?.id,
-      name: contentLanguageBilingual({
-        en: place?.name?.en,
-        fr: place?.name?.fr,
-        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-        calendarContentLanguage: calendarContentLanguage,
-      }),
-      description: contentLanguageBilingual({
-        en: place?.disambiguatingDescription?.en,
-        fr: place?.disambiguatingDescription?.fr,
-        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-        calendarContentLanguage: calendarContentLanguage,
-      }),
+      name:
+        place?.name?.en || place?.name?.fr
+          ? contentLanguageBilingual({
+              en: place?.name?.en,
+              fr: place?.name?.fr,
+              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+              calendarContentLanguage: calendarContentLanguage,
+            })
+          : typeof place?.name === 'string' && place?.name,
+      description:
+        place?.disambiguatingDescription?.en || place?.disambiguatingDescription?.fr
+          ? contentLanguageBilingual({
+              en: place?.disambiguatingDescription?.en,
+              fr: place?.disambiguatingDescription?.fr,
+              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+              calendarContentLanguage: calendarContentLanguage,
+            })
+          : typeof place?.disambiguatingDescription === 'string' && place?.disambiguatingDescription,
       postalAddress: place?.postalAddress ?? place?.address,
       accessibility: place?.accessibility ?? [],
       openingHours: place?.openingHours,
       key: place?.id,
       sameAs: place?.sameAs,
+      source: source,
+      uri: place?.uri,
     };
   });
   return options;

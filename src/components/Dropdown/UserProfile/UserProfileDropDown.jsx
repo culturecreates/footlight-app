@@ -56,10 +56,7 @@ const UserProfileDropDown = () => {
       trigger={['click']}>
       <div className="user-profile-dropwdown-content">
         <Avatar className="dropdown-avatar" src={user.profileImage} size={32} />
-        <span className="user-profile-user-name">
-          {user?.firstName?.charAt(0)}
-          {user?.lastName}
-        </span>
+        <span className="user-profile-user-name">{user?.userName}</span>
         <CaretDownOutlined />
       </div>
     </Dropdown>
