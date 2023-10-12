@@ -67,6 +67,10 @@ const AddTaxonomy = () => {
       setSearchParams(location.state?.id);
     }
   }, []);
+  useEffect(() => {
+    console.log(taxonomyData, conceptData);
+    console.log(location.state?.dynamic);
+  }, [conceptData]);
 
   useEffect(() => {
     if (taxonomyId) {
@@ -75,15 +79,17 @@ const AddTaxonomy = () => {
         .then((res) => {
           setConceptData(res.concepts);
           setTaxonomyData(res);
+          setFormValues({
+            classType: res?.taxonomyClass,
+            name: res?.name,
+            description: res?.disambiguatingDescription,
+            id: res?.id,
+            userAccess: [true],
+            mapToField: res?.mappedToField,
+          });
         });
     }
-    console.log(formValues);
-  }, [taxonomyId, formValues]);
-
-  const setClassValue = () => {
-    console.log(taxonomyData);
-  };
-  setClassValue();
+  }, [taxonomyId]);
 
   const openAddNewConceptModal = () => {
     setAddNewPopup(true);
@@ -192,41 +198,43 @@ const AddTaxonomy = () => {
                         </Form.Item>
                       </Col>
                     </Row>
-                    <Row>
-                      <Col flex="423px">
-                        <Form.Item label={t('dashboard.taxonomy.addNew.mapToField')} className="classType">
-                          <Dropdown
-                            key={standardFields.join()[0]}
-                            overlayClassName="add-user-form-field-dropdown-wrapper"
-                            getPopupContainer={(trigger) => trigger.parentNode}
-                            overlayStyle={{ minWidth: '100%' }}
-                            menu={{
-                              items: standardFields,
-                              selectable: true,
-                              onSelect: ({ selectedKeys }) => {
-                                setFormValues({
-                                  ...formValues,
-                                  mapToField: selectedKeys[0],
-                                });
-                              },
-                            }}
-                            disabled={formValues?.classType === '' || standardFields.length === 0}
-                            trigger={['click']}>
-                            <div>
-                              <Typography.Text>
-                                {formValues?.mapToField
-                                  ? formValues?.mapToField
-                                  : t('dashboard.taxonomy.selectType.classPlaceHolder')}
-                              </Typography.Text>
-                              <DownOutlined style={{ fontSize: '16px' }} />
-                            </div>
-                          </Dropdown>
-                          <span className="field-description">
-                            {t(`dashboard.taxonomy.addNew.mapToFieldDescription`)}
-                          </span>
-                        </Form.Item>
-                      </Col>
-                    </Row>
+                    {(location.state?.dynamic === 'dynamic' || taxonomyId) && (
+                      <Row>
+                        <Col flex="423px">
+                          <Form.Item label={t('dashboard.taxonomy.addNew.mapToField')} className="classType">
+                            <Dropdown
+                              key={standardFields.join()[0]}
+                              overlayClassName="add-user-form-field-dropdown-wrapper"
+                              getPopupContainer={(trigger) => trigger.parentNode}
+                              overlayStyle={{ minWidth: '100%' }}
+                              menu={{
+                                items: standardFields,
+                                selectable: true,
+                                onSelect: ({ selectedKeys }) => {
+                                  setFormValues({
+                                    ...formValues,
+                                    mapToField: selectedKeys[0],
+                                  });
+                                },
+                              }}
+                              disabled={formValues?.classType === '' || standardFields.length === 0}
+                              trigger={['click']}>
+                              <div>
+                                <Typography.Text>
+                                  {formValues?.mapToField
+                                    ? formValues?.mapToField
+                                    : t('dashboard.taxonomy.selectType.classPlaceHolder')}
+                                </Typography.Text>
+                                <DownOutlined style={{ fontSize: '16px' }} />
+                              </div>
+                            </Dropdown>
+                            <span className="field-description">
+                              {t(`dashboard.taxonomy.addNew.mapToFieldDescription`)}
+                            </span>
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    )}
                     <Row>
                       <Col flex="423px">
                         <Form.Item label={t('dashboard.taxonomy.addNew.name')}>
@@ -277,9 +285,13 @@ const AddTaxonomy = () => {
                             </BilingualInput>
                           </ContentLanguageInput>
                           <span className="field-description">{t(`dashboard.taxonomy.addNew.nameDescription`)}</span>
-                          <Form.Item name="useTaxonomyName" valuePropName="checked">
-                            <Checkbox className="name-checkbox">{t(`dashboard.taxonomy.addNew.nameCheckbox`)}</Checkbox>
-                          </Form.Item>
+                          {location.state?.dynamic === 'dynamic' && (
+                            <Form.Item name="useTaxonomyName" valuePropName="checked">
+                              <Checkbox className="name-checkbox">
+                                {t(`dashboard.taxonomy.addNew.nameCheckbox`)}
+                              </Checkbox>
+                            </Form.Item>
+                          )}
                         </Form.Item>
                       </Col>
                     </Row>
@@ -338,50 +350,52 @@ const AddTaxonomy = () => {
                         </Form.Item>
                       </Col>
                     </Row>
-                    <Row>
-                      <Col flex="423px">
-                        <Form.Item
-                          label={t('dashboard.taxonomy.addNew.userAccess')}
-                          name="userAccess"
-                          className="user-access"
-                          rules={[
-                            ({ getFieldValue }) => ({
-                              validator(_, value) {
-                                if (value.length > 0 || getFieldValue('userAccess')) {
-                                  return Promise.resolve();
-                                } else return Promise.reject(new Error(t('dashboard.taxonomy.addNew.')));
-                              },
-                            }),
-                          ]}>
-                          <SearchableCheckbox
-                            onFilterChange={(values) => {
-                              setFormValues({ ...formValues, userAccess: values });
-                            }}
-                            data={[
-                              {
-                                key: userRolesWithTranslation[0].key,
-                                label: (
-                                  <Checkbox
-                                    key={userRolesWithTranslation[0].key}
-                                    style={{ marginLeft: '8px' }}
-                                    value={userRolesWithTranslation[0].key}>
-                                    {userRolesWithTranslation[0].label}
-                                  </Checkbox>
-                                ),
-                                filtervalue: userRolesWithTranslation[0].key,
-                              },
-                            ]}
-                            overlayStyle={{ minWidth: '100%' }}
-                            value={formValues.userAccess}>
-                            {t('dashboard.taxonomy.addNew.userAccessPlaceHolder')}
-                            <DownOutlined style={{ fontSize: '16px' }} />
-                          </SearchableCheckbox>
-                          <div className="field-description" style={{ marginTop: 8 }}>
-                            {t(`dashboard.taxonomy.addNew.userAccessDescription`)}
-                          </div>
-                        </Form.Item>
-                      </Col>
-                    </Row>
+                    {(location.state?.dynamic !== 'dynamic' || taxonomyId) && (
+                      <Row>
+                        <Col flex="423px">
+                          <Form.Item
+                            label={t('dashboard.taxonomy.addNew.userAccess')}
+                            name="userAccess"
+                            className="user-access"
+                            rules={[
+                              ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                  if (value.length > 0 || getFieldValue('userAccess')) {
+                                    return Promise.resolve();
+                                  } else return Promise.reject(new Error(t('dashboard.taxonomy.addNew.')));
+                                },
+                              }),
+                            ]}>
+                            <SearchableCheckbox
+                              onFilterChange={(values) => {
+                                setFormValues({ ...formValues, userAccess: values });
+                              }}
+                              data={[
+                                {
+                                  key: userRolesWithTranslation[0].key,
+                                  label: (
+                                    <Checkbox
+                                      key={userRolesWithTranslation[0].key}
+                                      style={{ marginLeft: '8px' }}
+                                      value={userRolesWithTranslation[0].key}>
+                                      {userRolesWithTranslation[0].label}
+                                    </Checkbox>
+                                  ),
+                                  filtervalue: userRolesWithTranslation[0].key,
+                                },
+                              ]}
+                              overlayStyle={{ minWidth: '100%' }}
+                              value={formValues.userAccess}>
+                              {t('dashboard.taxonomy.addNew.userAccessPlaceHolder')}
+                              <DownOutlined style={{ fontSize: '16px' }} />
+                            </SearchableCheckbox>
+                            <div className="field-description" style={{ marginTop: 8 }}>
+                              {t(`dashboard.taxonomy.addNew.userAccessDescription`)}
+                            </div>
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    )}
                   </div>
                 </Card>
               </div>

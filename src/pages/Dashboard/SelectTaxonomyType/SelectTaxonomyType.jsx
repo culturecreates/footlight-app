@@ -28,9 +28,9 @@ const SelectTaxonomyType = () => {
     console.log('clicked field option');
   };
 
-  const navigationHandler = () => {
+  const navigationHandler = (dynamic) => {
     navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomy}`, {
-      state: { selectedClass: selectedClass.key },
+      state: { selectedClass: selectedClass.key, dynamic: dynamic },
     });
   };
 
@@ -127,7 +127,7 @@ const SelectTaxonomyType = () => {
                           iconrender={<PlusOutlined style={{ fontSize: '24px' }} />}
                           label={t('dashboard.taxonomy.selectType.newField')}
                           style={{ width: '203.5px', height: '104px', padding: 16 }}
-                          onClick={() => navigationHandler()}
+                          onClick={() => navigationHandler('not-dynamic')}
                         />
                       </Col>
                       <Col>
@@ -141,7 +141,7 @@ const SelectTaxonomyType = () => {
                             padding: 16,
                             ...(standardFields.length < 1 && selectedClass.label !== '' && buttonStyles),
                           }}
-                          //   onClick={() => setDateType(dateTypes.SINGLE)}
+                          onClick={() => navigationHandler('dynamic')}
                         />
                       </Col>
                     </Row>

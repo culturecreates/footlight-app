@@ -11,7 +11,7 @@ function SearchableCheckbox(props) {
   const { children, allowSearch, data, onFilterChange, open, value, loading = false } = props;
   const { t } = useTranslation();
   let items = data ?? [];
-  console.log(value);
+
   useEffect(() => {
     if (allowSearch) {
       props.searchImplementation();

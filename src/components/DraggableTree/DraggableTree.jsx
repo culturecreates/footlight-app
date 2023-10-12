@@ -23,7 +23,7 @@ const DraggableTree = ({ data, setData, addNewPopup, setAddNewPopup, deleteDispl
   const [engGData, setEngGData] = useState([]);
   const [frenchGData, setFrenchGData] = useState([]);
   const [expandedKeys, setExpandedKeys] = useState(['0-0', '0-0-0', '0-0-0-0']);
-  const [selectedNode, setSelectedNode] = useState(null);
+  //   const [selectedNode, setSelectedNode] = useState(null);
   const [newConceptName, setNewConceptName] = useState({});
 
   const { t } = useTranslation();
@@ -105,8 +105,15 @@ const DraggableTree = ({ data, setData, addNewPopup, setAddNewPopup, deleteDispl
   };
 
   const handleClick = (node) => {
-    setSelectedNode(node);
-    console.log(selectedNode);
+    // setSelectedNode(node);
+
+    const item = data.map((item) => {
+      if (item.id === node.key) {
+        return item;
+      }
+    });
+    setNewConceptName({ fr: item[0]?.name?.fr, en: item[0]?.name?.en });
+    console.log(newConceptName);
     setAddNewPopup(true);
   };
 
@@ -115,14 +122,13 @@ const DraggableTree = ({ data, setData, addNewPopup, setAddNewPopup, deleteDispl
   };
 
   const handleAddChildModalClose = () => {
-    setNewConceptName('');
     setAddNewPopup(false);
   };
 
   const handleAddChild = () => {
     const newChildNode = {
-      id: Date.now(),
-      name: { en: newConceptName, fr: newConceptName },
+      id: Date.now().toString(),
+      name: { en: newConceptName?.en, fr: newConceptName?.fr },
       children: [],
     };
 
@@ -248,9 +254,10 @@ const DraggableTree = ({ data, setData, addNewPopup, setAddNewPopup, deleteDispl
                 >
                   <TextArea
                     autoSize
+                    value={newConceptName.fr}
                     autoComplete="off"
                     placeholder={t('dashboard.taxonomy.addNew.frDescriptionPlaceHolder')}
-                    onChange={(e) => setNewConceptName(e.target.value)}
+                    onChange={(e) => setNewConceptName({ ...newConceptName, fr: e.target.value })}
                     style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                     size="large"
                   />
@@ -272,8 +279,9 @@ const DraggableTree = ({ data, setData, addNewPopup, setAddNewPopup, deleteDispl
                   <TextArea
                     autoSize
                     autoComplete="off"
+                    value={newConceptName.en}
                     placeholder={t('dashboard.taxonomy.addNew.enDescriptionPlaceHolder')}
-                    onChange={(e) => setNewConceptName(e.target.value)}
+                    onChange={(e) => setNewConceptName({ ...newConceptName, en: e.target.value })}
                     style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                     size="large"
                   />

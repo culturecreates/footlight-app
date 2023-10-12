@@ -9,6 +9,10 @@
   width: 100%;
 }
 
+.draggable-tree .ant-tree-list {
+  flex: 1;
+}
+
 .draggable-tree .tree-item {
   display: flex;
   padding: 8px;
