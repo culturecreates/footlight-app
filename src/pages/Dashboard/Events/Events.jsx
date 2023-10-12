@@ -32,7 +32,7 @@ function Events() {
   const [currentCalendarData, pageNumber, setPageNumber] = useOutletContext();
 
   const [getEvents, { currentData: eventsData, isLoading, isFetching }] = useLazyGetEventsQuery();
-  const [getAllUsers, { currentData: userFilterData, isLoading: allUsersLoading }] = useLazyGetAllUsersQuery();
+  const [getAllUsers, { currentData: allUsersData, isLoading: allUsersLoading }] = useLazyGetAllUsersQuery();
   const [searchKey, setSearchKey] = useState();
 
   const [eventSearchQuery, setEventSearchQuery] = useState(
@@ -122,14 +122,15 @@ function Events() {
       : [],
   );
 
-  // let userFilterData = allUsersData?.data?.active?.slice()?.sort(function (x, y) {
-  //   return x?.id == user?.id ? -1 : y?.id == user?.id ? 1 : 0;
-  // });
+  let userFilterData = allUsersData?.data?.slice()?.sort(function (x, y) {
+    return x?._id == user?.id ? -1 : y?._id == user?.id ? 1 : 0;
+  });
 
-  // userFilterData = userFilterData
-  //   ?.slice(1)
-  //   ?.sort((a, b) => a?.firstName?.toLowerCase()?.localeCompare(b?.firstName?.toLowerCase()));
-  // userFilterData = [user].concat(userFilterData);
+  userFilterData = userFilterData
+    ?.slice(1)
+    ?.sort((a, b) => a?.firstName?.toLowerCase()?.localeCompare(b?.firstName?.toLowerCase()));
+
+  userFilterData = [{ _id: user?.id, ...user }]?.concat(userFilterData);
 
   const userSearch = () => {
     getAllUsers({
@@ -428,7 +429,7 @@ function Events() {
                     searchImplementation={userSearch}
                     setSearchKey={setSearchKey}
                     searchKey={searchKey}
-                    data={userFilterData?.data?.map((userDetail) => {
+                    data={userFilterData?.map((userDetail) => {
                       return {
                         key: userDetail?._id,
                         label: (
