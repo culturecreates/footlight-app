@@ -15,7 +15,7 @@ const SelectTaxonomyType = () => {
   const [formInstance] = Form.useForm();
   const { calendarId } = useParams();
 
-  const [selectedClass, setSelectedClass] = useState('');
+  const [selectedClass, setSelectedClass] = useState({ key: '', label: '' });
   const [standardFields, setStandardFields] = useState([]);
 
   const buttonStyles = {
@@ -29,12 +29,14 @@ const SelectTaxonomyType = () => {
   };
 
   const navigationHandler = () => {
-    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomy}`);
+    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomy}`, {
+      state: { selectedClass: selectedClass.key },
+    });
   };
 
   const setTaxonomyClass = ({ value, fieldType }) => {
     const selectedLabel = taxonomyClassTranslations.filter((item) => item.key === value);
-    setSelectedClass(selectedLabel[0].label);
+    setSelectedClass({ key: selectedLabel[0].key, label: selectedLabel[0].label });
     setStandardFields(standardFieldsForTaxonomy(selectedLabel[0].key));
     formInstance.setFieldsValue({ [fieldType]: value });
   };
@@ -88,7 +90,7 @@ const SelectTaxonomyType = () => {
                       trigger={['click']}>
                       <div>
                         <Typography.Text>
-                          {selectedClass || t('dashboard.taxonomy.selectType.classPlaceHolder')}
+                          {selectedClass.label || t('dashboard.taxonomy.selectType.classPlaceHolder')}
                         </Typography.Text>
                         <DownOutlined style={{ fontSize: '16px' }} />
                       </div>
@@ -132,12 +134,12 @@ const SelectTaxonomyType = () => {
                         <DateAction
                           iconrender={<DatabaseOutlined style={{ fontSize: '24px' }} />}
                           label={t('dashboard.taxonomy.selectType.existingField')}
-                          disabled={standardFields.length < 1 && selectedClass !== '' ? true : false}
+                          disabled={standardFields.length < 1 && selectedClass.label !== '' ? true : false}
                           style={{
                             width: '203.5px',
                             height: '104px',
                             padding: 16,
-                            ...(standardFields.length < 1 && selectedClass !== '' && buttonStyles),
+                            ...(standardFields.length < 1 && selectedClass.label !== '' && buttonStyles),
                           }}
                           //   onClick={() => setDateType(dateTypes.SINGLE)}
                         />
@@ -147,7 +149,7 @@ const SelectTaxonomyType = () => {
                       <Col flex="423px">
                         <span className="info-message">
                           {standardFields.length < 1 &&
-                            selectedClass != '' &&
+                            selectedClass.label != '' &&
                             t('dashboard.taxonomy.selectType.noFieldAvailable')}
                         </span>
                       </Col>

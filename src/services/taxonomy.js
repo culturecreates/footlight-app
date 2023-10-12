@@ -35,6 +35,16 @@ export const taxonomyApi = createApi({
       }),
       invalidatesTags: (result, error, arg) => [{ type: 'taxonomy', id: arg.id }],
     }),
+    addTaxonomy: builder.mutation({
+      query: ({ body, calendarId }) => ({
+        url: `taxonomy`,
+        method: 'POST',
+        headers: {
+          'calendar-id': calendarId,
+        },
+        body: body,
+      }),
+    }),
   }),
 });
 
@@ -44,4 +54,5 @@ export const {
   useLazyGetAllTaxonomyQuery,
   useLazyGetTaxonomyQuery,
   useDeleteTaxonomyMutation,
+  useAddTaxonomyMutation,
 } = taxonomyApi;
