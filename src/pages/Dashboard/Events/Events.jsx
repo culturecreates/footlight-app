@@ -89,6 +89,7 @@ function Events() {
       ? decodeURIComponent(sessionStorage.getItem('users'))?.split(',')
       : [],
   );
+
   let initialSelectedUsers = {};
   for (let index = 0; index < userFilter?.length; index++) {
     Object.assign(initialSelectedUsers, { [userFilter[index]]: true });
