@@ -6,6 +6,7 @@
 .draggable-tree {
   display: flex;
   justify-content: space-between;
+  width: 100%;
 }
 
 .draggable-tree .tree-item {
@@ -34,7 +35,7 @@
 
 .draggable-tree .ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected:hover,
 .draggable-tree .ant-tree .ant-tree-treenode:hover {
-  background-color: rgb(240, 239, 239);
+  background-color: #eff2ff;
   transition: 0.3s;
 }
 
@@ -72,3 +73,6 @@
   align-items: center;
 }
 
+.custom-common-modal-container .ant-modal-footer .outlined-label {
+  color: #ce1111;
+}
