@@ -90,8 +90,10 @@ export const treeEntitiesOption = (data, user, calendarContentLanguage, source =
                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                   calendarContentLanguage: calendarContentLanguage,
                 })
-              : typeof entity?.disambiguatingDescription === 'string' && entity?.disambiguatingDescription
+              : typeof entity?.description === 'string' && entity?.description
           }
+          artsDataLink={entity?.uri}
+          showExternalSourceLink={true}
         />
       ),
       value: entity?.id,
@@ -113,7 +115,7 @@ export const treeEntitiesOption = (data, user, calendarContentLanguage, source =
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             })
-          : typeof entity?.disambiguatingDescription === 'string' && entity?.disambiguatingDescription,
+          : typeof entity?.description === 'string' && entity?.description,
       contact: entity?.contactPoint,
       uri: entity?.uri,
       source: source,

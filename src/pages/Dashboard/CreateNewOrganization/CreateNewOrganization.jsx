@@ -44,6 +44,7 @@ import { usePrompt } from '../../../hooks/usePrompt';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { sourceOptions } from '../../../constants/sourceOptions';
+import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -175,11 +176,26 @@ function CreateNewOrganization() {
   const onSaveHandler = (event) => {
     event?.preventDefault();
     setShowDialog(false);
+    let validateFieldList = [
+      ['name', 'fr'],
+      ['name', 'en'],
+    ];
+    if (
+      form.getFieldValue('socialMediaLinks')?.filter((link) => {
+        if (link) return true;
+      })?.length > 0
+    ) {
+      validateFieldList = validateFieldList?.concat(
+        form
+          .getFieldValue('socialMediaLinks')
+          ?.filter((link) => {
+            if (link) return true;
+          })
+          ?.map((link, index) => ['socialMediaLinks', index]),
+      );
+    }
     form
-      .validateFields([
-        ['name', 'fr'],
-        ['name', 'en'],
-      ])
+      .validateFields(validateFieldList)
       .then(() => {
         var values = form.getFieldsValue(true);
         let organizationPayload = {};
@@ -526,7 +542,10 @@ function CreateNewOrganization() {
             },
           });
         }
-        if (organizationData?.sourceId) getArtsData(organizationData?.sourceId);
+        if (organizationData?.derivedFrom?.uri) {
+          let sourceId = getExternalSourceId(organizationData?.derivedFrom?.uri);
+          getArtsData(sourceId);
+        }
         if (organizationData?.place?.entityId) {
           getPlace({ placeId: organizationData?.place?.entityId, calendarId })
             .unwrap()

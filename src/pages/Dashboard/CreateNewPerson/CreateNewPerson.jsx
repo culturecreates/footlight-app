@@ -32,6 +32,7 @@ import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndica
 import { userRoles } from '../../../constants/userRoles';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { usePrompt } from '../../../hooks/usePrompt';
+import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -155,11 +156,26 @@ function CreateNewPerson() {
   const onSaveHandler = (event) => {
     event?.preventDefault();
     setShowDialog(false);
+    let validateFieldList = [
+      ['name', 'fr'],
+      ['name', 'en'],
+    ];
+    if (
+      form.getFieldValue('socialMediaLinks')?.filter((link) => {
+        if (link) return true;
+      })?.length > 0
+    ) {
+      validateFieldList = validateFieldList?.concat(
+        form
+          .getFieldValue('socialMediaLinks')
+          ?.filter((link) => {
+            if (link) return true;
+          })
+          ?.map((link, index) => ['socialMediaLinks', index]),
+      );
+    }
     form
-      .validateFields([
-        ['name', 'fr'],
-        ['name', 'en'],
-      ])
+      .validateFields(validateFieldList)
       .then(() => {
         var values = form.getFieldsValue(true);
         let personPayload = {};
@@ -300,7 +316,10 @@ function CreateNewPerson() {
             },
           });
         }
-        if (personData?.sourceId) getArtsData(personData?.sourceId);
+        if (personData?.derivedFrom?.uri) {
+          let sourceId = getExternalSourceId(personData?.derivedFrom?.uri);
+          getArtsData(sourceId);
+        }
       } else
         window.location.replace(
           `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.People}/${personId}`,

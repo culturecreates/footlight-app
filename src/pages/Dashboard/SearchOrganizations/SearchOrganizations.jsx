@@ -164,7 +164,7 @@ function SearchOrganizations() {
                                 calendarContentLanguage: calendarContentLanguage,
                               })}
                               description={organizer?.description}
-                              artsDataLink={`${process.env.REACT_APP_ARTS_DATA_PAGE_URI}${organizer?.id}`}
+                              artsDataLink={organizer?.uri}
                               Logo={organizer.logo ? <img src={organizer?.logo?.thumbnail?.uri} /> : <Logo />}
                               linkText={t('dashboard.organization.createNew.search.linkText')}
                               onClick={() => artsDataClickHandler(organizer)}

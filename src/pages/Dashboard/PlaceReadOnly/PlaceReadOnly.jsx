@@ -29,6 +29,7 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { loadArtsDataPlaceEntity } from '../../../services/artsData';
+import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -82,7 +83,10 @@ function PlaceReadOnly() {
 
   useEffect(() => {
     if (placeSuccess) {
-      if (placeData?.sourceId) getArtsDataPlace(placeData?.sourceId);
+      if (placeData?.derivedFrom?.uri) {
+        let sourceId = getExternalSourceId(placeData?.derivedFrom?.uri);
+        getArtsDataPlace(sourceId);
+      }
       if (placeData?.containedInPlace?.entityId) {
         let initialPlace = [];
         let initialPlaceAccessibiltiy = [];
@@ -178,7 +182,7 @@ function PlaceReadOnly() {
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                   </h4>
-                  <p className="read-only-event-content-sub-title-secondary">
+                  <p className="read-only-event-content-sub-title-primary">
                     {contentLanguageBilingual({
                       en: placeData?.disambiguatingDescription?.en,
                       fr: placeData?.disambiguatingDescription?.fr,
@@ -558,6 +562,7 @@ function PlaceReadOnly() {
                         name={locationPlace?.name}
                         description={locationPlace?.description}
                         artsDataLink={artsDataLinkChecker(locationPlace?.sameAs)}
+                        artsDataDetails={true}
                         itemWidth="423px"
                         calendarContentLanguage={calendarContentLanguage}
                         bordered
