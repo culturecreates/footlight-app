@@ -1,0 +1,82 @@
+.draggable-tree .addmodal .ant-modal-body {
+  display: flex;
+  align-items: center;
+}
+
+.draggable-tree {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.draggable-tree .ant-tree-list {
+  flex: 1;
+}
+
+.draggable-tree .tree-item {
+  display: flex;
+  padding: 8px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  align-self: stretch;
+  background: var(--background-neutrals-ground, #fff);
+  border-radius: 0px 4px 4px 0px;
+  border: solid 4px #eff2ff;
+  border-right: none;
+  height: 140px;
+  overflow-y: scroll;
+  color: var(--content-neutral-primary, #222732);
+}
+
+.draggable-tree .ant-tree .ant-tree-treenode-draggable .ant-tree-draggable-icon {
+  min-width: 24px;
+}
+
+.draggable-tree .ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
+  background-color: #fff;
+}
+
+.draggable-tree .ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected:hover,
+.draggable-tree .ant-tree .ant-tree-treenode:hover {
+  background-color: #eff2ff;
+  transition: 0.3s;
+}
+
+.draggable-tree .ant-tree .anticon {
+  width: 20px;
+  height: 20px;
+  color: #222732;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.draggable-tree .ant-tree .ant-tree-treenode-draggable .ant-tree-draggable-icon {
+  opacity: 1;
+}
+
+.draggable-tree .ant-tree.ant-tree-block-node .ant-tree-list-holder-inner .ant-tree-node-content-wrapper {
+  flex: auto;
+  color: var(--content-neutral-primary, #222732);
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.draggable-tree .tag-header {
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px; /* 133.333% */
+}
+
+.draggable-tree .ant-tree .ant-tree-treenode {
+  align-items: center;
+}
+
+.custom-common-modal-container .ant-modal-footer .outlined-label {
+  color: #ce1111;
+}

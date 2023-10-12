@@ -909,7 +909,10 @@
           "description": "Manage a hierarchical list of concepts for the taxonomy, in all calendar language(s). Concepts are available for selection from the mapped input field. Drag concepts to rearrange and/or nest them. When you move a concept in one language, it is moved in all languages.",
           "item": "Item",
           "french": "French",
-          "english": "English"
+          "english": "English",
+          "add": "Add concept",
+          "edit": "Edit concept",
+          "conceptName": "Concept name"
         }
       }
     }

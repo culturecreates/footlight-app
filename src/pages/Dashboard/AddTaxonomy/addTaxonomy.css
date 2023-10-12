@@ -96,3 +96,16 @@
   width: fit-content;
   border-radius: 4px 4px 0px 0px;
 }
+
+.add-taxonomy-wrapper .concept-card .outlined-button {
+  display: flex;
+  color: var(--content-action-default, #1b3de6);
+  text-align: center;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  flex-direction: row-reverse;
+  gap: 8px;
+  padding: 10px; /* Adjust the value according to your design */
+}
