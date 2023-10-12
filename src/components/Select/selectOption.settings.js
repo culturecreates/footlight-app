@@ -48,8 +48,10 @@ export const placesOptions = (data, user, calendarContentLanguage, source = sour
                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                   calendarContentLanguage: calendarContentLanguage,
                 })
-              : typeof place?.disambiguatingDescription === 'string' && place?.disambiguatingDescription
+              : typeof place?.description === 'string' && place?.description
           }
+          artsDataLink={place?.uri}
+          showExternalSourceLink={true}
         />
       ),
       value: place?.id,
@@ -70,7 +72,7 @@ export const placesOptions = (data, user, calendarContentLanguage, source = sour
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             })
-          : typeof place?.disambiguatingDescription === 'string' && place?.disambiguatingDescription,
+          : typeof place?.description === 'string' && place?.description,
       postalAddress: place?.postalAddress ?? place?.address,
       accessibility: place?.accessibility ?? [],
       openingHours: place?.openingHours,

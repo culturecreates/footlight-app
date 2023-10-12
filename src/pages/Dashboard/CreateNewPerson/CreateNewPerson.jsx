@@ -156,11 +156,26 @@ function CreateNewPerson() {
   const onSaveHandler = (event) => {
     event?.preventDefault();
     setShowDialog(false);
+    let validateFieldList = [
+      ['name', 'fr'],
+      ['name', 'en'],
+    ];
+    if (
+      form.getFieldValue('socialMediaLinks')?.filter((link) => {
+        if (link) return true;
+      })?.length > 0
+    ) {
+      validateFieldList = validateFieldList?.concat(
+        form
+          .getFieldValue('socialMediaLinks')
+          ?.filter((link) => {
+            if (link) return true;
+          })
+          ?.map((link, index) => ['socialMediaLinks', index]),
+      );
+    }
     form
-      .validateFields([
-        ['name', 'fr'],
-        ['name', 'en'],
-      ])
+      .validateFields(validateFieldList)
       .then(() => {
         var values = form.getFieldsValue(true);
         let personPayload = {};

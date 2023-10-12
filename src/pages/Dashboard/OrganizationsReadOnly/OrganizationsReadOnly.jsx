@@ -25,6 +25,7 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { loadArtsDataEntity } from '../../../services/artsData';
+import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 
 function OrganizationsReadOnly() {
   const { t } = useTranslation();
@@ -79,7 +80,10 @@ function OrganizationsReadOnly() {
 
   useEffect(() => {
     if (organizationSuccess) {
-      if (organizationData?.sourceId) getArtsData(organizationData?.sourceId);
+      if (organizationData?.derivedFrom?.uri) {
+        let sourceId = getExternalSourceId(organizationData?.derivedFrom?.uri);
+        getArtsData(sourceId);
+      }
       if (organizationData?.place?.entityId) {
         let initialPlace = [];
         let initialPlaceAccessibiltiy = [];
@@ -174,7 +178,7 @@ function OrganizationsReadOnly() {
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                   </h4>
-                  <p className="read-only-event-content-sub-title-secondary">
+                  <p className="read-only-event-content-sub-title-primary">
                     {contentLanguageBilingual({
                       en: organizationData?.disambiguatingDescription?.en,
                       fr: organizationData?.disambiguatingDescription?.fr,
