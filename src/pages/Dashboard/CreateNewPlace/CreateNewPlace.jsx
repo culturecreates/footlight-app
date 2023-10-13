@@ -69,6 +69,7 @@ import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { userRoles } from '../../../constants/userRoles';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
+import { sourceOptions } from '../../../constants/sourceOptions';
 
 const { TextArea } = Input;
 
@@ -149,6 +150,7 @@ function CreateNewPlace() {
   });
   const [containedInPlace, setContainedInPlace] = useState();
   const [allPlacesList, setAllPlacesList] = useState([]);
+  const [allPlacesArtsdataList, setAllPlacesArtsdataList] = useState([]);
   const [descriptionMinimumWordCount] = useState(1);
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [addedFields, setAddedFields] = useState([]);
@@ -156,6 +158,7 @@ function CreateNewPlace() {
   const [showDialog, setShowDialog] = useState(false);
   const [address, setAddress] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -313,7 +316,7 @@ function CreateNewPlace() {
         ])
         .then(() => {
           var values = form.getFieldsValue(true);
-          let placeObj, languageKey, dynamicFields;
+          let placeObj, languageKey, dynamicFields, containedInPlaceObj;
           if (calendarContentLanguage == contentLanguage.ENGLISH) languageKey = 'en';
           else if (calendarContentLanguage == contentLanguage.FRENCH) languageKey = 'fr';
           let postalObj = {
@@ -367,6 +370,17 @@ function CreateNewPlace() {
               width: imageCrop?.original?.width,
             },
           };
+          if (values?.containedInPlace || values?.containedInPlace?.length > 0) {
+            if (containedInPlace?.source === sourceOptions.CMS)
+              containedInPlaceObj = {
+                entityId: values?.containedInPlace,
+              };
+            else if (containedInPlace?.source === sourceOptions.ARTSDATA)
+              containedInPlaceObj = {
+                uri: values?.containedInPlace,
+              };
+          }
+
           placeObj = {
             name: {
               ...(values?.english && { en: values?.english }),
@@ -380,7 +394,7 @@ function CreateNewPlace() {
             }),
             ...(values?.openingHours && { openingHours: { uri: urlProtocolCheck(values?.openingHours) } }),
             ...(values?.containedInPlace && {
-              containedInPlace: values?.containedInPlace ? { entityId: values?.containedInPlace } : undefined,
+              containedInPlace: containedInPlaceObj,
             }),
             geo: {
               latitude: values?.latitude,
@@ -426,6 +440,7 @@ function CreateNewPlace() {
             }),
             ...(values?.dynamicFields && { dynamicFields }),
           };
+
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
             const formdata = new FormData();
             formdata.append('file', values?.dragger[0].originFileObj);
@@ -566,7 +581,10 @@ function CreateNewPlace() {
         if (placeId) containedInPlaceFilter = response?.cms?.filter((place) => place?.id != placeId);
         else containedInPlaceFilter = response?.cms;
 
-        setAllPlacesList(placesOptions(containedInPlaceFilter, user, calendarContentLanguage));
+        setAllPlacesList(placesOptions(containedInPlaceFilter, user, calendarContentLanguage, sourceOptions.CMS));
+        setAllPlacesArtsdataList(
+          placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+        );
       })
       .catch((error) => console.log(error));
   };
@@ -1502,27 +1520,62 @@ function CreateNewPlace() {
                     trigger={['click']}
                     content={
                       <div>
-                        <div className="search-scrollable-content">
-                          {allPlacesList?.length > 0 ? (
-                            allPlacesList?.map((place, index) => (
-                              <div
-                                key={index}
-                                className={`event-popover-options ${
-                                  containedInPlace?.value == place?.value ? 'event-popover-options-active' : null
-                                }`}
-                                onClick={() => {
-                                  setContainedInPlace(place);
-                                  form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.value);
-                                  setIsPopoverOpen({
-                                    ...isPopoverOpen,
-                                    containedInPlace: false,
-                                  });
-                                }}>
-                                {place?.label}
+                        <div>
+                          <>
+                            <div className="popover-section-header">
+                              {t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                            </div>
+                            <div className="search-scrollable-content">
+                              {allPlacesList?.length > 0 ? (
+                                allPlacesList?.map((place, index) => (
+                                  <div
+                                    key={index}
+                                    className={`event-popover-options ${
+                                      containedInPlace?.value == place?.value ? 'event-popover-options-active' : null
+                                    }`}
+                                    onClick={() => {
+                                      setContainedInPlace(place);
+                                      form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.value);
+                                      setIsPopoverOpen({
+                                        ...isPopoverOpen,
+                                        containedInPlace: false,
+                                      });
+                                    }}>
+                                    {place?.label}
+                                  </div>
+                                ))
+                              ) : (
+                                <NoContent />
+                              )}
+                            </div>
+                          </>
+                          {quickCreateKeyword !== '' && (
+                            <>
+                              <div className="popover-section-header">
+                                {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
                               </div>
-                            ))
-                          ) : (
-                            <NoContent />
+                              <div className="search-scrollable-content">
+                                {allPlacesArtsdataList?.length > 0 ? (
+                                  allPlacesArtsdataList?.map((place, index) => (
+                                    <div
+                                      key={index}
+                                      className="event-popover-options"
+                                      onClick={() => {
+                                        setContainedInPlace(place);
+                                        form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.uri);
+                                        setIsPopoverOpen({
+                                          ...isPopoverOpen,
+                                          containedInPlace: false,
+                                        });
+                                      }}>
+                                      {place?.label}
+                                    </div>
+                                  ))
+                                ) : (
+                                  <NoContent />
+                                )}
+                              </div>
+                            </>
                           )}
                         </div>
                       </div>
@@ -1531,10 +1584,12 @@ function CreateNewPlace() {
                       style={{ borderRadius: '4px', width: '423px' }}
                       placeholder={t('dashboard.places.createNew.addPlace.containedInPlace.placeholder')}
                       onChange={(e) => {
+                        setQuickCreateKeyword(e.target.value);
                         debounceSearchPlace(e.target.value);
                         setIsPopoverOpen({ ...isPopoverOpen, containedInPlace: true });
                       }}
-                      onClick={() => {
+                      onClick={(e) => {
+                        setQuickCreateKeyword(e.target.value);
                         setIsPopoverOpen({ ...isPopoverOpen, containedInPlace: true });
                       }}
                     />
