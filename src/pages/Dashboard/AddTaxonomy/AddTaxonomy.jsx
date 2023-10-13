@@ -32,6 +32,7 @@ const AddTaxonomy = () => {
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const [deleteDisplayFlag, setDeleteDisplayFlag] = useState(true);
+  const [newConceptName, setNewConceptName] = useState({ en: '', fr: '' });
   const [conceptData, setConceptData] = useState([]);
   const [standardFields, setStandardFields] = useState([]);
   const [taxonomyData, setTaxonomyData] = useState([]);
@@ -39,12 +40,12 @@ const AddTaxonomy = () => {
     classType: '',
     mapToField: '',
     name: {
-      french: '',
-      english: '',
+      fr: '',
+      en: '',
     },
     description: {
-      french: '',
-      english: '',
+      fr: '',
+      en: '',
     },
     userAccess: [false],
   });
@@ -208,7 +209,7 @@ const AddTaxonomy = () => {
                               getPopupContainer={(trigger) => trigger.parentNode}
                               overlayStyle={{ minWidth: '100%' }}
                               menu={{
-                                items: standardFields,
+                                items: standardFields.map((field) => ({ key: field, label: field })),
                                 selectable: true,
                                 onSelect: ({ selectedKeys }) => {
                                   setFormValues({
@@ -255,6 +256,13 @@ const AddTaxonomy = () => {
                                 ]}>
                                 <TextArea
                                   autoSize
+                                  value={formValues?.name.fr}
+                                  onChange={(e) => {
+                                    setFormValues({
+                                      ...formValues,
+                                      name: { ...formValues.name, fr: e.target.value },
+                                    });
+                                  }}
                                   autoComplete="off"
                                   placeholder={t('dashboard.taxonomy.addNew.frNamePlaceHolder')}
                                   style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
@@ -276,6 +284,13 @@ const AddTaxonomy = () => {
                                 ]}>
                                 <TextArea
                                   autoSize
+                                  value={formValues?.name.en}
+                                  onChange={(e) => {
+                                    setFormValues({
+                                      ...formValues,
+                                      name: { ...formValues.name, en: e.target.value },
+                                    });
+                                  }}
                                   autoComplete="off"
                                   placeholder={t('dashboard.taxonomy.addNew.enNamePlaceHolder')}
                                   style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
@@ -316,6 +331,13 @@ const AddTaxonomy = () => {
                                 <TextArea
                                   autoSize
                                   autoComplete="off"
+                                  value={formValues?.description.fr}
+                                  onChange={(e) => {
+                                    setFormValues({
+                                      ...formValues,
+                                      description: { ...formValues.description, fr: e.target.value },
+                                    });
+                                  }}
                                   placeholder={t('dashboard.taxonomy.addNew.frDescriptionPlaceHolder')}
                                   style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                                   size="large"
@@ -337,6 +359,13 @@ const AddTaxonomy = () => {
                                 <TextArea
                                   autoSize
                                   autoComplete="off"
+                                  value={formValues?.description.en}
+                                  onChange={(e) => {
+                                    setFormValues({
+                                      ...formValues,
+                                      description: { ...formValues.description, en: e.target.value },
+                                    });
+                                  }}
                                   placeholder={t('dashboard.taxonomy.addNew.enDescriptionPlaceHolder')}
                                   style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                                   size="large"
@@ -413,6 +442,8 @@ const AddTaxonomy = () => {
                           setData={setConceptData}
                           addNewPopup={addNewPopup}
                           setAddNewPopup={setAddNewPopup}
+                          newConceptName={newConceptName}
+                          setNewConceptName={setNewConceptName}
                           deleteDisplayFlag={deleteDisplayFlag}
                           setDeleteDisplayFlag={setDeleteDisplayFlag}
                         />

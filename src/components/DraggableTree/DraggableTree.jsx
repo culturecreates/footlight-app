@@ -12,7 +12,16 @@ import Outlined from '../../components/Button/Outlined';
 import BilingualInput from '../BilingualInput';
 import './draggableTree.css';
 
-const DraggableTree = ({ data, setData, addNewPopup, setAddNewPopup, deleteDisplayFlag, setDeleteDisplayFlag }) => {
+const DraggableTree = ({
+  data,
+  setData,
+  addNewPopup,
+  setAddNewPopup,
+  deleteDisplayFlag,
+  setDeleteDisplayFlag,
+  newConceptName,
+  setNewConceptName,
+}) => {
   const { TextArea } = Input;
 
   const [currentCalendarData] = useOutletContext();
@@ -24,7 +33,6 @@ const DraggableTree = ({ data, setData, addNewPopup, setAddNewPopup, deleteDispl
   const [frenchGData, setFrenchGData] = useState([]);
   const [expandedKeys, setExpandedKeys] = useState(['0-0', '0-0-0', '0-0-0-0']);
   //   const [selectedNode, setSelectedNode] = useState(null);
-  const [newConceptName, setNewConceptName] = useState({});
 
   const { t } = useTranslation();
 
@@ -122,6 +130,7 @@ const DraggableTree = ({ data, setData, addNewPopup, setAddNewPopup, deleteDispl
   };
 
   const handleAddChildModalClose = () => {
+    setNewConceptName({ en: '', fr: '' });
     setAddNewPopup(false);
   };
 
@@ -135,7 +144,7 @@ const DraggableTree = ({ data, setData, addNewPopup, setAddNewPopup, deleteDispl
     const updatedData = [...data];
     updatedData.push(newChildNode);
     setData(updatedData);
-
+    setNewConceptName({ en: '', fr: '' });
     handleAddChildModalClose();
   };
 
