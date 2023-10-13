@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './imageCrop.css';
 import { Row, Col, Space, Radio, Button } from 'antd';
@@ -15,18 +15,31 @@ function ImageCrop(props) {
     props;
   const { t } = useTranslation();
 
-  let ASPECT_RATIO_TYPE = {
+  const ASPECT_RATIO_TYPE = {
     large: {
       value: largeAspectRatio ? ratioChecker(largeAspectRatio) : 16 / 9,
       type: 'LARGE',
-      initial: cropValues?.large ?? undefined,
+      initial:
+        cropValues?.large?.height !== undefined &&
+        cropValues?.large?.width !== undefined &&
+        cropValues?.large?.x !== undefined &&
+        cropValues?.large?.y !== undefined
+          ? cropValues?.large
+          : undefined,
     },
     thumbnail: {
       value: thumbnailAspectRatio ? ratioChecker(thumbnailAspectRatio) : 3 / 2,
       type: 'THUMBNAIL',
-      initial: cropValues?.thumbnail ?? undefined,
+      initial:
+        cropValues?.thumbnail?.height !== undefined &&
+        cropValues?.thumbnail?.width !== undefined &&
+        cropValues?.thumbnail?.x !== undefined &&
+        cropValues?.thumbnail?.y !== undefined
+          ? cropValues?.thumbnail
+          : undefined,
     },
   };
+
   const [largeCrop, onLargeCropChange] = useState({ x: 0, y: 0 });
   const [thumbnailCrop, onThumbnailCropChange] = useState({ x: 0, y: 0 });
 
@@ -34,8 +47,8 @@ function ImageCrop(props) {
   const [thumbnailZoom, onThumbnailZoomChange] = useState(1);
 
   const [aspectRatioType, setAspectRatioType] = useState(ASPECT_RATIO_TYPE.large.type);
-  const [initialLargeCroppedArea, setInitialLargeCroppedArea] = useState(ASPECT_RATIO_TYPE.large.initial);
-  const [initialThumbnailCroppedArea, setInitialThumbnailCroppedArea] = useState(ASPECT_RATIO_TYPE.thumbnail.initial);
+  const [initialLargeCroppedArea, setInitialLargeCroppedArea] = useState(undefined);
+  const [initialThumbnailCroppedArea, setInitialThumbnailCroppedArea] = useState(undefined);
 
   const onCropAreaChange = (croppedArea, croppedAreaPixel) => {
     if (
@@ -99,15 +112,30 @@ function ImageCrop(props) {
     setOpen(false);
     let imageCrop = form.getFieldValue('imageCrop');
     if (imageCrop) {
-      setInitialLargeCroppedArea(imageCrop?.large);
-      setInitialThumbnailCroppedArea(imageCrop?.thumbnail);
+      if (
+        imageCrop?.large?.x !== undefined &&
+        imageCrop?.large?.y !== undefined &&
+        imageCrop?.large?.height !== undefined &&
+        imageCrop?.large?.width !== undefined
+      )
+        setInitialLargeCroppedArea(imageCrop?.large);
+      else setInitialLargeCroppedArea(undefined);
+      if (
+        imageCrop?.thumbnail?.x !== undefined &&
+        imageCrop?.thumbnail?.y !== undefined &&
+        imageCrop?.thumbnail?.height !== undefined &&
+        imageCrop?.thumbnail?.width !== undefined
+      )
+        setInitialThumbnailCroppedArea(imageCrop?.thumbnail);
+      else setInitialThumbnailCroppedArea(undefined);
+      setCropValues(imageCrop);
     }
     setAspectRatioType(ASPECT_RATIO_TYPE.large.type);
     onLargeCropChange({ x: 0, y: 0 });
     onThumbnailCropChange({ x: 0, y: 0 });
   };
 
-  const showCroppedImage = useCallback(async () => {
+  const showCroppedImage = async () => {
     try {
       const croppedImage = await getCroppedImg(image, cropValues?.large, null);
       setImage(croppedImage);
@@ -115,7 +143,12 @@ function ImageCrop(props) {
     } catch (e) {
       console.error(e);
     }
-  }, [cropValues?.large]);
+  };
+
+  useEffect(() => {
+    setInitialLargeCroppedArea(ASPECT_RATIO_TYPE.large.initial ?? undefined);
+    setInitialThumbnailCroppedArea(ASPECT_RATIO_TYPE.thumbnail.initial ?? undefined);
+  }, []);
 
   return (
     <CustomModal
