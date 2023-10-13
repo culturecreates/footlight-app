@@ -584,8 +584,9 @@ function AddEvent() {
                     imageCrop = {
                       ...imageCrop,
                       original: {
-                        ...imageCrop?.original,
                         entityId,
+                        height: response?.data?.height,
+                        width: response?.data?.width,
                       },
                     };
                   } else
