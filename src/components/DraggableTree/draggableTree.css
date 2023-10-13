@@ -80,3 +80,8 @@
 .custom-common-modal-container .ant-modal-footer .outlined-label {
   color: #ce1111;
 }
+
+.draggable-tree .ant-tree .ant-tree-node-content-wrapper:hover {
+  background-color: #eff2ff;
+  transition: 0.3s;
+}

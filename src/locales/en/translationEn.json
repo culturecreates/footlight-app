@@ -891,7 +891,7 @@
         "destinationHeading": "Select the destination for your taxonomy.",
         "name": "Taxonomy name",
         "nameCheckbox": "Use the taxonomy name to rename the field.",
-        "frNamePlaceHolder": "Enter taxonomy my name in French",
+        "frNamePlaceHolder": "Enter taxonomy name in French",
         "enNamePlaceHolder": "Enter taxonomy name in English",
         "mapToField": "Map to existing field",
         "mapToFieldDescription": "Select an input field for the taxonomy.",

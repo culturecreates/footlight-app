@@ -29,9 +29,10 @@ const SelectTaxonomyType = () => {
   };
 
   const navigationHandler = (dynamic) => {
-    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomy}`, {
-      state: { selectedClass: selectedClass.key, dynamic: dynamic },
-    });
+    selectedClass.key != '' &&
+      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomy}`, {
+        state: { selectedClass: selectedClass.key, dynamic: dynamic },
+      });
   };
 
   const setTaxonomyClass = ({ value, fieldType }) => {

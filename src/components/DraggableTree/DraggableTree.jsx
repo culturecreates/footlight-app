@@ -21,6 +21,7 @@ const DraggableTree = ({
   setDeleteDisplayFlag,
   newConceptName,
   setNewConceptName,
+  form,
 }) => {
   const { TextArea } = Input;
 
@@ -121,16 +122,24 @@ const DraggableTree = ({
       }
     });
     setNewConceptName({ fr: item[0]?.name?.fr, en: item[0]?.name?.en });
-    console.log(newConceptName);
     setAddNewPopup(true);
   };
 
   const editConceptHandler = (node) => {
-    console.log(node);
+    form.setFieldsValue({
+      french: node?.name?.fr,
+      english: node?.name?.en,
+    });
+    setAddNewPopup(true);
   };
 
   const handleAddChildModalClose = () => {
     setNewConceptName({ en: '', fr: '' });
+    form.setFieldsValue({
+      french: '',
+      english: '',
+    });
+
     setAddNewPopup(false);
   };
 
@@ -139,6 +148,7 @@ const DraggableTree = ({
       id: Date.now().toString(),
       name: { en: newConceptName?.en, fr: newConceptName?.fr },
       children: [],
+      isNew: true,
     };
 
     const updatedData = [...data];
