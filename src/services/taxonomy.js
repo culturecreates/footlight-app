@@ -45,6 +45,16 @@ export const taxonomyApi = createApi({
         body: body,
       }),
     }),
+    updateTaxonomy: builder.mutation({
+      query: ({ body, calendarId, taxonomyId }) => ({
+        url: `taxonomy/${taxonomyId}`,
+        method: 'PATCH',
+        headers: {
+          'calendar-id': calendarId,
+        },
+        body: body,
+      }),
+    }),
   }),
 });
 
@@ -55,4 +65,5 @@ export const {
   useLazyGetTaxonomyQuery,
   useDeleteTaxonomyMutation,
   useAddTaxonomyMutation,
+  useUpdateTaxonomyMutation,
 } = taxonomyApi;
