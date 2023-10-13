@@ -341,11 +341,13 @@ const UserManagement = () => {
   };
 
   const listItemHandler = (id) => {
-    id === user.id &&
+    if (adminCheckHandler()) {
+      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}/${id}`);
+    } else if (id === user.id) {
       navigate(
         `${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}?id=${id}`,
       );
-    adminCheckHandler() && navigate(`${location.pathname}${PathName.UserManagement}/${id}`);
+    }
   };
 
   return (
