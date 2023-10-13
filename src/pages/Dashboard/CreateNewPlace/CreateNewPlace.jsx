@@ -317,6 +317,7 @@ function CreateNewPlace() {
         .then(() => {
           var values = form.getFieldsValue(true);
           let placeObj, languageKey, dynamicFields, containedInPlaceObj;
+
           if (calendarContentLanguage == contentLanguage.ENGLISH) languageKey = 'en';
           else if (calendarContentLanguage == contentLanguage.FRENCH) languageKey = 'fr';
           let postalObj = {
