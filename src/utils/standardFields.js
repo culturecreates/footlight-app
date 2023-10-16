@@ -1,11 +1,12 @@
 import { taxonomyClass } from '../constants/taxonomyClass';
 
 export const standardFieldsForTaxonomy = (value, takenFields) => {
+  if (value === undefined) {
+    value = taxonomyClass.EVENT;
+  }
   let returnArr = [];
   const filter = (arr, taxonomyClass) => {
     arr.map((item) => {
-      console.log(takenFields, item);
-
       takenFields.map((takenItem) => {
         if (item != takenItem?.mappedToField && taxonomyClass == takenItem?.taxonomyClass) {
           returnArr.push(item);
