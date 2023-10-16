@@ -39,6 +39,7 @@ function QuickCreatePlace(props) {
     setLocationPlace,
     eventForm,
   } = props;
+
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const timestampRef = useRef(Date.now()).current;
