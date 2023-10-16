@@ -273,7 +273,6 @@ const Taxonomy = () => {
                     bordered={false}
                     pagination={{
                       onChange: (page) => {
-                        console.log(page);
                         setPageNumber(page);
                         window.scrollTo({
                           top: 0,
