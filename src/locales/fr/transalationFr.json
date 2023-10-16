@@ -880,6 +880,7 @@
       },
       "addNew": {
         "heading": "Nouvelle taxonomie",
+        "editHeading": "Modifier taxonomy",
         "save": "Sauvegarder",
         "class": "Classe",
         "destinationHeading": "Sélectionnez la destination de votre taxonomie.",

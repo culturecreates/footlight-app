@@ -169,7 +169,7 @@ const AddTaxonomy = () => {
                   <BreadCrumbButton />
                   <div className="add-Taxonomy-heading">
                     <h4>
-                      {taxonomyId ? t('dashboard.taxonomy.addNew.heading') : t('dashboard.taxonomy.addNew.heading')}
+                      {taxonomyId ? t('dashboard.taxonomy.addNew.editHeading') : t('dashboard.taxonomy.addNew.heading')}
                     </h4>
                   </div>
                 </Col>
@@ -452,7 +452,7 @@ const AddTaxonomy = () => {
                     <Row gutter={[24, 24]}>
                       <Col className="heading-concepts">{t('dashboard.taxonomy.addNew.concepts.heading')}</Col>
                       <Col className="text-concepts">{t('dashboard.taxonomy.addNew.concepts.description')}</Col>
-                      <Col flex="423px" style={{ display: 'flex', padding: 0 }}>
+                      <Col flex="423px" style={{ display: 'flex', padding: '0 12px' }}>
                         <DraggableTree
                           data={conceptData}
                           form={form}
