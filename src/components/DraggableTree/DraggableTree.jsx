@@ -228,7 +228,6 @@ const DraggableTree = ({
           ...selectedNode,
           children: [...(selectedNode.children || []), newChildNode],
         });
-        console.log('node', selectedNode);
         setData(updatedData);
       } else {
         const updatedData = [...data, newChildNode];
