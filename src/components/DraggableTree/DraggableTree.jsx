@@ -30,105 +30,152 @@ const DraggableTree = ({
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
-  const [engGData, setEngGData] = useState([]);
-  const [frenchGData, setFrenchGData] = useState([]);
-  const [expandedKeys, setExpandedKeys] = useState(['0-0', '0-0-0', '0-0-0-0']);
-  //   const [selectedNode, setSelectedNode] = useState(null);
-
   const { t } = useTranslation();
+  const [treeData1, setTreeData1] = useState();
+  const [treeData2, setTreeData2] = useState();
 
-  const formatTreeData = (data, language) => {
-    const formattedData = [];
-
-    const traverse = (node, parentKey) => {
-      const key = parentKey ? `${parentKey}-${node.id}` : `${node.id}`;
-
-      const formattedNode = {
-        key,
-        title: (
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span>{node.name[language]}</span>
-            <span
-              onClick={(e) => {
-                e.stopPropagation();
-                editConceptHandler(node);
-              }}>
-              <EditOutlined style={{ fontSize: 16 }} />
-            </span>
-          </div>
-        ),
-      };
-
-      if (node.children && node.children.length > 0) {
-        formattedNode.children = node.children.map((child) => traverse(child, key));
-      }
-
-      return formattedNode;
-    };
-
-    data?.forEach((node) => {
-      formattedData.push(traverse(node));
-    });
-
-    return formattedData;
+  const generateFormattedData = (data, isTree1) => {
+    return data.map((item) => ({
+      key: item.key,
+      title: isTree1 ? (
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <span>{item.name?.fr}</span>
+          <span
+            onClick={(e) => {
+              e.stopPropagation();
+              editConceptHandler(item);
+            }}>
+            <EditOutlined style={{ fontSize: 16 }} />
+          </span>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <span>{item.name?.en}</span>
+          <span
+            onClick={(e) => {
+              e.stopPropagation();
+              editConceptHandler(item);
+            }}>
+            <EditOutlined style={{ fontSize: 16 }} />
+          </span>
+        </div>
+      ),
+      children: item.children ? generateFormattedData(item.children, isTree1) : undefined,
+    }));
   };
 
-  const updateTreeData = (dragKey, dropKey, dropPos, language) => {
-    const updateData = (treeData) => {
-      const dragIndex = treeData.findIndex((item) => item.key === dragKey);
-      const dropIndex = treeData.findIndex((item) => item.key === dropKey);
-
-      if (dragIndex !== -1 && dropIndex !== -1) {
-        const [draggedItem] = treeData.splice(dragIndex, 1);
-        treeData.splice(dropPos === -1 ? dropIndex : dropIndex + 1, 0, draggedItem);
-      }
-
-      return treeData;
-    };
-
-    if (language === 'en') {
-      setEngGData((prevData) => updateData([...prevData]));
-    } else if (language === 'fr') {
-      setFrenchGData((prevData) => updateData([...prevData]));
-    }
-  };
-
-  const onDragEnter = (info) => {
-    setExpandedKeys(info.expandedKeys);
-  };
-
-  const onDrop = (info) => {
+  const onDrop = (info, treeData, setTreeData, counterpartTreeData, setCounterpartTreeData) => {
     const dropKey = info.node.key;
     const dragKey = info.dragNode.key;
-    const dropPos = info.dropPosition;
+    const dropPos = info.node.pos.split('-');
+    const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
 
-    if (dragKey.split('-').slice(0, -1).join('-') !== dropKey.split('-').slice(0, -1).join('-')) {
-      const parentKey = dropKey.split('-').slice(0, -1).join('-');
-      updateTreeData(dragKey, parentKey, 1, 'en');
-      updateTreeData(dragKey, parentKey, 1, 'fr');
-      return;
+    const loop = (data, key, callback) => {
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].key === key) {
+          return callback(data[i], i, data);
+        }
+        if (data[i].children) {
+          loop(data[i].children, key, callback);
+        }
+      }
+    };
+
+    let dragObj;
+    loop(treeData, dragKey, (item, index, arr) => {
+      arr.splice(index, 1);
+      dragObj = item;
+    });
+
+    if (!info.dropToGap) {
+      loop(treeData, dropKey, (item) => {
+        item.children = item.children || [];
+        item.children.unshift(dragObj);
+      });
+    } else if ((info.node.children || []).length > 0 && info.node.expanded && dropPosition === 1) {
+      loop(treeData, dropKey, (item) => {
+        item.children = item.children || [];
+        item.children.unshift(dragObj);
+      });
+    } else {
+      let ar = [];
+      let i;
+      loop(treeData, dropKey, (_item, index, arr) => {
+        ar = arr;
+        i = index;
+      });
+      if (dropPosition === -1) {
+        ar.splice(i, 0, dragObj);
+      } else {
+        ar.splice(i + 1, 0, dragObj);
+      }
     }
 
-    updateTreeData(dragKey, dropKey, dropPos, 'en');
-    updateTreeData(dragKey, dropKey, dropPos, 'fr');
+    let dragObj2;
+    loop(counterpartTreeData, dragKey, (item, index, arr) => {
+      arr.splice(index, 1);
+      dragObj2 = item;
+    });
+    if (!info.dropToGap) {
+      loop(counterpartTreeData, dropKey, (item) => {
+        item.children = item.children || [];
+        item.children.unshift(dragObj2);
+      });
+    } else if ((info.node.children || []).length > 0 && info.node.expanded && dropPosition === 1) {
+      loop(counterpartTreeData, dropKey, (item) => {
+        item.children = item.children || [];
+        item.children.unshift(dragObj2);
+      });
+    } else {
+      let ar = [];
+      let i;
+      loop(counterpartTreeData, dropKey, (_item, index, arr) => {
+        ar = arr;
+        i = index;
+      });
+      if (dropPosition === -1) {
+        ar.splice(i, 0, dragObj2);
+      } else {
+        ar.splice(i + 1, 0, dragObj2);
+      }
+    }
+
+    setTreeData([...treeData]);
+    setCounterpartTreeData([...counterpartTreeData]);
   };
 
-  const handleClick = (node) => {
-    // setSelectedNode(node);
+  // const findItem = (data, key) => {
+  //   const helper = (items) => {
+  //     for (let i = 0; i < items.length; i++) {
+  //       if (items[i].key === key) {
+  //         return items[i];
+  //       }
+  //       if (items[i].children) {
+  //         const foundItem = helper(items[i].children);
+  //         if (foundItem) {
+  //           return foundItem;
+  //         }
+  //       }
+  //     }
+  //     return null;
+  //   };
 
-    const item = data.map((item) => {
-      if (item.id === node.key) {
-        return item;
-      }
+  //   return helper(data);
+  // };
+
+  const handleClick = (node) => {
+    form.setFieldsValue({
+      french: '',
+      english: '',
     });
-    setNewConceptName({ fr: item[0]?.name?.fr, en: item[0]?.name?.en });
+    console.log(node);
     setAddNewPopup(true);
   };
 
   const editConceptHandler = (node) => {
     form.setFieldsValue({
-      french: node?.name?.fr,
-      english: node?.name?.en,
+      frenchconcept: node?.name?.fr,
+      englishconcept: node?.name?.en,
     });
     setAddNewPopup(true);
   };
@@ -158,27 +205,14 @@ const DraggableTree = ({
     handleAddChildModalClose();
   };
 
-  //   const findNode = (data, key) => {
-  //     for (let i = 0; i < data.length; i++) {
-  //       if (data[i].key === key) {
-  //         return data[i];
-  //       }
-  //       if (data[i].children) {
-  //         const foundNode = findNode(data[i].children, key);
-  //         if (foundNode) return foundNode;
-  //       }
-  //     }
-  //     return null;
-  //   };
-
   const handleDelete = () => {
     setDeleteDisplayFlag(false);
     setData(data);
   };
 
   useEffect(() => {
-    setEngGData(formatTreeData(data, 'en'));
-    setFrenchGData(formatTreeData(data, 'fr'));
+    setTreeData1(generateFormattedData(data, true));
+    setTreeData2(generateFormattedData(data, false));
   }, [data]);
 
   return (
@@ -188,12 +222,10 @@ const DraggableTree = ({
         <div className="tree-item">
           <Tree
             className="draggable-tree"
-            defaultExpandedKeys={expandedKeys}
             draggable
             blockNode
-            onDragEnter={onDragEnter}
-            onDrop={onDrop}
-            treeData={engGData}
+            onDrop={(info) => onDrop(info, treeData1, setTreeData1, treeData2, setTreeData2)}
+            treeData={treeData1}
             onSelect={(selectedKeys, { node }) => handleClick(node)}
           />
         </div>
@@ -203,12 +235,10 @@ const DraggableTree = ({
         <div className="tree-item" style={{ borderRight: 'solid 4px #eff2ff' }}>
           <Tree
             className="draggable-tree"
-            defaultExpandedKeys={expandedKeys}
             draggable
             blockNode
-            onDragEnter={onDragEnter}
-            onDrop={onDrop}
-            treeData={frenchGData}
+            onDrop={(info) => onDrop(info, treeData2, setTreeData2, treeData1, setTreeData1)}
+            treeData={treeData2}
             onSelect={(selectedKeys, { node }) => handleClick(node)}
           />
         </div>
@@ -258,7 +288,7 @@ const DraggableTree = ({
             <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
               <BilingualInput fieldData={newConceptName}>
                 <Form.Item
-                  name="french"
+                  name="frenchconcept"
                   key={contentLanguage.FRENCH}
                   dependencies={['english']}
                   //   rules={[
@@ -282,7 +312,7 @@ const DraggableTree = ({
                   />
                 </Form.Item>
                 <Form.Item
-                  name="english"
+                  name="englishconcept"
                   key={contentLanguage.ENGLISH}
                   dependencies={['french']}
                   //   rules={[
