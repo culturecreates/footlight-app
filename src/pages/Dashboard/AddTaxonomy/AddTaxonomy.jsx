@@ -553,7 +553,7 @@ const AddTaxonomy = () => {
           </Row>
         </Form>
       ) : (
-        <div style={{ display: 'grid', placeContent: 'center', height: '400px', width: '100%' }}>
+        <div style={{ display: 'grid', placeContent: 'center', height: '500px', width: '100%' }}>
           <LoadingIndicator />
         </div>
       )}
