@@ -428,7 +428,7 @@
       },
       "deleteOrganization": {
         "title": "Confirmer la suppression",
-        "description": "Êtes-vous sûr de vouloir supprimer définitivement cet organisation?",
+        "description": "Confirmer la suppression Êtes-vous sûr de vouloir supprimer définitivement cette organisation? Cette action supprimera également toutes les données qui lui sont associées et tous les endroits où elle a été utilisée",
         "ok": "OK",
         "cancel": "Annuler"
       },
@@ -496,7 +496,7 @@
       },
       "deletePlace": {
         "title": "Confirmer la suppression",
-        "description": "Êtes-vous sûr de vouloir supprimer définitivement cet lieu?",
+        "description": "Confirmer la suppression Êtes-vous sûr de vouloir supprimer définitivement cette lieu ? Cette action supprimera également toutes les données qui lui sont associées et tous les endroits où elle a été utilisée",
         "ok": "OK",
         "cancel": "Annuler"
       },
@@ -651,7 +651,7 @@
       },
       "deletePerson": {
         "title": "Confirmer la suppression",
-        "description": "Are you sure you want to permanently delete this personne?",
+        "description": "Confirmer la suppression Êtes-vous sûr de vouloir supprimer définitivement cette personne? Cette action supprimera également toutes les données qui lui sont associées et tous les endroits où elle a été utilisée",
         "ok": "OK",
         "cancel": "Annuler"
       },
