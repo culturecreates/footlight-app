@@ -17,12 +17,13 @@ export const inviteApi = createApi({
     }),
 
     inviteUser: builder.mutation({
-      query: ({ firstName, lastName, email, role, calendarId }) => {
+      query: ({ firstName, lastName, email, role, calendarId, language }) => {
         return {
           url: `invite`,
           method: 'POST',
           headers: {
             'calendar-id': calendarId,
+            language: language,
           },
           body: { firstName, lastName, email, role },
         };

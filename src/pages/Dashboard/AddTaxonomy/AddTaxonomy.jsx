@@ -62,8 +62,8 @@ const AddTaxonomy = () => {
   const [updateTaxonomy] = useUpdateTaxonomyMutation();
 
   useEffect(() => {
-    setLoading(true);
     if (!taxonomyId && currentCalendarData) {
+      setLoading(true);
       if (location.state?.selectedClass) {
         const selectedKeys = taxonomyClassTranslations.filter((item) => item.key === location.state?.selectedClass);
         setFormValues({
@@ -553,7 +553,7 @@ const AddTaxonomy = () => {
           </Row>
         </Form>
       ) : (
-        <div style={{ display: 'grid', placeContent: 'center', height: '400px', width: '100%' }}>
+        <div style={{ display: 'grid', placeContent: 'center', height: '500px', width: '100%' }}>
           <LoadingIndicator />
         </div>
       )}

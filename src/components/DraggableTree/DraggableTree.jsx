@@ -212,7 +212,7 @@ const DraggableTree = ({
         name: { en: newConceptName?.en, fr: newConceptName?.fr },
       };
 
-      const updatedData = updateNodeInData(data, selectedNode.key, updatedNode);
+      const updatedData = updateNodeInData(data, selectedNode?.key, updatedNode);
       setData(updatedData);
       setForEditing(false);
     } else {
@@ -261,7 +261,7 @@ const DraggableTree = ({
     if (forEditing && selectedNode) {
       const updatedData = deleteNodeFromData(data, selectedNode.key);
       setData(updatedData);
-
+      setForEditing(false);
       setNewConceptName({ en: '', fr: '' });
       handleAddChildModalClose();
     } else {
