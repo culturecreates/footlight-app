@@ -11,6 +11,7 @@ export const bilingual = ({ fr, en, interfaceLanguage: interfaceLanguage }) => {
 
 export const contentLanguageBilingual = ({ fr, en, interfaceLanguage: interfaceLanguage, calendarContentLanguage }) => {
   let contentLanguageKey;
+
   switch (calendarContentLanguage) {
     case contentLanguage.FRENCH:
       contentLanguageKey = 'fr';
