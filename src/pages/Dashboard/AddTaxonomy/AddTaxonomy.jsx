@@ -117,19 +117,28 @@ const AddTaxonomy = () => {
     setDeleteDisplayFlag(false);
   };
 
-  const saveTaxonomyHandler = () => {
-    const filteredConceptData = conceptData.map((item) => {
-      const modifiedTaxonomyObject = item?.isNew
-        ? {
-            name: item?.name,
-          }
-        : {
-            id: item.id,
-            name: item.name,
-          };
+  const modifyConceptData = (conceptData) => {
+    return conceptData.map((item) => {
+      let modifiedConcept;
+      if (item && item.isNew) {
+        modifiedConcept = {
+          name: item.name,
+          children: item.children ? modifyConceptData(item.children) : [],
+        };
+      } else {
+        modifiedConcept = {
+          id: item.id,
+          name: item.name,
+          children: item.children ? modifyConceptData(item.children) : [],
+        };
+      }
 
-      return modifiedTaxonomyObject;
+      return modifiedConcept;
     });
+  };
+
+  const saveTaxonomyHandler = () => {
+    const filteredConceptData = modifyConceptData(conceptData);
     form
       .validateFields(['frenchname', 'englishname', 'frenchdescription', 'englishdescription'])
       .then(() => {
