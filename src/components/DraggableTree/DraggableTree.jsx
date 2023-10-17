@@ -74,19 +74,19 @@ const DraggableTree = ({
     for (let index = 0; index < dataFr.length; index++) {
       const elementFr = dataFr[index];
       const elementEn = dataEn[index];
-      const combinedElement = findItem(elementFr?.key);
-      // const combinedElement = {
-      //   id: elementFr?.key,
-      //   key: elementFr?.key,
-      //   name: {
-      //     en: elementFr.title?.props?.children[0]?.props?.children,
-      //     fr: elementEn.title?.props?.children[0]?.props?.children,
-      //   },
-      //   ...(elementFr?.isNew && { isNew: elementFr?.isNew }),
-      //   children: [],
-      // };
+      const savedElement = findItem(elementFr?.key);
+      const combinedElement = {
+        id: elementFr?.key,
+        key: elementFr?.key,
+        name: {
+          en: elementFr.title?.props?.children[0]?.props?.children,
+          fr: elementEn.title?.props?.children[0]?.props?.children,
+        },
+        ...(savedElement?.isNew && { isNew: savedElement?.isNew }),
+        children: [],
+      };
 
-      if (elementFr.children.length > 0) {
+      if (elementFr?.children?.length > 0) {
         combinedElement.children = combineBothTreeData(elementFr.children, elementEn.children);
       }
 
@@ -171,9 +171,9 @@ const DraggableTree = ({
         ar.splice(i + 1, 0, dragObj2);
       }
     }
-    setData(combineBothTreeData(treeData, counterpartTreeData));
     setTreeData([...treeData]);
     setCounterpartTreeData([...counterpartTreeData]);
+    setData(combineBothTreeData(treeData, counterpartTreeData));
   };
 
   const findItem = (key) => {
@@ -409,7 +409,7 @@ const DraggableTree = ({
                   <TextArea
                     autoSize
                     autoComplete="off"
-                    placeholder={t('dashboard.taxonomy.addNew.frDescriptionPlaceHolder')}
+                    placeholder={t('dashboard.taxonomy.addNew.concepts.placeHolderFr')}
                     onChange={(e) => {
                       setNewConceptName({ ...newConceptName, fr: e.target.value });
                     }}
@@ -437,7 +437,7 @@ const DraggableTree = ({
                     onChange={(e) => {
                       setNewConceptName({ ...newConceptName, en: e.target.value });
                     }}
-                    placeholder={t('dashboard.taxonomy.addNew.enDescriptionPlaceHolder')}
+                    placeholder={t('dashboard.taxonomy.addNew.concepts.placeHolderEn')}
                     style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                     size="large"
                   />
