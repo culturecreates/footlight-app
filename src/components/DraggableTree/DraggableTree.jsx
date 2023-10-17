@@ -228,7 +228,6 @@ const DraggableTree = ({
           ...selectedNode,
           children: [...(selectedNode.children || []), newChildNode],
         });
-        console.log('node', selectedNode);
         setData(updatedData);
       } else {
         const updatedData = [...data, newChildNode];
@@ -372,16 +371,15 @@ const DraggableTree = ({
                   key={contentLanguage.FRENCH}
                   dependencies={['english']}
                   initialValue={newConceptName?.fr}
-                  //   rules={[
-                  //     ({ getFieldValue }) => ({
-                  //       validator(_, value) {
-                  //         if (value || getFieldValue('english')) {
-                  //           return Promise.resolve();
-                  //         } else return Promise.reject(new Error(t('dashboard.taxonomy.addNew.')));
-                  //       },
-                  //     }),
-                  //   ]}
-                >
+                  rules={[
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (value || getFieldValue('englishconcept')) {
+                          return Promise.resolve();
+                        } else return Promise.reject(new Error(t('dashboard.taxonomy.addNew.validations.conceptName')));
+                      },
+                    }),
+                  ]}>
                   <TextArea
                     autoSize
                     autoComplete="off"
@@ -398,16 +396,15 @@ const DraggableTree = ({
                   key={contentLanguage.ENGLISH}
                   dependencies={['french']}
                   initialValue={newConceptName?.en}
-                  //   rules={[
-                  //     ({ getFieldValue }) => ({
-                  //       validator(_, value) {
-                  //         if (value || getFieldValue('french')) {
-                  //           return Promise.resolve();
-                  //         } else return Promise.reject(new Error(t('dashboard.taxonomy.addNew.')));
-                  //       },
-                  //     }),
-                  //   ]}
-                >
+                  rules={[
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (value || getFieldValue('frenchconcept')) {
+                          return Promise.resolve();
+                        } else return Promise.reject(new Error(t('dashboard.taxonomy.addNew.validations.conceptName')));
+                      },
+                    }),
+                  ]}>
                   <TextArea
                     autoSize
                     autoComplete="off"

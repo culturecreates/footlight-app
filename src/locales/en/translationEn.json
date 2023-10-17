@@ -905,6 +905,15 @@
         "userAccessPlaceHolder": "Select",
         "userAccessDescription": "Select who has permission to see and use this field.",
         "adminOnly": "Admin only",
+        "validations": {
+          "name": "Taxonomy name is required.",
+          "class": "Class is required",
+          "conceptName": "Concept nameis required"
+        },
+        "messages":{
+          "create":"Success! Your Taxonomy has been created.",
+          "update":"Success! Your Taxonomy has been updated."	
+        },
         "concepts": {
           "heading": "Concept list",
           "description": "Manage a hierarchical list of concepts for the taxonomy, in all calendar language(s). Concepts are available for selection from the mapped input field. Drag concepts to rearrange and/or nest them. When you move a concept in one language, it is moved in all languages.",
