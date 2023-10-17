@@ -238,7 +238,10 @@ const AddTaxonomy = () => {
                   <div>
                     <Row>
                       <Col flex="423px">
-                        <Form.Item label={t('dashboard.taxonomy.addNew.class')} className="classType">
+                        <Form.Item
+                          label={t('dashboard.taxonomy.addNew.class')}
+                          required
+                          className={`classType ${taxonomyId != '' ? 'disabled-dropdown' : ''}`}>
                           <Dropdown
                             overlayClassName="add-user-form-field-dropdown-wrapper"
                             getPopupContainer={(trigger) => trigger.parentNode}
@@ -277,7 +280,7 @@ const AddTaxonomy = () => {
                     {(location.state?.dynamic === 'dynamic' || (taxonomyId && !taxonomyData?.isDynamicField)) && (
                       <Row>
                         <Col flex="423px">
-                          <Form.Item label={t('dashboard.taxonomy.addNew.mapToField')} className="classType">
+                          <Form.Item label={t('dashboard.taxonomy.addNew.mapToField')} required className="classType">
                             <Dropdown
                               overlayClassName="add-user-form-field-dropdown-wrapper"
                               getPopupContainer={(trigger) => trigger.parentNode}
@@ -312,7 +315,7 @@ const AddTaxonomy = () => {
                     )}
                     <Row>
                       <Col flex="423px">
-                        <Form.Item label={t('dashboard.taxonomy.addNew.name')}>
+                        <Form.Item label={t('dashboard.taxonomy.addNew.name')} required>
                           <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                             <BilingualInput fieldData={formValues?.name}>
                               <Form.Item
@@ -458,6 +461,7 @@ const AddTaxonomy = () => {
                           <Form.Item
                             label={t('dashboard.taxonomy.addNew.userAccess')}
                             name="userAccess"
+                            required
                             className="user-access"
                             rules={[
                               ({ getFieldValue }) => ({
