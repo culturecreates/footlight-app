@@ -2,7 +2,7 @@ import { Button, Card, Col, Dropdown, Form, Row, Typography } from 'antd';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LeftOutlined, DownOutlined, PlusOutlined, DatabaseOutlined } from '@ant-design/icons';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import './selectTaxonomyType.css';
 import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
 import DateAction from '../../../components/Button/DateAction/DateAction';
@@ -14,6 +14,7 @@ const SelectTaxonomyType = () => {
   const navigate = useNavigate();
   const [formInstance] = Form.useForm();
   const { calendarId } = useParams();
+  const [currentCalendarData] = useOutletContext();
 
   const [selectedClass, setSelectedClass] = useState({ key: '', label: '' });
   const [standardFields, setStandardFields] = useState([]);
@@ -38,7 +39,7 @@ const SelectTaxonomyType = () => {
   const setTaxonomyClass = ({ value, fieldType }) => {
     const selectedLabel = taxonomyClassTranslations.filter((item) => item.key === value);
     setSelectedClass({ key: selectedLabel[0].key, label: selectedLabel[0].label });
-    setStandardFields(standardFieldsForTaxonomy(selectedLabel[0].key));
+    setStandardFields(standardFieldsForTaxonomy(selectedLabel[0].key, currentCalendarData?.fieldTaxonomyMaps));
     formInstance.setFieldsValue({ [fieldType]: value });
   };
 
