@@ -33,7 +33,7 @@ const AddTaxonomy = () => {
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [deleteDisplayFlag, setDeleteDisplayFlag] = useState(true);
   const [newConceptName, setNewConceptName] = useState({ en: '', fr: '' });
   const [conceptData, setConceptData] = useState([]);
@@ -62,21 +62,26 @@ const AddTaxonomy = () => {
   const [updateTaxonomy] = useUpdateTaxonomyMutation();
 
   useEffect(() => {
-    if (!taxonomyId) {
+    setLoading(true);
+    if (!taxonomyId && currentCalendarData) {
       if (location.state?.selectedClass) {
         const selectedKeys = taxonomyClassTranslations.filter((item) => item.key === location.state?.selectedClass);
         setFormValues({
           ...formValues,
           classType: selectedKeys[0].key,
         });
-        const availableStandardFields = standardFieldsForTaxonomy(location.state?.selectedClass);
+        const availableStandardFields = standardFieldsForTaxonomy(
+          location.state?.selectedClass,
+          currentCalendarData?.fieldTaxonomyMaps,
+        );
         setStandardFields(availableStandardFields);
       }
+      setLoading(false);
     }
     if (location.state?.id) {
       setSearchParams(location.state?.id);
     }
-  }, []);
+  }, [currentCalendarData]);
 
   useEffect(() => {
     if (taxonomyId) {
@@ -102,8 +107,8 @@ const AddTaxonomy = () => {
             userAccess: [true],
             mapToField: res?.mappedToField,
           });
+          setLoading(false);
         });
-      setLoading(false);
     }
   }, [taxonomyId]);
 
@@ -236,8 +241,12 @@ const AddTaxonomy = () => {
                                 setFormValues({
                                   ...formValues,
                                   classType: selectedKeys[0],
+                                  mapToField: '',
                                 });
-                                const availableStandardFields = standardFieldsForTaxonomy(selectedKeys[0]);
+                                const availableStandardFields = standardFieldsForTaxonomy(
+                                  selectedKeys[0],
+                                  currentCalendarData?.fieldTaxonomyMaps,
+                                );
                                 setStandardFields(availableStandardFields);
                               },
                             }}
@@ -261,7 +270,6 @@ const AddTaxonomy = () => {
                         <Col flex="423px">
                           <Form.Item label={t('dashboard.taxonomy.addNew.mapToField')} className="classType">
                             <Dropdown
-                              key={standardFields.join()[0]}
                               overlayClassName="add-user-form-field-dropdown-wrapper"
                               getPopupContainer={(trigger) => trigger.parentNode}
                               overlayStyle={{ minWidth: '100%' }}
@@ -493,7 +501,15 @@ const AddTaxonomy = () => {
                     <Row gutter={[24, 24]}>
                       <Col className="heading-concepts">{t('dashboard.taxonomy.addNew.concepts.heading')}</Col>
                       <Col className="text-concepts">{t('dashboard.taxonomy.addNew.concepts.description')}</Col>
-                      <Col flex="423px" style={{ display: 'flex', padding: '0 12px' }}>
+                      <Col
+                        flex="423px"
+                        style={{
+                          display: 'flex',
+                          paddingTop: '0',
+                          paddingRight: '12px',
+                          paddingBottom: '0',
+                          paddingLeft: '12px',
+                        }}>
                         <DraggableTree
                           data={conceptData}
                           form={form}
@@ -512,7 +528,13 @@ const AddTaxonomy = () => {
                     <Outlined
                       label={t('dashboard.taxonomy.addNew.concepts.item')}
                       onClick={openAddNewConceptModal}
-                      style={{ padding: '8px 16px 8px 8px', height: '40px' }}>
+                      style={{
+                        paddingTop: '8px',
+                        paddingRight: '16px',
+                        paddingBottom: '8px',
+                        paddingLeft: '8px',
+                        height: '40px',
+                      }}>
                       <PlusOutlined style={{ fontSize: '24px' }} />
                     </Outlined>
                   </Col>

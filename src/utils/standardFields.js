@@ -6,14 +6,20 @@ export const standardFieldsForTaxonomy = (value, takenFields) => {
   }
   let returnArr = [];
   const filter = (arr, taxonomyClass) => {
+    returnArr = arr;
     arr.map((item) => {
       takenFields.map((takenItem) => {
-        if (item != takenItem?.mappedToField && taxonomyClass == takenItem?.taxonomyClass) {
-          returnArr.push(item);
+        if (
+          item === takenItem?.mappedToField &&
+          taxonomyClass.toLowerCase() === takenItem?.taxonomyClass.toLowerCase() &&
+          takenItem?.mappedToField !== null
+        ) {
+          returnArr = returnArr.filter((e) => e !== item);
         }
       });
     });
   };
+
   if (value === taxonomyClass.EVENT) {
     const arr = [
       'EventAccessibility',
@@ -25,22 +31,22 @@ export const standardFieldsForTaxonomy = (value, takenFields) => {
       'inLanguage',
     ];
     filter(arr, taxonomyClass.EVENT);
-    return returnArr;
+    return [...new Set(returnArr)];
   } else if (value === taxonomyClass.PLACE) {
     const arr = ['PlaceAccessibility', 'Region', 'Type'];
     filter(arr, taxonomyClass.PLACE);
-    return returnArr;
+    return [...new Set(returnArr)];
   } else if (value === taxonomyClass.VIRTUAL_LOCATION) {
     const arr = ['Type'];
     filter(arr, taxonomyClass.VIRTUAL_LOCATION);
-    return returnArr;
+    return [...new Set(returnArr)];
   } else if (value === taxonomyClass.PERSON) {
     const arr = ['Occupation'];
     filter(arr, taxonomyClass.PERSON);
-    return returnArr;
+    return [...new Set(returnArr)];
   } else {
     const arr = [];
     filter(arr, taxonomyClass.ORGANIZATION);
-    return returnArr;
+    return [...new Set(returnArr)];
   }
 };
