@@ -285,6 +285,7 @@ const UserManagement = () => {
           lastName: item.lastName,
           email: item.email,
           role: userRole[0]?.role,
+          language: user?.interfaceLanguage,
           calendarId,
         })
           .unwrap()

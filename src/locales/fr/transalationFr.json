@@ -898,6 +898,15 @@
         "userAccess": "Restreindre l'accès aux utilisateurs",
         "userAccessPlaceHolder": "Sélectionnez",
         "userAccessDescription": "Select who has permission to see and use this field.",
+        "validations": {
+          "name": "Le nom est requis.",
+          "class": "Le Classe est requis",
+          "conceptName": "Le nom du concept est requis"
+        },
+        "messages": {
+          "create": "Succès ! Votre [organisation | personne | lieu] a été créé.",
+          "update": "Succès! Votre [organisation | personne | lieu] a été mis à jour."
+        },
         "adminOnly": "Administrateur uniquement",
         "concepts": {
           "heading": "Liste de concepts",
