@@ -26,8 +26,6 @@ const DraggableTree = ({
   const { TextArea } = Input;
 
   const [currentCalendarData] = useOutletContext();
-  //   const timestampRef = useRef(Date.now()).current;
-
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const { t } = useTranslation();
@@ -68,6 +66,34 @@ const DraggableTree = ({
       ),
       children: item.children ? generateFormattedData(item.children, isTree1) : undefined,
     }));
+  };
+
+  const combineBothTreeData = (dataFr, dataEn) => {
+    const combinedData = [];
+
+    for (let index = 0; index < dataFr.length; index++) {
+      const elementFr = dataFr[index];
+      const elementEn = dataEn[index];
+      const savedElement = findItem(elementFr?.key);
+      const combinedElement = {
+        id: elementFr?.key,
+        key: elementFr?.key,
+        name: {
+          en: elementFr.title?.props?.children[0]?.props?.children,
+          fr: elementEn.title?.props?.children[0]?.props?.children,
+        },
+        ...(savedElement?.isNew && { isNew: savedElement?.isNew }),
+        children: [],
+      };
+
+      if (elementFr?.children?.length > 0) {
+        combinedElement.children = combineBothTreeData(elementFr.children, elementEn.children);
+      }
+
+      combinedData.push(combinedElement);
+    }
+
+    return combinedData;
   };
 
   const onDrop = (info, treeData, setTreeData, counterpartTreeData, setCounterpartTreeData) => {
@@ -145,9 +171,9 @@ const DraggableTree = ({
         ar.splice(i + 1, 0, dragObj2);
       }
     }
-
     setTreeData([...treeData]);
     setCounterpartTreeData([...counterpartTreeData]);
+    setData(combineBothTreeData(treeData, counterpartTreeData));
   };
 
   const findItem = (key) => {
@@ -211,7 +237,6 @@ const DraggableTree = ({
         ...selectedNode,
         name: { en: newConceptName?.en, fr: newConceptName?.fr },
       };
-
       const updatedData = updateNodeInData(data, selectedNode?.key, updatedNode);
       setData(updatedData);
       setForEditing(false);
@@ -223,6 +248,7 @@ const DraggableTree = ({
         children: [],
         isNew: true,
       };
+
       if (selectedNode) {
         const updatedData = updateNodeInData(data, selectedNode.key, {
           ...selectedNode,
@@ -303,7 +329,7 @@ const DraggableTree = ({
             draggable
             blockNode
             onDrop={(info) => onDrop(info, treeData1, setTreeData1, treeData2, setTreeData2)}
-            treeData={treeData1}
+            treeData={treeData2}
             onSelect={handleClick}
           />
         </div>
@@ -316,7 +342,7 @@ const DraggableTree = ({
             draggable
             blockNode
             onDrop={(info) => onDrop(info, treeData2, setTreeData2, treeData1, setTreeData1)}
-            treeData={treeData2}
+            treeData={treeData1}
             onSelect={handleClick}
             on
           />
@@ -383,7 +409,7 @@ const DraggableTree = ({
                   <TextArea
                     autoSize
                     autoComplete="off"
-                    placeholder={t('dashboard.taxonomy.addNew.frDescriptionPlaceHolder')}
+                    placeholder={t('dashboard.taxonomy.addNew.concepts.placeHolderFr')}
                     onChange={(e) => {
                       setNewConceptName({ ...newConceptName, fr: e.target.value });
                     }}
@@ -411,7 +437,7 @@ const DraggableTree = ({
                     onChange={(e) => {
                       setNewConceptName({ ...newConceptName, en: e.target.value });
                     }}
-                    placeholder={t('dashboard.taxonomy.addNew.enDescriptionPlaceHolder')}
+                    placeholder={t('dashboard.taxonomy.addNew.concepts.placeHolderEn')}
                     style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                     size="large"
                   />

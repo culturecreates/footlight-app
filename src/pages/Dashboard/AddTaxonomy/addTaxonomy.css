@@ -109,3 +109,19 @@
   gap: 8px;
   padding: 10px; /* Adjust the value according to your design */
 }
+
+.add-taxonomy-wrapper .disabled-dropdown .ant-dropdown-trigger {
+  border-radius: 4px;
+  border: 1px solid var(--content-neutral-stroke, #b6c1c9);
+  background: var(--background-neutrals-underground-0, #f7f7f7);
+}
+
+.add-taxonomy-wrapper .ant-form-item-required{
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 4px;
+}
+
+.add-taxonomy-wrapper .ant-form-item-label{
+  width: fit-content;
+}

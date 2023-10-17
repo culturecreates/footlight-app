@@ -908,7 +908,7 @@
         "validations": {
           "name": "Taxonomy name is required.",
           "class": "Class is required",
-          "conceptName": "Concept nameis required"
+          "conceptName": "Concept name is required"
         },
         "messages":{
           "create":"Success! Your Taxonomy has been created.",
@@ -922,7 +922,10 @@
           "english": "English",
           "add": "Add concept",
           "edit": "Edit concept",
-          "conceptName": "Concept name"
+          "conceptName": "Concept name",
+          "placeHolderFr": "Enter French Concept name",
+          "placeHolderEn": "Enter English Concept name"
+
         }
       }
     }
