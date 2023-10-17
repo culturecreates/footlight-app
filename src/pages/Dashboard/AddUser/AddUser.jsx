@@ -206,6 +206,7 @@ const AddUser = () => {
             lastName: values.lastName,
             email: values.email,
             role: values.userType,
+            language: values?.languagePreference?.key,
             calendarId,
           }).then((res) => {
             if (res.statusCode == 202) {
