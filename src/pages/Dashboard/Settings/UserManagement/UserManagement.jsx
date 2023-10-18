@@ -184,15 +184,18 @@ const UserManagement = () => {
   };
 
   const currentCalendarUserStatus = (item) => {
+    if (item?.roles.length == 0) {
+      return userActivityStatus[0].key;
+    }
     const activeCalendar = item?.roles.filter((r) => {
       return r.calendarId == calendarId;
     });
-    return activeCalendar[0].status;
+    return activeCalendar[0]?.status;
   };
 
   const tooltipItemDisplayHandler = ({ item }) => {
     const dropdownItems = [];
-    const userStatus = item.roles.filter((i) => {
+    const userStatus = item?.roles.filter((i) => {
       if (i.calendarId === calendarId) {
         return i.role;
       }
@@ -257,13 +260,13 @@ const UserManagement = () => {
 
   const tooltipItemClickHandler = ({ key, item }) => {
     let invitationLink;
-    const userRole = item.roles.filter((i) => {
+    const userRole = item?.roles.filter((i) => {
       if (i.calendarId === calendarId) {
         return i.role;
       }
     });
 
-    const userStatus = item.roles.filter((i) => {
+    const userStatus = item?.roles.filter((i) => {
       if (i.calendarId === calendarId) {
         return i.role;
       }
