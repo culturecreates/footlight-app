@@ -89,7 +89,9 @@ const AddUser = () => {
   const [inviteUser] = useInviteUserMutation();
   const [updateUserById] = useUpdateUserByIdMutation();
   const [updateCurrentUser] = useUpdateCurrentUserMutation();
-  const [getCurrentUserDetails, { isSuccess: isCurrentUserSuccess }] = useLazyGetCurrentUserQuery();
+  const [getCurrentUserDetails, { isSuccess: isCurrentUserSuccess }] = useLazyGetCurrentUserQuery({
+    sessionId: timestampRef,
+  });
 
   useEffect(() => {
     if (userId !== user?.id) {
@@ -100,7 +102,7 @@ const AddUser = () => {
     }
 
     if (userId && userId !== user?.id) {
-      getUser({ userId, calendarId, sessionId: timestampRef })
+      getUser({ userId, calendarId })
         .unwrap()
         .then((response) => {
           const activeCalendars = response?.roles.filter((r) => {
@@ -204,6 +206,7 @@ const AddUser = () => {
             lastName: values.lastName,
             email: values.email,
             role: values.userType,
+            language: values?.languagePreference?.key,
             calendarId,
           }).then((res) => {
             if (res.statusCode == 202) {

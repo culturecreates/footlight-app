@@ -26,21 +26,21 @@ function ImageUpload(props) {
 
   const [cropValues, setCropValues] = useState({
     large: {
-      x: eventImageData?.large?.xCoordinate ?? 0,
-      y: eventImageData?.large?.yCoordinate ?? 0,
-      height: eventImageData?.large?.height ?? 0,
-      width: eventImageData?.large?.width ?? 0,
+      x: eventImageData?.large?.xCoordinate ?? undefined,
+      y: eventImageData?.large?.yCoordinate ?? undefined,
+      height: eventImageData?.large?.height ?? undefined,
+      width: eventImageData?.large?.width ?? undefined,
     },
     original: {
       entityId: eventImageData?.original?.entityId ?? null,
-      height: eventImageData?.original?.height ?? 0,
-      width: eventImageData?.original?.width ?? 0,
+      height: eventImageData?.original?.height ?? undefined,
+      width: eventImageData?.original?.width ?? undefined,
     },
     thumbnail: {
-      x: eventImageData?.thumbnail?.xCoordinate ?? 0,
-      y: eventImageData?.thumbnail?.yCoordinate ?? 0,
-      height: eventImageData?.thumbnail?.height ?? 0,
-      width: eventImageData?.thumbnail?.width ?? 0,
+      x: eventImageData?.thumbnail?.xCoordinate ?? undefined,
+      y: eventImageData?.thumbnail?.yCoordinate ?? undefined,
+      height: eventImageData?.thumbnail?.height ?? undefined,
+      width: eventImageData?.thumbnail?.width ?? undefined,
     },
   });
 
@@ -58,16 +58,6 @@ function ImageUpload(props) {
       const _loadedImageUrl = event.target.result;
       const image = document.createElement('img');
       image.src = _loadedImageUrl;
-      image.addEventListener('load', () => {
-        const { width, height } = image;
-        setCropValues({
-          ...cropValues,
-          original: {
-            height,
-            width,
-          },
-        });
-      });
     });
   };
   const beforeUpload = (file) => {
@@ -83,6 +73,11 @@ function ImageUpload(props) {
       return;
     }
     if (info.file.status === 'done') {
+      setCropValues({
+        large: undefined,
+        thumbnail: undefined,
+        original: undefined,
+      });
       getBase64(info.file.originFileObj, (url) => {
         setLoading(false);
         setImageUrl(url);
@@ -198,7 +193,7 @@ function ImageUpload(props) {
         </Upload.Dragger>
       </Form.Item>
 
-      {isCrop && (
+      {isCrop && imageCropOpen && (
         <ImageCrop
           setOpen={setImageCropOpen}
           open={imageCropOpen}

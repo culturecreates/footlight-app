@@ -78,7 +78,7 @@ const UserReadOnly = () => {
                 <Row>
                   <Col flex="auto">
                     <div className="breadcrumb-container">
-                      <Button type="link" onClick={() => navigate(-1)}>
+                      <Button type="link" onClick={() => navigate(-2)}>
                         <LeftOutlined style={{ fontSize: '12px', paddingRight: '5px' }} />
                         {t('dashboard.settings.userReadOnly.breadcrumb')}
                       </Button>

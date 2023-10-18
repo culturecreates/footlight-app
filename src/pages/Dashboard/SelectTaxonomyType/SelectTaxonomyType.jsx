@@ -2,7 +2,7 @@ import { Button, Card, Col, Dropdown, Form, Row, Typography } from 'antd';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LeftOutlined, DownOutlined, PlusOutlined, DatabaseOutlined } from '@ant-design/icons';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import './selectTaxonomyType.css';
 import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
 import DateAction from '../../../components/Button/DateAction/DateAction';
@@ -14,8 +14,9 @@ const SelectTaxonomyType = () => {
   const navigate = useNavigate();
   const [formInstance] = Form.useForm();
   const { calendarId } = useParams();
+  const [currentCalendarData] = useOutletContext();
 
-  const [selectedClass, setSelectedClass] = useState('');
+  const [selectedClass, setSelectedClass] = useState({ key: '', label: '' });
   const [standardFields, setStandardFields] = useState([]);
 
   const buttonStyles = {
@@ -28,14 +29,17 @@ const SelectTaxonomyType = () => {
     console.log('clicked field option');
   };
 
-  const navigationHandler = () => {
-    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomy}`);
+  const navigationHandler = (dynamic) => {
+    selectedClass.key != '' &&
+      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomy}`, {
+        state: { selectedClass: selectedClass.key, dynamic: dynamic },
+      });
   };
 
   const setTaxonomyClass = ({ value, fieldType }) => {
     const selectedLabel = taxonomyClassTranslations.filter((item) => item.key === value);
-    setSelectedClass(selectedLabel[0].label);
-    setStandardFields(standardFieldsForTaxonomy(selectedLabel[0].key));
+    setSelectedClass({ key: selectedLabel[0].key, label: selectedLabel[0].label });
+    setStandardFields(standardFieldsForTaxonomy(selectedLabel[0].key, currentCalendarData?.fieldTaxonomyMaps));
     formInstance.setFieldsValue({ [fieldType]: value });
   };
 
@@ -88,7 +92,7 @@ const SelectTaxonomyType = () => {
                       trigger={['click']}>
                       <div>
                         <Typography.Text>
-                          {selectedClass || t('dashboard.taxonomy.selectType.classPlaceHolder')}
+                          {selectedClass.label || t('dashboard.taxonomy.selectType.classPlaceHolder')}
                         </Typography.Text>
                         <DownOutlined style={{ fontSize: '16px' }} />
                       </div>
@@ -125,21 +129,21 @@ const SelectTaxonomyType = () => {
                           iconrender={<PlusOutlined style={{ fontSize: '24px' }} />}
                           label={t('dashboard.taxonomy.selectType.newField')}
                           style={{ width: '203.5px', height: '104px', padding: 16 }}
-                          onClick={() => navigationHandler()}
+                          onClick={() => navigationHandler('not-dynamic')}
                         />
                       </Col>
                       <Col>
                         <DateAction
                           iconrender={<DatabaseOutlined style={{ fontSize: '24px' }} />}
                           label={t('dashboard.taxonomy.selectType.existingField')}
-                          disabled={standardFields.length < 1 && selectedClass !== '' ? true : false}
+                          disabled={standardFields.length < 1 && selectedClass.label !== '' ? true : false}
                           style={{
                             width: '203.5px',
                             height: '104px',
                             padding: 16,
-                            ...(standardFields.length < 1 && selectedClass !== '' && buttonStyles),
+                            ...(standardFields.length < 1 && selectedClass.label !== '' && buttonStyles),
                           }}
-                          //   onClick={() => setDateType(dateTypes.SINGLE)}
+                          onClick={() => navigationHandler('dynamic')}
                         />
                       </Col>
                     </Row>
@@ -147,7 +151,7 @@ const SelectTaxonomyType = () => {
                       <Col flex="423px">
                         <span className="info-message">
                           {standardFields.length < 1 &&
-                            selectedClass != '' &&
+                            selectedClass.label != '' &&
                             t('dashboard.taxonomy.selectType.noFieldAvailable')}
                         </span>
                       </Col>

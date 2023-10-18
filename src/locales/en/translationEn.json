@@ -429,7 +429,7 @@
       },
       "deleteOrganization": {
         "title": "Confirm Delete",
-        "description": "Are you sure you want to permanently delete this organization?",
+        "description": "Are you sure you want to permanently delete this organization? This action will also delete all its associated data and everywhere it was used, including in events. ",
         "ok": "OK",
         "cancel": "Cancel"
       },
@@ -497,7 +497,7 @@
       },
       "deletePlace": {
         "title": "Confirm Delete",
-        "description": "Are you sure you want to permanently delete this place?",
+        "description": "Are you sure you want to permanently delete this place? This action will also delete all its associated data and everywhere it was used, including in events. ",
         "ok": "OK",
         "cancel": "Cancel"
       },
@@ -654,7 +654,7 @@
       },
       "deletePerson": {
         "title": "Confirm Delete",
-        "description": "Are you sure you want to permanently delete this person?",
+        "description": "Are you sure you want to permanently delete this person? This action will also delete all its associated data and everywhere it was used, including in events. ",
         "ok": "OK",
         "cancel": "Cancel"
       },
@@ -886,12 +886,13 @@
       },
       "addNew": {
         "heading": "New taxonomy",
+        "editHeading": "Edit taxonomy",
         "save": "Save",
         "class": "Class",
         "destinationHeading": "Select the destination for your taxonomy.",
         "name": "Taxonomy name",
         "nameCheckbox": "Use the taxonomy name to rename the field.",
-        "frNamePlaceHolder": "Enter taxonomy my name in French",
+        "frNamePlaceHolder": "Enter taxonomy name in French",
         "enNamePlaceHolder": "Enter taxonomy name in English",
         "mapToField": "Map to existing field",
         "mapToFieldDescription": "Select an input field for the taxonomy.",
@@ -904,12 +905,27 @@
         "userAccessPlaceHolder": "Select",
         "userAccessDescription": "Select who has permission to see and use this field.",
         "adminOnly": "Admin only",
+        "validations": {
+          "name": "Taxonomy name is required.",
+          "class": "Class is required",
+          "conceptName": "Concept name is required"
+        },
+        "messages":{
+          "create":"Success! Your Taxonomy has been created.",
+          "update":"Success! Your Taxonomy has been updated."	
+        },
         "concepts": {
           "heading": "Concept list",
           "description": "Manage a hierarchical list of concepts for the taxonomy, in all calendar language(s). Concepts are available for selection from the mapped input field. Drag concepts to rearrange and/or nest them. When you move a concept in one language, it is moved in all languages.",
           "item": "Item",
           "french": "French",
-          "english": "English"
+          "english": "English",
+          "add": "Add concept",
+          "edit": "Edit concept",
+          "conceptName": "Concept name",
+          "placeHolderFr": "Enter French Concept name",
+          "placeHolderEn": "Enter English Concept name"
+
         }
       }
     }

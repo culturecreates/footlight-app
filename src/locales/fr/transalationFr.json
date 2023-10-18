@@ -428,7 +428,7 @@
       },
       "deleteOrganization": {
         "title": "Confirmer la suppression",
-        "description": "Êtes-vous sûr de vouloir supprimer définitivement cet organisation?",
+        "description": "Confirmer la suppression Êtes-vous sûr de vouloir supprimer définitivement cette organisation? Cette action supprimera également toutes les données qui lui sont associées et tous les endroits où elle a été utilisée",
         "ok": "OK",
         "cancel": "Annuler"
       },
@@ -496,7 +496,7 @@
       },
       "deletePlace": {
         "title": "Confirmer la suppression",
-        "description": "Êtes-vous sûr de vouloir supprimer définitivement cet lieu?",
+        "description": "Confirmer la suppression Êtes-vous sûr de vouloir supprimer définitivement cette lieu ? Cette action supprimera également toutes les données qui lui sont associées et tous les endroits où elle a été utilisée",
         "ok": "OK",
         "cancel": "Annuler"
       },
@@ -651,7 +651,7 @@
       },
       "deletePerson": {
         "title": "Confirmer la suppression",
-        "description": "Are you sure you want to permanently delete this personne?",
+        "description": "Confirmer la suppression Êtes-vous sûr de vouloir supprimer définitivement cette personne? Cette action supprimera également toutes les données qui lui sont associées et tous les endroits où elle a été utilisée",
         "ok": "OK",
         "cancel": "Annuler"
       },
@@ -880,6 +880,7 @@
       },
       "addNew": {
         "heading": "Nouvelle taxonomie",
+        "editHeading": "Modifier taxonomy",
         "save": "Sauvegarder",
         "class": "Classe",
         "destinationHeading": "Sélectionnez la destination de votre taxonomie.",
@@ -897,13 +898,27 @@
         "userAccess": "Restreindre l'accès aux utilisateurs",
         "userAccessPlaceHolder": "Sélectionnez",
         "userAccessDescription": "Select who has permission to see and use this field.",
+        "validations": {
+          "name": "Le nom est requis.",
+          "class": "Le Classe est requis",
+          "conceptName": "Le nom du concept est requis"
+        },
+        "messages": {
+          "create": "Succès ! Votre [organisation | personne | lieu] a été créé.",
+          "update": "Succès! Votre [organisation | personne | lieu] a été mis à jour."
+        },
         "adminOnly": "Administrateur uniquement",
         "concepts": {
           "heading": "Liste de concepts",
           "description": "Gérer une liste hiérarchique de concepts pour la taxonomie, dans toutes les langues du calendrier. Les concepts peuvent être sélectionnés à partir du champ de saisie correspondant. Faites glisser les concepts pour les réorganiser et/ou les imbriquer. Lorsque vous déplacez un concept dans une langue, il est déplacé dans toutes les langues.",
           "item": "Item",
           "french": "Français",
-          "english": "Anglais"
+          "english": "Anglais",
+          "add": "Ajouteréditer un concept.",
+          "edit": "Editer un concept.",
+          "conceptName": "Concept name",
+          "placeHolderFr": "Enter French Concept name",
+          "placeHolderEn": "Enter English Concept name"
         }
       }
     }

@@ -273,7 +273,6 @@ const Taxonomy = () => {
                     bordered={false}
                     pagination={{
                       onChange: (page) => {
-                        console.log(page);
                         setPageNumber(page);
                         window.scrollTo({
                           top: 0,
@@ -299,7 +298,12 @@ const Taxonomy = () => {
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                           calendarContentLanguage: calendarContentLanguage,
                         })}
-                        description={item.taxonomyClass}
+                        description={contentLanguageBilingual({
+                          en: item?.disambiguatingDescription?.en,
+                          fr: item?.disambiguatingDescription?.fr,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                          calendarContentLanguage: calendarContentLanguage,
+                        })}
                         createdDate={item?.creator?.date}
                         createdByUserName={item?.creator?.userName}
                         updatedDate={item?.modifier?.date}

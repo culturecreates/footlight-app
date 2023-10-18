@@ -21,6 +21,12 @@
   content: '*';
 }
 
+.quick-create-place-modal-wrapper .title-required:after {
+  margin-left: 4px;
+  content: '*';
+  color: #f43131;
+}
+
 .quick-create-place-modal-wrapper .quick-create-place-modal-sub-heading {
   font-weight: 400;
   font-size: 16px;
@@ -30,4 +36,22 @@
 .quick-create-place-modal-wrapper .ant-dropdown-menu-item-selected {
   color: #0f0e98;
   background-color: #eff2ff;
+}
+
+.quick-create-place-modal-wrapper
+  .ant-form-item-label
+  > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after {
+  display: inline-block;
+  margin-right: 4px;
+  color: #f43131;
+  font-size: 14px;
+  font-family: 'Roboto';
+  line-height: 1;
+  content: '*';
+}
+
+.quick-create-place-modal-wrapper
+  .ant-form-item-label
+  > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+  display: none;
 }

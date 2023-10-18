@@ -23,6 +23,7 @@ import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import { useAddPostalAddressMutation } from '../../../services/postalAddress';
 import { useAddPlaceMutation, useLazyGetPlaceQuery } from '../../../services/places';
 import { placesOptions } from '../../Select/selectOption.settings';
+import { placeTaxonomyMappedFieldTypes } from '../../../constants/placeMappedFieldTypes';
 
 const { TextArea } = Input;
 
@@ -38,6 +39,7 @@ function QuickCreatePlace(props) {
     setLocationPlace,
     eventForm,
   } = props;
+
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const timestampRef = useRef(Date.now()).current;
@@ -116,7 +118,7 @@ function QuickCreatePlace(props) {
   };
   const createPlaceHandler = () => {
     form
-      .validateFields(['french', 'english'])
+      .validateFields(['french', 'english', 'address'])
       .then(() => {
         var values = form.getFieldsValue(true);
         let languageKey;
@@ -182,6 +184,14 @@ function QuickCreatePlace(props) {
                 postalAddressId: {
                   entityId: response?.id,
                 },
+                regions: values?.region
+                  ? values.region.map((item) => {
+                      const obj = {
+                        entityId: item,
+                      };
+                      return obj;
+                    })
+                  : undefined,
               };
               addPlace({ data: placeObj, calendarId })
                 .unwrap()
@@ -317,7 +327,10 @@ function QuickCreatePlace(props) {
                   </Form.Item>
                 </BilingualInput>
               </ContentLanguageInput>
-              <Form.Item name="address" label={t('dashboard.events.addEditEvent.location.quickCreatePlace.address')}>
+              <Form.Item
+                name="address"
+                label={t('dashboard.events.addEditEvent.location.quickCreatePlace.address')}
+                required>
                 <PlacesAutocomplete value={address} onChange={handleChange} onSelect={handleSelect}>
                   {({ getInputProps, suggestions, getSuggestionItemProps }) => (
                     <Dropdown
@@ -365,6 +378,41 @@ function QuickCreatePlace(props) {
                   treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Type', false, calendarContentLanguage)}
                   tagRender={(props) => {
                     const { closable, onClose, label } = props;
+                    return (
+                      <Tags
+                        closable={closable}
+                        onClose={onClose}
+                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                        {label}
+                      </Tags>
+                    );
+                  }}
+                />
+              </Form.Item>
+              <Form.Item
+                name={'region'}
+                label={taxonomyDetails(
+                  allTaxonomyData?.data,
+                  user,
+                  placeTaxonomyMappedFieldTypes.REGION,
+                  'name',
+                  false,
+                )}>
+                <TreeSelectOption
+                  placeholder={t('dashboard.places.createNew.addPlace.address.region.placeholder')}
+                  allowClear
+                  treeDefaultExpandAll
+                  notFoundContent={<NoContent />}
+                  clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                  treeData={treeTaxonomyOptions(
+                    allTaxonomyData,
+                    user,
+                    placeTaxonomyMappedFieldTypes.REGION,
+                    false,
+                    calendarContentLanguage,
+                  )}
+                  tagRender={(props) => {
+                    const { label, closable, onClose } = props;
                     return (
                       <Tags
                         closable={closable}
