@@ -126,11 +126,11 @@ const UserReadOnly = () => {
                       <h2 className="user-info-details-card-heading">{t('dashboard.settings.userReadOnly.details')}</h2>
                     </Col>
                   </Row>
-                  {(userInfo?.lastName || userInfo?.firstName) &&
+                  {userInfo?.userName &&
                     createUserInfoRowItem({
                       isCopiableText: false,
                       infoType: 'userName',
-                      infoText: userInfo.firstName[0].toLowerCase() + userInfo.lastName.toLowerCase(),
+                      infoText: userInfo?.userName,
                     })}
 
                   {userInfo?.firstName &&
