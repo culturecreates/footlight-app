@@ -187,7 +187,7 @@ const UserManagement = () => {
     const activeCalendar = item?.roles.filter((r) => {
       return r.calendarId == calendarId;
     });
-    return activeCalendar[0].status;
+    return activeCalendar[0]?.status;
   };
 
   const tooltipItemDisplayHandler = ({ item }) => {
