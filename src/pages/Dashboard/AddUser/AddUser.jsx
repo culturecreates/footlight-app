@@ -78,8 +78,8 @@ const AddUser = () => {
     return calendar.calendarId === calendarId;
   });
 
-  const [getUser, { isSuccess: isUserFetchSuccess }] = useLazyGetUserByIdQuery();
-  const [getUserSearch, { isFetching: isUsersearchFeatching }] = useLazyGetAllUsersQuery();
+  const [getUser, { isFetching: isUserFetching }] = useLazyGetUserByIdQuery({ sessionId: timestampRef });
+  const [getUserSearch, { isFetching: isUsersearchFeatching }] = useLazyGetAllUsersQuery({ sessionId: timestampRef });
 
   const [
     currentUserLeaveCalendar,
@@ -89,7 +89,7 @@ const AddUser = () => {
   const [inviteUser] = useInviteUserMutation();
   const [updateUserById] = useUpdateUserByIdMutation();
   const [updateCurrentUser] = useUpdateCurrentUserMutation();
-  const [getCurrentUserDetails, { isSuccess: isCurrentUserSuccess }] = useLazyGetCurrentUserQuery({
+  const [getCurrentUserDetails, { isFetching: isCurrentUserFetching }] = useLazyGetCurrentUserQuery({
     sessionId: timestampRef,
   });
 
@@ -256,7 +256,6 @@ const AddUser = () => {
                     const requiredRole = response?.roles.filter((r) => {
                       return r.calendarId === calendarId;
                     });
-
                     const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
 
                     setUserData({
@@ -265,6 +264,7 @@ const AddUser = () => {
                       phoneNumber: response?.phoneNumber,
                       email: response?.email,
                       userType: requiredRole[0]?.role,
+                      userName: response?.userName,
                       languagePreference: { key: response.interfaceLanguage, label: selectedLanguage },
                       calendars: response.roles,
                     });
@@ -288,6 +288,7 @@ const AddUser = () => {
                     profileImage: user?.profileImage,
                     roles: user?.roles,
                     isSuperAdmin: user?.isSuperAdmin,
+                    userName: user?.userName,
                     interfaceLanguage: values?.languagePreference?.key,
                   },
                 };
@@ -471,7 +472,7 @@ const AddUser = () => {
           },
           { name: ['languagePreference'], value: userData.languagePreference },
         ]}>
-        {isUserFetchSuccess || isCurrentUserSuccess || !userId ? (
+        {!(isUserFetching || isCurrentUserFetching) ? (
           <Row gutter={[0, 32]} className="add-edit-wrapper add-user-wrapper">
             <Col span={24}>
               <Row gutter={[0, 16]}>
