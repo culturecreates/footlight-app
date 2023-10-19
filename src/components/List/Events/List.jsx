@@ -91,6 +91,8 @@ function Lists(props) {
               <EventStatusOptions
                 key={index}
                 publishState={eventItem?.publishState}
+                isFeatured={eventItem?.isFeatured}
+                eventData={eventItem}
                 creator={eventItem?.creator}
                 eventId={eventItem?.id}>
                 <span>
@@ -104,6 +106,8 @@ function Lists(props) {
               <EventStatusOptions
                 key={index}
                 publishState={eventItem?.publishState}
+                eventData={eventItem}
+                isFeatured={eventItem?.isFeatured}
                 creator={eventItem?.creator}
                 eventId={eventItem?.id}>
                 <span>

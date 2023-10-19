@@ -68,6 +68,7 @@ export const eventsApi = createApi({
         },
         body: data,
       }),
+      invalidatesTags: (result, error, arg) => [{ type: 'Events', id: arg.id }],
     }),
   }),
 });

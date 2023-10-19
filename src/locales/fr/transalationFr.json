@@ -399,7 +399,9 @@
         "publishEvent": "Publier l'événement",
         "unpublishEvent": "Passer en brouillon",
         "deleteEvent": "Supprimer l'événement",
-        "duplicateEvent": "Dupliquer l’événement"
+        "duplicateEvent": "Dupliquer l’événement",
+        "featureEvent": "Mettre en vedette",
+        "unFeatureEvent": "Retirer la mise en vedette"
       },
       "publishState": {
         "published": "Publié",
