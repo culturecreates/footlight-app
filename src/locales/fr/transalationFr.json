@@ -870,6 +870,7 @@
           "organization": "Organization",
           "virtualLocation": "Virtual location"
         },
+        "classValidation":"Sélectionnez une classe",
         "classPlaceHolder": "Sélectionner une classe",
         "destinationHeading": "Sélectionnez la destination de votre taxonomie.",
         "inputType": "Type de données",
@@ -916,6 +917,7 @@
           "english": "Anglais",
           "add": "Ajouteréditer un concept.",
           "edit": "Editer un concept.",
+          "save": "Sauvegarder",
           "conceptName": "Concept name",
           "placeHolderFr": "Enter French Concept name",
           "placeHolderEn": "Enter English Concept name"
