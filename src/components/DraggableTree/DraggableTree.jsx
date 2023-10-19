@@ -11,6 +11,7 @@ import ContentLanguageInput from '../ContentLanguageInput';
 import Outlined from '../../components/Button/Outlined';
 import BilingualInput from '../BilingualInput';
 import './draggableTree.css';
+import LanguageFilter from './LanguageFilter';
 
 const DraggableTree = ({
   data,
@@ -321,33 +322,38 @@ const DraggableTree = ({
 
   return (
     <div className="draggable-tree">
-      <Form.Item style={{ width: '50%' }}>
-        <span className="tag-header">{t('dashboard.taxonomy.addNew.concepts.english')}</span>
-        <div className="tree-item">
-          <Tree
-            className="draggable-tree"
-            draggable
-            blockNode
-            onDrop={(info) => onDrop(info, treeData1, setTreeData1, treeData2, setTreeData2)}
-            treeData={treeData2}
-            onSelect={handleClick}
-          />
-        </div>
-      </Form.Item>
-      <Form.Item style={{ width: '50%' }}>
-        <span className="tag-header">{t('dashboard.taxonomy.addNew.concepts.french')}</span>
-        <div className="tree-item" style={{ borderRight: 'solid 4px #eff2ff' }}>
-          <Tree
-            className="draggable-tree"
-            draggable
-            blockNode
-            onDrop={(info) => onDrop(info, treeData2, setTreeData2, treeData1, setTreeData1)}
-            treeData={treeData1}
-            onSelect={handleClick}
-            on
-          />
-        </div>
-      </Form.Item>
+      <LanguageFilter calendarContentLanguage={calendarContentLanguage}>
+        <Form.Item style={{ width: '50%' }} key={contentLanguage.ENGLISH}>
+          <span className="tag-header">{t('dashboard.taxonomy.addNew.concepts.english')}</span>
+          <div className="tree-item">
+            <Tree
+              className="draggable-tree"
+              draggable
+              blockNode
+              onDrop={(info) => onDrop(info, treeData1, setTreeData1, treeData2, setTreeData2)}
+              treeData={treeData2}
+              onSelect={handleClick}
+            />
+          </div>
+        </Form.Item>
+      </LanguageFilter>
+
+      <LanguageFilter calendarContentLanguage={calendarContentLanguage}>
+        <Form.Item style={{ width: '50%' }} key={contentLanguage.FRENCH}>
+          <span className="tag-header">{t('dashboard.taxonomy.addNew.concepts.french')}</span>
+          <div className="tree-item" style={{ borderRight: 'solid 4px #eff2ff' }}>
+            <Tree
+              className="draggable-tree"
+              draggable
+              blockNode
+              onDrop={(info) => onDrop(info, treeData2, setTreeData2, treeData1, setTreeData1)}
+              treeData={treeData1}
+              onSelect={handleClick}
+              on
+            />
+          </div>
+        </Form.Item>
+      </LanguageFilter>
 
       <div className="addmodal">
         <CustomModal
