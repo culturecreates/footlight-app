@@ -322,7 +322,7 @@ const AddTaxonomy = () => {
                                 name="frenchname"
                                 key={contentLanguage.FRENCH}
                                 initialValue={formValues?.name?.fr}
-                                dependencies={['english']}
+                                dependencies={['englishname']}
                                 rules={[
                                   ({ getFieldValue }) => ({
                                     validator(_, value) {

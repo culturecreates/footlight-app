@@ -12,6 +12,7 @@ import Outlined from '../../components/Button/Outlined';
 import BilingualInput from '../BilingualInput';
 import './draggableTree.css';
 import LanguageFilter from './LanguageFilter';
+import { Confirm } from '../Modal/Confirm/Confirm';
 
 const DraggableTree = ({
   data,
@@ -285,16 +286,25 @@ const DraggableTree = ({
   };
 
   const handleDelete = () => {
-    if (forEditing && selectedNode) {
-      const updatedData = deleteNodeFromData(data, selectedNode.key);
-      setData(updatedData);
-      setForEditing(false);
-      setNewConceptName({ en: '', fr: '' });
-      handleAddChildModalClose();
-    } else {
-      setDeleteDisplayFlag(false);
-      setData(data);
-    }
+    setAddNewPopup(false);
+    Confirm({
+      title: t('dashboard.settings.addUser.confirmLeave'),
+      onAction: () => {
+        if (forEditing && selectedNode) {
+          const updatedData = deleteNodeFromData(data, selectedNode.key);
+          setData(updatedData);
+          setForEditing(false);
+          setNewConceptName({ en: '', fr: '' });
+          handleAddChildModalClose();
+        } else {
+          setDeleteDisplayFlag(false);
+          setData(data);
+        }
+      },
+      content: t('dashboard.settings.addUser.leaveCalender'),
+      okText: t('dashboard.settings.addUser.leave'),
+      cancelText: t('dashboard.events.deleteEvent.cancel'),
+    });
   };
 
   const deleteNodeFromData = (data, key) => {
@@ -361,7 +371,9 @@ const DraggableTree = ({
           destroyOnClose
           centered
           title={
-            <span className="quick-create-organization-modal-title">{t('dashboard.taxonomy.addNew.concepts.add')}</span>
+            <span className="quick-create-organization-modal-title">
+              {!forEditing ? t('dashboard.taxonomy.addNew.concepts.add') : t('dashboard.taxonomy.addNew.concepts.edit')}
+            </span>
           }
           onCancel={() => handleAddChildModalClose()}
           footer={
@@ -389,7 +401,11 @@ const DraggableTree = ({
                 />
                 <PrimaryButton
                   key="add-dates"
-                  label={t('dashboard.events.addEditEvent.quickCreate.create')}
+                  label={
+                    forEditing
+                      ? t('dashboard.taxonomy.addNew.concepts.editBtn')
+                      : t('dashboard.events.addEditEvent.quickCreate.create')
+                  }
                   onClick={handleAddChild}
                 />
               </div>
