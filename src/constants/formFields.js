@@ -551,7 +551,7 @@ export const returnFormDataWithFields = ({
         field?.mappedField === mappedFieldTypes.IMAGE
           ? entityData?.image?.large?.uri
           : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo?.large?.uri,
-      originalImageUrl:
+      originalUrl:
         field?.mappedField === mappedFieldTypes.IMAGE
           ? entityData?.image?.original?.uri
           : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo?.original?.uri,
