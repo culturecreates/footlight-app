@@ -1,21 +1,23 @@
 import React from 'react';
-import { Button, Dropdown, Modal, message } from 'antd';
+import { Button, Dropdown, Modal, message, notification } from 'antd';
 import { ExclamationCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { eventPublishOptions } from '../../../constants/eventPublishOptions';
 import './eventStatus.css';
 import ProtectedComponents from '../../../layout/ProtectedComponents';
 import { eventPublishState } from '../../../constants/eventPublishState';
-import { useDeleteEventMutation, useUpdateEventStateMutation } from '../../../services/events';
+import { useDeleteEventMutation, useUpdateEventMutation, useUpdateEventStateMutation } from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 const { confirm } = Modal;
-function EventStatusOptions({ children, publishState, creator, eventId, isFeatured }) {
+function EventStatusOptions({ children, publishState, creator, eventId, isFeatured, eventData }) {
   const { t } = useTranslation();
   const { calendarId } = useParams();
   const navigate = useNavigate();
   const [updateEventState] = useUpdateEventStateMutation();
   const [deleteEvent] = useDeleteEventMutation();
+  const [updateEvent] = useUpdateEventMutation();
+
   const items = eventPublishOptions.map((item) => {
     if (publishState == eventPublishState.PUBLISHED) {
       if (item.key != '0') {
@@ -96,6 +98,32 @@ function EventStatusOptions({ children, publishState, creator, eventId, isFeatur
           });
         });
     } else if (key === '3') navigate(`${location.pathname}${PathName.AddEvent}?duplicateId=${eventId}`);
+    else if (key === '4' || key === '5') {
+      const eventObj = {
+        ...eventData,
+        isFeatured: !isFeatured,
+      };
+      updateEvent({
+        data: eventObj,
+        calendarId,
+        eventId: eventData.id,
+      })
+        .unwrap()
+        .then((res) => {
+          if (res?.statusCode == 202) {
+            notification.success({
+              description: t('dashboard.events.addEditEvent.notification.updateEvent'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   };
   return (
     <ProtectedComponents creator={creator}>
