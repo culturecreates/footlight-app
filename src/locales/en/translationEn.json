@@ -876,6 +876,7 @@
           "organization": "Organization",
           "virtualLocation": "Virtual location"
         },
+        "classValidation":"Select a class.",
         "classPlaceHolder": "Select class",
         "destinationHeading": "Select the destination for your taxonomy.",
         "inputType": "Input type",
