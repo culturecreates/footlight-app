@@ -399,6 +399,8 @@
       "publishOptions": {
         "publishEvent": "Publish event",
         "unpublishEvent": "Unpublish event",
+        "featureEvent":"Feature this event",
+        "unFeatureEvent":"Unfeature this event",
         "deleteEvent": "Delete event",
         "duplicateEvent": "Duplicate Event"
       },

@@ -104,6 +104,7 @@ function Lists(props) {
               <EventStatusOptions
                 key={index}
                 publishState={eventItem?.publishState}
+                isFeatured={eventItem?.isFeatured}
                 creator={eventItem?.creator}
                 eventId={eventItem?.id}>
                 <span>

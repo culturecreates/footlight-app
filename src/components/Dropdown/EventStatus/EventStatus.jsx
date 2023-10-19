@@ -10,7 +10,7 @@ import { useDeleteEventMutation, useUpdateEventStateMutation } from '../../../se
 import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 const { confirm } = Modal;
-function EventStatusOptions({ children, publishState, creator, eventId }) {
+function EventStatusOptions({ children, publishState, creator, eventId, isFeatured }) {
   const { t } = useTranslation();
   const { calendarId } = useParams();
   const navigate = useNavigate();
@@ -18,15 +18,28 @@ function EventStatusOptions({ children, publishState, creator, eventId }) {
   const [deleteEvent] = useDeleteEventMutation();
   const items = eventPublishOptions.map((item) => {
     if (publishState == eventPublishState.PUBLISHED) {
-      if (item.key != '0')
-        return {
-          key: item?.key,
-          label: item?.label,
-          type: item?.type,
-        };
+      if (item.key != '0') {
+        if (isFeatured) {
+          if (item.key !== '4') {
+            return {
+              key: item?.key,
+              label: item?.label,
+              type: item?.type,
+            };
+          }
+        } else {
+          if (item.key !== '5') {
+            return {
+              key: item?.key,
+              label: item?.label,
+              type: item?.type,
+            };
+          }
+        }
+      }
     } else {
       if (publishState == eventPublishState.DRAFT || publishState === eventPublishState.PENDING_REVIEW)
-        if (item.key != '1')
+        if (item.key != '1' && item.key !== '5' && item.key !== '4')
           return {
             key: item?.key,
             label: item?.label,
@@ -40,6 +53,7 @@ function EventStatusOptions({ children, publishState, creator, eventId }) {
         };
     }
   });
+
   const showDeleteConfirm = () => {
     confirm({
       title: t('dashboard.events.deleteEvent.title'),
