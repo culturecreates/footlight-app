@@ -236,10 +236,17 @@ const UserManagement = () => {
       !(userStatus[0]?.status === userActivityStatus[4].key || userStatus[0]?.status === userActivityStatus[2].key) &&
       !item?.isSuperAdmin
     ) {
-      dropdownItems.push({
-        key: 'activateOrDeactivate',
-        label: t('dashboard.settings.userManagement.tooltip.activateOrDeactivate'),
-      });
+      if (!(userStatus[0]?.status == userActivityStatus[0].key)) {
+        dropdownItems.push({
+          key: 'activateOrDeactivate',
+          label: t('dashboard.settings.userManagement.tooltip.activate'),
+        });
+      } else {
+        dropdownItems.push({
+          key: 'activateOrDeactivate',
+          label: t('dashboard.settings.userManagement.tooltip.deactivate'),
+        });
+      }
     }
 
     if (!(userStatus[0]?.status === userActivityStatus[0].key || userStatus[0]?.status === userActivityStatus[2].key)) {
@@ -254,6 +261,25 @@ const UserManagement = () => {
 
   const onSearchChangeHandler = (event) => {
     if (event.target.value === '') setUserSearchQuery('');
+  };
+
+  const cancelInvitationHandler = (userInvitationId) => {
+    withdrawInvitation({ id: userInvitationId[0]?.invitationId, calendarId })
+      .unwrap()
+      .then((res) => {
+        if (res?.statusCode == 202) {
+          const filtersDecoded = setFiletrsForApiCall();
+          getAllUsers({
+            page: pageNumber,
+            limit: 10,
+            filters: filtersDecoded,
+            query: userSearchQuery,
+            sessionId: timestampRef,
+            calendarId: calendarId,
+            includeCalenderFilter: true,
+          });
+        }
+      });
   };
 
   const createTitleHandler = (firstName, lastName, userName) => {
@@ -350,22 +376,14 @@ const UserManagement = () => {
         break;
 
       case 'withDrawInvitation':
-        withdrawInvitation({ id: userInvitationId[0]?.invitationId, calendarId })
-          .unwrap()
-          .then((res) => {
-            if (res?.statusCode == 202) {
-              const filtersDecoded = setFiletrsForApiCall();
-              getAllUsers({
-                page: pageNumber,
-                limit: 10,
-                filters: filtersDecoded,
-                query: userSearchQuery,
-                sessionId: timestampRef,
-                calendarId: calendarId,
-                includeCalenderFilter: true,
-              });
-            }
-          });
+        Confirm({
+          title: t('dashboard.settings.userManagement.tooltip.modal.cancelInvitationTitle'),
+          onAction: () => cancelInvitationHandler(userInvitationId),
+          okText: t('dashboard.settings.addUser.delete'),
+          cancelText: t('dashboard.settings.addUser.cancel'),
+          content: t('dashboard.settings.userManagement.tooltip.modal.cancelInvitationMessage'),
+        });
+
         break;
       default:
         break;
