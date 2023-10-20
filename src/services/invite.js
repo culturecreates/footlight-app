@@ -40,6 +40,18 @@ export const inviteApi = createApi({
         };
       },
     }),
+
+    withDrawInvitation: builder.mutation({
+      query: ({ id, calendarId }) => {
+        return {
+          url: `invite/${id}/withdraw`,
+          method: 'POST',
+          headers: {
+            'calendar-id': calendarId,
+          },
+        };
+      },
+    }),
   }),
 });
 
@@ -48,4 +60,5 @@ export const {
   useAcceptInviteMutation,
   useLazyGetInviteDetailsQuery,
   useInviteUserMutation,
+  useWithDrawInvitationMutation,
 } = inviteApi;
