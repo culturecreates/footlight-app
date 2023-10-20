@@ -602,6 +602,12 @@
             "addPlace": "Ajouter un lieu",
             "placeholder": "Rechercher un lieu"
           },
+          "containsPlace": {
+            "containsPlace": "Contient un lieu",
+            "subheading": "Ajoutez des lieux d'intérêt contenus dans ce lieu.",
+            "addPlace": "Ajouter un lieu",
+            "placeholder": "Rechercher un lieu"
+          },
           "venueAccessibility": {
             "venueAccessibility": "Accessibilité du site",
             "placeholder": "Sélectionner un élément",

@@ -606,6 +606,12 @@
             "addPlace": "Add a place",
             "placeholder": "Search a place"
           },
+          "containsPlace": {
+            "containsPlace": "Contains place",
+            "subheading": "Add places of interest that are contained in this place.",
+            "addPlace": "Add a place",
+            "placeholder": "Search a place"
+          },
           "venueAccessibility": {
             "venueAccessibility": "Venue accessibility",
             "subheading": "These accessibility items will be displayed in all the event located at this venue.",
