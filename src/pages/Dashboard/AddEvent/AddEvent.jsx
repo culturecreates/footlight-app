@@ -2131,7 +2131,6 @@ function AddEvent() {
                               {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                             </div>
                             <div className="search-scrollable-content">
-                              {' '}
                               {organizersList?.length > 0 ? (
                                 organizersList?.map((organizer, index) => (
                                   <div
