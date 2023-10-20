@@ -30,6 +30,7 @@ import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { loadArtsDataPlaceEntity } from '../../../services/artsData';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
+import { sourceOptions } from '../../../constants/sourceOptions';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -59,6 +60,7 @@ function PlaceReadOnly() {
   const [locationPlace, setLocationPlace] = useState();
   const [artsDataLoading, setArtsDataLoading] = useState(false);
   const [artsData, setArtsData] = useState(null);
+  const [selectedContainsPlaces, setSelectedContainsPlaces] = useState([]);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -126,6 +128,20 @@ function PlaceReadOnly() {
               })
               .catch((error) => console.log(error));
           });
+      }
+      if (placeData?.containsPlace?.length > 0) {
+        let initialContainsPlace = placeData?.containsPlace?.map((place) => {
+          return {
+            disambiguatingDescription: place?.disambiguatingDescription,
+            id: place?.id,
+            name: place?.name,
+            image: place?.image,
+            uri: place?.derivedFrom?.uri,
+          };
+        });
+        setSelectedContainsPlaces(
+          placesOptions(initialContainsPlace, user, calendarContentLanguage, sourceOptions.CMS),
+        );
       }
     }
   }, [placeSuccess]);
@@ -541,6 +557,37 @@ function PlaceReadOnly() {
                           return <Tags>{label}</Tags>;
                         }}
                       />
+                    </Col>
+                  </Col>
+                </Row>
+              </Col>
+              <Col></Col>
+            </Card>
+          )}
+          {placeData?.containsPlace?.length > 0 && (
+            <Card>
+              <Col>
+                <Row gutter={[0, 24]}>
+                  <Col span={24}>
+                    <p className="read-only-event-content" style={{ fontSize: '24px' }}>
+                      {t('dashboard.places.createNew.addPlace.containsPlace.containsPlace')}
+                    </p>
+                    <Col span={24}>
+                      {selectedContainsPlaces?.map((containsPlace, index) => {
+                        return (
+                          <SelectionItem
+                            key={index}
+                            icon={containsPlace?.label?.props?.icon}
+                            name={containsPlace?.name}
+                            description={containsPlace?.description}
+                            artsDataLink={containsPlace?.uri}
+                            artsDataDetails={true}
+                            calendarContentLanguage={calendarContentLanguage}
+                            bordered
+                            itemWidth="423px"
+                          />
+                        );
+                      })}
                     </Col>
                   </Col>
                 </Row>
