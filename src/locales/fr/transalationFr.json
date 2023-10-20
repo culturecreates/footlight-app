@@ -753,6 +753,7 @@
           "editUser": "Modifier l'utilisateur",
           "sendInvitation": "Envoyer l'invitation",
           "copyInvitationLink": "Copier le lien de l'invitation",
+          "withDrawInvitation": "Withdraw invitation",
           "activateOrDeactivate": "Activé/Désactivé",
           "deleteUser": "Supprimer l'utilisateur",
           "modal": {

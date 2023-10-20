@@ -399,8 +399,8 @@
       "publishOptions": {
         "publishEvent": "Publish event",
         "unpublishEvent": "Unpublish event",
-        "featureEvent":"Feature this event",
-        "unFeatureEvent":"Unfeature this event",
+        "featureEvent": "Feature this event",
+        "unFeatureEvent": "Unfeature this event",
         "deleteEvent": "Delete event",
         "duplicateEvent": "Duplicate Event"
       },
@@ -759,6 +759,7 @@
           "sendInvitation": "Send invitation",
           "copyInvitationLink": "Copy invitation link",
           "activateOrDeactivate": "Activate/Deactivate",
+          "withDrawInvitation": "Withdraw invitation",
           "deleteUser": "Delete user",
           "modal": {
             "deleteText": "Are you sure you want to permanently delete this user",
@@ -878,7 +879,7 @@
           "organization": "Organization",
           "virtualLocation": "Virtual location"
         },
-        "classValidation":"Select a class.",
+        "classValidation": "Select a class.",
         "classPlaceHolder": "Select class",
         "destinationHeading": "Select the destination for your taxonomy.",
         "inputType": "Input type",
@@ -913,9 +914,9 @@
           "class": "Class is required",
           "conceptName": "Concept name is required"
         },
-        "messages":{
-          "create":"Success! Your Taxonomy has been created.",
-          "update":"Success! Your Taxonomy has been updated."	
+        "messages": {
+          "create": "Success! Your Taxonomy has been created.",
+          "update": "Success! Your Taxonomy has been updated."
         },
         "concepts": {
           "heading": "Concept list",
@@ -929,7 +930,6 @@
           "conceptName": "Concept name",
           "placeHolderFr": "Enter French Concept name",
           "placeHolderEn": "Enter English Concept name"
-
         }
       }
     }
