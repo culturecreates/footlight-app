@@ -1,4 +1,4 @@
-import { Button, Col, Dropdown, Grid, List, Row, Space } from 'antd';
+import { Badge, Button, Checkbox, Col, Dropdown, Grid, List, Row, Space } from 'antd';
 import i18next from 'i18next';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +28,8 @@ import { contentLanguageBilingual } from '../../../utils/bilingual';
 import ListItem from '../../../components/List/ListItem.jsx/ListItem';
 import { userRoles } from '../../../constants/userRoles';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
+import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
+import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox/SearchableCheckbox';
 
 const Taxonomy = () => {
   const { useBreakpoint } = Grid;
@@ -41,13 +43,17 @@ const Taxonomy = () => {
   const [currentCalendarData] = useOutletContext();
   const navigate = useNavigate();
 
-  const [getAllTaxonomy, { currentData: allTaxonomy, isFetching: isTaxonomyFetching }] =
-    useLazyGetAllTaxonomyQuery(timestampRef);
+  const [getAllTaxonomy, { currentData: allTaxonomy, isFetching: isTaxonomyFetching }] = useLazyGetAllTaxonomyQuery({
+    sessionId: timestampRef,
+  });
   const [deleteTaxonomy] = useDeleteTaxonomyMutation();
 
   const sortByParam = searchParams.get('sortBy');
+
   const orderParam = searchParams.get('order');
   const queryParam = searchParams.get('query');
+  const classParam = searchParams.get('class');
+
   const totalCount = allTaxonomy?.totalCount;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const calendar = user?.roles.filter((calendar) => {
@@ -57,16 +63,19 @@ const Taxonomy = () => {
   const defaultSort = sortByParam || sessionStorage.getItem('sortByTaxonomy') || `${sortByOptionsTaxonomy[0].key}`;
   const defaultOrder = orderParam || sessionStorage.getItem('orderTaxonomy') || sortOrder?.ASC;
   const defaultQuery = queryParam || sessionStorage.getItem('queryTaxonomy') || '';
+  const defaultClass = classParam || sessionStorage.getItem('classTaxonomy') || [];
 
   const [filters, setFilters] = useState({
     sort: decodeURIComponent(defaultSort),
     order: decodeURIComponent(defaultOrder),
     query: decodeURIComponent(defaultQuery),
+    class: decodeURIComponent(defaultClass)?.split(','),
   });
   const [pageNumber, setPageNumber] = useState(1);
 
   useEffect(() => {
     const filtersDecoded = setFiletrsForApiCall();
+
     getAllTaxonomy({
       calendarId,
       query: filters.query,
@@ -75,7 +84,6 @@ const Taxonomy = () => {
       includeConcepts: false,
       page: pageNumber,
       limit: 10,
-      sessionId: timestampRef,
     });
 
     let params = {
@@ -83,6 +91,7 @@ const Taxonomy = () => {
       order: filters?.order,
       sortBy: filters?.sort,
       ...(filters.query !== '' && { query: filters.query }),
+      ...(filters?.class?.length > 0 && filters?.class[0] !== '' && { class: encodeURIComponent(filters?.class) }),
     };
     setSearchParams(createSearchParams(params));
     sessionStorage.setItem('pageTaxonomy', pageNumber);
@@ -90,12 +99,19 @@ const Taxonomy = () => {
     sessionStorage.setItem('queryTaxonomy', filters.query);
     sessionStorage.setItem('orderTaxonomy', filters?.order);
     sessionStorage.setItem('sortByTaxonomy', filters?.sort);
+    filters?.class?.length > 0 && sessionStorage.setItem('classTaxonomy', encodeURIComponent(filters?.class));
   }, [filters, pageNumber]);
 
   const setFiletrsForApiCall = () => {
     let optionalFilters = new URLSearchParams();
 
     let sortParam;
+
+    filters?.class?.length > 0 &&
+      filters?.class[0] !== '' &&
+      filters?.class?.forEach((c) => {
+        optionalFilters.append('taxonomy-class', c);
+      });
 
     if (filters.sort == `${sortByOptionsTaxonomy[0].key}`) {
       sortParam = `${sortByOptionsTaxonomy[0].key}.${i18next.language}`;
@@ -104,7 +120,7 @@ const Taxonomy = () => {
     }
     optionalFilters.append('sort', encodeURIComponent(`${filters?.order}(${sortParam})`));
 
-    const filtersDecoded = decodeURIComponent(decodeURIComponent(optionalFilters.toString()));
+    const filtersDecoded = decodeURIComponent(optionalFilters.toString());
     return filtersDecoded;
   };
 
@@ -139,6 +155,10 @@ const Taxonomy = () => {
     sessionStorage.removeItem('sortByUserListing');
     sessionStorage.removeItem('userStatusUserListing');
     sessionStorage.removeItem('userRoleUserListing');
+  };
+
+  const classFilterChangeHandler = (values) => {
+    setFilters({ ...filters, class: values });
   };
 
   const onSortSelect = ({ selectedKeys }) => {
@@ -245,19 +265,57 @@ const Taxonomy = () => {
                     />
                   </Row>
                 </Col>
-                <Col>
-                  {(filters.order !== sortOrder.ASC || filters.sort !== `${sortByOptionsTaxonomy[0].key}`) && (
-                    <Button
-                      size="large"
-                      className="filter-buttons"
-                      style={{ color: '#1B3DE6' }}
-                      onClick={filterClearHandler}>
-                      {t('dashboard.events.filter.clear')}&nbsp;
-                      <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
-                    </Button>
-                  )}
-                </Col>
               </Row>
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col>
+              <SearchableCheckbox
+                overlayClassName="filter-sort-dropdown-wrapper"
+                getPopupContainer={(trigger) => trigger.parentNode}
+                overlayStyle={{ minWidth: '200px' }}
+                onFilterChange={classFilterChangeHandler}
+                data={taxonomyClassTranslations?.map((classType) => {
+                  return {
+                    key: classType.key,
+                    label: (
+                      <Checkbox value={classType.key} key={classType.key} style={{ marginLeft: '8px' }}>
+                        {classType.label}
+                      </Checkbox>
+                    ),
+                    filtervalue: classType.key,
+                  };
+                })}
+                allowSearch={false}
+                value={filters?.class}
+                trigger={['click']}>
+                <Button
+                  size="large"
+                  className="filter-buttons"
+                  style={{ borderColor: filters?.class?.length > 0 && filters?.class[0] !== '' && '#607EFC' }}>
+                  {t('dashboard.settings.userManagement.userTypes')}
+                  {filters?.publication?.length > 0 && (
+                    <>
+                      &nbsp;
+                      <Badge count={filters?.publication?.length} showZero={false} color="#1B3DE6" />
+                    </>
+                  )}
+                </Button>
+              </SearchableCheckbox>
+            </Col>
+            <Col>
+              {(filters.order !== sortOrder.ASC ||
+                filters.sort !== `${sortByOptionsTaxonomy[0].key}` ||
+                (filters?.class?.length > 0 && filters?.class[0] !== '')) && (
+                <Button
+                  size="large"
+                  className="filter-buttons"
+                  style={{ color: '#1B3DE6' }}
+                  onClick={filterClearHandler}>
+                  {t('dashboard.events.filter.clear')}&nbsp;
+                  <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
+                </Button>
+              )}
             </Col>
           </Row>
         </Col>

@@ -381,6 +381,11 @@ const AddUser = () => {
     setUserData({ ...userData, [fieldType]: value });
   };
 
+  const getUserTypeLabelFromKey = (key) => {
+    const label = userRolesWithTranslation.filter((u) => u.key == key);
+    return label[0].label;
+  };
+
   const searchHandlerUserSearch = (value) => {
     value != ''
       ? getUserSearch({ includeCalenderFilter: false, calendarId, query: value, page: 1, limit: 10, filters: '' })
@@ -722,7 +727,7 @@ const AddUser = () => {
                             <div>
                               <Typography.Text>
                                 {userData?.userType !== ''
-                                  ? userData?.userType
+                                  ? getUserTypeLabelFromKey(userData?.userType)
                                   : t('dashboard.settings.addUser.placeHolder.userType')}
                               </Typography.Text>
                               <DownOutlined style={{ fontSize: '16px' }} />
