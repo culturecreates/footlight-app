@@ -753,13 +753,18 @@
           "editUser": "Modifier l'utilisateur",
           "sendInvitation": "Envoyer l'invitation",
           "copyInvitationLink": "Copier le lien de l'invitation",
-          "activateOrDeactivate": "Activé/Désactivé",
+          "withDrawInvitation": "Annuler l'invitation",
+          "activate": "Activé",
+          "deactivate": "Désactivé",
           "deleteUser": "Supprimer l'utilisateur",
+          "cancelInvitation": "Confirm cancellation",
           "modal": {
             "deleteText": "Are you sure you want to permanently delete this user",
             "deactivateText": "Are you sure you want to deactivate this user",
             "activateText": "Êtes-vous sûr de vouloir activer cet utilisateur ?",
-            "copyText": "Lien d'invitation copié.."
+            "copyText": "Lien d'invitation copié..",
+            "cancelInvitationTitle": "Confirmer l'annulation",
+            "cancelInvitationMessage": "Êtes-vous sûr? Cette action retirera cet utilisateur de votre calendrier."
           }
         }
       },
@@ -872,7 +877,7 @@
           "organization": "Organization",
           "virtualLocation": "Virtual location"
         },
-        "classValidation":"Sélectionnez une classe",
+        "classValidation": "Sélectionnez une classe",
         "classPlaceHolder": "Sélectionner une classe",
         "destinationHeading": "Sélectionnez la destination de votre taxonomie.",
         "inputType": "Type de données",

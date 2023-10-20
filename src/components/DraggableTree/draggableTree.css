@@ -27,6 +27,7 @@
   height: 140px;
   overflow-y: scroll;
   color: var(--content-neutral-primary, #222732);
+  height: 196px;
 }
 
 .draggable-tree .ant-tree .ant-tree-treenode-draggable .ant-tree-draggable-icon {
