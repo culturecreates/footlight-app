@@ -150,14 +150,14 @@ const Taxonomy = () => {
     });
     setPageNumber(1);
     sessionStorage.removeItem('page');
-    sessionStorage.removeItem('query');
+    sessionStorage.removeItem('queryTaxonomy');
     sessionStorage.removeItem('orderUserListing');
-    sessionStorage.removeItem('sortByUserListing');
-    sessionStorage.removeItem('userStatusUserListing');
-    sessionStorage.removeItem('userRoleUserListing');
+    sessionStorage.removeItem('orderTaxonomy');
+    sessionStorage.removeItem('classTaxonomy');
   };
 
   const classFilterChangeHandler = (values) => {
+    console.log(filters, values);
     setFilters({ ...filters, class: values });
   };
 
@@ -293,11 +293,15 @@ const Taxonomy = () => {
                   size="large"
                   className="filter-buttons"
                   style={{ borderColor: filters?.class?.length > 0 && filters?.class[0] !== '' && '#607EFC' }}>
-                  {t('dashboard.settings.userManagement.userTypes')}
-                  {filters?.publication?.length > 0 && (
+                  {t('dashboard.taxonomy.listing.classType')}
+                  {filters?.class?.length > 0 && (
                     <>
                       &nbsp;
-                      <Badge count={filters?.publication?.length} showZero={false} color="#1B3DE6" />
+                      <Badge
+                        count={filters?.class?.length > 0 && filters?.class[0] !== '' ? filters?.class?.length : <></>}
+                        showZero={false}
+                        color="#1B3DE6"
+                      />
                     </>
                   )}
                 </Button>

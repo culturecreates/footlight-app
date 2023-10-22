@@ -863,6 +863,7 @@
       "listing": {
         "heading": "Taxonomies",
         "addNew": "Personne",
+        "classType":"Class",
         "sort": {
           "sortBy": "Trier par",
           "name": "Nom",
