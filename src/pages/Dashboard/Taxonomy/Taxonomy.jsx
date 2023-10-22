@@ -157,7 +157,6 @@ const Taxonomy = () => {
   };
 
   const classFilterChangeHandler = (values) => {
-    console.log(filters, values);
     setFilters({ ...filters, class: values });
   };
 
