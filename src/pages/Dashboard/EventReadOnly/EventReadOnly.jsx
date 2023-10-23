@@ -972,7 +972,7 @@ function EventReadOnly() {
                   <div
                     className="read-only-event-section-wrapper"
                     style={{
-                      display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.FEATURED)
+                      display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.TICKET_INFO)
                         ? adminCheckHandler()
                           ? ''
                           : 'none'
