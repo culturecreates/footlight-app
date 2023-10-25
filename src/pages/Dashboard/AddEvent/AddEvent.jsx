@@ -205,6 +205,7 @@ function AddEvent() {
           .then((response) => {
             resolve(response?.id);
             setNewEventId(response?.id);
+
             if (!toggle) {
               notification.success({
                 description: t('dashboard.events.addEditEvent.notification.saveAsDraft'),
@@ -915,42 +916,55 @@ function AddEvent() {
             ...initialPlace[0],
             ['openingHours']: initialPlace[0]?.openingHours?.uri,
           };
-          let initialPlaceAccessibiltiy = [];
-          if (initialPlace[0]?.accessibility?.length > 0) {
-            getAllTaxonomy({
-              calendarId,
-              search: '',
-              taxonomyClass: taxonomyClass.PLACE,
-              includeConcepts: true,
-              sessionId: timestampRef,
-            })
-              .unwrap()
-              .then((res) => {
+          getAllTaxonomy({
+            calendarId,
+            search: '',
+            taxonomyClass: taxonomyClass.PLACE,
+            includeConcepts: true,
+            sessionId: timestampRef,
+          })
+            .unwrap()
+            .then((res) => {
+              if (initialPlace[0]?.accessibility?.length > 0) {
                 res?.data?.forEach((taxonomy) => {
                   if (taxonomy?.mappedToField === 'PlaceAccessibility') {
+                    let initialPlaceAccessibiltiy = [];
                     initialPlace[0]?.accessibility?.forEach((accessibility) => {
                       taxonomy?.concept?.forEach((concept) => {
                         if (concept?.id == accessibility?.entityId) {
-                          initialPlaceAccessibiltiy = initialPlaceAccessibiltiy?.concat([concept]);
+                          initialPlaceAccessibiltiy.push(concept);
                         }
                       });
                     });
+                    initialPlace[0] = {
+                      ...initialPlace[0],
+                      ['accessibility']: initialPlaceAccessibiltiy,
+                    };
+                    setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0], sourceOptions.CMS);
                   }
                 });
+              } else {
                 initialPlace[0] = {
                   ...initialPlace[0],
-                  ['accessibility']: initialPlaceAccessibiltiy,
+                  ['accessibility']: [],
                 };
                 setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0], sourceOptions.CMS);
-              })
-              .catch((error) => console.log(error));
-          } else {
-            initialPlace[0] = {
-              ...initialPlace[0],
-              ['accessibility']: [],
-            };
-            setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0], sourceOptions.CMS);
-          }
+              }
+              res?.data?.map((taxonomy) => {
+                if (taxonomy?.mappedToField == 'Region') {
+                  taxonomy?.concept?.forEach((t) => {
+                    if (initialPlace[0]?.regions[0]?.entityId == t?.id) {
+                      initialPlace[0] = { ...initialPlace[0], regions: [t] };
+                      setLocationPlace(
+                        placesOptions(initialPlace, user, calendarContentLanguage)[0],
+                        sourceOptions.CMS,
+                      );
+                    }
+                  });
+                }
+              });
+            })
+            .catch((error) => console.log(error));
         }
         if (eventData?.locations?.filter((location) => location?.isVirtualLocation == true)?.length > 0)
           initialAddedFields = initialAddedFields?.concat(locationType?.fieldNames);
@@ -971,6 +985,7 @@ function AddEvent() {
               type: organizer?.type,
               logo: organizer?.entity?.logo,
               image: organizer?.entity?.image,
+              contactPoint: organizer?.entity?.contactPoint,
             };
           });
           setSelectedOrganizers(
@@ -1108,6 +1123,7 @@ function AddEvent() {
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
     }
   }, [isLoading, currentCalendarData]);
+
   useEffect(() => {
     if (currentCalendarData) {
       let publishValidateFields = [];
@@ -1788,6 +1804,7 @@ function AddEvent() {
                     accessibility={locationPlace?.accessibility}
                     openingHours={locationPlace?.openingHours}
                     calendarContentLanguage={calendarContentLanguage}
+                    region={locationPlace?.region}
                     bordered
                     closable
                     onClose={() => {
