@@ -357,7 +357,7 @@ function Events() {
                   menu={{
                     items: sortByOptions,
                     selectable: true,
-                    defaultSelectedKeys: [filter?.sort],
+                    selectedKeys: [filter?.sort],
                     onSelect: onSortSelect,
                   }}
                   trigger={['click']}>
