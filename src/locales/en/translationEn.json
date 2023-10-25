@@ -869,6 +869,7 @@
       "listing": {
         "heading": "Taxonomies",
         "addNew": "Taxonomy",
+        "classType":"Class",
         "sort": {
           "sortBy": "Sort by",
           "name": "Name",
