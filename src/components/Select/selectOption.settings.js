@@ -30,6 +30,7 @@ export const placesOptions = (data, user, calendarContentLanguage, source = sour
         <SelectionItem
           itemWidth="100%"
           icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
+          region={place?.regions ?? place?.regions}
           name={
             place?.name?.en || place?.name?.fr
               ? contentLanguageBilingual({
@@ -74,6 +75,7 @@ export const placesOptions = (data, user, calendarContentLanguage, source = sour
             })
           : typeof place?.description === 'string' && place?.description,
       postalAddress: place?.postalAddress ?? place?.address,
+      region: place?.regions ?? place?.regions,
       accessibility: place?.accessibility ?? [],
       openingHours: place?.openingHours,
       key: place?.id,

@@ -1788,6 +1788,7 @@ function AddEvent() {
                     accessibility={locationPlace?.accessibility}
                     openingHours={locationPlace?.openingHours}
                     calendarContentLanguage={calendarContentLanguage}
+                    region={locationPlace?.region}
                     bordered
                     closable
                     onClose={() => {

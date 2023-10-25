@@ -7,6 +7,7 @@ import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import ArtsDataLink from '../../Tags/ArtsDataLink/ArtsDataLink';
+import SmallButton from '../../Button/SmallButton';
 
 function SelectionItem(props) {
   const {
@@ -18,6 +19,7 @@ function SelectionItem(props) {
     onClose,
     itemWidth,
     postalAddress,
+    region,
     accessibility,
     openingHours,
     calendarContentLanguage,
@@ -119,6 +121,9 @@ function SelectionItem(props) {
 
                       {postalAddress?.postalCode && <span>{postalAddress?.postalCode}</span>}
                       <br />
+                      {region.length > 0 && (
+                        <SmallButton styles={{ marginTop: 5, marginBottom: 5 }} label={region[0]?.name?.en} />
+                      )}
                       {openingHours && (
                         <p>
                           <a
