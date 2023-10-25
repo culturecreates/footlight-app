@@ -984,6 +984,7 @@ function AddEvent() {
               type: organizer?.type,
               logo: organizer?.entity?.logo,
               image: organizer?.entity?.image,
+              contactPoint: organizer?.entity?.contactPoint,
             };
           });
           setSelectedOrganizers(
@@ -1121,6 +1122,7 @@ function AddEvent() {
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
     }
   }, [isLoading, currentCalendarData]);
+
   useEffect(() => {
     if (currentCalendarData) {
       let publishValidateFields = [];
