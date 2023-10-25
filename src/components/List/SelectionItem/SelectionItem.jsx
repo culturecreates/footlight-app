@@ -121,8 +121,16 @@ function SelectionItem(props) {
 
                       {postalAddress?.postalCode && <span>{postalAddress?.postalCode}</span>}
                       <br />
-                      {region.length > 0 && (
-                        <SmallButton styles={{ marginTop: 5, marginBottom: 5 }} label={region[0]?.name?.en} />
+                      {Array.isArray(region) && (
+                        <SmallButton
+                          styles={{ marginTop: 5, marginBottom: 5 }}
+                          label={contentLanguageBilingual({
+                            en: region[0]?.name?.en,
+                            fr: region[0]?.name?.fr,
+                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                            calendarContentLanguage: calendarContentLanguage,
+                          })}
+                        />
                       )}
                       {openingHours && (
                         <p>
