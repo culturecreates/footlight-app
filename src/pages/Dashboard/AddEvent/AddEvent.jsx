@@ -205,6 +205,7 @@ function AddEvent() {
           .then((response) => {
             resolve(response?.id);
             setNewEventId(response?.id);
+
             if (!toggle) {
               notification.success({
                 description: t('dashboard.events.addEditEvent.notification.saveAsDraft'),
