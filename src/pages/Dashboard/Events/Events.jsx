@@ -148,10 +148,6 @@ function Events() {
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   useEffect(() => {
-    console.log(filter);
-  }, [filter]);
-
-  useEffect(() => {
     let query = new URLSearchParams();
     let sortQuery = new URLSearchParams();
     let usersQuery, publicationQuery;
