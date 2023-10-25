@@ -2278,7 +2278,7 @@ function AddEvent() {
                 style={{
                   display: !addedFields?.includes(otherInformationFieldNames.contact) && 'none',
                 }}>
-                {(eventData?.contactPoint?.name?.fr?.length > 0 || eventData?.contactPoint?.name?.en?.length) && (
+                {selectedOrganizers?.length > 0 && selectedOrganizers[0]?.contact && (
                   <Outlined
                     icon={<SnippetsOutlined style={{ color: '#1B3DE6', fontSize: '20px' }} />}
                     size="large"
