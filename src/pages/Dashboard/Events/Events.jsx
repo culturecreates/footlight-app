@@ -148,6 +148,10 @@ function Events() {
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   useEffect(() => {
+    console.log(filter);
+  }, [filter]);
+
+  useEffect(() => {
     let query = new URLSearchParams();
     let sortQuery = new URLSearchParams();
     let usersQuery, publicationQuery;
@@ -357,7 +361,7 @@ function Events() {
                   menu={{
                     items: sortByOptions,
                     selectable: true,
-                    defaultSelectedKeys: [filter?.sort],
+                    selectedKeys: [filter?.sort],
                     onSelect: onSortSelect,
                   }}
                   trigger={['click']}>
