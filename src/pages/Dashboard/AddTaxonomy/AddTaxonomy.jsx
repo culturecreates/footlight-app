@@ -27,7 +27,7 @@ const AddTaxonomy = () => {
   let [searchParams, setSearchParams] = useSearchParams();
   const taxonomyId = searchParams.get('id');
   const { t } = useTranslation();
-  const [currentCalendarData] = useOutletContext();
+  const [currentCalendarData, , , getCalendar] = useOutletContext();
   const timestampRef = useRef(Date.now()).current;
   const navigate = useNavigate();
 
@@ -149,15 +149,11 @@ const AddTaxonomy = () => {
             french: values?.frenchdescription,
             english: values?.englishdescription,
           },
-          name: {
-            en: values?.frenchname,
-            fr: values?.englishname,
-          },
         });
         const body = {
           name: {
-            en: values?.frenchname,
-            fr: values?.englishname,
+            en: values?.englishname,
+            fr: values?.frenchname,
           },
           taxonomyClass: formValues.classType,
           isDynamicField: location.state?.dynamic
@@ -176,28 +172,34 @@ const AddTaxonomy = () => {
         if (taxonomyId) {
           updateTaxonomy({ calendarId, body, taxonomyId })
             .unwrap()
-            .then(() => {
-              notification.success({
-                description: t('dashboard.taxonomy.addNew.messages.update'),
-                placement: 'top',
-                closeIcon: <></>,
-                maxCount: 1,
-                duration: 3,
-              });
-              navigate(-1);
+            .then((res) => {
+              if (res.statusCode == 202) {
+                getCalendar({ id: calendarId, sessionId: timestampRef });
+                notification.success({
+                  description: t('dashboard.taxonomy.addNew.messages.update'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+                navigate(-1);
+              }
             });
         } else {
           addTaxonomy({ calendarId, body })
             .unwrap()
-            .then(() => {
-              notification.success({
-                description: t('dashboard.taxonomy.addNew.messages.create'),
-                placement: 'top',
-                closeIcon: <></>,
-                maxCount: 1,
-                duration: 3,
-              });
-              navigate(-3);
+            .then((res) => {
+              if (res.statusCode == 202) {
+                getCalendar({ id: calendarId, sessionId: timestampRef });
+                notification.success({
+                  description: t('dashboard.taxonomy.addNew.messages.create'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+                navigate(-3);
+              }
             });
         }
       })
@@ -265,7 +267,7 @@ const AddTaxonomy = () => {
                                 setStandardFields(availableStandardFields);
                               },
                             }}
-                            disabled={!!taxonomyId}
+                            // disabled={!!taxonomyId}
                             trigger={['click']}>
                             <div>
                               <Typography.Text>
@@ -342,6 +344,12 @@ const AddTaxonomy = () => {
                                   autoSize
                                   autoComplete="off"
                                   placeholder={t('dashboard.taxonomy.addNew.frNamePlaceHolder')}
+                                  onChange={(e) => {
+                                    setFormValues({
+                                      ...formValues,
+                                      name: { ...formValues.name, fr: e.target.value },
+                                    });
+                                  }}
                                   style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                                   size="large"
                                 />
@@ -368,6 +376,12 @@ const AddTaxonomy = () => {
                                   defaultValue={formValues?.name?.en}
                                   autoComplete="off"
                                   placeholder={t('dashboard.taxonomy.addNew.enNamePlaceHolder')}
+                                  onChange={(e) => {
+                                    setFormValues({
+                                      ...formValues,
+                                      name: { ...formValues.name, en: e.target.value },
+                                    });
+                                  }}
                                   style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                                   size="large"
                                 />
