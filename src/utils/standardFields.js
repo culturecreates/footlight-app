@@ -20,7 +20,7 @@ export const standardFieldsForTaxonomy = (value, takenFields) => {
     });
   };
 
-  if (value === taxonomyClass.EVENT) {
+  if (value.toLowerCase() === taxonomyClass.EVENT.toLowerCase()) {
     const arr = [
       'EventAccessibility',
       'Audience',
@@ -32,15 +32,15 @@ export const standardFieldsForTaxonomy = (value, takenFields) => {
     ];
     filter(arr, taxonomyClass.EVENT);
     return [...new Set(returnArr)];
-  } else if (value === taxonomyClass.PLACE) {
+  } else if (value.toLowerCase() === taxonomyClass.PLACE.toLowerCase()) {
     const arr = ['PlaceAccessibility', 'Region', 'Type'];
     filter(arr, taxonomyClass.PLACE);
     return [...new Set(returnArr)];
-  } else if (value === taxonomyClass.VIRTUAL_LOCATION) {
+  } else if (value.toLowerCase() === taxonomyClass.VIRTUAL_LOCATION.toLowerCase()) {
     const arr = ['Type'];
     filter(arr, taxonomyClass.VIRTUAL_LOCATION);
     return [...new Set(returnArr)];
-  } else if (value === taxonomyClass.PERSON) {
+  } else if (value.toLowerCase() === taxonomyClass.PERSON.toLowerCase()) {
     const arr = ['Occupation'];
     filter(arr, taxonomyClass.PERSON);
     return [...new Set(returnArr)];

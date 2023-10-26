@@ -40,7 +40,7 @@ const Taxonomy = () => {
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
   const screens = useBreakpoint();
-  const [currentCalendarData] = useOutletContext();
+  const [currentCalendarData, , , getCalendar] = useOutletContext();
   const navigate = useNavigate();
 
   const [getAllTaxonomy, { currentData: allTaxonomy, isFetching: isTaxonomyFetching }] = useLazyGetAllTaxonomyQuery({
@@ -110,7 +110,7 @@ const Taxonomy = () => {
     filters?.class?.length > 0 &&
       filters?.class[0] !== '' &&
       filters?.class?.forEach((c) => {
-        optionalFilters.append('taxonomy-class', c);
+        optionalFilters.append('taxonomy-class', c.toUpperCase());
       });
 
     if (filters.sort == `${sortByOptionsTaxonomy[0].key}`) {
@@ -178,7 +178,15 @@ const Taxonomy = () => {
   const deleteOrganizationHandler = (id) => {
     Confirm({
       title: t('dashboard.taxonomy.listing.modal.titleDelete'),
-      onAction: () => deleteTaxonomy({ id: id, calendarId: calendarId }),
+      onAction: () => {
+        deleteTaxonomy({ id: id, calendarId: calendarId })
+          .unwrap()
+          .then((res) => {
+            if (res.statusCode == 202) {
+              getCalendar({ id: calendarId, sessionId: timestampRef });
+            }
+          });
+      },
       okText: t('dashboard.settings.addUser.delete'),
       cancelText: t('dashboard.settings.addUser.cancel'),
       content: t('dashboard.taxonomy.listing.modal.contentDelete'),

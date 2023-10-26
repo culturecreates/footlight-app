@@ -27,7 +27,7 @@ const AddTaxonomy = () => {
   let [searchParams, setSearchParams] = useSearchParams();
   const taxonomyId = searchParams.get('id');
   const { t } = useTranslation();
-  const [currentCalendarData] = useOutletContext();
+  const [currentCalendarData, , , getCalendar] = useOutletContext();
   const timestampRef = useRef(Date.now()).current;
   const navigate = useNavigate();
 
@@ -68,7 +68,7 @@ const AddTaxonomy = () => {
         const selectedKeys = taxonomyClassTranslations.filter((item) => item.key === location.state?.selectedClass);
         setFormValues({
           ...formValues,
-          classType: selectedKeys[0].key,
+          classType: selectedKeys[0]?.key,
         });
         const availableStandardFields = standardFieldsForTaxonomy(
           location.state?.selectedClass,
@@ -91,6 +91,11 @@ const AddTaxonomy = () => {
         .then((res) => {
           setConceptData(res.concepts);
           setTaxonomyData(res);
+          const availableStandardFields = standardFieldsForTaxonomy(
+            location.state?.selectedClass,
+            currentCalendarData?.fieldTaxonomyMaps,
+          );
+          setStandardFields(availableStandardFields);
           form.setFieldsValue({
             classType: res?.taxonomyClass,
             frenchname: res?.name?.fr,
@@ -149,15 +154,11 @@ const AddTaxonomy = () => {
             french: values?.frenchdescription,
             english: values?.englishdescription,
           },
-          name: {
-            en: values?.frenchname,
-            fr: values?.englishname,
-          },
         });
         const body = {
           name: {
-            en: values?.frenchname,
-            fr: values?.englishname,
+            en: values?.englishname,
+            fr: values?.frenchname,
           },
           taxonomyClass: formValues.classType,
           isDynamicField: location.state?.dynamic
@@ -176,28 +177,34 @@ const AddTaxonomy = () => {
         if (taxonomyId) {
           updateTaxonomy({ calendarId, body, taxonomyId })
             .unwrap()
-            .then(() => {
-              notification.success({
-                description: t('dashboard.taxonomy.addNew.messages.update'),
-                placement: 'top',
-                closeIcon: <></>,
-                maxCount: 1,
-                duration: 3,
-              });
-              navigate(-1);
+            .then((res) => {
+              if (res.statusCode == 202) {
+                getCalendar({ id: calendarId, sessionId: timestampRef });
+                notification.success({
+                  description: t('dashboard.taxonomy.addNew.messages.update'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+                navigate(-1);
+              }
             });
         } else {
           addTaxonomy({ calendarId, body })
             .unwrap()
-            .then(() => {
-              notification.success({
-                description: t('dashboard.taxonomy.addNew.messages.create'),
-                placement: 'top',
-                closeIcon: <></>,
-                maxCount: 1,
-                duration: 3,
-              });
-              navigate(-3);
+            .then((res) => {
+              if (res.statusCode == 202) {
+                getCalendar({ id: calendarId, sessionId: timestampRef });
+                notification.success({
+                  description: t('dashboard.taxonomy.addNew.messages.create'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+                navigate(-3);
+              }
             });
         }
       })
@@ -250,9 +257,12 @@ const AddTaxonomy = () => {
                               items: taxonomyClassTranslations,
                               selectable: true,
                               onSelect: ({ selectedKeys }) => {
+                                const classKey = taxonomyClassTranslations.find((item) => {
+                                  return item.key === selectedKeys[0];
+                                });
                                 setFormValues({
                                   ...formValues,
-                                  classType: selectedKeys[0],
+                                  classType: classKey?.key,
                                   mapToField: '',
                                 });
                                 const availableStandardFields = standardFieldsForTaxonomy(
@@ -339,6 +349,12 @@ const AddTaxonomy = () => {
                                   autoSize
                                   autoComplete="off"
                                   placeholder={t('dashboard.taxonomy.addNew.frNamePlaceHolder')}
+                                  onChange={(e) => {
+                                    setFormValues({
+                                      ...formValues,
+                                      name: { ...formValues.name, fr: e.target.value },
+                                    });
+                                  }}
                                   style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                                   size="large"
                                 />
@@ -365,6 +381,12 @@ const AddTaxonomy = () => {
                                   defaultValue={formValues?.name?.en}
                                   autoComplete="off"
                                   placeholder={t('dashboard.taxonomy.addNew.enNamePlaceHolder')}
+                                  onChange={(e) => {
+                                    setFormValues({
+                                      ...formValues,
+                                      name: { ...formValues.name, en: e.target.value },
+                                    });
+                                  }}
                                   style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                                   size="large"
                                 />
