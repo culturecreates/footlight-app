@@ -22,12 +22,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-              footlight-app:
-                - 'footlight-app/**'
       - name: Log in to the Container registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
@@ -58,17 +52,12 @@ jobs:
          envkey_REACT_APP_FEATURE_FLAG_TAXONOMY: true
          envkey_REACT_APP_FEATURE_FLAG_IMAGE_CROP: true
          envkey_REACT_APP_ENV: "staging"
-         envkey_REACT_APP_INVITE_URL: "http://staging.cms.footlight.io/join?invitationId="
-         envkey_REACT_APP_ACCEPT_URL: "http://staging.cms.footlight.io/accept?invitationId="
+         envkey_REACT_APP_INVITE_URL: "http://localhost:3001/join?invitationId="
+         envkey_REACT_APP_ACCEPT_URL: "http://localhost:3001/accept?invitationId="
          directory: footlight-app
          file_name: .env
          fail_on_empty: false
 
-      - name: Create secret key files
-        run: |
-         mkdir -p secrets
-         echo "${{ secrets.PRIVATE_KEY_PEM_PRO }}" | base64 -d  >> secrets/private-key.pem
-         echo "${{ secrets.PUBLIC_CERTIFICATE_PEM_PRO }}" | base64 -d >> secrets/public-certificate.pem
       - name: Build and push Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
