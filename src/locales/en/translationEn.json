@@ -869,7 +869,7 @@
       "listing": {
         "heading": "Taxonomies",
         "addNew": "Taxonomy",
-        "classType":"Class",
+        "classType": "Class",
         "sort": {
           "sortBy": "Sort by",
           "name": "Name",
@@ -940,7 +940,9 @@
           "editBtn": "Edit",
           "conceptName": "Concept name",
           "placeHolderFr": "Enter French Concept name",
-          "placeHolderEn": "Enter English Concept name"
+          "placeHolderEn": "Enter English Concept name",
+          "deleteConceptMessage": "Are you sure you want to permanently delete this concept? This action will also delete it everywhere it was used, including in events.",
+          "deleteConceptHeading": "Delete concept"
         }
       }
     }

@@ -288,7 +288,7 @@ const DraggableTree = ({
   const handleDelete = () => {
     setAddNewPopup(false);
     Confirm({
-      title: t('dashboard.settings.addUser.confirmLeave'),
+      title: t('dashboard.taxonomy.addNew.concepts.deleteConceptHeading'),
       onAction: () => {
         if (forEditing && selectedNode) {
           const updatedData = deleteNodeFromData(data, selectedNode.key);
@@ -301,7 +301,7 @@ const DraggableTree = ({
           setData(data);
         }
       },
-      content: t('dashboard.settings.addUser.leaveCalender'),
+      content: t('dashboard.taxonomy.addNew.concepts.deleteConceptMessage'),
       okText: t('dashboard.settings.addUser.leave'),
       cancelText: t('dashboard.events.deleteEvent.cancel'),
     });

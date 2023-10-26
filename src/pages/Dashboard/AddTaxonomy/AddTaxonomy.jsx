@@ -91,6 +91,11 @@ const AddTaxonomy = () => {
         .then((res) => {
           setConceptData(res.concepts);
           setTaxonomyData(res);
+          const availableStandardFields = standardFieldsForTaxonomy(
+            location.state?.selectedClass,
+            currentCalendarData?.fieldTaxonomyMaps,
+          );
+          setStandardFields(availableStandardFields);
           form.setFieldsValue({
             classType: res?.taxonomyClass,
             frenchname: res?.name?.fr,
@@ -267,7 +272,7 @@ const AddTaxonomy = () => {
                                 setStandardFields(availableStandardFields);
                               },
                             }}
-                            // disabled={!!taxonomyId}
+                            disabled={!!taxonomyId}
                             trigger={['click']}>
                             <div>
                               <Typography.Text>

@@ -863,7 +863,7 @@
       "listing": {
         "heading": "Taxonomies",
         "addNew": "Personne",
-        "classType":"Class",
+        "classType": "Class",
         "sort": {
           "sortBy": "Trier par",
           "name": "Nom",
@@ -934,7 +934,9 @@
           "save": "Sauvegarder",
           "conceptName": "Concept name",
           "placeHolderFr": "Enter French Concept name",
-          "placeHolderEn": "Enter English Concept name"
+          "placeHolderEn": "Enter English Concept name",
+          "deleteConceptHeading": "Supprimer concept",
+          "deleteConceptMessage": "Êtes-vous sûr de vouloir supprimer définitivement ce concept ? Cette action le supprimera également partout où il a été utilisé, y compris dans les événements."
         }
       }
     }
