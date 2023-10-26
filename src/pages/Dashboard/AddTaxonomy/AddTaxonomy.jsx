@@ -68,7 +68,7 @@ const AddTaxonomy = () => {
         const selectedKeys = taxonomyClassTranslations.filter((item) => item.key === location.state?.selectedClass);
         setFormValues({
           ...formValues,
-          classType: selectedKeys[0].key,
+          classType: selectedKeys[0]?.key,
         });
         const availableStandardFields = standardFieldsForTaxonomy(
           location.state?.selectedClass,
@@ -250,9 +250,12 @@ const AddTaxonomy = () => {
                               items: taxonomyClassTranslations,
                               selectable: true,
                               onSelect: ({ selectedKeys }) => {
+                                const classKey = taxonomyClassTranslations.find((item) => {
+                                  return item.key === selectedKeys[0];
+                                });
                                 setFormValues({
                                   ...formValues,
-                                  classType: selectedKeys[0],
+                                  classType: classKey?.key,
                                   mapToField: '',
                                 });
                                 const availableStandardFields = standardFieldsForTaxonomy(
