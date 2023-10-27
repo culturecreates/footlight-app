@@ -1336,6 +1336,7 @@ function AddEvent() {
                       : true
                     : false
                 }
+                style={{ display: !taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false) && 'none' }}
                 rules={[
                   {
                     required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EVENT_TYPE),
@@ -1368,6 +1369,7 @@ function AddEvent() {
                 initialValue={eventData?.audience?.map((audience) => {
                   return audience?.entityId;
                 })}
+                style={{ display: !taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false) && 'none' }}
                 hidden={
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.AUDIENCE)
                     ? adminCheckHandler()
@@ -2784,7 +2786,10 @@ function AddEvent() {
                 name={otherInformationFieldNames.inLanguage}
                 className={otherInformationFieldNames.inLanguage}
                 style={{
-                  display: !addedFields?.includes(otherInformationFieldNames.inLanguage) && 'none',
+                  display:
+                    (!addedFields?.includes(otherInformationFieldNames.inLanguage) ||
+                      !taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name', false)) &&
+                    'none',
                 }}
                 label={taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name', false)}
                 initialValue={eventData?.inLanguage?.map((inLanguage) => {
@@ -2851,6 +2856,9 @@ function AddEvent() {
                 initialValue={eventData?.accessibility?.map((type) => {
                   return type?.entityId;
                 })}
+                style={{
+                  display: !taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false) && 'none',
+                }}
                 help={
                   <p
                     className="add-event-date-heading"
