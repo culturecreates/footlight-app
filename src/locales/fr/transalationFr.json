@@ -365,6 +365,7 @@
           "person": "Personne",
           "organization": "Organisation",
           "create": "Créer",
+          "addFullDetails": "Add full details",
           "cancel": "Annuler",
           "quickCreateOrganization": {
             "title": "Créer une organisation",

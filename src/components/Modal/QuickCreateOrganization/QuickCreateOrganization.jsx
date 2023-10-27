@@ -17,6 +17,7 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { sourceOptions } from '../../../constants/sourceOptions';
+import Outlined from '../../Button/Outlined';
 
 const { TextArea } = Input;
 
@@ -37,6 +38,7 @@ function QuickCreateOrganization(props) {
     setSelectedSupporters,
     selectedOrganizerPerformerSupporterType,
     organizerPerformerSupporterTypes,
+    saveAsDraftHandler,
   } = props;
   const [form] = Form.useForm();
   const { t } = useTranslation();
@@ -159,6 +161,12 @@ function QuickCreateOrganization(props) {
       })
       .catch((error) => console.log(error));
   };
+
+  const goToAddFullDetailsPageHandler = (e) => {
+    console.log(e);
+    saveAsDraftHandler(e);
+  };
+
   return (
     <CustomModal
       open={open}
@@ -171,6 +179,17 @@ function QuickCreateOrganization(props) {
       }
       onCancel={() => setOpen(false)}
       footer={[
+        <div className="add-full-details-btn-wrapper" key="add-full-details">
+          <Outlined
+            size="large"
+            label={t('dashboard.events.addEditEvent.quickCreate.addFullDetails')}
+            onClick={() => {
+              (e) => {
+                goToAddFullDetailsPageHandler(e);
+              };
+            }}
+          />
+        </div>,
         <TextButton
           key="cancel"
           size="large"
