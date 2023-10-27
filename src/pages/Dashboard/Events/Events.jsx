@@ -327,12 +327,18 @@ function Events() {
             <Row justify="space-between">
               <Col>
                 <div className="events-heading-wrapper">
-                  <h4 className="events-heading">{t('dashboard.events.heading')}</h4>
+                  <h4 className="events-heading" data-cy="heading-events-list">
+                    {t('dashboard.events.heading')}
+                  </h4>
                 </div>
               </Col>
 
               <Col>
-                <AddEvent label={t('dashboard.events.addEvent')} onClick={addEventHandler} />
+                <AddEvent
+                  label={t('dashboard.events.addEvent')}
+                  onClick={addEventHandler}
+                  data-cy="button-add-new-event"
+                />
               </Col>
             </Row>
           </Col>
@@ -344,11 +350,14 @@ function Events() {
                 defaultValue={eventSearchQuery}
                 allowClear={true}
                 onChange={onChangeHandler}
+                data-cy="input-search-events"
               />
             </Col>
             <Col>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <span style={{ fontSize: '16px', fontWeight: 700 }}>{t('dashboard.events.filter.sort.sortBy')}</span>
+                <span style={{ fontSize: '16px', fontWeight: 700 }} data-cy="span-sort-by-text">
+                  {t('dashboard.events.filter.sort.sortBy')}
+                </span>
 
                 <Dropdown
                   overlayClassName="filter-sort-dropdown-wrapper"
@@ -361,7 +370,7 @@ function Events() {
                     onSelect: onSortSelect,
                   }}
                   trigger={['click']}>
-                  <Button size="large" className="filter-sort-button">
+                  <Button size="large" className="filter-sort-button" data-cy="button-sort-by">
                     <Space>
                       {sortByOptions?.map((sortBy, index) => {
                         if (sortBy?.key === filter?.sort) return <span key={index}>{sortBy?.label}</span>;
@@ -385,6 +394,7 @@ function Events() {
                     )
                   }
                   size={'large'}
+                  data-cy="button-sort-order"
                 />
               </div>
             </Col>
@@ -410,7 +420,8 @@ function Events() {
                       <Button
                         size="large"
                         className="filter-buttons"
-                        style={{ borderColor: filter?.publication?.length > 0 && '#607EFC' }}>
+                        style={{ borderColor: filter?.publication?.length > 0 && '#607EFC' }}
+                        data-cy="button-filter-publication">
                         {t('dashboard.events.filter.publication.label')}
                         {filter?.publication?.length > 0 && (
                           <>
@@ -454,7 +465,8 @@ function Events() {
                     <Button
                       size="large"
                       className="filter-buttons"
-                      style={{ borderColor: userFilter?.length > 0 && '#607EFC' }}>
+                      style={{ borderColor: userFilter?.length > 0 && '#607EFC' }}
+                      data-cy="button-filter-users">
                       {t('dashboard.events.filter.users.label')}
                       {userFilter?.length > 0 && (
                         <>
@@ -490,7 +502,8 @@ function Events() {
                                 setSelectedDates([]);
                                 setFilter({ ...filter, dates: ['any', 'any'] });
                                 setIsPopoverOpen(false);
-                              }}>
+                              }}
+                              data-cy="button-filter-datepicker-past-events">
                               {t('dashboard.events.filter.dates.allTime')}
                             </Button>
                             <Button
@@ -505,7 +518,8 @@ function Events() {
                                 setSelectedDates([]);
                                 setFilter({ ...filter, dates: ['any', moment().subtract(1, 'days')] });
                                 setIsPopoverOpen(false);
-                              }}>
+                              }}
+                              data-cy="button-filter-datepicker-all-events">
                               {t('dashboard.events.filter.dates.past')}
                             </Button>
                           </div>
@@ -519,7 +533,8 @@ function Events() {
                     <Button
                       size="large"
                       className="filter-buttons"
-                      style={{ borderColor: filter?.dates?.length > 0 > 0 && '#607EFC' }}>
+                      style={{ borderColor: filter?.dates?.length > 0 > 0 && '#607EFC' }}
+                      data-cy="button-filter-dates">
                       {t('dashboard.events.filter.dates.dates')}
                       {filter?.dates?.length > 0 && (
                         <>
@@ -539,7 +554,8 @@ function Events() {
                       size="large"
                       className="filter-buttons"
                       style={{ color: '#1B3DE6' }}
-                      onClick={filterClearHandler}>
+                      onClick={filterClearHandler}
+                      data-cy="button-filter-clear">
                       {t('dashboard.events.filter.clear')}&nbsp;
                       <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
                     </Button>

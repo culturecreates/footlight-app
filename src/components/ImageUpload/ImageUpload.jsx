@@ -132,23 +132,28 @@ function ImageUpload(props) {
               <span className="image-footer">
                 <span className="image-contents">
                   <img className="image-thumbnail" src={file?.url ?? file?.thumbUrl} />
-                  <a className="image-name" target="_blank" rel="noopener noreferrer" href={file?.url ?? imageUrl}>
+                  <a
+                    className="image-name"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href={file?.url ?? imageUrl}
+                    data-cy="anchor-image-link">
                     {file?.name}
                   </a>
                 </span>
                 <span className="image-actions">
                   {props?.imageReadOnly && (
-                    <span onClick={actions?.download}>
+                    <span onClick={actions?.download} data-cy="span-download-image">
                       <DownloadOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
                     </span>
                   )}
                   {!props?.imageReadOnly && imageUrl && (
-                    <span onClick={actions?.remove}>
+                    <span onClick={actions?.remove} data-cy="span-remove-image">
                       <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
                     </span>
                   )}
                   {!props?.imageReadOnly && (props?.imageUrl || imageUrl) && isCrop && (
-                    <span className="edit-image" onClick={actions?.preview}>
+                    <span className="edit-image" onClick={actions?.preview} data-cy="span-preview-crop-image">
                       <EditOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
                     </span>
                   )}

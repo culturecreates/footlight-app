@@ -75,6 +75,7 @@ function EventStatusOptions({ children, publishState, creator, eventId }) {
                   type="text"
                   icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
                   onClick={() => message.destroy('event-review-publish-warning')}
+                  data-cy="button-cancel-publish-error-warning"
                 />
               </>
             ),

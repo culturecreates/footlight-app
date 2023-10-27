@@ -133,12 +133,13 @@ function Lists(props) {
                       eventItem?.isFeatured &&
                       '3px solid #1B3DE6',
                   }}
+                  data-cy="image-event-thumbnail"
                 />
               </div>
             }
             title={
               <div className="event-list-title">
-                <span className="event-list-title-heading">
+                <span className="event-list-title-heading" data-cy="span-start-date-time">
                   {(eventItem?.startDate || eventItem?.startDateTime) &&
                     moment
                       .tz(
@@ -183,7 +184,7 @@ function Lists(props) {
             }
             description={
               <div className="event-list-description">
-                <span className="event-list-description-name">
+                <span className="event-list-description-name" data-cy="span-event-name">
                   {contentLanguageBilingual({
                     en: eventItem?.name?.en,
                     fr: eventItem?.name?.fr,
@@ -191,7 +192,7 @@ function Lists(props) {
                     calendarContentLanguage: calendarContentLanguage,
                   })}
                 </span>
-                <span className="event-list-description-place">
+                <span className="event-list-description-place" data-cy="span-event-location">
                   {eventItem?.location
                     ?.map((place) => {
                       return contentLanguageBilingual({
@@ -211,7 +212,7 @@ function Lists(props) {
             onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId, eventItem?.publishState)}
             title={<EventStatus label={eventItem?.publishState} />}
             description={
-              <div className="event-list-status">
+              <div className="event-list-status" data-cy="span-event-creator">
                 <span className="event-list-status-created-by">
                   {t('dashboard.events.list.createdBy')}&nbsp;
                   {moment
@@ -221,10 +222,10 @@ function Lists(props) {
                     ?.toUpperCase()}
                   &nbsp;
                   {t('dashboard.events.list.by')}&nbsp;
-                  <Username userName={eventItem?.creator?.userName} />
+                  <Username userName={eventItem?.creator?.userName} data-cy="span-event-creator-username" />
                 </span>
                 {eventItem?.modifier?.userName ? (
-                  <span className="event-list-status-updated-by">
+                  <span className="event-list-status-updated-by" data-cy="span-event-modifier">
                     {t('dashboard.events.list.updatedBy')}&nbsp;
                     {moment
                       .tz(eventItem?.modifier?.date, eventItem?.scheduleTimezone ?? 'Canada/Eastern')
@@ -233,7 +234,7 @@ function Lists(props) {
                       ?.toUpperCase()}
                     &nbsp;
                     {t('dashboard.events.list.by')}&nbsp;
-                    <Username userName={eventItem?.modifier?.userName} />
+                    <Username userName={eventItem?.modifier?.userName} data-cy="span-event-modifier-username" />
                   </span>
                 ) : (
                   <></>

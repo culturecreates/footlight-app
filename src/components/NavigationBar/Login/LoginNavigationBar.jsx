@@ -20,11 +20,15 @@ function NavigationBar() {
           src={require('../../../assets/images/footlight-logo-small.png')}
           alt="Footlight logo"
           className="footlight-logo"
+          data-cy="image-footlight-logo"
         />
-        <h6 className="logo-name">Footlight</h6>
+        <h6 className="logo-name" data-cy="heading-footlight-title">
+          Footlight
+        </h6>
       </div>
       <div>
         <OutlinedButton
+          data-cy="button-change-interface-language"
           size="large"
           label={t('login.changeLanguageTo')}
           onClick={() => changeLanguageHandler(i18n.language)}
