@@ -1337,8 +1337,6 @@ function AddEvent() {
                   }}
                 />
               </Form.Item>
-              {console.log(taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false))}
-              {console.log(treeTaxonomyOptions(allTaxonomyData, user, 'Audience', false, calendarContentLanguage))}
               <Form.Item
                 name="targetAudience"
                 label={taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false)}
