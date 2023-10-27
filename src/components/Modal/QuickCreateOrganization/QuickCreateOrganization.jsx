@@ -173,7 +173,7 @@ function QuickCreateOrganization(props) {
       destroyOnClose
       centered
       title={
-        <span className="quick-create-organization-modal-title">
+        <span className="quick-create-organization-modal-title" data-cy="span-quick-create-organization-heading">
           {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.title')}
         </span>
       }
@@ -195,11 +195,13 @@ function QuickCreateOrganization(props) {
           size="large"
           label={t('dashboard.events.addEditEvent.quickCreate.cancel')}
           onClick={() => setOpen(false)}
+          data-cy="button-quick-create-organization-cancel"
         />,
         <PrimaryButton
           key="add-dates"
           label={t('dashboard.events.addEditEvent.quickCreate.create')}
           onClick={createOrganizationHandler}
+          data-cy="button-quick-create-organization-save"
         />,
       ]}>
       <Row gutter={[0, 10]} className="quick-create-organization-modal-wrapper">
@@ -207,14 +209,18 @@ function QuickCreateOrganization(props) {
           <Form form={form} layout="vertical" name="organizerForm" preserve={false}>
             <Row>
               <Col>
-                <p className="quick-create-organization-modal-sub-heading">
+                <p
+                  className="quick-create-organization-modal-sub-heading"
+                  data-cy="para-quick-create-organization-subheading">
                   {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.subHeading')}
                 </p>
               </Col>
             </Row>
             <Row>
               <Col>
-                <span className="quick-create-organization-modal-label">
+                <span
+                  className="quick-create-organization-modal-label"
+                  data-cy="span-quick-create-organization-name-label">
                   {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.name')}
                 </span>
               </Col>
@@ -254,6 +260,7 @@ function QuickCreateOrganization(props) {
                     placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.namePlaceholder')}
                     style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
                     size="large"
+                    data-cy="input-quick-create-organization-name-french"
                   />
                 </Form.Item>
                 <Form.Item
@@ -288,6 +295,7 @@ function QuickCreateOrganization(props) {
                     placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.namePlaceholder')}
                     style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
                     size="large"
+                    data-cy="input-quick-create-organization-name-english"
                   />
                 </Form.Item>
               </BilingualInput>
@@ -305,6 +313,7 @@ function QuickCreateOrganization(props) {
                 addonBefore="https://"
                 autoComplete="off"
                 placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.websitePlaceholder')}
+                data-cy="input-quick-create-organization-website"
               />
             </Form.Item>
             <Form.Item
@@ -332,7 +341,9 @@ function QuickCreateOrganization(props) {
               ]}>
               <Row>
                 <Col>
-                  <p className="quick-create-organization-modal-sub-heading">
+                  <p
+                    className="quick-create-organization-modal-sub-heading"
+                    data-cy="para-quick-create-organization-logo-subheading">
                     {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.logoSubHeading')}
                   </p>
                 </Col>

@@ -160,7 +160,7 @@ function ImageCrop(props) {
       }}
       onCancel={() => setOpen(false)}
       title={
-        <span className="quick-select-modal-title">
+        <span className="quick-select-modal-title" data-cy="span-image-crop-heading">
           {t('dashboard.events.addEditEvent.otherInformation.image.crop.title')}
         </span>
       }
@@ -170,22 +170,27 @@ function ImageCrop(props) {
           size="large"
           label={t('dashboard.events.addEditEvent.otherInformation.image.crop.cancel')}
           onClick={() => onCancel()}
+          data-cy="button-image-crop-cancel"
         />,
         <PrimaryButton
           key="add-dates"
           label={t('dashboard.events.addEditEvent.otherInformation.image.crop.save')}
           onClick={() => saveCropHandler()}
+          data-cy="button-image-crop-save"
         />,
       ]}>
       <div className="image-crop-wrapper">
         <Row gutter={[0, 18]}>
           <Col span={24}>
-            <span className="quick-select-modal-sub-heading">
+            <span className="quick-select-modal-sub-heading" data-cy="span-image-crop-subheading">
               {t('dashboard.events.addEditEvent.otherInformation.image.crop.subHeading')}
             </span>
           </Col>
           <Col span={24}>
-            <span className="quick-select-modal-sub-heading" style={{ fontWeight: 700, color: '#222732' }}>
+            <span
+              className="quick-select-modal-sub-heading"
+              style={{ fontWeight: 700, color: '#222732' }}
+              data-cy="span-image-crop-frame-size-text">
               {t('dashboard.events.addEditEvent.otherInformation.image.crop.savedFrameSize')}
             </span>
           </Col>
@@ -196,10 +201,10 @@ function ImageCrop(props) {
               onChange={(event) => aspectRatioControl(event.target.value)}
               style={{ color: '#222732' }}>
               <Space direction="vertical">
-                <Radio value={ASPECT_RATIO_TYPE.large.type}>
+                <Radio value={ASPECT_RATIO_TYPE.large.type} data-cy="radio-button-large-aspect-ratio">
                   {largeAspectRatio} {t('dashboard.events.addEditEvent.otherInformation.image.crop.ratio')}
                 </Radio>
-                <Radio value={ASPECT_RATIO_TYPE.thumbnail.type}>
+                <Radio value={ASPECT_RATIO_TYPE.thumbnail.type} data-cy="radio-button-thumbnail-aspect-ratio">
                   {thumbnailAspectRatio} {t('dashboard.events.addEditEvent.otherInformation.image.crop.ratio')}
                 </Radio>
               </Space>
@@ -212,6 +217,7 @@ function ImageCrop(props) {
                   type="text"
                   icon={<MinusOutlined color=" #646d7b" />}
                   onClick={() => onLargeZoomChange(largeZoom - 0.1)}
+                  data-cy="button-minimize-large-zoom"
                 />
                 <input
                   type="range"
@@ -222,11 +228,13 @@ function ImageCrop(props) {
                   aria-labelledby="Zoom"
                   onChange={(e) => onLargeZoomChange(e.target.value)}
                   className="zoom-range"
+                  data-cy="input-slide-large-zoom"
                 />
                 <Button
                   type="text"
                   icon={<PlusOutlined style={{ color: '#646d7b' }} />}
                   onClick={() => onLargeZoomChange(largeZoom + 0.1)}
+                  data-cy="button-maximize-large-zoom"
                 />
               </div>
             )}
@@ -236,6 +244,7 @@ function ImageCrop(props) {
                   type="text"
                   icon={<MinusOutlined color=" #646d7b" />}
                   onClick={() => onThumbnailZoomChange(thumbnailZoom - 0.1)}
+                  data-cy="button-minimize-thumbnail-zoom"
                 />
                 <input
                   type="range"
@@ -246,11 +255,13 @@ function ImageCrop(props) {
                   aria-labelledby="Zoom"
                   onChange={(e) => onThumbnailZoomChange(e.target.value)}
                   className="zoom-range"
+                  data-cy="input-slide-thumbnail-zoom"
                 />
                 <Button
                   type="text"
                   icon={<PlusOutlined style={{ color: '#646d7b' }} />}
                   onClick={() => onThumbnailZoomChange(thumbnailZoom + 0.1)}
+                  data-cy="button-maximize-thumbnail-zoom"
                 />
               </div>
             )}
@@ -271,6 +282,7 @@ function ImageCrop(props) {
                   onZoomChange={onLargeZoomChange}
                   onCropComplete={onCropAreaChange}
                   initialCroppedAreaPixels={initialLargeCroppedArea}
+                  data-cy="large-cropper"
                 />
               )}
               {aspectRatioType === ASPECT_RATIO_TYPE.thumbnail.type && (
@@ -287,6 +299,7 @@ function ImageCrop(props) {
                   onZoomChange={onThumbnailZoomChange}
                   onCropComplete={onCropAreaChange}
                   initialCroppedAreaPixels={initialThumbnailCroppedArea}
+                  data-cy="thumbnail-cropper"
                 />
               )}
             </div>

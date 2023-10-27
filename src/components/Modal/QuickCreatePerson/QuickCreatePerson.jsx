@@ -156,7 +156,7 @@ function QuickCreatePerson(props) {
         destroyOnClose
         centered
         title={
-          <span className="quick-create-person-modal-title">
+          <span className="quick-create-person-modal-title" data-cy="span-quick-create-person-heading">
             {t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.title')}
           </span>
         }
@@ -167,11 +167,13 @@ function QuickCreatePerson(props) {
             size="large"
             label={t('dashboard.events.addEditEvent.quickCreate.cancel')}
             onClick={() => setOpen(false)}
+            data-cy="button-quick-create-person-cancel"
           />,
           <PrimaryButton
             key="add-dates"
             label={t('dashboard.events.addEditEvent.quickCreate.create')}
             onClick={createPersonHandler}
+            data-cy="button-quick-create-person-save"
           />,
         ]}>
         <Row gutter={[0, 10]} className="quick-create-person-modal-wrapper">
@@ -179,14 +181,14 @@ function QuickCreatePerson(props) {
             <Form form={form} layout="vertical" name="organizerForm" preserve={false}>
               <Row>
                 <Col>
-                  <p className="quick-create-person-modal-sub-heading">
+                  <p className="quick-create-person-modal-sub-heading" data-cy="para-quick-create-person-subheading">
                     {t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.subHeading')}
                   </p>
                 </Col>
               </Row>
               <Row>
                 <Col>
-                  <span className="quick-create-person-modal-label">
+                  <span className="quick-create-person-modal-label" data-cy="span-quick-create-person-name-label">
                     {t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.name')}
                   </span>
                 </Col>
@@ -226,6 +228,7 @@ function QuickCreatePerson(props) {
                       placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.namePlaceholder')}
                       style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
                       size="large"
+                      data-cy="input-quick-create-person-name-french"
                     />
                   </Form.Item>
                   <Form.Item
@@ -260,6 +263,7 @@ function QuickCreatePerson(props) {
                       placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.namePlaceholder')}
                       style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
                       size="large"
+                      data-cy="input-quick-create-person-name-english"
                     />
                   </Form.Item>
                 </BilingualInput>
@@ -301,6 +305,7 @@ function QuickCreatePerson(props) {
                   addonBefore="https://"
                   autoComplete="off"
                   placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.websitePlaceholder')}
+                  data-cy="input-quick-create-person-website"
                 />
               </Form.Item>
             </Form>

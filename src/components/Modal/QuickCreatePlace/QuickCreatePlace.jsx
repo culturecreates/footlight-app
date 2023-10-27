@@ -223,7 +223,7 @@ function QuickCreatePlace(props) {
         destroyOnClose
         centered
         title={
-          <span className="quick-create-place-modal-title">
+          <span className="quick-create-place-modal-title" data-cy="span-quick-create-modal-heading">
             {t('dashboard.events.addEditEvent.location.quickCreatePlace.title')}
           </span>
         }
@@ -234,11 +234,13 @@ function QuickCreatePlace(props) {
             size="large"
             label={t('dashboard.events.addEditEvent.location.quickCreatePlace.cancel')}
             onClick={() => setOpen(false)}
+            data-cy="button-cancel-quick-create-place"
           />,
           <PrimaryButton
             key="add-dates"
             label={t('dashboard.events.addEditEvent.location.quickCreatePlace.create')}
             onClick={createPlaceHandler}
+            data-cy="button-save-quick-create-place"
           />,
         ]}>
         <Row gutter={[0, 10]} className="quick-create-place-modal-wrapper">
@@ -246,14 +248,14 @@ function QuickCreatePlace(props) {
             <Form form={form} layout="vertical" name="organizerForm" preserve={false}>
               <Row>
                 <Col>
-                  <p className="quick-create-place-modal-sub-heading">
+                  <p className="quick-create-place-modal-sub-heading" data-cy="para-quick-create-modal-subheading">
                     {t('dashboard.events.addEditEvent.location.quickCreatePlace.subHeading')}
                   </p>
                 </Col>
               </Row>
               <Row>
                 <Col>
-                  <span className="quick-create-place-modal-label">
+                  <span className="quick-create-place-modal-label" data-cy="para-quick-create-place-name-label">
                     {t('dashboard.events.addEditEvent.location.quickCreatePlace.name')}
                   </span>
                 </Col>
@@ -291,6 +293,7 @@ function QuickCreatePlace(props) {
                       placeholder={t('dashboard.events.addEditEvent.location.quickCreatePlace.namePlaceholder')}
                       style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
                       size="large"
+                      data-cy="text-area-quick-create-place-name-french"
                     />
                   </Form.Item>
                   <Form.Item
@@ -323,6 +326,7 @@ function QuickCreatePlace(props) {
                       placeholder={t('dashboard.events.addEditEvent.location.quickCreatePlace.namePlaceholder')}
                       style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
                       size="large"
+                      data-cy="text-area-quick-create-place-name-english"
                     />
                   </Form.Item>
                 </BilingualInput>
@@ -362,6 +366,7 @@ function QuickCreatePlace(props) {
                             style={{ color: '#B6C1C9', fontSize: '18px' }}
                           />
                         }
+                        data-cy="input-quick-create-google-place-keyword"
                       />
                     </Dropdown>
                   )}
