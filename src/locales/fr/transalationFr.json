@@ -860,10 +860,28 @@
       }
     },
     "taxonomy": {
+      "standardFields": {
+        "place": {
+          "inLanguage": "Langue de l'événement",
+          "PlaceAccessibility": "Accessibilité du lieu",
+          "Region": "Quartier",
+          "Type": "Type de lieux"
+        },
+        "Event": {
+          "EventAccessibility": "Accessibilité de l'événement",
+          "Audience": "Public",
+          "EventType": "Type d'événement",
+          "OrganizerRole": "Rôle de l'organisation",
+          "PerformerRole": "Rôle d'interprète",
+          "SupporterRole": "Rôle de contributeur"
+        },
+        "Person": { "Occupation": "Occupation" }
+      },
       "listing": {
         "heading": "Taxonomies",
-        "addNew": "Personne",
-        "classType": "Class",
+        "addNew": "Taxonomie",
+        "classType": "Classe",
+        "search": "Rechercher des taxonomies",
         "sort": {
           "sortBy": "Trier par",
           "name": "Nom",
@@ -903,8 +921,8 @@
         "nameCheckbox": "Use the taxonomy name to rename the field.",
         "frNamePlaceHolder": "Entrez le nom de la taxonomie en français",
         "enNamePlaceHolder": "entrez le nom de la taxonomie en anglais",
-        "mapToField": "Map to existing field",
-        "mapToFieldDescription": "Select an input field for the taxonomy.",
+        "mapToField": "Mapper à un champ existant",
+        "mapToFieldDescription": "Sélectionner un champ de saisie pour la taxonomie.",
         "nameDescription": "Ce nom est utilisé pour étiqueter le champ de saisie associé.",
         "description": "Description identifiante",
         "frDescriptionPlaceHolder": "Entrez la description identifiante en français",
@@ -912,7 +930,7 @@
         "descriptionExplation": "Ajouter pour différencier la taxonomie dans les résultats de recherche.",
         "userAccess": "Restreindre l'accès aux utilisateurs",
         "userAccessPlaceHolder": "Sélectionnez",
-        "userAccessDescription": "Select who has permission to see and use this field.",
+        "userAccessDescription": "Sélectionner les utilisateurs qui ont le droit de visualiser et d'utiliser ce champ.",
         "validations": {
           "name": "Le nom est requis.",
           "class": "Le Classe est requis",
@@ -926,15 +944,16 @@
         "concepts": {
           "heading": "Liste de concepts",
           "description": "Gérer une liste hiérarchique de concepts pour la taxonomie, dans toutes les langues du calendrier. Les concepts peuvent être sélectionnés à partir du champ de saisie correspondant. Faites glisser les concepts pour les réorganiser et/ou les imbriquer. Lorsque vous déplacez un concept dans une langue, il est déplacé dans toutes les langues.",
-          "item": "Item",
+          "item": "Article",
           "french": "Français",
           "english": "Anglais",
-          "add": "Ajouteréditer un concept.",
-          "edit": "Editer un concept.",
+          "add": "Ajoute un concept",
+          "edit": "Éditer un concept",
           "save": "Sauvegarder",
-          "conceptName": "Concept name",
-          "placeHolderFr": "Enter French Concept name",
-          "placeHolderEn": "Enter English Concept name",
+          "editBtn": "Sauvegarder",
+          "conceptName": "Nom",
+          "placeHolderFr": "Entrez un nom en français",
+          "placeHolderEn": "Entrez un nom en anglais",
           "deleteConceptHeading": "Supprimer concept",
           "deleteConceptMessage": "Êtes-vous sûr de vouloir supprimer définitivement ce concept ? Cette action le supprimera également partout où il a été utilisé, y compris dans les événements."
         }
