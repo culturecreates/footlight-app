@@ -906,7 +906,17 @@ function CreateNewPlace() {
                       required: requiredFieldNames?.includes(placeFormRequiredFieldNames?.PLACE_TYPE),
                       message: t('dashboard.places.createNew.addPlace.validations.placeTypeRequired'),
                     },
-                  ]}>
+                  ]}
+                  style={{
+                    display:
+                      !taxonomyDetails(
+                        allTaxonomyData?.data,
+                        user,
+                        placeTaxonomyMappedFieldTypes.TYPE,
+                        'name',
+                        false,
+                      ) && 'none',
+                  }}>
                   <TreeSelectOption
                     placeholder={t('dashboard.places.createNew.addPlace.placeType.placeholder')}
                     allowClear
@@ -1429,7 +1439,17 @@ function CreateNewPlace() {
                         artsData?.regions?.map((region) => {
                           return region?.entityId;
                         })
-                  }>
+                  }
+                  style={{
+                    display:
+                      !taxonomyDetails(
+                        allTaxonomyData?.data,
+                        user,
+                        placeTaxonomyMappedFieldTypes.REGION,
+                        'name',
+                        false,
+                      ) && 'none',
+                  }}>
                   <TreeSelectOption
                     placeholder={t('dashboard.places.createNew.addPlace.address.region.placeholder')}
                     allowClear
@@ -1628,7 +1648,6 @@ function CreateNewPlace() {
                 </Row>
                 <Form.Item
                   name={formFieldNames.PLACE_ACCESSIBILITY}
-                  style={{ width: '423px' }}
                   label={taxonomyDetails(
                     allTaxonomyData?.data,
                     user,
@@ -1638,7 +1657,18 @@ function CreateNewPlace() {
                   )}
                   initialValue={placeData?.accessibility?.map((type) => {
                     return type?.entityId;
-                  })}>
+                  })}
+                  style={{
+                    width: '423px',
+                    display:
+                      !taxonomyDetails(
+                        allTaxonomyData?.data,
+                        user,
+                        placeTaxonomyMappedFieldTypes.PLACE_ACCESSIBILITY,
+                        'name',
+                        false,
+                      ) && 'none',
+                  }}>
                   <TreeSelectOption
                     placeholder={t('dashboard.places.createNew.addPlace.venueAccessibility.placeholder')}
                     allowClear

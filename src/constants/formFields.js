@@ -255,6 +255,11 @@ export const formFieldValue = [
           })}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
           treeData={treeTaxonomyOptions(taxonomyData, user, taxonomyAlias, isDynamicField, calendarContentLanguage)}
+          style={{
+            display:
+              !treeTaxonomyOptions(taxonomyData, user, taxonomyAlias, isDynamicField, calendarContentLanguage) &&
+              'none',
+          }}
           tagRender={(props) => {
             const { label, closable, onClose } = props;
             return (
