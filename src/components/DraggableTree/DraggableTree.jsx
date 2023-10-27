@@ -411,62 +411,66 @@ const DraggableTree = ({
               </div>
             </div>
           }>
-          <Form.Item label={t('dashboard.taxonomy.addNew.concepts.conceptName')}>
-            <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-              <BilingualInput fieldData={newConceptName}>
-                <Form.Item
-                  name="frenchconcept"
-                  key={contentLanguage.FRENCH}
-                  dependencies={['english']}
-                  initialValue={newConceptName?.fr}
-                  rules={[
-                    ({ getFieldValue }) => ({
-                      validator(_, value) {
-                        if (value || getFieldValue('englishconcept')) {
-                          return Promise.resolve();
-                        } else return Promise.reject(new Error(t('dashboard.taxonomy.addNew.validations.conceptName')));
-                      },
-                    }),
-                  ]}>
-                  <TextArea
-                    autoSize
-                    autoComplete="off"
-                    placeholder={t('dashboard.taxonomy.addNew.concepts.placeHolderFr')}
-                    onChange={(e) => {
-                      setNewConceptName({ ...newConceptName, fr: e.target.value });
-                    }}
-                    style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                    size="large"
-                  />
-                </Form.Item>
-                <Form.Item
-                  name="englishconcept"
-                  key={contentLanguage.ENGLISH}
-                  dependencies={['french']}
-                  initialValue={newConceptName?.en}
-                  rules={[
-                    ({ getFieldValue }) => ({
-                      validator(_, value) {
-                        if (value || getFieldValue('frenchconcept')) {
-                          return Promise.resolve();
-                        } else return Promise.reject(new Error(t('dashboard.taxonomy.addNew.validations.conceptName')));
-                      },
-                    }),
-                  ]}>
-                  <TextArea
-                    autoSize
-                    autoComplete="off"
-                    onChange={(e) => {
-                      setNewConceptName({ ...newConceptName, en: e.target.value });
-                    }}
-                    placeholder={t('dashboard.taxonomy.addNew.concepts.placeHolderEn')}
-                    style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
-                    size="large"
-                  />
-                </Form.Item>
-              </BilingualInput>
-            </ContentLanguageInput>
-          </Form.Item>
+          <div className="add-new-concept-wrapper">
+            <Form.Item label={t('dashboard.taxonomy.addNew.concepts.conceptName')}>
+              <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                <BilingualInput fieldData={newConceptName}>
+                  <Form.Item
+                    name="frenchconcept"
+                    key={contentLanguage.FRENCH}
+                    dependencies={['english']}
+                    initialValue={newConceptName?.fr}
+                    rules={[
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          if (value || getFieldValue('englishconcept')) {
+                            return Promise.resolve();
+                          } else
+                            return Promise.reject(new Error(t('dashboard.taxonomy.addNew.validations.conceptName')));
+                        },
+                      }),
+                    ]}>
+                    <TextArea
+                      autoSize
+                      autoComplete="off"
+                      placeholder={t('dashboard.taxonomy.addNew.concepts.placeHolderFr')}
+                      onChange={(e) => {
+                        setNewConceptName({ ...newConceptName, fr: e.target.value });
+                      }}
+                      style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                      size="large"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="englishconcept"
+                    key={contentLanguage.ENGLISH}
+                    dependencies={['french']}
+                    initialValue={newConceptName?.en}
+                    rules={[
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          if (value || getFieldValue('frenchconcept')) {
+                            return Promise.resolve();
+                          } else
+                            return Promise.reject(new Error(t('dashboard.taxonomy.addNew.validations.conceptName')));
+                        },
+                      }),
+                    ]}>
+                    <TextArea
+                      autoSize
+                      autoComplete="off"
+                      onChange={(e) => {
+                        setNewConceptName({ ...newConceptName, en: e.target.value });
+                      }}
+                      placeholder={t('dashboard.taxonomy.addNew.concepts.placeHolderEn')}
+                      style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                      size="large"
+                    />
+                  </Form.Item>
+                </BilingualInput>
+              </ContentLanguageInput>
+            </Form.Item>
+          </div>
         </CustomModal>
       </div>
     </div>
