@@ -13,12 +13,25 @@ function ChangeType(props) {
         size="small"
         className="first-button"
         onClick={onClick}
+        data-cy="button-select-change-type"
       />
-      <Button type="text" disabled={disabled} className="second-button" onClick={onClick}>
+      <Button
+        type="text"
+        disabled={disabled}
+        className="second-button"
+        onClick={onClick}
+        data-cy="button-select-change-type">
         {label}
       </Button>
       <TooltipStyled title={promptText}>
-        <Button type="text" icon={secondaryIcon} disabled={disabled} size="small" className="third-button" />
+        <Button
+          type="text"
+          icon={secondaryIcon}
+          disabled={disabled}
+          size="small"
+          className="third-button"
+          data-cy="button-select-change-type"
+        />
       </TooltipStyled>
     </div>
   );

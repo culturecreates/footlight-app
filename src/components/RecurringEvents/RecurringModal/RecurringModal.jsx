@@ -269,8 +269,14 @@ const RecurringModal = ({
           size="large"
           label={t('dashboard.events.addEditEvent.dates.cancel')}
           onClick={handleCancel}
+          data-cy="button-cancel-custom-dates"
         />,
-        <PrimaryButton key="add-dates" label={t('dashboard.events.addEditEvent.dates.addDates')} onClick={handleOk} />,
+        <PrimaryButton
+          key="add-dates"
+          label={t('dashboard.events.addEditEvent.dates.addDates')}
+          onClick={handleOk}
+          data-cy="button-save-custom-dates"
+        />,
       ]}
       bodyStyle={{ padding: '0px' }}>
       <Row>
@@ -332,26 +338,37 @@ const RecurringModal = ({
             {dateSource.map((item) => (
               <div key={item.id}>
                 <div className="custom-time-layout">
-                  <div className={item.isDeleted ? 'deleted-text custom-no-of-date' : 'custom-no-of-date'}>
+                  <div
+                    className={item.isDeleted ? 'deleted-text custom-no-of-date' : 'custom-no-of-date'}
+                    data-cy="div-display-cutstom-start-date">
                     {moment(item?.initDate)
                       .locale(i18n.language)
                       .format(currentLang === 'en' ? 'ddd, MMMM DD, YYYY' : currentLang === 'fr' && 'ddd DD MMMM YYYY')}
                   </div>
                   <div className="crud-icons">
                     {item.isDeleted ? (
-                      <UndoOutlined onClick={() => redoEvent(item)} style={iconcolor} />
+                      <UndoOutlined onClick={() => redoEvent(item)} style={iconcolor} data-cy="icon-undo-change" />
                     ) : (
                       <CopyOutlined
                         onClick={() => {
                           if (item.time && item.time.length > 0) copyEvents(item);
                         }}
                         style={iconcolor}
+                        data-cy="icon-copy-custom-date"
                       />
                     )}
                     {item.isDeleted ? (
-                      <DeleteFilled onClick={() => deleteEventPermenent(item)} style={iconcolor} />
+                      <DeleteFilled
+                        onClick={() => deleteEventPermenent(item)}
+                        style={iconcolor}
+                        data-cy="icon-delete-custom-date-permanent"
+                      />
                     ) : (
-                      <DeleteOutlined onClick={() => deleteEvent(item)} style={iconcolor} />
+                      <DeleteOutlined
+                        onClick={() => deleteEvent(item)}
+                        style={iconcolor}
+                        data-cy="icon-delete-custom-date"
+                      />
                     )}
                   </div>
                 </div>
@@ -360,7 +377,7 @@ const RecurringModal = ({
                   item?.time &&
                   item?.time?.map((customTime, index) => (
                     <div className="custom-time-layout" style={{ margin: '9px' }} key={index}>
-                      <div>
+                      <div data-cy="div-display-cutstom-time">
                         {customTime?.startTime &&
                           moment(customTime?.startTime, 'hh:mm a').format(
                             i18n.language === 'en' ? 'hh:mm a' : i18n.language === 'fr' && 'HH:mm',
@@ -376,6 +393,7 @@ const RecurringModal = ({
                           <CloseOutlined
                             className="close-time"
                             onClick={() => deleteTime(item, customTime.startTime)}
+                            data-cy="icon-delete-custom-time"
                           />
                         </div>
                       )}
@@ -389,6 +407,7 @@ const RecurringModal = ({
                       setShowAddTime(true);
                       setSelectedDateId(item.id);
                     }}
+                    data-cy="button-add-custom-time"
                   />
                 )}
 
@@ -452,6 +471,7 @@ const RecurringModal = ({
                               setShowAddTime(false);
                               setSelectedDateId(null);
                             }}
+                            data-cy="button-cancel-custom-add-time-to-all-dates"
                           />
                           <PrimaryButton
                             key="add-time"
@@ -459,6 +479,7 @@ const RecurringModal = ({
                             size="large"
                             disabled={startTimeCustomWatch || endTimeCustomWatch ? false : true}
                             label={t('dashboard.events.addEditEvent.dates.modal.add')}
+                            data-cy="button-save-custom-add-time-to-all-dates"
                           />
                         </Form.Item>
                       </div>

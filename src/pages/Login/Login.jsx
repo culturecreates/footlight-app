@@ -59,7 +59,9 @@ const Login = () => {
   return (
     <Auth>
       <div className="login-page-wrapper">
-        <h3 className="login-heading">{t('login.header')}</h3>
+        <h3 className="login-heading" data-cy="heading-login-heading">
+          {t('login.header')}
+        </h3>
         <Form
           name="normal_login"
           className="login-form"
@@ -92,7 +94,7 @@ const Login = () => {
                 message: t('login.validations.emptyEmail'),
               },
             ]}>
-            <LoginInput placeholder={t('login.emailPlaceHolder')} />
+            <LoginInput placeholder={t('login.emailPlaceHolder')} data-cy="input-login-email" />
           </Form.Item>
           <Form.Item
             className="login-form-item"
@@ -112,20 +114,27 @@ const Login = () => {
             <PasswordInput
               placeholder={t('login.passwordPlaceHolder')}
               iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+              data-cy="input-login-password"
             />
           </Form.Item>
           <Form.Item>
             <Form.Item name="remember" valuePropName="checked" noStyle>
               <Checkbox>
-                <span className="login-remember-me">{t('login.rememberMe')}</span>
+                <span className="login-remember-me" data-cy="span-login-remember-me-checkbox">
+                  {t('login.rememberMe')}
+                </span>
               </Checkbox>
             </Form.Item>
           </Form.Item>
 
           <Form.Item>
-            <LoginButton label={t('login.loginButtonText')} htmlType="htmlType" />
+            <LoginButton label={t('login.loginButtonText')} htmlType="htmlType" data-cy="button-login-submit" />
           </Form.Item>
-          <Button className="reset-my-password" type="text" onClick={() => navigate(PathName.ForgotPassword)}>
+          <Button
+            className="reset-my-password"
+            type="text"
+            onClick={() => navigate(PathName.ForgotPassword)}
+            data-cy="button-reset-my-password">
             {t('login.resetMyPasswordText')}
           </Button>
         </Form>

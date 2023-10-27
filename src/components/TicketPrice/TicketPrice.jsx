@@ -15,10 +15,14 @@ function TicketPrice(props) {
       <thead>
         <tr>
           <th>
-            <p className="edit-price-title-primary">{t('dashboard.events.addEditEvent.tickets.price')}</p>
+            <p className="edit-price-title-primary" data-cy="para-ticket-price-label">
+              {t('dashboard.events.addEditEvent.tickets.price')}
+            </p>
           </th>
           <th>
-            <p className="edit-price-title-primary ">{t('dashboard.events.addEditEvent.tickets.description')}</p>
+            <p className="edit-price-title-primary" data-cy="para-ticket-price-description">
+              {t('dashboard.events.addEditEvent.tickets.description')}
+            </p>
           </th>
           <th></th>
         </tr>
@@ -41,17 +45,25 @@ function TicketPrice(props) {
                   controls={false}
                   style={{ borderWidth: '0px' }}
                   addonAfter={t('dashboard.events.addEditEvent.tickets.CAD')}
+                  data-cy="input-ticket-price-number"
                 />
               </Form.Item>
             </td>
             <td>
               <Form.Item {...restField} name={[name, secondFieldName, thirdFieldName]}>
-                <StyledInput placeholder={t('dashboard.events.addEditEvent.tickets.enterType')} />
+                <StyledInput
+                  placeholder={t('dashboard.events.addEditEvent.tickets.enterType')}
+                  data-cy="input-ticket-price-description"
+                />
               </Form.Item>
             </td>
             <td>
               <Form.Item>
-                <DeleteOutlined onClick={() => remove(name)} style={{ color: '#1B3DE6', fontSize: '20px' }} />
+                <DeleteOutlined
+                  onClick={() => remove(name)}
+                  style={{ color: '#1B3DE6', fontSize: '20px' }}
+                  data-cy="icon-remove-ticket-price"
+                />
               </Form.Item>
             </td>
           </tr>
@@ -75,7 +87,8 @@ function TicketPrice(props) {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                    }}>
+                    }}
+                    data-cy="button-add-ticket-price">
                     <PlusOutlined style={{ color: '#1B3DE6' }} />
                   </div>
                 }>

@@ -324,6 +324,7 @@ const RecurringEvents = function ({
             defaultValue={dateFrequencyOptions[0]?.value}
             key="updateDropdownKey"
             optionFilterProp="children"
+            data-cy="date-frequency-select"
             // onChange={handleChange}
           />
         </Form.Item>
@@ -511,7 +512,8 @@ const RecurringEvents = function ({
                     backgroundColor: '#EFF2FF',
                   }),
                 }}
-                onClick={() => weekDaySelectHandler(day?.value)}>
+                onClick={() => weekDaySelectHandler(day?.value)}
+                data-cy="button-select-days">
                 {day.name}
               </Button>
             );
@@ -526,6 +528,7 @@ const RecurringEvents = function ({
             icon={<ControlOutlined />}
             onClick={() => openCustomize()}
             label={t('dashboard.events.addEditEvent.dates.editDates')}
+            data-cy="button-edit-dates"
           />
         )}
       </div>
