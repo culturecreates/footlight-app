@@ -15,7 +15,7 @@ import { userRolesWithTranslation } from '../../../constants/userRoles';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
 import DraggableTree from '../../../components/DraggableTree/DraggableTree';
 import { useAddTaxonomyMutation, useLazyGetTaxonomyQuery, useUpdateTaxonomyMutation } from '../../../services/taxonomy';
-import { standardFieldsForTaxonomy } from '../../../utils/standardFields';
+import { getStandardFieldArrayForClass, standardFieldsForTaxonomy } from '../../../utils/standardFields';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 
 const AddTaxonomy = () => {
@@ -34,6 +34,7 @@ const AddTaxonomy = () => {
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const [loading, setLoading] = useState(true);
+  const [render, setRender] = useState(true);
   const [deleteDisplayFlag, setDeleteDisplayFlag] = useState(true);
   const [newConceptName, setNewConceptName] = useState({ en: '', fr: '' });
   const [conceptData, setConceptData] = useState([]);
@@ -50,7 +51,7 @@ const AddTaxonomy = () => {
       fr: '',
       en: '',
     },
-    userAccess: [false],
+    userAccess: [],
   });
   //   const [availableStandardFields, setAvailableStandardFields] = useState([]);
   const [addNewPopup, setAddNewPopup] = useState(false);
@@ -92,24 +93,28 @@ const AddTaxonomy = () => {
           setConceptData(res.concepts);
           setTaxonomyData(res);
           const availableStandardFields = standardFieldsForTaxonomy(
-            location.state?.selectedClass,
+            res?.taxonomyClass,
             currentCalendarData?.fieldTaxonomyMaps,
           );
-          setStandardFields(availableStandardFields);
+          setStandardFields([
+            ...availableStandardFields,
+            getStandardFieldArrayForClass(res?.taxonomyClass).find((i) => i.key == res?.mappedToField),
+          ]);
           form.setFieldsValue({
             classType: res?.taxonomyClass,
             frenchname: res?.name?.fr,
             englishname: res?.name?.en,
             frenchdescription: res?.disambiguatingDescription?.fr,
             englishdescription: res?.disambiguatingDescription?.en,
-            userAccess: [true],
+            userAccess: [],
           });
+
           setFormValues({
             classType: res?.taxonomyClass,
             name: res?.name,
             description: res?.disambiguatingDescription,
             id: res?.id,
-            userAccess: [true],
+            userAccess: [],
             mapToField: res?.mappedToField,
           });
           setLoading(false);
@@ -269,7 +274,12 @@ const AddTaxonomy = () => {
                                   selectedKeys[0],
                                   currentCalendarData?.fieldTaxonomyMaps,
                                 );
-                                setStandardFields(availableStandardFields);
+                                setStandardFields([
+                                  ...availableStandardFields,
+                                  getStandardFieldArrayForClass(classKey?.key).find(
+                                    (i) => i.key == formValues?.mapToField,
+                                  ),
+                                ]);
                               },
                             }}
                             disabled={!!taxonomyId}
@@ -296,21 +306,37 @@ const AddTaxonomy = () => {
                               getPopupContainer={(trigger) => trigger.parentNode}
                               overlayStyle={{ minWidth: '100%' }}
                               menu={{
-                                items: standardFields.map((field) => ({ key: field, label: field })),
+                                items: standardFields.filter((s) => s != undefined),
                                 selectable: true,
                                 onSelect: ({ selectedKeys }) => {
+                                  const item = getStandardFieldArrayForClass(formValues?.classType).find(
+                                    (i) => i.key == selectedKeys[0],
+                                  );
+                                  const name = {
+                                    en: item?.en,
+                                    fr: item?.fr,
+                                  };
+                                  form.setFieldValue('frenchname', item?.fr);
+                                  form.setFieldValue('englishname', item?.en);
                                   setFormValues({
                                     ...formValues,
                                     mapToField: selectedKeys[0],
+                                    name,
                                   });
+                                  setRender(!render);
                                 },
                               }}
-                              disabled={formValues?.classType === '' || standardFields.length === 0}
+                              disabled={
+                                formValues?.classType === '' ||
+                                standardFields.filter((s) => s != undefined).length === 0
+                              }
                               trigger={['click']}>
                               <div>
                                 <Typography.Text>
                                   {formValues?.mapToField
-                                    ? formValues?.mapToField
+                                    ? getStandardFieldArrayForClass(formValues?.classType).find(
+                                        (i) => i.key == formValues?.mapToField,
+                                      )?.label
                                     : t('dashboard.taxonomy.selectType.classPlaceHolder')}
                                 </Typography.Text>
                                 <DownOutlined style={{ fontSize: '16px' }} />
@@ -331,7 +357,7 @@ const AddTaxonomy = () => {
                               <Form.Item
                                 name="frenchname"
                                 key={contentLanguage.FRENCH}
-                                initialValue={formValues?.name?.fr}
+                                // initialValue={formValues?.name?.fr}
                                 dependencies={['englishname']}
                                 rules={[
                                   ({ getFieldValue }) => ({
@@ -349,6 +375,9 @@ const AddTaxonomy = () => {
                                   autoSize
                                   autoComplete="off"
                                   placeholder={t('dashboard.taxonomy.addNew.frNamePlaceHolder')}
+                                  key={render}
+                                  defaultValue={formValues?.name?.fr}
+                                  value={formValues.name.fr}
                                   onChange={(e) => {
                                     setFormValues({
                                       ...formValues,
@@ -361,7 +390,7 @@ const AddTaxonomy = () => {
                               </Form.Item>
                               <Form.Item
                                 name="englishname"
-                                initialValue={formValues?.name?.en}
+                                // initialValue={formValues?.name?.en}
                                 key={contentLanguage.ENGLISH}
                                 dependencies={['frenchname']}
                                 rules={[
@@ -380,6 +409,8 @@ const AddTaxonomy = () => {
                                   autoSize
                                   defaultValue={formValues?.name?.en}
                                   autoComplete="off"
+                                  key={render}
+                                  value={formValues.name.en}
                                   placeholder={t('dashboard.taxonomy.addNew.enNamePlaceHolder')}
                                   onChange={(e) => {
                                     setFormValues({
@@ -495,7 +526,7 @@ const AddTaxonomy = () => {
                               }),
                             ]}>
                             <SearchableCheckbox
-                              disabled={true}
+                              // disabled={true}
                               onFilterChange={(values) => {
                                 setFormValues({ ...formValues, userAccess: values });
                               }}
@@ -506,7 +537,7 @@ const AddTaxonomy = () => {
                                     <Checkbox
                                       key={userRolesWithTranslation[0].key}
                                       style={{ marginLeft: '8px' }}
-                                      value={userRolesWithTranslation[0].key}>
+                                      value={t(`dashboard.taxonomy.addNew.adminOnly`)}>
                                       {userRolesWithTranslation[0].label}
                                     </Checkbox>
                                   ),
@@ -515,7 +546,9 @@ const AddTaxonomy = () => {
                               ]}
                               overlayStyle={{ minWidth: '100%' }}
                               value={formValues.userAccess}>
-                              {userRolesWithTranslation[0].label}
+                              {formValues.userAccess?.length > 0
+                                ? t(`dashboard.taxonomy.addNew.adminOnly`)
+                                : t(`dashboard.taxonomy.addNew.userAccessPlaceHolder`)}
                               <DownOutlined style={{ fontSize: '16px' }} />
                             </SearchableCheckbox>
                             <div className="field-description" style={{ marginTop: 8 }}>
@@ -531,7 +564,7 @@ const AddTaxonomy = () => {
             </Col>
             <Col flex="736px" style={{ marginTop: '32px' }} className="concept-card">
               <Card bordered={false}>
-                <Row justify="space-between">
+                <Row justify="space-between" wrap={false}>
                   <Col flex="423px">
                     <Row gutter={[24, 24]}>
                       <Col className="heading-concepts">{t('dashboard.taxonomy.addNew.concepts.heading')}</Col>

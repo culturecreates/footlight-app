@@ -222,7 +222,7 @@ const Taxonomy = () => {
               <Row gutter={[8, 8]} align="middle">
                 <Col flex={'auto'} style={{ marginRight: '24px', maxWidth: 400 }}>
                   <UserSearch
-                    placeholder={t('dashboard.settings.userManagement.searchPlaceholder')}
+                    placeholder={t('dashboard.taxonomy.listing.search')}
                     onPressEnter={(e) => onSearchHandler(e)}
                     defaultValue={filters.query}
                     allowClear={true}
