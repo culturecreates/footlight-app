@@ -17,11 +17,15 @@ function QuickSelect(props) {
       width={500}
       open={open}
       onCancel={() => setOpen(false)}
-      title={<span className="quick-select-modal-title">{t('dashboard.events.addEditEvent.quickCreate.title')}</span>}
+      title={
+        <span className="quick-select-modal-title" data-cy="span-select-organizer-person-heading">
+          {t('dashboard.events.addEditEvent.quickCreate.title')}
+        </span>
+      }
       footer={false}>
       <Row gutter={[0, 32]} className="quick-select-modal-wrapper">
         <Col span={24}>
-          <span className="quick-select-modal-sub-heading">
+          <span className="quick-select-modal-sub-heading" data-cy="span-select-organizer-person-subheading">
             {t('dashboard.events.addEditEvent.quickCreate.subHeading')}
           </span>
         </Col>
@@ -37,6 +41,7 @@ function QuickSelect(props) {
                   setQuickCreatePersonModal(true);
                 }}
                 disabled={featureFlags.quickCreatePersonPlace === 'true' ? false : true}
+                data-cy="button-select-person"
               />
             </Col>
             <Col span={12}>
@@ -56,6 +61,7 @@ function QuickSelect(props) {
                   setOpen(!open);
                   setQuickCreateOrganizerModal(true);
                 }}
+                data-cy="button-select-organizer"
               />
             </Col>
           </Row>

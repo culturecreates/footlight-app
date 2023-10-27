@@ -5,7 +5,9 @@ function Username(props) {
   const { firstName, lastName, userName } = props;
 
   return (
-    <span className="event-list-status-userdetail">{userName ? userName : `${firstName?.charAt(0)}${lastName}`}</span>
+    <span className="event-list-status-userdetail" {...props}>
+      {userName ? userName : `${firstName?.charAt(0)}${lastName}`}
+    </span>
   );
 }
 

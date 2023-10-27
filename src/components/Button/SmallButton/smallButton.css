@@ -1,0 +1,22 @@
+.small-button-wrapper .ant-btn {
+  background: #2196f3;
+  border-radius: 4px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: #ffffff;
+}
+
+.small-button-wrapper .ant-btn-default {
+  padding-top: 4px;
+  padding-left: 8px;
+  padding-bottom: 4px;
+  padding-right: 8px;
+}
+
+.small-button-wrapper {
+  cursor: initial;
+}

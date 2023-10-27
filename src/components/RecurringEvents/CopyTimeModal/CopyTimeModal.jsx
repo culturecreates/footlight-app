@@ -77,7 +77,7 @@ const CopyTimeModal = ({ isModalVisible, setIsModalVisible, recurringEvents, cop
       closable={false}
       title={
         <div className="custom-modal-title-wrapper">
-          <span className="custom-modal-title-heading">
+          <span className="custom-modal-title-heading" data-cy="span-duplicate-time-heading">
             {t('dashboard.events.addEditEvent.dates.modal.duplicateTimes')}
           </span>
         </div>
@@ -89,18 +89,20 @@ const CopyTimeModal = ({ isModalVisible, setIsModalVisible, recurringEvents, cop
           size="large"
           label={t('dashboard.events.addEditEvent.dates.cancel')}
           onClick={handleCancel}
+          data-cy="button-cancel-duplicate-time"
         />,
         <PrimaryButton
           key="add-dates"
           label={t('dashboard.events.addEditEvent.dates.modal.apply')}
           onClick={showConfirm}
+          data-cy="button-save-duplicate-time"
         />,
       ]}
       className="copy-modal">
       {copyTime &&
         copyTime.time &&
         copyTime.time.map((customTime, index) => (
-          <div className="replace-txt" key={index}>
+          <div className="replace-txt" key={index} data-cy="div-display-cutstom-duplicate-time">
             {customTime?.startTime &&
               moment(customTime?.startTime, 'hh:mm a').format(
                 i18n.language === 'en' ? 'hh:mm a' : i18n.language === 'fr' && 'HH:mm',
@@ -116,11 +118,17 @@ const CopyTimeModal = ({ isModalVisible, setIsModalVisible, recurringEvents, cop
               .format(currentLang === 'en' ? 'ddd, MMMM DD, YYYY' : currentLang === 'fr' && 'ddd DD MMMM YYYY')}
           </div>
         ))}
-      <div className="replace-txt">{t('dashboard.events.addEditEvent.dates.modal.replaceTimeonFolllowingDates')}</div>
+      <div className="replace-txt" data-cy="div-replace-time-text">
+        {t('dashboard.events.addEditEvent.dates.modal.replaceTimeonFolllowingDates')}
+      </div>
       <div style={{ maxHeight: '300px', overflowY: 'scroll' }}>
         <Checkbox.Group className="copycheck" options={checkOptions} onChange={onChange} value={selectedCheckbox} />
       </div>
-      <Checkbox onChange={onCheckAllChange} checked={checkAll} className="select-all-check">
+      <Checkbox
+        onChange={onCheckAllChange}
+        checked={checkAll}
+        className="select-all-check"
+        data-cy="checkbox-select-unselect-all">
         {checkAll
           ? t('dashboard.events.addEditEvent.dates.modal.unselectAll')
           : t('dashboard.events.addEditEvent.dates.modal.selectAll')}

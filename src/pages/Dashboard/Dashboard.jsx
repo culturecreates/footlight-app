@@ -141,7 +141,7 @@ function Dashboard() {
                 overflowY: 'scroll',
                 background: '#F9FAFF',
               }}>
-              <Outlet context={[currentCalendarData, pageNumber, setPageNumber]} />
+              <Outlet context={[currentCalendarData, pageNumber, setPageNumber, getCalendar]} />
             </Content>
           </Layout>
         </Layout>

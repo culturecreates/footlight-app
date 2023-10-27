@@ -11,22 +11,22 @@ export const taxonomyClass = {
 export const taxonomyClassTranslations = [
   {
     label: <Translation>{(t) => t('dashboard.taxonomy.selectType.classDropdownOptions.event')}</Translation>,
-    key: 'EVENT',
+    key: 'Event',
   },
   {
     label: <Translation>{(t) => t('dashboard.taxonomy.selectType.classDropdownOptions.place')}</Translation>,
-    key: `PLACE`,
+    key: `Place`,
   },
   {
     label: <Translation>{(t) => t('dashboard.taxonomy.selectType.classDropdownOptions.organization')}</Translation>,
-    key: 'ORGANIZATION',
+    key: 'Organization',
   },
   {
     label: <Translation>{(t) => t('dashboard.taxonomy.selectType.classDropdownOptions.person')}</Translation>,
-    key: 'PERSON',
+    key: 'Person',
   },
   {
     label: <Translation>{(t) => t('dashboard.taxonomy.selectType.classDropdownOptions.virtualLocation')}</Translation>,
-    key: 'VIRTUAL_LOCATION',
+    key: 'Virtual_Location',
   },
 ];

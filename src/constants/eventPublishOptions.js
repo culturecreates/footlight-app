@@ -10,6 +10,14 @@ export const eventPublishOptions = [
     key: '1',
   },
   {
+    label: <Translation>{(t) => t('dashboard.events.publishOptions.featureEvent')}</Translation>,
+    key: '4',
+  },
+  {
+    label: <Translation>{(t) => t('dashboard.events.publishOptions.unFeatureEvent')}</Translation>,
+    key: '5',
+  },
+  {
     type: 'divider',
   },
   {

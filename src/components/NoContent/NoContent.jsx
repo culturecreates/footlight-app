@@ -12,7 +12,9 @@ function NoContent(props) {
       <span className="no-content-icon">
         <ExclamationCircleOutlined style={{ fontSize: '14px', color: '#607EFC' }} />
       </span>
-      <p className="no-content-text">{label ?? t('common.noneFound')}</p>
+      <p className="no-content-text" data-cy="para-no-content-label">
+        {label ?? t('common.noneFound')}
+      </p>
     </div>
   );
 }
