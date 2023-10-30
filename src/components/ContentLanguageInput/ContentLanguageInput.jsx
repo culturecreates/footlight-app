@@ -2,6 +2,7 @@ import { contentLanguage } from '../../constants/contentLanguage';
 
 function ContentLanguageInput(props) {
   const { children, calendarContentLanguage } = props;
+
   if (calendarContentLanguage === contentLanguage.FRENCH)
     return children?.props?.children?.filter((child) => child?.key === contentLanguage.FRENCH);
   else if (calendarContentLanguage === contentLanguage.ENGLISH)

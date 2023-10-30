@@ -205,6 +205,7 @@ function AddEvent() {
           .then((response) => {
             resolve(response?.id);
             setNewEventId(response?.id);
+
             if (!toggle) {
               notification.success({
                 description: t('dashboard.events.addEditEvent.notification.saveAsDraft'),
@@ -694,6 +695,7 @@ function AddEvent() {
               &nbsp;
               <Button
                 type="text"
+                data-cy="button-close-review-publish-warning"
                 icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
                 onClick={() => message.destroy('event-review-publish-warning')}
               />
@@ -717,12 +719,14 @@ function AddEvent() {
               size="large"
               label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
               onClick={(e) => saveAsDraftHandler(e)}
+              data-cy="button-save-event"
               disabled={updateEventLoading || addEventLoading || addImageLoading ? true : false}
             />
           </Form.Item>
           <Form.Item>
             <PrimaryButton
               label={t('dashboard.events.addEditEvent.saveOptions.publish')}
+              data-cy="button-publish-event"
               onClick={(e) => reviewPublishHandler(e)}
               disabled={
                 updateEventLoading || addEventLoading || updateEventStateLoading || addImageLoading ? true : false
@@ -740,6 +744,7 @@ function AddEvent() {
               label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
               onClick={(e) => saveAsDraftHandler(e)}
               disabled={updateEventLoading || addEventLoading || addImageLoading ? true : false}
+              data-cy="button-save-event"
             />
           </Form.Item>
 
@@ -747,6 +752,7 @@ function AddEvent() {
             <PrimaryButton
               label={t('dashboard.events.addEditEvent.saveOptions.sendToReview')}
               onClick={(e) => reviewPublishHandler(e)}
+              data-cy="button-review-event"
               disabled={
                 updateEventLoading || addEventLoading || updateEventStateLoading || addImageLoading ? true : false
               }
@@ -762,7 +768,7 @@ function AddEvent() {
         <>
           <Form.Item>
             <PublishState eventId={eventId} reviewPublishHandler={(e) => reviewPublishHandler(e)}>
-              <span>{t('dashboard.events.publishState.published')}</span>
+              <span data-cy="span-published-text">{t('dashboard.events.publishState.published')}</span>
             </PublishState>
           </Form.Item>
           <Form.Item>
@@ -770,6 +776,7 @@ function AddEvent() {
               label={t('dashboard.events.addEditEvent.saveOptions.save')}
               onClick={(e) => saveAsDraftHandler(e)}
               disabled={updateEventLoading || addEventLoading || addImageLoading ? true : false}
+              data-cy="button-save-event"
             />
           </Form.Item>
         </>
@@ -849,7 +856,9 @@ function AddEvent() {
         </Form.Item>
       </Col>
       <Col>
-        <span style={{ color: '#222732', minHeight: '32px', display: 'flex', alignItems: 'center' }}>
+        <span
+          style={{ color: '#222732', minHeight: '32px', display: 'flex', alignItems: 'center' }}
+          data-cy="span-featured-event-text">
           {t('dashboard.events.addEditEvent.featuredEvent')}
         </span>
       </Col>
@@ -915,42 +924,55 @@ function AddEvent() {
             ...initialPlace[0],
             ['openingHours']: initialPlace[0]?.openingHours?.uri,
           };
-          let initialPlaceAccessibiltiy = [];
-          if (initialPlace[0]?.accessibility?.length > 0) {
-            getAllTaxonomy({
-              calendarId,
-              search: '',
-              taxonomyClass: taxonomyClass.PLACE,
-              includeConcepts: true,
-              sessionId: timestampRef,
-            })
-              .unwrap()
-              .then((res) => {
+          getAllTaxonomy({
+            calendarId,
+            search: '',
+            taxonomyClass: taxonomyClass.PLACE,
+            includeConcepts: true,
+            sessionId: timestampRef,
+          })
+            .unwrap()
+            .then((res) => {
+              if (initialPlace[0]?.accessibility?.length > 0) {
                 res?.data?.forEach((taxonomy) => {
                   if (taxonomy?.mappedToField === 'PlaceAccessibility') {
+                    let initialPlaceAccessibiltiy = [];
                     initialPlace[0]?.accessibility?.forEach((accessibility) => {
                       taxonomy?.concept?.forEach((concept) => {
                         if (concept?.id == accessibility?.entityId) {
-                          initialPlaceAccessibiltiy = initialPlaceAccessibiltiy?.concat([concept]);
+                          initialPlaceAccessibiltiy.push(concept);
                         }
                       });
                     });
+                    initialPlace[0] = {
+                      ...initialPlace[0],
+                      ['accessibility']: initialPlaceAccessibiltiy,
+                    };
+                    setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0], sourceOptions.CMS);
                   }
                 });
+              } else {
                 initialPlace[0] = {
                   ...initialPlace[0],
-                  ['accessibility']: initialPlaceAccessibiltiy,
+                  ['accessibility']: [],
                 };
                 setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0], sourceOptions.CMS);
-              })
-              .catch((error) => console.log(error));
-          } else {
-            initialPlace[0] = {
-              ...initialPlace[0],
-              ['accessibility']: [],
-            };
-            setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0], sourceOptions.CMS);
-          }
+              }
+              res?.data?.map((taxonomy) => {
+                if (taxonomy?.mappedToField == 'Region') {
+                  taxonomy?.concept?.forEach((t) => {
+                    if (initialPlace[0]?.regions[0]?.entityId == t?.id) {
+                      initialPlace[0] = { ...initialPlace[0], regions: [t] };
+                      setLocationPlace(
+                        placesOptions(initialPlace, user, calendarContentLanguage)[0],
+                        sourceOptions.CMS,
+                      );
+                    }
+                  });
+                }
+              });
+            })
+            .catch((error) => console.log(error));
         }
         if (eventData?.locations?.filter((location) => location?.isVirtualLocation == true)?.length > 0)
           initialAddedFields = initialAddedFields?.concat(locationType?.fieldNames);
@@ -971,6 +993,7 @@ function AddEvent() {
               type: organizer?.type,
               logo: organizer?.entity?.logo,
               image: organizer?.entity?.image,
+              contactPoint: organizer?.entity?.contactPoint,
             };
           });
           setSelectedOrganizers(
@@ -1108,6 +1131,7 @@ function AddEvent() {
         window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
     }
   }, [isLoading, currentCalendarData]);
+
   useEffect(() => {
     if (currentCalendarData) {
       let publishValidateFields = [];
@@ -1207,7 +1231,7 @@ function AddEvent() {
             <Row justify="space-between">
               <Col>
                 <div className="add-edit-event-heading">
-                  <h4>
+                  <h4 data-cy="heading-new-edit-event">
                     {eventId
                       ? t('dashboard.events.addEditEvent.heading.editEvent')
                       : t('dashboard.events.addEditEvent.heading.newEvent')}
@@ -1268,6 +1292,7 @@ function AddEvent() {
                       placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
                       style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                       size="large"
+                      data-cy="text-area-event-french-name"
                     />
                   </Form.Item>
                   <Form.Item
@@ -1292,6 +1317,7 @@ function AddEvent() {
                       placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
                       style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                       size="large"
+                      data-cy="text-area-event-english-name"
                     />
                   </Form.Item>
                 </BilingualInput>
@@ -1431,7 +1457,9 @@ function AddEvent() {
               {!dateType ? (
                 <Row>
                   <Col>
-                    <p className="add-event-date-heading">{t('dashboard.events.addEditEvent.dates.heading')}</p>
+                    <p className="add-event-date-heading" data-cy="heading-dates">
+                      {t('dashboard.events.addEditEvent.dates.heading')}
+                    </p>
                   </Col>
                 </Row>
               ) : (
@@ -1594,16 +1622,19 @@ function AddEvent() {
                           iconrender={<CalendarOutlined />}
                           label={t('dashboard.events.addEditEvent.dates.singleDate')}
                           onClick={() => setDateType(dateTypes.SINGLE)}
+                          data-cy="button-select-single-date"
                         />
                         <DateAction
                           iconrender={<CalendarOutlined />}
                           label={t('dashboard.events.addEditEvent.dates.dateRange')}
                           onClick={() => setDateType(dateTypes.RANGE)}
+                          data-cy="button-select-date-range"
                         />
                         <DateAction
                           iconrender={<CalendarOutlined />}
                           label={t('dashboard.events.addEditEvent.dates.multipleDates')}
                           onClick={() => setDateType(dateTypes.MULTIPLE)}
+                          data-cy="button-select-multiple-date"
                         />
                       </div>
                     </Form.Item>
@@ -1617,7 +1648,7 @@ function AddEvent() {
                     name="eventStatus"
                     label={t('dashboard.events.addEditEvent.dates.status')}
                     initialValue={eventData?.eventStatus ?? eventStatus.EventScheduled}>
-                    <Select options={eventStatusOptions} />
+                    <Select options={eventStatusOptions} data-cy="select-event-status" />
                   </Form.Item>
                 </Col>
               </Row>
@@ -1712,7 +1743,8 @@ function AddEvent() {
                                       ...isPopoverOpen,
                                       locationPlace: false,
                                     });
-                                  }}>
+                                  }}
+                                  data-cy="div-select-place">
                                   {place?.label}
                                 </div>
                               ))
@@ -1739,7 +1771,8 @@ function AddEvent() {
                                         ...isPopoverOpen,
                                         locationPlace: false,
                                       });
-                                    }}>
+                                    }}
+                                    data-cy="div-select-arts-data-place">
                                     {place?.label}
                                   </div>
                                 ))
@@ -1757,7 +1790,8 @@ function AddEvent() {
                             onClick={() => {
                               setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false });
                               setQuickCreatePlaceModal(true);
-                            }}>
+                            }}
+                            data-cy="div-select-quick-create-keyword">
                             <PlusCircleOutlined />
                             &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
                             {quickCreateKeyword}&#34;
@@ -1778,6 +1812,7 @@ function AddEvent() {
                       setQuickCreateKeyword(e.target.value);
                       setIsPopoverOpen({ ...isPopoverOpen, locationPlace: true });
                     }}
+                    data-cy="input-quick-create-keyword-place"
                   />
                 </Popover>
                 {locationPlace && (
@@ -1790,6 +1825,7 @@ function AddEvent() {
                     accessibility={locationPlace?.accessibility}
                     openingHours={locationPlace?.openingHours}
                     calendarContentLanguage={calendarContentLanguage}
+                    region={locationPlace?.region}
                     bordered
                     closable
                     onClose={() => {
@@ -1829,6 +1865,7 @@ function AddEvent() {
                         placeholder={t('dashboard.events.addEditEvent.location.placeHolderVirtualLocationFr')}
                         style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                         size="large"
+                        data-cy="text-area-virtual-location-french"
                       />
                     </Form.Item>
                     <Form.Item
@@ -1841,6 +1878,7 @@ function AddEvent() {
                         placeholder={t('dashboard.events.addEditEvent.location.placeHolderVirtualLocationEn')}
                         style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                         size="large"
+                        data-cy="text-area-virtual-location-english"
                       />
                     </Form.Item>
                   </BilingualInput>
@@ -1864,6 +1902,7 @@ function AddEvent() {
                   addonBefore="https://"
                   autoComplete="off"
                   placeholder={t('dashboard.events.addEditEvent.location.placeHolderOnlineLink')}
+                  data-cy="input-virtual-location-link"
                 />
               </Form.Item>
             </Form.Item>
@@ -2080,7 +2119,7 @@ function AddEvent() {
                 ]}>
                 <Row>
                   <Col>
-                    <p className="add-event-date-heading">
+                    <p className="add-event-date-heading" data-cy="para-image-upload-sub-text">
                       {t('dashboard.events.addEditEvent.otherInformation.image.subHeading')}
                     </p>
                   </Col>
@@ -2111,7 +2150,7 @@ function AddEvent() {
               <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.organizer.title')}>
                 <Row>
                   <Col>
-                    <p className="add-event-date-heading">
+                    <p className="add-event-date-heading" data-cy="para-organizer-subheading">
                       {t('dashboard.events.addEditEvent.otherInformation.organizer.subHeading')}
                     </p>
                   </Col>
@@ -2133,7 +2172,6 @@ function AddEvent() {
                               {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                             </div>
                             <div className="search-scrollable-content">
-                              {' '}
                               {organizersList?.length > 0 ? (
                                 organizersList?.map((organizer, index) => (
                                   <div
@@ -2145,7 +2183,8 @@ function AddEvent() {
                                         ...isPopoverOpen,
                                         organizer: false,
                                       });
-                                    }}>
+                                    }}
+                                    data-cy="div-select-organizer">
                                     {organizer?.label}
                                   </div>
                                 ))
@@ -2171,7 +2210,8 @@ function AddEvent() {
                                           ...isPopoverOpen,
                                           organizer: false,
                                         });
-                                      }}>
+                                      }}
+                                      data-cy="div-select-artsdata-organizer">
                                       {organizer?.label}
                                     </div>
                                   ))
@@ -2189,7 +2229,8 @@ function AddEvent() {
                               onClick={() => {
                                 setIsPopoverOpen({ ...isPopoverOpen, organizer: false });
                                 setQuickOrganizerModal(true);
-                              }}>
+                              }}
+                              data-cy="div-select-quick-create-organizer-keyword">
                               <PlusCircleOutlined />
                               &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
                               {quickCreateKeyword}&#34;
@@ -2211,6 +2252,7 @@ function AddEvent() {
                         setQuickCreateKeyword(e.target.value);
                         setIsPopoverOpen({ ...isPopoverOpen, organizer: true });
                       }}
+                      data-cy="input-quick-create-organizer-keyword"
                     />
                   </Popover>
 
@@ -2307,6 +2349,7 @@ function AddEvent() {
                           )}
                           style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                           size="large"
+                          data-cy="input-contact-title-french"
                         />
                       </Form.Item>
                       <Form.Item
@@ -2321,6 +2364,7 @@ function AddEvent() {
                           )}
                           style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                           size="large"
+                          data-cy="input-contact-title-english"
                         />
                       </Form.Item>
                     </BilingualInput>
@@ -2342,6 +2386,7 @@ function AddEvent() {
                     addonBefore="https://"
                     autoComplete="off"
                     placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
+                    data-cy="input-contact-website"
                   />
                 </Form.Item>
                 <Form.Item
@@ -2351,6 +2396,7 @@ function AddEvent() {
                   initialValue={eventData?.contactPoint?.telephone}>
                   <StyledInput
                     placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderPhoneNumber')}
+                    data-cy="input-contact-phonenumber"
                   />
                 </Form.Item>
                 <Form.Item
@@ -2366,6 +2412,7 @@ function AddEvent() {
                   ]}>
                   <StyledInput
                     placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderEmail')}
+                    data-cy="input-contact-email"
                   />
                 </Form.Item>
               </Form.Item>
@@ -2378,7 +2425,7 @@ function AddEvent() {
                 }}>
                 <Row>
                   <Col>
-                    <p className="add-event-date-heading">
+                    <p className="add-event-date-heading" data-cy="para-performer-subheading">
                       {t('dashboard.events.addEditEvent.otherInformation.performer.subHeading')}
                     </p>
                   </Col>
@@ -2410,7 +2457,8 @@ function AddEvent() {
                                       ...isPopoverOpen,
                                       performer: false,
                                     });
-                                  }}>
+                                  }}
+                                  data-cy="div-select-performer">
                                   {performer?.label}
                                 </div>
                               ))
@@ -2437,7 +2485,8 @@ function AddEvent() {
                                         ...isPopoverOpen,
                                         performer: false,
                                       });
-                                    }}>
+                                    }}
+                                    data-cy="div-select-artsdata-performer">
                                     {performer?.label}
                                   </div>
                                 ))
@@ -2454,7 +2503,8 @@ function AddEvent() {
                               onClick={() => {
                                 setIsPopoverOpen({ ...isPopoverOpen, performer: false });
                                 setQuickOrganizerModal(true);
-                              }}>
+                              }}
+                              data-cy="div-select-quick-create-performer-keyword">
                               <PlusCircleOutlined />
                               &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
                               {quickCreateKeyword}&#34;
@@ -2476,6 +2526,7 @@ function AddEvent() {
                         setQuickCreateKeyword(e.target.value);
                         setIsPopoverOpen({ ...isPopoverOpen, performer: true });
                       }}
+                      data-cy="input-quick-create-performer-keyword"
                     />
                   </Popover>
 
@@ -2508,7 +2559,7 @@ function AddEvent() {
                 }}>
                 <Row>
                   <Col>
-                    <p className="add-event-date-heading">
+                    <p className="add-event-date-heading" data-cy="para-supporter-subheading">
                       {t('dashboard.events.addEditEvent.otherInformation.supporter.subHeading')}
                     </p>
                   </Col>
@@ -2541,7 +2592,8 @@ function AddEvent() {
                                         ...isPopoverOpen,
                                         supporter: false,
                                       });
-                                    }}>
+                                    }}
+                                    data-cy="div-select-supporter">
                                     {supporter?.label}
                                   </div>
                                 ))
@@ -2568,7 +2620,8 @@ function AddEvent() {
                                           ...isPopoverOpen,
                                           supporter: false,
                                         });
-                                      }}>
+                                      }}
+                                      data-cy="div-select-artsdata-supporter">
                                       {supporter?.label}
                                     </div>
                                   ))
@@ -2587,7 +2640,7 @@ function AddEvent() {
                                 setIsPopoverOpen({ ...isPopoverOpen, supporter: false });
                                 setQuickOrganizerModal(true);
                               }}>
-                              <PlusCircleOutlined />
+                              <PlusCircleOutlined data-cy="div-select-quick-create-supporter-keyword" />
                               &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
                               {quickCreateKeyword}&#34;
                             </div>
@@ -2608,6 +2661,7 @@ function AddEvent() {
                         setQuickCreateKeyword(e.target.value);
                         setIsPopoverOpen({ ...isPopoverOpen, supporter: true });
                       }}
+                      data-cy="input-quick-create-supporter-keyword"
                     />
                   </Popover>
 
@@ -2649,6 +2703,7 @@ function AddEvent() {
                   addonBefore="https://"
                   autoComplete="off"
                   placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
+                  data-cy="input-event-link"
                 />
               </Form.Item>
               <Form.Item
@@ -2669,6 +2724,7 @@ function AddEvent() {
                   addonBefore="https://"
                   autoComplete="off"
                   placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
+                  data-cy="input-video-link"
                 />
               </Form.Item>
               <Form.Item
@@ -2691,9 +2747,10 @@ function AddEvent() {
                     addonBefore="https://"
                     autoComplete="off"
                     placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
+                    data-cy="input-facebook-link"
                   />
                 </Form.Item>
-                <p className="add-event-date-heading">
+                <p className="add-event-date-heading" data-cy="para-facebook-link-footer">
                   {t('dashboard.events.addEditEvent.otherInformation.facebookLinkFooter')}
                 </p>
               </Form.Item>
@@ -2722,6 +2779,7 @@ function AddEvent() {
                       </Tags>
                     );
                   }}
+                  data-cy="select-keywords"
                 />
               </Form.Item>
               <Form.Item
@@ -2951,16 +3009,19 @@ function AddEvent() {
                           iconrender={<MoneyFree />}
                           label={t('dashboard.events.addEditEvent.tickets.free')}
                           onClick={() => setTicketType(offerTypes.FREE)}
+                          data-cy="button-select-ticket-free"
                         />
                         <DateAction
                           iconrender={<Money />}
                           label={t('dashboard.events.addEditEvent.tickets.paid')}
                           onClick={() => setTicketType(offerTypes.PAYING)}
+                          data-cy="button-select-ticket-paid"
                         />
                         <DateAction
                           iconrender={<EditOutlined />}
                           label={t('dashboard.events.addEditEvent.tickets.registration')}
                           onClick={() => setTicketType(offerTypes.REGISTER)}
+                          data-cy="button-select-ticket-register"
                         />
                       </div>
                     </Form.Item>
@@ -2993,6 +3054,7 @@ function AddEvent() {
                     addonBefore="https://"
                     autoComplete="off"
                     placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderLinks')}
+                    data-cy="input-ticket-registration-link"
                   />
                 </Form.Item>
               )}
@@ -3031,6 +3093,7 @@ function AddEvent() {
                       addonBefore="https://"
                       autoComplete="off"
                       placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderLinks')}
+                      data-cy="input-ticket-buy-link"
                     />
                   </Form.Item>
                   <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
@@ -3157,6 +3220,7 @@ function AddEvent() {
                             resize: 'vertical',
                           }}
                           size="large"
+                          data-cy="input-ticket-price-note-french"
                         />
                       </Form.Item>
                       <Form.Item
@@ -3200,6 +3264,7 @@ function AddEvent() {
                             resize: 'vertical',
                           }}
                           size="large"
+                          data-cy="input-ticket-price-note-english"
                         />
                       </Form.Item>
                     </BilingualInput>

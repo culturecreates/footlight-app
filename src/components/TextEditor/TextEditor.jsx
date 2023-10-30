@@ -90,6 +90,7 @@ function TextEditor(props) {
           className="text-editor"
           modules={modules}
           onChange={onChange}
+          data-cy="text-editor"
         />
       </Form.Item>
       <div className="event-description-footer">

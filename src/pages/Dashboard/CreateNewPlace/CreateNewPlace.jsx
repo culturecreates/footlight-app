@@ -113,6 +113,7 @@ function CreateNewPlace() {
     ACCESSIBILITY_NOTE_ENGLISH: 'englishAccessibilityNote',
     ACCESSIBILITY_NOTE_FRENCH: 'frenchAccessibilityNote',
     REGION: 'region',
+    CONTAINS_PLACE: 'containsPlace',
   };
   const placeId = searchParams.get('id');
   const artsDataId = location?.state?.data?.id ?? null;
@@ -147,8 +148,10 @@ function CreateNewPlace() {
   const [artsDataLoading, setArtsDataLoading] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState({
     containedInPlace: false,
+    containsPlace: false,
   });
   const [containedInPlace, setContainedInPlace] = useState();
+  const [selectedContainsPlaces, setSelectedContainsPlaces] = useState([]);
   const [allPlacesList, setAllPlacesList] = useState([]);
   const [allPlacesArtsdataList, setAllPlacesArtsdataList] = useState([]);
   const [descriptionMinimumWordCount] = useState(1);
@@ -316,7 +319,11 @@ function CreateNewPlace() {
         ])
         .then(() => {
           var values = form.getFieldsValue(true);
-          let placeObj, languageKey, dynamicFields, containedInPlaceObj;
+          let placeObj,
+            languageKey,
+            dynamicFields,
+            containedInPlaceObj,
+            containsPlace = [];
 
           if (calendarContentLanguage == contentLanguage.ENGLISH) languageKey = 'en';
           else if (calendarContentLanguage == contentLanguage.FRENCH) languageKey = 'fr';
@@ -382,6 +389,19 @@ function CreateNewPlace() {
               };
           }
 
+          if (values?.containsPlace) {
+            containsPlace = values?.containsPlace?.map((place) => {
+              if (place?.source === sourceOptions.CMS)
+                return {
+                  entityId: place?.value,
+                };
+              else if (place?.source === sourceOptions.ARTSDATA)
+                return {
+                  uri: place?.uri,
+                };
+            });
+          }
+
           placeObj = {
             name: {
               ...(values?.english && { en: values?.english }),
@@ -440,6 +460,7 @@ function CreateNewPlace() {
               },
             }),
             ...(values?.dynamicFields && { dynamicFields }),
+            ...(values?.containsPlace && { containsPlace }),
           };
 
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
@@ -629,6 +650,10 @@ function CreateNewPlace() {
   }, [addedFields]);
 
   useEffect(() => {
+    if (selectedContainsPlaces) form.setFieldValue(formFieldNames.CONTAINS_PLACE, selectedContainsPlaces);
+  }, [selectedContainsPlaces]);
+
+  useEffect(() => {
     if (calendarId && placeData && currentCalendarData) {
       let initialAddedFields = [],
         initialPlaceAccessibiltiy = [],
@@ -703,6 +728,20 @@ function CreateNewPlace() {
               },
             },
           });
+        }
+        if (placeData?.containsPlace?.length > 0) {
+          let initialContainsPlace = placeData?.containsPlace?.map((place) => {
+            return {
+              disambiguatingDescription: place?.disambiguatingDescription,
+              id: place?.id,
+              name: place?.name,
+              image: place?.image,
+              uri: place?.derivedFrom?.uri,
+            };
+          });
+          setSelectedContainsPlaces(
+            placesOptions(initialContainsPlace, user, calendarContentLanguage, sourceOptions.CMS),
+          );
         }
         if (placeData?.openingHours) initialAddedFields = initialAddedFields?.concat(formFieldNames?.OPENING_HOURS);
         if (placeData?.accessibilityNote)
@@ -1516,6 +1555,125 @@ function CreateNewPlace() {
                   })
                 )}
               </Form.Item>
+            </Card>
+            <Card title={t('dashboard.places.createNew.addPlace.containsPlace.containsPlace')}>
+              <>
+                <Row>
+                  <Col>
+                    <p className="add-event-date-heading">
+                      {t('dashboard.places.createNew.addPlace.containsPlace.subheading')}
+                    </p>
+                  </Col>
+                </Row>
+                <Form.Item
+                  name={formFieldNames.CONTAINS_PLACE}
+                  className="subheading-wrap"
+                  // initialValue={initialPlace && initialPlace[0]?.id}
+                  label={t('dashboard.places.createNew.addPlace.containsPlace.addPlace')}>
+                  <Popover
+                    open={isPopoverOpen.containedsPlace}
+                    onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, containsPlace: open })}
+                    overlayClassName="event-popover"
+                    placement="bottom"
+                    autoAdjustOverflow={false}
+                    getPopupContainer={(trigger) => trigger.parentNode}
+                    trigger={['click']}
+                    content={
+                      <div>
+                        <div>
+                          <>
+                            <div className="popover-section-header">
+                              {t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                            </div>
+                            <div className="search-scrollable-content">
+                              {allPlacesList?.length > 0 ? (
+                                allPlacesList?.map((place, index) => (
+                                  <div
+                                    key={index}
+                                    className={`event-popover-options`}
+                                    onClick={() => {
+                                      setSelectedContainsPlaces([...selectedContainsPlaces, place]);
+                                      setIsPopoverOpen({
+                                        ...isPopoverOpen,
+                                        containsPlace: false,
+                                      });
+                                    }}>
+                                    {place?.label}
+                                  </div>
+                                ))
+                              ) : (
+                                <NoContent />
+                              )}
+                            </div>
+                          </>
+                          {quickCreateKeyword !== '' && (
+                            <>
+                              <div className="popover-section-header">
+                                {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                              </div>
+                              <div className="search-scrollable-content">
+                                {allPlacesArtsdataList?.length > 0 ? (
+                                  allPlacesArtsdataList?.map((place, index) => (
+                                    <div
+                                      key={index}
+                                      className="event-popover-options"
+                                      onClick={() => {
+                                        setSelectedContainsPlaces([...selectedContainsPlaces, place]);
+                                        setIsPopoverOpen({
+                                          ...isPopoverOpen,
+                                          containsPlace: false,
+                                        });
+                                      }}>
+                                      {place?.label}
+                                    </div>
+                                  ))
+                                ) : (
+                                  <NoContent />
+                                )}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    }>
+                    <EventsSearch
+                      style={{ borderRadius: '4px', width: '423px' }}
+                      placeholder={t('dashboard.places.createNew.addPlace.containedInPlace.placeholder')}
+                      onChange={(e) => {
+                        setQuickCreateKeyword(e.target.value);
+                        debounceSearchPlace(e.target.value);
+                        setIsPopoverOpen({ ...isPopoverOpen, containsPlace: true });
+                      }}
+                      onClick={(e) => {
+                        setQuickCreateKeyword(e.target.value);
+                        setIsPopoverOpen({ ...isPopoverOpen, containsPlace: true });
+                      }}
+                    />
+                  </Popover>
+                  {selectedContainsPlaces?.map((containsPlace, index) => {
+                    return (
+                      <SelectionItem
+                        key={index}
+                        icon={containsPlace?.label?.props?.icon}
+                        name={containsPlace?.name}
+                        description={containsPlace?.description}
+                        itemWidth="100%"
+                        artsDataLink={containsPlace?.uri}
+                        artsDataDetails={true}
+                        calendarContentLanguage={calendarContentLanguage}
+                        bordered
+                        closable
+                        onClose={() => {
+                          setSelectedContainsPlaces(
+                            selectedContainsPlaces?.filter((selectedContainPlace, indexValue) => indexValue != index),
+                          );
+                        }}
+                      />
+                    );
+                  })}
+                </Form.Item>
+              </>
+              <></>
             </Card>
             <Card title={t('dashboard.places.createNew.addPlace.containedInPlace.containedInPlace')}>
               <>

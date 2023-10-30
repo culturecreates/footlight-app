@@ -15,7 +15,7 @@ import { userRolesWithTranslation } from '../../../constants/userRoles';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
 import DraggableTree from '../../../components/DraggableTree/DraggableTree';
 import { useAddTaxonomyMutation, useLazyGetTaxonomyQuery, useUpdateTaxonomyMutation } from '../../../services/taxonomy';
-import { standardFieldsForTaxonomy } from '../../../utils/standardFields';
+import { getStandardFieldArrayForClass, standardFieldsForTaxonomy } from '../../../utils/standardFields';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 
 const AddTaxonomy = () => {
@@ -27,13 +27,14 @@ const AddTaxonomy = () => {
   let [searchParams, setSearchParams] = useSearchParams();
   const taxonomyId = searchParams.get('id');
   const { t } = useTranslation();
-  const [currentCalendarData] = useOutletContext();
+  const [currentCalendarData, , , getCalendar] = useOutletContext();
   const timestampRef = useRef(Date.now()).current;
   const navigate = useNavigate();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const [loading, setLoading] = useState(true);
+  const [render, setRender] = useState(true);
   const [deleteDisplayFlag, setDeleteDisplayFlag] = useState(true);
   const [newConceptName, setNewConceptName] = useState({ en: '', fr: '' });
   const [conceptData, setConceptData] = useState([]);
@@ -50,7 +51,7 @@ const AddTaxonomy = () => {
       fr: '',
       en: '',
     },
-    userAccess: [false],
+    userAccess: [],
   });
   //   const [availableStandardFields, setAvailableStandardFields] = useState([]);
   const [addNewPopup, setAddNewPopup] = useState(false);
@@ -68,7 +69,7 @@ const AddTaxonomy = () => {
         const selectedKeys = taxonomyClassTranslations.filter((item) => item.key === location.state?.selectedClass);
         setFormValues({
           ...formValues,
-          classType: selectedKeys[0].key,
+          classType: selectedKeys[0]?.key,
         });
         const availableStandardFields = standardFieldsForTaxonomy(
           location.state?.selectedClass,
@@ -84,33 +85,42 @@ const AddTaxonomy = () => {
   }, [currentCalendarData]);
 
   useEffect(() => {
-    if (taxonomyId) {
+    if (taxonomyId && currentCalendarData) {
       setLoading(true);
       getTaxonomy({ id: taxonomyId, includeConcepts: true, calendarId })
         .unwrap()
         .then((res) => {
           setConceptData(res.concepts);
           setTaxonomyData(res);
+          const availableStandardFields = standardFieldsForTaxonomy(
+            res?.taxonomyClass,
+            currentCalendarData?.fieldTaxonomyMaps,
+          );
+          setStandardFields([
+            ...availableStandardFields,
+            getStandardFieldArrayForClass(res?.taxonomyClass).find((i) => i.key == res?.mappedToField),
+          ]);
           form.setFieldsValue({
             classType: res?.taxonomyClass,
             frenchname: res?.name?.fr,
             englishname: res?.name?.en,
             frenchdescription: res?.disambiguatingDescription?.fr,
             englishdescription: res?.disambiguatingDescription?.en,
-            userAccess: [true],
+            userAccess: res?.isAdminOnly ? [t(`dashboard.taxonomy.addNew.adminOnly`)] : [],
           });
+
           setFormValues({
             classType: res?.taxonomyClass,
             name: res?.name,
             description: res?.disambiguatingDescription,
             id: res?.id,
-            userAccess: [true],
+            userAccess: res?.isAdminOnly ? [t(`dashboard.taxonomy.addNew.adminOnly`)] : [],
             mapToField: res?.mappedToField,
           });
           setLoading(false);
         });
     }
-  }, [taxonomyId]);
+  }, [taxonomyId, currentCalendarData]);
 
   const openAddNewConceptModal = () => {
     setAddNewPopup(true);
@@ -149,15 +159,11 @@ const AddTaxonomy = () => {
             french: values?.frenchdescription,
             english: values?.englishdescription,
           },
-          name: {
-            en: values?.frenchname,
-            fr: values?.englishname,
-          },
         });
         const body = {
           name: {
-            en: values?.frenchname,
-            fr: values?.englishname,
+            en: values?.englishname,
+            fr: values?.frenchname,
           },
           taxonomyClass: formValues.classType,
           isDynamicField: location.state?.dynamic
@@ -165,7 +171,7 @@ const AddTaxonomy = () => {
             : taxonomyData?.isDynamicField,
           includeInFullTextSearch: true,
           mappedToField: formValues?.mapToField,
-          isAdminOnly: true,
+          isAdminOnly: formValues.userAccess.length > 0,
           disambiguatingDescription: {
             en: values?.frenchdescription,
             fr: values?.englishdescription,
@@ -176,28 +182,34 @@ const AddTaxonomy = () => {
         if (taxonomyId) {
           updateTaxonomy({ calendarId, body, taxonomyId })
             .unwrap()
-            .then(() => {
-              notification.success({
-                description: t('dashboard.taxonomy.addNew.messages.update'),
-                placement: 'top',
-                closeIcon: <></>,
-                maxCount: 1,
-                duration: 3,
-              });
-              navigate(-1);
+            .then((res) => {
+              if (res.statusCode == 202) {
+                getCalendar({ id: calendarId, sessionId: timestampRef });
+                notification.success({
+                  description: t('dashboard.taxonomy.addNew.messages.update'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+                navigate(-1);
+              }
             });
         } else {
           addTaxonomy({ calendarId, body })
             .unwrap()
-            .then(() => {
-              notification.success({
-                description: t('dashboard.taxonomy.addNew.messages.create'),
-                placement: 'top',
-                closeIcon: <></>,
-                maxCount: 1,
-                duration: 3,
-              });
-              navigate(-3);
+            .then((res) => {
+              if (res.statusCode == 202) {
+                getCalendar({ id: calendarId, sessionId: timestampRef });
+                notification.success({
+                  description: t('dashboard.taxonomy.addNew.messages.create'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+                navigate(-3);
+              }
             });
         }
       })
@@ -250,16 +262,24 @@ const AddTaxonomy = () => {
                               items: taxonomyClassTranslations,
                               selectable: true,
                               onSelect: ({ selectedKeys }) => {
+                                const classKey = taxonomyClassTranslations.find((item) => {
+                                  return item.key === selectedKeys[0];
+                                });
                                 setFormValues({
                                   ...formValues,
-                                  classType: selectedKeys[0],
+                                  classType: classKey?.key,
                                   mapToField: '',
                                 });
                                 const availableStandardFields = standardFieldsForTaxonomy(
                                   selectedKeys[0],
                                   currentCalendarData?.fieldTaxonomyMaps,
                                 );
-                                setStandardFields(availableStandardFields);
+                                setStandardFields([
+                                  ...availableStandardFields,
+                                  getStandardFieldArrayForClass(classKey?.key).find(
+                                    (i) => i.key == formValues?.mapToField,
+                                  ),
+                                ]);
                               },
                             }}
                             disabled={!!taxonomyId}
@@ -286,21 +306,37 @@ const AddTaxonomy = () => {
                               getPopupContainer={(trigger) => trigger.parentNode}
                               overlayStyle={{ minWidth: '100%' }}
                               menu={{
-                                items: standardFields.map((field) => ({ key: field, label: field })),
+                                items: standardFields.filter((s) => s != undefined),
                                 selectable: true,
                                 onSelect: ({ selectedKeys }) => {
+                                  const item = getStandardFieldArrayForClass(formValues?.classType).find(
+                                    (i) => i.key == selectedKeys[0],
+                                  );
+                                  const name = {
+                                    en: item?.en,
+                                    fr: item?.fr,
+                                  };
+                                  form.setFieldValue('frenchname', item?.fr);
+                                  form.setFieldValue('englishname', item?.en);
                                   setFormValues({
                                     ...formValues,
                                     mapToField: selectedKeys[0],
+                                    name,
                                   });
+                                  setRender(!render);
                                 },
                               }}
-                              disabled={formValues?.classType === '' || standardFields.length === 0}
+                              disabled={
+                                formValues?.classType === '' ||
+                                standardFields.filter((s) => s != undefined).length === 0
+                              }
                               trigger={['click']}>
                               <div>
                                 <Typography.Text>
                                   {formValues?.mapToField
-                                    ? formValues?.mapToField
+                                    ? getStandardFieldArrayForClass(formValues?.classType).find(
+                                        (i) => i.key == formValues?.mapToField,
+                                      )?.label
                                     : t('dashboard.taxonomy.selectType.classPlaceHolder')}
                                 </Typography.Text>
                                 <DownOutlined style={{ fontSize: '16px' }} />
@@ -321,8 +357,8 @@ const AddTaxonomy = () => {
                               <Form.Item
                                 name="frenchname"
                                 key={contentLanguage.FRENCH}
-                                initialValue={formValues?.name?.fr}
-                                dependencies={['english']}
+                                // initialValue={formValues?.name?.fr}
+                                dependencies={['englishname']}
                                 rules={[
                                   ({ getFieldValue }) => ({
                                     validator(_, value) {
@@ -339,13 +375,22 @@ const AddTaxonomy = () => {
                                   autoSize
                                   autoComplete="off"
                                   placeholder={t('dashboard.taxonomy.addNew.frNamePlaceHolder')}
+                                  key={render}
+                                  defaultValue={formValues?.name?.fr}
+                                  value={formValues.name.fr}
+                                  onChange={(e) => {
+                                    setFormValues({
+                                      ...formValues,
+                                      name: { ...formValues.name, fr: e.target.value },
+                                    });
+                                  }}
                                   style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                                   size="large"
                                 />
                               </Form.Item>
                               <Form.Item
                                 name="englishname"
-                                initialValue={formValues?.name?.en}
+                                // initialValue={formValues?.name?.en}
                                 key={contentLanguage.ENGLISH}
                                 dependencies={['frenchname']}
                                 rules={[
@@ -364,7 +409,15 @@ const AddTaxonomy = () => {
                                   autoSize
                                   defaultValue={formValues?.name?.en}
                                   autoComplete="off"
+                                  key={render}
+                                  value={formValues.name.en}
                                   placeholder={t('dashboard.taxonomy.addNew.enNamePlaceHolder')}
+                                  onChange={(e) => {
+                                    setFormValues({
+                                      ...formValues,
+                                      name: { ...formValues.name, en: e.target.value },
+                                    });
+                                  }}
                                   style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                                   size="large"
                                 />
@@ -463,17 +516,18 @@ const AddTaxonomy = () => {
                             name="userAccess"
                             required
                             className="user-access"
-                            rules={[
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  if (value.length > 0 || getFieldValue('userAccess')) {
-                                    return Promise.resolve();
-                                  } else return Promise.reject(new Error(t('dashboard.taxonomy.addNew.')));
-                                },
-                              }),
-                            ]}>
+                            // rules={[
+                            // ({ getFieldValue }) => ({
+                            // validator(_, value) {
+                            // if (value.length > 0 || getFieldValue('userAccess')) {
+                            // return Promise.resolve();
+                            // } else return Promise.reject(new Error(t('dashboard.taxonomy.addNew.')));
+                            // },
+                            // }),
+                            // ]}
+                          >
                             <SearchableCheckbox
-                              disabled={true}
+                              // disabled={true}
                               onFilterChange={(values) => {
                                 setFormValues({ ...formValues, userAccess: values });
                               }}
@@ -484,8 +538,8 @@ const AddTaxonomy = () => {
                                     <Checkbox
                                       key={userRolesWithTranslation[0].key}
                                       style={{ marginLeft: '8px' }}
-                                      value={userRolesWithTranslation[0].key}>
-                                      {userRolesWithTranslation[0].label}
+                                      value={t(`dashboard.taxonomy.addNew.adminOnly`)}>
+                                      {t(`dashboard.taxonomy.addNew.adminOnly`)}
                                     </Checkbox>
                                   ),
                                   filtervalue: userRolesWithTranslation[0].key,
@@ -493,7 +547,9 @@ const AddTaxonomy = () => {
                               ]}
                               overlayStyle={{ minWidth: '100%' }}
                               value={formValues.userAccess}>
-                              {userRolesWithTranslation[0].label}
+                              {formValues.userAccess?.length > 0
+                                ? t(`dashboard.taxonomy.addNew.adminOnly`)
+                                : t(`dashboard.taxonomy.addNew.userAccessPlaceHolder`)}
                               <DownOutlined style={{ fontSize: '16px' }} />
                             </SearchableCheckbox>
                             <div className="field-description" style={{ marginTop: 8 }}>
@@ -509,7 +565,7 @@ const AddTaxonomy = () => {
             </Col>
             <Col flex="736px" style={{ marginTop: '32px' }} className="concept-card">
               <Card bordered={false}>
-                <Row justify="space-between">
+                <Row justify="space-between" wrap={false}>
                   <Col flex="423px">
                     <Row gutter={[24, 24]}>
                       <Col className="heading-concepts">{t('dashboard.taxonomy.addNew.concepts.heading')}</Col>

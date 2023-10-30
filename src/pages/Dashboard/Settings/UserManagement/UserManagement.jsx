@@ -24,7 +24,7 @@ import { sortByOptionsUsers, sortOrder } from '../../../../constants/sortByOptio
 import Username from '../../../../components/Username';
 import { PathName } from '../../../../constants/pathName';
 import { roleHandler } from '../../../../utils/roleHandler';
-import { useInviteUserMutation } from '../../../../services/invite';
+import { useInviteUserMutation, useWithDrawInvitationMutation } from '../../../../services/invite';
 import AddEvent from '../../../../components/Button/AddEvent';
 import { copyText } from '../../../../utils/copyText';
 import ReadOnlyProtectedComponent from '../../../../layout/ReadOnlyProtectedComponent';
@@ -69,6 +69,7 @@ const UserManagement = () => {
   const [deleteUser] = useDeleteUserMutation();
   const [activateUser] = useActivateUserMutation();
   const [deActivateUser] = useDeactivateUserMutation();
+  const [withdrawInvitation] = useWithDrawInvitationMutation();
 
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
@@ -210,6 +211,13 @@ const UserManagement = () => {
       dropdownItems.push({ key: 'editUser', label: t('dashboard.settings.userManagement.tooltip.editUser') });
     }
 
+    if (adminCheckHandler() && userStatus[0]?.status === userActivityStatus[2].key) {
+      dropdownItems.push({
+        key: 'withDrawInvitation',
+        label: t('dashboard.settings.userManagement.tooltip.withDrawInvitation'),
+      });
+    }
+
     if (!item?.isSuperAdmin && !isUserInactiveInThisCalendar) {
       dropdownItems.push({
         key: 'copyInvitationLink',
@@ -228,10 +236,17 @@ const UserManagement = () => {
       !(userStatus[0]?.status === userActivityStatus[4].key || userStatus[0]?.status === userActivityStatus[2].key) &&
       !item?.isSuperAdmin
     ) {
-      dropdownItems.push({
-        key: 'activateOrDeactivate',
-        label: t('dashboard.settings.userManagement.tooltip.activateOrDeactivate'),
-      });
+      if (!(userStatus[0]?.status == userActivityStatus[0].key)) {
+        dropdownItems.push({
+          key: 'activateOrDeactivate',
+          label: t('dashboard.settings.userManagement.tooltip.activate'),
+        });
+      } else {
+        dropdownItems.push({
+          key: 'activateOrDeactivate',
+          label: t('dashboard.settings.userManagement.tooltip.deactivate'),
+        });
+      }
     }
 
     if (!(userStatus[0]?.status === userActivityStatus[0].key || userStatus[0]?.status === userActivityStatus[2].key)) {
@@ -246,6 +261,25 @@ const UserManagement = () => {
 
   const onSearchChangeHandler = (event) => {
     if (event.target.value === '') setUserSearchQuery('');
+  };
+
+  const cancelInvitationHandler = (userInvitationId) => {
+    withdrawInvitation({ id: userInvitationId[0]?.invitationId, calendarId })
+      .unwrap()
+      .then((res) => {
+        if (res?.statusCode == 202) {
+          const filtersDecoded = setFiletrsForApiCall();
+          getAllUsers({
+            page: pageNumber,
+            limit: 10,
+            filters: filtersDecoded,
+            query: userSearchQuery,
+            sessionId: timestampRef,
+            calendarId: calendarId,
+            includeCalenderFilter: true,
+          });
+        }
+      });
   };
 
   const createTitleHandler = (firstName, lastName, userName) => {
@@ -269,6 +303,12 @@ const UserManagement = () => {
     const userStatus = item?.roles.filter((i) => {
       if (i.calendarId === calendarId) {
         return i.role;
+      }
+    });
+
+    const userInvitationId = item?.roles.filter((i) => {
+      if (i.calendarId === calendarId) {
+        return i?.invitationId;
       }
     });
 
@@ -335,6 +375,16 @@ const UserManagement = () => {
         });
         break;
 
+      case 'withDrawInvitation':
+        Confirm({
+          title: t('dashboard.settings.userManagement.tooltip.modal.cancelInvitationTitle'),
+          onAction: () => cancelInvitationHandler(userInvitationId),
+          okText: t('dashboard.settings.addUser.delete'),
+          cancelText: t('dashboard.settings.addUser.cancel'),
+          content: t('dashboard.settings.userManagement.tooltip.modal.cancelInvitationMessage'),
+        });
+
+        break;
       default:
         break;
     }

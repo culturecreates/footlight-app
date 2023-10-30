@@ -1,52 +1,62 @@
+import { EVENT, PERSON, PLACE } from '../constants/standardFieldsTranslations';
 import { taxonomyClass } from '../constants/taxonomyClass';
 
 export const standardFieldsForTaxonomy = (value, takenFields) => {
   if (value === undefined) {
-    value = taxonomyClass.EVENT;
+    return [];
   }
   let returnArr = [];
   const filter = (arr, taxonomyClass) => {
     returnArr = arr;
-    arr.map((item) => {
-      takenFields.map((takenItem) => {
-        if (
-          item === takenItem?.mappedToField &&
-          taxonomyClass.toLowerCase() === takenItem?.taxonomyClass.toLowerCase() &&
-          takenItem?.mappedToField !== null
-        ) {
-          returnArr = returnArr.filter((e) => e !== item);
-        }
+    if (arr.length > 0) {
+      arr.map((item) => {
+        takenFields.map((takenItem) => {
+          if (takenItem?.mappedToField !== null) {
+            if (
+              item?.key.toLowerCase() === takenItem?.mappedToField.toLowerCase() &&
+              taxonomyClass.toLowerCase() === takenItem?.taxonomyClass.toLowerCase()
+            ) {
+              returnArr = returnArr.filter((e) => e?.key !== item.key);
+            }
+          }
+        });
       });
-    });
+    }
   };
 
-  if (value === taxonomyClass.EVENT) {
-    const arr = [
-      'EventAccessibility',
-      'Audience',
-      'EventType',
-      'OrganizerRole',
-      'PerformerRole',
-      'SupporterRole',
-      'inLanguage',
-    ];
-    filter(arr, taxonomyClass.EVENT);
+  if (value.toLowerCase() === taxonomyClass.EVENT.toLowerCase()) {
+    filter(EVENT, taxonomyClass.EVENT);
     return [...new Set(returnArr)];
-  } else if (value === taxonomyClass.PLACE) {
-    const arr = ['PlaceAccessibility', 'Region', 'Type'];
-    filter(arr, taxonomyClass.PLACE);
+  } else if (value.toLowerCase() === taxonomyClass.PLACE.toLowerCase()) {
+    filter(PLACE, taxonomyClass.PLACE);
     return [...new Set(returnArr)];
-  } else if (value === taxonomyClass.VIRTUAL_LOCATION) {
-    const arr = ['Type'];
-    filter(arr, taxonomyClass.VIRTUAL_LOCATION);
+  } else if (value.toLowerCase() === taxonomyClass.VIRTUAL_LOCATION.toLowerCase()) {
+    filter([], taxonomyClass.VIRTUAL_LOCATION);
     return [...new Set(returnArr)];
-  } else if (value === taxonomyClass.PERSON) {
-    const arr = ['Occupation'];
-    filter(arr, taxonomyClass.PERSON);
+  } else if (value.toLowerCase() === taxonomyClass.PERSON.toLowerCase()) {
+    filter(PERSON, taxonomyClass.PERSON);
     return [...new Set(returnArr)];
   } else {
     const arr = [];
     filter(arr, taxonomyClass.ORGANIZATION);
     return [...new Set(returnArr)];
   }
+};
+
+export const getStandardFieldArrayForClass = (value) => {
+  let arr = [];
+  switch (value.toUpperCase()) {
+    case taxonomyClass.PERSON:
+      arr = PERSON;
+      break;
+    case taxonomyClass.EVENT:
+      arr = EVENT;
+      break;
+    case taxonomyClass.PLACE:
+      arr = PLACE;
+      break;
+    default:
+      break;
+  }
+  return arr;
 };

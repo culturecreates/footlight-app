@@ -367,6 +367,7 @@
           "person": "Person",
           "organization": "Organization",
           "create": "Create",
+          "addFullDetails": "Add full details",
           "cancel": "Cancel",
           "quickCreateOrganization": {
             "title": "Create an organization",
@@ -399,6 +400,8 @@
       "publishOptions": {
         "publishEvent": "Publish event",
         "unpublishEvent": "Unpublish event",
+        "featureEvent": "Feature this event",
+        "unFeatureEvent": "Unfeature this event",
         "deleteEvent": "Delete event",
         "duplicateEvent": "Duplicate Event"
       },
@@ -604,6 +607,12 @@
             "addPlace": "Add a place",
             "placeholder": "Search a place"
           },
+          "containsPlace": {
+            "containsPlace": "Contains place",
+            "subheading": "Add places of interest that are contained in this place.",
+            "addPlace": "Add a place",
+            "placeholder": "Search a place"
+          },
           "venueAccessibility": {
             "venueAccessibility": "Venue accessibility",
             "subheading": "These accessibility items will be displayed in all the event located at this venue.",
@@ -756,13 +765,18 @@
           "editUser": "Edit user",
           "sendInvitation": "Send invitation",
           "copyInvitationLink": "Copy invitation link",
-          "activateOrDeactivate": "Activate/Deactivate",
+          "activate": "Activate",
+          "deactivate": "Deactivate",
+          "withDrawInvitation": "Cancel invitation",
           "deleteUser": "Delete user",
+          "cancelInvitation": "Confirm cancellation",
           "modal": {
             "deleteText": "Are you sure you want to permanently delete this user",
             "deactivateText": "Are you sure you want to deactivate this user",
             "activateText": "Are you sure you want to activate this user",
-            "copyText": "Invitation link copied."
+            "copyText": "Invitation link copied.",
+            "cancelInvitationTitle": "Confirm cancellation",
+            "cancelInvitationMessage": "Are you sure? This action will remove this user from your calendar."
           }
         }
       },
@@ -853,9 +867,28 @@
       }
     },
     "taxonomy": {
+      "standardFields": {
+        "place": {
+          "inLanguage": "Language of event",
+          "PlaceAccessibility": "Place accessibility",
+          "Region": "District",
+          "Type": "Place type"
+        },
+        "Event": {
+          "EventAccessibility": "Event accessibility",
+          "Audience": "Audience",
+          "EventType": "Event type",
+          "OrganizerRole": "Organizer Role",
+          "PerformerRole": "Performer Role",
+          "SupporterRole": "Contributor Role"
+        },
+        "Person": { "Occupation": "Occupation" }
+      },
       "listing": {
         "heading": "Taxonomies",
         "addNew": "Taxonomy",
+        "classType": "Class",
+        "search": "Search Taxonomies",
         "sort": {
           "sortBy": "Sort by",
           "name": "Name",
@@ -876,6 +909,7 @@
           "organization": "Organization",
           "virtualLocation": "Virtual location"
         },
+        "classValidation": "Select a class.",
         "classPlaceHolder": "Select class",
         "destinationHeading": "Select the destination for your taxonomy.",
         "inputType": "Input type",
@@ -910,9 +944,9 @@
           "class": "Class is required",
           "conceptName": "Concept name is required"
         },
-        "messages":{
-          "create":"Success! Your Taxonomy has been created.",
-          "update":"Success! Your Taxonomy has been updated."	
+        "messages": {
+          "create": "Success! Your Taxonomy has been created.",
+          "update": "Success! Your Taxonomy has been updated."
         },
         "concepts": {
           "heading": "Concept list",
@@ -922,10 +956,12 @@
           "english": "English",
           "add": "Add concept",
           "edit": "Edit concept",
-          "conceptName": "Concept name",
-          "placeHolderFr": "Enter French Concept name",
-          "placeHolderEn": "Enter English Concept name"
-
+          "editBtn": "Save",
+          "conceptName": "Name",
+          "placeHolderFr": "Enter French name",
+          "placeHolderEn": "Enter English name",
+          "deleteConceptMessage": "Are you sure you want to permanently delete this concept? This action will also delete it everywhere it was used, including in events.",
+          "deleteConceptHeading": "Delete concept"
         }
       }
     }

@@ -365,6 +365,7 @@
           "person": "Personne",
           "organization": "Organisation",
           "create": "Créer",
+          "addFullDetails": "Add full details",
           "cancel": "Annuler",
           "quickCreateOrganization": {
             "title": "Créer une organisation",
@@ -399,7 +400,9 @@
         "publishEvent": "Publier l'événement",
         "unpublishEvent": "Passer en brouillon",
         "deleteEvent": "Supprimer l'événement",
-        "duplicateEvent": "Dupliquer l’événement"
+        "duplicateEvent": "Dupliquer l’événement",
+        "featureEvent": "Mettre en vedette",
+        "unFeatureEvent": "Retirer la mise en vedette"
       },
       "publishState": {
         "published": "Publié",
@@ -600,6 +603,12 @@
             "addPlace": "Ajouter un lieu",
             "placeholder": "Rechercher un lieu"
           },
+          "containsPlace": {
+            "containsPlace": "Contient un lieu",
+            "subheading": "Ajoutez des lieux d'intérêt contenus dans ce lieu.",
+            "addPlace": "Ajouter un lieu",
+            "placeholder": "Rechercher un lieu"
+          },
           "venueAccessibility": {
             "venueAccessibility": "Accessibilité du site",
             "placeholder": "Sélectionner un élément",
@@ -751,13 +760,18 @@
           "editUser": "Modifier l'utilisateur",
           "sendInvitation": "Envoyer l'invitation",
           "copyInvitationLink": "Copier le lien de l'invitation",
-          "activateOrDeactivate": "Activé/Désactivé",
+          "withDrawInvitation": "Annuler l'invitation",
+          "activate": "Activé",
+          "deactivate": "Désactivé",
           "deleteUser": "Supprimer l'utilisateur",
+          "cancelInvitation": "Confirm cancellation",
           "modal": {
             "deleteText": "Are you sure you want to permanently delete this user",
             "deactivateText": "Are you sure you want to deactivate this user",
             "activateText": "Êtes-vous sûr de vouloir activer cet utilisateur ?",
-            "copyText": "Lien d'invitation copié.."
+            "copyText": "Lien d'invitation copié..",
+            "cancelInvitationTitle": "Confirmer l'annulation",
+            "cancelInvitationMessage": "Êtes-vous sûr? Cette action retirera cet utilisateur de votre calendrier."
           }
         }
       },
@@ -847,9 +861,28 @@
       }
     },
     "taxonomy": {
+      "standardFields": {
+        "place": {
+          "inLanguage": "Langue de l'événement",
+          "PlaceAccessibility": "Accessibilité du lieu",
+          "Region": "Quartier",
+          "Type": "Type de lieux"
+        },
+        "Event": {
+          "EventAccessibility": "Accessibilité de l'événement",
+          "Audience": "Public",
+          "EventType": "Type d'événement",
+          "OrganizerRole": "Rôle de l'organisation",
+          "PerformerRole": "Rôle d'interprète",
+          "SupporterRole": "Rôle de contributeur"
+        },
+        "Person": { "Occupation": "Occupation" }
+      },
       "listing": {
         "heading": "Taxonomies",
-        "addNew": "Personne",
+        "addNew": "Taxonomie",
+        "classType": "Classe",
+        "search": "Rechercher des taxonomies",
         "sort": {
           "sortBy": "Trier par",
           "name": "Nom",
@@ -870,6 +903,7 @@
           "organization": "Organization",
           "virtualLocation": "Virtual location"
         },
+        "classValidation": "Sélectionnez une classe",
         "classPlaceHolder": "Sélectionner une classe",
         "destinationHeading": "Sélectionnez la destination de votre taxonomie.",
         "inputType": "Type de données",
@@ -888,8 +922,8 @@
         "nameCheckbox": "Use the taxonomy name to rename the field.",
         "frNamePlaceHolder": "Entrez le nom de la taxonomie en français",
         "enNamePlaceHolder": "entrez le nom de la taxonomie en anglais",
-        "mapToField": "Map to existing field",
-        "mapToFieldDescription": "Select an input field for the taxonomy.",
+        "mapToField": "Mapper à un champ existant",
+        "mapToFieldDescription": "Sélectionner un champ de saisie pour la taxonomie.",
         "nameDescription": "Ce nom est utilisé pour étiqueter le champ de saisie associé.",
         "description": "Description identifiante",
         "frDescriptionPlaceHolder": "Entrez la description identifiante en français",
@@ -897,7 +931,7 @@
         "descriptionExplation": "Ajouter pour différencier la taxonomie dans les résultats de recherche.",
         "userAccess": "Restreindre l'accès aux utilisateurs",
         "userAccessPlaceHolder": "Sélectionnez",
-        "userAccessDescription": "Select who has permission to see and use this field.",
+        "userAccessDescription": "Sélectionner les utilisateurs qui ont le droit de visualiser et d'utiliser ce champ.",
         "validations": {
           "name": "Le nom est requis.",
           "class": "Le Classe est requis",
@@ -911,14 +945,18 @@
         "concepts": {
           "heading": "Liste de concepts",
           "description": "Gérer une liste hiérarchique de concepts pour la taxonomie, dans toutes les langues du calendrier. Les concepts peuvent être sélectionnés à partir du champ de saisie correspondant. Faites glisser les concepts pour les réorganiser et/ou les imbriquer. Lorsque vous déplacez un concept dans une langue, il est déplacé dans toutes les langues.",
-          "item": "Item",
+          "item": "Article",
           "french": "Français",
           "english": "Anglais",
-          "add": "Ajouteréditer un concept.",
-          "edit": "Editer un concept.",
-          "conceptName": "Concept name",
-          "placeHolderFr": "Enter French Concept name",
-          "placeHolderEn": "Enter English Concept name"
+          "add": "Ajoute un concept",
+          "edit": "Éditer un concept",
+          "save": "Sauvegarder",
+          "editBtn": "Sauvegarder",
+          "conceptName": "Nom",
+          "placeHolderFr": "Entrez un nom en français",
+          "placeHolderEn": "Entrez un nom en anglais",
+          "deleteConceptHeading": "Supprimer concept",
+          "deleteConceptMessage": "Êtes-vous sûr de vouloir supprimer définitivement ce concept ? Cette action le supprimera également partout où il a été utilisé, y compris dans les événements."
         }
       }
     }

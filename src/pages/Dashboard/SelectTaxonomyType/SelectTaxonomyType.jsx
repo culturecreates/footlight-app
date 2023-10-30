@@ -30,10 +30,11 @@ const SelectTaxonomyType = () => {
   };
 
   const navigationHandler = (dynamic) => {
-    selectedClass.key != '' &&
+    formInstance.validateFields(['classType']).then(() => {
       navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomy}`, {
         state: { selectedClass: selectedClass.key, dynamic: dynamic },
       });
+    });
   };
 
   const setTaxonomyClass = ({ value, fieldType }) => {
@@ -76,7 +77,7 @@ const SelectTaxonomyType = () => {
                     rules={[
                       {
                         required: true,
-                        message: 'Please select a value for Class Type',
+                        message: t('dashboard.taxonomy.selectType.classValidation'),
                       },
                     ]}>
                     <Dropdown

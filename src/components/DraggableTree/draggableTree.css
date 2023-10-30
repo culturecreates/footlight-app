@@ -27,6 +27,7 @@
   height: 140px;
   overflow-y: scroll;
   color: var(--content-neutral-primary, #222732);
+  height: 196px;
 }
 
 .draggable-tree .ant-tree .ant-tree-treenode-draggable .ant-tree-draggable-icon {
@@ -84,4 +85,16 @@
 .draggable-tree .ant-tree .ant-tree-node-content-wrapper:hover {
   background-color: #eff2ff;
   transition: 0.3s;
+}
+
+.custom-common-modal-container-wrapper .add-new-concept-wrapper .ant-row {
+  flex-direction: column;
+}
+
+.custom-common-modal-container-wrapper .add-new-concept-wrapper .ant-form-item-label {
+  text-align: left;
+}
+
+.custom-common-modal-container .add-new-concept-wrapper .ant-form-item-label > label::after {
+  display: none;
 }

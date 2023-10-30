@@ -15,7 +15,9 @@ function Event(props) {
             {title && (
               <Row>
                 <Col>
-                  <div className={`add-event-date-wrap ${required && 'title-required'}`}>{title}</div>
+                  <div className={`add-event-date-wrap ${required && 'title-required'}`} data-cy="section-title">
+                    {title}
+                  </div>
                 </Col>
               </Row>
             )}
