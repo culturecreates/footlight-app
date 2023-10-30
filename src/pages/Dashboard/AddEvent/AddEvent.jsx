@@ -2786,123 +2786,126 @@ function AddEvent() {
               )}
             </Form.Item>
           </CardEvent>
-          <CardEvent title={t('dashboard.events.addEditEvent.eventAccessibility.title')}>
-            <>
-              <p className="add-event-date-heading">
-                {t('dashboard.events.addEditEvent.eventAccessibility.subHeading')}
-              </p>
-              <Form.Item
-                name="eventAccessibility"
-                className="eventAccessibility"
-                label={taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false)}
-                initialValue={eventData?.accessibility?.map((type) => {
-                  return type?.entityId;
-                })}
-                style={{
-                  display: !taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false) && 'none',
-                }}
-                help={
-                  <p className="add-event-date-heading" style={{ fontSize: '12px' }}>
-                    {t('dashboard.events.addEditEvent.eventAccessibility.footer')}
-                  </p>
-                }>
-                <TreeSelectOption
-                  allowClear
-                  treeDefaultExpandAll
-                  style={{ width: '423px' }}
-                  notFoundContent={<NoContent />}
-                  clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                  treeData={treeTaxonomyOptions(
-                    allTaxonomyData,
-                    user,
-                    'EventAccessibility',
-                    false,
-                    calendarContentLanguage,
-                  )}
-                  placeholder={t('dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibility')}
-                  tagRender={(props) => {
-                    const { label, closable, onClose } = props;
-                    return (
-                      <Tags
-                        closable={closable}
-                        onClose={onClose}
-                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                        {label}
-                      </Tags>
-                    );
+          {taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false) && (
+            <CardEvent title={t('dashboard.events.addEditEvent.eventAccessibility.title')}>
+              <>
+                <p className="add-event-date-heading">
+                  {t('dashboard.events.addEditEvent.eventAccessibility.subHeading')}
+                </p>
+                <Form.Item
+                  name="eventAccessibility"
+                  className="eventAccessibility"
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false)}
+                  initialValue={eventData?.accessibility?.map((type) => {
+                    return type?.entityId;
+                  })}
+                  style={{
+                    display:
+                      !taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false) && 'none',
                   }}
-                />
+                  help={
+                    <p className="add-event-date-heading" style={{ fontSize: '12px' }}>
+                      {t('dashboard.events.addEditEvent.eventAccessibility.footer')}
+                    </p>
+                  }>
+                  <TreeSelectOption
+                    allowClear
+                    treeDefaultExpandAll
+                    style={{ width: '423px' }}
+                    notFoundContent={<NoContent />}
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    treeData={treeTaxonomyOptions(
+                      allTaxonomyData,
+                      user,
+                      'EventAccessibility',
+                      false,
+                      calendarContentLanguage,
+                    )}
+                    placeholder={t('dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibility')}
+                    tagRender={(props) => {
+                      const { label, closable, onClose } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.eventAccessibility.note')}
+                  name={eventAccessibilityFieldNames.noteWrap}
+                  className={eventAccessibilityFieldNames.noteWrap}
+                  style={{
+                    display: !addedFields?.includes(eventAccessibilityFieldNames.noteWrap) && 'none',
+                  }}>
+                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                    <BilingualInput fieldData={eventData?.accessibilityNote}>
+                      <Form.Item
+                        name="frenchAccessibilityNote"
+                        initialValue={eventData?.accessibilityNote?.fr}
+                        key={contentLanguage.FRENCH}>
+                        <TextArea
+                          autoComplete="off"
+                          placeholder={t(
+                            'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityFrenchNote',
+                          )}
+                          style={{
+                            borderRadius: '4px',
+                            border: '4px solid #E8E8E8',
+                            width: '423px',
+                            resize: 'vertical',
+                          }}
+                          size="large"
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        name="englishAccessibilityNote"
+                        initialValue={eventData?.accessibilityNote?.en}
+                        key={contentLanguage.ENGLISH}>
+                        <TextArea
+                          autoComplete="off"
+                          placeholder={t(
+                            'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityEnglishNote',
+                          )}
+                          style={{
+                            borderRadius: '4px',
+                            border: '4px solid #E8E8E8',
+                            width: '423px',
+                            resize: 'vertical',
+                          }}
+                          size="large"
+                        />
+                      </Form.Item>
+                    </BilingualInput>
+                  </ContentLanguageInput>
+                </Form.Item>
+              </>
+              <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
+                {addedFields?.includes(eventAccessibilityFieldNames.noteWrap) ? (
+                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                ) : (
+                  eventAccessibilityOptions.map((type) => {
+                    if (!addedFields?.includes(type.fieldNames))
+                      return (
+                        <ChangeType
+                          key={type.type}
+                          primaryIcon={<PlusOutlined />}
+                          disabled={type.disabled}
+                          label={type.label}
+                          promptText={type.tooltip}
+                          secondaryIcon={<InfoCircleOutlined />}
+                          onClick={() => addFieldsHandler(type?.fieldNames)}
+                        />
+                      );
+                  })
+                )}
               </Form.Item>
-              <Form.Item
-                label={t('dashboard.events.addEditEvent.eventAccessibility.note')}
-                name={eventAccessibilityFieldNames.noteWrap}
-                className={eventAccessibilityFieldNames.noteWrap}
-                style={{
-                  display: !addedFields?.includes(eventAccessibilityFieldNames.noteWrap) && 'none',
-                }}>
-                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                  <BilingualInput fieldData={eventData?.accessibilityNote}>
-                    <Form.Item
-                      name="frenchAccessibilityNote"
-                      initialValue={eventData?.accessibilityNote?.fr}
-                      key={contentLanguage.FRENCH}>
-                      <TextArea
-                        autoComplete="off"
-                        placeholder={t(
-                          'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityFrenchNote',
-                        )}
-                        style={{
-                          borderRadius: '4px',
-                          border: '4px solid #E8E8E8',
-                          width: '423px',
-                          resize: 'vertical',
-                        }}
-                        size="large"
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      name="englishAccessibilityNote"
-                      initialValue={eventData?.accessibilityNote?.en}
-                      key={contentLanguage.ENGLISH}>
-                      <TextArea
-                        autoComplete="off"
-                        placeholder={t(
-                          'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityEnglishNote',
-                        )}
-                        style={{
-                          borderRadius: '4px',
-                          border: '4px solid #E8E8E8',
-                          width: '423px',
-                          resize: 'vertical',
-                        }}
-                        size="large"
-                      />
-                    </Form.Item>
-                  </BilingualInput>
-                </ContentLanguageInput>
-              </Form.Item>
-            </>
-            <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
-              {addedFields?.includes(eventAccessibilityFieldNames.noteWrap) ? (
-                <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
-              ) : (
-                eventAccessibilityOptions.map((type) => {
-                  if (!addedFields?.includes(type.fieldNames))
-                    return (
-                      <ChangeType
-                        key={type.type}
-                        primaryIcon={<PlusOutlined />}
-                        disabled={type.disabled}
-                        label={type.label}
-                        promptText={type.tooltip}
-                        secondaryIcon={<InfoCircleOutlined />}
-                        onClick={() => addFieldsHandler(type?.fieldNames)}
-                      />
-                    );
-                })
-              )}
-            </Form.Item>
-          </CardEvent>
+            </CardEvent>
+          )}
           <CardEvent
             title={t('dashboard.events.addEditEvent.tickets.title')}
             required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.TICKET_INFO)}
