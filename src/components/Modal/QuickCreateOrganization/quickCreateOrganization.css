@@ -26,3 +26,7 @@
   font-size: 16px;
   color: #646d7b;
 }
+
+.custom-common-modal-container .ant-modal-footer .quick-create-organization-modal-footer .outlined-label {
+  color: rgb(27, 61, 230);
+}
