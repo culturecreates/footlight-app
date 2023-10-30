@@ -85,7 +85,7 @@ const AddTaxonomy = () => {
   }, [currentCalendarData]);
 
   useEffect(() => {
-    if (taxonomyId) {
+    if (taxonomyId && currentCalendarData) {
       setLoading(true);
       getTaxonomy({ id: taxonomyId, includeConcepts: true, calendarId })
         .unwrap()
@@ -106,7 +106,7 @@ const AddTaxonomy = () => {
             englishname: res?.name?.en,
             frenchdescription: res?.disambiguatingDescription?.fr,
             englishdescription: res?.disambiguatingDescription?.en,
-            userAccess: [],
+            userAccess: res?.isAdminOnly ? [t(`dashboard.taxonomy.addNew.adminOnly`)] : [],
           });
 
           setFormValues({
@@ -114,13 +114,13 @@ const AddTaxonomy = () => {
             name: res?.name,
             description: res?.disambiguatingDescription,
             id: res?.id,
-            userAccess: [],
+            userAccess: res?.isAdminOnly ? [t(`dashboard.taxonomy.addNew.adminOnly`)] : [],
             mapToField: res?.mappedToField,
           });
           setLoading(false);
         });
     }
-  }, [taxonomyId]);
+  }, [taxonomyId, currentCalendarData]);
 
   const openAddNewConceptModal = () => {
     setAddNewPopup(true);
@@ -171,7 +171,7 @@ const AddTaxonomy = () => {
             : taxonomyData?.isDynamicField,
           includeInFullTextSearch: true,
           mappedToField: formValues?.mapToField,
-          isAdminOnly: true,
+          isAdminOnly: formValues.userAccess.length > 0,
           disambiguatingDescription: {
             en: values?.frenchdescription,
             fr: values?.englishdescription,
@@ -516,15 +516,16 @@ const AddTaxonomy = () => {
                             name="userAccess"
                             required
                             className="user-access"
-                            rules={[
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  if (value.length > 0 || getFieldValue('userAccess')) {
-                                    return Promise.resolve();
-                                  } else return Promise.reject(new Error(t('dashboard.taxonomy.addNew.')));
-                                },
-                              }),
-                            ]}>
+                            // rules={[
+                            // ({ getFieldValue }) => ({
+                            // validator(_, value) {
+                            // if (value.length > 0 || getFieldValue('userAccess')) {
+                            // return Promise.resolve();
+                            // } else return Promise.reject(new Error(t('dashboard.taxonomy.addNew.')));
+                            // },
+                            // }),
+                            // ]}
+                          >
                             <SearchableCheckbox
                               // disabled={true}
                               onFilterChange={(values) => {
@@ -538,7 +539,7 @@ const AddTaxonomy = () => {
                                       key={userRolesWithTranslation[0].key}
                                       style={{ marginLeft: '8px' }}
                                       value={t(`dashboard.taxonomy.addNew.adminOnly`)}>
-                                      {userRolesWithTranslation[0].label}
+                                      {t(`dashboard.taxonomy.addNew.adminOnly`)}
                                     </Checkbox>
                                   ),
                                   filtervalue: userRolesWithTranslation[0].key,
