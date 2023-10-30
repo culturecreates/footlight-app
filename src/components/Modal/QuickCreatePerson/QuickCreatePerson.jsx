@@ -273,6 +273,9 @@ function QuickCreatePerson(props) {
                 label={taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false)}
                 hidden={taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false) ? false : true}>
                 <TreeSelectOption
+                  style={{
+                    display: !taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false) && 'none',
+                  }}
                   placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.occupationPlaceholder')}
                   allowClear
                   treeDefaultExpandAll
