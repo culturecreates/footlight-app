@@ -117,6 +117,7 @@ function CreateNewPlace() {
   };
   const placeId = searchParams.get('id');
   const artsDataId = location?.state?.data?.id ?? null;
+  const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let requiredFields = currentCalendarData?.formSchema?.filter((form) => form?.formName === 'Place');
   requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
@@ -245,14 +246,18 @@ function CreateNewPlace() {
                   .unwrap()
                   .then(() => {
                     resolve(placeId);
-                    notification.success({
-                      description: t('dashboard.places.createNew.addPlace.notification.editSuccess'),
-                      placement: 'top',
-                      closeIcon: <></>,
-                      maxCount: 1,
-                      duration: 3,
-                    });
-                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
+                    if (isRoutingToEventPage) {
+                      navigate(-1);
+                    } else {
+                      notification.success({
+                        description: t('dashboard.places.createNew.addPlace.notification.editSuccess'),
+                        placement: 'top',
+                        closeIcon: <></>,
+                        maxCount: 1,
+                        duration: 3,
+                      });
+                      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
+                    }
                   })
                   .catch((error) => {
                     reject();
@@ -280,14 +285,18 @@ function CreateNewPlace() {
                   .unwrap()
                   .then(() => {
                     resolve(placeId);
-                    notification.success({
-                      description: t('dashboard.places.createNew.addPlace.notification.editSuccess'),
-                      placement: 'top',
-                      closeIcon: <></>,
-                      maxCount: 1,
-                      duration: 3,
-                    });
-                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
+                    if (isRoutingToEventPage) {
+                      navigate(-1);
+                    } else {
+                      notification.success({
+                        description: t('dashboard.places.createNew.addPlace.notification.editSuccess'),
+                        placement: 'top',
+                        closeIcon: <></>,
+                        maxCount: 1,
+                        duration: 3,
+                      });
+                      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
+                    }
                   })
                   .catch((error) => {
                     reject();

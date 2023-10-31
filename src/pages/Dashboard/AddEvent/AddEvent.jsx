@@ -1843,6 +1843,7 @@ function AddEvent() {
                   interfaceLanguage={user?.interfaceLanguage?.toLowerCase()}
                   calendarContentLanguage={calendarContentLanguage}
                   setLocationPlace={setLocationPlace}
+                  locationPlace={locationPlace}
                   eventForm={form}
                   saveAsDraftHandler={saveAsDraftHandler}
                 />

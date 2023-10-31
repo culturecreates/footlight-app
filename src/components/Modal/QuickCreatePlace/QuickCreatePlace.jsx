@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './quickCreatePlace.css';
 import CustomModal from '../Common/CustomModal';
 import TextButton from '../../Button/Text/Text';
@@ -24,6 +24,9 @@ import { useAddPostalAddressMutation } from '../../../services/postalAddress';
 import { useAddPlaceMutation, useLazyGetPlaceQuery } from '../../../services/places';
 import { placesOptions } from '../../Select/selectOption.settings';
 import { placeTaxonomyMappedFieldTypes } from '../../../constants/placeMappedFieldTypes';
+import Outlined from '../../Button/Outlined';
+import { useNavigate } from 'react-router-dom';
+import { PathName } from '../../../constants/pathName';
 
 const { TextArea } = Input;
 
@@ -37,14 +40,30 @@ function QuickCreatePlace(props) {
     setKeyword,
     interfaceLanguage,
     setLocationPlace,
+    locationPlace,
     eventForm,
+    saveAsDraftHandler,
   } = props;
 
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const timestampRef = useRef(Date.now()).current;
-
+  const navigate = useNavigate();
   const { user } = useSelector(getUserDetails);
+
+  const [event, setEvent] = useState([]);
+
+  useEffect(() => {
+    if (event.length > 0) {
+      saveAsDraftHandler(event[0], true).then((res) => {
+        if (res) {
+          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${event[1]?.id}`, {
+            state: { data: { isRoutingToEventPage: true } },
+          });
+        }
+      });
+    }
+  }, [locationPlace]);
 
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
@@ -116,106 +135,119 @@ function QuickCreatePlace(props) {
       })
       .catch((error) => console.log(error));
   };
-  const createPlaceHandler = () => {
-    form
-      .validateFields(['french', 'english', 'address'])
-      .then(() => {
-        var values = form.getFieldsValue(true);
-        let languageKey;
-        if (calendarContentLanguage == contentLanguage.ENGLISH) languageKey = 'en';
-        else if (calendarContentLanguage == contentLanguage.FRENCH) languageKey = 'fr';
-        let postalObj = {
-          addressCountry: { [languageKey]: values.addressCountry },
-          addressLocality: { [languageKey]: values.addressLocality },
-          addressRegion: { [languageKey]: values.addressRegion },
-          postalCode: values.postalCode,
-          streetAddress: { [languageKey]: values.streetAddress },
-        };
+  const createPlaceHandler = (toggle = true) => {
+    return new Promise((resolve, reject) => {
+      form
+        .validateFields(['french', 'english', 'address'])
+        .then(() => {
+          var values = form.getFieldsValue(true);
+          let languageKey;
+          if (calendarContentLanguage == contentLanguage.ENGLISH) languageKey = 'en';
+          else if (calendarContentLanguage == contentLanguage.FRENCH) languageKey = 'fr';
+          let postalObj = {
+            addressCountry: { [languageKey]: values.addressCountry },
+            addressLocality: { [languageKey]: values.addressLocality },
+            addressRegion: { [languageKey]: values.addressRegion },
+            postalCode: values.postalCode,
+            streetAddress: { [languageKey]: values.streetAddress },
+          };
 
-        if (calendarContentLanguage == contentLanguage.BILINGUAL) {
-          postalObj.addressCountry = {
-            fr: values.addressCountry,
-            en: values.addressCountryEn,
-          };
-          postalObj.addressLocality = {
-            fr: values.addressLocality,
-            en: values.addressLocalityEn,
-          };
-          postalObj.addressRegion = {
-            fr: values.addressRegion,
-            en: values.addressRegionEn,
-          };
-          postalObj.streetAddress = {
-            fr: values.streetAddress,
-            en: values.streetAddressEn,
-          };
-        }
-        addPostalAddress({ data: postalObj, calendarId })
-          .unwrap()
-          .then((response) => {
-            if (response && response?.statusCode == 202) {
-              let name = {},
-                placeObj = {},
-                additionalType = undefined;
-              if (values?.english)
-                name = {
-                  en: values?.english,
-                };
-
-              if (values?.french)
-                name = {
-                  ...name,
-                  fr: values?.french,
-                };
-              if (values?.placeType) {
-                additionalType = values?.placeType?.map((placeTypeId) => {
-                  return {
-                    entityId: placeTypeId,
+          if (calendarContentLanguage == contentLanguage.BILINGUAL) {
+            postalObj.addressCountry = {
+              fr: values.addressCountry,
+              en: values.addressCountryEn,
+            };
+            postalObj.addressLocality = {
+              fr: values.addressLocality,
+              en: values.addressLocalityEn,
+            };
+            postalObj.addressRegion = {
+              fr: values.addressRegion,
+              en: values.addressRegionEn,
+            };
+            postalObj.streetAddress = {
+              fr: values.streetAddress,
+              en: values.streetAddressEn,
+            };
+          }
+          addPostalAddress({ data: postalObj, calendarId })
+            .unwrap()
+            .then((response) => {
+              if (response && response?.statusCode == 202) {
+                let name = {},
+                  placeObj = {},
+                  additionalType = undefined;
+                if (values?.english)
+                  name = {
+                    en: values?.english,
                   };
-                });
+
+                if (values?.french)
+                  name = {
+                    ...name,
+                    fr: values?.french,
+                  };
+                if (values?.placeType) {
+                  additionalType = values?.placeType?.map((placeTypeId) => {
+                    return {
+                      entityId: placeTypeId,
+                    };
+                  });
+                }
+                placeObj = {
+                  name,
+                  additionalType,
+                  geo: {
+                    latitude: values?.latitude,
+                    longitude: values?.longitude,
+                  },
+                  postalAddressId: {
+                    entityId: response?.id,
+                  },
+                  regions: values?.region
+                    ? values.region.map((item) => {
+                        const obj = {
+                          entityId: item,
+                        };
+                        return obj;
+                      })
+                    : undefined,
+                };
+                addPlace({ data: placeObj, calendarId })
+                  .unwrap()
+                  .then((response) => {
+                    if (response && response?.statusCode == 202) {
+                      if (toggle) {
+                        notification.success({
+                          description: t('dashboard.events.addEditEvent.location.quickCreatePlace.success'),
+                          placement: 'top',
+                          closeIcon: <></>,
+                          maxCount: 1,
+                          duration: 3,
+                        });
+                      }
+                      setKeyword('');
+                      getSelectedPlace(response?.id);
+                      setOpen(false);
+                      resolve(response);
+                    }
+                  })
+                  .catch((error) => console.log(error));
               }
-              placeObj = {
-                name,
-                additionalType,
-                geo: {
-                  latitude: values?.latitude,
-                  longitude: values?.longitude,
-                },
-                postalAddressId: {
-                  entityId: response?.id,
-                },
-                regions: values?.region
-                  ? values.region.map((item) => {
-                      const obj = {
-                        entityId: item,
-                      };
-                      return obj;
-                    })
-                  : undefined,
-              };
-              addPlace({ data: placeObj, calendarId })
-                .unwrap()
-                .then((response) => {
-                  if (response && response?.statusCode == 202) {
-                    notification.success({
-                      description: t('dashboard.events.addEditEvent.location.quickCreatePlace.success'),
-                      placement: 'top',
-                      closeIcon: <></>,
-                      maxCount: 1,
-                      duration: 3,
-                    });
-                    setKeyword('');
-                    getSelectedPlace(response?.id);
-                    setOpen(false);
-                  }
-                })
-                .catch((error) => console.log(error));
-            }
-          })
-          .catch((error) => console.log(error));
-      })
-      .catch((error) => console.log(error));
+            })
+            .catch((error) => console.log(error));
+        })
+        .catch((error) => reject(error));
+    });
   };
+
+  const goToAddFullDetailsPageHandler = async (e) => {
+    const response = await createPlaceHandler(false);
+    if (response) {
+      setEvent([e, response]);
+    }
+  };
+
   return (
     !taxonomyLoading && (
       <CustomModal
@@ -228,21 +260,37 @@ function QuickCreatePlace(props) {
           </span>
         }
         onCancel={() => setOpen(false)}
-        footer={[
-          <TextButton
-            key="cancel"
-            size="large"
-            label={t('dashboard.events.addEditEvent.location.quickCreatePlace.cancel')}
-            onClick={() => setOpen(false)}
-            data-cy="button-cancel-quick-create-place"
-          />,
-          <PrimaryButton
-            key="add-dates"
-            label={t('dashboard.events.addEditEvent.location.quickCreatePlace.create')}
-            onClick={createPlaceHandler}
-            data-cy="button-save-quick-create-place"
-          />,
-        ]}>
+        footer={
+          <div
+            style={{ display: 'flex', justifyContent: 'space-between' }}
+            className="quick-create-organization-modal-footer">
+            <div className="add-full-details-btn-wrapper" key="add-full-details">
+              <Outlined
+                size="large"
+                label={t('dashboard.events.addEditEvent.quickCreate.addFullDetails')}
+                data-cy="button-quick-create-organization-add-full-details"
+                onClick={(e) => {
+                  goToAddFullDetailsPageHandler(e);
+                }}
+              />
+            </div>
+            <div>
+              <TextButton
+                key="cancel"
+                size="large"
+                label={t('dashboard.events.addEditEvent.quickCreate.cancel')}
+                onClick={() => setOpen(false)}
+                data-cy="button-cancel-quick-create-place"
+              />
+              <PrimaryButton
+                key="add-dates"
+                label={t('dashboard.events.addEditEvent.quickCreate.create')}
+                onClick={createPlaceHandler}
+                data-cy="button-save-quick-create-place"
+              />
+            </div>
+          </div>
+        }>
         <Row gutter={[0, 10]} className="quick-create-place-modal-wrapper">
           <Col span={24}>
             <Form form={form} layout="vertical" name="organizerForm" preserve={false}>
