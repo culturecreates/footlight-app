@@ -975,6 +975,7 @@ function AddEvent() {
           initialPlace[0] = {
             ...initialPlace[0],
             ['openingHours']: initialPlace[0]?.openingHours?.uri,
+            ['type']: entitiesClass?.place,
           };
           getAllTaxonomy({
             calendarId,
