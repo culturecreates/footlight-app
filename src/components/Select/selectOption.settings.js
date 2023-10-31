@@ -83,7 +83,7 @@ export const placesOptions = (data, user, calendarContentLanguage, source = sour
       source: source,
       uri: place?.uri,
       type: place?.type,
-      creatorId: place?.creator?.userId,
+      creatorId: place?.creator?.userId ?? place?.createdByUserId,
     };
   });
   return options;

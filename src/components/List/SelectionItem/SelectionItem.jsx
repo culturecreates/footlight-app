@@ -57,7 +57,7 @@ function SelectionItem(props) {
                 key="list-loadmore-close"
                 onClick={onEdit}
                 style={{ color: '#1b3de6', fontSize: '12px', fontWeight: 600, padding: '0px' }}>
-                Edit
+                {t('dashboard.organization.readOnly.edit')}
               </Button>
             </ReadOnlyProtectedComponent>
           ),

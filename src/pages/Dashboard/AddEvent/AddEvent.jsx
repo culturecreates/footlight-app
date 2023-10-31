@@ -852,6 +852,23 @@ function AddEvent() {
   const organizerPerformerSupporterPlaceNavigationHandler = (id, type, event) => {
     saveAsDraftHandler(event, true)
       .then(() => {
+        if ((!eventId || eventId === '') && newEventId === null)
+          notification.success({
+            description: t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+            placement: 'top',
+            closeIcon: <></>,
+            maxCount: 1,
+            duration: 3,
+          });
+        else
+          notification.success({
+            description: t('dashboard.events.addEditEvent.notification.updateEvent'),
+            placement: 'top',
+            closeIcon: <></>,
+            maxCount: 1,
+            duration: 3,
+          });
+
         if (type?.toUpperCase() == taxonomyClass.ORGANIZATION)
           navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${id}`);
         else if (type?.toUpperCase() == taxonomyClass.PERSON)
@@ -1007,6 +1024,7 @@ function AddEvent() {
               logo: organizer?.entity?.logo,
               image: organizer?.entity?.image,
               contactPoint: organizer?.entity?.contactPoint,
+              creator: organizer?.entity?.creator,
             };
           });
           setSelectedOrganizers(
@@ -1022,6 +1040,7 @@ function AddEvent() {
               type: performer?.type,
               logo: performer?.entity?.logo,
               image: performer?.entity?.image,
+              creator: performer?.entity?.creator,
             };
           });
           setSelectedPerformers(
@@ -1038,6 +1057,7 @@ function AddEvent() {
               type: supporter?.type,
               logo: supporter?.entity?.logo,
               image: supporter?.entity?.image,
+              creator: supporter?.entity?.creator,
             };
           });
           setSelectedSupporters(
