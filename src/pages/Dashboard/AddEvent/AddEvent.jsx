@@ -143,6 +143,7 @@ function AddEvent() {
   const [selectedOrganizers, setSelectedOrganizers] = useState([]);
   const [selectedPerformers, setSelectedPerformers] = useState([]);
   const [selectedSupporters, setSelectedSupporters] = useState([]);
+  const [loaderModalOpen, setLoaderModalOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState({
     locationPlace: false,
     organizer: false,
@@ -1846,6 +1847,8 @@ function AddEvent() {
                   locationPlace={locationPlace}
                   eventForm={form}
                   saveAsDraftHandler={saveAsDraftHandler}
+                  setLoaderModalOpen={setLoaderModalOpen}
+                  loaderModalOpen={loaderModalOpen}
                 />
               </Form.Item>
               <Form.Item
@@ -2300,6 +2303,8 @@ function AddEvent() {
                   selectedOrganizerPerformerSupporterType={selectedOrganizerPerformerSupporterType}
                   organizerPerformerSupporterTypes={organizerPerformerSupporterTypes}
                   saveAsDraftHandler={saveAsDraftHandler}
+                  setLoaderModalOpen={setLoaderModalOpen}
+                  loaderModalOpen={loaderModalOpen}
                 />
                 <QuickCreatePerson
                   open={quickCreatePersonModal}
@@ -2318,6 +2323,8 @@ function AddEvent() {
                   selectedOrganizerPerformerSupporterType={selectedOrganizerPerformerSupporterType}
                   organizerPerformerSupporterTypes={organizerPerformerSupporterTypes}
                   saveAsDraftHandler={saveAsDraftHandler}
+                  setLoaderModalOpen={setLoaderModalOpen}
+                  loaderModalOpen={loaderModalOpen}
                 />
               </Form.Item>
               <Form.Item

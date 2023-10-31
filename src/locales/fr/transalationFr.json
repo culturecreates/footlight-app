@@ -368,7 +368,10 @@
           "addFullDetails": "Add full details",
           "cancel": "Annuler",
           "loaderModal": {
-            "text": "Sauvegarde et redirection vers le formulaire complet"
+            "text": "Sauvegarde et redirection vers le formulaire complet",
+            "titleOrganization": "Créer une organisation",
+            "titlePerson": "Créer une personne",
+            "titlePlace": "Créer une place"
           },
           "quickCreateOrganization": {
             "title": "Créer une organisation",

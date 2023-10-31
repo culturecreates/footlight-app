@@ -25,6 +25,7 @@ import { sourceOptions } from '../../../constants/sourceOptions';
 import Outlined from '../../Button/Outlined';
 import { useNavigate } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
+import QuickCreateSaving from '../QuickCreateSaving/QuickCreateSaving';
 
 const { TextArea } = Input;
 
@@ -46,6 +47,8 @@ function QuickCreatePerson(props) {
     selectedOrganizerPerformerSupporterType,
     organizerPerformerSupporterTypes,
     saveAsDraftHandler,
+    setLoaderModalOpen,
+    loaderModalOpen,
   } = props;
   const [form] = Form.useForm();
   const { t } = useTranslation();
@@ -149,6 +152,8 @@ function QuickCreatePerson(props) {
             url,
             occupation,
           };
+          setOpen(false);
+          setLoaderModalOpen(true);
           addPerson({ data: personObj, calendarId })
             .unwrap()
             .then((response) => {
@@ -163,7 +168,6 @@ function QuickCreatePerson(props) {
               }
               setKeyword('');
               getSelectedPerson(response?.id);
-              setOpen(false);
               resolve(response);
             })
             .catch((error) => {
@@ -183,186 +187,208 @@ function QuickCreatePerson(props) {
 
   return (
     !taxonomyLoading && (
-      <CustomModal
-        open={open}
-        destroyOnClose
-        centered
-        title={
-          <span className="quick-create-person-modal-title" data-cy="span-quick-create-person-heading">
-            {t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.title')}
-          </span>
-        }
-        onCancel={() => setOpen(false)}
-        footer={
-          <div
-            style={{ display: 'flex', justifyContent: 'space-between' }}
-            className="quick-create-organization-modal-footer">
-            <div className="add-full-details-btn-wrapper" key="add-full-details">
-              <Outlined
-                size="large"
-                label={t('dashboard.events.addEditEvent.quickCreate.addFullDetails')}
-                data-cy="button-quick-create-organization-add-full-details"
-                onClick={(e) => {
-                  goToAddFullDetailsPageHandler(e);
-                }}
-              />
-            </div>
-            <div>
-              <TextButton
-                key="cancel"
-                size="large"
-                label={t('dashboard.events.addEditEvent.quickCreate.cancel')}
-                onClick={() => setOpen(false)}
-                data-cy="button-quick-create-person-cancel"
-              />
-              <PrimaryButton
-                key="add-dates"
-                label={t('dashboard.events.addEditEvent.quickCreate.create')}
-                onClick={createPersonHandler}
-                data-cy="button-quick-create-person-save"
-              />
-            </div>
-          </div>
-        }>
-        <Row gutter={[0, 10]} className="quick-create-person-modal-wrapper">
-          <Col span={24}>
-            <Form form={form} layout="vertical" name="organizerForm" preserve={false}>
-              <Row>
-                <Col>
-                  <p className="quick-create-person-modal-sub-heading" data-cy="para-quick-create-person-subheading">
-                    {t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.subHeading')}
-                  </p>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <span className="quick-create-person-modal-label" data-cy="span-quick-create-person-name-label">
-                    {t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.name')}
-                  </span>
-                </Col>
-              </Row>
-              <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                <BilingualInput defaultTab={interfaceLanguage}>
+      <>
+        {!loaderModalOpen ? (
+          <CustomModal
+            open={open}
+            centered
+            title={
+              <span className="quick-create-person-modal-title" data-cy="span-quick-create-person-heading">
+                {t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.title')}
+              </span>
+            }
+            onCancel={() => setOpen(false)}
+            footer={
+              <div
+                style={{ display: 'flex', justifyContent: 'space-between' }}
+                className="quick-create-organization-modal-footer">
+                <div className="add-full-details-btn-wrapper" key="add-full-details">
+                  <Outlined
+                    size="large"
+                    label={t('dashboard.events.addEditEvent.quickCreate.addFullDetails')}
+                    data-cy="button-quick-create-organization-add-full-details"
+                    onClick={(e) => {
+                      goToAddFullDetailsPageHandler(e);
+                    }}
+                  />
+                </div>
+                <div>
+                  <TextButton
+                    key="cancel"
+                    size="large"
+                    label={t('dashboard.events.addEditEvent.quickCreate.cancel')}
+                    onClick={() => setOpen(false)}
+                    data-cy="button-quick-create-person-cancel"
+                  />
+                  <PrimaryButton
+                    key="add-dates"
+                    label={t('dashboard.events.addEditEvent.quickCreate.create')}
+                    onClick={createPersonHandler}
+                    data-cy="button-quick-create-person-save"
+                  />
+                </div>
+              </div>
+            }>
+            <Row gutter={[0, 10]} className="quick-create-person-modal-wrapper">
+              <Col span={24}>
+                <Form form={form} layout="vertical" name="organizerForm" preserve={false}>
+                  <Row>
+                    <Col>
+                      <p
+                        className="quick-create-person-modal-sub-heading"
+                        data-cy="para-quick-create-person-subheading">
+                        {t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.subHeading')}
+                      </p>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <span className="quick-create-person-modal-label" data-cy="span-quick-create-person-name-label">
+                        {t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.name')}
+                      </span>
+                    </Col>
+                  </Row>
+                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                    <BilingualInput defaultTab={interfaceLanguage}>
+                      <Form.Item
+                        name="french"
+                        key={contentLanguage.FRENCH}
+                        initialValue={
+                          calendarContentLanguage === contentLanguage.BILINGUAL
+                            ? interfaceLanguage === 'fr'
+                              ? keyword
+                              : undefined
+                            : calendarContentLanguage === contentLanguage.FRENCH
+                            ? keyword
+                            : undefined
+                        }
+                        dependencies={['english']}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (value || getFieldValue('english')) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(
+                                  new Error(
+                                    t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.validations.name'),
+                                  ),
+                                );
+                            },
+                          }),
+                        ]}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.namePlaceholder')}
+                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
+                          size="large"
+                          data-cy="input-quick-create-person-name-french"
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        name="english"
+                        dependencies={['french']}
+                        initialValue={
+                          calendarContentLanguage === contentLanguage.BILINGUAL
+                            ? interfaceLanguage === 'en'
+                              ? keyword
+                              : undefined
+                            : calendarContentLanguage === contentLanguage.ENGLISH
+                            ? keyword
+                            : undefined
+                        }
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (value || getFieldValue('french')) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(
+                                  new Error(
+                                    t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.validations.name'),
+                                  ),
+                                );
+                            },
+                          }),
+                        ]}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.namePlaceholder')}
+                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
+                          size="large"
+                          data-cy="input-quick-create-person-name-english"
+                        />
+                      </Form.Item>
+                    </BilingualInput>
+                  </ContentLanguageInput>
                   <Form.Item
-                    name="french"
-                    key={contentLanguage.FRENCH}
-                    initialValue={
-                      calendarContentLanguage === contentLanguage.BILINGUAL
-                        ? interfaceLanguage === 'fr'
-                          ? keyword
-                          : undefined
-                        : calendarContentLanguage === contentLanguage.FRENCH
-                        ? keyword
-                        : undefined
-                    }
-                    dependencies={['english']}
-                    rules={[
-                      ({ getFieldValue }) => ({
-                        validator(_, value) {
-                          if (value || getFieldValue('english')) {
-                            return Promise.resolve();
-                          } else
-                            return Promise.reject(
-                              new Error(
-                                t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.validations.name'),
-                              ),
-                            );
-                        },
-                      }),
-                    ]}>
-                    <TextArea
-                      autoSize
-                      autoComplete="off"
-                      placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.namePlaceholder')}
-                      style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
-                      size="large"
-                      data-cy="input-quick-create-person-name-french"
+                    name="occupation"
+                    label={taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false)}
+                    hidden={taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false) ? false : true}>
+                    <TreeSelectOption
+                      style={{
+                        display: !taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false) && 'none',
+                      }}
+                      placeholder={t(
+                        'dashboard.events.addEditEvent.quickCreate.quickCreatePerson.occupationPlaceholder',
+                      )}
+                      allowClear
+                      treeDefaultExpandAll
+                      notFoundContent={<NoContent />}
+                      clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                      treeData={treeTaxonomyOptions(
+                        allTaxonomyData,
+                        user,
+                        'Occupation',
+                        false,
+                        calendarContentLanguage,
+                      )}
+                      tagRender={(props) => {
+                        const { label, closable, onClose } = props;
+                        return (
+                          <Tags
+                            closable={closable}
+                            onClose={onClose}
+                            closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                            {label}
+                          </Tags>
+                        );
+                      }}
                     />
                   </Form.Item>
                   <Form.Item
-                    name="english"
-                    dependencies={['french']}
-                    initialValue={
-                      calendarContentLanguage === contentLanguage.BILINGUAL
-                        ? interfaceLanguage === 'en'
-                          ? keyword
-                          : undefined
-                        : calendarContentLanguage === contentLanguage.ENGLISH
-                        ? keyword
-                        : undefined
-                    }
+                    name="contactWebsiteUrl"
+                    label={t('dashboard.events.addEditEvent.otherInformation.contact.website')}
                     rules={[
-                      ({ getFieldValue }) => ({
-                        validator(_, value) {
-                          if (value || getFieldValue('french')) {
-                            return Promise.resolve();
-                          } else
-                            return Promise.reject(
-                              new Error(
-                                t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.validations.name'),
-                              ),
-                            );
-                        },
-                      }),
+                      {
+                        type: 'url',
+                        message: t('dashboard.events.addEditEvent.validations.url'),
+                      },
                     ]}>
-                    <TextArea
-                      autoSize
+                    <StyledInput
+                      addonBefore="https://"
                       autoComplete="off"
-                      placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.namePlaceholder')}
-                      style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
-                      size="large"
-                      data-cy="input-quick-create-person-name-english"
+                      placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.websitePlaceholder')}
+                      data-cy="input-quick-create-person-website"
                     />
                   </Form.Item>
-                </BilingualInput>
-              </ContentLanguageInput>
-              <Form.Item
-                name="occupation"
-                label={taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false)}
-                hidden={taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false) ? false : true}>
-                <TreeSelectOption
-                  style={{
-                    display: !taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false) && 'none',
-                  }}
-                  placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.occupationPlaceholder')}
-                  allowClear
-                  treeDefaultExpandAll
-                  notFoundContent={<NoContent />}
-                  clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                  treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Occupation', false, calendarContentLanguage)}
-                  tagRender={(props) => {
-                    const { label, closable, onClose } = props;
-                    return (
-                      <Tags
-                        closable={closable}
-                        onClose={onClose}
-                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                        {label}
-                      </Tags>
-                    );
-                  }}
-                />
-              </Form.Item>
-              <Form.Item
-                name="contactWebsiteUrl"
-                label={t('dashboard.events.addEditEvent.otherInformation.contact.website')}
-                rules={[
-                  {
-                    type: 'url',
-                    message: t('dashboard.events.addEditEvent.validations.url'),
-                  },
-                ]}>
-                <StyledInput
-                  addonBefore="https://"
-                  autoComplete="off"
-                  placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.websitePlaceholder')}
-                  data-cy="input-quick-create-person-website"
-                />
-              </Form.Item>
-            </Form>
-          </Col>
-        </Row>
-      </CustomModal>
+                </Form>
+              </Col>
+            </Row>
+          </CustomModal>
+        ) : (
+          <>
+            <QuickCreateSaving
+              title={t('dashboard.events.addEditEvent.quickCreate.loaderModal.titlePerson')}
+              text={t('dashboard.events.addEditEvent.quickCreate.loaderModal.text')}
+              open={!loaderModalOpen}
+              onCancel={() => setLoaderModalOpen(false)}
+            />
+          </>
+        )}
+      </>
     )
   );
 }

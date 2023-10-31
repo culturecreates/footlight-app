@@ -20,6 +20,7 @@ import { sourceOptions } from '../../../constants/sourceOptions';
 import Outlined from '../../Button/Outlined';
 import { useNavigate } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
+import QuickCreateSaving from '../QuickCreateSaving/QuickCreateSaving';
 
 const { TextArea } = Input;
 
@@ -41,6 +42,8 @@ function QuickCreateOrganization(props) {
     selectedOrganizerPerformerSupporterType,
     organizerPerformerSupporterTypes,
     saveAsDraftHandler,
+    setLoaderModalOpen,
+    loaderModalOpen,
   } = props;
   const [form] = Form.useForm();
   const { t } = useTranslation();
@@ -131,6 +134,8 @@ function QuickCreateOrganization(props) {
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
             const formdata = new FormData();
             formdata.append('file', values?.dragger[0].originFileObj);
+            setLoaderModalOpen(true);
+            setOpen(false);
             formdata &&
               addImage({ data: formdata, calendarId })
                 .unwrap()
@@ -149,11 +154,9 @@ function QuickCreateOrganization(props) {
                         });
                         setKeyword('');
                         getSelectedOrganizer(response?.id);
-                        setOpen(false);
                       } else {
                         setKeyword('');
                         getSelectedOrganizer(response?.id);
-                        setOpen(false);
                       }
                       resolve(response);
                     })
@@ -165,6 +168,8 @@ function QuickCreateOrganization(props) {
                   console.log(error);
                 });
           } else {
+            setLoaderModalOpen(true);
+            setOpen(false);
             addOrganization({ data: organizationObj, calendarId })
               .unwrap()
               .then((response) => {
@@ -206,197 +211,219 @@ function QuickCreateOrganization(props) {
   };
 
   return (
-    <CustomModal
-      open={open}
-      destroyOnClose
-      centered
-      title={
-        <span className="quick-create-organization-modal-title" data-cy="span-quick-create-organization-heading">
-          {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.title')}
-        </span>
-      }
-      onCancel={() => setOpen(false)}
-      footer={
-        <div
-          style={{ display: 'flex', justifyContent: 'space-between' }}
-          className="quick-create-organization-modal-footer">
-          <div className="add-full-details-btn-wrapper" key="add-full-details">
-            <Outlined
-              size="large"
-              label={t('dashboard.events.addEditEvent.quickCreate.addFullDetails')}
-              data-cy="button-quick-create-organization-add-full-details"
-              onClick={(e) => {
-                goToAddFullDetailsPageHandler(e);
-              }}
-            />
-          </div>
-          <div>
-            <TextButton
-              key="cancel"
-              size="large"
-              label={t('dashboard.events.addEditEvent.quickCreate.cancel')}
-              onClick={() => setOpen(false)}
-              data-cy="button-quick-create-organization-cancel"
-            />
-            <PrimaryButton
-              key="add-dates"
-              label={t('dashboard.events.addEditEvent.quickCreate.create')}
-              onClick={createOrganizationHandler}
-              data-cy="button-quick-create-organization-save"
-            />
-          </div>
-        </div>
-      }>
-      <Row gutter={[0, 10]} className="quick-create-organization-modal-wrapper">
-        <Col span={24}>
-          <Form form={form} layout="vertical" name="organizerForm" preserve={false}>
-            <Row>
-              <Col>
-                <p
-                  className="quick-create-organization-modal-sub-heading"
-                  data-cy="para-quick-create-organization-subheading">
-                  {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.subHeading')}
-                </p>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <span
-                  className="quick-create-organization-modal-label"
-                  data-cy="span-quick-create-organization-name-label">
-                  {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.name')}
-                </span>
-              </Col>
-            </Row>
-            <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-              <BilingualInput defaultTab={interfaceLanguage}>
+    <>
+      {!loaderModalOpen ? (
+        <CustomModal
+          open={open}
+          centered
+          title={
+            <span className="quick-create-organization-modal-title" data-cy="span-quick-create-organization-heading">
+              {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.title')}
+            </span>
+          }
+          onCancel={() => setOpen(false)}
+          footer={
+            <div
+              style={{ display: 'flex', justifyContent: 'space-between' }}
+              className="quick-create-organization-modal-footer">
+              <div className="add-full-details-btn-wrapper" key="add-full-details">
+                <Outlined
+                  size="large"
+                  label={t('dashboard.events.addEditEvent.quickCreate.addFullDetails')}
+                  data-cy="button-quick-create-organization-add-full-details"
+                  onClick={(e) => {
+                    goToAddFullDetailsPageHandler(e);
+                  }}
+                />
+              </div>
+              <div>
+                <TextButton
+                  key="cancel"
+                  size="large"
+                  label={t('dashboard.events.addEditEvent.quickCreate.cancel')}
+                  onClick={() => setOpen(false)}
+                  data-cy="button-quick-create-organization-cancel"
+                />
+                <PrimaryButton
+                  key="add-dates"
+                  label={t('dashboard.events.addEditEvent.quickCreate.create')}
+                  onClick={createOrganizationHandler}
+                  data-cy="button-quick-create-organization-save"
+                />
+              </div>
+            </div>
+          }>
+          <Row gutter={[0, 10]} className="quick-create-organization-modal-wrapper">
+            <Col span={24}>
+              <Form form={form} layout="vertical" name="organizerForm" preserve={false}>
+                <Row>
+                  <Col>
+                    <p
+                      className="quick-create-organization-modal-sub-heading"
+                      data-cy="para-quick-create-organization-subheading">
+                      {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.subHeading')}
+                    </p>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <span
+                      className="quick-create-organization-modal-label"
+                      data-cy="span-quick-create-organization-name-label">
+                      {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.name')}
+                    </span>
+                  </Col>
+                </Row>
+                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <BilingualInput defaultTab={interfaceLanguage}>
+                    <Form.Item
+                      name="french"
+                      key={contentLanguage.FRENCH}
+                      initialValue={
+                        calendarContentLanguage === contentLanguage.BILINGUAL
+                          ? interfaceLanguage === 'fr'
+                            ? keyword
+                            : undefined
+                          : calendarContentLanguage === contentLanguage.FRENCH
+                          ? keyword
+                          : undefined
+                      }
+                      dependencies={['english']}
+                      rules={[
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value || getFieldValue('english')) {
+                              return Promise.resolve();
+                            } else
+                              return Promise.reject(
+                                new Error(
+                                  t(
+                                    'dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.validations.name',
+                                  ),
+                                ),
+                              );
+                          },
+                        }),
+                      ]}>
+                      <TextArea
+                        autoSize
+                        autoComplete="off"
+                        placeholder={t(
+                          'dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.namePlaceholder',
+                        )}
+                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
+                        size="large"
+                        data-cy="input-quick-create-organization-name-french"
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name="english"
+                      dependencies={['french']}
+                      initialValue={
+                        calendarContentLanguage === contentLanguage.BILINGUAL
+                          ? interfaceLanguage === 'en'
+                            ? keyword
+                            : undefined
+                          : calendarContentLanguage === contentLanguage.ENGLISH
+                          ? keyword
+                          : undefined
+                      }
+                      rules={[
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value || getFieldValue('french')) {
+                              return Promise.resolve();
+                            } else
+                              return Promise.reject(
+                                new Error(
+                                  t(
+                                    'dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.validations.name',
+                                  ),
+                                ),
+                              );
+                          },
+                        }),
+                      ]}>
+                      <TextArea
+                        autoSize
+                        autoComplete="off"
+                        placeholder={t(
+                          'dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.namePlaceholder',
+                        )}
+                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
+                        size="large"
+                        data-cy="input-quick-create-organization-name-english"
+                      />
+                    </Form.Item>
+                  </BilingualInput>
+                </ContentLanguageInput>
                 <Form.Item
-                  name="french"
-                  key={contentLanguage.FRENCH}
-                  initialValue={
-                    calendarContentLanguage === contentLanguage.BILINGUAL
-                      ? interfaceLanguage === 'fr'
-                        ? keyword
-                        : undefined
-                      : calendarContentLanguage === contentLanguage.FRENCH
-                      ? keyword
-                      : undefined
-                  }
-                  dependencies={['english']}
+                  name="contactWebsiteUrl"
+                  label={t('dashboard.events.addEditEvent.otherInformation.contact.website')}
+                  rules={[
+                    {
+                      type: 'url',
+                      message: t('dashboard.events.addEditEvent.validations.url'),
+                    },
+                  ]}>
+                  <StyledInput
+                    addonBefore="https://"
+                    autoComplete="off"
+                    placeholder={t(
+                      'dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.websitePlaceholder',
+                    )}
+                    data-cy="input-quick-create-organization-website"
+                  />
+                </Form.Item>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.logo')}
+                  name="draggerWrap"
+                  //   {...(isAddImageError && {
+                  //     help: t('dashboard.events.addEditEvent.validations.errorImage'),
+                  //     validateStatus: 'error',
+                  //   })}
                   rules={[
                     ({ getFieldValue }) => ({
-                      validator(_, value) {
-                        if (value || getFieldValue('english')) {
+                      validator() {
+                        if (
+                          (getFieldValue('dragger') != undefined && getFieldValue('dragger')?.length > 0) ||
+                          !getFieldValue('dragger') ||
+                          getFieldValue('dragger')?.length > 0
+                        ) {
                           return Promise.resolve();
                         } else
                           return Promise.reject(
-                            new Error(
-                              t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.validations.name'),
-                            ),
+                            new Error(t('dashboard.events.addEditEvent.validations.otherInformation.emptyImage')),
                           );
                       },
                     }),
                   ]}>
-                  <TextArea
-                    autoSize
-                    autoComplete="off"
-                    placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.namePlaceholder')}
-                    style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
-                    size="large"
-                    data-cy="input-quick-create-organization-name-french"
-                  />
+                  <Row>
+                    <Col>
+                      <p
+                        className="quick-create-organization-modal-sub-heading"
+                        data-cy="para-quick-create-organization-logo-subheading">
+                        {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.logoSubHeading')}
+                      </p>
+                    </Col>
+                  </Row>
+                  <ImageUpload imageReadOnly={false} preview={false} />
                 </Form.Item>
-                <Form.Item
-                  name="english"
-                  dependencies={['french']}
-                  initialValue={
-                    calendarContentLanguage === contentLanguage.BILINGUAL
-                      ? interfaceLanguage === 'en'
-                        ? keyword
-                        : undefined
-                      : calendarContentLanguage === contentLanguage.ENGLISH
-                      ? keyword
-                      : undefined
-                  }
-                  rules={[
-                    ({ getFieldValue }) => ({
-                      validator(_, value) {
-                        if (value || getFieldValue('french')) {
-                          return Promise.resolve();
-                        } else
-                          return Promise.reject(
-                            new Error(
-                              t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.validations.name'),
-                            ),
-                          );
-                      },
-                    }),
-                  ]}>
-                  <TextArea
-                    autoSize
-                    autoComplete="off"
-                    placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.namePlaceholder')}
-                    style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
-                    size="large"
-                    data-cy="input-quick-create-organization-name-english"
-                  />
-                </Form.Item>
-              </BilingualInput>
-            </ContentLanguageInput>
-            <Form.Item
-              name="contactWebsiteUrl"
-              label={t('dashboard.events.addEditEvent.otherInformation.contact.website')}
-              rules={[
-                {
-                  type: 'url',
-                  message: t('dashboard.events.addEditEvent.validations.url'),
-                },
-              ]}>
-              <StyledInput
-                addonBefore="https://"
-                autoComplete="off"
-                placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.websitePlaceholder')}
-                data-cy="input-quick-create-organization-website"
-              />
-            </Form.Item>
-            <Form.Item
-              label={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.logo')}
-              name="draggerWrap"
-              //   {...(isAddImageError && {
-              //     help: t('dashboard.events.addEditEvent.validations.errorImage'),
-              //     validateStatus: 'error',
-              //   })}
-              rules={[
-                ({ getFieldValue }) => ({
-                  validator() {
-                    if (
-                      (getFieldValue('dragger') != undefined && getFieldValue('dragger')?.length > 0) ||
-                      !getFieldValue('dragger') ||
-                      getFieldValue('dragger')?.length > 0
-                    ) {
-                      return Promise.resolve();
-                    } else
-                      return Promise.reject(
-                        new Error(t('dashboard.events.addEditEvent.validations.otherInformation.emptyImage')),
-                      );
-                  },
-                }),
-              ]}>
-              <Row>
-                <Col>
-                  <p
-                    className="quick-create-organization-modal-sub-heading"
-                    data-cy="para-quick-create-organization-logo-subheading">
-                    {t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.logoSubHeading')}
-                  </p>
-                </Col>
-              </Row>
-              <ImageUpload imageReadOnly={false} preview={false} />
-            </Form.Item>
-          </Form>
-        </Col>
-      </Row>
-    </CustomModal>
+              </Form>
+            </Col>
+          </Row>
+        </CustomModal>
+      ) : (
+        <>
+          <QuickCreateSaving
+            title={t('dashboard.events.addEditEvent.quickCreate.loaderModal.titleOrganization')}
+            text={t('dashboard.events.addEditEvent.quickCreate.loaderModal.text')}
+            open={!loaderModalOpen}
+            onCancel={() => setLoaderModalOpen(false)}
+          />
+        </>
+      )}
+    </>
   );
 }
 

@@ -370,7 +370,10 @@
           "addFullDetails": "Add full details",
           "cancel": "Cancel",
           "loaderModal": {
-            "text": "Sauvegarde et redirection vers le formulaire complet"
+            "text": "Save and redirect to complete form",
+            "titleOrganization": "Create new Organization",
+            "titlePerson": "Create new Person",
+            "titlePlace": "Create new Place"
           },
           "quickCreateOrganization": {
             "title": "Create an organization",

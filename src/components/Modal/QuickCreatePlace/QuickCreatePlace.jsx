@@ -27,6 +27,7 @@ import { placeTaxonomyMappedFieldTypes } from '../../../constants/placeMappedFie
 import Outlined from '../../Button/Outlined';
 import { useNavigate } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
+import QuickCreateSaving from '../QuickCreateSaving/QuickCreateSaving';
 
 const { TextArea } = Input;
 
@@ -43,6 +44,8 @@ function QuickCreatePlace(props) {
     locationPlace,
     eventForm,
     saveAsDraftHandler,
+    setLoaderModalOpen,
+    loaderModalOpen,
   } = props;
 
   const [form] = Form.useForm();
@@ -52,7 +55,6 @@ function QuickCreatePlace(props) {
   const { user } = useSelector(getUserDetails);
 
   const [event, setEvent] = useState([]);
-
   useEffect(() => {
     if (event.length > 0) {
       saveAsDraftHandler(event[0], true).then((res) => {
@@ -170,6 +172,8 @@ function QuickCreatePlace(props) {
               en: values.streetAddressEn,
             };
           }
+          setOpen(false);
+          setLoaderModalOpen(true);
           addPostalAddress({ data: postalObj, calendarId })
             .unwrap()
             .then((response) => {
@@ -228,7 +232,6 @@ function QuickCreatePlace(props) {
                       }
                       setKeyword('');
                       getSelectedPlace(response?.id);
-                      setOpen(false);
                       resolve(response);
                     }
                   })
@@ -250,248 +253,270 @@ function QuickCreatePlace(props) {
 
   return (
     !taxonomyLoading && (
-      <CustomModal
-        open={open}
-        destroyOnClose
-        centered
-        title={
-          <span className="quick-create-place-modal-title" data-cy="span-quick-create-modal-heading">
-            {t('dashboard.events.addEditEvent.location.quickCreatePlace.title')}
-          </span>
-        }
-        onCancel={() => setOpen(false)}
-        footer={
-          <div
-            style={{ display: 'flex', justifyContent: 'space-between' }}
-            className="quick-create-organization-modal-footer">
-            <div className="add-full-details-btn-wrapper" key="add-full-details">
-              <Outlined
-                size="large"
-                label={t('dashboard.events.addEditEvent.quickCreate.addFullDetails')}
-                data-cy="button-quick-create-organization-add-full-details"
-                onClick={(e) => {
-                  goToAddFullDetailsPageHandler(e);
-                }}
-              />
-            </div>
-            <div>
-              <TextButton
-                key="cancel"
-                size="large"
-                label={t('dashboard.events.addEditEvent.quickCreate.cancel')}
-                onClick={() => setOpen(false)}
-                data-cy="button-cancel-quick-create-place"
-              />
-              <PrimaryButton
-                key="add-dates"
-                label={t('dashboard.events.addEditEvent.quickCreate.create')}
-                onClick={createPlaceHandler}
-                data-cy="button-save-quick-create-place"
-              />
-            </div>
-          </div>
-        }>
-        <Row gutter={[0, 10]} className="quick-create-place-modal-wrapper">
-          <Col span={24}>
-            <Form form={form} layout="vertical" name="organizerForm" preserve={false}>
-              <Row>
-                <Col>
-                  <p className="quick-create-place-modal-sub-heading" data-cy="para-quick-create-modal-subheading">
-                    {t('dashboard.events.addEditEvent.location.quickCreatePlace.subHeading')}
-                  </p>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <span className="quick-create-place-modal-label" data-cy="para-quick-create-place-name-label">
-                    {t('dashboard.events.addEditEvent.location.quickCreatePlace.name')}
-                  </span>
-                </Col>
-              </Row>
-              <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                <BilingualInput defaultTab={interfaceLanguage}>
-                  <Form.Item
-                    name="french"
-                    key={contentLanguage.FRENCH}
-                    initialValue={
-                      calendarContentLanguage === contentLanguage.BILINGUAL
-                        ? interfaceLanguage === 'fr'
-                          ? keyword
-                          : undefined
-                        : calendarContentLanguage === contentLanguage.FRENCH
-                        ? keyword
-                        : undefined
-                    }
-                    dependencies={['english']}
-                    rules={[
-                      ({ getFieldValue }) => ({
-                        validator(_, value) {
-                          if (value || getFieldValue('english')) {
-                            return Promise.resolve();
-                          } else
-                            return Promise.reject(
-                              new Error(t('dashboard.events.addEditEvent.location.quickCreatePlace.validations.name')),
-                            );
-                        },
-                      }),
-                    ]}>
-                    <TextArea
-                      autoSize
-                      autoComplete="off"
-                      placeholder={t('dashboard.events.addEditEvent.location.quickCreatePlace.namePlaceholder')}
-                      style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
-                      size="large"
-                      data-cy="text-area-quick-create-place-name-french"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="english"
-                    dependencies={['french']}
-                    initialValue={
-                      calendarContentLanguage === contentLanguage.BILINGUAL
-                        ? interfaceLanguage === 'en'
-                          ? keyword
-                          : undefined
-                        : calendarContentLanguage === contentLanguage.ENGLISH
-                        ? keyword
-                        : undefined
-                    }
-                    rules={[
-                      ({ getFieldValue }) => ({
-                        validator(_, value) {
-                          if (value || getFieldValue('french')) {
-                            return Promise.resolve();
-                          } else
-                            return Promise.reject(
-                              new Error(t('dashboard.events.addEditEvent.location.quickCreatePlace.validations.name')),
-                            );
-                        },
-                      }),
-                    ]}>
-                    <TextArea
-                      autoSize
-                      autoComplete="off"
-                      placeholder={t('dashboard.events.addEditEvent.location.quickCreatePlace.namePlaceholder')}
-                      style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
-                      size="large"
-                      data-cy="text-area-quick-create-place-name-english"
-                    />
-                  </Form.Item>
-                </BilingualInput>
-              </ContentLanguageInput>
-              <Form.Item
-                name="address"
-                label={t('dashboard.events.addEditEvent.location.quickCreatePlace.address')}
-                required>
-                <PlacesAutocomplete value={address} onChange={handleChange} onSelect={handleSelect}>
-                  {({ getInputProps, suggestions, getSuggestionItemProps }) => (
-                    <Dropdown
-                      open={dropdownOpen}
-                      overlayClassName="filter-sort-dropdown-wrapper"
-                      getPopupContainer={(trigger) => trigger.parentNode}
-                      menu={{
-                        items: suggestions?.map((suggestion, index) => {
-                          return {
-                            key: index,
-                            label: (
-                              <div {...getSuggestionItemProps(suggestion)} key={index}>
-                                <span>{suggestion.description}</span>
-                              </div>
-                            ),
-                          };
-                        }),
-                        selectable: true,
-                      }}
-                      trigger={['click']}>
-                      <StyledInput
-                        autoComplete="off"
-                        {...getInputProps({
-                          placeholder: t('dashboard.events.addEditEvent.location.quickCreatePlace.searchPlaceholder'),
-                        })}
-                        prefix={
-                          <SearchOutlined
-                            className="events-search-icon"
-                            style={{ color: '#B6C1C9', fontSize: '18px' }}
-                          />
+      <>
+        {!loaderModalOpen ? (
+          <CustomModal
+            open={open}
+            centered
+            title={
+              <span className="quick-create-place-modal-title" data-cy="span-quick-create-modal-heading">
+                {t('dashboard.events.addEditEvent.location.quickCreatePlace.title')}
+              </span>
+            }
+            onCancel={() => setOpen(false)}
+            footer={
+              <div
+                style={{ display: 'flex', justifyContent: 'space-between' }}
+                className="quick-create-organization-modal-footer">
+                <div className="add-full-details-btn-wrapper" key="add-full-details">
+                  <Outlined
+                    size="large"
+                    label={t('dashboard.events.addEditEvent.quickCreate.addFullDetails')}
+                    data-cy="button-quick-create-organization-add-full-details"
+                    onClick={(e) => {
+                      goToAddFullDetailsPageHandler(e);
+                    }}
+                  />
+                </div>
+                <div>
+                  <TextButton
+                    key="cancel"
+                    size="large"
+                    label={t('dashboard.events.addEditEvent.quickCreate.cancel')}
+                    onClick={() => setOpen(false)}
+                    data-cy="button-cancel-quick-create-place"
+                  />
+                  <PrimaryButton
+                    key="add-dates"
+                    label={t('dashboard.events.addEditEvent.quickCreate.create')}
+                    onClick={createPlaceHandler}
+                    data-cy="button-save-quick-create-place"
+                  />
+                </div>
+              </div>
+            }>
+            <Row gutter={[0, 10]} className="quick-create-place-modal-wrapper">
+              <Col span={24}>
+                <Form form={form} layout="vertical" name="organizerForm" preserve={false}>
+                  <Row>
+                    <Col>
+                      <p className="quick-create-place-modal-sub-heading" data-cy="para-quick-create-modal-subheading">
+                        {t('dashboard.events.addEditEvent.location.quickCreatePlace.subHeading')}
+                      </p>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <span className="quick-create-place-modal-label" data-cy="para-quick-create-place-name-label">
+                        {t('dashboard.events.addEditEvent.location.quickCreatePlace.name')}
+                      </span>
+                    </Col>
+                  </Row>
+                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                    <BilingualInput defaultTab={interfaceLanguage}>
+                      <Form.Item
+                        name="french"
+                        key={contentLanguage.FRENCH}
+                        initialValue={
+                          calendarContentLanguage === contentLanguage.BILINGUAL
+                            ? interfaceLanguage === 'fr'
+                              ? keyword
+                              : undefined
+                            : calendarContentLanguage === contentLanguage.FRENCH
+                            ? keyword
+                            : undefined
                         }
-                        data-cy="input-quick-create-google-place-keyword"
-                      />
-                    </Dropdown>
-                  )}
-                </PlacesAutocomplete>
-              </Form.Item>
+                        dependencies={['english']}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (value || getFieldValue('english')) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(
+                                  new Error(
+                                    t('dashboard.events.addEditEvent.location.quickCreatePlace.validations.name'),
+                                  ),
+                                );
+                            },
+                          }),
+                        ]}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          placeholder={t('dashboard.events.addEditEvent.location.quickCreatePlace.namePlaceholder')}
+                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
+                          size="large"
+                          data-cy="text-area-quick-create-place-name-french"
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        name="english"
+                        dependencies={['french']}
+                        initialValue={
+                          calendarContentLanguage === contentLanguage.BILINGUAL
+                            ? interfaceLanguage === 'en'
+                              ? keyword
+                              : undefined
+                            : calendarContentLanguage === contentLanguage.ENGLISH
+                            ? keyword
+                            : undefined
+                        }
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (value || getFieldValue('french')) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(
+                                  new Error(
+                                    t('dashboard.events.addEditEvent.location.quickCreatePlace.validations.name'),
+                                  ),
+                                );
+                            },
+                          }),
+                        ]}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          placeholder={t('dashboard.events.addEditEvent.location.quickCreatePlace.namePlaceholder')}
+                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
+                          size="large"
+                          data-cy="text-area-quick-create-place-name-english"
+                        />
+                      </Form.Item>
+                    </BilingualInput>
+                  </ContentLanguageInput>
+                  <Form.Item
+                    name="address"
+                    label={t('dashboard.events.addEditEvent.location.quickCreatePlace.address')}
+                    required>
+                    <PlacesAutocomplete value={address} onChange={handleChange} onSelect={handleSelect}>
+                      {({ getInputProps, suggestions, getSuggestionItemProps }) => (
+                        <Dropdown
+                          open={dropdownOpen}
+                          overlayClassName="filter-sort-dropdown-wrapper"
+                          getPopupContainer={(trigger) => trigger.parentNode}
+                          menu={{
+                            items: suggestions?.map((suggestion, index) => {
+                              return {
+                                key: index,
+                                label: (
+                                  <div {...getSuggestionItemProps(suggestion)} key={index}>
+                                    <span>{suggestion.description}</span>
+                                  </div>
+                                ),
+                              };
+                            }),
+                            selectable: true,
+                          }}
+                          trigger={['click']}>
+                          <StyledInput
+                            autoComplete="off"
+                            {...getInputProps({
+                              placeholder: t(
+                                'dashboard.events.addEditEvent.location.quickCreatePlace.searchPlaceholder',
+                              ),
+                            })}
+                            prefix={
+                              <SearchOutlined
+                                className="events-search-icon"
+                                style={{ color: '#B6C1C9', fontSize: '18px' }}
+                              />
+                            }
+                            data-cy="input-quick-create-google-place-keyword"
+                          />
+                        </Dropdown>
+                      )}
+                    </PlacesAutocomplete>
+                  </Form.Item>
 
-              <Form.Item name="placeType" label={taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false)}>
-                <TreeSelectOption
-                  style={{ display: !taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false) && 'none' }}
-                  allowClear
-                  treeDefaultExpandAll
-                  placeholder={t('dashboard.events.addEditEvent.location.quickCreatePlace.typePlaceholder')}
-                  notFoundContent={<NoContent />}
-                  clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                  treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Type', false, calendarContentLanguage)}
-                  tagRender={(props) => {
-                    const { closable, onClose, label } = props;
-                    return (
-                      <Tags
-                        closable={closable}
-                        onClose={onClose}
-                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                        {label}
-                      </Tags>
-                    );
-                  }}
-                />
-              </Form.Item>
-              <Form.Item
-                name={'region'}
-                label={taxonomyDetails(
-                  allTaxonomyData?.data,
-                  user,
-                  placeTaxonomyMappedFieldTypes.REGION,
-                  'name',
-                  false,
-                )}>
-                <TreeSelectOption
-                  style={{
-                    display:
-                      !taxonomyDetails(
-                        allTaxonomyData?.data,
+                  <Form.Item
+                    name="placeType"
+                    label={taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false)}>
+                    <TreeSelectOption
+                      style={{
+                        display: !taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false) && 'none',
+                      }}
+                      allowClear
+                      treeDefaultExpandAll
+                      placeholder={t('dashboard.events.addEditEvent.location.quickCreatePlace.typePlaceholder')}
+                      notFoundContent={<NoContent />}
+                      clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                      treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Type', false, calendarContentLanguage)}
+                      tagRender={(props) => {
+                        const { closable, onClose, label } = props;
+                        return (
+                          <Tags
+                            closable={closable}
+                            onClose={onClose}
+                            closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                            {label}
+                          </Tags>
+                        );
+                      }}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name={'region'}
+                    label={taxonomyDetails(
+                      allTaxonomyData?.data,
+                      user,
+                      placeTaxonomyMappedFieldTypes.REGION,
+                      'name',
+                      false,
+                    )}>
+                    <TreeSelectOption
+                      style={{
+                        display:
+                          !taxonomyDetails(
+                            allTaxonomyData?.data,
+                            user,
+                            placeTaxonomyMappedFieldTypes.REGION,
+                            'name',
+                            false,
+                          ) && 'none',
+                      }}
+                      placeholder={t('dashboard.places.createNew.addPlace.address.region.placeholder')}
+                      allowClear
+                      treeDefaultExpandAll
+                      notFoundContent={<NoContent />}
+                      clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                      treeData={treeTaxonomyOptions(
+                        allTaxonomyData,
                         user,
                         placeTaxonomyMappedFieldTypes.REGION,
-                        'name',
                         false,
-                      ) && 'none',
-                  }}
-                  placeholder={t('dashboard.places.createNew.addPlace.address.region.placeholder')}
-                  allowClear
-                  treeDefaultExpandAll
-                  notFoundContent={<NoContent />}
-                  clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                  treeData={treeTaxonomyOptions(
-                    allTaxonomyData,
-                    user,
-                    placeTaxonomyMappedFieldTypes.REGION,
-                    false,
-                    calendarContentLanguage,
-                  )}
-                  tagRender={(props) => {
-                    const { label, closable, onClose } = props;
-                    return (
-                      <Tags
-                        closable={closable}
-                        onClose={onClose}
-                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                        {label}
-                      </Tags>
-                    );
-                  }}
-                />
-              </Form.Item>
-            </Form>
-          </Col>
-        </Row>
-      </CustomModal>
+                        calendarContentLanguage,
+                      )}
+                      tagRender={(props) => {
+                        const { label, closable, onClose } = props;
+                        return (
+                          <Tags
+                            closable={closable}
+                            onClose={onClose}
+                            closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                            {label}
+                          </Tags>
+                        );
+                      }}
+                    />
+                  </Form.Item>
+                </Form>
+              </Col>
+            </Row>
+          </CustomModal>
+        ) : (
+          <>
+            <QuickCreateSaving
+              title={t('dashboard.events.addEditEvent.quickCreate.loaderModal.titlePlace')}
+              text={t('dashboard.events.addEditEvent.quickCreate.loaderModal.text')}
+              open={!loaderModalOpen}
+              onCancel={() => setLoaderModalOpen(false)}
+            />
+          </>
+        )}
+      </>
     )
   );
 }
