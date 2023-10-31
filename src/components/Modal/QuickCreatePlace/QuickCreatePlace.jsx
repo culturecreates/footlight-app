@@ -80,6 +80,7 @@ function QuickCreatePlace(props) {
   const [addPlace] = useAddPlaceMutation();
 
   const [address, setAddress] = useState('');
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleChange = (address) => {
