@@ -152,8 +152,10 @@ function QuickCreatePerson(props) {
             url,
             occupation,
           };
-          setOpen(false);
-          setLoaderModalOpen(true);
+          if (!toggle) {
+            setOpen(false);
+            setLoaderModalOpen(true);
+          }
           addPerson({ data: personObj, calendarId })
             .unwrap()
             .then((response) => {
@@ -167,6 +169,7 @@ function QuickCreatePerson(props) {
                 });
               }
               setKeyword('');
+              setOpen(false);
               getSelectedPerson(response?.id);
               resolve(response);
             })

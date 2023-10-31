@@ -172,8 +172,10 @@ function QuickCreatePlace(props) {
               en: values.streetAddressEn,
             };
           }
-          setOpen(false);
-          setLoaderModalOpen(true);
+          if (!toggle) {
+            setOpen(false);
+            setLoaderModalOpen(true);
+          }
           addPostalAddress({ data: postalObj, calendarId })
             .unwrap()
             .then((response) => {
@@ -232,6 +234,7 @@ function QuickCreatePlace(props) {
                       }
                       setKeyword('');
                       getSelectedPlace(response?.id);
+                      setOpen(false);
                       resolve(response);
                     }
                   })

@@ -134,8 +134,10 @@ function QuickCreateOrganization(props) {
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
             const formdata = new FormData();
             formdata.append('file', values?.dragger[0].originFileObj);
-            setLoaderModalOpen(true);
-            setOpen(false);
+            if (!toggle) {
+              setLoaderModalOpen(true);
+              setOpen(false);
+            }
             formdata &&
               addImage({ data: formdata, calendarId })
                 .unwrap()
@@ -152,6 +154,7 @@ function QuickCreateOrganization(props) {
                           maxCount: 1,
                           duration: 3,
                         });
+                        setOpen(false);
                         setKeyword('');
                         getSelectedOrganizer(response?.id);
                       } else {
@@ -168,8 +171,10 @@ function QuickCreateOrganization(props) {
                   console.log(error);
                 });
           } else {
-            setLoaderModalOpen(true);
-            setOpen(false);
+            if (!toggle) {
+              setLoaderModalOpen(true);
+              setOpen(false);
+            }
             addOrganization({ data: organizationObj, calendarId })
               .unwrap()
               .then((response) => {
