@@ -74,6 +74,7 @@ function QuickCreatePlace(props) {
     includeConcepts: true,
     sessionId: timestampRef,
   });
+
   const [getPlace] = useLazyGetPlaceQuery();
   const [addPostalAddress] = useAddPostalAddressMutation();
   const [addPlace] = useAddPlaceMutation();
