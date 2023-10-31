@@ -647,7 +647,6 @@ function AddEvent() {
           });
         });
     });
-
     return promise;
   };
 
