@@ -57,6 +57,7 @@ function CreateNewOrganization() {
   const { calendarId } = useParams();
   let [searchParams] = useSearchParams();
 
+  const quickCreateData = JSON.parse(sessionStorage.getItem('values'));
   const organizationId = searchParams.get('id');
   const artsDataId = location?.state?.data?.id ?? null;
 
@@ -136,6 +137,10 @@ function CreateNewOrganization() {
               maxCount: 1,
               duration: 3,
             });
+            if (quickCreateData) {
+              sessionStorage.removeItem('values');
+              navigate(-1);
+            }
             if (!toggle) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}`);
           })
           .catch((errorInfo) => {
@@ -559,6 +564,15 @@ function CreateNewOrganization() {
         console.log(error);
       });
   };
+
+  useEffect(() => {
+    if (quickCreateData) {
+      setNewEntityData({
+        name: { en: quickCreateData?.english, fr: quickCreateData?.french },
+        url: { uri: quickCreateData?.contactWebsiteUrl },
+      });
+    }
+  }, [quickCreateData]);
 
   useEffect(() => {
     if (addedFields?.length > 0) {

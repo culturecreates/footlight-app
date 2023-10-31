@@ -18,6 +18,8 @@ import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import Outlined from '../../Button/Outlined';
+import { useNavigate } from 'react-router-dom';
+import { PathName } from '../../../constants/pathName';
 
 const { TextArea } = Input;
 
@@ -42,7 +44,7 @@ function QuickCreateOrganization(props) {
   } = props;
   const [form] = Form.useForm();
   const { t } = useTranslation();
-
+  const navigate = useNavigate();
   const { user } = useSelector(getUserDetails);
 
   const [addImage] = useAddImageMutation();
@@ -162,9 +164,14 @@ function QuickCreateOrganization(props) {
       .catch((error) => console.log(error));
   };
 
-  const goToAddFullDetailsPageHandler = (e) => {
-    console.log(e);
-    saveAsDraftHandler(e);
+  const goToAddFullDetailsPageHandler = async (e) => {
+    const values = form.getFieldsValue(true);
+    sessionStorage.setItem('values', JSON.stringify(values));
+    saveAsDraftHandler(e, true).then((res) => {
+      if (res) {
+        navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}`);
+      }
+    });
   };
 
   return (
@@ -178,32 +185,37 @@ function QuickCreateOrganization(props) {
         </span>
       }
       onCancel={() => setOpen(false)}
-      footer={[
-        <div className="add-full-details-btn-wrapper" key="add-full-details">
-          <Outlined
-            size="large"
-            label={t('dashboard.events.addEditEvent.quickCreate.addFullDetails')}
-            onClick={() => {
-              (e) => {
+      footer={
+        <div
+          style={{ display: 'flex', justifyContent: 'space-between' }}
+          className="quick-create-organization-modal-footer">
+          <div className="add-full-details-btn-wrapper" key="add-full-details">
+            <Outlined
+              size="large"
+              label={t('dashboard.events.addEditEvent.quickCreate.addFullDetails')}
+              data-cy="button-quick-create-organization-add-full-details"
+              onClick={(e) => {
                 goToAddFullDetailsPageHandler(e);
-              };
-            }}
-          />
-        </div>,
-        <TextButton
-          key="cancel"
-          size="large"
-          label={t('dashboard.events.addEditEvent.quickCreate.cancel')}
-          onClick={() => setOpen(false)}
-          data-cy="button-quick-create-organization-cancel"
-        />,
-        <PrimaryButton
-          key="add-dates"
-          label={t('dashboard.events.addEditEvent.quickCreate.create')}
-          onClick={createOrganizationHandler}
-          data-cy="button-quick-create-organization-save"
-        />,
-      ]}>
+              }}
+            />
+          </div>
+          <div>
+            <TextButton
+              key="cancel"
+              size="large"
+              label={t('dashboard.events.addEditEvent.quickCreate.cancel')}
+              onClick={() => setOpen(false)}
+              data-cy="button-quick-create-organization-cancel"
+            />
+            <PrimaryButton
+              key="add-dates"
+              label={t('dashboard.events.addEditEvent.quickCreate.create')}
+              onClick={createOrganizationHandler}
+              data-cy="button-quick-create-organization-save"
+            />
+          </div>
+        </div>
+      }>
       <Row gutter={[0, 10]} className="quick-create-organization-modal-wrapper">
         <Col span={24}>
           <Form form={form} layout="vertical" name="organizerForm" preserve={false}>

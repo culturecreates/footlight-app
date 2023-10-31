@@ -2340,6 +2340,7 @@ function AddEvent() {
                   setSelectedSupporters={setSelectedSupporters}
                   selectedOrganizerPerformerSupporterType={selectedOrganizerPerformerSupporterType}
                   organizerPerformerSupporterTypes={organizerPerformerSupporterTypes}
+                  saveAsDraftHandler={saveAsDraftHandler}
                 />
                 <QuickCreatePerson
                   open={quickCreatePersonModal}

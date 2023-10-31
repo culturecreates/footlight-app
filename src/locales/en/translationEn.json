@@ -369,6 +369,9 @@
           "create": "Create",
           "addFullDetails": "Add full details",
           "cancel": "Cancel",
+          "loaderModal": {
+            "text": "Sauvegarde et redirection vers le formulaire complet"
+          },
           "quickCreateOrganization": {
             "title": "Create an organization",
             "subHeading": "Add basic information about this organization.",
