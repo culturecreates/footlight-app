@@ -7,4 +7,9 @@
   line-height: 24px;
   letter-spacing: 0em;
   text-align: center;
+  padding: 8 0;
+}
+
+.saving-loader-modal .custom-common-modal-container .ant-modal-content .ant-modal-header {
+  height: 64px;
 }
