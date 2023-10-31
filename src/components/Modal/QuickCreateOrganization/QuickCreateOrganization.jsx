@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CustomModal from '../Common/CustomModal';
 import TextButton from '../../Button/Text/Text';
 import { useTranslation } from 'react-i18next';
@@ -51,6 +51,21 @@ function QuickCreateOrganization(props) {
   const [addOrganization] = useAddOrganizationMutation();
   const [getOrganization] = useLazyGetOrganizationQuery();
 
+  const [event, setEvent] = useState([]);
+
+  useEffect(() => {
+    if (event.length > 0) {
+      saveAsDraftHandler(event[0], true).then((res) => {
+        if (res) {
+          navigate(
+            `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${event[1]?.id}`,
+            { state: { data: { isRoutingToEventPage: true } } },
+          );
+        }
+      });
+    }
+  }, [selectedOrganizers]);
+
   const getSelectedOrganizer = (id) => {
     getOrganization({ id, calendarId })
       .unwrap()
@@ -84,94 +99,110 @@ function QuickCreateOrganization(props) {
       })
       .catch((error) => console.log(error));
   };
-  const createOrganizationHandler = () => {
-    form
-      .validateFields(['french', 'english'])
-      .then(() => {
-        var values = form.getFieldsValue(true);
-        let name = {},
-          url = {},
-          organizationObj = {};
+  const createOrganizationHandler = (toggle = true) => {
+    return new Promise((resolve, reject) => {
+      form
+        .validateFields(['french', 'english'])
+        .then(() => {
+          var values = form.getFieldsValue(true);
+          let name = {},
+            url = {},
+            organizationObj = {};
 
-        if (values?.english)
-          name = {
-            en: values?.english,
-          };
+          if (values?.english)
+            name = {
+              en: values?.english,
+            };
 
-        if (values?.french)
-          name = {
-            ...name,
-            fr: values?.french,
-          };
+          if (values?.french)
+            name = {
+              ...name,
+              fr: values?.french,
+            };
 
-        if (values?.contactWebsiteUrl)
-          url = {
-            uri: values?.contactWebsiteUrl,
+          if (values?.contactWebsiteUrl)
+            url = {
+              uri: values?.contactWebsiteUrl,
+            };
+          organizationObj = {
+            name,
+            url,
           };
-        organizationObj = {
-          name,
-          url,
-        };
-        if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
-          const formdata = new FormData();
-          formdata.append('file', values?.dragger[0].originFileObj);
-          formdata &&
-            addImage({ data: formdata, calendarId })
+          if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
+            const formdata = new FormData();
+            formdata.append('file', values?.dragger[0].originFileObj);
+            formdata &&
+              addImage({ data: formdata, calendarId })
+                .unwrap()
+                .then((response) => {
+                  organizationObj['logo'] = response?.data;
+                  addOrganization({ data: organizationObj, calendarId })
+                    .unwrap()
+                    .then((response) => {
+                      if (toggle) {
+                        notification.success({
+                          description: t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.success'),
+                          placement: 'top',
+                          closeIcon: <></>,
+                          maxCount: 1,
+                          duration: 3,
+                        });
+                        setKeyword('');
+                        getSelectedOrganizer(response?.id);
+                        setOpen(false);
+                      } else {
+                        setKeyword('');
+                        getSelectedOrganizer(response?.id);
+                        setOpen(false);
+                      }
+                      resolve(response);
+                    })
+                    .catch((error) => {
+                      console.log(error);
+                    });
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+          } else {
+            addOrganization({ data: organizationObj, calendarId })
               .unwrap()
               .then((response) => {
-                organizationObj['logo'] = response?.data;
-                addOrganization({ data: organizationObj, calendarId })
-                  .unwrap()
-                  .then((response) => {
-                    notification.success({
-                      description: t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.success'),
-                      placement: 'top',
-                      closeIcon: <></>,
-                      maxCount: 1,
-                      duration: 3,
-                    });
-                    setKeyword('');
-                    getSelectedOrganizer(response?.id);
-                    setOpen(false);
-                  })
-                  .catch((error) => {
-                    console.log(error);
+                if (toggle) {
+                  notification.success({
+                    description: t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.success'),
+                    placement: 'top',
+                    closeIcon: <></>,
+                    maxCount: 1,
+                    duration: 3,
                   });
+                  setKeyword('');
+                  getSelectedOrganizer(response?.id);
+                  setOpen(false);
+                } else {
+                  getSelectedOrganizer(response?.id);
+                  setOpen(false);
+                }
+                resolve(response);
               })
               .catch((error) => {
                 console.log(error);
+                reject(error);
               });
-        } else {
-          addOrganization({ data: organizationObj, calendarId })
-            .unwrap()
-            .then((response) => {
-              notification.success({
-                description: t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.success'),
-                placement: 'top',
-                closeIcon: <></>,
-                maxCount: 1,
-                duration: 3,
-              });
-              setKeyword('');
-              getSelectedOrganizer(response?.id);
-              setOpen(false);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        }
-      })
-      .catch((error) => console.log(error));
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          reject(error);
+        });
+    });
   };
 
   const goToAddFullDetailsPageHandler = async (e) => {
-    const values = form.getFieldsValue(true);
-    sessionStorage.setItem('values', JSON.stringify(values));
-    saveAsDraftHandler(e, true).then((res) => {
-      if (res) {
-        navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}`);
-      }
-    });
+    const response = await createOrganizationHandler(false);
+    if (response) {
+      setEvent([e, response]);
+    }
   };
 
   return (
