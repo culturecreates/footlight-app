@@ -119,6 +119,7 @@ export const treeEntitiesOption = (data, user, calendarContentLanguage, source =
       contact: entity?.contactPoint,
       uri: entity?.uri,
       source: source,
+      creatorId: entity?.creator?.userId,
     };
   });
   return options;

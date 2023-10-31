@@ -848,6 +848,19 @@ function AddEvent() {
     if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
     else return false;
   };
+
+  const organizerPerformerSupporterPlaceNavigationHandler = (id, type, event) => {
+    saveAsDraftHandler(event, true)
+      .then(() => {
+        if (type?.toUpperCase() == taxonomyClass.ORGANIZATION)
+          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${id}`);
+        else if (type?.toUpperCase() == taxonomyClass.PERSON)
+          navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${id}`);
+        else if (type?.toUpperCase() == taxonomyClass.PLACE)
+          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${id}`);
+      })
+      .catch((error) => console.log(error));
+  };
   const FeaturedJSX = (
     <Row justify={'end'} align={'top'} gutter={[8, 0]}>
       <Col>
@@ -1832,6 +1845,11 @@ function AddEvent() {
                       setLocationPlace();
                       form.setFieldValue('locationPlace', undefined);
                     }}
+                    edit={locationPlace?.source === sourceOptions.CMS && true}
+                    onEdit={(e) =>
+                      organizerPerformerSupporterPlaceNavigationHandler(locationPlace?.value, locationPlace?.type, e)
+                    }
+                    creatorId={locationPlace?.creatorId}
                   />
                 )}
                 <QuickCreatePlace
@@ -2271,6 +2289,11 @@ function AddEvent() {
                             selectedOrganizers?.filter((selectedOrganizer, indexValue) => indexValue != index),
                           );
                         }}
+                        edit={organizer?.source === sourceOptions.CMS && true}
+                        onEdit={(e) =>
+                          organizerPerformerSupporterPlaceNavigationHandler(organizer?.value, organizer?.type, e)
+                        }
+                        creatorId={organizer?.creatorId}
                       />
                     );
                   })}
@@ -2545,6 +2568,11 @@ function AddEvent() {
                             selectedPerformers?.filter((selectedPerformer, indexValue) => indexValue != index),
                           );
                         }}
+                        edit={performer?.source === sourceOptions.CMS && true}
+                        onEdit={(e) =>
+                          organizerPerformerSupporterPlaceNavigationHandler(performer?.value, performer?.type, e)
+                        }
+                        creatorId={performer?.creatorId}
                       />
                     );
                   })}
@@ -2680,6 +2708,11 @@ function AddEvent() {
                             selectedSupporters?.filter((selectedSupporter, indexValue) => indexValue != index),
                           );
                         }}
+                        edit={supporter?.source === sourceOptions.CMS && true}
+                        onEdit={(e) =>
+                          organizerPerformerSupporterPlaceNavigationHandler(supporter?.value, supporter?.type, e)
+                        }
+                        creatorId={supporter?.creatorId}
                       />
                     );
                   })}
