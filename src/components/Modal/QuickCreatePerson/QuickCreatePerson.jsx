@@ -176,7 +176,6 @@ function QuickCreatePerson(props) {
 
   const goToAddFullDetailsPageHandler = async (e) => {
     const response = await createPersonHandler(false);
-   
     if (response) {
       setEvent([e, response]);
     }
