@@ -74,11 +74,13 @@ function QuickCreatePlace(props) {
     includeConcepts: true,
     sessionId: timestampRef,
   });
+
   const [getPlace] = useLazyGetPlaceQuery();
   const [addPostalAddress] = useAddPostalAddressMutation();
   const [addPlace] = useAddPlaceMutation();
 
   const [address, setAddress] = useState('');
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleChange = (address) => {

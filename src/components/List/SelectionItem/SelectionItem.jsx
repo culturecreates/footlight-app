@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import ArtsDataLink from '../../Tags/ArtsDataLink/ArtsDataLink';
 import SmallButton from '../../Button/SmallButton';
+import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 
 function SelectionItem(props) {
   const {
@@ -26,6 +27,9 @@ function SelectionItem(props) {
     artsDataLink,
     artsDataDetails,
     showExternalSourceLink,
+    onEdit,
+    edit,
+    creatorId,
   } = props;
   const { t } = useTranslation();
   const { user } = useSelector(getUserDetails);
@@ -45,6 +49,17 @@ function SelectionItem(props) {
               <span style={{ textDecoration: 'underline' }}>Artsdata</span>
               <LinkOutlined />
             </ArtsDataLink>
+          ),
+          edit && (
+            <ReadOnlyProtectedComponent creator={creatorId}>
+              <Button
+                type="text"
+                key="list-loadmore-close"
+                onClick={onEdit}
+                style={{ color: '#1b3de6', fontSize: '12px', fontWeight: 600, padding: '0px' }}>
+                {t('dashboard.organization.readOnly.edit')}
+              </Button>
+            </ReadOnlyProtectedComponent>
           ),
           closable && (
             <Button type="text" key="list-loadmore-close" onClick={onClose} style={{ padding: '0px' }}>
