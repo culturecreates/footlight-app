@@ -375,6 +375,7 @@ function QuickCreatePlace(props) {
 
               <Form.Item name="placeType" label={taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false)}>
                 <TreeSelectOption
+                  style={{ display: !taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false) && 'none' }}
                   allowClear
                   treeDefaultExpandAll
                   placeholder={t('dashboard.events.addEditEvent.location.quickCreatePlace.typePlaceholder')}
@@ -404,6 +405,16 @@ function QuickCreatePlace(props) {
                   false,
                 )}>
                 <TreeSelectOption
+                  style={{
+                    display:
+                      !taxonomyDetails(
+                        allTaxonomyData?.data,
+                        user,
+                        placeTaxonomyMappedFieldTypes.REGION,
+                        'name',
+                        false,
+                      ) && 'none',
+                  }}
                   placeholder={t('dashboard.places.createNew.addPlace.address.region.placeholder')}
                   allowClear
                   treeDefaultExpandAll
