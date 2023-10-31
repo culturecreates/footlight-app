@@ -21,6 +21,10 @@
   color: #0f0e98;
 }
 
+.sidebar-wrapper .sidebar-main-menu  .ant-menu-item:hover {
+  background-color: #F9FAFF;
+}
+
 .sidebar-wrapper .sidebar-main-menu {
   margin-top: 24px;
 }
