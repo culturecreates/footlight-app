@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './quickCreatePerson.css';
 import { CloseCircleOutlined } from '@ant-design/icons';
 import CustomModal from '../Common/CustomModal';
@@ -22,6 +22,9 @@ import NoContent from '../../NoContent/NoContent';
 import TreeSelectOption from '../../TreeSelectOption/TreeSelectOption';
 import Tags from '../../Tags/Common/Tags';
 import { sourceOptions } from '../../../constants/sourceOptions';
+import Outlined from '../../Button/Outlined';
+import { useNavigate } from 'react-router-dom';
+import { PathName } from '../../../constants/pathName';
 
 const { TextArea } = Input;
 
@@ -42,12 +45,28 @@ function QuickCreatePerson(props) {
     setSelectedSupporters,
     selectedOrganizerPerformerSupporterType,
     organizerPerformerSupporterTypes,
+    saveAsDraftHandler,
   } = props;
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const timestampRef = useRef(Date.now()).current;
 
   const { user } = useSelector(getUserDetails);
+  const navigate = useNavigate();
+
+  const [event, setEvent] = useState([]);
+
+  useEffect(() => {
+    if (event.length > 0) {
+      saveAsDraftHandler(event[0], true).then((res) => {
+        if (res) {
+          navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${event[1]?.id}`, {
+            state: { data: { isRoutingToEventPage: true } },
+          });
+        }
+      });
+    }
+  }, [selectedOrganizers, selectedPerformers, selectedSupporters]);
 
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
@@ -92,63 +111,77 @@ function QuickCreatePerson(props) {
       })
       .catch((error) => console.log(error));
   };
-  const createPersonHandler = () => {
-    form
-      .validateFields(['french', 'english'])
-      .then(() => {
-        var values = form.getFieldsValue(true);
-        let name = {},
-          url = {},
-          occupation = [],
-          personObj = {};
+  const createPersonHandler = (toggle = true) => {
+    return new Promise((resolve, reject) => {
+      form
+        .validateFields(['french', 'english'])
+        .then(() => {
+          var values = form.getFieldsValue(true);
+          let name = {},
+            url = {},
+            occupation = [],
+            personObj = {};
 
-        if (values?.english)
-          name = {
-            en: values?.english,
-          };
-
-        if (values?.french)
-          name = {
-            ...name,
-            fr: values?.french,
-          };
-
-        if (values?.contactWebsiteUrl)
-          url = {
-            uri: values?.contactWebsiteUrl,
-          };
-        if (values?.occupation) {
-          occupation = values?.occupation?.map((occupationId) => {
-            return {
-              entityId: occupationId,
+          if (values?.english)
+            name = {
+              en: values?.english,
             };
-          });
-        }
-        personObj = {
-          name,
-          url,
-          occupation,
-        };
-        addPerson({ data: personObj, calendarId })
-          .unwrap()
-          .then((response) => {
-            notification.success({
-              description: t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.success'),
-              placement: 'top',
-              closeIcon: <></>,
-              maxCount: 1,
-              duration: 3,
+
+          if (values?.french)
+            name = {
+              ...name,
+              fr: values?.french,
+            };
+
+          if (values?.contactWebsiteUrl)
+            url = {
+              uri: values?.contactWebsiteUrl,
+            };
+          if (values?.occupation) {
+            occupation = values?.occupation?.map((occupationId) => {
+              return {
+                entityId: occupationId,
+              };
             });
-            setKeyword('');
-            getSelectedPerson(response?.id);
-            setOpen(false);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      })
-      .catch((error) => console.log(error));
+          }
+          personObj = {
+            name,
+            url,
+            occupation,
+          };
+          addPerson({ data: personObj, calendarId })
+            .unwrap()
+            .then((response) => {
+              if (toggle) {
+                notification.success({
+                  description: t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.success'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+              }
+              setKeyword('');
+              getSelectedPerson(response?.id);
+              setOpen(false);
+              resolve(response);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch((error) => reject(error));
+    });
   };
+
+  const goToAddFullDetailsPageHandler = async (e) => {
+    const response = await createPersonHandler(false);
+   
+    if (response) {
+      setEvent([e, response]);
+    }
+  };
+
   return (
     !taxonomyLoading && (
       <CustomModal
@@ -161,21 +194,37 @@ function QuickCreatePerson(props) {
           </span>
         }
         onCancel={() => setOpen(false)}
-        footer={[
-          <TextButton
-            key="cancel"
-            size="large"
-            label={t('dashboard.events.addEditEvent.quickCreate.cancel')}
-            onClick={() => setOpen(false)}
-            data-cy="button-quick-create-person-cancel"
-          />,
-          <PrimaryButton
-            key="add-dates"
-            label={t('dashboard.events.addEditEvent.quickCreate.create')}
-            onClick={createPersonHandler}
-            data-cy="button-quick-create-person-save"
-          />,
-        ]}>
+        footer={
+          <div
+            style={{ display: 'flex', justifyContent: 'space-between' }}
+            className="quick-create-organization-modal-footer">
+            <div className="add-full-details-btn-wrapper" key="add-full-details">
+              <Outlined
+                size="large"
+                label={t('dashboard.events.addEditEvent.quickCreate.addFullDetails')}
+                data-cy="button-quick-create-organization-add-full-details"
+                onClick={(e) => {
+                  goToAddFullDetailsPageHandler(e);
+                }}
+              />
+            </div>
+            <div>
+              <TextButton
+                key="cancel"
+                size="large"
+                label={t('dashboard.events.addEditEvent.quickCreate.cancel')}
+                onClick={() => setOpen(false)}
+                data-cy="button-quick-create-person-cancel"
+              />
+              <PrimaryButton
+                key="add-dates"
+                label={t('dashboard.events.addEditEvent.quickCreate.create')}
+                onClick={createPersonHandler}
+                data-cy="button-quick-create-person-save"
+              />
+            </div>
+          </div>
+        }>
         <Row gutter={[0, 10]} className="quick-create-person-modal-wrapper">
           <Col span={24}>
             <Form form={form} layout="vertical" name="organizerForm" preserve={false}>

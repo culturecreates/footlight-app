@@ -1844,6 +1844,7 @@ function AddEvent() {
                   calendarContentLanguage={calendarContentLanguage}
                   setLocationPlace={setLocationPlace}
                   eventForm={form}
+                  saveAsDraftHandler={saveAsDraftHandler}
                 />
               </Form.Item>
               <Form.Item
@@ -2315,6 +2316,7 @@ function AddEvent() {
                   setSelectedSupporters={setSelectedSupporters}
                   selectedOrganizerPerformerSupporterType={selectedOrganizerPerformerSupporterType}
                   organizerPerformerSupporterTypes={organizerPerformerSupporterTypes}
+                  saveAsDraftHandler={saveAsDraftHandler}
                 />
               </Form.Item>
               <Form.Item

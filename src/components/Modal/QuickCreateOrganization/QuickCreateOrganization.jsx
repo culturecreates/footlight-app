@@ -64,7 +64,7 @@ function QuickCreateOrganization(props) {
         }
       });
     }
-  }, [selectedOrganizers]);
+  }, [selectedOrganizers, selectedPerformers, selectedSupporters]);
 
   const getSelectedOrganizer = (id) => {
     getOrganization({ id, calendarId })
