@@ -13,3 +13,7 @@
 .saving-loader-modal .custom-common-modal-container .ant-modal-content .ant-modal-header {
   height: 64px;
 }
+
+.saving-loader-modal .ant-modal-body {
+  padding: 0;
+}

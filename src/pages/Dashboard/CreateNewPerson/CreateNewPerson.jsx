@@ -47,6 +47,7 @@ function CreateNewPerson() {
 
   const personId = searchParams.get('id');
   const artsDataId = location?.state?.data?.id ?? null;
+  const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
 
   const { data: personData, isLoading: personLoading } = useGetPersonQuery(
     { personId, calendarId, sessionId: timestampRef },
@@ -135,14 +136,18 @@ function CreateNewPerson() {
           .unwrap()
           .then(() => {
             resolve(personId);
-            notification.success({
-              description: t('dashboard.people.createNew.addPerson.notification.editSuccess'),
-              placement: 'top',
-              closeIcon: <></>,
-              maxCount: 1,
-              duration: 3,
-            });
-            navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}`);
+            if (isRoutingToEventPage) {
+              navigate(-1);
+            } else {
+              notification.success({
+                description: t('dashboard.people.createNew.addPerson.notification.editSuccess'),
+                placement: 'top',
+                closeIcon: <></>,
+                maxCount: 1,
+                duration: 3,
+              });
+              navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}`);
+            }
           })
           .catch((error) => {
             reject();

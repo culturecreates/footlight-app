@@ -14,15 +14,19 @@ const QuickCreateSaving = (props) => {
         height="296px"
         destroyOnClose
         centered
+        className="saving-loader-modal"
         title={
-          <span className="quick-create-loader-modal-title" data-cy="span-quick-create-loader-heading">
+          <span
+            className="quick-create-loader-modal-title"
+            data-cy="span-quick-create-loader-heading"
+            style={{ fontSize: 20, fontWeight: 700, color: '#222732' }}>
             {title}
           </span>
         }
         footer={null}>
         <div
           style={{
-            height: '232px',
+            height: '184px',
             width: '100%',
             display: 'flex',
             flexDirection: 'column',
