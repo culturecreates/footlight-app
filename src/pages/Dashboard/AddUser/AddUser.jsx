@@ -383,7 +383,7 @@ const AddUser = () => {
 
   const getUserTypeLabelFromKey = (key) => {
     const label = userRolesWithTranslation.filter((u) => u.key == key);
-    return label[0].label;
+    return label[0]?.label;
   };
 
   const searchHandlerUserSearch = (value) => {

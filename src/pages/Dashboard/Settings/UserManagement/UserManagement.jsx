@@ -554,7 +554,6 @@ const UserManagement = () => {
                     showSizeChanger: false,
                   }}
                   renderItem={(item, index) => {
-                    console.log(item);
                     return (
                       <ListCard
                         id={index}
@@ -577,7 +576,6 @@ const UserManagement = () => {
                               menu={{
                                 items: tooltipItemDisplayHandler({ item }),
                                 onClick: ({ key }) => {
-                                  console.log(item);
                                   tooltipItemClickHandler({ key, item });
                                 },
                               }}
