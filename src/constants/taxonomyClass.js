@@ -5,7 +5,7 @@ export const taxonomyClass = {
   PLACE: 'PLACE',
   ORGANIZATION: 'ORGANIZATION',
   PERSON: 'PERSON',
-  VIRTUAL_LOCATION: 'VIRTUAL_LOCATION',
+  // VIRTUAL_LOCATION: 'VIRTUAL_LOCATION',
 };
 
 export const taxonomyClassTranslations = [
@@ -25,8 +25,8 @@ export const taxonomyClassTranslations = [
     label: <Translation>{(t) => t('dashboard.taxonomy.selectType.classDropdownOptions.person')}</Translation>,
     key: 'Person',
   },
-  {
-    label: <Translation>{(t) => t('dashboard.taxonomy.selectType.classDropdownOptions.virtualLocation')}</Translation>,
-    key: 'Virtual_Location',
-  },
+  // {
+  //   label: <Translation>{(t) => t('dashboard.taxonomy.selectType.classDropdownOptions.virtualLocation')}</Translation>,
+  //   key: 'Virtual_Location',
+  // },
 ];
