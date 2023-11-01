@@ -514,7 +514,6 @@ const AddTaxonomy = () => {
                           <Form.Item
                             label={t('dashboard.taxonomy.addNew.userAccess')}
                             name="userAccess"
-                            required
                             className="user-access"
                             // rules={[
                             // ({ getFieldValue }) => ({

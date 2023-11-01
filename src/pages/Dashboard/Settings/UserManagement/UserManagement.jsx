@@ -249,7 +249,10 @@ const UserManagement = () => {
       }
     }
 
-    if (!(userStatus[0]?.status === userActivityStatus[0].key || userStatus[0]?.status === userActivityStatus[2].key)) {
+    if (
+      !(userStatus[0]?.status === userActivityStatus[0].key || userStatus[0]?.status === userActivityStatus[2].key) &&
+      !item?.isSuperAdmin
+    ) {
       dropdownItems.push({
         key: 'deleteUser',
         label: t('dashboard.settings.userManagement.tooltip.deleteUser'),
@@ -569,7 +572,6 @@ const UserManagement = () => {
                         actions={[
                           adminCheckHandler() && (
                             <Dropdown
-                              disabled={!item?.isSuperAdmin}
                               overlayClassName="filter-sort-dropdown-wrapper"
                               overlayStyle={{ minWidth: '200px' }}
                               getPopupContainer={(trigger) => trigger.parentNode}
@@ -581,7 +583,7 @@ const UserManagement = () => {
                               }}
                               trigger={['click']}>
                               <span>
-                                {!item?.isSuperAdmin ? (
+                                {!item?.isSuperAdmin || item._id == user.id ? (
                                   <MoreOutlined className="event-list-more-icon" key={index} />
                                 ) : (
                                   <div style={{ width: 24 }}></div>

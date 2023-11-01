@@ -119,12 +119,13 @@ const AddUser = () => {
             lastName: response?.lastName,
             phoneNumber: response?.phoneNumber,
             email: response?.email,
-            userType: response?.roles.length != 0 ? requiredRole[0]?.role : userRoles.SUPER_ADMIN,
+            userType: requiredRole[0]?.role,
             languagePreference: {
               key: response.interfaceLanguage,
               label: selectedLanguage?.label ? selectedLanguage?.label : '',
             },
             calendars: response.roles,
+            ...response,
           });
         });
     } else if (userId && userId === user?.id) {
@@ -144,12 +145,13 @@ const AddUser = () => {
             lastName: response?.lastName,
             phoneNumber: response?.phoneNumber,
             email: response?.email,
-            userType: response?.roles.length != 0 ? requiredRole[0]?.role : userRoles.SUPER_ADMIN,
+            userType: requiredRole[0]?.role,
             languagePreference: {
               key: response.interfaceLanguage,
               label: selectedLanguage?.label ? selectedLanguage?.label : '',
             },
             calendars: response.roles,
+            ...response,
           });
         });
     } else if (location.state?.data) {
@@ -382,6 +384,10 @@ const AddUser = () => {
   };
 
   const getUserTypeLabelFromKey = (key) => {
+    if (userData?.isSuperAdmin) {
+      return t('dashboard.settings.userManagement.superAdmin');
+    }
+
     const label = userRolesWithTranslation.filter((u) => u.key == key);
     return label[0]?.label;
   };
@@ -715,7 +721,7 @@ const AddUser = () => {
                             overlayClassName="add-user-form-field-dropdown-wrapper"
                             getPopupContainer={(trigger) => trigger.parentNode}
                             overlayStyle={{ minWidth: '100%' }}
-                            disabled={!adminCheckHandler()}
+                            disabled={!adminCheckHandler() || userData?.isSuperAdmin}
                             menu={{
                               items: userRolesWithTranslation,
                               selectable: true,
