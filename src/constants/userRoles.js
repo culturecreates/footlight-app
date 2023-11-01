@@ -5,6 +5,7 @@ export const userRoles = {
   EDITOR: 'EDITOR',
   CONTRIBUTOR: 'CONTRIBUTOR',
   GUEST: 'GUEST',
+  SUPER_ADMIN: 'SUPER ADMIN',
 };
 
 export const userRolesWithTranslation = [
@@ -12,4 +13,5 @@ export const userRolesWithTranslation = [
   { label: <Translation>{(t) => t('dashboard.settings.userManagement.contributor')}</Translation>, key: 'CONTRIBUTOR' },
   { label: <Translation>{(t) => t('dashboard.settings.userManagement.editor')}</Translation>, key: 'EDITOR' },
   { label: <Translation>{(t) => t('dashboard.settings.userManagement.guest')}</Translation>, key: 'GUEST' },
+  { label: <Translation>{(t) => t('dashboard.settings.userManagement.superAdmin')}</Translation>, key: 'SUPER ADMIN' },
 ];
