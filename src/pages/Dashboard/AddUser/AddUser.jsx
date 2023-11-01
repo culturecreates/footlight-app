@@ -119,7 +119,7 @@ const AddUser = () => {
             lastName: response?.lastName,
             phoneNumber: response?.phoneNumber,
             email: response?.email,
-            userType: requiredRole[0]?.role,
+            userType: response?.roles.length != 0 ? requiredRole[0]?.role : userRoles.SUPER_ADMIN,
             languagePreference: {
               key: response.interfaceLanguage,
               label: selectedLanguage?.label ? selectedLanguage?.label : '',
@@ -144,7 +144,7 @@ const AddUser = () => {
             lastName: response?.lastName,
             phoneNumber: response?.phoneNumber,
             email: response?.email,
-            userType: requiredRole[0]?.role,
+            userType: response?.roles.length != 0 ? requiredRole[0]?.role : userRoles.SUPER_ADMIN,
             languagePreference: {
               key: response.interfaceLanguage,
               label: selectedLanguage?.label ? selectedLanguage?.label : '',
@@ -383,7 +383,7 @@ const AddUser = () => {
 
   const getUserTypeLabelFromKey = (key) => {
     const label = userRolesWithTranslation.filter((u) => u.key == key);
-    return label[0].label;
+    return label[0]?.label;
   };
 
   const searchHandlerUserSearch = (value) => {
