@@ -218,6 +218,9 @@ function Events() {
     if (usersQuery) sessionStorage.setItem('users', usersQuery);
     else sessionStorage.removeItem('users');
     if (publicationQuery) sessionStorage.setItem('publication', publicationQuery);
+    else if (sessionStorage.getItem('publication')) {
+      sessionStorage.removeItem('publication');
+    }
     if (filter?.dates?.length > 0 && filter?.dates[0] && filter?.dates[0] !== '')
       sessionStorage.setItem('startDateRange', filter?.dates[0]);
     else sessionStorage.setItem('startDateRange', query?.get('start-date-range'));
@@ -260,6 +263,7 @@ function Events() {
   };
 
   const onFilterChange = (values, filterType) => {
+    console.log(values);
     if (filterType === filterTypes.PUBLICATION)
       setFilter({
         ...filter,
