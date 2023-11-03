@@ -79,7 +79,7 @@ const AddUser = () => {
   });
 
   const [getUser, { isFetching: isUserFetching }] = useLazyGetUserByIdQuery({ sessionId: timestampRef });
-  const [getUserSearch, { isFetching: isUsersearchFeatching }] = useLazyGetAllUsersQuery({ sessionId: timestampRef });
+  const [getUserSearch] = useLazyGetAllUsersQuery({ sessionId: timestampRef });
 
   const [
     currentUserLeaveCalendar,
@@ -398,9 +398,9 @@ const AddUser = () => {
           .unwrap()
           .then((res) => {
             setUserSearchData(res);
-            if (res?.data.length > 0) {
-              setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
-            }
+            // if (res?.data.length > 0) {
+            //   setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
+            // }
           })
       : setUserSearchData([]);
   };
@@ -561,19 +561,16 @@ const AddUser = () => {
                               <div className="search-bar-organization">
                                 <Popover
                                   open={
-                                    (userSearchData?.data?.length > 0 &&
-                                      isPopoverOpen?.searchUserFirstName &&
-                                      userSearchKeyword != '') ||
-                                    (isUsersearchFeatching &&
-                                      userSearchData?.data?.length > 0 &&
-                                      userSearchKeyword != '')
+                                    userSearchData?.data?.length > 0 &&
+                                    isPopoverOpen?.searchUserFirstName &&
+                                    userSearchKeyword != ''
                                   }
                                   arrow={false}
                                   overlayClassName="entity-popover"
                                   placement="bottom"
                                   onOpenChange={(open) => {
-                                    if (userSearchData?.data?.length > 0) {
-                                      setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: open });
+                                    setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: open });
+                                    if (userSearchKeyword != '') {
                                       debounceSearch(userSearchKeyword);
                                     }
                                   }}
@@ -604,13 +601,14 @@ const AddUser = () => {
                                     onPressEnter={(e) => {
                                       e.preventDefault();
                                       setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: false });
+                                      e.target.blur();
                                     }}
                                     onFocus={(e) => {
                                       if (e.target.value != '') {
                                         if (userSearchData?.data?.length > 0) {
                                           setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
+                                          debounceSearch(e.target.value);
                                         }
-                                        debounceSearch(e.target.value);
                                       }
                                     }}
                                     onClick={(e) => {
