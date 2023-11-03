@@ -269,19 +269,21 @@ const DraggableTree = ({
 
   const updateNodeInData = (data, key, updatedNode) => {
     const updateData = (items) => {
-      for (let i = 0; i < items.length; i++) {
-        if (items[i].key === key) {
-          items[i] = updatedNode;
-          return data;
+      return items.map((item) => {
+        if (item.key === key) {
+          return updatedNode;
         }
-        if (items[i].children) {
-          updateData(items[i].children);
+        if (item.children) {
+          return {
+            ...item,
+            children: updateData(item.children),
+          };
         }
-      }
+        return item;
+      });
     };
 
-    const newData = [...data];
-    updateData(newData);
+    const newData = updateData([...data]);
     return newData;
   };
 
