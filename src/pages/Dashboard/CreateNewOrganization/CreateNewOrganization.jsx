@@ -156,7 +156,7 @@ function CreateNewOrganization() {
           .unwrap()
           .then(() => {
             resolve(organizationId);
-            if (isRoutingToEventPage) {
+            if (isRoutingToEventPage && !toggle) {
               navigate(-1);
             } else {
               notification.success({
@@ -547,7 +547,9 @@ function CreateNewOrganization() {
     onSaveHandler(event, true)
       .then(() => {
         if (type?.toUpperCase() == taxonomyClass.PLACE)
-          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${id}`);
+          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${id}`, {
+            state: { data: { isRoutingToOrganization: true } },
+          });
       })
       .catch((error) => console.log(error));
   };
@@ -632,6 +634,7 @@ function CreateNewOrganization() {
                     initialPlace = {
                       ...response,
                       ['accessibility']: initialPlaceAccessibiltiy,
+                      ['type']: entitiesClass?.place,
                     };
                     setLocationPlace(
                       placesOptions([initialPlace], user, calendarContentLanguage)[0],
@@ -643,8 +646,9 @@ function CreateNewOrganization() {
                 initialPlace = {
                   ...response,
                   ['accessibility']: [],
+                  ['type']: entitiesClass?.place,
                 };
-                setLocationPlace(placesOptions([response], user, calendarContentLanguage)[0], sourceOptions.CMS);
+                setLocationPlace(placesOptions([initialPlace], user, calendarContentLanguage)[0], sourceOptions.CMS);
               }
             })
             .catch((error) => console.log(error));

@@ -118,6 +118,7 @@ function CreateNewPlace() {
   const placeId = searchParams.get('id');
   const artsDataId = location?.state?.data?.id ?? null;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
+  const isRoutingToOrganization = location?.state?.data?.isRoutingToOrganization;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let requiredFields = currentCalendarData?.formSchema?.filter((form) => form?.formName === 'Place');
   requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
@@ -246,7 +247,7 @@ function CreateNewPlace() {
                   .unwrap()
                   .then(() => {
                     resolve(placeId);
-                    if (isRoutingToEventPage) {
+                    if (isRoutingToEventPage || isRoutingToOrganization) {
                       navigate(-1);
                     } else {
                       notification.success({
@@ -285,7 +286,7 @@ function CreateNewPlace() {
                   .unwrap()
                   .then(() => {
                     resolve(placeId);
-                    if (isRoutingToEventPage) {
+                    if (isRoutingToEventPage || isRoutingToOrganization) {
                       navigate(-1);
                     } else {
                       notification.success({
