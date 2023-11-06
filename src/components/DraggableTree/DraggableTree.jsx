@@ -35,6 +35,7 @@ const DraggableTree = ({
   const [treeData2, setTreeData2] = useState();
   const [forEditing, setForEditing] = useState();
   const [selectedNode, setSetSelectedNode] = useState();
+  const [expandedKeys, setExpandedKeys] = useState();
 
   const generateFormattedData = (data, isTree1) => {
     return data.map((item) => ({
@@ -342,7 +343,11 @@ const DraggableTree = ({
               className="draggable-tree"
               draggable
               blockNode
+              expandedKeys={expandedKeys}
               onDrop={(info) => onDrop(info, treeData1, setTreeData1, treeData2, setTreeData2)}
+              onExpand={(key) => {
+                setExpandedKeys(key);
+              }}
               treeData={treeData2}
               onSelect={handleClick}
             />
@@ -358,7 +363,11 @@ const DraggableTree = ({
               className="draggable-tree"
               draggable
               blockNode
+              expandedKeys={expandedKeys}
               onDrop={(info) => onDrop(info, treeData2, setTreeData2, treeData1, setTreeData1)}
+              onExpand={(key) => {
+                setExpandedKeys(key);
+              }}
               treeData={treeData1}
               onSelect={handleClick}
               on
