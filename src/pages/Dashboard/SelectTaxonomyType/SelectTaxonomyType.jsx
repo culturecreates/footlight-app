@@ -1,5 +1,5 @@
 import { Button, Card, Col, Dropdown, Form, Row, Typography } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LeftOutlined, DownOutlined, PlusOutlined, DatabaseOutlined } from '@ant-design/icons';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
@@ -8,6 +8,10 @@ import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
 import DateAction from '../../../components/Button/DateAction/DateAction';
 import { standardFieldsForTaxonomy } from '../../../utils/standardFields';
 import { PathName } from '../../../constants/pathName';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
+import { userRoles } from '../../../constants/userRoles';
 
 const SelectTaxonomyType = () => {
   const { t } = useTranslation();
@@ -15,6 +19,8 @@ const SelectTaxonomyType = () => {
   const [formInstance] = Form.useForm();
   const { calendarId } = useParams();
   const [currentCalendarData] = useOutletContext();
+  const { user } = useSelector(getUserDetails);
+  const dispatch = useDispatch();
 
   const [selectedClass, setSelectedClass] = useState({ key: '', label: '' });
   const [standardFields, setStandardFields] = useState([]);
@@ -24,6 +30,21 @@ const SelectTaxonomyType = () => {
     background: 'var(--background-neutrals-underground-0, #F7F7F7)',
     opacity: 0.5,
   };
+
+  const calendar = user?.roles.filter((calendar) => {
+    return calendar.calendarId === calendarId;
+  });
+
+  const adminCheckHandler = () => {
+    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
+    else return false;
+  };
+
+  useEffect(() => {
+    if (!adminCheckHandler()) {
+      dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Not Authorized' }));
+    }
+  }, []);
 
   const onSaveHandler = () => {
     console.log('clicked field option');
