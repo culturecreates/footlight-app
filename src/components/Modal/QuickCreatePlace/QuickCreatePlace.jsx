@@ -28,6 +28,8 @@ import Outlined from '../../Button/Outlined';
 import { useNavigate } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import QuickCreateSaving from '../QuickCreateSaving/QuickCreateSaving';
+import { sourceOptions } from '../../../constants/sourceOptions';
+import { entitiesClass } from '../../../constants/entitiesClass';
 
 const { TextArea } = Input;
 
@@ -132,7 +134,12 @@ function QuickCreatePlace(props) {
     getPlace({ placeId: id, calendarId })
       .unwrap()
       .then((response) => {
-        setLocationPlace(placesOptions([response], user, calendarContentLanguage)[0]);
+        let placeObj = response;
+        placeObj = {
+          ...placeObj,
+          type: entitiesClass.place,
+        };
+        setLocationPlace(placesOptions([placeObj], user, calendarContentLanguage)[0], sourceOptions.CMS);
         eventForm.setFieldValue('locationPlace', id);
       })
       .catch((error) => console.log(error));
