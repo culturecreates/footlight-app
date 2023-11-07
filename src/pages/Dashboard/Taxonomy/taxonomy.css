@@ -36,9 +36,9 @@
   border-bottom: none;
 }
 
-.taxonomy-listing-wrapper .non-admin-class .event-list-item-wrapper {
-  cursor: pointer !important;
-}
+/* .taxonomy-listing-wrapper .non-admin-class .event-list-item-wrapper {
+  cursor: pointer;
+} */
 
 .taxonomy-listing-wrapper .ant-tabs-nav {
   margin-bottom: 0;
