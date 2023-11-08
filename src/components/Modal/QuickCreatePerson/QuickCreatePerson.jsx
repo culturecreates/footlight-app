@@ -65,6 +65,13 @@ function QuickCreatePerson(props) {
         .then((res) => {
           setLoaderModalOpen(false);
           if (res) {
+            notification.success({
+              description: t('dashboard.events.addEditEvent.notification.updateEvent'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
             navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${event[1]?.id}`, {
               state: { data: { isRoutingToEventPage: true } },
             });
