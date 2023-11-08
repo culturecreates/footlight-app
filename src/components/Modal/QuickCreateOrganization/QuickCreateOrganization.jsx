@@ -18,7 +18,7 @@ import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import Outlined from '../../Button/Outlined';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import QuickCreateSaving from '../QuickCreateSaving/QuickCreateSaving';
 
@@ -49,6 +49,7 @@ function QuickCreateOrganization(props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useSelector(getUserDetails);
+  const { eventId } = useParams();
 
   const [addImage] = useAddImageMutation();
   const [addOrganization] = useAddOrganizationMutation();
@@ -71,7 +72,11 @@ function QuickCreateOrganization(props) {
             });
             navigate(
               `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${event[1]?.id}`,
-              { state: { data: { isRoutingToEventPage: true } } },
+              {
+                state: {
+                  data: { isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${res}` },
+                },
+              },
             );
           }
         })
