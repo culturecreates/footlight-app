@@ -157,7 +157,7 @@ function CreateNewOrganization() {
           .then(() => {
             resolve(organizationId);
             if (isRoutingToEventPage && !toggle) {
-              navigate(-1);
+              navigate(isRoutingToEventPage);
             } else {
               notification.success({
                 description: t('dashboard.organization.createNew.notification.editSuccess'),
@@ -287,7 +287,7 @@ function CreateNewOrganization() {
                       };
                     organizationPayload['image'] = imageCrop;
                     addUpdateOrganizationApiHandler(organizationPayload, toggle)
-                      .then(() => resolve())
+                      .then((id) => resolve(id))
                       .catch((error) => {
                         reject();
                         console.log(error);
@@ -304,7 +304,7 @@ function CreateNewOrganization() {
                 else organizationPayload['image'] = imageCrop;
               }
               addUpdateOrganizationApiHandler(organizationPayload, toggle)
-                .then(() => resolve())
+                .then((id) => resolve(id))
                 .catch((error) => {
                   reject();
                   console.log(error);
@@ -340,7 +340,7 @@ function CreateNewOrganization() {
                 else organizationPayload['logo'] = organizationData?.logo;
               }
               addUpdateOrganizationApiHandler(organizationPayload, toggle)
-                .then(() => resolve())
+                .then((id) => resolve(id))
                 .catch((error) => {
                   reject();
                   console.log(error);
@@ -395,7 +395,7 @@ function CreateNewOrganization() {
                               thumbnail: {},
                             };
                             addUpdateOrganizationApiHandler(organizationPayload, toggle)
-                              .then(() => resolve())
+                              .then((id) => resolve(id))
                               .catch((error) => {
                                 reject();
                                 console.log(error);
@@ -412,7 +412,7 @@ function CreateNewOrganization() {
                         else organizationPayload['logo'] = organizationData?.logo;
                       }
                       addUpdateOrganizationApiHandler(organizationPayload, toggle)
-                        .then(() => resolve())
+                        .then((id) => resolve(id))
                         .catch((error) => {
                           reject();
                           console.log(error);
@@ -446,7 +446,7 @@ function CreateNewOrganization() {
                         thumbnail: {},
                       };
                       addUpdateOrganizationApiHandler(organizationPayload, toggle)
-                        .then(() => resolve())
+                        .then((id) => resolve(id))
                         .catch((error) => {
                           reject();
                           console.log(error);
@@ -463,7 +463,7 @@ function CreateNewOrganization() {
                   else organizationPayload['logo'] = organizationData?.logo;
                 }
                 addUpdateOrganizationApiHandler(organizationPayload, toggle)
-                  .then(() => resolve())
+                  .then((id) => resolve(id))
                   .catch((error) => {
                     reject();
                     console.log(error);
@@ -480,7 +480,7 @@ function CreateNewOrganization() {
               else organizationPayload['image'] = imageCrop;
             }
             addUpdateOrganizationApiHandler(organizationPayload, toggle)
-              .then(() => resolve())
+              .then((id) => resolve(id))
               .catch((error) => {
                 reject();
                 console.log(error);
@@ -545,10 +545,17 @@ function CreateNewOrganization() {
 
   const placeNavigationHandler = (id, type, event) => {
     onSaveHandler(event, true)
-      .then(() => {
+      .then((savedOrganizationId) => {
         if (type?.toUpperCase() == taxonomyClass.PLACE)
           navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${id}`, {
-            state: { data: { isRoutingToOrganization: true } },
+            state: {
+              data: {
+                isRoutingToOrganization: organizationId
+                  ? `${location.pathname}?id=${organizationId}`
+                  : `${location.pathname}?id=${savedOrganizationId}`,
+                isRoutingToEventPage: location.state?.data?.isRoutingToEventPage,
+              },
+            },
           });
       })
       .catch((error) => console.log(error));
@@ -690,7 +697,13 @@ function CreateNewOrganization() {
                       <div className="button-container">
                         <Button
                           type="link"
-                          onClick={() => navigate(-1)}
+                          onClick={() => {
+                            if (isRoutingToEventPage) {
+                              navigate(isRoutingToEventPage);
+                            } else {
+                              navigate(-1);
+                            }
+                          }}
                           icon={<LeftOutlined style={{ marginRight: '17px' }} />}>
                           {t('dashboard.organization.createNew.search.breadcrumb')}
                         </Button>

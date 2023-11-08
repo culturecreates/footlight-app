@@ -25,7 +25,7 @@ import { useAddPlaceMutation, useLazyGetPlaceQuery } from '../../../services/pla
 import { placesOptions } from '../../Select/selectOption.settings';
 import { placeTaxonomyMappedFieldTypes } from '../../../constants/placeMappedFieldTypes';
 import Outlined from '../../Button/Outlined';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import QuickCreateSaving from '../QuickCreateSaving/QuickCreateSaving';
 import { sourceOptions } from '../../../constants/sourceOptions';
@@ -55,6 +55,7 @@ function QuickCreatePlace(props) {
   const timestampRef = useRef(Date.now()).current;
   const navigate = useNavigate();
   const { user } = useSelector(getUserDetails);
+  const { eventId } = useParams();
 
   const [event, setEvent] = useState([]);
   useEffect(() => {
@@ -71,7 +72,9 @@ function QuickCreatePlace(props) {
               duration: 3,
             });
             navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${event[1]?.id}`, {
-              state: { data: { isRoutingToEventPage: true } },
+              state: {
+                data: { isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${res}` },
+              },
             });
           }
         })
