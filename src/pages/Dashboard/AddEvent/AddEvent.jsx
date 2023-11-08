@@ -206,15 +206,14 @@ function AddEvent() {
           .then((response) => {
             resolve(response?.id);
             setNewEventId(response?.id);
-
+            notification.success({
+              description: t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
             if (!toggle) {
-              notification.success({
-                description: t('dashboard.events.addEditEvent.notification.saveAsDraft'),
-                placement: 'top',
-                closeIcon: <></>,
-                maxCount: 1,
-                duration: 3,
-              });
               navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
             }
           })
@@ -235,14 +234,14 @@ function AddEvent() {
           .unwrap()
           .then(() => {
             resolve(eventId ?? newEventId);
+            notification.success({
+              description: t('dashboard.events.addEditEvent.notification.updateEvent'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
             if (!toggle) {
-              notification.success({
-                description: t('dashboard.events.addEditEvent.notification.updateEvent'),
-                placement: 'top',
-                closeIcon: <></>,
-                maxCount: 1,
-                duration: 3,
-              });
               navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
             }
           })

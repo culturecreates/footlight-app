@@ -61,6 +61,7 @@ function QuickCreatePlace(props) {
     if (event.length > 0) {
       saveAsDraftHandler(event[0], true)
         .then((res) => {
+          setLoaderModalOpen(false);
           if (res) {
             navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${event[1]?.id}`, {
               state: { data: { isRoutingToEventPage: true } },
@@ -406,6 +407,12 @@ function QuickCreatePlace(props) {
                   <Form.Item
                     name="address"
                     label={t('dashboard.events.addEditEvent.location.quickCreatePlace.address')}
+                    rules={[
+                      {
+                        required: true,
+                        message: t('dashboard.events.addEditEvent.location.quickCreatePlace.validations.address'),
+                      },
+                    ]}
                     required>
                     <PlacesAutocomplete value={address} onChange={handleChange} onSelect={handleSelect}>
                       {({ getInputProps, suggestions, getSuggestionItemProps }) => (
@@ -525,7 +532,7 @@ function QuickCreatePlace(props) {
         ) : (
           <>
             <QuickCreateSaving
-              title={t('dashboard.events.addEditEvent.quickCreate.loaderModal.titlePlace')}
+              title={t('dashboard.events.addEditEvent.quickCreate.loaderModal.title')}
               text={t('dashboard.events.addEditEvent.quickCreate.loaderModal.text')}
               open={!loaderModalOpen}
               onCancel={() => setLoaderModalOpen(false)}

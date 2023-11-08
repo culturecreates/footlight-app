@@ -60,6 +60,7 @@ function QuickCreateOrganization(props) {
     if (event.length > 0) {
       saveAsDraftHandler(event[0], true)
         .then((res) => {
+          setLoaderModalOpen(false);
           if (res) {
             navigate(
               `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${event[1]?.id}`,
@@ -427,7 +428,7 @@ function QuickCreateOrganization(props) {
       ) : (
         <>
           <QuickCreateSaving
-            title={t('dashboard.events.addEditEvent.quickCreate.loaderModal.titleOrganization')}
+            title={t('dashboard.events.addEditEvent.quickCreate.loaderModal.title')}
             text={t('dashboard.events.addEditEvent.quickCreate.loaderModal.text')}
             open={!loaderModalOpen}
             onCancel={() => setLoaderModalOpen(false)}

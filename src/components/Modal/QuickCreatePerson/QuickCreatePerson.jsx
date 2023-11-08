@@ -63,7 +63,8 @@ function QuickCreatePerson(props) {
     if (event.length > 0) {
       saveAsDraftHandler(event[0], true)
         .then((res) => {
-          if (res === event[1]?.id) {
+          setLoaderModalOpen(false);
+          if (res) {
             navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${event[1]?.id}`, {
               state: { data: { isRoutingToEventPage: true } },
             });
@@ -390,7 +391,7 @@ function QuickCreatePerson(props) {
         ) : (
           <>
             <QuickCreateSaving
-              title={t('dashboard.events.addEditEvent.quickCreate.loaderModal.titlePerson')}
+              title={t('dashboard.events.addEditEvent.quickCreate.loaderModal.title')}
               text={t('dashboard.events.addEditEvent.quickCreate.loaderModal.text')}
               open={!loaderModalOpen}
               onCancel={() => setLoaderModalOpen(false)}
