@@ -235,6 +235,7 @@ function AddEvent() {
           .unwrap()
           .then(() => {
             resolve(eventId ?? newEventId);
+
             if (!toggle) {
               notification.success({
                 description: t('dashboard.events.addEditEvent.notification.updateEvent'),
@@ -605,7 +606,7 @@ function AddEvent() {
                   addUpdateEventApiHandler(eventObj, toggle)
                     .then((id) => resolve(id))
                     .catch((error) => {
-                      reject();
+                      reject(error);
                       console.log(error);
                     });
                 })
@@ -623,13 +624,14 @@ function AddEvent() {
             addUpdateEventApiHandler(eventObj, toggle)
               .then((id) => resolve(id))
               .catch((error) => {
-                reject();
+                reject(error);
                 console.log(error);
               });
           }
         })
         .catch((error) => {
           console.log(error);
+          reject(error);
           message.warning({
             duration: 10,
             maxCount: 1,
