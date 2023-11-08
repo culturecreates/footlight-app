@@ -789,7 +789,6 @@ function CreateNewPlace() {
     }
 
     placesSearch('');
-    console.log(location.state);
   }, []);
 
   return !isPlaceLoading && !artsDataLoading && !taxonomyLoading ? (
