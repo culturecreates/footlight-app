@@ -4,7 +4,6 @@ import './customModal.css';
 
 function CustomModal(props) {
   const { children, className } = props;
-  console.log(className);
   return (
     <Modal
       title="Basic Modal"
