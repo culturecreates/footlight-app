@@ -137,7 +137,7 @@ function CreateNewPerson() {
           .then(() => {
             resolve(personId);
             if (isRoutingToEventPage) {
-              navigate(-1);
+              navigate(isRoutingToEventPage);
             } else {
               notification.success({
                 description: t('dashboard.people.createNew.addPerson.notification.editSuccess'),
@@ -358,7 +358,13 @@ function CreateNewPerson() {
                       <div className="button-container">
                         <Button
                           type="link"
-                          onClick={() => navigate(-1)}
+                          onClick={() => {
+                            if (isRoutingToEventPage) {
+                              navigate(isRoutingToEventPage);
+                            } else {
+                              navigate(-1);
+                            }
+                          }}
                           icon={<LeftOutlined style={{ marginRight: '17px' }} />}>
                           {t('dashboard.organization.createNew.search.breadcrumb')}
                         </Button>

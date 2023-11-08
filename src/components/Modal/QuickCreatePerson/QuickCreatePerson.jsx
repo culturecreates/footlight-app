@@ -23,7 +23,7 @@ import TreeSelectOption from '../../TreeSelectOption/TreeSelectOption';
 import Tags from '../../Tags/Common/Tags';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import Outlined from '../../Button/Outlined';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import QuickCreateSaving from '../QuickCreateSaving/QuickCreateSaving';
 
@@ -53,6 +53,7 @@ function QuickCreatePerson(props) {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const timestampRef = useRef(Date.now()).current;
+  const { eventId } = useParams();
 
   const { user } = useSelector(getUserDetails);
   const navigate = useNavigate();
@@ -73,7 +74,9 @@ function QuickCreatePerson(props) {
               duration: 3,
             });
             navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${event[1]?.id}`, {
-              state: { data: { isRoutingToEventPage: true } },
+              state: {
+                data: { isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${res}` },
+              },
             });
           }
         })
