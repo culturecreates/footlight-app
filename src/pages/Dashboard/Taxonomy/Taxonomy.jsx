@@ -73,6 +73,11 @@ const Taxonomy = () => {
   });
   const [pageNumber, setPageNumber] = useState(1);
 
+  const handleListCardStyles = () => {
+    const listCardStyles = !adminCheckHandler() ? { style: { cursor: 'initial' } } : { style: { cursor: 'pointer' } };
+    return listCardStyles;
+  };
+
   useEffect(() => {
     const filtersDecoded = setFiletrsForApiCall();
 
@@ -173,7 +178,8 @@ const Taxonomy = () => {
     navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomySelectType}`);
   };
   const listItemHandler = (id) => {
-    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomy}?id=${id}`);
+    adminCheckHandler() &&
+      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomy}?id=${id}`);
   };
   const deleteOrganizationHandler = (id) => {
     Confirm({
@@ -359,6 +365,7 @@ const Taxonomy = () => {
                       <ListItem
                         key={index}
                         id={index}
+                        styles={handleListCardStyles()}
                         logo={item?.logo?.thumbnail?.uri}
                         defaultLogo={<TagOutlined style={{ color: '#607EFC', fontSize: '18px' }} />}
                         title={contentLanguageBilingual({

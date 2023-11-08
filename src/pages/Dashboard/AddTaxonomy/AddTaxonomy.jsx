@@ -11,12 +11,15 @@ import Outlined from '../../../components/Button/Outlined';
 import ContentLanguageInput from '../../../components/ContentLanguageInput';
 import './addTaxonomy.css';
 import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
-import { userRolesWithTranslation } from '../../../constants/userRoles';
+import { userRoles, userRolesWithTranslation } from '../../../constants/userRoles';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
 import DraggableTree from '../../../components/DraggableTree/DraggableTree';
 import { useAddTaxonomyMutation, useLazyGetTaxonomyQuery, useUpdateTaxonomyMutation } from '../../../services/taxonomy';
 import { getStandardFieldArrayForClass, standardFieldsForTaxonomy } from '../../../utils/standardFields';
 import LoadingIndicator from '../../../components/LoadingIndicator';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
 
 const AddTaxonomy = () => {
   const { TextArea } = Input;
@@ -26,12 +29,21 @@ const AddTaxonomy = () => {
   const location = useLocation();
   let [searchParams, setSearchParams] = useSearchParams();
   const taxonomyId = searchParams.get('id');
+  const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
   const [currentCalendarData, , , getCalendar] = useOutletContext();
   const timestampRef = useRef(Date.now()).current;
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
+  const calendar = user?.roles.filter((calendar) => {
+    return calendar.calendarId === calendarId;
+  });
+  const adminCheckHandler = () => {
+    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
+    else return false;
+  };
 
   const [loading, setLoading] = useState(true);
   const [render, setRender] = useState(true);
@@ -61,6 +73,12 @@ const AddTaxonomy = () => {
   });
   const [addTaxonomy] = useAddTaxonomyMutation();
   const [updateTaxonomy] = useUpdateTaxonomyMutation();
+
+  useEffect(() => {
+    if (!adminCheckHandler) {
+      dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Not Authorized' }));
+    }
+  }, []);
 
   useEffect(() => {
     if (!taxonomyId && currentCalendarData) {

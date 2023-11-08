@@ -61,13 +61,27 @@ function QuickCreatePerson(props) {
 
   useEffect(() => {
     if (event.length > 0) {
-      saveAsDraftHandler(event[0], true).then((res) => {
-        if (res) {
-          navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${event[1]?.id}`, {
-            state: { data: { isRoutingToEventPage: true } },
-          });
-        }
-      });
+      saveAsDraftHandler(event[0], true)
+        .then((res) => {
+          setLoaderModalOpen(false);
+          if (res) {
+            notification.success({
+              description: t('dashboard.events.addEditEvent.notification.updateEvent'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${event[1]?.id}`, {
+              state: { data: { isRoutingToEventPage: true } },
+            });
+          }
+        })
+        .catch((error) => {
+          if (error) {
+            setLoaderModalOpen(false);
+          }
+        });
     }
   }, [selectedOrganizers, selectedPerformers, selectedSupporters]);
 
@@ -384,7 +398,7 @@ function QuickCreatePerson(props) {
         ) : (
           <>
             <QuickCreateSaving
-              title={t('dashboard.events.addEditEvent.quickCreate.loaderModal.titlePerson')}
+              title={t('dashboard.events.addEditEvent.quickCreate.loaderModal.title')}
               text={t('dashboard.events.addEditEvent.quickCreate.loaderModal.text')}
               open={!loaderModalOpen}
               onCancel={() => setLoaderModalOpen(false)}
