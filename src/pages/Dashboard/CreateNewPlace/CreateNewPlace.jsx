@@ -247,8 +247,18 @@ function CreateNewPlace() {
                   .unwrap()
                   .then(() => {
                     resolve(placeId);
-                    if (isRoutingToEventPage || isRoutingToOrganization) {
-                      navigate(-1);
+                    if (isRoutingToEventPage && isRoutingToOrganization) {
+                      navigate(isRoutingToOrganization, {
+                        state: {
+                          data: {
+                            isRoutingToEventPage: location.state?.data?.isRoutingToEventPage,
+                          },
+                        },
+                      });
+                    } else if (isRoutingToEventPage && !isRoutingToOrganization) {
+                      navigate(isRoutingToEventPage);
+                    } else if (!isRoutingToEventPage && isRoutingToOrganization) {
+                      navigate(isRoutingToOrganization);
                     } else {
                       notification.success({
                         description: t('dashboard.places.createNew.addPlace.notification.editSuccess'),
@@ -779,6 +789,7 @@ function CreateNewPlace() {
     }
 
     placesSearch('');
+    console.log(location.state);
   }, []);
 
   return !isPlaceLoading && !artsDataLoading && !taxonomyLoading ? (
@@ -794,7 +805,23 @@ function CreateNewPlace() {
                       <div className="button-container">
                         <Button
                           type="link"
-                          onClick={() => navigate(-1)}
+                          onClick={() => {
+                            if (isRoutingToEventPage && isRoutingToOrganization) {
+                              navigate(isRoutingToOrganization, {
+                                state: {
+                                  data: {
+                                    isRoutingToEventPage: location.state?.data?.isRoutingToEventPage,
+                                  },
+                                },
+                              });
+                            } else if (isRoutingToEventPage && !isRoutingToOrganization) {
+                              navigate(isRoutingToEventPage);
+                            } else if (!isRoutingToEventPage && isRoutingToOrganization) {
+                              navigate(isRoutingToOrganization);
+                            } else {
+                              navigate(-1);
+                            }
+                          }}
                           icon={<LeftOutlined style={{ marginRight: '17px' }} />}>
                           {t('dashboard.places.createNew.search.breadcrumb')}
                         </Button>

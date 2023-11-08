@@ -15,7 +15,7 @@ import {
 import moment from 'moment-timezone';
 import i18n from 'i18next';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
-import { useNavigate, useParams, useSearchParams, useOutletContext } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams, useOutletContext, useLocation } from 'react-router-dom';
 import { useGetEventQuery, useUpdateEventStateMutation } from '../../../services/events';
 import { PathName } from '../../../constants/pathName';
 import Outlined from '../../../components/Button/Outlined';
@@ -88,6 +88,7 @@ const { TextArea } = Input;
 
 function AddEvent() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [form] = Form.useForm();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId, eventId } = useParams();
@@ -874,7 +875,7 @@ function AddEvent() {
 
   const organizerPerformerSupporterPlaceNavigationHandler = (id, type, event) => {
     saveAsDraftHandler(event, true)
-      .then(() => {
+      .then((savedEventId) => {
         if ((!eventId || eventId === '') && newEventId === null)
           notification.success({
             description: t('dashboard.events.addEditEvent.notification.saveAsDraft'),
@@ -894,15 +895,21 @@ function AddEvent() {
 
         if (type?.toUpperCase() == taxonomyClass.ORGANIZATION)
           navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${id}`, {
-            state: { data: { isRoutingToEventPage: true } },
+            state: {
+              data: { isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${savedEventId}` },
+            },
           });
         else if (type?.toUpperCase() == taxonomyClass.PERSON)
           navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${id}`, {
-            state: { data: { isRoutingToEventPage: true } },
+            state: {
+              data: { isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${savedEventId}` },
+            },
           });
         else if (type?.toUpperCase() == taxonomyClass.PLACE)
           navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${id}`, {
-            state: { data: { isRoutingToEventPage: true } },
+            state: {
+              data: { isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${savedEventId}` },
+            },
           });
       })
       .catch((error) => console.log(error));
