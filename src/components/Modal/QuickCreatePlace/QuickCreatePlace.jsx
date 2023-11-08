@@ -59,13 +59,19 @@ function QuickCreatePlace(props) {
   const [event, setEvent] = useState([]);
   useEffect(() => {
     if (event.length > 0) {
-      saveAsDraftHandler(event[0], true).then((res) => {
-        if (res) {
-          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${event[1]?.id}`, {
-            state: { data: { isRoutingToEventPage: true } },
-          });
-        }
-      });
+      saveAsDraftHandler(event[0], true)
+        .then((res) => {
+          if (res) {
+            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${event[1]?.id}`, {
+              state: { data: { isRoutingToEventPage: true } },
+            });
+          }
+        })
+        .catch((error) => {
+          if (error) {
+            setLoaderModalOpen(false);
+          }
+        });
     }
   }, [locationPlace]);
 
