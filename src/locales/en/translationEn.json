@@ -233,8 +233,10 @@
             "crop": {
               "title": "Position image",
               "subHeading": "Adjust position if necessary.",
-              "savedFrameSize": "Saved frame sizes",
+              "savedFrameSize": "Available image ratios",
               "ratio": "Ratio",
+              "thumbnailImage": "Thumbnail image",
+              "largeImage": "Large image",
               "save": "Save",
               "cancel": "Cancel"
             }
