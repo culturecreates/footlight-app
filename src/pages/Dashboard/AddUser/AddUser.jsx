@@ -211,7 +211,7 @@ const AddUser = () => {
             language: values?.languagePreference?.key,
             calendarId,
           }).then((res) => {
-            if (res.statusCode == 202) {
+            if (res.statusCode == 201) {
               notification.success({
                 description: t(`dashboard.settings.addUser.notification.invitation`),
                 key: res.message,

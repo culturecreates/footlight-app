@@ -859,7 +859,7 @@
           "language": "Select preferred language."
         },
         "notification": {
-          "invitation": "Invitation send successfully",
+          "invitation": "Success! Invitation sent.",
           "updateUser": "Success! User profile has been updated.",
           "deleteUser": "Are you sure you want to permanently delete this user?"
         },
