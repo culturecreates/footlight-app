@@ -117,6 +117,8 @@ function CreateNewPlace() {
   };
   const placeId = searchParams.get('id');
   const artsDataId = location?.state?.data?.id ?? null;
+  const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
+  const isRoutingToOrganization = location?.state?.data?.isRoutingToOrganization;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let requiredFields = currentCalendarData?.formSchema?.filter((form) => form?.formName === 'Place');
   requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
@@ -245,14 +247,28 @@ function CreateNewPlace() {
                   .unwrap()
                   .then(() => {
                     resolve(placeId);
-                    notification.success({
-                      description: t('dashboard.places.createNew.addPlace.notification.editSuccess'),
-                      placement: 'top',
-                      closeIcon: <></>,
-                      maxCount: 1,
-                      duration: 3,
-                    });
-                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
+                    if (isRoutingToEventPage && isRoutingToOrganization) {
+                      navigate(isRoutingToOrganization, {
+                        state: {
+                          data: {
+                            isRoutingToEventPage: location.state?.data?.isRoutingToEventPage,
+                          },
+                        },
+                      });
+                    } else if (isRoutingToEventPage && !isRoutingToOrganization) {
+                      navigate(isRoutingToEventPage);
+                    } else if (!isRoutingToEventPage && isRoutingToOrganization) {
+                      navigate(isRoutingToOrganization);
+                    } else {
+                      notification.success({
+                        description: t('dashboard.places.createNew.addPlace.notification.editSuccess'),
+                        placement: 'top',
+                        closeIcon: <></>,
+                        maxCount: 1,
+                        duration: 3,
+                      });
+                      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
+                    }
                   })
                   .catch((error) => {
                     reject();
@@ -280,14 +296,28 @@ function CreateNewPlace() {
                   .unwrap()
                   .then(() => {
                     resolve(placeId);
-                    notification.success({
-                      description: t('dashboard.places.createNew.addPlace.notification.editSuccess'),
-                      placement: 'top',
-                      closeIcon: <></>,
-                      maxCount: 1,
-                      duration: 3,
-                    });
-                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
+                    if (isRoutingToEventPage && isRoutingToOrganization) {
+                      navigate(isRoutingToOrganization, {
+                        state: {
+                          data: {
+                            isRoutingToEventPage: location.state?.data?.isRoutingToEventPage,
+                          },
+                        },
+                      });
+                    } else if (isRoutingToEventPage && !isRoutingToOrganization) {
+                      navigate(isRoutingToEventPage);
+                    } else if (!isRoutingToEventPage && isRoutingToOrganization) {
+                      navigate(isRoutingToOrganization);
+                    } else {
+                      notification.success({
+                        description: t('dashboard.places.createNew.addPlace.notification.editSuccess'),
+                        placement: 'top',
+                        closeIcon: <></>,
+                        maxCount: 1,
+                        duration: 3,
+                      });
+                      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`);
+                    }
                   })
                   .catch((error) => {
                     reject();
@@ -784,7 +814,23 @@ function CreateNewPlace() {
                       <div className="button-container">
                         <Button
                           type="link"
-                          onClick={() => navigate(-1)}
+                          onClick={() => {
+                            if (isRoutingToEventPage && isRoutingToOrganization) {
+                              navigate(isRoutingToOrganization, {
+                                state: {
+                                  data: {
+                                    isRoutingToEventPage: location.state?.data?.isRoutingToEventPage,
+                                  },
+                                },
+                              });
+                            } else if (isRoutingToEventPage && !isRoutingToOrganization) {
+                              navigate(isRoutingToEventPage);
+                            } else if (!isRoutingToEventPage && isRoutingToOrganization) {
+                              navigate(isRoutingToOrganization);
+                            } else {
+                              navigate(-1);
+                            }
+                          }}
                           icon={<LeftOutlined style={{ marginRight: '17px' }} />}>
                           {t('dashboard.places.createNew.search.breadcrumb')}
                         </Button>
@@ -945,7 +991,17 @@ function CreateNewPlace() {
                       required: requiredFieldNames?.includes(placeFormRequiredFieldNames?.PLACE_TYPE),
                       message: t('dashboard.places.createNew.addPlace.validations.placeTypeRequired'),
                     },
-                  ]}>
+                  ]}
+                  style={{
+                    display:
+                      !taxonomyDetails(
+                        allTaxonomyData?.data,
+                        user,
+                        placeTaxonomyMappedFieldTypes.TYPE,
+                        'name',
+                        false,
+                      ) && 'none',
+                  }}>
                   <TreeSelectOption
                     placeholder={t('dashboard.places.createNew.addPlace.placeType.placeholder')}
                     allowClear
@@ -1468,7 +1524,17 @@ function CreateNewPlace() {
                         artsData?.regions?.map((region) => {
                           return region?.entityId;
                         })
-                  }>
+                  }
+                  style={{
+                    display:
+                      !taxonomyDetails(
+                        allTaxonomyData?.data,
+                        user,
+                        placeTaxonomyMappedFieldTypes.REGION,
+                        'name',
+                        false,
+                      ) && 'none',
+                  }}>
                   <TreeSelectOption
                     placeholder={t('dashboard.places.createNew.addPlace.address.region.placeholder')}
                     allowClear
@@ -1775,124 +1841,145 @@ function CreateNewPlace() {
               </>
               <></>
             </Card>
-            <Card title={t('dashboard.places.createNew.addPlace.venueAccessibility.venueAccessibility')}>
-              <>
-                <Row>
-                  <Col>
-                    <p className="add-event-date-heading">
-                      {t('dashboard.places.createNew.addPlace.venueAccessibility.subheading')}
-                    </p>
-                  </Col>
-                </Row>
-                <Form.Item
-                  name={formFieldNames.PLACE_ACCESSIBILITY}
-                  style={{ width: '423px' }}
-                  label={taxonomyDetails(
-                    allTaxonomyData?.data,
-                    user,
-                    placeTaxonomyMappedFieldTypes.PLACE_ACCESSIBILITY,
-                    'name',
-                    false,
-                  )}
-                  initialValue={placeData?.accessibility?.map((type) => {
-                    return type?.entityId;
-                  })}>
-                  <TreeSelectOption
-                    placeholder={t('dashboard.places.createNew.addPlace.venueAccessibility.placeholder')}
-                    allowClear
-                    treeDefaultExpandAll
-                    notFoundContent={<NoContent />}
-                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                    treeData={treeTaxonomyOptions(
-                      allTaxonomyData,
+            {taxonomyDetails(
+              allTaxonomyData?.data,
+              user,
+              placeTaxonomyMappedFieldTypes.PLACE_ACCESSIBILITY,
+              'name',
+              false,
+            ) && (
+              <Card title={t('dashboard.places.createNew.addPlace.venueAccessibility.venueAccessibility')}>
+                <>
+                  <Row>
+                    <Col>
+                      <p className="add-event-date-heading">
+                        {t('dashboard.places.createNew.addPlace.venueAccessibility.subheading')}
+                      </p>
+                    </Col>
+                  </Row>
+                  <Form.Item
+                    name={formFieldNames.PLACE_ACCESSIBILITY}
+                    label={taxonomyDetails(
+                      allTaxonomyData?.data,
                       user,
                       placeTaxonomyMappedFieldTypes.PLACE_ACCESSIBILITY,
+                      'name',
                       false,
-                      calendarContentLanguage,
                     )}
-                    tagRender={(props) => {
-                      const { label, closable, onClose } = props;
-                      return (
-                        <Tags
-                          closable={closable}
-                          onClose={onClose}
-                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                          {label}
-                        </Tags>
-                      );
-                    }}
-                  />
-                </Form.Item>
+                    initialValue={placeData?.accessibility?.map((type) => {
+                      return type?.entityId;
+                    })}
+                    style={{
+                      width: '423px',
+                      display:
+                        !taxonomyDetails(
+                          allTaxonomyData?.data,
+                          user,
+                          placeTaxonomyMappedFieldTypes.PLACE_ACCESSIBILITY,
+                          'name',
+                          false,
+                        ) && 'none',
+                    }}>
+                    <TreeSelectOption
+                      placeholder={t('dashboard.places.createNew.addPlace.venueAccessibility.placeholder')}
+                      allowClear
+                      treeDefaultExpandAll
+                      notFoundContent={<NoContent />}
+                      clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                      treeData={treeTaxonomyOptions(
+                        allTaxonomyData,
+                        user,
+                        placeTaxonomyMappedFieldTypes.PLACE_ACCESSIBILITY,
+                        false,
+                        calendarContentLanguage,
+                      )}
+                      tagRender={(props) => {
+                        const { label, closable, onClose } = props;
+                        return (
+                          <Tags
+                            closable={closable}
+                            onClose={onClose}
+                            closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                            {label}
+                          </Tags>
+                        );
+                      }}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    label={t('dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.note')}
+                    name={placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP}
+                    className={formFieldNames.ACCESSIBILITY_NOTE_WRAP}
+                    style={{
+                      display:
+                        !addedFields?.includes(placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP) &&
+                        'none',
+                    }}>
+                    <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                      <BilingualInput fieldData={placeData?.accessibilityNote}>
+                        <Form.Item
+                          name={formFieldNames.ACCESSIBILITY_NOTE_FRENCH}
+                          initialValue={placeData?.accessibilityNote?.fr}
+                          key={contentLanguage.FRENCH}>
+                          <TextArea
+                            autoComplete="off"
+                            placeholder={t(
+                              'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.placeholder.french',
+                            )}
+                            style={{
+                              borderRadius: '4px',
+                              border: '4px solid #E8E8E8',
+                              width: '423px',
+                              resize: 'vertical',
+                            }}
+                            size="large"
+                          />
+                        </Form.Item>
+                        <Form.Item
+                          name={formFieldNames.ACCESSIBILITY_NOTE_ENGLISH}
+                          initialValue={placeData?.accessibilityNote?.en}
+                          key={contentLanguage.ENGLISH}>
+                          <TextArea
+                            autoComplete="off"
+                            placeholder={t(
+                              'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.placeholder.english',
+                            )}
+                            style={{
+                              borderRadius: '4px',
+                              border: '4px solid #E8E8E8',
+                              width: '423px',
+                              resize: 'vertical',
+                            }}
+                            size="large"
+                          />
+                        </Form.Item>
+                      </BilingualInput>
+                    </ContentLanguageInput>
+                  </Form.Item>
+                </>
                 <Form.Item
-                  label={t('dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.note')}
-                  name={placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP}
-                  className={formFieldNames.ACCESSIBILITY_NOTE_WRAP}
-                  style={{
-                    display:
-                      !addedFields?.includes(placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP) && 'none',
-                  }}>
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                    <BilingualInput fieldData={placeData?.accessibilityNote}>
-                      <Form.Item
-                        name={formFieldNames.ACCESSIBILITY_NOTE_FRENCH}
-                        initialValue={placeData?.accessibilityNote?.fr}
-                        key={contentLanguage.FRENCH}>
-                        <TextArea
-                          autoComplete="off"
-                          placeholder={t(
-                            'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.placeholder.french',
-                          )}
-                          style={{
-                            borderRadius: '4px',
-                            border: '4px solid #E8E8E8',
-                            width: '423px',
-                            resize: 'vertical',
-                          }}
-                          size="large"
+                  label={t('dashboard.places.createNew.addPlace.addMoreDetails')}
+                  style={{ lineHeight: '2.5' }}>
+                  {addedFields?.includes(placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP) ? (
+                    <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                  ) : (
+                    placeAccessibilityTypeOptions.map((type) => {
+                      return (
+                        <ChangeType
+                          key={type.type}
+                          primaryIcon={<PlusOutlined />}
+                          disabled={type.disabled}
+                          label={type.label}
+                          promptText={type.tooltip}
+                          secondaryIcon={<InfoCircleOutlined />}
+                          onClick={() => addFieldsHandler(type?.fieldNames)}
                         />
-                      </Form.Item>
-                      <Form.Item
-                        name={formFieldNames.ACCESSIBILITY_NOTE_ENGLISH}
-                        initialValue={placeData?.accessibilityNote?.en}
-                        key={contentLanguage.ENGLISH}>
-                        <TextArea
-                          autoComplete="off"
-                          placeholder={t(
-                            'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.placeholder.english',
-                          )}
-                          style={{
-                            borderRadius: '4px',
-                            border: '4px solid #E8E8E8',
-                            width: '423px',
-                            resize: 'vertical',
-                          }}
-                          size="large"
-                        />
-                      </Form.Item>
-                    </BilingualInput>
-                  </ContentLanguageInput>
+                      );
+                    })
+                  )}
                 </Form.Item>
-              </>
-              <Form.Item label={t('dashboard.places.createNew.addPlace.addMoreDetails')} style={{ lineHeight: '2.5' }}>
-                {addedFields?.includes(placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP) ? (
-                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
-                ) : (
-                  placeAccessibilityTypeOptions.map((type) => {
-                    return (
-                      <ChangeType
-                        key={type.type}
-                        primaryIcon={<PlusOutlined />}
-                        disabled={type.disabled}
-                        label={type.label}
-                        promptText={type.tooltip}
-                        secondaryIcon={<InfoCircleOutlined />}
-                        onClick={() => addFieldsHandler(type?.fieldNames)}
-                      />
-                    );
-                  })
-                )}
-              </Form.Item>
-            </Card>
+              </Card>
+            )}
           </Row>
         </Form>
       </div>

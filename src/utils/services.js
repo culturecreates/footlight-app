@@ -123,11 +123,10 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       placement: 'top',
     });
   }
-  if (result?.meta?.response && result?.meta?.response.status === 503) {
+  if (result?.meta?.response?.status === 502) {
     // HTTP 503 Service Unavailable server error response code indicates that the server is not ready to handle the request.
     // Common causes are a server that is down for maintenance or that is overloaded.
     api.dispatch(setErrorStates({ errorCode: '503', isError: true }));
-
     notification.info({
       key: '503',
       message: <Translation>{(t) => t('common.server.status.503.message')}</Translation>,

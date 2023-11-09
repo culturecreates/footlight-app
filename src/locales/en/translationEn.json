@@ -210,7 +210,8 @@
             "type": "Type",
             "typePlaceholder": "Select type",
             "validations": {
-              "name": "Name is required."
+              "name": "Name is required.",
+              "address": "Address is required"
             }
           }
         },
@@ -367,7 +368,12 @@
           "person": "Person",
           "organization": "Organization",
           "create": "Create",
+          "addFullDetails": "Add full details",
           "cancel": "Cancel",
+          "loaderModal": {
+            "text": "Saving and redirecting.",
+            "title": "Add full details"
+          },
           "quickCreateOrganization": {
             "title": "Create an organization",
             "subHeading": "Add basic information about this organization.",

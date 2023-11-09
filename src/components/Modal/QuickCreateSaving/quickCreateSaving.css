@@ -1,0 +1,19 @@
+.saving-loader-modal .text {
+  font-weight: 400;
+  font-family: Roboto;
+  font-size: 16px;
+  color: #646d7b;
+  margin-top: -30px;
+  line-height: 24px;
+  letter-spacing: 0em;
+  text-align: center;
+  padding: 8px 0px;
+}
+
+.saving-loader-modal .custom-common-modal-container .ant-modal-content .ant-modal-header {
+  height: 64px;
+}
+
+.saving-loader-modal .ant-modal-body {
+  padding: 0;
+}

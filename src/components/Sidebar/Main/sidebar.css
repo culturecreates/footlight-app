@@ -24,6 +24,13 @@
 .sidebar-wrapper .sidebar-main-menu {
   margin-top: 24px;
 }
+
+.sidebar-wrapper .sidebar-main-menu .ant-menu-light .ant-menu-item:hover:not(.sidebar-wrapper .sidebar-main-menu .ant-menu-item-selected) {
+  background-color: #f9faff;
+  color: #1B3DE6
+}
+
+
 .sidebar-wrapper .sidebar-calendar {
   gap: 8px;
   height: 48px;

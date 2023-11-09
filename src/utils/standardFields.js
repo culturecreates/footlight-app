@@ -30,9 +30,6 @@ export const standardFieldsForTaxonomy = (value, takenFields) => {
   } else if (value.toLowerCase() === taxonomyClass.PLACE.toLowerCase()) {
     filter(PLACE, taxonomyClass.PLACE);
     return [...new Set(returnArr)];
-  } else if (value.toLowerCase() === taxonomyClass.VIRTUAL_LOCATION.toLowerCase()) {
-    filter([], taxonomyClass.VIRTUAL_LOCATION);
-    return [...new Set(returnArr)];
   } else if (value.toLowerCase() === taxonomyClass.PERSON.toLowerCase()) {
     filter(PERSON, taxonomyClass.PERSON);
     return [...new Set(returnArr)];
@@ -42,6 +39,11 @@ export const standardFieldsForTaxonomy = (value, takenFields) => {
     return [...new Set(returnArr)];
   }
 };
+
+// else if (value.toLowerCase() === taxonomyClass.VIRTUAL_LOCATION.toLowerCase()) {
+//   filter([], taxonomyClass.VIRTUAL_LOCATION);
+//   return [...new Set(returnArr)];
+// }
 
 export const getStandardFieldArrayForClass = (value) => {
   let arr = [];

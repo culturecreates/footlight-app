@@ -89,6 +89,7 @@ function TextEditor(props) {
           placeholder={placeholder}
           className="text-editor"
           modules={modules}
+          preserveWhitespace
           onChange={onChange}
           data-cy="text-editor"
         />

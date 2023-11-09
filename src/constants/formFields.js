@@ -17,6 +17,7 @@ import EventsSearch from '../components/Search/Events/EventsSearch';
 import SelectionItem from '../components/List/SelectionItem';
 import BilingualTextEditor from '../components/BilingualTextEditor';
 import Outlined from '../components/Button/Outlined';
+import { sourceOptions } from './sourceOptions';
 
 const { TextArea } = Input;
 
@@ -255,6 +256,11 @@ export const formFieldValue = [
           })}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
           treeData={treeTaxonomyOptions(taxonomyData, user, taxonomyAlias, isDynamicField, calendarContentLanguage)}
+          style={{
+            display:
+              !treeTaxonomyOptions(taxonomyData, user, taxonomyAlias, isDynamicField, calendarContentLanguage) &&
+              'none',
+          }}
           tagRender={(props) => {
             const { label, closable, onClose } = props;
             return (
@@ -321,6 +327,7 @@ export const formFieldValue = [
       placesSearch,
       calendarContentLanguage,
       allPlacesArtsdataList,
+      placeNavigationHandler,
     }) => {
       return (
         <>
@@ -413,6 +420,9 @@ export const formFieldValue = [
                 setLocationPlace();
                 form.setFieldValue(name, undefined);
               }}
+              edit={locationPlace?.source === sourceOptions.CMS && true}
+              onEdit={(e) => placeNavigationHandler(locationPlace?.value, locationPlace?.type, e)}
+              creatorId={locationPlace?.creatorId}
             />
           )}
         </>
@@ -520,6 +530,7 @@ export const returnFormDataWithFields = ({
   isPopoverOpen,
   form,
   style,
+  placeNavigationHandler,
 }) => {
   return renderFormFields({
     name: [field?.mappedField],
@@ -586,6 +597,7 @@ export const returnFormDataWithFields = ({
       isPopoverOpen,
       form,
       taxonomyAlias: field?.taxonomyAlias,
+      placeNavigationHandler,
     }),
     key: index,
     initialValue: formInitialValueHandler(field?.type, field?.mappedField, field?.datatype, entityData),

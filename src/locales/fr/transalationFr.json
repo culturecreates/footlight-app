@@ -209,7 +209,8 @@
             "type": "Type",
             "typePlaceholder": "Sélectionnez un type",
             "validations": {
-              "name": "Le nom est requis."
+              "name": "Le nom est requis.",
+              "address": "L'adresse est requise."
             }
           }
         },
@@ -365,7 +366,12 @@
           "person": "Personne",
           "organization": "Organisation",
           "create": "Créer",
+          "addFullDetails": "Add full details",
           "cancel": "Annuler",
+          "loaderModal": {
+            "text": "Sauvegarde et redirection.",
+            "title": "Ajouter les détails complets"
+          },
           "quickCreateOrganization": {
             "title": "Créer une organisation",
             "subHeading": "Ajoutez des informations de base sur cette organisation.",

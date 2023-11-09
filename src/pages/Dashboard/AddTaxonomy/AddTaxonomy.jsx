@@ -11,12 +11,15 @@ import Outlined from '../../../components/Button/Outlined';
 import ContentLanguageInput from '../../../components/ContentLanguageInput';
 import './addTaxonomy.css';
 import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
-import { userRolesWithTranslation } from '../../../constants/userRoles';
+import { userRoles, userRolesWithTranslation } from '../../../constants/userRoles';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
 import DraggableTree from '../../../components/DraggableTree/DraggableTree';
 import { useAddTaxonomyMutation, useLazyGetTaxonomyQuery, useUpdateTaxonomyMutation } from '../../../services/taxonomy';
 import { getStandardFieldArrayForClass, standardFieldsForTaxonomy } from '../../../utils/standardFields';
 import LoadingIndicator from '../../../components/LoadingIndicator';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
 
 const AddTaxonomy = () => {
   const { TextArea } = Input;
@@ -26,12 +29,21 @@ const AddTaxonomy = () => {
   const location = useLocation();
   let [searchParams, setSearchParams] = useSearchParams();
   const taxonomyId = searchParams.get('id');
+  const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
   const [currentCalendarData, , , getCalendar] = useOutletContext();
   const timestampRef = useRef(Date.now()).current;
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
+  const calendar = user?.roles.filter((calendar) => {
+    return calendar.calendarId === calendarId;
+  });
+  const adminCheckHandler = () => {
+    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
+    else return false;
+  };
 
   const [loading, setLoading] = useState(true);
   const [render, setRender] = useState(true);
@@ -63,6 +75,12 @@ const AddTaxonomy = () => {
   const [updateTaxonomy] = useUpdateTaxonomyMutation();
 
   useEffect(() => {
+    if (!adminCheckHandler) {
+      dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Not Authorized' }));
+    }
+  }, []);
+
+  useEffect(() => {
     if (!taxonomyId && currentCalendarData) {
       setLoading(true);
       if (location.state?.selectedClass) {
@@ -85,7 +103,7 @@ const AddTaxonomy = () => {
   }, [currentCalendarData]);
 
   useEffect(() => {
-    if (taxonomyId) {
+    if (taxonomyId && currentCalendarData) {
       setLoading(true);
       getTaxonomy({ id: taxonomyId, includeConcepts: true, calendarId })
         .unwrap()
@@ -106,7 +124,7 @@ const AddTaxonomy = () => {
             englishname: res?.name?.en,
             frenchdescription: res?.disambiguatingDescription?.fr,
             englishdescription: res?.disambiguatingDescription?.en,
-            userAccess: [],
+            userAccess: res?.isAdminOnly ? [t(`dashboard.taxonomy.addNew.adminOnly`)] : [],
           });
 
           setFormValues({
@@ -114,13 +132,13 @@ const AddTaxonomy = () => {
             name: res?.name,
             description: res?.disambiguatingDescription,
             id: res?.id,
-            userAccess: [],
+            userAccess: res?.isAdminOnly ? [t(`dashboard.taxonomy.addNew.adminOnly`)] : [],
             mapToField: res?.mappedToField,
           });
           setLoading(false);
         });
     }
-  }, [taxonomyId]);
+  }, [taxonomyId, currentCalendarData]);
 
   const openAddNewConceptModal = () => {
     setAddNewPopup(true);
@@ -171,7 +189,7 @@ const AddTaxonomy = () => {
             : taxonomyData?.isDynamicField,
           includeInFullTextSearch: true,
           mappedToField: formValues?.mapToField,
-          isAdminOnly: true,
+          isAdminOnly: formValues.userAccess.length > 0,
           disambiguatingDescription: {
             en: values?.frenchdescription,
             fr: values?.englishdescription,
@@ -514,17 +532,17 @@ const AddTaxonomy = () => {
                           <Form.Item
                             label={t('dashboard.taxonomy.addNew.userAccess')}
                             name="userAccess"
-                            required
                             className="user-access"
-                            rules={[
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  if (value.length > 0 || getFieldValue('userAccess')) {
-                                    return Promise.resolve();
-                                  } else return Promise.reject(new Error(t('dashboard.taxonomy.addNew.')));
-                                },
-                              }),
-                            ]}>
+                            // rules={[
+                            // ({ getFieldValue }) => ({
+                            // validator(_, value) {
+                            // if (value.length > 0 || getFieldValue('userAccess')) {
+                            // return Promise.resolve();
+                            // } else return Promise.reject(new Error(t('dashboard.taxonomy.addNew.')));
+                            // },
+                            // }),
+                            // ]}
+                          >
                             <SearchableCheckbox
                               // disabled={true}
                               onFilterChange={(values) => {
@@ -538,7 +556,7 @@ const AddTaxonomy = () => {
                                       key={userRolesWithTranslation[0].key}
                                       style={{ marginLeft: '8px' }}
                                       value={t(`dashboard.taxonomy.addNew.adminOnly`)}>
-                                      {userRolesWithTranslation[0].label}
+                                      {t(`dashboard.taxonomy.addNew.adminOnly`)}
                                     </Checkbox>
                                   ),
                                   filtervalue: userRolesWithTranslation[0].key,

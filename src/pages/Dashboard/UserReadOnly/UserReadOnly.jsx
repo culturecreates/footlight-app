@@ -26,7 +26,7 @@ const UserReadOnly = () => {
   const timestampRef = useRef(Date.now()).current;
   const { userId, calendarId } = useParams();
   const [currentCalendarData] = useOutletContext();
-  const { currentUser } = useSelector(getUserDetails);
+  const { user } = useSelector(getUserDetails);
 
   const [userSubscribedCalenders, setUserSubscribedCalenders] = useState();
 
@@ -84,23 +84,25 @@ const UserReadOnly = () => {
                       </Button>
                     </div>
                   </Col>
-                  <Col flex="60px">
-                    <ReadOnlyProtectedComponent>
-                      <div className="button-container">
-                        <OutlinedButton
-                          label={t('dashboard.settings.userReadOnly.editBtn')}
-                          size="middle"
-                          style={{ height: '40px' }}
-                          onClick={() =>
-                            navigate(
-                              `${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}`,
-                              { state: { data: userInfo } },
-                            )
-                          }
-                        />
-                      </div>
-                    </ReadOnlyProtectedComponent>
-                  </Col>
+                  {(!userInfo?.isSuperAdmin || user?.id === userInfo?.id) && (
+                    <Col flex="60px">
+                      <ReadOnlyProtectedComponent>
+                        <div className="button-container">
+                          <OutlinedButton
+                            label={t('dashboard.settings.userReadOnly.editBtn')}
+                            size="middle"
+                            style={{ height: '40px' }}
+                            onClick={() =>
+                              navigate(
+                                `${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}`,
+                                { state: { data: userInfo } },
+                              )
+                            }
+                          />
+                        </div>
+                      </ReadOnlyProtectedComponent>
+                    </Col>
+                  )}
                 </Row>
               </Col>
               <Col span={24}>
@@ -216,11 +218,11 @@ const UserReadOnly = () => {
                             name={contentLanguageBilingual({
                               en: item?.name?.en,
                               fr: item?.name?.fr,
-                              interfaceLanguage: currentUser?.interfaceLanguage?.toLowerCase(),
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                               calendarContentLanguage: calendarContentLanguage,
                             })}
                             calenderItem={item}
-                            currentUser={false} // to hide leave button
+                            user={false} // to hide leave button
                             itemWidth="423px"
                             bordered
                             calendarContentLanguage={calendarContentLanguage}

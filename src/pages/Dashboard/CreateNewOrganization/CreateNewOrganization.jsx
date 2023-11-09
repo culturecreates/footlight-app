@@ -59,6 +59,7 @@ function CreateNewOrganization() {
 
   const organizationId = searchParams.get('id');
   const artsDataId = location?.state?.data?.id ?? null;
+  const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
 
   const { data: organizationData, isLoading: organizationLoading } = useGetOrganizationQuery(
     { id: organizationId, calendarId, sessionId: timestampRef },
@@ -106,7 +107,7 @@ function CreateNewOrganization() {
     else return false;
   };
 
-  const addUpdateOrganizationApiHandler = (organizationObj) => {
+  const addUpdateOrganizationApiHandler = (organizationObj, toggle) => {
     var promise = new Promise(function (resolve, reject) {
       if (!organizationId || organizationId === '') {
         if (artsDataId && artsData) {
@@ -136,7 +137,7 @@ function CreateNewOrganization() {
               maxCount: 1,
               duration: 3,
             });
-            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}`);
+            if (!toggle) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}`);
           })
           .catch((errorInfo) => {
             reject();
@@ -155,14 +156,18 @@ function CreateNewOrganization() {
           .unwrap()
           .then(() => {
             resolve(organizationId);
-            notification.success({
-              description: t('dashboard.organization.createNew.notification.editSuccess'),
-              placement: 'top',
-              closeIcon: <></>,
-              maxCount: 1,
-              duration: 3,
-            });
-            navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}`);
+            if (isRoutingToEventPage && !toggle) {
+              navigate(isRoutingToEventPage);
+            } else {
+              notification.success({
+                description: t('dashboard.organization.createNew.notification.editSuccess'),
+                placement: 'top',
+                closeIcon: <></>,
+                maxCount: 1,
+                duration: 3,
+              });
+              if (!toggle) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}`);
+            }
           })
           .catch((error) => {
             reject();
@@ -173,7 +178,7 @@ function CreateNewOrganization() {
     return promise;
   };
 
-  const onSaveHandler = (event) => {
+  const onSaveHandler = (event, toggle = false) => {
     event?.preventDefault();
     setShowDialog(false);
     let validateFieldList = [
@@ -194,210 +199,118 @@ function CreateNewOrganization() {
           ?.map((link, index) => ['socialMediaLinks', index]),
       );
     }
-    form
-      .validateFields(validateFieldList)
-      .then(() => {
-        var values = form.getFieldsValue(true);
-        let organizationPayload = {};
-        Object.keys(values)?.map((object) => {
-          let payload = formPayloadHandler(values[object], object, formFields);
-          if (payload) {
-            let newKeys = Object.keys(payload);
-            let childKeys = object?.split('.');
+    var promise = new Promise(function (resolve, reject) {
+      form
+        .validateFields(validateFieldList)
+        .then(() => {
+          var values = form.getFieldsValue(true);
+          let organizationPayload = {};
+          Object.keys(values)?.map((object) => {
+            let payload = formPayloadHandler(values[object], object, formFields);
+            if (payload) {
+              let newKeys = Object.keys(payload);
+              let childKeys = object?.split('.');
+              organizationPayload = {
+                ...organizationPayload,
+                ...(newKeys?.length > 0 && { [newKeys[0]]: payload[newKeys[0]] }),
+                ...(childKeys?.length == 2 && {
+                  [childKeys[0]]: {
+                    ...organizationPayload[childKeys[0]],
+                    [childKeys[1]]: payload[childKeys[0]][childKeys[1]],
+                  },
+                }),
+              };
+            }
+          });
+          if (locationPlace?.source === sourceOptions.ARTSDATA) {
             organizationPayload = {
               ...organizationPayload,
-              ...(newKeys?.length > 0 && { [newKeys[0]]: payload[newKeys[0]] }),
-              ...(childKeys?.length == 2 && {
-                [childKeys[0]]: {
-                  ...organizationPayload[childKeys[0]],
-                  [childKeys[1]]: payload[childKeys[0]][childKeys[1]],
-                },
-              }),
+              place: {
+                uri: locationPlace?.uri,
+              },
+            };
+          } else {
+            organizationPayload = {
+              ...organizationPayload,
+              place: {
+                entityId: locationPlace?.value,
+              },
             };
           }
-        });
-        if (locationPlace?.source === sourceOptions.ARTSDATA) {
-          organizationPayload = {
-            ...organizationPayload,
-            place: {
-              uri: locationPlace?.uri,
+          let imageCrop = form.getFieldValue('imageCrop');
+          imageCrop = {
+            large: {
+              xCoordinate: imageCrop?.large?.x,
+              yCoordinate: imageCrop?.large?.y,
+              height: imageCrop?.large?.height,
+              width: imageCrop?.large?.width,
+            },
+            thumbnail: {
+              xCoordinate: imageCrop?.thumbnail?.x,
+              yCoordinate: imageCrop?.thumbnail?.y,
+              height: imageCrop?.thumbnail?.height,
+              width: imageCrop?.thumbnail?.width,
+            },
+            original: {
+              entityId: imageCrop?.original?.entityId,
+              height: imageCrop?.original?.height,
+              width: imageCrop?.original?.width,
             },
           };
-        } else {
-          organizationPayload = {
-            ...organizationPayload,
-            place: {
-              entityId: locationPlace?.value,
-            },
-          };
-        }
-        let imageCrop = form.getFieldValue('imageCrop');
-        imageCrop = {
-          large: {
-            xCoordinate: imageCrop?.large?.x,
-            yCoordinate: imageCrop?.large?.y,
-            height: imageCrop?.large?.height,
-            width: imageCrop?.large?.width,
-          },
-          thumbnail: {
-            xCoordinate: imageCrop?.thumbnail?.x,
-            yCoordinate: imageCrop?.thumbnail?.y,
-            height: imageCrop?.thumbnail?.height,
-            width: imageCrop?.thumbnail?.width,
-          },
-          original: {
-            entityId: imageCrop?.original?.entityId,
-            height: imageCrop?.original?.height,
-            width: imageCrop?.original?.width,
-          },
-        };
-        if ((values?.image || (values?.image && values?.image?.length > 0)) && !values?.logo) {
-          if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
-            const formdata = new FormData();
-            formdata.append('file', values?.image[0].originFileObj);
-            formdata &&
-              addImage({ data: formdata, calendarId })
-                .unwrap()
-                .then((response) => {
-                  if (featureFlags.imageCropFeature) {
-                    imageCrop = {
-                      ...imageCrop,
-                      original: {
-                        ...imageCrop?.original,
-                        entityId: response?.data?.original?.entityId,
-                        height: response?.data?.height,
-                        width: response?.data?.width,
-                      },
-                    };
-                  } else
-                    imageCrop = {
-                      ...imageCrop,
-                      original: {
-                        ...imageCrop?.original,
-                        entityId: response?.data?.original?.entityId,
-                        height: response?.data?.height,
-                        width: response?.data?.width,
-                      },
-                    };
-                  organizationPayload['image'] = imageCrop;
-                  addUpdateOrganizationApiHandler(organizationPayload);
-                })
+          if ((values?.image || (values?.image && values?.image?.length > 0)) && !values?.logo) {
+            if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
+              const formdata = new FormData();
+              formdata.append('file', values?.image[0].originFileObj);
+              formdata &&
+                addImage({ data: formdata, calendarId })
+                  .unwrap()
+                  .then((response) => {
+                    if (featureFlags.imageCropFeature) {
+                      imageCrop = {
+                        ...imageCrop,
+                        original: {
+                          ...imageCrop?.original,
+                          entityId: response?.data?.original?.entityId,
+                          height: response?.data?.height,
+                          width: response?.data?.width,
+                        },
+                      };
+                    } else
+                      imageCrop = {
+                        ...imageCrop,
+                        original: {
+                          ...imageCrop?.original,
+                          entityId: response?.data?.original?.entityId,
+                          height: response?.data?.height,
+                          width: response?.data?.width,
+                        },
+                      };
+                    organizationPayload['image'] = imageCrop;
+                    addUpdateOrganizationApiHandler(organizationPayload, toggle)
+                      .then((id) => resolve(id))
+                      .catch((error) => {
+                        reject();
+                        console.log(error);
+                      });
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    const element = document.getElementsByClassName('image');
+                    element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                  });
+            } else {
+              if (values?.image) {
+                if (values?.image && values?.image?.length == 0) organizationPayload['image'] = null;
+                else organizationPayload['image'] = imageCrop;
+              }
+              addUpdateOrganizationApiHandler(organizationPayload, toggle)
+                .then((id) => resolve(id))
                 .catch((error) => {
+                  reject();
                   console.log(error);
-                  const element = document.getElementsByClassName('image');
-                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
                 });
-          } else {
-            if (values?.image) {
-              if (values?.image && values?.image?.length == 0) organizationPayload['image'] = null;
-              else organizationPayload['image'] = imageCrop;
             }
-            addUpdateOrganizationApiHandler(organizationPayload);
-          }
-        } else if ((values?.logo || (values?.logo && values?.logo?.length > 0)) && !values?.image) {
-          if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
-            const formdata = new FormData();
-            formdata.append('file', values?.logo[0].originFileObj);
-            formdata &&
-              addImage({ data: formdata, calendarId })
-                .unwrap()
-                .then((response) => {
-                  organizationPayload['logo'] = {
-                    original: {
-                      entityId: response?.data?.original?.entityId,
-                      height: response?.data?.height,
-                      width: response?.data?.width,
-                    },
-                    large: {},
-                    thumbnail: {},
-                  };
-                  addUpdateOrganizationApiHandler(organizationPayload);
-                })
-                .catch((error) => {
-                  console.log(error);
-                  const element = document.getElementsByClassName('logo');
-                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                });
-          } else {
-            if (values?.logo) {
-              if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
-              else organizationPayload['logo'] = organizationData?.logo;
-            }
-            addUpdateOrganizationApiHandler(organizationPayload);
-          }
-        } else if (
-          (values?.image || (values?.image && values?.image?.length > 0)) &&
-          (values?.logo || (values?.logo && values?.logo?.length > 0))
-        ) {
-          if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
-            const formdata = new FormData();
-            formdata.append('file', values?.image[0].originFileObj);
-            formdata &&
-              addImage({ data: formdata, calendarId })
-                .unwrap()
-                .then((response) => {
-                  if (featureFlags.imageCropFeature) {
-                    imageCrop = {
-                      ...imageCrop,
-                      original: {
-                        ...imageCrop?.original,
-                        entityId: response?.data?.original?.entityId,
-                        height: response?.data?.height,
-                        width: response?.data?.width,
-                      },
-                    };
-                  } else
-                    imageCrop = {
-                      ...imageCrop,
-                      original: {
-                        ...imageCrop?.original,
-                        entityId: response?.data?.original?.entityId,
-                        height: response?.data?.height,
-                        width: response?.data?.width,
-                      },
-                    };
-                  organizationPayload['image'] = imageCrop;
-                  if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
-                    const formdata = new FormData();
-                    formdata.append('file', values?.logo[0].originFileObj);
-                    formdata &&
-                      addImage({ data: formdata, calendarId })
-                        .unwrap()
-                        .then((response) => {
-                          organizationPayload['logo'] = {
-                            original: {
-                              entityId: response?.data?.original?.entityId,
-                              height: response?.data?.height,
-                              width: response?.data?.width,
-                            },
-                            large: {},
-                            thumbnail: {},
-                          };
-                          addUpdateOrganizationApiHandler(organizationPayload);
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                          const element = document.getElementsByClassName('logo');
-                          element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                        });
-                  } else {
-                    if (values?.logo) {
-                      if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
-                      else organizationPayload['logo'] = organizationData?.logo;
-                    }
-                    addUpdateOrganizationApiHandler(organizationPayload);
-                  }
-                })
-                .catch((error) => {
-                  console.log(error);
-                  const element = document.getElementsByClassName('image');
-                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                });
-          } else {
-            if (values?.image) {
-              if (values?.image && values?.image?.length == 0) organizationPayload['image'] = null;
-              else organizationPayload['image'] = imageCrop;
-            }
+          } else if ((values?.logo || (values?.logo && values?.logo?.length > 0)) && !values?.image) {
             if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
               const formdata = new FormData();
               formdata.append('file', values?.logo[0].originFileObj);
@@ -414,7 +327,7 @@ function CreateNewOrganization() {
                       large: {},
                       thumbnail: {},
                     };
-                    addUpdateOrganizationApiHandler(organizationPayload);
+                    addUpdateOrganizationApiHandler(organizationPayload, toggle);
                   })
                   .catch((error) => {
                     console.log(error);
@@ -426,40 +339,176 @@ function CreateNewOrganization() {
                 if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
                 else organizationPayload['logo'] = organizationData?.logo;
               }
-              addUpdateOrganizationApiHandler(organizationPayload);
+              addUpdateOrganizationApiHandler(organizationPayload, toggle)
+                .then((id) => resolve(id))
+                .catch((error) => {
+                  reject();
+                  console.log(error);
+                });
             }
+          } else if (
+            (values?.image || (values?.image && values?.image?.length > 0)) &&
+            (values?.logo || (values?.logo && values?.logo?.length > 0))
+          ) {
+            if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
+              const formdata = new FormData();
+              formdata.append('file', values?.image[0].originFileObj);
+              formdata &&
+                addImage({ data: formdata, calendarId })
+                  .unwrap()
+                  .then((response) => {
+                    if (featureFlags.imageCropFeature) {
+                      imageCrop = {
+                        ...imageCrop,
+                        original: {
+                          ...imageCrop?.original,
+                          entityId: response?.data?.original?.entityId,
+                          height: response?.data?.height,
+                          width: response?.data?.width,
+                        },
+                      };
+                    } else
+                      imageCrop = {
+                        ...imageCrop,
+                        original: {
+                          ...imageCrop?.original,
+                          entityId: response?.data?.original?.entityId,
+                          height: response?.data?.height,
+                          width: response?.data?.width,
+                        },
+                      };
+                    organizationPayload['image'] = imageCrop;
+                    if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
+                      const formdata = new FormData();
+                      formdata.append('file', values?.logo[0].originFileObj);
+                      formdata &&
+                        addImage({ data: formdata, calendarId })
+                          .unwrap()
+                          .then((response) => {
+                            organizationPayload['logo'] = {
+                              original: {
+                                entityId: response?.data?.original?.entityId,
+                                height: response?.data?.height,
+                                width: response?.data?.width,
+                              },
+                              large: {},
+                              thumbnail: {},
+                            };
+                            addUpdateOrganizationApiHandler(organizationPayload, toggle)
+                              .then((id) => resolve(id))
+                              .catch((error) => {
+                                reject();
+                                console.log(error);
+                              });
+                          })
+                          .catch((error) => {
+                            console.log(error);
+                            const element = document.getElementsByClassName('logo');
+                            element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                          });
+                    } else {
+                      if (values?.logo) {
+                        if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
+                        else organizationPayload['logo'] = organizationData?.logo;
+                      }
+                      addUpdateOrganizationApiHandler(organizationPayload, toggle)
+                        .then((id) => resolve(id))
+                        .catch((error) => {
+                          reject();
+                          console.log(error);
+                        });
+                    }
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    const element = document.getElementsByClassName('image');
+                    element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                  });
+            } else {
+              if (values?.image) {
+                if (values?.image && values?.image?.length == 0) organizationPayload['image'] = null;
+                else organizationPayload['image'] = imageCrop;
+              }
+              if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
+                const formdata = new FormData();
+                formdata.append('file', values?.logo[0].originFileObj);
+                formdata &&
+                  addImage({ data: formdata, calendarId })
+                    .unwrap()
+                    .then((response) => {
+                      organizationPayload['logo'] = {
+                        original: {
+                          entityId: response?.data?.original?.entityId,
+                          height: response?.data?.height,
+                          width: response?.data?.width,
+                        },
+                        large: {},
+                        thumbnail: {},
+                      };
+                      addUpdateOrganizationApiHandler(organizationPayload, toggle)
+                        .then((id) => resolve(id))
+                        .catch((error) => {
+                          reject();
+                          console.log(error);
+                        });
+                    })
+                    .catch((error) => {
+                      console.log(error);
+                      const element = document.getElementsByClassName('logo');
+                      element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                    });
+              } else {
+                if (values?.logo) {
+                  if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
+                  else organizationPayload['logo'] = organizationData?.logo;
+                }
+                addUpdateOrganizationApiHandler(organizationPayload, toggle)
+                  .then((id) => resolve(id))
+                  .catch((error) => {
+                    reject();
+                    console.log(error);
+                  });
+              }
+            }
+          } else {
+            if (values?.logo) {
+              if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
+              else organizationPayload['logo'] = organizationData?.logo;
+            }
+            if (values?.image) {
+              if (values?.image && values?.image?.length == 0) organizationPayload['image'] = null;
+              else organizationPayload['image'] = imageCrop;
+            }
+            addUpdateOrganizationApiHandler(organizationPayload, toggle)
+              .then((id) => resolve(id))
+              .catch((error) => {
+                reject();
+                console.log(error);
+              });
           }
-        } else {
-          if (values?.logo) {
-            if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
-            else organizationPayload['logo'] = organizationData?.logo;
-          }
-          if (values?.image) {
-            if (values?.image && values?.image?.length == 0) organizationPayload['image'] = null;
-            else organizationPayload['image'] = imageCrop;
-          }
-          addUpdateOrganizationApiHandler(organizationPayload);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        message.warning({
-          duration: 10,
-          maxCount: 1,
-          key: 'organization-save-as-warning',
-          content: (
-            <>
-              {t('dashboard.organization.createNew.notification.saveError')} &nbsp;
-              <Button
-                type="text"
-                icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                onClick={() => message.destroy('person-save-as-warning')}
-              />
-            </>
-          ),
-          icon: <ExclamationCircleOutlined />,
+        })
+        .catch((error) => {
+          console.log(error);
+          message.warning({
+            duration: 10,
+            maxCount: 1,
+            key: 'organization-save-as-warning',
+            content: (
+              <>
+                {t('dashboard.organization.createNew.notification.saveError')} &nbsp;
+                <Button
+                  type="text"
+                  icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                  onClick={() => message.destroy('person-save-as-warning')}
+                />
+              </>
+            ),
+            icon: <ExclamationCircleOutlined />,
+          });
         });
-      });
+    });
+
+    return promise;
   };
 
   const placesSearch = (inputValue = '') => {
@@ -492,6 +541,24 @@ function CreateNewOrganization() {
 
   const onValuesChangeHandler = () => {
     setShowDialog(true);
+  };
+
+  const placeNavigationHandler = (id, type, event) => {
+    onSaveHandler(event, true)
+      .then((savedOrganizationId) => {
+        if (type?.toUpperCase() == taxonomyClass.PLACE)
+          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${id}`, {
+            state: {
+              data: {
+                isRoutingToOrganization: organizationId
+                  ? `${location.pathname}?id=${organizationId}`
+                  : `${location.pathname}?id=${savedOrganizationId}`,
+                isRoutingToEventPage: location.state?.data?.isRoutingToEventPage,
+              },
+            },
+          });
+      })
+      .catch((error) => console.log(error));
   };
 
   const getArtsData = (id) => {
@@ -574,6 +641,7 @@ function CreateNewOrganization() {
                     initialPlace = {
                       ...response,
                       ['accessibility']: initialPlaceAccessibiltiy,
+                      ['type']: entitiesClass?.place,
                     };
                     setLocationPlace(
                       placesOptions([initialPlace], user, calendarContentLanguage)[0],
@@ -585,8 +653,9 @@ function CreateNewOrganization() {
                 initialPlace = {
                   ...response,
                   ['accessibility']: [],
+                  ['type']: entitiesClass?.place,
                 };
-                setLocationPlace(placesOptions([response], user, calendarContentLanguage)[0], sourceOptions.CMS);
+                setLocationPlace(placesOptions([initialPlace], user, calendarContentLanguage)[0], sourceOptions.CMS);
               }
             })
             .catch((error) => console.log(error));
@@ -628,7 +697,13 @@ function CreateNewOrganization() {
                       <div className="button-container">
                         <Button
                           type="link"
-                          onClick={() => navigate(-1)}
+                          onClick={() => {
+                            if (isRoutingToEventPage) {
+                              navigate(isRoutingToEventPage);
+                            } else {
+                              navigate(-1);
+                            }
+                          }}
                           icon={<LeftOutlined style={{ marginRight: '17px' }} />}>
                           {t('dashboard.organization.createNew.search.breadcrumb')}
                         </Button>
@@ -754,6 +829,7 @@ function CreateNewOrganization() {
                                     : ''
                                   : '',
                               },
+                              placeNavigationHandler,
                             });
                           }
                         });

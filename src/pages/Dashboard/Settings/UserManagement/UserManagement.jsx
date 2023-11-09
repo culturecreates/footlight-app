@@ -249,7 +249,10 @@ const UserManagement = () => {
       }
     }
 
-    if (!(userStatus[0]?.status === userActivityStatus[0].key || userStatus[0]?.status === userActivityStatus[2].key)) {
+    if (
+      !(userStatus[0]?.status === userActivityStatus[0].key || userStatus[0]?.status === userActivityStatus[2].key) &&
+      !item?.isSuperAdmin
+    ) {
       dropdownItems.push({
         key: 'deleteUser',
         label: t('dashboard.settings.userManagement.tooltip.deleteUser'),
@@ -553,39 +556,45 @@ const UserManagement = () => {
                     current: Number(pageNumber),
                     showSizeChanger: false,
                   }}
-                  renderItem={(item, index) => (
-                    <ListCard
-                      id={index}
-                      key={index}
-                      listItemHandler={() => {
-                        return listItemHandler(item?._id);
-                      }}
-                      title={createTitleHandler(item?.firstName, item?.lastName, item?.userName)}
-                      description={roleHandler({ roles: item?.roles, calendarId })}
-                      activityStatus={currentCalendarUserStatus(item)}
-                      styles={handleListCardStyles(item)}
-                      invitedBy={item?.invitedBy && <Username userName={item?.invitedBy} />}
-                      actions={[
-                        adminCheckHandler() && (
-                          <Dropdown
-                            overlayClassName="filter-sort-dropdown-wrapper"
-                            overlayStyle={{ minWidth: '200px' }}
-                            getPopupContainer={(trigger) => trigger.parentNode}
-                            menu={{
-                              items: tooltipItemDisplayHandler({ item }),
-                              onClick: ({ key }) => {
-                                tooltipItemClickHandler({ key, item });
-                              },
-                            }}
-                            trigger={['click']}>
-                            <span>
-                              <MoreOutlined className="event-list-more-icon" key={index} />
-                            </span>
-                          </Dropdown>
-                        ),
-                      ]}
-                    />
-                  )}
+                  renderItem={(item, index) => {
+                    return (
+                      <ListCard
+                        id={index}
+                        key={index}
+                        listItemHandler={() => {
+                          return listItemHandler(item?._id);
+                        }}
+                        title={createTitleHandler(item?.firstName, item?.lastName, item?.userName)}
+                        description={roleHandler({ roles: item?.roles, calendarId })}
+                        activityStatus={currentCalendarUserStatus(item)}
+                        styles={handleListCardStyles(item)}
+                        invitedBy={item?.invitedBy && <Username userName={item?.invitedBy} />}
+                        actions={[
+                          adminCheckHandler() && (
+                            <Dropdown
+                              overlayClassName="filter-sort-dropdown-wrapper"
+                              overlayStyle={{ minWidth: '200px' }}
+                              getPopupContainer={(trigger) => trigger.parentNode}
+                              menu={{
+                                items: tooltipItemDisplayHandler({ item }),
+                                onClick: ({ key }) => {
+                                  tooltipItemClickHandler({ key, item });
+                                },
+                              }}
+                              trigger={['click']}>
+                              <span>
+                                {!item?.isSuperAdmin || item._id == user.id ? (
+                                  <MoreOutlined className="event-list-more-icon" key={index} />
+                                ) : (
+                                  <div style={{ width: 24 }}></div>
+                                )}
+                              </span>
+                            </Dropdown>
+                          ),
+                        ]}
+                      />
+                    );
+                  }}
                 />
               ) : (
                 <NoContent style={{ height: '200px' }} />

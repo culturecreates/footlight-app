@@ -15,7 +15,7 @@ import {
 import moment from 'moment-timezone';
 import i18n from 'i18next';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
-import { useNavigate, useParams, useSearchParams, useOutletContext } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams, useOutletContext, useLocation } from 'react-router-dom';
 import { useGetEventQuery, useUpdateEventStateMutation } from '../../../services/events';
 import { PathName } from '../../../constants/pathName';
 import Outlined from '../../../components/Button/Outlined';
@@ -88,6 +88,7 @@ const { TextArea } = Input;
 
 function AddEvent() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [form] = Form.useForm();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId, eventId } = useParams();
@@ -143,6 +144,7 @@ function AddEvent() {
   const [selectedOrganizers, setSelectedOrganizers] = useState([]);
   const [selectedPerformers, setSelectedPerformers] = useState([]);
   const [selectedSupporters, setSelectedSupporters] = useState([]);
+  const [loaderModalOpen, setLoaderModalOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState({
     locationPlace: false,
     organizer: false,
@@ -234,6 +236,7 @@ function AddEvent() {
           .unwrap()
           .then(() => {
             resolve(eventId ?? newEventId);
+
             if (!toggle) {
               notification.success({
                 description: t('dashboard.events.addEditEvent.notification.updateEvent'),
@@ -604,7 +607,7 @@ function AddEvent() {
                   addUpdateEventApiHandler(eventObj, toggle)
                     .then((id) => resolve(id))
                     .catch((error) => {
-                      reject();
+                      reject(error);
                       console.log(error);
                     });
                 })
@@ -622,13 +625,14 @@ function AddEvent() {
             addUpdateEventApiHandler(eventObj, toggle)
               .then((id) => resolve(id))
               .catch((error) => {
-                reject();
+                reject(error);
                 console.log(error);
               });
           }
         })
         .catch((error) => {
           console.log(error);
+          reject(error);
           message.warning({
             duration: 10,
             maxCount: 1,
@@ -647,36 +651,58 @@ function AddEvent() {
           });
         });
     });
-
     return promise;
   };
 
   const reviewPublishHandler = (event) => {
     event?.preventDefault();
+    const isValuesChanged = showDialog;
     setShowDialog(false);
     form
       .validateFields(validateFields)
       .then(() => {
-        saveAsDraftHandler(event, true)
-          .then((id) => {
-            updateEventState({ id: eventId ?? id, calendarId })
-              .unwrap()
-              .then(() => {
-                notification.success({
-                  description:
-                    calendar[0]?.role === userRoles.GUEST
-                      ? t('dashboard.events.addEditEvent.notification.sendToReview')
-                      : t('dashboard.events.addEditEvent.notification.publish'),
-                  placement: 'top',
-                  closeIcon: <></>,
-                  maxCount: 1,
-                  duration: 3,
-                });
-                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
-              })
-              .catch((error) => console.log(error));
-          })
-          .catch((error) => console.log(error));
+        if (isValuesChanged)
+          saveAsDraftHandler(event, true)
+            .then((id) => {
+              updateEventState({ id: eventId ?? id, calendarId })
+                .unwrap()
+                .then(() => {
+                  notification.success({
+                    description:
+                      calendar[0]?.role === userRoles.GUEST
+                        ? t('dashboard.events.addEditEvent.notification.sendToReview')
+                        : eventData?.publishState === eventPublishState.DRAFT
+                        ? t('dashboard.events.addEditEvent.notification.publish')
+                        : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+                    placement: 'top',
+                    closeIcon: <></>,
+                    maxCount: 1,
+                    duration: 3,
+                  });
+                  navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+                })
+                .catch((error) => console.log(error));
+            })
+            .catch((error) => console.log(error));
+        else
+          updateEventState({ id: eventId, calendarId })
+            .unwrap()
+            .then(() => {
+              notification.success({
+                description:
+                  calendar[0]?.role === userRoles.GUEST
+                    ? t('dashboard.events.addEditEvent.notification.sendToReview')
+                    : eventData?.publishState === eventPublishState.DRAFT
+                    ? t('dashboard.events.addEditEvent.notification.publish')
+                    : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+                placement: 'top',
+                closeIcon: <></>,
+                maxCount: 1,
+                duration: 3,
+              });
+              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+            })
+            .catch((error) => console.log(error));
       })
       .catch((error) => {
         console.log(error);
@@ -848,6 +874,48 @@ function AddEvent() {
     if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
     else return false;
   };
+
+  const organizerPerformerSupporterPlaceNavigationHandler = (id, type, event) => {
+    saveAsDraftHandler(event, true)
+      .then((savedEventId) => {
+        if ((!eventId || eventId === '') && newEventId === null)
+          notification.success({
+            description: t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+            placement: 'top',
+            closeIcon: <></>,
+            maxCount: 1,
+            duration: 3,
+          });
+        else
+          notification.success({
+            description: t('dashboard.events.addEditEvent.notification.updateEvent'),
+            placement: 'top',
+            closeIcon: <></>,
+            maxCount: 1,
+            duration: 3,
+          });
+
+        if (type?.toUpperCase() == taxonomyClass.ORGANIZATION)
+          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${id}`, {
+            state: {
+              data: { isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${savedEventId}` },
+            },
+          });
+        else if (type?.toUpperCase() == taxonomyClass.PERSON)
+          navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${id}`, {
+            state: {
+              data: { isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${savedEventId}` },
+            },
+          });
+        else if (type?.toUpperCase() == taxonomyClass.PLACE)
+          navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${id}`, {
+            state: {
+              data: { isRoutingToEventPage: eventId ? location.pathname : `${location.pathname}/${savedEventId}` },
+            },
+          });
+      })
+      .catch((error) => console.log(error));
+  };
   const FeaturedJSX = (
     <Row justify={'end'} align={'top'} gutter={[8, 0]}>
       <Col>
@@ -923,6 +991,7 @@ function AddEvent() {
           initialPlace[0] = {
             ...initialPlace[0],
             ['openingHours']: initialPlace[0]?.openingHours?.uri,
+            ['type']: entitiesClass?.place,
           };
           getAllTaxonomy({
             calendarId,
@@ -994,6 +1063,7 @@ function AddEvent() {
               logo: organizer?.entity?.logo,
               image: organizer?.entity?.image,
               contactPoint: organizer?.entity?.contactPoint,
+              creator: organizer?.entity?.creator,
             };
           });
           setSelectedOrganizers(
@@ -1009,6 +1079,7 @@ function AddEvent() {
               type: performer?.type,
               logo: performer?.entity?.logo,
               image: performer?.entity?.image,
+              creator: performer?.entity?.creator,
             };
           });
           setSelectedPerformers(
@@ -1025,6 +1096,7 @@ function AddEvent() {
               type: supporter?.type,
               logo: supporter?.entity?.logo,
               image: supporter?.entity?.image,
+              creator: supporter?.entity?.creator,
             };
           });
           setSelectedSupporters(
@@ -1336,6 +1408,7 @@ function AddEvent() {
                       : true
                     : false
                 }
+                style={{ display: !taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false) && 'none' }}
                 rules={[
                   {
                     required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EVENT_TYPE),
@@ -1368,6 +1441,7 @@ function AddEvent() {
                 initialValue={eventData?.audience?.map((audience) => {
                   return audience?.entityId;
                 })}
+                style={{ display: !taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false) && 'none' }}
                 hidden={
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.AUDIENCE)
                     ? adminCheckHandler()
@@ -1830,6 +1904,11 @@ function AddEvent() {
                       setLocationPlace();
                       form.setFieldValue('locationPlace', undefined);
                     }}
+                    edit={locationPlace?.source === sourceOptions.CMS && true}
+                    onEdit={(e) =>
+                      organizerPerformerSupporterPlaceNavigationHandler(locationPlace?.value, locationPlace?.type, e)
+                    }
+                    creatorId={locationPlace?.creatorId}
                   />
                 )}
                 <QuickCreatePlace
@@ -1841,7 +1920,11 @@ function AddEvent() {
                   interfaceLanguage={user?.interfaceLanguage?.toLowerCase()}
                   calendarContentLanguage={calendarContentLanguage}
                   setLocationPlace={setLocationPlace}
+                  locationPlace={locationPlace}
                   eventForm={form}
+                  saveAsDraftHandler={saveAsDraftHandler}
+                  setLoaderModalOpen={setLoaderModalOpen}
+                  loaderModalOpen={loaderModalOpen}
                 />
               </Form.Item>
               <Form.Item
@@ -2269,6 +2352,11 @@ function AddEvent() {
                             selectedOrganizers?.filter((selectedOrganizer, indexValue) => indexValue != index),
                           );
                         }}
+                        edit={organizer?.source === sourceOptions.CMS && true}
+                        onEdit={(e) =>
+                          organizerPerformerSupporterPlaceNavigationHandler(organizer?.value, organizer?.type, e)
+                        }
+                        creatorId={organizer?.creatorId}
                       />
                     );
                   })}
@@ -2295,6 +2383,9 @@ function AddEvent() {
                   setSelectedSupporters={setSelectedSupporters}
                   selectedOrganizerPerformerSupporterType={selectedOrganizerPerformerSupporterType}
                   organizerPerformerSupporterTypes={organizerPerformerSupporterTypes}
+                  saveAsDraftHandler={saveAsDraftHandler}
+                  setLoaderModalOpen={setLoaderModalOpen}
+                  loaderModalOpen={loaderModalOpen}
                 />
                 <QuickCreatePerson
                   open={quickCreatePersonModal}
@@ -2312,6 +2403,9 @@ function AddEvent() {
                   setSelectedSupporters={setSelectedSupporters}
                   selectedOrganizerPerformerSupporterType={selectedOrganizerPerformerSupporterType}
                   organizerPerformerSupporterTypes={organizerPerformerSupporterTypes}
+                  saveAsDraftHandler={saveAsDraftHandler}
+                  setLoaderModalOpen={setLoaderModalOpen}
+                  loaderModalOpen={loaderModalOpen}
                 />
               </Form.Item>
               <Form.Item
@@ -2543,6 +2637,11 @@ function AddEvent() {
                             selectedPerformers?.filter((selectedPerformer, indexValue) => indexValue != index),
                           );
                         }}
+                        edit={performer?.source === sourceOptions.CMS && true}
+                        onEdit={(e) =>
+                          organizerPerformerSupporterPlaceNavigationHandler(performer?.value, performer?.type, e)
+                        }
+                        creatorId={performer?.creatorId}
                       />
                     );
                   })}
@@ -2678,6 +2777,11 @@ function AddEvent() {
                             selectedSupporters?.filter((selectedSupporter, indexValue) => indexValue != index),
                           );
                         }}
+                        edit={supporter?.source === sourceOptions.CMS && true}
+                        onEdit={(e) =>
+                          organizerPerformerSupporterPlaceNavigationHandler(supporter?.value, supporter?.type, e)
+                        }
+                        creatorId={supporter?.creatorId}
                       />
                     );
                   })}
@@ -2784,7 +2888,10 @@ function AddEvent() {
                 name={otherInformationFieldNames.inLanguage}
                 className={otherInformationFieldNames.inLanguage}
                 style={{
-                  display: !addedFields?.includes(otherInformationFieldNames.inLanguage) && 'none',
+                  display:
+                    (!addedFields?.includes(otherInformationFieldNames.inLanguage) ||
+                      !taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name', false)) &&
+                    'none',
                 }}
                 label={taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name', false)}
                 initialValue={eventData?.inLanguage?.map((inLanguage) => {
@@ -2839,125 +2946,126 @@ function AddEvent() {
               )}
             </Form.Item>
           </CardEvent>
-          <CardEvent title={t('dashboard.events.addEditEvent.eventAccessibility.title')}>
-            <>
-              <p className="add-event-date-heading">
-                {t('dashboard.events.addEditEvent.eventAccessibility.subHeading')}
-              </p>
-              <Form.Item
-                name="eventAccessibility"
-                className="eventAccessibility"
-                label={taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false)}
-                initialValue={eventData?.accessibility?.map((type) => {
-                  return type?.entityId;
-                })}
-                help={
-                  <p
-                    className="add-event-date-heading"
-                    style={{ fontSize: '12px' }}
-                    data-cy="para-event-accessibility-footer">
-                    {t('dashboard.events.addEditEvent.eventAccessibility.footer')}
-                  </p>
-                }>
-                <TreeSelectOption
-                  allowClear
-                  treeDefaultExpandAll
-                  style={{ width: '423px' }}
-                  notFoundContent={<NoContent />}
-                  clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                  treeData={treeTaxonomyOptions(
-                    allTaxonomyData,
-                    user,
-                    'EventAccessibility',
-                    false,
-                    calendarContentLanguage,
-                  )}
-                  placeholder={t('dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibility')}
-                  tagRender={(props) => {
-                    const { label, closable, onClose } = props;
-                    return (
-                      <Tags
-                        closable={closable}
-                        onClose={onClose}
-                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                        {label}
-                      </Tags>
-                    );
+          {taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false) && (
+            <CardEvent title={t('dashboard.events.addEditEvent.eventAccessibility.title')}>
+              <>
+                <p className="add-event-date-heading">
+                  {t('dashboard.events.addEditEvent.eventAccessibility.subHeading')}
+                </p>
+                <Form.Item
+                  name="eventAccessibility"
+                  className="eventAccessibility"
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false)}
+                  initialValue={eventData?.accessibility?.map((type) => {
+                    return type?.entityId;
+                  })}
+                  style={{
+                    display:
+                      !taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false) && 'none',
                   }}
-                />
+                  help={
+                    <p className="add-event-date-heading" style={{ fontSize: '12px' }}>
+                      {t('dashboard.events.addEditEvent.eventAccessibility.footer')}
+                    </p>
+                  }>
+                  <TreeSelectOption
+                    allowClear
+                    treeDefaultExpandAll
+                    style={{ width: '423px' }}
+                    notFoundContent={<NoContent />}
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    treeData={treeTaxonomyOptions(
+                      allTaxonomyData,
+                      user,
+                      'EventAccessibility',
+                      false,
+                      calendarContentLanguage,
+                    )}
+                    placeholder={t('dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibility')}
+                    tagRender={(props) => {
+                      const { label, closable, onClose } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.eventAccessibility.note')}
+                  name={eventAccessibilityFieldNames.noteWrap}
+                  className={eventAccessibilityFieldNames.noteWrap}
+                  style={{
+                    display: !addedFields?.includes(eventAccessibilityFieldNames.noteWrap) && 'none',
+                  }}>
+                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                    <BilingualInput fieldData={eventData?.accessibilityNote}>
+                      <Form.Item
+                        name="frenchAccessibilityNote"
+                        initialValue={eventData?.accessibilityNote?.fr}
+                        key={contentLanguage.FRENCH}>
+                        <TextArea
+                          autoComplete="off"
+                          placeholder={t(
+                            'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityFrenchNote',
+                          )}
+                          style={{
+                            borderRadius: '4px',
+                            border: '4px solid #E8E8E8',
+                            width: '423px',
+                            resize: 'vertical',
+                          }}
+                          size="large"
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        name="englishAccessibilityNote"
+                        initialValue={eventData?.accessibilityNote?.en}
+                        key={contentLanguage.ENGLISH}>
+                        <TextArea
+                          autoComplete="off"
+                          placeholder={t(
+                            'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityEnglishNote',
+                          )}
+                          style={{
+                            borderRadius: '4px',
+                            border: '4px solid #E8E8E8',
+                            width: '423px',
+                            resize: 'vertical',
+                          }}
+                          size="large"
+                        />
+                      </Form.Item>
+                    </BilingualInput>
+                  </ContentLanguageInput>
+                </Form.Item>
+              </>
+              <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
+                {addedFields?.includes(eventAccessibilityFieldNames.noteWrap) ? (
+                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                ) : (
+                  eventAccessibilityOptions.map((type) => {
+                    if (!addedFields?.includes(type.fieldNames))
+                      return (
+                        <ChangeType
+                          key={type.type}
+                          primaryIcon={<PlusOutlined />}
+                          disabled={type.disabled}
+                          label={type.label}
+                          promptText={type.tooltip}
+                          secondaryIcon={<InfoCircleOutlined />}
+                          onClick={() => addFieldsHandler(type?.fieldNames)}
+                        />
+                      );
+                  })
+                )}
               </Form.Item>
-              <Form.Item
-                label={t('dashboard.events.addEditEvent.eventAccessibility.note')}
-                name={eventAccessibilityFieldNames.noteWrap}
-                className={eventAccessibilityFieldNames.noteWrap}
-                style={{
-                  display: !addedFields?.includes(eventAccessibilityFieldNames.noteWrap) && 'none',
-                }}>
-                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                  <BilingualInput fieldData={eventData?.accessibilityNote}>
-                    <Form.Item
-                      name="frenchAccessibilityNote"
-                      initialValue={eventData?.accessibilityNote?.fr}
-                      key={contentLanguage.FRENCH}>
-                      <TextArea
-                        autoComplete="off"
-                        placeholder={t(
-                          'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityFrenchNote',
-                        )}
-                        style={{
-                          borderRadius: '4px',
-                          border: '4px solid #E8E8E8',
-                          width: '423px',
-                          resize: 'vertical',
-                        }}
-                        size="large"
-                        data-cy="input-accessibility-note-french"
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      name="englishAccessibilityNote"
-                      initialValue={eventData?.accessibilityNote?.en}
-                      key={contentLanguage.ENGLISH}>
-                      <TextArea
-                        autoComplete="off"
-                        placeholder={t(
-                          'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityEnglishNote',
-                        )}
-                        style={{
-                          borderRadius: '4px',
-                          border: '4px solid #E8E8E8',
-                          width: '423px',
-                          resize: 'vertical',
-                        }}
-                        size="large"
-                        data-cy="input-accessibility-note-english"
-                      />
-                    </Form.Item>
-                  </BilingualInput>
-                </ContentLanguageInput>
-              </Form.Item>
-            </>
-            <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
-              {addedFields?.includes(eventAccessibilityFieldNames.noteWrap) ? (
-                <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
-              ) : (
-                eventAccessibilityOptions.map((type) => {
-                  if (!addedFields?.includes(type.fieldNames))
-                    return (
-                      <ChangeType
-                        key={type.type}
-                        primaryIcon={<PlusOutlined />}
-                        disabled={type.disabled}
-                        label={type.label}
-                        promptText={type.tooltip}
-                        secondaryIcon={<InfoCircleOutlined />}
-                        onClick={() => addFieldsHandler(type?.fieldNames)}
-                      />
-                    );
-                })
-              )}
-            </Form.Item>
-          </CardEvent>
+            </CardEvent>
+          )}
           <CardEvent
             title={t('dashboard.events.addEditEvent.tickets.title')}
             required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.TICKET_INFO)}
