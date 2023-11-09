@@ -855,7 +855,7 @@
           "language": "Sélectionnez la langue préférée"
         },
         "notification": {
-          "invitation": "L'invitation a été envoyée avec succès",
+          "invitation": "Succès! L'invitation a été envoyée.",
           "updateUser": "Succès ! Le profil de l'utilisateur a été mis à jour.",
           "deleteUser": "Êtes-vous sûr de vouloir supprimer définitivement cet utilisateur?"
         },
