@@ -3,6 +3,8 @@ import { TreeSelect } from 'antd';
 import './treeSelectOption.css';
 
 function TreeSelectOption(props) {
+  const TITLE = 'title';
+  const LABEL = 'label';
   return (
     <TreeSelect
       getPopupContainer={(trigger) => trigger.parentNode}
@@ -13,7 +15,8 @@ function TreeSelectOption(props) {
       }}
       multiple
       showSearch
-      treeNodeFilterProp={'title'}
+      treeNodeFilterProp={TITLE}
+      treeNodeLabelProp={LABEL}
       {...props}
       showArrow={props?.showArrow ?? true}
     />
