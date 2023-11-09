@@ -296,8 +296,18 @@ function CreateNewPlace() {
                   .unwrap()
                   .then(() => {
                     resolve(placeId);
-                    if (isRoutingToEventPage || isRoutingToOrganization) {
-                      navigate(-1);
+                    if (isRoutingToEventPage && isRoutingToOrganization) {
+                      navigate(isRoutingToOrganization, {
+                        state: {
+                          data: {
+                            isRoutingToEventPage: location.state?.data?.isRoutingToEventPage,
+                          },
+                        },
+                      });
+                    } else if (isRoutingToEventPage && !isRoutingToOrganization) {
+                      navigate(isRoutingToEventPage);
+                    } else if (!isRoutingToEventPage && isRoutingToOrganization) {
+                      navigate(isRoutingToOrganization);
                     } else {
                       notification.success({
                         description: t('dashboard.places.createNew.addPlace.notification.editSuccess'),
