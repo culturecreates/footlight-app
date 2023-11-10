@@ -1414,7 +1414,8 @@ function AddEvent() {
                     required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EVENT_TYPE),
                     message: t('dashboard.events.addEditEvent.validations.eventType'),
                   },
-                ]}>
+                ]}
+                data-cy="form-item-event-type-label">
                 <TreeSelectOption
                   placeholder={t('dashboard.events.addEditEvent.language.placeHolderEventType')}
                   allowClear
@@ -1428,11 +1429,13 @@ function AddEvent() {
                       <Tags
                         closable={closable}
                         onClose={onClose}
-                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}
+                        data-cy={`tag-event-type-${label}`}>
                         {label}
                       </Tags>
                     );
                   }}
+                  data-cy="treeselect-event-type"
                 />
               </Form.Item>
               <Form.Item
@@ -1454,7 +1457,8 @@ function AddEvent() {
                     required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.AUDIENCE),
                     message: t('dashboard.events.addEditEvent.validations.targetAudience'),
                   },
-                ]}>
+                ]}
+                data-cy="form-item-audience-label">
                 <TreeSelectOption
                   allowClear
                   treeDefaultExpandAll
@@ -1462,10 +1466,12 @@ function AddEvent() {
                   clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                   treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience', false, calendarContentLanguage)}
                   placeholder={t('dashboard.events.addEditEvent.language.placeHolderTargetAudience')}
+                  data-cy="treeselect-audience"
                   tagRender={(props) => {
                     const { closable, onClose, label } = props;
                     return (
                       <Tags
+                        data-cy={`tag-audience-${label}`}
                         closable={closable}
                         onClose={onClose}
                         closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
@@ -1499,17 +1505,20 @@ function AddEvent() {
                       }
                       hidden={
                         dynamicAdminOnlyFields?.includes(taxonomy?.id) ? (adminCheckHandler() ? false : true) : false
-                      }>
+                      }
+                      data-cy={`form-item-${taxonomy?.id}`}>
                       <TreeSelectOption
                         allowClear
                         treeDefaultExpandAll
                         notFoundContent={<NoContent />}
                         clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                         treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
+                        data-cy={`treeselect-${taxonomy?.id}`}
                         tagRender={(props) => {
                           const { label, closable, onClose } = props;
                           return (
                             <Tags
+                              data-cy={`tag-${taxonomy?.id}`}
                               closable={closable}
                               onClose={onClose}
                               closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
@@ -1572,8 +1581,9 @@ function AddEvent() {
                                 required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.START_DATE),
                                 message: t('dashboard.events.addEditEvent.validations.date'),
                               },
-                            ]}>
-                            <DatePickerStyled style={{ width: '423px' }} />
+                            ]}
+                            data-cy="form-item-event-single-date-label">
+                            <DatePickerStyled style={{ width: '423px' }} data-cy="single-date-event" />
                           </Form.Item>
                           <Row justify="space-between">
                             <Col flex={'203.5px'}>
@@ -1587,11 +1597,13 @@ function AddEvent() {
                                         eventData?.scheduleTimezone ?? 'Canada/Eastern',
                                       )
                                     : undefined
-                                }>
+                                }
+                                data-cy="form-item-single-date-start-time-label">
                                 <TimePickerStyled
                                   placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                                   use12Hours={i18n?.language === 'en' ? true : false}
                                   format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                                  data-cy="single-date-start-time"
                                 />
                               </Form.Item>
                             </Col>
@@ -1603,11 +1615,13 @@ function AddEvent() {
                                   eventData?.endDateTime
                                     ? moment.tz(eventData?.endDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
                                     : undefined
-                                }>
+                                }
+                                data-cy="form-item-single-date-end-time-label">
                                 <TimePickerStyled
                                   placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                                   use12Hours={i18n?.language === 'en' ? true : false}
                                   format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                                  data-cy="single-date-end-time"
                                 />
                               </Form.Item>
                             </Col>
@@ -1649,8 +1663,9 @@ function AddEvent() {
                               required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.START_DATE),
                               message: t('dashboard.events.addEditEvent.validations.date'),
                             },
-                          ]}>
-                          <DateRangePicker style={{ width: '423px' }} />
+                          ]}
+                          data-cy="form-item-date-range-label">
+                          <DateRangePicker style={{ width: '423px' }} data-cy="date-range" />
                         </Form.Item>
                       )}
                       {dateType === dateTypes.MULTIPLE && (
@@ -1719,7 +1734,8 @@ function AddEvent() {
                   <Form.Item
                     name="eventStatus"
                     label={t('dashboard.events.addEditEvent.dates.status')}
-                    initialValue={eventData?.eventStatus ?? eventStatus.EventScheduled}>
+                    initialValue={eventData?.eventStatus ?? eventStatus.EventScheduled}
+                    data-cy="form-item-event-status-label">
                     <Select options={eventStatusOptions} data-cy="select-event-status" />
                   </Form.Item>
                 </Col>
@@ -1793,11 +1809,12 @@ function AddEvent() {
                   autoAdjustOverflow={false}
                   getPopupContainer={(trigger) => trigger.parentNode}
                   trigger={['click']}
+                  data-cy="popover-event-place"
                   content={
                     <div>
                       <div>
                         <>
-                          <div className="popover-section-header">
+                          <div className="popover-section-header" >
                             {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                           </div>
                           <div className="search-scrollable-content">
