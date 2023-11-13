@@ -193,7 +193,7 @@ function OrganizationsReadOnly() {
           {artsDataLinkChecker(organizationData?.sameAs) && (
             <Col span={24}>
               <Row>
-                <Col span={16}>
+                <Col flex={'780px'}>
                   <ArtsDataInfo
                     artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
                     name={contentLanguageBilingual({
