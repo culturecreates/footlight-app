@@ -239,7 +239,7 @@ function Events() {
       calendarId: calendarId,
       includeCalenderFilter: true,
     });
-  }, []);
+  }, [calendarId]);
 
   const onSearchHandler = (event) => {
     setPageNumber(1);
