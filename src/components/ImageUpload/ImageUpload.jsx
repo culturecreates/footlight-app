@@ -120,6 +120,7 @@ function ImageUpload(props) {
     <>
       <Form.Item name={formName ?? 'dragger'} valuePropName="fileList" getValueFromEvent={normFile}>
         <Upload.Dragger
+          data-cy="antd-image-upload"
           accept='.png, .jpg, .jpeg"'
           className="upload-wrapper"
           multiple={false}

@@ -317,7 +317,8 @@ const RecurringEvents = function ({
         <Form.Item
           name="frequency"
           label={t('dashboard.events.addEditEvent.dates.frequency')}
-          initialValue={formFields?.frequency ?? dateFrequencyOptions[0]?.value}>
+          initialValue={formFields?.frequency ?? dateFrequencyOptions[0]?.value}
+          data-cy="form-item-date-frequency-label">
           <Select
             style={{ height: '40px' }}
             options={dateFrequencyOptions}
@@ -398,17 +399,22 @@ const RecurringEvents = function ({
             name="startDateRecur"
             className="status-comment-item"
             label={t('dashboard.events.addEditEvent.dates.multipleDates')}
-            rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}>
+            rules={[{ required: true, message: t('dashboard.events.addEditEvent.validations.date') }]}
+            data-cy="form-item-multiple-start-date-range-label">
             <DateRangePicker
               style={{ width: '423px' }}
               disabled={(isCustom || formFields?.frequency === 'CUSTOM') && startDateRecur?.length == 2 && true}
               suffixIcon={
                 subEventCount > 0 && (
-                  <Tags style={{ color: '#1572BB', borderRadius: '4px' }} color={'#DBF3FD'}>
+                  <Tags
+                    style={{ color: '#1572BB', borderRadius: '4px' }}
+                    color={'#DBF3FD'}
+                    data-cy="tag-sub-event-count">
                     {pluralize(subEventCount, t('dashboard.events.list.event'))}
                   </Tags>
                 )
               }
+              data-cy="multiple-start-date-range"
             />
           </Form.Item>
         </div>
@@ -441,11 +447,13 @@ const RecurringEvents = function ({
                   <Form.Item
                     name="startTimeRecur"
                     className="status-comment-item"
-                    label={t('dashboard.events.addEditEvent.dates.startTime')}>
+                    label={t('dashboard.events.addEditEvent.dates.startTime')}
+                    data-cy="form-item-multiple-start-time-label">
                     <TimePickerStyled
                       placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                       use12Hours={i18n?.language === 'en' ? true : false}
                       format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                      data-cy="multiple-start-time"
                     />
                   </Form.Item>
                 </Col>
@@ -453,13 +461,15 @@ const RecurringEvents = function ({
                   <Form.Item
                     name="endTimeRecur"
                     className="status-comment-item"
-                    label={t('dashboard.events.addEditEvent.dates.endTime')}>
+                    label={t('dashboard.events.addEditEvent.dates.endTime')}
+                    data-cy="form-item-multiple-end-time">
                     <TimePickerStyled
                       placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                       use12Hours={i18n?.language === 'en' ? true : false}
                       format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
                       disabledHours={disabledHours}
                       disabledMinutes={disabledMinutes}
+                      data-cy="multiple-end-time"
                     />
                   </Form.Item>
                 </Col>
@@ -499,7 +509,8 @@ const RecurringEvents = function ({
       <Form.Item
         name="daysOfWeek"
         label={t('dashboard.events.addEditEvent.dates.days')}
-        hidden={formFields?.frequency === dateFrequencyOptions[1].value ? false : true}>
+        hidden={formFields?.frequency === dateFrequencyOptions[1].value ? false : true}
+        data-cy="form-item-days-of-week">
         <div style={{ display: 'flex', gap: '8px' }}>
           {daysOfWeek.map((day, index) => {
             return (

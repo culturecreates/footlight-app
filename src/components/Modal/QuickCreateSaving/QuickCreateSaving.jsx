@@ -44,7 +44,9 @@ const QuickCreateSaving = (props) => {
               justifyContent: 'center',
             }}
           />
-          <span className="text">{text}</span>
+          <span className="text" data-cy="loading-indicator-text">
+            {text}
+          </span>
         </div>
       </CustomModal>
     </div>
