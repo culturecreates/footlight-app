@@ -296,7 +296,8 @@ function QuickCreatePerson(props) {
                                 );
                             },
                           }),
-                        ]}>
+                        ]}
+                        data-cy="form-item-quick-create-person-name-french-label">
                         <TextArea
                           autoSize
                           autoComplete="off"
@@ -331,7 +332,8 @@ function QuickCreatePerson(props) {
                                 );
                             },
                           }),
-                        ]}>
+                        ]}
+                        data-cy="form-item-quick-create-person-name-english-label">
                         <TextArea
                           autoSize
                           autoComplete="off"
@@ -346,7 +348,8 @@ function QuickCreatePerson(props) {
                   <Form.Item
                     name="occupation"
                     label={taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false)}
-                    hidden={taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false) ? false : true}>
+                    hidden={taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false) ? false : true}
+                    data-cy="form-item-quick-create-person-occupation-label">
                     <TreeSelectOption
                       style={{
                         display: !taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false) && 'none',
@@ -365,13 +368,15 @@ function QuickCreatePerson(props) {
                         false,
                         calendarContentLanguage,
                       )}
+                      data-cy="treeselect-quick-create-person-occupation"
                       tagRender={(props) => {
                         const { label, closable, onClose } = props;
                         return (
                           <Tags
                             closable={closable}
                             onClose={onClose}
-                            closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                            closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}
+                            data-cy={`tags-quick-create-person-occupation-${label}`}>
                             {label}
                           </Tags>
                         );
@@ -386,7 +391,8 @@ function QuickCreatePerson(props) {
                         type: 'url',
                         message: t('dashboard.events.addEditEvent.validations.url'),
                       },
-                    ]}>
+                    ]}
+                    data-cy="form-item-quick-create-person-website-label">
                     <StyledInput
                       addonBefore="https://"
                       autoComplete="off"

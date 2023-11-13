@@ -187,25 +187,23 @@ function ImageCrop(props) {
             </span>
           </Col>
           <Col span={24}>
-            <span
-              className="quick-select-modal-sub-heading"
-              style={{ fontWeight: 700, color: '#222732' }}
-              data-cy="span-image-crop-frame-size-text">
-              {t('dashboard.events.addEditEvent.otherInformation.image.crop.savedFrameSize')}
-            </span>
-          </Col>
-          <Col span={24}>
             <Radio.Group
               defaultValue={ASPECT_RATIO_TYPE.large.type}
               value={aspectRatioType}
               onChange={(event) => aspectRatioControl(event.target.value)}
               style={{ color: '#222732' }}>
               <Space direction="vertical">
-                <Radio value={ASPECT_RATIO_TYPE.large.type} data-cy="radio-button-large-aspect-ratio">
-                  {largeAspectRatio} {t('dashboard.events.addEditEvent.otherInformation.image.crop.ratio')}
+                <Radio
+                  value={ASPECT_RATIO_TYPE.large.type}
+                  data-cy="radio-button-large-aspect-ratio"
+                  className="image-ratio-text">
+                  {largeAspectRatio} {t('dashboard.events.addEditEvent.otherInformation.image.crop.largeImage')}
                 </Radio>
-                <Radio value={ASPECT_RATIO_TYPE.thumbnail.type} data-cy="radio-button-thumbnail-aspect-ratio">
-                  {thumbnailAspectRatio} {t('dashboard.events.addEditEvent.otherInformation.image.crop.ratio')}
+                <Radio
+                  value={ASPECT_RATIO_TYPE.thumbnail.type}
+                  data-cy="radio-button-thumbnail-aspect-ratio"
+                  className="image-ratio-text">
+                  {thumbnailAspectRatio} {t('dashboard.events.addEditEvent.otherInformation.image.crop.thumbnailImage')}
                 </Radio>
               </Space>
             </Radio.Group>

@@ -60,6 +60,21 @@
   box-shadow: 0px 0px 0px 8px rgba(63, 81, 181, 0.16);
 }
 
-.image-crop-wrapper .crop-container .reactEasyCrop_Contain{
+.image-crop-wrapper .crop-container .reactEasyCrop_Contain {
   z-index: -1;
+}
+
+.image-crop-wrapper .image-ratio-text {
+  color: #222732;
+  font-size: 16px;
+  font-style: normal;
+  line-height: 24px;
+}
+
+.image-crop-wrapper .image-ratio-text .ant-radio-inner::after {
+  background-color: #1b3de6;
+}
+
+.image-crop-wrapper .ant-radio-checked .ant-radio-inner {
+  border-color: #1b3de6;
 }

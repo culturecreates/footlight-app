@@ -1415,7 +1415,8 @@ function AddEvent() {
                     required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EVENT_TYPE),
                     message: t('dashboard.events.addEditEvent.validations.eventType'),
                   },
-                ]}>
+                ]}
+                data-cy="form-item-event-type-label">
                 <TreeSelectOption
                   placeholder={t('dashboard.events.addEditEvent.language.placeHolderEventType')}
                   allowClear
@@ -1429,11 +1430,13 @@ function AddEvent() {
                       <Tags
                         closable={closable}
                         onClose={onClose}
-                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}
+                        data-cy={`tag-event-type-${label}`}>
                         {label}
                       </Tags>
                     );
                   }}
+                  data-cy="treeselect-event-type"
                 />
               </Form.Item>
               <Form.Item
@@ -1455,7 +1458,8 @@ function AddEvent() {
                     required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.AUDIENCE),
                     message: t('dashboard.events.addEditEvent.validations.targetAudience'),
                   },
-                ]}>
+                ]}
+                data-cy="form-item-audience-label">
                 <TreeSelectOption
                   allowClear
                   treeDefaultExpandAll
@@ -1463,10 +1467,12 @@ function AddEvent() {
                   clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                   treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience', false, calendarContentLanguage)}
                   placeholder={t('dashboard.events.addEditEvent.language.placeHolderTargetAudience')}
+                  data-cy="treeselect-audience"
                   tagRender={(props) => {
                     const { closable, onClose, label } = props;
                     return (
                       <Tags
+                        data-cy={`tag-audience-${label}`}
                         closable={closable}
                         onClose={onClose}
                         closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
@@ -1500,17 +1506,20 @@ function AddEvent() {
                       }
                       hidden={
                         dynamicAdminOnlyFields?.includes(taxonomy?.id) ? (adminCheckHandler() ? false : true) : false
-                      }>
+                      }
+                      data-cy={`form-item-${taxonomy?.id}`}>
                       <TreeSelectOption
                         allowClear
                         treeDefaultExpandAll
                         notFoundContent={<NoContent />}
                         clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                         treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
+                        data-cy={`treeselect-${taxonomy?.id}`}
                         tagRender={(props) => {
                           const { label, closable, onClose } = props;
                           return (
                             <Tags
+                              data-cy={`tag-${taxonomy?.id}`}
                               closable={closable}
                               onClose={onClose}
                               closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
@@ -1573,8 +1582,9 @@ function AddEvent() {
                                 required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.START_DATE),
                                 message: t('dashboard.events.addEditEvent.validations.date'),
                               },
-                            ]}>
-                            <DatePickerStyled style={{ width: '423px' }} />
+                            ]}
+                            data-cy="form-item-event-single-date-label">
+                            <DatePickerStyled style={{ width: '423px' }} data-cy="single-date-event" />
                           </Form.Item>
                           <Row justify="space-between">
                             <Col flex={'203.5px'}>
@@ -1588,11 +1598,13 @@ function AddEvent() {
                                         eventData?.scheduleTimezone ?? 'Canada/Eastern',
                                       )
                                     : undefined
-                                }>
+                                }
+                                data-cy="form-item-single-date-start-time-label">
                                 <TimePickerStyled
                                   placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                                   use12Hours={i18n?.language === 'en' ? true : false}
                                   format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                                  data-cy="single-date-start-time"
                                 />
                               </Form.Item>
                             </Col>
@@ -1604,11 +1616,13 @@ function AddEvent() {
                                   eventData?.endDateTime
                                     ? moment.tz(eventData?.endDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
                                     : undefined
-                                }>
+                                }
+                                data-cy="form-item-single-date-end-time-label">
                                 <TimePickerStyled
                                   placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                                   use12Hours={i18n?.language === 'en' ? true : false}
                                   format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                                  data-cy="single-date-end-time"
                                 />
                               </Form.Item>
                             </Col>
@@ -1650,8 +1664,9 @@ function AddEvent() {
                               required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.START_DATE),
                               message: t('dashboard.events.addEditEvent.validations.date'),
                             },
-                          ]}>
-                          <DateRangePicker style={{ width: '423px' }} />
+                          ]}
+                          data-cy="form-item-date-range-label">
+                          <DateRangePicker style={{ width: '423px' }} data-cy="date-range" />
                         </Form.Item>
                       )}
                       {dateType === dateTypes.MULTIPLE && (
@@ -1720,7 +1735,8 @@ function AddEvent() {
                   <Form.Item
                     name="eventStatus"
                     label={t('dashboard.events.addEditEvent.dates.status')}
-                    initialValue={eventData?.eventStatus ?? eventStatus.EventScheduled}>
+                    initialValue={eventData?.eventStatus ?? eventStatus.EventScheduled}
+                    data-cy="form-item-event-status-label">
                     <Select options={eventStatusOptions} data-cy="select-event-status" />
                   </Form.Item>
                 </Col>
@@ -1785,7 +1801,8 @@ function AddEvent() {
                       ? false
                       : true
                     : false
-                }>
+                }
+                data-cy="form-item-place-label">
                 <Popover
                   open={isPopoverOpen.locationPlace}
                   onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open })}
@@ -1794,11 +1811,12 @@ function AddEvent() {
                   autoAdjustOverflow={false}
                   getPopupContainer={(trigger) => trigger.parentNode}
                   trigger={['click']}
+                  data-cy="popover-event-place"
                   content={
                     <div>
                       <div>
                         <>
-                          <div className="popover-section-header">
+                          <div className="popover-section-header" data-cy="div-place-footlight-title">
                             {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                           </div>
                           <div className="search-scrollable-content">
@@ -1817,7 +1835,7 @@ function AddEvent() {
                                       locationPlace: false,
                                     });
                                   }}
-                                  data-cy="div-select-place">
+                                  data-cy={`div-select-place-${index}`}>
                                   {place?.label}
                                 </div>
                               ))
@@ -1828,7 +1846,7 @@ function AddEvent() {
                         </>
                         {quickCreateKeyword !== '' && (
                           <>
-                            <div className="popover-section-header">
+                            <div className="popover-section-header" data-cy="div-place-artsdata-title">
                               {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
                             </div>
                             <div className="search-scrollable-content">
@@ -1845,7 +1863,7 @@ function AddEvent() {
                                         locationPlace: false,
                                       });
                                     }}
-                                    data-cy="div-select-arts-data-place">
+                                    data-cy={`div-select-arts-data-place-${index}`}>
                                     {place?.label}
                                   </div>
                                 ))
@@ -1934,13 +1952,15 @@ function AddEvent() {
                 className={virtualLocationFieldNames.virtualLocationName}
                 style={{
                   display: !addedFields?.includes(virtualLocationFieldNames.virtualLocationName) && 'none',
-                }}>
+                }}
+                data-cy="form-item-virtual-location-title">
                 <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                   <BilingualInput fieldData={initialVirtualLocation && initialVirtualLocation[0]?.name}>
                     <Form.Item
                       name="frenchVirtualLocation"
                       key={contentLanguage.FRENCH}
-                      initialValue={initialVirtualLocation && initialVirtualLocation[0]?.name?.fr}>
+                      initialValue={initialVirtualLocation && initialVirtualLocation[0]?.name?.fr}
+                      data-cy="form-item-virtual-location-french">
                       <TextArea
                         autoSize
                         autoComplete="off"
@@ -1953,7 +1973,8 @@ function AddEvent() {
                     <Form.Item
                       name="englishVirtualLocation"
                       key={contentLanguage.ENGLISH}
-                      initialValue={initialVirtualLocation && initialVirtualLocation[0]?.name?.en}>
+                      initialValue={initialVirtualLocation && initialVirtualLocation[0]?.name?.en}
+                      data-cy="form-item-virtual-location-english">
                       <TextArea
                         autoSize
                         autoComplete="off"
@@ -1979,7 +2000,8 @@ function AddEvent() {
                     type: 'url',
                     message: t('dashboard.events.addEditEvent.validations.url'),
                   },
-                ]}>
+                ]}
+                data-cy="form-item-virtual-location-link-title">
                 <StyledInput
                   addonBefore="https://"
                   autoComplete="off"
@@ -2027,7 +2049,8 @@ function AddEvent() {
                       ? false
                       : true
                     : false
-                }>
+                }
+                data-cy="form-item-description-title">
                 <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                   <BilingualInput fieldData={eventData?.description}>
                     <TextEditor
@@ -2229,7 +2252,9 @@ function AddEvent() {
                 />
               </Form.Item>
 
-              <Form.Item label={t('dashboard.events.addEditEvent.otherInformation.organizer.title')}>
+              <Form.Item
+                label={t('dashboard.events.addEditEvent.otherInformation.organizer.title')}
+                data-cy="form-item-organizer-title">
                 <Row>
                   <Col>
                     <p className="add-event-date-heading" data-cy="para-organizer-subheading">
@@ -2246,11 +2271,12 @@ function AddEvent() {
                     autoAdjustOverflow={false}
                     getPopupContainer={(trigger) => trigger.parentNode}
                     trigger={['click']}
+                    data-cy="popover-organizers"
                     content={
                       <div>
                         <div>
                           <>
-                            <div className="popover-section-header">
+                            <div className="popover-section-header" data-cy="div-organizers-footlight-entity-heading">
                               {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                             </div>
                             <div className="search-scrollable-content">
@@ -2266,7 +2292,7 @@ function AddEvent() {
                                         organizer: false,
                                       });
                                     }}
-                                    data-cy="div-select-organizer">
+                                    data-cy={`div-select-organizer-${index}`}>
                                     {organizer?.label}
                                   </div>
                                 ))
@@ -2277,7 +2303,7 @@ function AddEvent() {
                           </>
                           {quickCreateKeyword !== '' && (
                             <>
-                              <div className="popover-section-header">
+                              <div className="popover-section-header" data-cy="div-organizers-artsdata-entity-heading">
                                 {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
                               </div>
                               <div className="search-scrollable-content">
@@ -2293,7 +2319,7 @@ function AddEvent() {
                                           organizer: false,
                                         });
                                       }}
-                                      data-cy="div-select-artsdata-organizer">
+                                      data-cy={`div-select-artsdata-organizer-${index}`}>
                                       {organizer?.label}
                                     </div>
                                   ))
@@ -2415,19 +2441,22 @@ function AddEvent() {
                 name={otherInformationFieldNames.contact}
                 style={{
                   display: !addedFields?.includes(otherInformationFieldNames.contact) && 'none',
-                }}>
+                }}
+                data-cy="form-item-event-contact-label">
                 {selectedOrganizers?.length > 0 && selectedOrganizers[0]?.contact && (
                   <Outlined
                     icon={<SnippetsOutlined style={{ color: '#1B3DE6', fontSize: '20px' }} />}
                     size="large"
                     label={t('dashboard.events.addEditEvent.otherInformation.contact.copyOrganizerContact')}
                     onClick={copyOrganizerContactHandler}
+                    data-cy="button-copy-organizer-contact"
                   />
                 )}
 
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}
-                  className="subheading-wrap">
+                  className="subheading-wrap"
+                  data-cy="form-item-event-contact-title">
                   <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                     <BilingualInput fieldData={eventData?.contactPoint?.name}>
                       <Form.Item
@@ -2474,7 +2503,8 @@ function AddEvent() {
                       type: 'url',
                       message: t('dashboard.events.addEditEvent.validations.url'),
                     },
-                  ]}>
+                  ]}
+                  data-cy="form-item-event-contact-website-label">
                   <StyledInput
                     addonBefore="https://"
                     autoComplete="off"
@@ -2486,7 +2516,8 @@ function AddEvent() {
                   name="contactPhoneNumber"
                   className="subheading-wrap"
                   label={t('dashboard.events.addEditEvent.otherInformation.contact.phoneNumber')}
-                  initialValue={eventData?.contactPoint?.telephone}>
+                  initialValue={eventData?.contactPoint?.telephone}
+                  data-cy="form-item-event-contact-phone-number-label">
                   <StyledInput
                     placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderPhoneNumber')}
                     data-cy="input-contact-phonenumber"
@@ -2502,7 +2533,8 @@ function AddEvent() {
                       type: 'email',
                       message: t('login.validations.invalidEmail'),
                     },
-                  ]}>
+                  ]}
+                  data-cy="form-item-event-contact-email-label">
                   <StyledInput
                     placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderEmail')}
                     data-cy="input-contact-email"
@@ -2515,7 +2547,8 @@ function AddEvent() {
                 className={otherInformationFieldNames.performerWrap}
                 style={{
                   display: !addedFields?.includes(otherInformationFieldNames.performerWrap) && 'none',
-                }}>
+                }}
+                data-cy="form-item-event-performer-label">
                 <Row>
                   <Col>
                     <p className="add-event-date-heading" data-cy="para-performer-subheading">
@@ -2532,10 +2565,11 @@ function AddEvent() {
                     autoAdjustOverflow={false}
                     trigger={['click']}
                     getPopupContainer={(trigger) => trigger.parentNode}
+                    data-cy="popover-performer"
                     content={
                       <div>
                         <>
-                          <div className="popover-section-header">
+                          <div className="popover-section-header" data-cy="performer-footlight-entity-heading">
                             {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                           </div>
                           <div className="search-scrollable-content">
@@ -2551,7 +2585,7 @@ function AddEvent() {
                                       performer: false,
                                     });
                                   }}
-                                  data-cy="div-select-performer">
+                                  data-cy={`div-select-performer-${index}`}>
                                   {performer?.label}
                                 </div>
                               ))
@@ -2563,7 +2597,7 @@ function AddEvent() {
 
                         {quickCreateKeyword !== '' && (
                           <>
-                            <div className="popover-section-header">
+                            <div className="popover-section-header" data-cy="performer-artsdata-entity-heading">
                               {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
                             </div>
                             <div className="search-scrollable-content">
@@ -2579,7 +2613,7 @@ function AddEvent() {
                                         performer: false,
                                       });
                                     }}
-                                    data-cy="div-select-artsdata-performer">
+                                    data-cy={`div-select-artsdata-performer-${index}`}>
                                     {performer?.label}
                                   </div>
                                 ))
@@ -2654,7 +2688,8 @@ function AddEvent() {
                 className={otherInformationFieldNames.supporterWrap}
                 style={{
                   display: !addedFields?.includes(otherInformationFieldNames.supporterWrap) && 'none',
-                }}>
+                }}
+                data-cy="form-item-supporter-label">
                 <Row>
                   <Col>
                     <p className="add-event-date-heading" data-cy="para-supporter-subheading">
@@ -2671,11 +2706,12 @@ function AddEvent() {
                     autoAdjustOverflow={false}
                     trigger={['click']}
                     getPopupContainer={(trigger) => trigger.parentNode}
+                    data-cy="popover-supporter"
                     content={
                       <div>
                         <div>
                           <>
-                            <div className="popover-section-header">
+                            <div className="popover-section-header" data-cy="supporter-footlight-entity-heading">
                               {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                             </div>
                             <div className="search-scrollable-content">
@@ -2691,7 +2727,7 @@ function AddEvent() {
                                         supporter: false,
                                       });
                                     }}
-                                    data-cy="div-select-supporter">
+                                    data-cy={`div-select-supporter-${index}`}>
                                     {supporter?.label}
                                   </div>
                                 ))
@@ -2703,7 +2739,7 @@ function AddEvent() {
 
                           {quickCreateKeyword !== '' && (
                             <>
-                              <div className="popover-section-header">
+                              <div className="popover-section-header" data-cy="supporter-artsdata-entity-heading">
                                 {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
                               </div>
                               <div className="search-scrollable-content">
@@ -2719,7 +2755,7 @@ function AddEvent() {
                                           supporter: false,
                                         });
                                       }}
-                                      data-cy="div-select-artsdata-supporter">
+                                      data-cy={`div-select-artsdata-supporter-${index}`}>
                                       {supporter?.label}
                                     </div>
                                   ))
@@ -2737,7 +2773,8 @@ function AddEvent() {
                               onClick={() => {
                                 setIsPopoverOpen({ ...isPopoverOpen, supporter: false });
                                 setQuickOrganizerModal(true);
-                              }}>
+                              }}
+                              data-cy="div-quick-create-keyword-supporter">
                               <PlusCircleOutlined data-cy="div-select-quick-create-supporter-keyword" />
                               &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
                               {quickCreateKeyword}&#34;
@@ -2801,7 +2838,8 @@ function AddEvent() {
                     type: 'url',
                     message: t('dashboard.events.addEditEvent.validations.url'),
                   },
-                ]}>
+                ]}
+                data-cy="form-item-event-link">
                 <StyledInput
                   addonBefore="https://"
                   autoComplete="off"
@@ -2822,7 +2860,8 @@ function AddEvent() {
                     type: 'url',
                     message: t('dashboard.events.addEditEvent.validations.url'),
                   },
-                ]}>
+                ]}
+                data-cy="form-item-video-link">
                 <StyledInput
                   addonBefore="https://"
                   autoComplete="off"
@@ -2845,7 +2884,8 @@ function AddEvent() {
                       type: 'url',
                       message: t('dashboard.events.addEditEvent.validations.url'),
                     },
-                  ]}>
+                  ]}
+                  data-cy="form-item-facebook-link">
                   <StyledInput
                     addonBefore="https://"
                     autoComplete="off"
@@ -2864,7 +2904,8 @@ function AddEvent() {
                   display: !addedFields?.includes(otherInformationFieldNames.keywords) && 'none',
                 }}
                 label={t('dashboard.events.addEditEvent.otherInformation.keywords')}
-                initialValue={eventData?.keywords}>
+                initialValue={eventData?.keywords}
+                data-cy="form-item-select-keywords-label">
                 <SelectOption
                   mode="tags"
                   allowClear
@@ -2877,7 +2918,8 @@ function AddEvent() {
                       <Tags
                         closable={closable}
                         onClose={onClose}
-                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}
+                        data-cy={`tag-select-keywords-${label}`}>
                         {label}
                       </Tags>
                     );
@@ -2897,7 +2939,8 @@ function AddEvent() {
                 label={taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name', false)}
                 initialValue={eventData?.inLanguage?.map((inLanguage) => {
                   return inLanguage?.entityId;
-                })}>
+                })}
+                data-cy="form-item-eventlanguage-label">
                 <TreeSelectOption
                   allowClear
                   treeDefaultExpandAll
@@ -2905,10 +2948,12 @@ function AddEvent() {
                   notFoundContent={<NoContent />}
                   clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                   treeData={treeTaxonomyOptions(allTaxonomyData, user, 'inLanguage', false, calendarContentLanguage)}
+                  data-cy="treeselect-event-language"
                   tagRender={(props) => {
                     const { closable, onClose, label } = props;
                     return (
                       <Tags
+                        data-cy={`tag-event-language-${label}`}
                         closable={closable}
                         onClose={onClose}
                         closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
@@ -2950,7 +2995,7 @@ function AddEvent() {
           {taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false) && (
             <CardEvent title={t('dashboard.events.addEditEvent.eventAccessibility.title')}>
               <>
-                <p className="add-event-date-heading">
+                <p className="add-event-date-heading" data-cy="event-accessibility-subheading">
                   {t('dashboard.events.addEditEvent.eventAccessibility.subHeading')}
                 </p>
                 <Form.Item
@@ -2965,10 +3010,14 @@ function AddEvent() {
                       !taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false) && 'none',
                   }}
                   help={
-                    <p className="add-event-date-heading" style={{ fontSize: '12px' }}>
+                    <p
+                      className="add-event-date-heading"
+                      style={{ fontSize: '12px' }}
+                      data-cy="para-event-accessibility-footer">
                       {t('dashboard.events.addEditEvent.eventAccessibility.footer')}
                     </p>
-                  }>
+                  }
+                  data-cy="form-item-event-accessibility-label">
                   <TreeSelectOption
                     allowClear
                     treeDefaultExpandAll
@@ -2983,10 +3032,12 @@ function AddEvent() {
                       calendarContentLanguage,
                     )}
                     placeholder={t('dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibility')}
+                    data-cy="treeselect-event-accessibility"
                     tagRender={(props) => {
                       const { label, closable, onClose } = props;
                       return (
                         <Tags
+                          data-cy={`tag-event-accessibility-${label}`}
                           closable={closable}
                           onClose={onClose}
                           closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
@@ -3002,7 +3053,8 @@ function AddEvent() {
                   className={eventAccessibilityFieldNames.noteWrap}
                   style={{
                     display: !addedFields?.includes(eventAccessibilityFieldNames.noteWrap) && 'none',
-                  }}>
+                  }}
+                  data-cy="form-item-accessiblity-note-label">
                   <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                     <BilingualInput fieldData={eventData?.accessibilityNote}>
                       <Form.Item
@@ -3021,6 +3073,7 @@ function AddEvent() {
                             resize: 'vertical',
                           }}
                           size="large"
+                          data-cy="text-area-accessibility-note-french"
                         />
                       </Form.Item>
                       <Form.Item
@@ -3039,6 +3092,7 @@ function AddEvent() {
                             resize: 'vertical',
                           }}
                           size="large"
+                          data-cy="text-area-accessibility-note-english"
                         />
                       </Form.Item>
                     </BilingualInput>
@@ -3152,7 +3206,8 @@ function AddEvent() {
                           );
                       },
                     }),
-                  ]}>
+                  ]}
+                  data-cy="form-item-register-link-label">
                   <StyledInput
                     addonBefore="https://"
                     autoComplete="off"
@@ -3166,6 +3221,7 @@ function AddEvent() {
                   <Form.Item
                     name="ticketLink"
                     label={t('dashboard.events.addEditEvent.tickets.buyTicketLink')}
+                    data-cy="form-item-ticket-link-label"
                     initialValue={eventData?.offerConfiguration?.url?.uri}
                     rules={[
                       {
@@ -3378,6 +3434,7 @@ function AddEvent() {
             {ticketType && (ticketType == offerTypes.PAYING || ticketType == offerTypes.REGISTER) && (
               <Form.Item
                 label={t('dashboard.events.addEditEvent.tickets.changeTicketType')}
+                data-cy="form-item-change-ticket-type-label"
                 style={{ lineHeight: '2.5' }}>
                 {offerTypeOptions.map((type) => {
                   if (ticketType != type.type)

@@ -241,11 +241,11 @@ const RecurringModal = ({
       onCancel={() => setIsModalVisible(false)}
       title={
         <div className="custom-modal-title-wrapper">
-          <span className="custom-modal-title-heading">
+          <span className="custom-modal-title-heading" data-cy="span-recurring-title">
             {t('dashboard.events.addEditEvent.dates.modal.titleHeading')}
           </span>
           <div className="custom-modal-title-right-contents">
-            <span className="custom-modal-title-heading">
+            <span className="custom-modal-title-heading" data-cy="span-recurring-start-date-end-date-title">
               {sortedDates?.length > 0 &&
                 moment(sortedDates[0]?.initDate).locale(i18n.language).format('MMMM DD, YYYY')}
               {sortedDates?.length > 1 &&
@@ -327,6 +327,7 @@ const RecurringModal = ({
               onRenderEnd={() => {
                 setIsCalendarRenderComplete(true);
               }}
+              data-cy="calendar-custom-dates"
             />
           )}
         </Col>
@@ -423,7 +424,8 @@ const RecurringModal = ({
                         <Form.Item
                           name="startTimeCustom"
                           //   className="status-comment-item"
-                          label={t('dashboard.events.addEditEvent.dates.startTime')}>
+                          label={t('dashboard.events.addEditEvent.dates.startTime')}
+                          data-cy="custom-start-time-label">
                           <TimePickerStyled
                             placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                             use12Hours={i18n?.language === 'en' ? true : false}
@@ -434,6 +436,7 @@ const RecurringModal = ({
                                 startTimeCustom: value,
                               });
                             }}
+                            data-cy="custom-start-time"
                           />
                         </Form.Item>
                       </Col>
@@ -441,7 +444,8 @@ const RecurringModal = ({
                         <Form.Item
                           name="endTimeCustom"
                           //   className="status-comment-item"
-                          label={t('dashboard.events.addEditEvent.dates.endTime')}>
+                          label={t('dashboard.events.addEditEvent.dates.endTime')}
+                          data-cy="custom-end-time-label">
                           <TimePickerStyled
                             placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                             use12Hours={i18n?.language === 'en' ? true : false}
@@ -452,12 +456,17 @@ const RecurringModal = ({
                                 endTimeCustom: value,
                               });
                             }}
+                            data-cy="custom-end-time"
                           />
                         </Form.Item>
                       </Col>
                     </Row>
                     <div className="flex-align">
-                      <Checkbox onChange={onChangeCheckbox} className="check-time" checked={updateAllTime}>
+                      <Checkbox
+                        onChange={onChangeCheckbox}
+                        className="check-time"
+                        checked={updateAllTime}
+                        data-cy="checkbox-add-time-to-all-dates">
                         {t('dashboard.events.addEditEvent.dates.modal.addTimeToAllDates')}
                       </Checkbox>
                       <div>
