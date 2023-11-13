@@ -230,10 +230,12 @@
             "dragAndDrop": "ou glisser pour télécharger",
             "browse": "Parcourir",
             "crop": {
-              "title": "Position image",
-              "subHeading": "Adjust position if necessary.",
-              "savedFrameSize": "Saved frame sizes",
+              "title": "Positionnement de l’image",
+              "subHeading": "Ajuster la position de l’image si nécessaire.",
+              "savedFrameSize": "Ratios d'images disponibles",
               "ratio": "Ratio",
+              "thumbnailImage": "Vignette",
+              "largeImage": "Image grand format",
               "save": "Sauvegarder",
               "cancel": "Annuler"
             }
@@ -366,7 +368,7 @@
           "person": "Personne",
           "organization": "Organisation",
           "create": "Créer",
-          "addFullDetails": "Add full details",
+          "addFullDetails": "Ajouter les détails",
           "cancel": "Annuler",
           "loaderModal": {
             "text": "Sauvegarde et redirection.",

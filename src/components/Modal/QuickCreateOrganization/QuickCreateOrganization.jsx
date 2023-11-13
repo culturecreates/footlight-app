@@ -328,7 +328,8 @@ function QuickCreateOrganization(props) {
                               );
                           },
                         }),
-                      ]}>
+                      ]}
+                      data-cy="form-item-quick-create-organizer-name-french-label">
                       <TextArea
                         autoSize
                         autoComplete="off"
@@ -367,7 +368,8 @@ function QuickCreateOrganization(props) {
                               );
                           },
                         }),
-                      ]}>
+                      ]}
+                      data-cy="form-item-quick-create-organizer-name-english-label">
                       <TextArea
                         autoSize
                         autoComplete="off"
@@ -389,7 +391,8 @@ function QuickCreateOrganization(props) {
                       type: 'url',
                       message: t('dashboard.events.addEditEvent.validations.url'),
                     },
-                  ]}>
+                  ]}
+                  data-cy="form-item-quick-create-organizer-website-label">
                   <StyledInput
                     addonBefore="https://"
                     autoComplete="off"
@@ -421,7 +424,8 @@ function QuickCreateOrganization(props) {
                           );
                       },
                     }),
-                  ]}>
+                  ]}
+                  data-cy="form-item-quick-create-organizer-logo-label">
                   <Row>
                     <Col>
                       <p

@@ -5,7 +5,7 @@ import { ReactComponent as Organizations } from '../../assets/icons/organisation
 import { taxonomyClass } from '../../constants/taxonomyClass';
 import { sourceOptions } from '../../constants/sourceOptions';
 
-const handleMultilevelTreeSelect = (children, user, calendarContentLanguage) => {
+const handleMultilevelTreeSelect = (children, user, calendarContentLanguage, parentLabel) => {
   return children?.map((child) => {
     return {
       title: contentLanguageBilingual({
@@ -16,8 +16,17 @@ const handleMultilevelTreeSelect = (children, user, calendarContentLanguage) => 
       }),
       value: child?.id,
       ...(child?.children && {
-        children: handleMultilevelTreeSelect(child?.children, user, calendarContentLanguage),
+        children: handleMultilevelTreeSelect(child?.children, user, calendarContentLanguage, parentLabel),
       }),
+      label:
+        parentLabel +
+        '-' +
+        contentLanguageBilingual({
+          en: child?.name?.en,
+          fr: child?.name?.fr,
+          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+          calendarContentLanguage: calendarContentLanguage,
+        }),
     };
   });
 };
@@ -43,7 +52,23 @@ export const treeTaxonomyOptions = (data, user, mappedToField, isDynamicField, c
         }),
         value: concept?.id,
         ...(concept?.children && {
-          children: handleMultilevelTreeSelect(concept?.children, user, calendarContentLanguage),
+          children: handleMultilevelTreeSelect(
+            concept?.children,
+            user,
+            calendarContentLanguage,
+            contentLanguageBilingual({
+              en: concept?.name?.en,
+              fr: concept?.name?.fr,
+              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+              calendarContentLanguage: calendarContentLanguage,
+            }),
+          ),
+        }),
+        label: contentLanguageBilingual({
+          en: concept?.name?.en,
+          fr: concept?.name?.fr,
+          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+          calendarContentLanguage: calendarContentLanguage,
         }),
       };
     });

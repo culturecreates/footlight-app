@@ -65,6 +65,7 @@ function BilingualInput(props) {
       animated="false"
       tabBarStyle={{ margin: '0' }}
       className="bilingual-input-tab"
+      data-cy="bilingual-tabs"
     />
   );
 }

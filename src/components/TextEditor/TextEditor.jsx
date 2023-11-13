@@ -96,7 +96,7 @@ function TextEditor(props) {
       </Form.Item>
       <div className="event-description-footer">
         {descriptionMinimumWordCount > 1 ? (
-          <p>
+          <p data-cy="para-description-footer-title">
             {t('dashboard.events.addEditEvent.otherInformation.description.footerTitle', {
               wordCount: descriptionMinimumWordCount,
             })}
@@ -104,7 +104,9 @@ function TextEditor(props) {
         ) : (
           <div></div>
         )}
-        <p>{pluralize(wordCount, t('dashboard.events.addEditEvent.otherInformation.description.word'))}</p>
+        <p data-cy="description-word-count">
+          {pluralize(wordCount, t('dashboard.events.addEditEvent.otherInformation.description.word'))}
+        </p>
       </div>
       {calendarContentLanguage === contentLanguage.BILINGUAL && (
         <OutlinedButton
@@ -112,6 +114,7 @@ function TextEditor(props) {
           size="middle"
           disabled={wordCount > 1 ? false : true}
           onClick={translateHandler}
+          data-cy="button-translate"
         />
       )}
     </>
