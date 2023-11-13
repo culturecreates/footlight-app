@@ -367,7 +367,8 @@ function QuickCreatePlace(props) {
                                 );
                             },
                           }),
-                        ]}>
+                        ]}
+                        data-cy="form-item-quick-create-place-name-french-label">
                         <TextArea
                           autoSize
                           autoComplete="off"
@@ -402,7 +403,8 @@ function QuickCreatePlace(props) {
                                 );
                             },
                           }),
-                        ]}>
+                        ]}
+                        data-cy="form-item-quick-create-place-name-english-label">
                         <TextArea
                           autoSize
                           autoComplete="off"
@@ -423,7 +425,8 @@ function QuickCreatePlace(props) {
                         message: t('dashboard.events.addEditEvent.location.quickCreatePlace.validations.address'),
                       },
                     ]}
-                    required>
+                    required
+                    data-cy="form-item-quick-create-place-address-label">
                     <PlacesAutocomplete value={address} onChange={handleChange} onSelect={handleSelect}>
                       {({ getInputProps, suggestions, getSuggestionItemProps }) => (
                         <Dropdown
@@ -443,7 +446,8 @@ function QuickCreatePlace(props) {
                             }),
                             selectable: true,
                           }}
-                          trigger={['click']}>
+                          trigger={['click']}
+                          data-cy="dropwdown-google-places">
                           <StyledInput
                             autoComplete="off"
                             {...getInputProps({
@@ -466,7 +470,8 @@ function QuickCreatePlace(props) {
 
                   <Form.Item
                     name="placeType"
-                    label={taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false)}>
+                    label={taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false)}
+                    data-cy="form-item-quick-create-place-type-label">
                     <TreeSelectOption
                       style={{
                         display: !taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false) && 'none',
@@ -483,11 +488,13 @@ function QuickCreatePlace(props) {
                           <Tags
                             closable={closable}
                             onClose={onClose}
-                            closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                            closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}
+                            data-cy={`tags-quick-create-place-type-${label}`}>
                             {label}
                           </Tags>
                         );
                       }}
+                      data-cy="treeselect-quick-create-place-type"
                     />
                   </Form.Item>
                   <Form.Item
@@ -498,7 +505,8 @@ function QuickCreatePlace(props) {
                       placeTaxonomyMappedFieldTypes.REGION,
                       'name',
                       false,
-                    )}>
+                    )}
+                    data-cy="form-item-quick-create-place-region-label">
                     <TreeSelectOption
                       style={{
                         display:
@@ -528,11 +536,13 @@ function QuickCreatePlace(props) {
                           <Tags
                             closable={closable}
                             onClose={onClose}
-                            closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                            closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}
+                            data-cy={`tags-quick-create-region-${label}`}>
                             {label}
                           </Tags>
                         );
                       }}
+                      data-cy="treeselect-quick-create-region"
                     />
                   </Form.Item>
                 </Form>
