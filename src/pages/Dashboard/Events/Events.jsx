@@ -127,10 +127,9 @@ function Events() {
     return x?._id == user?.id ? -1 : y?._id == user?.id ? 1 : 0;
   });
 
-  userFilterData = userFilterData
-    ?.slice(1)
-    ?.sort((a, b) => a?.firstName?.toLowerCase()?.localeCompare(b?.firstName?.toLowerCase()));
-
+  userFilterData = userFilterData?.sort((a, b) =>
+    a?.firstName?.toLowerCase()?.localeCompare(b?.firstName?.toLowerCase()),
+  );
   userFilterData = [{ _id: user?.id, ...user }]?.concat(userFilterData);
 
   const userSearch = () => {
@@ -445,7 +444,7 @@ function Events() {
                     searchImplementation={userSearch}
                     setSearchKey={setSearchKey}
                     searchKey={searchKey}
-                    data={userFilterData?.map((userDetail) => {
+                    data={userFilterData?.slice(1)?.map((userDetail) => {
                       return {
                         key: userDetail?._id,
                         label: (
