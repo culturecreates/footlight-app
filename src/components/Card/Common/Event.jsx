@@ -8,8 +8,8 @@ function Event(props) {
     <Col
       className="add-event-section-col"
       flex={'780px'}
-      style={{ display: hidden && 'none', borderRadius: '4px', backgroundColor: '#ffffff' }}>
-      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-content">
+      style={{ display: hidden && 'none', borderRadius: '4px', backgroundColor: '#ffffff', margin: '0 16px' }}>
+      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-content" justify="space-between">
         <Col flex={'423px'}>
           <div className="add-event-section-wrapper">
             {title && (

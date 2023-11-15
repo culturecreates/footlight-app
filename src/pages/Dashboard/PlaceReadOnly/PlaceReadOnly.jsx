@@ -213,7 +213,7 @@ function PlaceReadOnly() {
           {artsDataLinkChecker(placeData?.sameAs) && (
             <Col span={24}>
               <Row>
-                <Col span={16}>
+                <Col span={16} flex={'780px'}>
                   <ArtsDataInfo
                     artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
                     name={contentLanguageBilingual({
