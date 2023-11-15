@@ -16,11 +16,18 @@ import { useLazyGetAllUsersQuery } from '../../../services/users';
 import { filterTypes } from '../../../constants/filterTypes';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
-import { sortByOptions, sortByOptionsUsers, sortOrder } from '../../../constants/sortByOptions';
+import {
+  sortByOptions,
+  sortByOptionsOrgsPlacesPerson,
+  sortByOptionsUsers,
+  sortOrder,
+} from '../../../constants/sortByOptions';
 import DateRangePicker from '../../../components/DateRangePicker';
 import moment from 'moment';
 import NoContent from '../../../components/NoContent/NoContent';
 import LoadingIndicator from '../../../components/LoadingIndicator/index';
+import { contentLanguageBilingual } from '../../../utils/bilingual';
+import { useLazyGetAllOrganizationQuery } from '../../../services/organization';
 
 function Events() {
   const { t } = useTranslation();
@@ -33,8 +40,12 @@ function Events() {
 
   const [getEvents, { currentData: eventsData, isLoading, isFetching }] = useLazyGetEventsQuery();
   const [getAllUsers, { currentData: allUsersData, isLoading: allUsersLoading }] = useLazyGetAllUsersQuery();
-  const [searchKey, setSearchKey] = useState();
 
+  const [getAllOrganization, { currentData: organizersData, isLoading: organizerLoading }] =
+    useLazyGetAllOrganizationQuery();
+
+  const [searchKey, setSearchKey] = useState();
+  const [organizationSearchKey, setOrganizationSearchKey] = useState();
   const [eventSearchQuery, setEventSearchQuery] = useState(
     searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('query') ?? '',
   );
@@ -90,13 +101,27 @@ function Events() {
       : [],
   );
 
-  let initialSelectedUsers = {};
+  const [organizerFilter, setOrganizerFilter] = useState(
+    searchParams.get('organizers')
+      ? decodeURIComponent(searchParams.get('organizers'))?.split(',')
+      : sessionStorage.getItem('organizers')
+      ? decodeURIComponent(sessionStorage.getItem('organizers'))?.split(',')
+      : [],
+  );
+
+  let initialSelectedUsers = {},
+    initialSelectedOrganizers = {};
   for (let index = 0; index < userFilter?.length; index++) {
+    Object.assign(initialSelectedUsers, { [userFilter[index]]: true });
+  }
+
+  for (let index = 0; index < organizerFilter?.length; index++) {
     Object.assign(initialSelectedUsers, { [userFilter[index]]: true });
   }
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState(initialSelectedUsers ?? {});
+  const [selectedOrganizer, setSelectedOrganizers] = useState(initialSelectedOrganizers ?? {});
   const [selectedDates, setSelectedDates] = useState(
     (searchParams.get('startDateRange') || sessionStorage.getItem('startDateRange')) &&
       (searchParams.get('endDateRange') || sessionStorage.getItem('endDateRange'))
@@ -142,6 +167,16 @@ function Events() {
     });
   };
 
+  const organizersPersonPlaceSearch = () => {
+    getAllOrganization({
+      calendarId,
+      sessionId: timestampRef,
+      pageNumber: 1,
+      query: organizationSearchKey,
+      sort: `sort=asc(${sortByOptionsOrgsPlacesPerson[0]?.key})`,
+    });
+  };
+
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   useEffect(() => {
@@ -151,11 +186,14 @@ function Events() {
   useEffect(() => {
     let query = new URLSearchParams();
     let sortQuery = new URLSearchParams();
-    let usersQuery, publicationQuery;
+    let usersQuery, publicationQuery, organizerQuery;
 
     userFilter?.forEach((user) => query.append('user', user));
+    organizerFilter?.forEach((organizer) => query.append('person-organization', organizer));
     filter?.publication?.forEach((state) => query.append('publish-state', state));
     if (userFilter?.length > 0) usersQuery = encodeURIComponent(userFilter);
+    if (organizerFilter?.length > 0) organizerQuery = encodeURIComponent(organizerFilter);
+
     if (filter?.publication?.length > 0) publicationQuery = encodeURIComponent(filter.publication);
 
     sortQuery.append(
@@ -202,6 +240,7 @@ function Events() {
       ...(filter?.dates?.length > 0 && filter?.dates[0] && { startDateRange: query?.get('start-date-range') }),
       ...(filter?.dates?.length > 1 && filter?.dates[1] && { endDateRange: query?.get('end-date-range') }),
       ...(usersQuery && { users: usersQuery }),
+      ...(organizerQuery && { organizers: organizerQuery }),
       ...(publicationQuery && { publication: publicationQuery }),
     };
 
@@ -218,6 +257,8 @@ function Events() {
     sessionStorage.setItem('sortBy', filter?.sort);
     if (usersQuery) sessionStorage.setItem('users', usersQuery);
     else sessionStorage.removeItem('users');
+    if (usersQuery) sessionStorage.setItem('organizers', usersQuery);
+    else sessionStorage.removeItem('organizers');
     if (publicationQuery) sessionStorage.setItem('publication', publicationQuery);
     else if (sessionStorage.getItem('publication')) {
       sessionStorage.removeItem('publication');
@@ -228,7 +269,7 @@ function Events() {
     if (filter?.dates?.length > 1 && filter?.dates[1] && filter?.dates[1] !== '')
       sessionStorage.setItem('endDateRange', filter?.dates[1]);
     else sessionStorage.setItem('endDateRange', query?.get('end-date-range'));
-  }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter]);
+  }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter, organizerFilter]);
 
   useEffect(() => {
     getAllUsers({
@@ -239,6 +280,14 @@ function Events() {
       sessionId: timestampRef,
       calendarId: calendarId,
       includeCalenderFilter: true,
+    });
+    getAllOrganization({
+      calendarId,
+      limit: 30,
+      sessionId: timestampRef,
+      pageNumber: 1,
+      query: organizationSearchKey,
+      sort: `sort=asc(${sortByOptionsOrgsPlacesPerson[0]?.key})`,
     });
   }, [calendarId]);
 
@@ -260,6 +309,17 @@ function Events() {
       return currentUsersFilter[key];
     });
     setUserFilter(filteredUsers);
+    setPageNumber(1);
+  };
+
+  const onOrganizerCheckboxChange = (e) => {
+    let currentOrganizerFilter = selectedOrganizer ?? {};
+    Object.assign(currentOrganizerFilter, { [e?.target?.value]: e?.target?.checked });
+    setSelectedOrganizers(currentOrganizerFilter);
+    let filteredOrganizers = Object.keys(currentOrganizerFilter).filter(function (key) {
+      return currentOrganizerFilter[key];
+    });
+    setOrganizerFilter(filteredOrganizers);
     setPageNumber(1);
   };
 
@@ -309,17 +369,26 @@ function Events() {
     });
     setUserFilter([]);
     setSelectedDates([]);
+    setOrganizerFilter([]);
     let usersToClear = selectedUsers;
     Object.keys(usersToClear)?.forEach(function (key) {
       usersToClear[key] = false;
     });
     setSelectedUsers(Object.assign({}, usersToClear));
+
+    let organizerToClear = selectedOrganizer;
+    Object.keys(organizerToClear)?.forEach(function (key) {
+      organizerToClear[key] = false;
+    });
+    setSelectedOrganizers(Object.assign({}, organizerToClear));
+
     setPageNumber(1);
     sessionStorage.removeItem('page');
     sessionStorage.removeItem('query');
     sessionStorage.removeItem('order');
     sessionStorage.removeItem('sortBy');
     sessionStorage.removeItem('users');
+    sessionStorage.removeItem('organizers');
     sessionStorage.removeItem('publication');
     sessionStorage.removeItem('startDateRange');
     sessionStorage.removeItem('endDateRange');
@@ -404,7 +473,7 @@ function Events() {
               </div>
             </Col>
 
-            <Col>
+            <Col span={24}>
               <Row gutter={20}>
                 <Space>
                   <Col>
@@ -550,11 +619,57 @@ function Events() {
                   </Popover>
                 </Col>
                 <Col>
+                  <SearchableCheckbox
+                    allowSearch={true}
+                    loading={organizerLoading}
+                    overlayStyle={{ height: '304px' }}
+                    searchImplementation={organizersPersonPlaceSearch}
+                    setSearchKey={setOrganizationSearchKey}
+                    searchKey={organizationSearchKey}
+                    data={organizersData?.data?.map((organizer) => {
+                      return {
+                        key: organizer?.id,
+                        label: (
+                          <>
+                            <Checkbox
+                              value={organizer?.id}
+                              key={organizer?.id}
+                              style={{ marginLeft: '8px' }}
+                              onChange={(e) => onOrganizerCheckboxChange(e)}>
+                              {contentLanguageBilingual({
+                                en: organizer?.name?.en,
+                                fr: organizer?.name?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              })}
+                            </Checkbox>
+                          </>
+                        ),
+                        filtervalue: organizer?.id,
+                      };
+                    })}
+                    value={organizerFilter}>
+                    <Button
+                      size="large"
+                      className="filter-buttons"
+                      style={{ borderColor: organizerFilter?.length > 0 && '#607EFC' }}
+                      data-cy="button-filter-users">
+                      {t('dashboard.events.filter.organizer.label')}
+                      {organizerFilter?.length > 0 && (
+                        <>
+                          &nbsp; <Badge count={organizerFilter?.length} showZero={false} color="#1B3DE6" />
+                        </>
+                      )}
+                    </Button>
+                  </SearchableCheckbox>
+                </Col>
+                <Col>
                   {(userFilter.length > 0 ||
                     filter?.publication?.length > 0 ||
                     filter?.dates?.length > 0 ||
                     filter?.order === sortOrder?.DESC ||
-                    filter?.sort != sortByOptions[2]?.key) && (
+                    filter?.sort != sortByOptions[2]?.key ||
+                    organizerFilter?.length > 0) && (
                     <Button
                       size="large"
                       className="filter-buttons"

@@ -105,6 +105,7 @@
           "allTime": "Toutes les dates",
           "past": "Passé"
         },
+        "organizer": { "label": "Organisations", "placeholderSearch": "Rechercher un nom" },
         "clear": "Éffacer"
       },
       "readOnlyEvent": {
