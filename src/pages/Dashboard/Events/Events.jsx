@@ -145,6 +145,10 @@ function Events() {
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   useEffect(() => {
+    filterClearHandler(); // when calendar data changes filters are reset
+  }, [currentCalendarData]);
+
+  useEffect(() => {
     let query = new URLSearchParams();
     let sortQuery = new URLSearchParams();
     let usersQuery, publicationQuery;
