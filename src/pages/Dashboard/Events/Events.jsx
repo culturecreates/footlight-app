@@ -123,14 +123,11 @@ function Events() {
       : [],
   );
 
-  let userFilterData = allUsersData?.data?.slice()?.sort(function (x, y) {
-    return x?._id == user?.id ? -1 : y?._id == user?.id ? 1 : 0;
-  });
+  // let userFilterDataTest = allUsersData?.data?.slice()?.sort(function (x, y) {
+  //   return x?._id == user?.id ? -1 : y?._id == user?.id ? 1 : 0;
+  // });
 
-  userFilterData = userFilterData
-    ?.slice(1)
-    ?.sort((a, b) => a?.firstName?.toLowerCase()?.localeCompare(b?.firstName?.toLowerCase()));
-
+  let userFilterData = allUsersData?.data?.filter((item) => user?.id != item._id);
   userFilterData = [{ _id: user?.id, ...user }]?.concat(userFilterData);
 
   const userSearch = () => {
