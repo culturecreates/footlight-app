@@ -180,10 +180,6 @@ function Events() {
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   useEffect(() => {
-    filterClearHandler(); // when calendar data changes filters are reset
-  }, [currentCalendarData]);
-
-  useEffect(() => {
     let query = new URLSearchParams();
     let sortQuery = new URLSearchParams();
     let usersQuery, publicationQuery, organizerQuery;
@@ -324,7 +320,6 @@ function Events() {
   };
 
   const onFilterChange = (values, filterType) => {
-    console.log(values);
     if (filterType === filterTypes.PUBLICATION)
       setFilter({
         ...filter,
