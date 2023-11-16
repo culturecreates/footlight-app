@@ -72,7 +72,6 @@ function Sidebar(props) {
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       calendarContentLanguage: calendarContentLanguage,
     });
-    sessionStorage.clear();
     setCalendarItem(selectedCalendar(currentCalendarData?.id, currentCalendarData?.image?.uri, calendarLabel));
   }, [currentCalendarData]);
 

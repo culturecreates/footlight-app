@@ -39,6 +39,7 @@ const UserProfileDropDown = () => {
           window.open(`${process.env.REACT_APP_HELP_FR_URL}`, '_blank', 'noopener,noreferrer');
         break;
       case 'logOut':
+        sessionStorage.clear();
         navigate(PathName.Login, { state: { previousPath: 'logout' } });
         break;
       default:
