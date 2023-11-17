@@ -34,6 +34,13 @@ function OrganizationsReadOnly() {
   const navigate = useNavigate();
   const [currentCalendarData] = useOutletContext();
 
+  const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
+    calendarId,
+    search: '',
+    taxonomyClass: taxonomyClass.ORGANIZATION,
+    includeConcepts: true,
+  });
+
   const {
     data: organizationData,
     isLoading: organizationLoading,
@@ -43,12 +50,6 @@ function OrganizationsReadOnly() {
     { id: organizationId, calendarId, sessionId: timestampRef },
     { skip: organizationId ? false : true },
   );
-  const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
-    calendarId,
-    search: '',
-    taxonomyClass: taxonomyClass.ORGANIZATION,
-    includeConcepts: true,
-  });
 
   const [getPlace] = useLazyGetPlaceQuery();
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery();
