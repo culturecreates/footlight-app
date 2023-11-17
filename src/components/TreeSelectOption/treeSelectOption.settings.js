@@ -138,7 +138,23 @@ export const treeDynamicTaxonomyOptions = (concepts, user, calendarContentLangua
         }),
         value: concept?.id,
         ...(concept?.children && {
-          children: handleMultilevelTreeSelect(concept?.children, user),
+          children: handleMultilevelTreeSelect(
+            concept?.children,
+            user,
+            calendarContentLanguage,
+            contentLanguageBilingual({
+              en: concept?.name?.en,
+              fr: concept?.name?.fr,
+              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+              calendarContentLanguage: calendarContentLanguage,
+            }),
+          ),
+        }),
+        label: contentLanguageBilingual({
+          en: concept?.name?.en,
+          fr: concept?.name?.fr,
+          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+          calendarContentLanguage: calendarContentLanguage,
         }),
       };
     });
