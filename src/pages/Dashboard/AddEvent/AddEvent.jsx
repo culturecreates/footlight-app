@@ -90,6 +90,8 @@ function AddEvent() {
   const navigate = useNavigate();
   const location = useLocation();
   const [form] = Form.useForm();
+  Form.useWatch('startTime', form);
+  Form.useWatch('endTime', form);
   const timestampRef = useRef(Date.now()).current;
   const { calendarId, eventId } = useParams();
   let [searchParams] = useSearchParams();
@@ -1603,6 +1605,11 @@ function AddEvent() {
                                   placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                                   use12Hours={i18n?.language === 'en' ? true : false}
                                   format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                                  onSelect={(value) => {
+                                    form.setFieldsValue({
+                                      startTime: value,
+                                    });
+                                  }}
                                   data-cy="single-date-start-time"
                                 />
                               </Form.Item>
@@ -1621,6 +1628,11 @@ function AddEvent() {
                                   placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                                   use12Hours={i18n?.language === 'en' ? true : false}
                                   format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                                  onSelect={(value) => {
+                                    form.setFieldsValue({
+                                      endTime: value,
+                                    });
+                                  }}
                                   data-cy="single-date-end-time"
                                 />
                               </Form.Item>

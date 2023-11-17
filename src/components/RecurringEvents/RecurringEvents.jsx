@@ -35,6 +35,8 @@ const RecurringEvents = function ({
   const [subEventCount, setSubEventCount] = useState(0);
   const startDateRecur = Form.useWatch('startDateRecur', form);
   const { t } = useTranslation();
+  Form.useWatch('endTimeRecur', form);
+  Form.useWatch('startTimeRecur', form);
 
   useEffect(() => {
     if (eventDetails) {
@@ -454,6 +456,11 @@ const RecurringEvents = function ({
                       use12Hours={i18n?.language === 'en' ? true : false}
                       format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
                       data-cy="multiple-start-time"
+                      onSelect={(value) => {
+                        form.setFieldsValue({
+                          startTimeRecur: value,
+                        });
+                      }}
                     />
                   </Form.Item>
                 </Col>
@@ -470,6 +477,11 @@ const RecurringEvents = function ({
                       disabledHours={disabledHours}
                       disabledMinutes={disabledMinutes}
                       data-cy="multiple-end-time"
+                      onSelect={(value) => {
+                        form.setFieldsValue({
+                          endTimeRecur: value,
+                        });
+                      }}
                     />
                   </Form.Item>
                 </Col>
