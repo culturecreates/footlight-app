@@ -182,10 +182,11 @@ function AddEvent() {
   let dynamicAdminOnlyFields = requiredFields?.adminOnlyFields?.dynamicFields ?? [];
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const dateTimeConverter = (date, time) => {
-    let dateSelected = moment.tz(date, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('DD-MM-YYYY');
-    let timeSelected = moment.tz(time, eventData?.scheduleTimezone ?? 'Canada/Eastern').format('hh:mm:ss a');
-    let dateTime = moment(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a');
-    return moment(dateTime).toISOString();
+    let dateSelected = date.format('DD-MM-YYYY');
+    let timeSelected = time.format('hh:mm:ss a');
+    // Combine date and time and explicitly set the timezone to 'Canada/Eastern'
+    let dateTime = moment.tz(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a', 'Canada/Eastern');
+    return dateTime.toISOString();
   };
 
   const calendar = user?.roles.filter((calendar) => {
