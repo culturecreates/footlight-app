@@ -2188,68 +2188,6 @@ function AddEvent() {
                   </BilingualInput>
                 </ContentLanguageInput>
               </Form.Item>
-              <Form.Item
-                label={t('dashboard.events.addEditEvent.otherInformation.image.title')}
-                name="draggerWrap"
-                className="draggerWrap"
-                required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.IMAGE)}
-                hidden={
-                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
-                    ? adminCheckHandler()
-                      ? false
-                      : true
-                    : false
-                }
-                initialValue={eventData?.image && eventData?.image?.original?.uri}
-                {...(isAddImageError && {
-                  help: t('dashboard.events.addEditEvent.validations.errorImage'),
-                  validateStatus: 'error',
-                })}
-                rules={[
-                  ({ getFieldValue }) => ({
-                    validator() {
-                      if (
-                        (getFieldValue('dragger') != undefined && getFieldValue('dragger')?.length > 0) ||
-                        (eventData?.image?.original?.uri && !getFieldValue('dragger')) ||
-                        (eventData?.image?.original?.uri && getFieldValue('dragger')?.length > 0)
-                      ) {
-                        return Promise.resolve();
-                      } else
-                        return Promise.reject(
-                          new Error(t('dashboard.events.addEditEvent.validations.otherInformation.emptyImage')),
-                        );
-                    },
-                  }),
-                ]}>
-                <Row>
-                  <Col>
-                    <p className="add-event-date-heading" data-cy="para-image-upload-sub-text">
-                      {t('dashboard.events.addEditEvent.otherInformation.image.subHeading')}
-                    </p>
-                  </Col>
-                </Row>
-                <ImageUpload
-                  imageUrl={eventData?.image?.large?.uri}
-                  originalImageUrl={eventData?.image?.original?.uri}
-                  imageReadOnly={false}
-                  preview={true}
-                  setImageCropOpen={setImageCropOpen}
-                  imageCropOpen={imageCropOpen}
-                  form={form}
-                  eventImageData={eventData?.image}
-                  largeAspectRatio={
-                    currentCalendarData?.imageConfig?.length > 0
-                      ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio
-                      : null
-                  }
-                  thumbnailAspectRatio={
-                    currentCalendarData?.imageConfig?.length > 0
-                      ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio
-                      : null
-                  }
-                  isCrop={featureFlags.imageCropFeature}
-                />
-              </Form.Item>
 
               <Form.Item
                 label={t('dashboard.events.addEditEvent.otherInformation.organizer.title')}
@@ -2540,6 +2478,70 @@ function AddEvent() {
                   />
                 </Form.Item>
               </Form.Item>
+
+              <Form.Item
+                label={t('dashboard.events.addEditEvent.otherInformation.image.title')}
+                name="draggerWrap"
+                className="draggerWrap"
+                required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.IMAGE)}
+                hidden={
+                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
+                    ? adminCheckHandler()
+                      ? false
+                      : true
+                    : false
+                }
+                initialValue={eventData?.image && eventData?.image?.original?.uri}
+                {...(isAddImageError && {
+                  help: t('dashboard.events.addEditEvent.validations.errorImage'),
+                  validateStatus: 'error',
+                })}
+                rules={[
+                  ({ getFieldValue }) => ({
+                    validator() {
+                      if (
+                        (getFieldValue('dragger') != undefined && getFieldValue('dragger')?.length > 0) ||
+                        (eventData?.image?.original?.uri && !getFieldValue('dragger')) ||
+                        (eventData?.image?.original?.uri && getFieldValue('dragger')?.length > 0)
+                      ) {
+                        return Promise.resolve();
+                      } else
+                        return Promise.reject(
+                          new Error(t('dashboard.events.addEditEvent.validations.otherInformation.emptyImage')),
+                        );
+                    },
+                  }),
+                ]}>
+                <Row>
+                  <Col>
+                    <p className="add-event-date-heading" data-cy="para-image-upload-sub-text">
+                      {t('dashboard.events.addEditEvent.otherInformation.image.subHeading')}
+                    </p>
+                  </Col>
+                </Row>
+                <ImageUpload
+                  imageUrl={eventData?.image?.large?.uri}
+                  originalImageUrl={eventData?.image?.original?.uri}
+                  imageReadOnly={false}
+                  preview={true}
+                  setImageCropOpen={setImageCropOpen}
+                  imageCropOpen={imageCropOpen}
+                  form={form}
+                  eventImageData={eventData?.image}
+                  largeAspectRatio={
+                    currentCalendarData?.imageConfig?.length > 0
+                      ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio
+                      : null
+                  }
+                  thumbnailAspectRatio={
+                    currentCalendarData?.imageConfig?.length > 0
+                      ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio
+                      : null
+                  }
+                  isCrop={featureFlags.imageCropFeature}
+                />
+              </Form.Item>
+
               <Form.Item
                 label={t('dashboard.events.addEditEvent.otherInformation.performer.title')}
                 name={otherInformationFieldNames.performerWrap}
