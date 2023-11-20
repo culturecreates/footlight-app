@@ -253,7 +253,7 @@ function Events() {
     sessionStorage.setItem('sortBy', filter?.sort);
     if (usersQuery) sessionStorage.setItem('users', usersQuery);
     else sessionStorage.removeItem('users');
-    if (usersQuery) sessionStorage.setItem('organizers', usersQuery);
+    if (organizerQuery) sessionStorage.setItem('organizers', organizerQuery);
     else sessionStorage.removeItem('organizers');
     if (publicationQuery) sessionStorage.setItem('publication', publicationQuery);
     else if (sessionStorage.getItem('publication')) {
