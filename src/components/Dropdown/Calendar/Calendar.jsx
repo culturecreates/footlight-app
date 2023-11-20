@@ -48,15 +48,7 @@ function Calendar({ children, allCalendarsData, setPageNumber }) {
       dispatch(setSelectedCalendar(String(key)));
       Cookies.set('calendarId', key);
       setPageNumber(1);
-      sessionStorage.removeItem('page');
-      sessionStorage.removeItem('query');
-      sessionStorage.removeItem('order');
-      sessionStorage.removeItem('sortBy');
-      sessionStorage.removeItem('users');
-      sessionStorage.removeItem('publication');
-      sessionStorage.removeItem('startDateRange');
-      sessionStorage.removeItem('endDateRange');
-      sessionStorage.removeItem('organizers');
+      sessionStorage.clear();
       setOpen(false);
       console.log(window.location.origin);
       const origin = window.location.origin;
