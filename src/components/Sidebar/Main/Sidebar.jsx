@@ -9,6 +9,7 @@ import { PathName } from '../../../constants/pathName';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { clearSessionStoredSearchQueries } from '../../../utils/clearSessionStoredSearchQueries';
 
 const { Sider } = Layout;
 
@@ -76,6 +77,9 @@ function Sidebar(props) {
   }, [currentCalendarData]);
 
   const onSidebarClickHandler = ({ item, key }) => {
+    if (key != selectedKey) {
+      clearSessionStoredSearchQueries();
+    }
     setSelectedKey([key]);
     navigate(`${PathName.Dashboard}/${calendarId}${item.props.path}`);
   };
