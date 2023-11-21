@@ -86,6 +86,7 @@ function SearchOrganizations() {
         text={t('dashboard.organization.createNew.search.text')}>
         <div className="search-bar-organization">
           <Popover
+            data-cy="popover-organization-entity-search"
             open={isPopoverOpen}
             arrow={false}
             overlayClassName="entity-popover"
@@ -99,7 +100,7 @@ function SearchOrganizations() {
             trigger={['click']}
             content={
               <div>
-                <div className="popover-section-header">
+                <div className="popover-section-header" data-cy="footlight-entity-title">
                   {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                 </div>
                 <div className="search-scrollable-content">
@@ -110,7 +111,8 @@ function SearchOrganizations() {
                         className="search-popover-options"
                         onClick={() => {
                           setIsPopoverOpen(false);
-                        }}>
+                        }}
+                        data-cy={`div-organization-footlight-${index}`}>
                         <EntityCard
                           title={contentLanguageBilingual({
                             en: organizer?.name?.en,
@@ -125,7 +127,13 @@ function SearchOrganizations() {
                             calendarContentLanguage: calendarContentLanguage,
                           })}
                           artsDataLink={artsDataLinkChecker(organizer?.uri)}
-                          Logo={organizer.logo ? <img src={organizer.logo?.thumbnail?.uri} /> : <Logo />}
+                          Logo={
+                            organizer.logo ? (
+                              <img src={organizer.logo?.thumbnail?.uri} data-cy={`img-entity-logo-${index}`} />
+                            ) : (
+                              <Logo />
+                            )
+                          }
                           linkText={t('dashboard.organization.createNew.search.linkText')}
                           onClick={() => {
                             if (routinghandler(user, calendarId, organizer?.creator?.userId, null, true)) {
@@ -144,7 +152,7 @@ function SearchOrganizations() {
                 </div>
                 {quickCreateKeyword !== '' && (
                   <>
-                    <div className="popover-section-header">
+                    <div className="popover-section-header" data-cy="organization-artsdata-heading">
                       {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
                     </div>
                     <div className="search-scrollable-content">
@@ -153,6 +161,7 @@ function SearchOrganizations() {
                           <div
                             key={index}
                             className="search-popover-options"
+                            data-cy={`div-orgnanization--artsdata-entity-${index}`}
                             onClick={() => {
                               setIsPopoverOpen(false);
                             }}>
@@ -191,6 +200,7 @@ function SearchOrganizations() {
               </div>
             }>
             <EventsSearch
+              data-cy="input-search-organization"
               style={{ borderRadius: '4px' }}
               placeholder="Search organizations"
               onClick={(e) => {

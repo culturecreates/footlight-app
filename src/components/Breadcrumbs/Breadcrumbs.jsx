@@ -12,15 +12,23 @@ function Breadcrumbs(props) {
   let crumbs = matches.filter((match) => Boolean(match.handle?.crumb)).map((match) => match.handle.crumb(match.data));
 
   return (
-    <Breadcrumb className="breadcrumbs">
+    <Breadcrumb className="breadcrumbs" data-cy="antd-breadcrumbs">
       {crumbs.map((crumb, index) => (
-        <Breadcrumb.Item key={index} className="breadcrumb-item cursor" onClick={() => navigate(-1)}>
+        <Breadcrumb.Item
+          key={index}
+          className="breadcrumb-item cursor"
+          onClick={() => navigate(-1)}
+          data-cy="antd-breadcrumb-item">
           <LeftOutlined style={{ marginRight: '17px' }} />
           {crumb}
         </Breadcrumb.Item>
       ))}
 
-      {name && <Breadcrumb.Item className="breadcrumb-item">{name}</Breadcrumb.Item>}
+      {name && (
+        <Breadcrumb.Item className="breadcrumb-item" data-cy="antd-breadcrumb-item-name">
+          {name}
+        </Breadcrumb.Item>
+      )}
     </Breadcrumb>
   );
 }

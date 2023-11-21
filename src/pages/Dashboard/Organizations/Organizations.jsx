@@ -140,11 +140,14 @@ function Organizations() {
     allOrganizationSuccess && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Main>
-          <h4 className="events-heading">{t('dashboard.organization.organizations')}</h4>
+          <h4 className="events-heading" data-cy="heading-organizations">
+            {t('dashboard.organization.organizations')}
+          </h4>
           <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
             <AddOrganization
               label={t('dashboard.organization.organization')}
               onClick={() => navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.Search}`)}
+              data-cy="button-add-organization"
             />
           </FeatureFlag>
 
@@ -154,6 +157,7 @@ function Organizations() {
             defaultValue={organizationSearchQuery}
             allowClear={true}
             onChange={onChangeHandler}
+            data-cy="input-search-organizations"
           />
           <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
           <></>
@@ -161,6 +165,7 @@ function Organizations() {
           {!allOrganizationFetching ? (
             allOrganizationData?.data?.length > 0 ? (
               <List
+                data-cy="antd-organizations-list"
                 className="event-list-wrapper"
                 itemLayout={screens.xs ? 'vertical' : 'horizontal'}
                 dataSource={allOrganizationData?.data}
@@ -177,10 +182,17 @@ function Organizations() {
                 }}
                 renderItem={(item, index) => (
                   <ListItem
+                    data-cy={`antd-organization-list-item-${index}`}
                     key={index}
                     id={index}
                     logo={item?.logo?.thumbnail?.uri}
-                    defaultLogo={<Icon component={OrganizationLogo} style={{ color: '#607EFC', fontSize: '18px' }} />}
+                    defaultLogo={
+                      <Icon
+                        component={OrganizationLogo}
+                        style={{ color: '#607EFC', fontSize: '18px' }}
+                        data-cy="organization-logo"
+                      />
+                    }
                     title={contentLanguageBilingual({
                       en: item?.name?.en,
                       fr: item?.name?.fr,
@@ -205,6 +217,7 @@ function Organizations() {
                           key={'delete-icon'}
                           style={{ color: '#222732', fontSize: '24px' }}
                           onClick={() => deleteOrganizationHandler(item?.id)}
+                          data-cy="delete-organization"
                         />
                       ),
                     ]}
@@ -212,11 +225,11 @@ function Organizations() {
                 )}
               />
             ) : (
-              <NoContent style={{ height: '200px' }} />
+              <NoContent style={{ height: '200px' }} data-cy="empty-organization" />
             )
           ) : (
             <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <LoadingIndicator />
+              <LoadingIndicator data-cy="organizations-listing-loader" />
             </div>
           )}
         </Main>
