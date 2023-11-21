@@ -105,6 +105,7 @@
           "allTime": "All time",
           "past": "Past"
         },
+        "organizer": { "label": "Organizations", "placeholderSearch": "Search name" },
         "clear": "Clear"
       },
       "readOnlyEvent": {

@@ -3,7 +3,6 @@ import './calendar.css';
 import { Dropdown } from 'antd';
 import { useDispatch } from 'react-redux';
 import { setSelectedCalendar } from '../../../redux/reducer/selectedCalendarSlice';
-import { useNavigate } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
@@ -12,8 +11,8 @@ import Cookies from 'js-cookie';
 
 function Calendar({ children, allCalendarsData, setPageNumber }) {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { user } = useSelector(getUserDetails);
+  const calendarIdInCookies = Cookies.get('calendarId');
 
   const [open, setOpen] = useState(false);
   const items = allCalendarsData?.data?.map((item) => {
@@ -45,19 +44,17 @@ function Calendar({ children, allCalendarsData, setPageNumber }) {
     };
   });
   const onClick = ({ key }) => {
-    navigate(`${PathName.Dashboard}/${key}${PathName.Events}`);
-    dispatch(setSelectedCalendar(String(key)));
-    Cookies.set('calendarId', key);
-    setPageNumber(1);
-    sessionStorage.removeItem('page');
-    sessionStorage.removeItem('query');
-    sessionStorage.removeItem('order');
-    sessionStorage.removeItem('sortBy');
-    sessionStorage.removeItem('users');
-    sessionStorage.removeItem('publication');
-    sessionStorage.removeItem('startDateRange');
-    sessionStorage.removeItem('endDateRange');
-    setOpen(false);
+    if (calendarIdInCookies != key) {
+      dispatch(setSelectedCalendar(String(key)));
+      Cookies.set('calendarId', key);
+      setPageNumber(1);
+      sessionStorage.clear();
+      setOpen(false);
+      console.log(window.location.origin);
+      const origin = window.location.origin;
+      const newUrl = `${origin}${PathName.Dashboard}/${key}${PathName.Events}`;
+      window.location.href = newUrl;
+    }
   };
 
   const handleOpenChange = (flag) => {

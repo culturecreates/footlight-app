@@ -6,7 +6,7 @@ function CreateEntityButton(props) {
   const { t } = useTranslation();
   const { quickCreateKeyword, onClick } = props;
   return (
-    <div className="quick-create" onClick={onClick}>
+    <div className="quick-create" onClick={onClick} data-cy="div-create-entity">
       <PlusCircleOutlined />
       &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
       {quickCreateKeyword}&#34;

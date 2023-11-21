@@ -151,6 +151,7 @@ function OrganizationsReadOnly() {
                   <ReadOnlyProtectedComponent creator={organizationData.createdByUserId}>
                     <div className="button-container">
                       <OutlinedButton
+                        data-cy="button-edit-organization"
                         label={t('dashboard.organization.readOnly.edit')}
                         size="middle"
                         style={{ height: '40px', width: '60px' }}
@@ -171,7 +172,7 @@ function OrganizationsReadOnly() {
             <Row>
               <Col flex={'780px'}>
                 <div className="read-only-event-heading">
-                  <h4>
+                  <h4 data-cy="heading-organization-name">
                     {contentLanguageBilingual({
                       en: organizationData?.name?.en,
                       fr: organizationData?.name?.fr,
@@ -179,7 +180,7 @@ function OrganizationsReadOnly() {
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                   </h4>
-                  <p className="read-only-event-content-sub-title-primary">
+                  <p className="read-only-event-content-sub-title-primary" data-cy="para-organization-para">
                     {contentLanguageBilingual({
                       en: organizationData?.disambiguatingDescription?.en,
                       fr: organizationData?.disambiguatingDescription?.fr,
@@ -194,7 +195,7 @@ function OrganizationsReadOnly() {
           {artsDataLinkChecker(organizationData?.sameAs) && (
             <Col span={24}>
               <Row>
-                <Col span={16}>
+                <Col flex={'780px'}>
                   <ArtsDataInfo
                     artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
                     name={contentLanguageBilingual({
@@ -219,25 +220,40 @@ function OrganizationsReadOnly() {
             <Col>
               <Row>
                 <Col span={24}>
-                  <p className="read-only-event-content" style={{ fontSize: '24px' }}>
+                  <p
+                    className="read-only-event-content"
+                    style={{ fontSize: '24px' }}
+                    data-cy="para-organization-details-title">
                     {t('dashboard.organization.readOnly.details')}
                   </p>
                 </Col>
                 {(organizationData?.name?.fr || organizationData?.name?.en) && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p className="read-only-event-content-sub-title-primary" data-cy="para-organization-name">
                       {t('dashboard.organization.readOnly.name')}
                     </p>
                     {organizationData?.name?.fr && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-                        <p className="read-only-event-content">{organizationData?.name?.fr}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-organization-name-tab-french">
+                          {t('common.tabFrench')}
+                        </p>
+                        <p className="read-only-event-content" data-cy="para-organization-name-french">
+                          {organizationData?.name?.fr}
+                        </p>
                       </>
                     )}
                     {organizationData?.name?.en && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-                        <p className="read-only-event-content">{organizationData?.name?.en}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-organization-name-tab-english">
+                          {t('common.tabEnglish')}
+                        </p>
+                        <p className="read-only-event-content" data-cy="para-organization-name-english">
+                          {organizationData?.name?.en}
+                        </p>
                       </>
                     )}
                   </Col>
@@ -245,41 +261,69 @@ function OrganizationsReadOnly() {
                 {(organizationData?.disambiguatingDescription?.en ||
                   organizationData?.disambiguatingDescription?.fr) && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p className="read-only-event-content-sub-title-primary" data-cy="para-disambiguating-desc">
                       {t('dashboard.organization.readOnly.disambiguatingDescription')}
                     </p>
                     {organizationData?.disambiguatingDescription?.fr && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-                        <p className="read-only-event-content">{organizationData?.disambiguatingDescription?.fr}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-disambiguating-desc-tab-french">
+                          {t('common.tabFrench')}
+                        </p>
+                        <p className="read-only-event-content" data-cy="para-disambiguating-desc-french">
+                          {organizationData?.disambiguatingDescription?.fr}
+                        </p>
                       </>
                     )}
                     {organizationData?.disambiguatingDescription?.en && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-                        <p className="read-only-event-content">{organizationData?.disambiguatingDescription?.en}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-disambiguating-desc-tab-english">
+                          {t('common.tabEnglish')}
+                        </p>
+                        <p className="read-only-event-content" data-cy="para-disambiguating-desc-english">
+                          {organizationData?.disambiguatingDescription?.en}
+                        </p>
                       </>
                     )}
                   </Col>
                 )}
                 {(organizationData?.description?.fr || organizationData?.description?.en) && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p
+                      className="read-only-event-content-sub-title-primary"
+                      data-cy="para-organization-description-title">
                       {t('dashboard.organization.readOnly.description')}
                     </p>
                     {organizationData?.description?.fr && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-organization-description-tab-french">
+                          {t('common.tabFrench')}
+                        </p>
                         <p className="read-only-event-content">
-                          <div dangerouslySetInnerHTML={{ __html: organizationData?.description?.fr }} />
+                          <div
+                            dangerouslySetInnerHTML={{ __html: organizationData?.description?.fr }}
+                            data-cy="div-organization-description-french"
+                          />
                         </p>
                       </>
                     )}
                     {organizationData?.description?.en && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-organization-description-tab-english">
+                          {t('common.tabEnglish')}
+                        </p>
                         <p className="read-only-event-content">
-                          <div dangerouslySetInnerHTML={{ __html: organizationData?.description?.en }} />
+                          <div
+                            dangerouslySetInnerHTML={{ __html: organizationData?.description?.en }}
+                            data-cy="div-organization-description-english"
+                          />
                         </p>
                       </>
                     )}
@@ -287,7 +331,7 @@ function OrganizationsReadOnly() {
                 )}
                 {organizationData?.url?.uri && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p className="read-only-event-content-sub-title-primary" data-cy="para-organization-website-title">
                       {t('dashboard.organization.readOnly.website')}
                     </p>
                     <p>
@@ -295,7 +339,8 @@ function OrganizationsReadOnly() {
                         href={organizationData?.url?.uri}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="url-links">
+                        className="url-links"
+                        data-cy="anchor-organization-website">
                         {organizationData?.url?.uri}
                       </a>
                     </p>
@@ -303,12 +348,19 @@ function OrganizationsReadOnly() {
                 )}
                 {organizationData?.socialMediaLinks?.length > 0 && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p
+                      className="read-only-event-content-sub-title-primary"
+                      data-cy="para-organization-social-media-title">
                       {t('dashboard.organization.readOnly.socialMediaLinks')}
                     </p>
                     {organizationData?.socialMediaLinks?.map((link, index) => (
                       <p key={index}>
-                        <a href={link} target="_blank" rel="noopener noreferrer" className="url-links">
+                        <a
+                          href={link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="url-links"
+                          data-cy={`anchor-organization-social-media-${index}`}>
                           {link}
                         </a>
                       </p>
@@ -317,28 +369,38 @@ function OrganizationsReadOnly() {
                 )}
                 {organizationData?.contactPoint && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p className="read-only-event-content-sub-title-primary" data-cy="para-organization-contact-title">
                       {t('dashboard.organization.readOnly.contact')}
                     </p>
                     {organizationData?.contactPoint?.name?.fr && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-organization-contact-title-french">
                           {t('dashboard.organization.readOnly.frenchContactTitle')}
                         </p>
-                        <p className="read-only-event-content">{organizationData?.contactPoint?.name?.fr}</p>
+                        <p className="read-only-event-content" data-cy="para-organization-contact-french">
+                          {organizationData?.contactPoint?.name?.fr}
+                        </p>
                       </>
                     )}
                     {organizationData?.contactPoint?.name?.en && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-organization-contact-title-english">
                           {t('dashboard.organization.readOnly.englishContactTitle')}
                         </p>
-                        <p className="read-only-event-content">{organizationData?.contactPoint?.name?.en}</p>
+                        <p className="read-only-event-content" data-cy="para-organization-contact-english">
+                          {organizationData?.contactPoint?.name?.en}
+                        </p>
                       </>
                     )}
                     {organizationData?.contactPoint?.url?.uri && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-organization-contact-website-title">
                           {t('dashboard.organization.readOnly.website')}
                         </p>
                         <p>
@@ -346,7 +408,8 @@ function OrganizationsReadOnly() {
                             href={organizationData?.contactPoint?.url?.uri}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="url-links">
+                            className="url-links"
+                            data-cy="anchor-organization-contact-website">
                             {organizationData?.contactPoint?.url?.uri}
                           </a>
                         </p>
@@ -354,18 +417,26 @@ function OrganizationsReadOnly() {
                     )}
                     {organizationData?.contactPoint?.telephone && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-organization-contact-telephone-title">
                           {t('dashboard.organization.readOnly.phoneNumber')}
                         </p>
-                        <p className="url-links">{organizationData?.contactPoint?.telephone}</p>
+                        <p className="url-links" data-cy="para-organization-contact-telephone">
+                          {organizationData?.contactPoint?.telephone}
+                        </p>
                       </>
                     )}
                     {organizationData?.contactPoint?.email && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-organization-contact-email-title">
                           {t('dashboard.organization.readOnly.email')}
                         </p>
-                        <p className="url-links">{organizationData?.contactPoint?.email}</p>
+                        <p className="url-links" data-cy="para-organization-contact-email">
+                          {organizationData?.contactPoint?.email}
+                        </p>
                       </>
                     )}
                   </Col>
@@ -385,7 +456,9 @@ function OrganizationsReadOnly() {
                         if (initialTaxonomy?.includes(taxonomy?.id) && initialValues?.length > 0)
                           return (
                             <div>
-                              <p className="read-only-event-content-sub-title-primary">
+                              <p
+                                className="read-only-event-content-sub-title-primary"
+                                data-cy={`para-organization-dynamic-taxonomy-name-${index}`}>
                                 {bilingual({
                                   en: taxonomy?.name?.en,
                                   fr: taxonomy?.name?.fr,
@@ -402,8 +475,9 @@ function OrganizationsReadOnly() {
                                 treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
                                 tagRender={(props) => {
                                   const { label } = props;
-                                  return <Tags>{label}</Tags>;
+                                  return <Tags data-cy={`tag-organization-dynamic-field-${label}`}>{label}</Tags>;
                                 }}
+                                data-cy="treeselect-organization-dynamic-field"
                               />
                             </div>
                           );
@@ -413,7 +487,7 @@ function OrganizationsReadOnly() {
                 )}
                 {locationPlace && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p className="read-only-event-content-sub-title-primary" data-cy="para-organization-place-title">
                       {t('dashboard.organization.readOnly.location')}
                     </p>
                     <SelectionItem
@@ -442,6 +516,7 @@ function OrganizationsReadOnly() {
                       width: '151px',
                       height: '151px',
                     }}
+                    data-cy="image-organization-logo"
                   />
                 </div>
               )}

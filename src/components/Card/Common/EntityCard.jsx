@@ -6,11 +6,17 @@ import { LinkOutlined } from '@ant-design/icons';
 const EntityCard = (props) => {
   const { title, description, artsDataLink, Logo, linkText, onClick } = props;
   return (
-    <div className="search-option-entity-card" onClick={onClick}>
-      <div className="image-container">{Logo}</div>
+    <div className="search-option-entity-card" onClick={onClick} data-cy="div-entity-option">
+      <div className="image-container" data-cy="div-entit-logo">
+        {Logo}
+      </div>
       <div className="text-container">
-        <div className="title">{title}</div>
-        <div className="description">{description}</div>
+        <div className="title" data-cy="div-entity-title">
+          {title}
+        </div>
+        <div className="description" data-cy="div-entity-description">
+          {description}
+        </div>
       </div>
       <div className="link-container">
         {artsDataLink && (
@@ -18,8 +24,11 @@ const EntityCard = (props) => {
             onClick={(e) => {
               e.stopPropagation();
               window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer');
-            }}>
-            <span style={{ textDecoration: 'underline' }}>{linkText}</span>
+            }}
+            data-cy="tag-entity-artsdata">
+            <span style={{ textDecoration: 'underline' }} data-cy="span-artsdata-link">
+              {linkText}
+            </span>
             <LinkOutlined />
           </ArtsDataLink>
         )}

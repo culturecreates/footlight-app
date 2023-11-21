@@ -81,7 +81,18 @@ const rules = [
 export const formFieldValue = [
   {
     type: formTypes.INPUT,
-    element: ({ datatype, data, calendarContentLanguage, name = [], placeholder, user, t, validations, required }) => {
+    element: ({
+      datatype,
+      data,
+      calendarContentLanguage,
+      name = [],
+      placeholder,
+      user,
+      t,
+      validations,
+      required,
+      mappedField,
+    }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
         return (
           <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
@@ -110,6 +121,7 @@ export const formFieldValue = [
                   placeholder={placeholder?.fr}
                   style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                   size="large"
+                  data-cy={`input-text-area-${mappedField}-french`}
                 />
               </Form.Item>
 
@@ -137,6 +149,7 @@ export const formFieldValue = [
                   placeholder={placeholder?.en}
                   style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                   size="large"
+                  data-cy={`input-text-area-${mappedField}-english`}
                 />
               </Form.Item>
             </BilingualInput>
@@ -149,6 +162,7 @@ export const formFieldValue = [
             autoComplete="off"
             style={{ width: '423px' }}
             placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
+            data-cy={`input-${mappedField}`}
           />
         );
       else if (datatype === dataTypes.EMAIL)
@@ -160,6 +174,7 @@ export const formFieldValue = [
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             })}
+            data-cy={`input-${mappedField}`}
           />
         );
       else if (datatype === dataTypes.URI_STRING_ARRAY) {
@@ -185,6 +200,7 @@ export const formFieldValue = [
                             addonBefore="https://"
                             autoComplete="off"
                             placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
+                            data-cy={`input-${mappedField}-${field.key}`}
                           />
                         </Form.Item>
                       </Col>
@@ -193,6 +209,7 @@ export const formFieldValue = [
                           <DeleteOutlined
                             style={{ color: '#1B3DE6', fontSize: '16px' }}
                             onClick={() => remove(field.name)}
+                            data-cy={`icon-delete-${mappedField}-${field.key}`}
                           />
                         ) : null}
                       </Col>
@@ -204,6 +221,7 @@ export const formFieldValue = [
                     size="large"
                     label={t('dashboard.organization.createNew.addOrganization.addSocialMediaLinks')}
                     onClick={() => add()}
+                    data-cy={`button-add-${mappedField}`}
                   />
                 </Form.Item>
               </>
@@ -219,13 +237,14 @@ export const formFieldValue = [
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             })}
+            data-cy={`input-${mappedField}`}
           />
         );
     },
   },
   {
     type: formTypes.TEXTAREA,
-    element: ({ placeholder, user, calendarContentLanguage }) => (
+    element: ({ placeholder, user, calendarContentLanguage, mappedField }) => (
       <TextArea
         autoSize
         autoComplete="off"
@@ -237,14 +256,24 @@ export const formFieldValue = [
         })}
         style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
         size="large"
+        data-cy={`input-text-area-${mappedField}`}
       />
     ),
   },
   {
     type: formTypes.MULTISELECT,
-    element: ({ taxonomyData, user, taxonomyAlias, isDynamicField, calendarContentLanguage, placeholder }) => {
+    element: ({
+      taxonomyData,
+      user,
+      taxonomyAlias,
+      isDynamicField,
+      calendarContentLanguage,
+      placeholder,
+      mappedField,
+    }) => {
       return (
         <TreeSelectOption
+          data-cy={`treeselect-${mappedField}`}
           allowClear
           treeDefaultExpandAll
           notFoundContent={<NoContent />}
@@ -265,6 +294,7 @@ export const formFieldValue = [
             const { label, closable, onClose } = props;
             return (
               <Tags
+                data-cy={`tag-${mappedField}-${label}`}
                 closable={closable}
                 onClose={onClose}
                 closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
@@ -328,10 +358,12 @@ export const formFieldValue = [
       calendarContentLanguage,
       allPlacesArtsdataList,
       placeNavigationHandler,
+      mappedField,
     }) => {
       return (
         <>
           <Popover
+            data-cy={`popover-${mappedField}`}
             open={isPopoverOpen}
             onOpenChange={(open) => setIsPopoverOpen(open)}
             overlayClassName="event-popover"
@@ -343,7 +375,7 @@ export const formFieldValue = [
               <div>
                 <div>
                   <>
-                    <div className="popover-section-header">
+                    <div className="popover-section-header" data-cy={`div-${mappedField}-footlight-place-title`}>
                       {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                     </div>
                     <div className="search-scrollable-content">
@@ -358,7 +390,8 @@ export const formFieldValue = [
                               setLocationPlace(place);
                               form.setFieldValue(name, place?.value);
                               setIsPopoverOpen(false);
-                            }}>
+                            }}
+                            data-cy={`div-${mappedField}-footlight-place-${index}`}>
                             {place?.label}
                           </div>
                         ))
@@ -368,7 +401,7 @@ export const formFieldValue = [
                     </div>
                   </>
 
-                  <div className="popover-section-header">
+                  <div className="popover-section-header" data-cy={`div-${mappedField}-artsdata-place-title`}>
                     {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
                   </div>
                   <div className="search-scrollable-content">
@@ -381,7 +414,8 @@ export const formFieldValue = [
                             setLocationPlace(place);
                             form.setFieldValue(name, place?.uri);
                             setIsPopoverOpen(false);
-                          }}>
+                          }}
+                          data-cy={`div-${mappedField}-artsdata-place-${index}`}>
                           {place?.label}
                         </div>
                       ))
@@ -402,6 +436,7 @@ export const formFieldValue = [
               onClick={() => {
                 setIsPopoverOpen(true);
               }}
+              data-cy={`input-${mappedField}`}
             />
           </Popover>
           {locationPlace && (
@@ -475,6 +510,7 @@ export const renderFormFields = ({
     <>
       {position === 'top' && datatype !== dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
       <Form.Item
+        data-cy={`form-item-${mappedField}`}
         label={label}
         name={name}
         key={key}
@@ -496,7 +532,10 @@ export const renderFormFields = ({
         })}
         help={
           position === 'bottom' && userTips ? (
-            <p className="add-event-date-heading" style={{ marginTop: '-15px' }}>
+            <p
+              className="add-event-date-heading"
+              style={{ marginTop: '-15px' }}
+              data-cy={`form-item-helper-text-${mappedField}`}>
               {userTips}
             </p>
           ) : undefined
@@ -539,6 +578,7 @@ export const returnFormDataWithFields = ({
     datatype: field?.datatype,
     required: field?.isRequiredField,
     element: formField?.element({
+      mappedField: field?.mappedField,
       data: entityData && entityData[field?.mappedField],
       datatype: field?.datatype,
       taxonomyData: allTaxonomyData,

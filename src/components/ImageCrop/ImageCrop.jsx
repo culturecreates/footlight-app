@@ -68,6 +68,8 @@ function ImageCrop(props) {
               width: croppedAreaPixel?.width,
             },
           });
+
+          setInitialLargeCroppedArea(croppedAreaPixel);
           break;
         case ASPECT_RATIO_TYPE.thumbnail.type:
           setCropValues({
@@ -79,6 +81,8 @@ function ImageCrop(props) {
               width: croppedAreaPixel?.width,
             },
           });
+
+          setInitialThumbnailCroppedArea(croppedAreaPixel);
           break;
         default:
           break;
