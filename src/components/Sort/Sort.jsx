@@ -35,8 +35,9 @@ function Sort(props) {
           // onSelect: onSortSelect,
         }}
         trigger={['click']}
-        open={false}>
-        <Button size="large" className="filter-sort-button" style={{ cursor: 'default' }}>
+        open={false}
+        data-cy="dropdown-sort-options">
+        <Button size="large" className="filter-sort-button" style={{ cursor: 'default' }} data-cy="button-sort-options">
           <Space>
             {sortByOptionsOrgsPlacesPerson?.map((sortBy, index) => {
               if (sortBy?.key === filter?.sort) return <span key={index}>{sortBy?.label}</span>;
@@ -60,6 +61,7 @@ function Sort(props) {
           )
         }
         size={'large'}
+        data-cy="button-sort-order"
       />
     </div>
   );

@@ -696,6 +696,7 @@ function CreateNewOrganization() {
                     <Col>
                       <div className="button-container">
                         <Button
+                          data-cy="button-back-to-previous-screen"
                           type="link"
                           onClick={() => {
                             if (isRoutingToEventPage) {
@@ -713,6 +714,7 @@ function CreateNewOrganization() {
                       <div className="add-event-button-wrap">
                         <Form.Item>
                           <PrimaryButton
+                            data-cy="button-save-organization"
                             label={t('dashboard.events.addEditEvent.saveOptions.save')}
                             onClick={() => onSaveHandler()}
                             disabled={
@@ -727,7 +729,7 @@ function CreateNewOrganization() {
 
                 <Col>
                   <div className="add-edit-event-heading">
-                    <h4>
+                    <h4 data-cy="heading-add-edit-organization">
                       {organizationId
                         ? t('dashboard.organization.createNew.addOrganization.editOrganization')
                         : t('dashboard.organization.createNew.addOrganization.newOrganization')}
@@ -745,7 +747,7 @@ function CreateNewOrganization() {
                         section[0]?.category === formCategory.PRIMARY && (
                           <Row>
                             <Col span={24}>
-                              <p className="add-entity-label">
+                              <p className="add-entity-label" data-cy="para-organization-data-source">
                                 {t('dashboard.organization.createNew.addOrganization.dataSource')}
                               </p>
                             </Col>
@@ -768,10 +770,11 @@ function CreateNewOrganization() {
                             </Col>
                             <Col span={24}>
                               <div style={{ display: 'inline' }}>
-                                <span className="add-event-date-heading">
+                                <span className="add-event-date-heading" data-cy="span-data-source-help-text-part-one">
                                   {t('dashboard.organization.createNew.addOrganization.question.firstPart')}
                                 </span>
                                 <span
+                                  data-cy="span-data-source-help-text-part-two"
                                   className="add-event-date-heading"
                                   style={{
                                     color: '#1b3de6',
@@ -786,7 +789,9 @@ function CreateNewOrganization() {
                                   }}>
                                   {t('dashboard.organization.createNew.addOrganization.question.secondPart')}
                                 </span>
-                                <span className="add-event-date-heading">
+                                <span
+                                  className="add-event-date-heading"
+                                  data-cy="span-data-source-help-text-part-three">
                                   {t('dashboard.organization.createNew.addOrganization.question.thirdPart')}
                                 </span>
                               </div>
