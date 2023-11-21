@@ -77,7 +77,7 @@ function Sidebar(props) {
   }, [currentCalendarData]);
 
   const onSidebarClickHandler = ({ item, key }) => {
-    if (key != selectedKey) {
+    if (key !== selectedKey) {
       clearSessionStoredSearchQueries();
     }
     setSelectedKey([key]);
