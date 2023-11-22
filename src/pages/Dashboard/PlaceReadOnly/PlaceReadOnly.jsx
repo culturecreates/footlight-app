@@ -170,6 +170,7 @@ function PlaceReadOnly() {
                   <ReadOnlyProtectedComponent creator={placeData.createdByUserId}>
                     <div className="button-container">
                       <OutlinedButton
+                        data-cy="button-edit-place"
                         label={t('dashboard.places.readOnly.edit')}
                         size="middle"
                         style={{ height: '40px', width: '60px' }}
@@ -190,7 +191,7 @@ function PlaceReadOnly() {
             <Row>
               <Col>
                 <div className="read-only-event-heading">
-                  <h4>
+                  <h4 data-cy="heading-place-name">
                     {contentLanguageBilingual({
                       en: placeData?.name?.en,
                       fr: placeData?.name?.fr,
@@ -198,7 +199,9 @@ function PlaceReadOnly() {
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                   </h4>
-                  <p className="read-only-event-content-sub-title-primary">
+                  <p
+                    className="read-only-event-content-sub-title-primary"
+                    data-cy="para-place-disambiguating-description">
                     {contentLanguageBilingual({
                       en: placeData?.disambiguatingDescription?.en,
                       fr: placeData?.disambiguatingDescription?.fr,
@@ -238,29 +241,42 @@ function PlaceReadOnly() {
               <Row>
                 {(placeData?.name?.fr || placeData?.name?.en) && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p className="read-only-event-content-sub-title-primary" data-cy="para-place-name-title">
                       {t('dashboard.places.readOnly.placeName')}
                     </p>
                     {placeData?.name?.fr && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-                        <p className="read-only-event-content">{placeData?.name?.fr}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-place-name-french-title">
+                          {t('common.tabFrench')}
+                        </p>
+                        <p className="read-only-event-content" data-cy="para-place-name-french">
+                          {placeData?.name?.fr}
+                        </p>
                       </>
                     )}
                     {placeData?.name?.en && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-                        <p className="read-only-event-content">{placeData?.name?.en}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-place-name-english-title">
+                          {t('common.tabEnglish')}
+                        </p>
+                        <p className="read-only-event-content" data-cy="para-place-name-english">
+                          {placeData?.name?.en}
+                        </p>
                       </>
                     )}
                   </Col>
                 )}
                 {placeData?.additionalType.length > 0 && (
                   <div>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p className="read-only-event-content-sub-title-primary" data-cy="para-">
                       {taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false)}
                     </p>
                     <TreeSelectOption
+                      data-cy="treeselect-place-additional-type"
                       style={{ marginBottom: '1rem' }}
                       bordered={false}
                       open={false}
@@ -271,7 +287,7 @@ function PlaceReadOnly() {
                       })}
                       tagRender={(props) => {
                         const { label } = props;
-                        return <Tags>{label}</Tags>;
+                        return <Tags data-cy={`tag-place-${label}`}>{label}</Tags>;
                       }}
                     />
                   </div>
@@ -291,7 +307,9 @@ function PlaceReadOnly() {
                         if (initialTaxonomy?.includes(taxonomy?.id) && initialValues?.length > 0)
                           return (
                             <div>
-                              <p className="read-only-event-content-sub-title-primary">
+                              <p
+                                className="read-only-event-content-sub-title-primary"
+                                data-cy="para-place-dynamic-taxonomy-name">
                                 {bilingual({
                                   en: taxonomy?.name?.en,
                                   fr: taxonomy?.name?.fr,
@@ -299,6 +317,7 @@ function PlaceReadOnly() {
                                 })}
                               </p>
                               <TreeSelectOption
+                                data-cy={`treeselect-place-dynamic-taxonomy-${index}`}
                                 key={index}
                                 style={{ marginBottom: '1rem' }}
                                 bordered={false}
@@ -308,7 +327,7 @@ function PlaceReadOnly() {
                                 treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
                                 tagRender={(props) => {
                                   const { label } = props;
-                                  return <Tags>{label}</Tags>;
+                                  return <Tags data-cy={`tag-place-dynamic-taxonomy-${label}`}>{label}</Tags>;
                                 }}
                               />
                             </div>
@@ -319,41 +338,69 @@ function PlaceReadOnly() {
                 )}
                 {(placeData?.disambiguatingDescription?.en || placeData?.disambiguatingDescription?.fr) && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p
+                      className="read-only-event-content-sub-title-primary"
+                      data-cy="para-place-disambiguating-description-title">
                       {t('dashboard.places.readOnly.disambiguatingDescription')}
                     </p>
                     {placeData?.disambiguatingDescription?.fr && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-                        <p className="read-only-event-content">{placeData?.disambiguatingDescription?.fr}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-place-disambiguating-description-french-title">
+                          {t('common.tabFrench')}
+                        </p>
+                        <p className="read-only-event-content" data-cy="para-place-disambiguating-description-french">
+                          {placeData?.disambiguatingDescription?.fr}
+                        </p>
                       </>
                     )}
                     {placeData?.disambiguatingDescription?.en && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-                        <p className="read-only-event-content">{placeData?.disambiguatingDescription?.en}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-place-disambiguating-description-english-title">
+                          {t('common.tabEnglish')}
+                        </p>
+                        <p className="read-only-event-content" data-cy="para-place-disambiguating-description-english">
+                          {placeData?.disambiguatingDescription?.en}
+                        </p>
                       </>
                     )}
                   </Col>
                 )}
                 {(placeData?.description?.fr || placeData?.description?.en) && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p className="read-only-event-content-sub-title-primary" data-cy="para-place-description-title">
                       {t('dashboard.places.readOnly.description')}
                     </p>
                     {placeData?.description?.fr && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-place-description-french-title">
+                          {t('common.tabFrench')}
+                        </p>
                         <p className="read-only-event-content">
-                          <div dangerouslySetInnerHTML={{ __html: placeData?.description?.fr }} />
+                          <div
+                            dangerouslySetInnerHTML={{ __html: placeData?.description?.fr }}
+                            data-cy="div-place-description-french"
+                          />
                         </p>
                       </>
                     )}
                     {placeData?.description?.en && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-place-description-english-title">
+                          {t('common.tabEnglish')}
+                        </p>
                         <p className="read-only-event-content">
-                          <div dangerouslySetInnerHTML={{ __html: placeData?.description?.en }} />
+                          <div
+                            dangerouslySetInnerHTML={{ __html: placeData?.description?.en }}
+                            data-cy="div-place-description-english"
+                          />
                         </p>
                       </>
                     )}
@@ -365,6 +412,7 @@ function PlaceReadOnly() {
               {placeData?.image?.original?.uri && (
                 <div style={{ marginTop: '-35%' }}>
                   <img
+                    data-cy="image-place-original"
                     src={placeData?.image?.original?.uri}
                     alt="avatar"
                     style={{
@@ -381,25 +429,40 @@ function PlaceReadOnly() {
             <Col>
               <Row gutter={[0, 24]}>
                 <Col span={24}>
-                  <span className="read-only-event-content" style={{ fontSize: '24px' }}>
+                  <span
+                    className="read-only-event-content"
+                    style={{ fontSize: '24px' }}
+                    data-cy="span-place-address-title">
                     {t('dashboard.places.readOnly.address.address')}
                   </span>
                 </Col>
                 {(placeData?.address?.streetAddress?.en || placeData?.address?.streetAddress?.fr) && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p className="read-only-event-content-sub-title-primary" data-cy="para-place-street-address-title">
                       {t('dashboard.places.readOnly.address.streetAddress')}
                     </p>
                     {placeData?.address?.streetAddress?.fr && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-                        <p className="read-only-event-content">{placeData?.address?.streetAddress?.fr}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-place-street-address-french-title">
+                          {t('common.tabFrench')}
+                        </p>
+                        <p className="read-only-event-content" data-cy="para-place-street-address-french">
+                          {placeData?.address?.streetAddress?.fr}
+                        </p>
                       </>
                     )}
                     {placeData?.address?.streetAddress?.en && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-                        <p className="read-only-event-content">{placeData?.address?.streetAddress?.en}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-place-street-address-english-title">
+                          {t('common.tabEnglish')}
+                        </p>
+                        <p className="read-only-event-content" data-cy="para-place-street-address-english">
+                          {placeData?.address?.streetAddress?.en}
+                        </p>
                       </>
                     )}
                   </Col>
@@ -407,11 +470,11 @@ function PlaceReadOnly() {
 
                 {(placeData?.address?.addressLocality?.en || placeData?.address?.addressLocality?.fr) && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p className="read-only-event-content-sub-title-primary" data-cy="para-place-city-title">
                       {t('dashboard.places.readOnly.address.city')}
                     </p>
                     <ArtsDataLink>
-                      <span style={{ textDecoration: 'underline' }}>
+                      <span style={{ textDecoration: 'underline' }} data-cy="span-place-city">
                         {contentLanguageBilingual({
                           en: placeData?.address?.addressLocality?.en,
                           fr: placeData?.address?.addressLocality?.fr,
@@ -425,21 +488,23 @@ function PlaceReadOnly() {
                 )}
                 {placeData?.address?.postalCode && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p className="read-only-event-content-sub-title-primary" data-cy="para-place-postalcode-title">
                       {t('dashboard.places.readOnly.address.postalCode')}
                     </p>
-                    <p className="read-only-event-content">{placeData?.address?.postalCode}</p>
+                    <p className="read-only-event-content" data-cy="para-place-postalcode">
+                      {placeData?.address?.postalCode}
+                    </p>
                   </Col>
                 )}
                 <Col span={24}>
                   <Row justify={'space-between'} gutter={[48, 0]}>
                     {placeData?.address?.addressRegion && (
                       <Col span={8}>
-                        <p className="read-only-event-content-sub-title-primary">
+                        <p className="read-only-event-content-sub-title-primary" data-cy="para-place-province-title">
                           {t('dashboard.places.readOnly.address.province')}
                         </p>
                         <ArtsDataLink>
-                          <span style={{ textDecoration: 'underline' }}>
+                          <span style={{ textDecoration: 'underline' }} data-cy="span-place-province">
                             {contentLanguageBilingual({
                               en: placeData?.address?.addressRegion?.en,
                               fr: placeData?.address?.addressRegion?.fr,
@@ -453,11 +518,11 @@ function PlaceReadOnly() {
                     )}
                     {placeData?.address?.addressCountry && (
                       <Col span={8}>
-                        <p className="read-only-event-content-sub-title-primary">
+                        <p className="read-only-event-content-sub-title-primary" data-cy="para-place-country-title">
                           {t('dashboard.places.readOnly.address.country')}
                         </p>
                         <ArtsDataLink>
-                          <span style={{ textDecoration: 'underline' }}>
+                          <span style={{ textDecoration: 'underline' }} data-cy="span-place-country">
                             {contentLanguageBilingual({
                               en: placeData?.address?.addressCountry?.en,
                               fr: placeData?.address?.addressCountry?.fr,
@@ -473,22 +538,25 @@ function PlaceReadOnly() {
                 </Col>
                 {placeData?.geoCoordinates && (
                   <Col span={10}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p className="read-only-event-content-sub-title-primary" data-cy="para-place-coordinates-title">
                       {t('dashboard.places.readOnly.address.coordinates')}
                     </p>
-                    <span className="read-only-event-content">
+                    <span className="read-only-event-content" data-cy="span-place-coordinates-latitude">
                       {placeData?.geoCoordinates?.latitude}
                       <br />
                     </span>
-                    <span className="read-only-event-content">{placeData?.geoCoordinates?.longitude}</span>
+                    <span className="read-only-event-content" data-cy="span-place-coordinates-longitute">
+                      {placeData?.geoCoordinates?.longitude}
+                    </span>
                   </Col>
                 )}
                 {placeData?.regions?.length > 0 && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p className="read-only-event-content-sub-title-primary" data-cy="para-place-region-title">
                       {taxonomyDetails(allTaxonomyData?.data, user, 'Region', 'name', false)}
                     </p>
                     <TreeSelectOption
+                      data-cy="treeselect-place-region"
                       style={{ marginBottom: '1rem' }}
                       bordered={false}
                       open={false}
@@ -499,18 +567,19 @@ function PlaceReadOnly() {
                       })}
                       tagRender={(props) => {
                         const { label } = props;
-                        return <Tags>{label}</Tags>;
+                        return <Tags data-cy={`tag-place-region-${label}`}>{label}</Tags>;
                       }}
                     />
                   </Col>
                 )}
                 {placeData?.openingHours?.uri && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p className="read-only-event-content-sub-title-primary" data-cy="para-place-opening-hours-title">
                       {t('dashboard.places.readOnly.address.openingHoursLink')}
                     </p>
                     <p>
                       <a
+                        data-cy="anchor-place-opening-hours"
                         href={placeData?.openingHours?.uri}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -529,15 +598,19 @@ function PlaceReadOnly() {
               <Col>
                 <Row gutter={[0, 24]}>
                   <Col span={24}>
-                    <p className="read-only-event-content" style={{ fontSize: '24px' }}>
+                    <p
+                      className="read-only-event-content"
+                      style={{ fontSize: '24px' }}
+                      data-cy="para-place-venue-accessibility-title">
                       {t('dashboard.places.readOnly.venueAccessibility')}
                     </p>
 
                     <Col span={24}>
-                      <p className="read-only-event-content-sub-title-primary">
+                      <p className="read-only-event-content-sub-title-primary" data-cy="para-place-accessibility-title">
                         {taxonomyDetails(allTaxonomyData?.data, user, 'PlaceAccessibility', 'name', false)}
                       </p>
                       <TreeSelectOption
+                        data-cy="treeselect-place-accessibility"
                         style={{ marginBottom: '1rem' }}
                         bordered={false}
                         open={false}
@@ -554,7 +627,7 @@ function PlaceReadOnly() {
                         })}
                         tagRender={(props) => {
                           const { label } = props;
-                          return <Tags>{label}</Tags>;
+                          return <Tags data-cy={`tag-place-accessibility-${label}`}>{label}</Tags>;
                         }}
                       />
                     </Col>
@@ -569,7 +642,10 @@ function PlaceReadOnly() {
               <Col>
                 <Row gutter={[0, 24]}>
                   <Col span={24}>
-                    <p className="read-only-event-content" style={{ fontSize: '24px' }}>
+                    <p
+                      className="read-only-event-content"
+                      style={{ fontSize: '24px' }}
+                      data-cy="para-place-contains-place-title">
                       {t('dashboard.places.createNew.addPlace.containsPlace.containsPlace')}
                     </p>
                     <Col span={24}>
@@ -599,7 +675,10 @@ function PlaceReadOnly() {
             <Col>
               <Row gutter={[0, 24]}>
                 <Col span={24}>
-                  <p className="read-only-event-content" style={{ fontSize: '24px' }}>
+                  <p
+                    className="read-only-event-content"
+                    style={{ fontSize: '24px' }}
+                    data-cy="para-place-contained-in--place-title">
                     {t('dashboard.places.readOnly.containedInPlace')}
                   </p>
                   <Col span={24}>
@@ -615,7 +694,9 @@ function PlaceReadOnly() {
                         bordered
                       />
                     ) : (
-                      <p className="read-only-event-content-sub-title-primary">
+                      <p
+                        className="read-only-event-content-sub-title-primary"
+                        data-cy="para-place-contains-place-empty-decription">
                         {t('dashboard.places.readOnly.notContainedInPlace')}
                       </p>
                     )}

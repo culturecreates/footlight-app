@@ -556,6 +556,7 @@ function CreateNewPlace() {
               <>
                 {t('dashboard.places.createNew.addPlace.notification.saveError')} &nbsp;
                 <Button
+                  data-cy="button-place-save-as-warning"
                   type="text"
                   icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
                   onClick={() => message.destroy('place-save-as-warning')}
@@ -813,6 +814,7 @@ function CreateNewPlace() {
                     <Col>
                       <div className="button-container">
                         <Button
+                          data-cy="button-place-back-to-previous"
                           type="link"
                           onClick={() => {
                             if (isRoutingToEventPage && isRoutingToOrganization) {
@@ -840,6 +842,7 @@ function CreateNewPlace() {
                       <div className="add-event-button-wrap">
                         <Form.Item>
                           <PrimaryButton
+                            data-cy="button-place-save"
                             label={t('dashboard.events.addEditEvent.saveOptions.save')}
                             onClick={(e) => onSaveHandler(e)}
                             disabled={addImageLoading || addPlaceLoading || updatePlaceLoading ? true : false}
@@ -852,7 +855,7 @@ function CreateNewPlace() {
 
                 <Col>
                   <div className="add-edit-event-heading">
-                    <h4>
+                    <h4 data-cy="heading-place-add-edit">
                       {placeId
                         ? t('dashboard.places.createNew.addPlace.editPlace')
                         : t('dashboard.places.createNew.addPlace.newPlace')}
@@ -866,7 +869,7 @@ function CreateNewPlace() {
                 {(artsDataLinkChecker(placeData?.sameAs) || artsDataLinkChecker(artsData?.sameAs)) && (
                   <Row>
                     <Col span={24}>
-                      <p className="add-entity-label">
+                      <p className="add-entity-label" data-cy="para-place-data-source">
                         {t('dashboard.organization.createNew.addOrganization.dataSource')}
                       </p>
                     </Col>
@@ -889,10 +892,11 @@ function CreateNewPlace() {
                     </Col>
                     <Col span={24}>
                       <div style={{ display: 'inline' }}>
-                        <span className="add-event-date-heading">
+                        <span className="add-event-date-heading" data-cy="span-place-question-part-one">
                           {t('dashboard.places.createNew.addPlace.question.firstPart')}
                         </span>
                         <span
+                          data-cy="span-place-question-part-two"
                           className="add-event-date-heading"
                           style={{
                             color: '#1b3de6',
@@ -905,7 +909,7 @@ function CreateNewPlace() {
                           }}>
                           {t('dashboard.places.createNew.addPlace.question.secondPart')}
                         </span>
-                        <span className="add-event-date-heading">
+                        <span className="add-event-date-heading" data-cy="span-place-question-part-three">
                           {t('dashboard.places.createNew.addPlace.question.thirdPart')}
                         </span>
                       </div>
@@ -921,6 +925,7 @@ function CreateNewPlace() {
                   <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                     <BilingualInput fieldData={placeData?.name ? placeData?.name : artsDataId && artsData?.name}>
                       <Form.Item
+                        data-cy="form-item-place-name-french"
                         name={formFieldNames.FRENCH}
                         key={contentLanguage.FRENCH}
                         initialValue={placeData?.name?.fr ? placeData?.name?.fr : artsDataId && artsData?.name?.fr}
@@ -938,6 +943,7 @@ function CreateNewPlace() {
                           }),
                         ]}>
                         <TextArea
+                          data-cy="input-text-area-place-name-french"
                           autoSize
                           autoComplete="off"
                           placeholder={t('dashboard.places.createNew.addPlace.name.placeholder.french')}
@@ -946,6 +952,7 @@ function CreateNewPlace() {
                         />
                       </Form.Item>
                       <Form.Item
+                        data-cy="form-item-place-name-english"
                         name={formFieldNames.ENGLISH}
                         key={contentLanguage.ENGLISH}
                         initialValue={placeData?.name?.en ? placeData?.name?.en : artsDataId && artsData?.name?.en}
@@ -963,6 +970,7 @@ function CreateNewPlace() {
                           }),
                         ]}>
                         <TextArea
+                          data-cy="input-text-area-place-name-english"
                           autoSize
                           autoComplete="off"
                           placeholder={t('dashboard.places.createNew.addPlace.name.placeholder.english')}
@@ -975,6 +983,7 @@ function CreateNewPlace() {
                 </Form.Item>
 
                 <Form.Item
+                  data-cy="form-item-place-type"
                   name={formFieldNames.TYPE}
                   label={taxonomyDetails(
                     allTaxonomyData?.data,
@@ -1003,6 +1012,7 @@ function CreateNewPlace() {
                       ) && 'none',
                   }}>
                   <TreeSelectOption
+                    data-cy="treeselect-place-type"
                     placeholder={t('dashboard.places.createNew.addPlace.placeType.placeholder')}
                     allowClear
                     treeDefaultExpandAll
@@ -1019,6 +1029,7 @@ function CreateNewPlace() {
                       const { label, closable, onClose } = props;
                       return (
                         <Tags
+                          data-cy={`tag-place-type-${label}`}
                           closable={closable}
                           onClose={onClose}
                           closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>

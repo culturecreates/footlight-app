@@ -137,7 +137,9 @@ function People() {
     allPeopleSuccess && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Main>
-          <h4 className="events-heading">{t('dashboard.people.people')}</h4>
+          <h4 className="events-heading" data-cy="heading-people-title">
+            {t('dashboard.people.people')}
+          </h4>
           <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
             <AddPerson
               label={t('dashboard.people.person')}
@@ -219,7 +221,7 @@ function People() {
             )
           ) : (
             <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <LoadingIndicator data-cy="loading-indicator" />
+              <LoadingIndicator data-cy="loading-indicator-people" />
             </div>
           )}
         </Main>

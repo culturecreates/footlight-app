@@ -138,13 +138,16 @@ function Places() {
     allPlacesSuccess && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
         <Main>
-          <h4 className="events-heading">{t('dashboard.places.places')}</h4>
+          <h4 className="events-heading" data-cy="heading-place-title">
+            {t('dashboard.places.places')}
+          </h4>
           <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
             <AddPlace
               label={t('dashboard.places.place')}
               onClick={() => {
                 navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`);
               }}
+              data-cy="button-add-new-place"
             />
           </FeatureFlag>
 
@@ -154,6 +157,7 @@ function Places() {
             defaultValue={placesSearchQuery}
             allowClear={true}
             onChange={onChangeHandler}
+            data-cy="input-place-search"
           />
           <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
           <></>
@@ -161,6 +165,7 @@ function Places() {
           {!allPlacesFetching ? (
             allPlacesData?.data?.length > 0 ? (
               <List
+                data-cy="list-places"
                 className="event-list-wrapper"
                 itemLayout={screens.xs ? 'vertical' : 'horizontal'}
                 dataSource={allPlacesData?.data}
@@ -177,10 +182,13 @@ function Places() {
                 }}
                 renderItem={(item, index) => (
                   <ListItem
+                    data-cy="list-item-place"
                     key={index}
                     id={index}
                     logo={item?.logo?.thumbnail?.uri}
-                    defaultLogo={<EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />}
+                    defaultLogo={
+                      <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} data-cy="logo-place" />
+                    }
                     title={contentLanguageBilingual({
                       en: item?.name?.en,
                       fr: item?.name?.fr,
@@ -202,6 +210,7 @@ function Places() {
                     actions={[
                       adminCheckHandler() && (
                         <DeleteOutlined
+                          data-cy="icon-delete-place"
                           key={'delete-icon'}
                           style={{ color: '#222732', fontSize: '24px' }}
                           onClick={() => deletePlaceHandler(item?.id)}
@@ -216,7 +225,7 @@ function Places() {
             )
           ) : (
             <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <LoadingIndicator />
+              <LoadingIndicator data-cy="loading-indicator-place" />
             </div>
           )}
         </Main>
