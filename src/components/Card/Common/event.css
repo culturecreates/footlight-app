@@ -1,12 +1,12 @@
 .add-event-section-col {
-  padding: 24px;
+  padding: 24px !important;
   background-color: #ffffff;
   padding-left: 24px;
   padding-right: 24px;
 }
 
 .add-event-section-col .add-event-section-wrapper {
-  padding: 24px;
+  padding: 8px !important;
   background-color: #ffffff;
 }
 

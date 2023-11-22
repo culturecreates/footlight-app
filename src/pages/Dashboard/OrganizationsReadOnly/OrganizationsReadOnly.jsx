@@ -193,7 +193,7 @@ function OrganizationsReadOnly() {
             </Row>
           </Col>
           {artsDataLinkChecker(organizationData?.sameAs) && (
-            <Col span={24}>
+            <Col flex={'780px'} className="artsdata-link-wrapper">
               <Row>
                 <Col flex={'780px'}>
                   <ArtsDataInfo

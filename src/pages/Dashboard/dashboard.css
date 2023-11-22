@@ -6,3 +6,8 @@
 .dashboard-wrapper {
   height: 100%;
 }
+
+.read-only-wrapper .artsdata-link-wrapper {
+  margin-left: 16px;
+  padding: 0 !important;
+}
