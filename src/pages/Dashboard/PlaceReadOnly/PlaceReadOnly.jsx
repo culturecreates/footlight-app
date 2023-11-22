@@ -211,9 +211,9 @@ function PlaceReadOnly() {
             </Row>
           </Col>
           {artsDataLinkChecker(placeData?.sameAs) && (
-            <Col span={24}>
+            <Col flex={'780px'} className="artsdata-link-wrapper">
               <Row>
-                <Col span={16} flex={'780px'}>
+                <Col flex={'780px'}>
                   <ArtsDataInfo
                     artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
                     name={contentLanguageBilingual({
