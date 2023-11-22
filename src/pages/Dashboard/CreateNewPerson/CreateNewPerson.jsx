@@ -357,6 +357,7 @@ function CreateNewPerson() {
                     <Col>
                       <div className="button-container">
                         <Button
+                          data-cy="button-person-back-to-previous"
                           type="link"
                           onClick={() => {
                             if (isRoutingToEventPage) {
@@ -374,6 +375,7 @@ function CreateNewPerson() {
                       <div className="add-event-button-wrap">
                         <Form.Item>
                           <PrimaryButton
+                            data-cy="button-save-person"
                             label={t('dashboard.events.addEditEvent.saveOptions.save')}
                             onClick={(e) => onSaveHandler(e)}
                             disabled={addPersonLoading || imageUploadLoading || updatePersonLoading ? true : false}
@@ -386,7 +388,7 @@ function CreateNewPerson() {
 
                 <Col>
                   <div className="add-edit-event-heading">
-                    <h4>
+                    <h4 data-cy="heading-add-edit-person-title">
                       {personId
                         ? t('dashboard.people.createNew.addPerson.editPerson')
                         : t('dashboard.people.createNew.addPerson.newPerson')}
@@ -404,7 +406,9 @@ function CreateNewPerson() {
                         section[0]?.category === formCategory.PRIMARY && (
                           <Row>
                             <Col span={24}>
-                              <p className="add-entity-label">{t('dashboard.people.createNew.addPerson.dataSource')}</p>
+                              <p className="add-entity-label" data-cy="para-person-datasource-title">
+                                {t('dashboard.people.createNew.addPerson.dataSource')}
+                              </p>
                             </Col>
                             <Col span={24}>
                               <ArtsDataInfo
@@ -425,10 +429,11 @@ function CreateNewPerson() {
                             </Col>
                             <Col span={24}>
                               <div style={{ display: 'inline' }}>
-                                <span className="add-event-date-heading">
+                                <span className="add-event-date-heading" data-cy="span-person-question-part-one">
                                   {t('dashboard.people.createNew.addPerson.question.firstPart')}
                                 </span>
                                 <span
+                                  data-cy="span-person-question-part-two"
                                   className="add-event-date-heading"
                                   style={{
                                     color: '#1b3de6',
@@ -441,7 +446,7 @@ function CreateNewPerson() {
                                   }}>
                                   {t('dashboard.people.createNew.addPerson.question.secondPart')}
                                 </span>
-                                <span className="add-event-date-heading">
+                                <span className="add-event-date-heading" data-cy="span-person-question-part-three">
                                   {t('dashboard.people.createNew.addPerson.question.thirdPart')}
                                 </span>
                               </div>
@@ -493,6 +498,7 @@ function CreateNewPerson() {
                                 initialValue={initialValues}
                                 hidden={taxonomy?.isAdminOnly ? (adminCheckHandler() ? false : true) : false}>
                                 <TreeSelectOption
+                                  data-cy={`treeselect-person-dynamic-fields-${index}`}
                                   allowClear
                                   treeDefaultExpandAll
                                   notFoundContent={<NoContent />}
@@ -506,6 +512,7 @@ function CreateNewPerson() {
                                     const { label, closable, onClose } = props;
                                     return (
                                       <Tags
+                                        data-cy={`tag-person-dynamic-field-${label}`}
                                         closable={closable}
                                         onClose={onClose}
                                         closeIcon={
@@ -531,7 +538,7 @@ function CreateNewPerson() {
     </FeatureFlag>
   ) : (
     <div style={{ height: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <LoadingIndicator />
+      <LoadingIndicator data-cy="loading-indicator-person" />
     </div>
   );
 }

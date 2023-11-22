@@ -107,6 +107,7 @@ function PersonReadOnly() {
                   <ReadOnlyProtectedComponent creator={personData.createdByUserId}>
                     <div className="button-container">
                       <OutlinedButton
+                        data-cy="button-edit-person"
                         label={t('dashboard.people.readOnly.edit')}
                         size="middle"
                         style={{ height: '40px', width: '60px' }}
@@ -127,7 +128,7 @@ function PersonReadOnly() {
             <Row>
               <Col flex="780px">
                 <div className="read-only-event-heading">
-                  <h4>
+                  <h4 data-cy="heading-person-name">
                     {contentLanguageBilingual({
                       en: personData?.name?.en,
                       fr: personData?.name?.fr,
@@ -135,7 +136,9 @@ function PersonReadOnly() {
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                   </h4>
-                  <p className="read-only-event-content-sub-title-primary">
+                  <p
+                    className="read-only-event-content-sub-title-primary"
+                    data-cy="para-person-disambiguating-description">
                     {contentLanguageBilingual({
                       en: personData?.disambiguatingDescription?.en,
                       fr: personData?.disambiguatingDescription?.fr,
@@ -175,33 +178,51 @@ function PersonReadOnly() {
             <Col>
               <Row>
                 <Col span={24}>
-                  <p className="read-only-event-content" style={{ fontSize: '24px' }}>
+                  <p
+                    className="read-only-event-content"
+                    style={{ fontSize: '24px' }}
+                    data-cy="para-person-details-title">
                     {t('dashboard.people.readOnly.details')}
                   </p>
                 </Col>
                 {(personData?.name?.fr || personData?.name?.en) && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">{t('dashboard.people.readOnly.name')}</p>
+                    <p className="read-only-event-content-sub-title-primary" data-cy="para-person-name-title">
+                      {t('dashboard.people.readOnly.name')}
+                    </p>
                     {personData?.name?.fr && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-                        <p className="read-only-event-content">{personData?.name?.fr}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-person-name-french-title">
+                          {t('common.tabFrench')}
+                        </p>
+                        <p className="read-only-event-content" data-cy="para-person-name-french">
+                          {personData?.name?.fr}
+                        </p>
                       </>
                     )}
                     {personData?.name?.en && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-                        <p className="read-only-event-content">{personData?.name?.en}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-person-name-english-title">
+                          {t('common.tabEnglish')}
+                        </p>
+                        <p className="read-only-event-content" data-cy="para-person-name-english">
+                          {personData?.name?.en}
+                        </p>
                       </>
                     )}
                   </Col>
                 )}
                 {personData?.occupation?.length > 0 && (
                   <div>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p className="read-only-event-content-sub-title-primary" data-cy="para-person-occupation-title">
                       {taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false)}
                     </p>
                     <TreeSelectOption
+                      data-cy="treeselect-person-occupation"
                       style={{ marginBottom: '1rem' }}
                       bordered={false}
                       open={false}
@@ -218,7 +239,7 @@ function PersonReadOnly() {
                       })}
                       tagRender={(props) => {
                         const { label } = props;
-                        return <Tags>{label}</Tags>;
+                        return <Tags data-cy={`tag-person-occupation-${label}`}>{label}</Tags>;
                       }}
                     />
                   </div>
@@ -246,6 +267,7 @@ function PersonReadOnly() {
                                 })}
                               </p>
                               <TreeSelectOption
+                                data-cy={`treeselect-person-dynamic-field-${index}`}
                                 key={index}
                                 style={{ marginBottom: '1rem' }}
                                 bordered={false}
@@ -255,7 +277,7 @@ function PersonReadOnly() {
                                 treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
                                 tagRender={(props) => {
                                   const { label } = props;
-                                  return <Tags>{label}</Tags>;
+                                  return <Tags data-cy={`tag-person-dynamic-field-${label}`}>{label}</Tags>;
                                 }}
                               />
                             </div>
@@ -266,41 +288,69 @@ function PersonReadOnly() {
                 )}
                 {(personData?.disambiguatingDescription?.en || personData?.disambiguatingDescription?.fr) && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p
+                      className="read-only-event-content-sub-title-primary"
+                      data-cy="para-person-disambiguating-description-title">
                       {t('dashboard.people.readOnly.disambiguatingDescription')}
                     </p>
                     {personData?.disambiguatingDescription?.fr && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
-                        <p className="read-only-event-content">{personData?.disambiguatingDescription?.fr}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-person-disambiguating-description-french-title">
+                          {t('common.tabFrench')}
+                        </p>
+                        <p className="read-only-event-content" data-cy="para-person-disambiguating-description-french">
+                          {personData?.disambiguatingDescription?.fr}
+                        </p>
                       </>
                     )}
                     {personData?.disambiguatingDescription?.en && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
-                        <p className="read-only-event-content">{personData?.disambiguatingDescription?.en}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-person-disambiguating-description-english-title">
+                          {t('common.tabEnglish')}
+                        </p>
+                        <p className="read-only-event-content" data-cy="para-person-disambiguating-description-english">
+                          {personData?.disambiguatingDescription?.en}
+                        </p>
                       </>
                     )}
                   </Col>
                 )}
                 {(personData?.description?.fr || personData?.description?.en) && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p className="read-only-event-content-sub-title-primary" data-cy="para-person-description-title">
                       {t('dashboard.people.readOnly.description')}
                     </p>
                     {personData?.description?.fr && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabFrench')}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-person-description-french-title">
+                          {t('common.tabFrench')}
+                        </p>
                         <p className="read-only-event-content">
-                          <div dangerouslySetInnerHTML={{ __html: personData?.description?.fr }} />
+                          <div
+                            dangerouslySetInnerHTML={{ __html: personData?.description?.fr }}
+                            data-cy="div-person-description-french"
+                          />
                         </p>
                       </>
                     )}
                     {personData?.description?.en && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">{t('common.tabEnglish')}</p>
+                        <p
+                          className="read-only-event-content-sub-title-secondary"
+                          data-cy="para-person-description-english-title">
+                          {t('common.tabEnglish')}
+                        </p>
                         <p className="read-only-event-content">
-                          <div dangerouslySetInnerHTML={{ __html: personData?.description?.en }} />
+                          <div
+                            dangerouslySetInnerHTML={{ __html: personData?.description?.en }}
+                            data-cy="div-person-description-english"
+                          />
                         </p>
                       </>
                     )}
@@ -308,11 +358,16 @@ function PersonReadOnly() {
                 )}
                 {personData?.url?.uri && (
                   <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary">
+                    <p className="read-only-event-content-sub-title-primary" data-cy="para-person-website-title">
                       {t('dashboard.people.readOnly.website')}
                     </p>
                     <p>
-                      <a href={personData?.url?.uri} target="_blank" rel="noopener noreferrer" className="url-links">
+                      <a
+                        href={personData?.url?.uri}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="url-links"
+                        data-cy="anchor-person-website">
                         {personData?.url?.uri}
                       </a>
                     </p>
@@ -325,7 +380,12 @@ function PersonReadOnly() {
                     </p>
                     {personData?.socialMediaLinks?.map((link, index) => (
                       <p key={index}>
-                        <a href={link} target="_blank" rel="noopener noreferrer" className="url-links">
+                        <a
+                          href={link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="url-links"
+                          data-cy="anchor-person-social-media-links">
                           {link}
                         </a>
                       </p>
@@ -345,6 +405,7 @@ function PersonReadOnly() {
                       height: '151px',
                       objectFit: 'cover',
                     }}
+                    data-cy="image-person-original"
                   />
                 </div>
               )}

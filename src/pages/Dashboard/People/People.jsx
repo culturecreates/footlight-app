@@ -144,6 +144,7 @@ function People() {
               onClick={() => {
                 navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
               }}
+              data-cy="button-add-new-person"
             />
           </FeatureFlag>
           <PersonSearch
@@ -152,6 +153,7 @@ function People() {
             defaultValue={peopleSearchQuery}
             allowClear={true}
             onChange={onChangeHandler}
+            data-cy="input-person-search"
           />
           <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
           <></>
@@ -159,6 +161,7 @@ function People() {
           {!allPeopleFetching ? (
             allPeopleData?.data?.length > 0 ? (
               <List
+                data-cy="list-people"
                 className="event-list-wrapper"
                 itemLayout={screens.xs ? 'vertical' : 'horizontal'}
                 dataSource={allPeopleData?.data}
@@ -175,10 +178,11 @@ function People() {
                 }}
                 renderItem={(item, index) => (
                   <ListItem
+                    data-cy="list-item-person"
                     key={index}
                     id={index}
                     logo={item?.image?.thumbnail?.uri}
-                    defaultLogo={<UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />}
+                    defaultLogo={<UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} data-cy="logo-person" />}
                     title={contentLanguageBilingual({
                       en: item?.name?.en,
                       fr: item?.name?.fr,
@@ -200,6 +204,7 @@ function People() {
                     actions={[
                       adminCheckHandler() && (
                         <DeleteOutlined
+                          data-cy="icon-delete-person"
                           key={'delete-icon'}
                           style={{ color: '#222732', fontSize: '24px' }}
                           onClick={() => deletePersonHandler(item?.id)}
@@ -214,7 +219,7 @@ function People() {
             )
           ) : (
             <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <LoadingIndicator />
+              <LoadingIndicator data-cy="loading-indicator" />
             </div>
           )}
         </Main>

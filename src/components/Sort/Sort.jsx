@@ -22,7 +22,9 @@ function Sort(props) {
   };
   return (
     <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-      <span style={{ fontSize: '16px', fontWeight: 700 }}>{t('dashboard.events.filter.sort.sortBy')}</span>
+      <span style={{ fontSize: '16px', fontWeight: 700 }} data-cy="span-sort-by-title">
+        {t('dashboard.events.filter.sort.sortBy')}
+      </span>
 
       <Dropdown
         overlayClassName="filter-sort-dropdown-wrapper"
@@ -40,7 +42,12 @@ function Sort(props) {
         <Button size="large" className="filter-sort-button" style={{ cursor: 'default' }} data-cy="button-sort-options">
           <Space>
             {sortByOptionsOrgsPlacesPerson?.map((sortBy, index) => {
-              if (sortBy?.key === filter?.sort) return <span key={index}>{sortBy?.label}</span>;
+              if (sortBy?.key === filter?.sort)
+                return (
+                  <span key={index} data-cy={`span-sort-option-${sortBy?.label}`}>
+                    {sortBy?.label}
+                  </span>
+                );
             })}
             {/* <DownOutlined style={{ fontSize: '12px', color: '#222732' }} /> */}
           </Space>
