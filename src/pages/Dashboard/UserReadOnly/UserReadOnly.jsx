@@ -53,14 +53,16 @@ const UserReadOnly = () => {
         <Col>
           <Row>
             <Col>
-              <div className="user-read-only-info-label">{t(`dashboard.settings.userReadOnly.${infoType}`)}</div>
+              <div className="user-read-only-info-label" data-cy="div-user-info-type">
+                {t(`dashboard.settings.userReadOnly.${infoType}`)}
+              </div>
             </Col>
           </Row>
           <Row>
             <Col
               className={`user-read-only-info-data ${isCopiableText && 'user-read-only-info-copiable'}`}
               onClick={onClick}>
-              <div>{infoText}</div>
+              <div data-cy="div-user-info-text">{infoText}</div>
             </Col>
           </Row>
         </Col>
@@ -78,7 +80,7 @@ const UserReadOnly = () => {
                 <Row>
                   <Col flex="auto">
                     <div className="breadcrumb-container">
-                      <Button type="link" onClick={() => navigate(-2)}>
+                      <Button type="link" onClick={() => navigate(-2)} data-cy="button-back-to-previous">
                         <LeftOutlined style={{ fontSize: '12px', paddingRight: '5px' }} />
                         {t('dashboard.settings.userReadOnly.breadcrumb')}
                       </Button>
@@ -89,6 +91,7 @@ const UserReadOnly = () => {
                       <ReadOnlyProtectedComponent>
                         <div className="button-container">
                           <OutlinedButton
+                            data-cy="button-user-edit"
                             label={t('dashboard.settings.userReadOnly.editBtn')}
                             size="middle"
                             style={{ height: '40px' }}
@@ -109,7 +112,7 @@ const UserReadOnly = () => {
                 <Row gutter={16}>
                   <Col>
                     <div className="read-only-user-heading">
-                      <h1>{userInfo?.firstName + ' ' + userInfo?.lastName}</h1>
+                      <h1 data-cy="heading-user-name">{userInfo?.firstName + ' ' + userInfo?.lastName}</h1>
                     </div>
                   </Col>
                   <Col className="read-only-user-status-wrapper">
@@ -125,7 +128,9 @@ const UserReadOnly = () => {
                 <Card className="user-read-only-card" style={{ border: 'none' }}>
                   <Row gutter={[0, 4]}>
                     <Col>
-                      <h2 className="user-info-details-card-heading">{t('dashboard.settings.userReadOnly.details')}</h2>
+                      <h2 className="user-info-details-card-heading" data-cy="heading-user-details-title">
+                        {t('dashboard.settings.userReadOnly.details')}
+                      </h2>
                     </Col>
                   </Row>
                   {userInfo?.userName &&
@@ -193,7 +198,7 @@ const UserReadOnly = () => {
                   <Card className="user-read-only-calendar-card" style={{ border: 'none' }}>
                     <Row>
                       <Col>
-                        <h2 className="user-info-details-card-heading">
+                        <h2 className="user-info-details-card-heading" data-cy="heading-user-calendar-access-title">
                           {t('dashboard.settings.userReadOnly.calendarAccess')}
                         </h2>
                       </Col>

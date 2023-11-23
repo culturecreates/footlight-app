@@ -86,6 +86,7 @@ function SearchPerson() {
         <Popover
           open={isPopoverOpen}
           arrow={false}
+          data-cy="popover-person-search"
           overlayClassName="entity-popover"
           placement="bottom"
           onOpenChange={(open) => {
@@ -97,7 +98,7 @@ function SearchPerson() {
           trigger={['click']}
           content={
             <div>
-              <div className="popover-section-header">
+              <div className="popover-section-header" data-cy="div-person-footlight-title">
                 {t('dashboard.people.createNew.search.footlightSectionHeading')}
               </div>
               <div className="search-scrollable-content">
@@ -109,7 +110,8 @@ function SearchPerson() {
                       onClick={() => {
                         setSelectedPeople([...selectedPeople, person]);
                         setIsPopoverOpen(false);
-                      }}>
+                      }}
+                      data-cy={`div-person-footlight-${index}`}>
                       <EntityCard
                         title={contentLanguageBilingual({
                           en: person?.name?.en,
@@ -149,7 +151,7 @@ function SearchPerson() {
 
               {quickCreateKeyword.length > 0 && (
                 <>
-                  <div className="popover-section-header">
+                  <div className="popover-section-header" data-cy="div-person-artsdata-title">
                     {t('dashboard.people.createNew.search.artsDataSectionHeading')}
                   </div>
                   <div className="search-scrollable-content">
@@ -161,7 +163,8 @@ function SearchPerson() {
                           onClick={() => {
                             setSelectedPeople([...selectedPeople, person]);
                             setIsPopoverOpen(false);
-                          }}>
+                          }}
+                          data-cy={`div-person-artsdata-${index}`}>
                           <EntityCard
                             title={contentLanguageBilingual({
                               en: person?.name?.en,
@@ -205,6 +208,7 @@ function SearchPerson() {
             </div>
           }>
           <EventsSearch
+            data-cy="input-person-search"
             style={{ borderRadius: '4px' }}
             placeholder="Search people"
             onClick={(e) => {
