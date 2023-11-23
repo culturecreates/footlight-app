@@ -83,6 +83,7 @@ function SearchPlaces() {
         text={t('dashboard.places.createNew.search.text')}>
         <div className="search-bar-places">
           <Popover
+            data-cy="popover-places-search"
             open={isPopoverOpen}
             arrow={false}
             overlayClassName="entity-popover"
@@ -96,7 +97,7 @@ function SearchPlaces() {
             trigger={['click']}
             content={
               <div>
-                <div className="popover-section-header">
+                <div className="popover-section-header" data-cy="div-place-footlight-title">
                   {t('dashboard.places.createNew.search.footlightSectionHeading')}
                 </div>
                 <div className="search-scrollable-content">
@@ -108,7 +109,8 @@ function SearchPlaces() {
                         onClick={() => {
                           setSelectedPlaces([...selectedPlaces, place]);
                           setIsPopoverOpen(false);
-                        }}>
+                        }}
+                        data-cy={`div-place-footlight-${index}`}>
                         <EntityCard
                           title={contentLanguageBilingual({
                             en: place?.name?.en,
@@ -148,7 +150,7 @@ function SearchPlaces() {
 
                 {quickCreateKeyword.length > 0 && (
                   <>
-                    <div className="popover-section-header">
+                    <div className="popover-section-header" data-cy="div-place-artsdata-title">
                       {t('dashboard.places.createNew.search.artsDataSectionHeading')}
                     </div>
                     <div className="search-scrollable-content">
@@ -159,7 +161,8 @@ function SearchPlaces() {
                             className="search-popover-options"
                             onClick={() => {
                               setIsPopoverOpen(false);
-                            }}>
+                            }}
+                            data-cy={`div-place-artsdata-${index}`}>
                             <EntityCard
                               title={contentLanguageBilingual({
                                 en: place?.name?.en,
@@ -203,6 +206,7 @@ function SearchPlaces() {
               </div>
             }>
             <EventsSearch
+              data-cy="input-place-search"
               style={{ borderRadius: '4px' }}
               placeholder="Search places"
               onClick={(e) => {

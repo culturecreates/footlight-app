@@ -21,6 +21,7 @@ function SearchableCheckbox(props) {
   return (
     <Checkbox.Group onChange={onFilterChange} value={value}>
       <Dropdown
+        data-cy="dropdown-searchable-checkbox"
         menu={{
           items: items,
           selectable: true,
@@ -32,7 +33,9 @@ function SearchableCheckbox(props) {
           <div className="searchable-checkbox-dropdown-wrapper">
             {allowSearch && (
               <AuthenticationInput
+                data-cy="input-search-entity"
                 size="small"
+                allowClear={true}
                 placeholder={t('dashboard.events.filter.users.placeholderSearch')}
                 onChange={(e) => props.setSearchKey(e.target.value)}
                 prefix={<SearchOutlined />}

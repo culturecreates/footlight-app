@@ -30,6 +30,7 @@ function ListItem(props) {
   const lang = i18n.language;
   return (
     <List.Item
+      data-cy="list-item-entity"
       className="event-list-item-wrapper"
       key={id}
       actions={actions}
@@ -37,10 +38,11 @@ function ListItem(props) {
       <List.Item.Meta
         className="event-list-item-meta"
         onClick={listItemHandler}
+        data-cy="list-item-meta-entity"
         avatar={
           logo ? (
             <div className="event-list-image-wrapper" style={{ height: '40px', width: '40px' }}>
-              <img src={logo} className="event-list-image" />
+              <img src={logo} className="event-list-image" data-cy="image-entity-logo" />
             </div>
           ) : (
             <div
@@ -60,8 +62,10 @@ function ListItem(props) {
         }
         description={
           <div className="event-list-description">
-            <span className="event-list-description-name">{title}</span>
-            <span className="event-list-description-place" style={{ width: '100%' }}>
+            <span className="event-list-description-name" data-cy="span-entity-title">
+              {title}
+            </span>
+            <span className="event-list-description-place" style={{ width: '100%' }} data-cy="span-entity-description">
               {description}
             </span>
           </div>
@@ -71,15 +75,19 @@ function ListItem(props) {
         className="event-status-list-item"
         title={
           artsDataLink && (
-            <ArtsDataLink onClick={() => window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer')}>
-              <span style={{ textDecoration: 'underline' }}>Artsdata</span>
+            <ArtsDataLink
+              onClick={() => window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer')}
+              data-cy="tag-entity-artsdata">
+              <span style={{ textDecoration: 'underline' }} data-cy="span-entity-artsdata">
+                Artsdata
+              </span>
               <LinkOutlined />
             </ArtsDataLink>
           )
         }
         description={
           <div className="event-list-status">
-            <span className="event-list-status-created-by">
+            <span className="event-list-status-created-by" data-cy="span-entity-created-date">
               {t('dashboard.events.list.createdBy')}&nbsp;
               {moment
                 .tz(createdDate, scheduleTimezone ?? 'Canada/Eastern')
@@ -88,10 +96,10 @@ function ListItem(props) {
                 ?.toUpperCase()}
               &nbsp;
               {t('dashboard.events.list.by')}&nbsp;
-              <Username userName={createdByUserName} />
+              <Username userName={createdByUserName} data-cy="span-entity-created-username" />
             </span>
             {updatedByUserName ? (
-              <span className="event-list-status-updated-by">
+              <span className="event-list-status-updated-by" data-cy="span-entity-updated-date">
                 {t('dashboard.events.list.updatedBy')}&nbsp;
                 {moment
                   .tz(updatedDate, scheduleTimezone ?? 'Canada/Eastern')
@@ -100,7 +108,7 @@ function ListItem(props) {
                   ?.toUpperCase()}
                 &nbsp;
                 {t('dashboard.events.list.by')}&nbsp;
-                <Username userName={updatedByUserName} />
+                <Username userName={updatedByUserName} data-cy="span-entity-updated-username" />
               </span>
             ) : (
               <></>

@@ -57,6 +57,7 @@ const ChangePassword = ({ isPopoverOpen, setIsPopoverOpen }) => {
               <>
                 {error?.data?.message} &nbsp;
                 <Button
+                  data-cy="button-close-warning"
                   type="text"
                   icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
                   onClick={() => message.destroy('udpate-user-warning')}
@@ -73,6 +74,7 @@ const ChangePassword = ({ isPopoverOpen, setIsPopoverOpen }) => {
 
   return (
     <Modal
+      data-cy="modal-change-password"
       cancelText={t('dashboard.settings.addUser.passwordModal.Cancel')}
       okText={t('dashboard.settings.addUser.passwordModal.changePassword')}
       cancelButtonProps={{ className: 'cancel-button' }}
@@ -88,6 +90,7 @@ const ChangePassword = ({ isPopoverOpen, setIsPopoverOpen }) => {
       }}>
       <Form form={form} layout="vertical" name="passwordForm" onFinish={handleFormSubmit}>
         <Form.Item
+          data-cy="form-item-password-title"
           label={t('dashboard.settings.addUser.passwordModal.Password')}
           name="password"
           rules={[
@@ -96,9 +99,13 @@ const ChangePassword = ({ isPopoverOpen, setIsPopoverOpen }) => {
               message: t('resetPassword.validations.emptyPassword'),
             },
           ]}>
-          <PasswordInput placeholder={t('dashboard.settings.addUser.passwordModal.placeHolder.current')} />
+          <PasswordInput
+            placeholder={t('dashboard.settings.addUser.passwordModal.placeHolder.current')}
+            data-cy="input-user-password"
+          />
         </Form.Item>
         <Form.Item
+          data-cy="form-item-new-password-title"
           label={t('dashboard.settings.addUser.passwordModal.newPassword')}
           name="newPassword"
           rules={[
@@ -107,9 +114,13 @@ const ChangePassword = ({ isPopoverOpen, setIsPopoverOpen }) => {
               message: t('resetPassword.validations.emptyPassword'),
             },
           ]}>
-          <PasswordInput placeholder={t('dashboard.settings.addUser.passwordModal.placeHolder.new')} />
+          <PasswordInput
+            placeholder={t('dashboard.settings.addUser.passwordModal.placeHolder.new')}
+            data-cy="input-user-new-password"
+          />
         </Form.Item>
         <Form.Item
+          data-cy="form-item-confirm-password-title"
           label={t('dashboard.settings.addUser.passwordModal.confirmNewPassword')}
           name="confirmPassword"
           dependencies={['newPassword']}
@@ -127,7 +138,10 @@ const ChangePassword = ({ isPopoverOpen, setIsPopoverOpen }) => {
               },
             }),
           ]}>
-          <PasswordInput placeholder={t('dashboard.settings.addUser.passwordModal.placeHolder.confirm')} />
+          <PasswordInput
+            placeholder={t('dashboard.settings.addUser.passwordModal.placeHolder.confirm')}
+            data-cy="input-user-confirm-password"
+          />
         </Form.Item>
       </Form>
     </Modal>

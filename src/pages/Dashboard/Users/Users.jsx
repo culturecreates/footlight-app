@@ -197,12 +197,16 @@ function Users() {
             <Row justify="space-between">
               <Col>
                 <div className="user-profile-heading">
-                  <h4>{t('dashboard.userProfile.userProfile')}</h4>
+                  <h4 data-cy="heading-user-profile-title">{t('dashboard.userProfile.userProfile')}</h4>
                 </div>
               </Col>
               <Col>
                 <div className="add-event-button-wrap">
-                  <PrimaryButton label={t('dashboard.userProfile.save')} onClick={handleSave} />
+                  <PrimaryButton
+                    label={t('dashboard.userProfile.save')}
+                    onClick={handleSave}
+                    data-cy="button-user-save"
+                  />
                 </div>
               </Col>
             </Row>
@@ -225,6 +229,7 @@ function Users() {
                 <p>{t('dashboard.userProfile.subHeading')}</p>
               </div>
               <Form.Item
+                data-cy="form-item-user-firstname-title"
                 name="firstName"
                 initialValue={currentUserData?.firstName}
                 label={t('dashboard.userProfile.firstName')}
@@ -235,10 +240,12 @@ function Users() {
                   },
                 ]}>
                 <StyledInput
+                  data-cy="input-user-firstname"
                   placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderPhoneNumber')}
                 />
               </Form.Item>
               <Form.Item
+                data-cy="form-item-user-lastname-title"
                 name="lastName"
                 initialValue={currentUserData?.lastName}
                 label={t('dashboard.userProfile.lastName')}
@@ -249,10 +256,12 @@ function Users() {
                   },
                 ]}>
                 <StyledInput
+                  data-cy="input-user-lastname"
                   placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderPhoneNumber')}
                 />
               </Form.Item>
               <Form.Item
+                data-cy="form-item-user-email-title"
                 name="email"
                 label={t('dashboard.userProfile.email')}
                 labelAlign="left"
@@ -268,21 +277,24 @@ function Users() {
                   },
                 ]}>
                 <LoginInput
+                  data-cy="input-user-email"
                   placeholder={t('resetPassword.emailPlaceHolder')}
                   disabled={location?.state?.email ? true : false}
                 />
               </Form.Item>
               <div className="interfaceLanguage-selector">
                 <Form.Item
+                  data-cy="form-item-user-language-title"
                   name="interfaceLanguage"
                   label={t('dashboard.userProfile.languagePreference')}
                   initialValue={currentUserData?.interfaceLanguage?.toUpperCase()}
                   required>
-                  <Select options={locale} />
+                  <Select options={locale} data-cy="select-user-language" />
                 </Form.Item>
               </div>
               <Form.Item name="button">
                 <OutlinedButton
+                  data-cy="button-user-change-password"
                   label={t('dashboard.userProfile.changePassword')}
                   size="large"
                   onClick={() => setIsModalVisible(true)}
@@ -292,7 +304,7 @@ function Users() {
                 maskClosable
                 title={
                   <div className="custom-modal-title-wrapper">
-                    <span className="custom-modal-title-heading">
+                    <span className="custom-modal-title-heading" data-cy="span-change-password">
                       {t('dashboard.userProfile.changePasswordButton')}
                     </span>
                   </div>
@@ -303,12 +315,14 @@ function Users() {
                 centered
                 footer={[
                   <TextButton
+                    data-cy="button-user-change-password-cancel"
                     key="cancel"
                     size="large"
                     label={t('dashboard.userProfile.cancel')}
                     onClick={handleModalCancel}
                   />,
                   <PrimaryButton
+                    data-cy="button-user-change-password-save"
                     key="add-dates"
                     label={t('dashboard.userProfile.changePasswordButton')}
                     onClick={handlePasswordSave}
@@ -318,6 +332,7 @@ function Users() {
                 <Row>
                   <Col span={24} className="change-password-modal-body">
                     <Form.Item
+                      data-cy="form-item-old-password-title"
                       name="oldPassword"
                       label={t('dashboard.userProfile.password')}
                       labelAlign="left"
@@ -329,11 +344,13 @@ function Users() {
                         },
                       ]}>
                       <PasswordInput
+                        data-cy="input-user-old-password"
                         placeholder={t('dashboard.userProfile.passwordPlaceHolder')}
                         iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                       />
                     </Form.Item>
                     <Form.Item
+                      data-cy="form-item-new-password-title"
                       name="newPassword"
                       label={t('dashboard.userProfile.newPassword')}
                       labelAlign="left"
@@ -345,11 +362,13 @@ function Users() {
                         },
                       ]}>
                       <PasswordInput
+                        data-cy="input-new-password"
                         placeholder={t('dashboard.userProfile.newPasswordPlaceholder')}
                         iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                       />
                     </Form.Item>
                     <Form.Item
+                      data-cy="form-item-confirm-password-title"
                       name="confirmNewPassword"
                       label={t('dashboard.userProfile.confirmNewPassword')}
                       labelAlign="left"
@@ -368,6 +387,7 @@ function Users() {
                         }),
                       ]}>
                       <PasswordInput
+                        data-cy="input-confirm-password"
                         placeholder={t('dashboard.userProfile.confirmNewPasswordPlaceHolder')}
                         iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                       />
