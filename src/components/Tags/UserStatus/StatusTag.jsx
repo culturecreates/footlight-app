@@ -38,7 +38,7 @@ const StatusTag = ({ activityStatus }) => {
     }
   };
   return (
-    <div className="user-status-tag">
+    <div className="user-status-tag" data-cy="user-status-tag">
       <Tags color={activityStatusTextColor} style={activityStatusStyle}>
         {activityStatusText}
       </Tags>

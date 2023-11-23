@@ -420,15 +420,17 @@ const UserManagement = () => {
                   defaultValue={userSearchQuery}
                   allowClear={true}
                   onChange={onSearchChangeHandler}
+                  data-cy="input-user-search"
                 />
               </Col>
               <Col>
                 <Row align="middle" className="sort-option-row">
-                  <span style={{ fontSize: '16px', fontWeight: 700, marginRight: 8 }}>
+                  <span style={{ fontSize: '16px', fontWeight: 700, marginRight: 8 }} data-cy="span-user-sort">
                     {t('dashboard.settings.userManagement.sort')}
                   </span>
 
                   <Dropdown
+                    data-cy="dropdown-user-sort"
                     overlayClassName="filter-sort-dropdown-wrapper"
                     overlayStyle={{ minWidth: '200px' }}
                     getPopupContainer={(trigger) => trigger.parentNode}
@@ -439,7 +441,7 @@ const UserManagement = () => {
                       onSelect: onSortSelect,
                     }}
                     trigger={['click']}>
-                    <Button size="large" className="filter-sort-button">
+                    <Button size="large" className="filter-sort-button" data-cy="button-user-sort">
                       <Space>
                         {sortByOptionsUsers?.map((sortBy, index) => {
                           if (sortBy?.key === filter?.sort) return <span key={index}>{sortBy?.label}</span>;
@@ -449,6 +451,7 @@ const UserManagement = () => {
                     </Button>
                   </Dropdown>
                   <Button
+                    data-cy="button-user-sort-order"
                     className="filter-sort-button"
                     style={{ borderColor: filter?.order && '#1B3DE6' }}
                     onClick={handleSortOrderChange}
@@ -470,7 +473,11 @@ const UserManagement = () => {
 
           <Col flex={'140px'} className="add-btn-container">
             <ReadOnlyProtectedComponent>
-              <AddEvent label={t('dashboard.settings.userManagement.addUser')} onClick={addEventHandler} />
+              <AddEvent
+                label={t('dashboard.settings.userManagement.addUser')}
+                onClick={addEventHandler}
+                data-cy="button-add-user"
+              />
             </ReadOnlyProtectedComponent>
           </Col>
         </Row>
@@ -478,6 +485,7 @@ const UserManagement = () => {
         <Row gutter={[8]} align="middle">
           <Col>
             <Dropdown
+              data-cy="dropdown-user-status"
               overlayClassName="filter-sort-dropdown-wrapper"
               getPopupContainer={(trigger) => trigger.parentNode}
               overlayStyle={{ minWidth: '200px' }}
@@ -490,6 +498,7 @@ const UserManagement = () => {
               trigger={['click']}>
               <Space>
                 <Button
+                  data-cy="button-user-status"
                   size="large"
                   className="filter-buttons"
                   style={{ borderColor: filter?.userStatus && '#607EFC' }}>
@@ -500,6 +509,7 @@ const UserManagement = () => {
           </Col>
           <Col>
             <Dropdown
+              data-cy="dropdown-user-type"
               overlayClassName="filter-sort-dropdown-wrapper"
               getPopupContainer={(trigger) => trigger.parentNode}
               overlayStyle={{ minWidth: '200px' }}
@@ -511,7 +521,11 @@ const UserManagement = () => {
               }}
               trigger={['click']}>
               <Space>
-                <Button size="large" className="filter-buttons" style={{ borderColor: filter?.userRole && '#607EFC' }}>
+                <Button
+                  size="large"
+                  className="filter-buttons"
+                  style={{ borderColor: filter?.userRole && '#607EFC' }}
+                  data-cy="button-user-status">
                   {t('dashboard.settings.userManagement.userTypes')}
                 </Button>
               </Space>
@@ -523,7 +537,12 @@ const UserManagement = () => {
               filter.sort !== sortByOptionsUsers[0].key ||
               filter.userRole !== '' ||
               filter.userStatus !== '') && (
-              <Button size="large" className="filter-buttons" style={{ color: '#1B3DE6' }} onClick={filterClearHandler}>
+              <Button
+                size="large"
+                className="filter-buttons"
+                style={{ color: '#1B3DE6' }}
+                onClick={filterClearHandler}
+                data-cy="button-user-fiter-clear">
                 {t('dashboard.events.filter.clear')}&nbsp;
                 <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
               </Button>
@@ -537,6 +556,7 @@ const UserManagement = () => {
             <Col span={24}>
               {userData?.data.length && !isUsersLoading > 0 ? (
                 <List
+                  data-cy="list-user"
                   className="event-list-wrapper"
                   itemLayout={screens.xs ? 'vertical' : 'horizontal'}
                   dataSource={userData?.data}
@@ -559,6 +579,7 @@ const UserManagement = () => {
                   renderItem={(item, index) => {
                     return (
                       <ListCard
+                        data-cy="list-card-user"
                         id={index}
                         key={index}
                         listItemHandler={() => {
@@ -572,6 +593,7 @@ const UserManagement = () => {
                         actions={[
                           adminCheckHandler() && (
                             <Dropdown
+                              data-cy="dropdown-user-actions"
                               overlayClassName="filter-sort-dropdown-wrapper"
                               overlayStyle={{ minWidth: '200px' }}
                               getPopupContainer={(trigger) => trigger.parentNode}
@@ -605,7 +627,7 @@ const UserManagement = () => {
       ) : (
         <div
           style={{ height: '400px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <LoadingIndicator />
+          <LoadingIndicator data-cy="loading-indicator-user" />
         </div>
       )}
     </Row>

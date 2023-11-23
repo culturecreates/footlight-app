@@ -492,6 +492,7 @@ const AddUser = () => {
                     <Col className="breadcrumb">
                       <div className="button-container">
                         <Button
+                          data-cy="button-user-back-to-previous"
                           type="link"
                           onClick={() => navigate(-2)}
                           icon={<LeftOutlined style={{ marginRight: '17px' }} />}>
@@ -503,6 +504,7 @@ const AddUser = () => {
                       <div className="add-event-button-wrap">
                         <Form.Item>
                           <PrimaryButton
+                            data-cy="button-user-save"
                             label={t('dashboard.events.addEditEvent.saveOptions.save')}
                             htmlType="submit"
                           />
@@ -513,7 +515,7 @@ const AddUser = () => {
                 </Col>
                 <Col>
                   <div className="add-edit-event-heading">
-                    <h4>
+                    <h4 data-cy="heading-user-profile-edit-add">
                       {isCurrentUser
                         ? t('dashboard.settings.addUser.userProfile')
                         : userId
@@ -528,7 +530,7 @@ const AddUser = () => {
               <Card style={{ border: 'none', width: '100%' }}>
                 <Row gutter={[0, 24]}>
                   <Col flex={'423px'}>
-                    <div className="details-card-description">
+                    <div className="details-card-description" data-cy="div-user-profile-edit-add-page">
                       {isCurrentUser
                         ? t('dashboard.settings.addUser.detailsCardDescriptionCurrentUser')
                         : userId
@@ -538,6 +540,7 @@ const AddUser = () => {
                   </Col>
                   <Col flex={'423px'}>
                     <Form.Item
+                      data-cy="form-item-user-first-name-title"
                       name="firstName"
                       required
                       label={t('dashboard.settings.addUser.firstName')}
@@ -640,6 +643,7 @@ const AddUser = () => {
                     </Form.Item>
 
                     <Form.Item
+                      data-cy="form-item-user-last-name-title"
                       name="lastName"
                       required
                       label={t('dashboard.settings.addUser.lastName')}
@@ -661,6 +665,7 @@ const AddUser = () => {
                       </Row>
                     </Form.Item>
                     <Form.Item
+                      data-cy="form-item-user-phonenumber-title"
                       name="phoneNumber"
                       label={t('dashboard.settings.addUser.phoneNumber')}
                       rules={[
@@ -682,6 +687,7 @@ const AddUser = () => {
                     </Form.Item>
 
                     <Form.Item
+                      data-cy="form-item-user-email-title"
                       name="email"
                       required
                       label={t('dashboard.settings.addUser.email')}
@@ -704,6 +710,7 @@ const AddUser = () => {
                     </Form.Item>
 
                     <Form.Item
+                      data-cy="form-item-user-usertype-title"
                       name="userType"
                       required
                       label={t('dashboard.settings.addUser.userType')}
@@ -716,6 +723,7 @@ const AddUser = () => {
                       <Row>
                         <Col flex={'423px'}>
                           <Dropdown
+                            data-cy="dropdown-user-usertype"
                             overlayClassName="add-user-form-field-dropdown-wrapper"
                             getPopupContainer={(trigger) => trigger.parentNode}
                             overlayStyle={{ minWidth: '100%' }}
@@ -729,7 +737,7 @@ const AddUser = () => {
                             }}
                             trigger={['click']}>
                             <div>
-                              <Typography.Text>
+                              <Typography.Text data-cy="typography-user-usertype">
                                 {userData?.userType !== ''
                                   ? getUserTypeLabelFromKey(userData?.userType)
                                   : t('dashboard.settings.addUser.placeHolder.userType')}
@@ -742,6 +750,7 @@ const AddUser = () => {
                     </Form.Item>
 
                     <Form.Item
+                      data-cy="form-item-user-language-title"
                       name="languagePreference"
                       required
                       label={t('dashboard.settings.addUser.languagePreference')}
@@ -754,6 +763,7 @@ const AddUser = () => {
                       <Row>
                         <Col flex={'423px'}>
                           <Dropdown
+                            data-cy="dropdown-user-language"
                             overlayClassName="add-user-form-field-dropdown-wrapper"
                             getPopupContainer={(trigger) => trigger.parentNode}
                             overlayStyle={{
@@ -775,7 +785,7 @@ const AddUser = () => {
                             }}
                             trigger={['click']}>
                             <div>
-                              <Typography.Text>
+                              <Typography.Text data-cy="typography-user-language">
                                 {userData?.languagePreference?.label !== ''
                                   ? userData?.languagePreference?.label
                                   : t('dashboard.settings.addUser.placeHolder.language')}
@@ -791,6 +801,7 @@ const AddUser = () => {
                       <div className="password-modal">
                         <div className="button-container">
                           <OutlinedButton
+                            data-cy="button-changepassword"
                             label={t('dashboard.settings.addUser.passwordModal.btnText')}
                             size="large"
                             style={{ height: '40px' }}
@@ -811,7 +822,7 @@ const AddUser = () => {
                     <Card style={{ border: 'none' }}>
                       <Row>
                         <Col span={24} className="card-heading-container">
-                          <h5>{t(`dashboard.settings.addUser.calendars`)}</h5>
+                          <h5 data-cy="heading-user-calendars">{t(`dashboard.settings.addUser.calendars`)}</h5>
                         </Col>
                       </Row>
                       <Row>
@@ -824,6 +835,7 @@ const AddUser = () => {
                                     (item, index) =>
                                       item.status == userActivityStatus[0].key && (
                                         <CalendarSelect
+                                          data-cy="selected-calendars"
                                           key={index}
                                           icon={
                                             item?.image ? (
@@ -872,7 +884,7 @@ const AddUser = () => {
           </Row>
         ) : (
           <div style={{ height: 400, width: '100%', display: 'grid', placeContent: 'center' }}>
-            <LoadingIndicator />
+            <LoadingIndicator data-cy="loading-indicator-user" />
           </div>
         )}
       </Form>

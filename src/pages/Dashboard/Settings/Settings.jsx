@@ -23,7 +23,9 @@ const Settings = () => {
     <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
       <Row className="settings-wrapper">
         <Col span={24}>
-          <h4 className="settings-heading">{t('dashboard.settings.heading')}</h4>
+          <h4 className="settings-heading" data-cy="heading-settings-title">
+            {t('dashboard.settings.heading')}
+          </h4>
         </Col>
         <Col span={24}>
           <Tabs items={items} activeKey={tabKey} onChange={onTabChange} />
