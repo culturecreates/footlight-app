@@ -17,7 +17,12 @@ const CalendarSelect = (props) => {
           <>
             {currentUser ? (
               <div key={name} className="button-container">
-                <Button type="text" key="list-loadmore-close" onClick={onButtonClick} style={{ padding: '0px' }}>
+                <Button
+                  type="text"
+                  key="list-loadmore-close"
+                  onClick={onButtonClick}
+                  style={{ padding: '0px' }}
+                  data-cy="button-calendar-leave">
                   {t('dashboard.settings.addUser.leave')}
                 </Button>
               </div>
@@ -25,7 +30,8 @@ const CalendarSelect = (props) => {
               <Button
                 size="large"
                 className="filter-buttons role-added-button"
-                style={{ padding: '4px 8px', height: 'auto' }}>
+                style={{ padding: '4px 8px', height: 'auto' }}
+                data-cy="button-user-role">
                 {calenderItem?.role}
               </Button>
             )}
@@ -42,13 +48,19 @@ const CalendarSelect = (props) => {
                 backgroundColor: '#E3E8FF',
                 borderRadius: '4px',
               }}
+              data-cy="avatar-calendar-image"
             />
           }
-          title={<span className="selection-item-title">{name}</span>}
+          title={
+            <span className="selection-item-title" data-cy="span-calendar-name">
+              {name}
+            </span>
+          }
         />
 
         {currentUser && (
           <Button
+            data-cy="button-calendar-role"
             size="large"
             className="filter-buttons role-added-button"
             style={{ padding: '4px 8px', height: 'auto' }}>

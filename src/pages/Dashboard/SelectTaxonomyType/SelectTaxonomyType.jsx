@@ -70,12 +70,14 @@ const SelectTaxonomyType = () => {
       <Row>
         <Col span={24}>
           <div className="button-container">
-            <Button type="link" onClick={() => navigate(-1)}>
+            <Button type="link" onClick={() => navigate(-1)} data-cy="button-taxonomy-back-to-previous">
               <LeftOutlined style={{ fontSize: '12px', paddingRight: '5px' }} />
               {t('dashboard.organization.createNew.search.breadcrumb')}
             </Button>
           </div>
-          <h4 className="heading">{t('dashboard.taxonomy.selectType.heading')}</h4>
+          <h4 className="heading" data-cy="span-taxonomy-select-type-heading">
+            {t('dashboard.taxonomy.selectType.heading')}
+          </h4>
         </Col>
       </Row>
       <Row>
@@ -91,6 +93,7 @@ const SelectTaxonomyType = () => {
               <Row className="classType">
                 <Col flex="423px">
                   <Form.Item
+                    data-cy="form-item-class-title"
                     name="classType"
                     required
                     label={t('dashboard.taxonomy.selectType.class')}
@@ -102,6 +105,7 @@ const SelectTaxonomyType = () => {
                       },
                     ]}>
                     <Dropdown
+                      data-cy="dropdown-concept-class"
                       getPopupContainer={(trigger) => trigger.parentNode}
                       overlayStyle={{ minWidth: '100%' }}
                       menu={{
@@ -113,14 +117,14 @@ const SelectTaxonomyType = () => {
                       }}
                       trigger={['click']}>
                       <div>
-                        <Typography.Text>
+                        <Typography.Text data-cy="typography-taxonomy-class">
                           {selectedClass.label || t('dashboard.taxonomy.selectType.classPlaceHolder')}
                         </Typography.Text>
                         <DownOutlined style={{ fontSize: '16px' }} />
                       </div>
                     </Dropdown>
                   </Form.Item>
-                  <span className="destination-discription">
+                  <span className="destination-discription" data-cy="span-taxonomy-select-class-helper-text">
                     {t('dashboard.taxonomy.selectType.destinationHeading')}
                   </span>
                 </Col>
@@ -128,6 +132,7 @@ const SelectTaxonomyType = () => {
               <Row style={{ marginTop: 24 }}>
                 <Col>
                   <Form.Item
+                    data-cy="form-item-taxonomy-select-type"
                     name="inputType"
                     required
                     label={t('dashboard.taxonomy.selectType.inputType')}
@@ -140,7 +145,7 @@ const SelectTaxonomyType = () => {
                     ]}>
                     <Row>
                       <Col>
-                        <span className="destination-discription">
+                        <span className="destination-discription" data-cy="span-taxonomy-select-type-helper-text">
                           {t('dashboard.taxonomy.selectType.inputTypeDescription')}
                         </span>
                       </Col>
@@ -156,6 +161,7 @@ const SelectTaxonomyType = () => {
                       </Col>
                       <Col>
                         <DateAction
+                          data-cy="button-taxonomy-existing-field"
                           iconrender={<DatabaseOutlined style={{ fontSize: '24px' }} />}
                           label={t('dashboard.taxonomy.selectType.existingField')}
                           disabled={standardFields.length < 1 && selectedClass.label !== '' ? true : false}
@@ -171,7 +177,7 @@ const SelectTaxonomyType = () => {
                     </Row>
                     <Row>
                       <Col flex="423px">
-                        <span className="info-message">
+                        <span className="info-message" data-cy="span-info-message">
                           {standardFields.length < 1 &&
                             selectedClass.label != '' &&
                             t('dashboard.taxonomy.selectType.noFieldAvailable')}

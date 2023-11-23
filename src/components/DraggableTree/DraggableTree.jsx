@@ -337,9 +337,12 @@ const DraggableTree = ({
     <div className="draggable-tree">
       <LanguageFilter calendarContentLanguage={calendarContentLanguage}>
         <Form.Item style={{ width: '50%' }} key={contentLanguage.ENGLISH}>
-          <span className="tag-header">{t('dashboard.taxonomy.addNew.concepts.english')}</span>
+          <span className="tag-header" data-cy="span-taxonomy-concept-english-title">
+            {t('dashboard.taxonomy.addNew.concepts.english')}
+          </span>
           <div className="tree-item">
             <Tree
+              data-cy="tree-taxonomy-concept-english"
               className="draggable-tree"
               draggable
               blockNode
@@ -357,9 +360,12 @@ const DraggableTree = ({
 
       <LanguageFilter calendarContentLanguage={calendarContentLanguage}>
         <Form.Item style={{ width: '50%' }} key={contentLanguage.FRENCH}>
-          <span className="tag-header">{t('dashboard.taxonomy.addNew.concepts.french')}</span>
+          <span className="tag-header" data-cy="span-taxonomy-concept-french-title">
+            {t('dashboard.taxonomy.addNew.concepts.french')}
+          </span>
           <div className="tree-item" style={{ borderRight: 'solid 4px #eff2ff' }}>
             <Tree
+              data-cy="tree-taxonomy-concept-french"
               className="draggable-tree"
               draggable
               blockNode
@@ -378,11 +384,12 @@ const DraggableTree = ({
 
       <div className="addmodal">
         <CustomModal
+          data-cy="modal-taxonomy-concept"
           open={addNewPopup}
           destroyOnClose
           centered
           title={
-            <span className="quick-create-organization-modal-title">
+            <span className="quick-create-organization-modal-title" data-cy="span-taxonomy-concept-add-edit">
               {!forEditing ? t('dashboard.taxonomy.addNew.concepts.add') : t('dashboard.taxonomy.addNew.concepts.edit')}
             </span>
           }
@@ -392,6 +399,7 @@ const DraggableTree = ({
               {deleteDisplayFlag && (
                 <div key="delete-contaoner" className="delete-contaioner">
                   <Outlined
+                    data-cy="button-taxonomy-concept-delete"
                     key="delete"
                     label={t('dashboard.settings.addUser.delete')}
                     onClick={() => handleDelete()}
@@ -405,12 +413,14 @@ const DraggableTree = ({
               )}
               <div style={{ flexGrow: 1 }}>
                 <TextButton
+                  data-cy="button-taxonomy-concept-cancel"
                   key="cancel"
                   size="large"
                   label={t('dashboard.events.addEditEvent.quickCreate.cancel')}
                   onClick={() => handleAddChildModalClose()}
                 />
                 <PrimaryButton
+                  data-cy="button-taxonomy-concept-edit"
                   key="add-dates"
                   label={
                     forEditing
@@ -442,6 +452,7 @@ const DraggableTree = ({
                       }),
                     ]}>
                     <TextArea
+                      data-cy="input-text-area-concept-name-french"
                       autoSize
                       autoComplete="off"
                       placeholder={t('dashboard.taxonomy.addNew.concepts.placeHolderFr')}
@@ -468,6 +479,7 @@ const DraggableTree = ({
                       }),
                     ]}>
                     <TextArea
+                      data-cy="input-text-area-concept-name-english"
                       autoSize
                       autoComplete="off"
                       onChange={(e) => {

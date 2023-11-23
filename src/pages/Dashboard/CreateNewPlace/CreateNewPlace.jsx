@@ -556,6 +556,7 @@ function CreateNewPlace() {
               <>
                 {t('dashboard.places.createNew.addPlace.notification.saveError')} &nbsp;
                 <Button
+                  data-cy="button-place-save-as-warning"
                   type="text"
                   icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
                   onClick={() => message.destroy('place-save-as-warning')}
@@ -813,6 +814,7 @@ function CreateNewPlace() {
                     <Col>
                       <div className="button-container">
                         <Button
+                          data-cy="button-place-back-to-previous"
                           type="link"
                           onClick={() => {
                             if (isRoutingToEventPage && isRoutingToOrganization) {
@@ -840,6 +842,7 @@ function CreateNewPlace() {
                       <div className="add-event-button-wrap">
                         <Form.Item>
                           <PrimaryButton
+                            data-cy="button-place-save"
                             label={t('dashboard.events.addEditEvent.saveOptions.save')}
                             onClick={(e) => onSaveHandler(e)}
                             disabled={addImageLoading || addPlaceLoading || updatePlaceLoading ? true : false}
@@ -852,7 +855,7 @@ function CreateNewPlace() {
 
                 <Col>
                   <div className="add-edit-event-heading">
-                    <h4>
+                    <h4 data-cy="heading-place-add-edit">
                       {placeId
                         ? t('dashboard.places.createNew.addPlace.editPlace')
                         : t('dashboard.places.createNew.addPlace.newPlace')}
@@ -866,7 +869,7 @@ function CreateNewPlace() {
                 {(artsDataLinkChecker(placeData?.sameAs) || artsDataLinkChecker(artsData?.sameAs)) && (
                   <Row>
                     <Col span={24}>
-                      <p className="add-entity-label">
+                      <p className="add-entity-label" data-cy="para-place-data-source">
                         {t('dashboard.organization.createNew.addOrganization.dataSource')}
                       </p>
                     </Col>
@@ -889,10 +892,11 @@ function CreateNewPlace() {
                     </Col>
                     <Col span={24}>
                       <div style={{ display: 'inline' }}>
-                        <span className="add-event-date-heading">
+                        <span className="add-event-date-heading" data-cy="span-place-question-part-one">
                           {t('dashboard.places.createNew.addPlace.question.firstPart')}
                         </span>
                         <span
+                          data-cy="span-place-question-part-two"
                           className="add-event-date-heading"
                           style={{
                             color: '#1b3de6',
@@ -905,7 +909,7 @@ function CreateNewPlace() {
                           }}>
                           {t('dashboard.places.createNew.addPlace.question.secondPart')}
                         </span>
-                        <span className="add-event-date-heading">
+                        <span className="add-event-date-heading" data-cy="span-place-question-part-three">
                           {t('dashboard.places.createNew.addPlace.question.thirdPart')}
                         </span>
                       </div>
@@ -921,6 +925,7 @@ function CreateNewPlace() {
                   <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                     <BilingualInput fieldData={placeData?.name ? placeData?.name : artsDataId && artsData?.name}>
                       <Form.Item
+                        data-cy="form-item-place-name-french"
                         name={formFieldNames.FRENCH}
                         key={contentLanguage.FRENCH}
                         initialValue={placeData?.name?.fr ? placeData?.name?.fr : artsDataId && artsData?.name?.fr}
@@ -938,6 +943,7 @@ function CreateNewPlace() {
                           }),
                         ]}>
                         <TextArea
+                          data-cy="input-text-area-place-name-french"
                           autoSize
                           autoComplete="off"
                           placeholder={t('dashboard.places.createNew.addPlace.name.placeholder.french')}
@@ -946,6 +952,7 @@ function CreateNewPlace() {
                         />
                       </Form.Item>
                       <Form.Item
+                        data-cy="form-item-place-name-english"
                         name={formFieldNames.ENGLISH}
                         key={contentLanguage.ENGLISH}
                         initialValue={placeData?.name?.en ? placeData?.name?.en : artsDataId && artsData?.name?.en}
@@ -963,6 +970,7 @@ function CreateNewPlace() {
                           }),
                         ]}>
                         <TextArea
+                          data-cy="input-text-area-place-name-english"
                           autoSize
                           autoComplete="off"
                           placeholder={t('dashboard.places.createNew.addPlace.name.placeholder.english')}
@@ -975,6 +983,7 @@ function CreateNewPlace() {
                 </Form.Item>
 
                 <Form.Item
+                  data-cy="form-item-place-type"
                   name={formFieldNames.TYPE}
                   label={taxonomyDetails(
                     allTaxonomyData?.data,
@@ -1003,6 +1012,7 @@ function CreateNewPlace() {
                       ) && 'none',
                   }}>
                   <TreeSelectOption
+                    data-cy="treeselect-place-type"
                     placeholder={t('dashboard.places.createNew.addPlace.placeType.placeholder')}
                     allowClear
                     treeDefaultExpandAll
@@ -1019,6 +1029,7 @@ function CreateNewPlace() {
                       const { label, closable, onClose } = props;
                       return (
                         <Tags
+                          data-cy={`tag-place-type-${label}`}
                           closable={closable}
                           onClose={onClose}
                           closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
@@ -1029,6 +1040,7 @@ function CreateNewPlace() {
                   />
                 </Form.Item>
                 <Form.Item
+                  data-cy="form-item-place-disambiguating-description-title"
                   label={t('dashboard.places.createNew.addPlace.disambiguatingDescription.disambiguatingDescription')}>
                   <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                     <BilingualInput
@@ -1054,6 +1066,7 @@ function CreateNewPlace() {
                           )}
                           style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                           size="large"
+                          data-cy="input-place-disambiguating-description-french"
                         />
                       </Form.Item>
                       <Form.Item
@@ -1073,12 +1086,15 @@ function CreateNewPlace() {
                           )}
                           style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
                           size="large"
+                          data-cy="input-place-disambiguating-description-english"
                         />
                       </Form.Item>
                     </BilingualInput>
                   </ContentLanguageInput>
                 </Form.Item>
-                <Form.Item label={t('dashboard.places.createNew.addPlace.description.description')}>
+                <Form.Item
+                  label={t('dashboard.places.createNew.addPlace.description.description')}
+                  data-cy="form-item-place-description-title">
                   <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                     <BilingualInput
                       fieldData={
@@ -1087,6 +1103,7 @@ function CreateNewPlace() {
                           : artsData?.description && artsDataId && artsData?.description
                       }>
                       <TextEditor
+                        data-cy="editor-place-description-french"
                         formName={formFieldNames.EDITOR_FRENCH}
                         key={contentLanguage.FRENCH}
                         calendarContentLanguage={calendarContentLanguage}
@@ -1103,6 +1120,7 @@ function CreateNewPlace() {
                       />
 
                       <TextEditor
+                        data-cy="editor-place-description-english"
                         formName={formFieldNames.EDITOR_ENGLISH}
                         key={contentLanguage.ENGLISH}
                         initialValue={
@@ -1121,6 +1139,7 @@ function CreateNewPlace() {
                   </ContentLanguageInput>
                 </Form.Item>
                 <Form.Item
+                  data-cy="form-item-place-image-title"
                   label={t('dashboard.places.createNew.addPlace.image.image')}
                   name={formFieldNames.DRAGGER_WRAP}
                   className="draggerWrap"
@@ -1148,12 +1167,13 @@ function CreateNewPlace() {
                   ]}>
                   <Row>
                     <Col>
-                      <p className="add-event-date-heading">
+                      <p className="add-event-date-heading" data-cy="para-place-image-helper-text">
                         {t('dashboard.places.createNew.addPlace.image.subheading')}
                       </p>
                     </Col>
                   </Row>
                   <ImageUpload
+                    data-cy="image-upload-place"
                     imageUrl={placeData?.image?.large?.uri}
                     originalImageUrl={placeData?.image?.original?.uri}
                     imageReadOnly={false}
@@ -1183,6 +1203,7 @@ function CreateNewPlace() {
                     });
                     return (
                       <Form.Item
+                        data-cy={`form-item-place-dynamic-field-title-${index}`}
                         key={index}
                         name={[formFieldNames.DYNAMIC_FIELS, taxonomy?.id]}
                         label={bilingual({
@@ -1193,6 +1214,7 @@ function CreateNewPlace() {
                         initialValue={initialValues}
                         hidden={taxonomy?.isAdminOnly ? (adminCheckHandler() ? false : true) : false}>
                         <TreeSelectOption
+                          data-cy={`treeselect-place-dynamic-field-${index}`}
                           allowClear
                           treeDefaultExpandAll
                           notFoundContent={<NoContent />}
@@ -1202,9 +1224,15 @@ function CreateNewPlace() {
                             const { label, closable, onClose } = props;
                             return (
                               <Tags
+                                data-cy={`tag-place-dynamic-field-${label}`}
                                 closable={closable}
                                 onClose={onClose}
-                                closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                                closeIcon={
+                                  <CloseCircleOutlined
+                                    style={{ color: '#1b3de6', fontSize: '12px' }}
+                                    data-cy={`icon-place-dynamic-taxonomy-close-${label}`}
+                                  />
+                                }>
                                 {label}
                               </Tags>
                             );
@@ -1221,15 +1249,20 @@ function CreateNewPlace() {
               <>
                 <Row>
                   <Col>
-                    <p className="add-event-date-heading">
+                    <p className="add-event-date-heading" data-cy="para-place-address-subheading">
                       {t('dashboard.places.createNew.addPlace.address.subheading')}
                     </p>
                   </Col>
                 </Row>
                 <Form.Item name="addressSearch">
-                  <PlacesAutocomplete value={address} onChange={handleChange} onSelect={handleSelect}>
+                  <PlacesAutocomplete
+                    value={address}
+                    onChange={handleChange}
+                    onSelect={handleSelect}
+                    data-cy="google-places-autocomplete">
                     {({ getInputProps, suggestions, getSuggestionItemProps }) => (
                       <Dropdown
+                        data-cy="dropdown-place-google-place"
                         open={dropdownOpen}
                         overlayClassName="filter-sort-dropdown-wrapper"
                         getPopupContainer={(trigger) => trigger.parentNode}
@@ -1238,8 +1271,11 @@ function CreateNewPlace() {
                             return {
                               key: index,
                               label: (
-                                <div {...getSuggestionItemProps(suggestion)} key={index}>
-                                  <span>{suggestion.description}</span>
+                                <div
+                                  {...getSuggestionItemProps(suggestion)}
+                                  key={index}
+                                  data-cy={`div-place-google-place-${index}`}>
+                                  <span data-cy="div-place-suggestion">{suggestion.description}</span>
                                 </div>
                               ),
                             };
@@ -1248,6 +1284,7 @@ function CreateNewPlace() {
                         }}
                         trigger={['click']}>
                         <StyledInput
+                          data-cy="input-place-google-place"
                           autoComplete="off"
                           {...getInputProps({
                             placeholder: t('dashboard.events.addEditEvent.location.quickCreatePlace.searchPlaceholder'),
@@ -1263,7 +1300,10 @@ function CreateNewPlace() {
                     )}
                   </PlacesAutocomplete>
                 </Form.Item>
-                <Form.Item label={t('dashboard.places.createNew.addPlace.address.streetAddress')} required={true}>
+                <Form.Item
+                  label={t('dashboard.places.createNew.addPlace.address.streetAddress')}
+                  required={true}
+                  data-cy="form-item-street-address-title">
                   <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                     <BilingualInput
                       fieldData={
@@ -1293,6 +1333,7 @@ function CreateNewPlace() {
                           }),
                         ]}>
                         <TextArea
+                          data-cy="input-text-area-place-street-address-french"
                           autoSize
                           autoComplete="off"
                           placeholder={t('dashboard.places.createNew.addPlace.address.streetAddressPlaceholder.french')}
@@ -1322,6 +1363,7 @@ function CreateNewPlace() {
                           }),
                         ]}>
                         <TextArea
+                          data-cy="input-text-area-place-street-address-english"
                           autoSize
                           autoComplete="off"
                           placeholder={t(
@@ -1334,7 +1376,9 @@ function CreateNewPlace() {
                     </BilingualInput>
                   </ContentLanguageInput>
                 </Form.Item>
-                <Form.Item label={t('dashboard.places.createNew.addPlace.address.city.city')}>
+                <Form.Item
+                  label={t('dashboard.places.createNew.addPlace.address.city.city')}
+                  data-cy="form-item-place-city-title">
                   <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                     <BilingualInput
                       fieldData={
@@ -1352,6 +1396,7 @@ function CreateNewPlace() {
                         }
                         dependencies={[formFieldNames.CITY_ENGLISH]}>
                         <TextArea
+                          data-cy="input-text-area-place-city-french"
                           autoSize
                           autoComplete="off"
                           placeholder={t('dashboard.places.createNew.addPlace.address.city.placeholder.french')}
@@ -1369,6 +1414,7 @@ function CreateNewPlace() {
                         }
                         dependencies={[formFieldNames.CITY_FRENCH]}>
                         <TextArea
+                          data-cy="input-text-area-place-city-english"
                           autoSize
                           autoComplete="off"
                           placeholder={t('dashboard.places.createNew.addPlace.address.city.placeholder.english')}
@@ -1380,6 +1426,7 @@ function CreateNewPlace() {
                   </ContentLanguageInput>
                 </Form.Item>
                 <Form.Item
+                  data-cy="form-item-postal-code-title"
                   name={formFieldNames.POSTAL_CODE}
                   initialValue={
                     placeData?.address?.postalCode
@@ -1393,11 +1440,16 @@ function CreateNewPlace() {
                       message: t('dashboard.places.createNew.addPlace.validations.postalCodeRequired'),
                     },
                   ]}>
-                  <StyledInput placeholder={t('dashboard.places.createNew.addPlace.address.postalCode.placeholder')} />
+                  <StyledInput
+                    placeholder={t('dashboard.places.createNew.addPlace.address.postalCode.placeholder')}
+                    data-cy="input-postal-code"
+                  />
                 </Form.Item>
                 <Row gutter={[16, 0]}>
                   <Col span={12}>
-                    <Form.Item label={t('dashboard.places.createNew.addPlace.address.province.province')}>
+                    <Form.Item
+                      label={t('dashboard.places.createNew.addPlace.address.province.province')}
+                      data-cy="form-item-province-title">
                       <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                         <BilingualInput
                           fieldData={
@@ -1415,6 +1467,7 @@ function CreateNewPlace() {
                             }
                             dependencies={[formFieldNames.PROVINCE_ENGLISH]}>
                             <TextArea
+                              data-cy="input-text-area-province-french"
                               autoSize
                               autoComplete="off"
                               placeholder={t('dashboard.places.createNew.addPlace.address.province.placeholder.french')}
@@ -1432,6 +1485,7 @@ function CreateNewPlace() {
                             }
                             dependencies={[formFieldNames.PROVINCE_FRENCH]}>
                             <TextArea
+                              data-cy="input-text-area-province-english"
                               autoSize
                               autoComplete="off"
                               placeholder={t(
@@ -1446,7 +1500,9 @@ function CreateNewPlace() {
                     </Form.Item>
                   </Col>
                   <Col span={12}>
-                    <Form.Item label={t('dashboard.places.createNew.addPlace.address.country.country')}>
+                    <Form.Item
+                      label={t('dashboard.places.createNew.addPlace.address.country.country')}
+                      data-cy="form-item-country-title">
                       <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                         <BilingualInput
                           fieldData={
@@ -1464,6 +1520,7 @@ function CreateNewPlace() {
                             }
                             dependencies={[formFieldNames.COUNTRY_ENGLISH]}>
                             <TextArea
+                              data-cy="input-text-area-country-french"
                               autoSize
                               autoComplete="off"
                               placeholder={t('dashboard.places.createNew.addPlace.address.country.placeholder.french')}
@@ -1481,6 +1538,7 @@ function CreateNewPlace() {
                             }
                             dependencies={[formFieldNames.COUNTRY_FRENCH]}>
                             <TextArea
+                              data-cy="input-text-area-country-english"
                               autoSize
                               autoComplete="off"
                               placeholder={t('dashboard.places.createNew.addPlace.address.country.placeholder.english')}
@@ -1502,10 +1560,12 @@ function CreateNewPlace() {
                         (artsData?.geo?.latitude || artsData?.geo?.longitude) &&
                         artsData?.geo?.latitude + '' + artsData?.geo?.longitude
                   }
+                  data-cy="form--item-place-coordinates-title"
                   label={t('dashboard.places.createNew.addPlace.address.coordinates.coordinates')}>
-                  <StyledInput />
+                  <StyledInput data-cy="input-place-coordinates" />
                 </Form.Item>
                 <Form.Item
+                  data-cy="form-item-place-region"
                   name={formFieldNames.REGION}
                   label={taxonomyDetails(
                     allTaxonomyData?.data,
@@ -1536,6 +1596,7 @@ function CreateNewPlace() {
                       ) && 'none',
                   }}>
                   <TreeSelectOption
+                    data-cy="treeselect-place-region"
                     placeholder={t('dashboard.places.createNew.addPlace.address.region.placeholder')}
                     allowClear
                     treeDefaultExpandAll
@@ -1552,6 +1613,7 @@ function CreateNewPlace() {
                       const { label, closable, onClose } = props;
                       return (
                         <Tags
+                          data-cy={`tag-place-${label}`}
                           closable={closable}
                           onClose={onClose}
                           closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
@@ -1562,6 +1624,7 @@ function CreateNewPlace() {
                   />
                 </Form.Item>
                 <Form.Item
+                  data-cy="form-item-opening-hours-title"
                   name={formFieldNames.OPENING_HOURS}
                   className={`${formFieldNames.OPENING_HOURS} subheading-wrap`}
                   label={t('dashboard.places.createNew.addPlace.address.openingHours.openingHours')}
@@ -1576,13 +1639,17 @@ function CreateNewPlace() {
                     },
                   ]}>
                   <StyledInput
+                    data-cy="input-place-opening-hours"
                     addonBefore="https://"
                     autoComplete="off"
                     placeholder={t('dashboard.places.createNew.addPlace.address.openingHours.placeholder')}
                   />
                 </Form.Item>
               </>
-              <Form.Item label={t('dashboard.places.createNew.addPlace.addMoreDetails')} style={{ lineHeight: '2.5' }}>
+              <Form.Item
+                label={t('dashboard.places.createNew.addPlace.addMoreDetails')}
+                style={{ lineHeight: '2.5' }}
+                data-cy="form-item-add-more-details-title">
                 {addedFields?.includes(addressTypeOptionsFieldNames.OPENING_HOURS) ? (
                   <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
                 ) : (
@@ -1606,18 +1673,19 @@ function CreateNewPlace() {
               <>
                 <Row>
                   <Col>
-                    <p className="add-event-date-heading">
+                    <p className="add-event-date-heading" data-cy="para-place-contains-place-subheading">
                       {t('dashboard.places.createNew.addPlace.containsPlace.subheading')}
                     </p>
                   </Col>
                 </Row>
                 <Form.Item
+                  data-cy="form-item-contains-place-title"
                   name={formFieldNames.CONTAINS_PLACE}
                   className="subheading-wrap"
                   // initialValue={initialPlace && initialPlace[0]?.id}
                   label={t('dashboard.places.createNew.addPlace.containsPlace.addPlace')}>
                   <Popover
-                    open={isPopoverOpen.containedsPlace}
+                    open={isPopoverOpen.containsPlace}
                     onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, containsPlace: open })}
                     overlayClassName="event-popover"
                     placement="bottom"
@@ -1628,7 +1696,7 @@ function CreateNewPlace() {
                       <div>
                         <div>
                           <>
-                            <div className="popover-section-header">
+                            <div className="popover-section-header" data-cy="div-place-footlight-title">
                               {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                             </div>
                             <div className="search-scrollable-content">
@@ -1643,7 +1711,8 @@ function CreateNewPlace() {
                                         ...isPopoverOpen,
                                         containsPlace: false,
                                       });
-                                    }}>
+                                    }}
+                                    data-cy="div-place-footlight">
                                     {place?.label}
                                   </div>
                                 ))
@@ -1654,7 +1723,7 @@ function CreateNewPlace() {
                           </>
                           {quickCreateKeyword !== '' && (
                             <>
-                              <div className="popover-section-header">
+                              <div className="popover-section-header" data-cy="div-place-artsdata-title">
                                 {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
                               </div>
                               <div className="search-scrollable-content">
@@ -1669,7 +1738,8 @@ function CreateNewPlace() {
                                           ...isPopoverOpen,
                                           containsPlace: false,
                                         });
-                                      }}>
+                                      }}
+                                      data-cy="div-place-artsdata">
                                       {place?.label}
                                     </div>
                                   ))
@@ -1683,6 +1753,7 @@ function CreateNewPlace() {
                       </div>
                     }>
                     <EventsSearch
+                      data-cy="input-contains-place"
                       style={{ borderRadius: '4px', width: '423px' }}
                       placeholder={t('dashboard.places.createNew.addPlace.containedInPlace.placeholder')}
                       onChange={(e) => {
@@ -1699,6 +1770,7 @@ function CreateNewPlace() {
                   {selectedContainsPlaces?.map((containsPlace, index) => {
                     return (
                       <SelectionItem
+                        data-cy={`selected-contains-place-${index}`}
                         key={index}
                         icon={containsPlace?.label?.props?.icon}
                         name={containsPlace?.name}
@@ -1725,7 +1797,7 @@ function CreateNewPlace() {
               <>
                 <Row>
                   <Col>
-                    <p className="add-event-date-heading">
+                    <p className="add-event-date-heading" data-cy="para-contained-in-place-subheading">
                       {t('dashboard.places.createNew.addPlace.containedInPlace.subheading')}
                     </p>
                   </Col>
@@ -1734,8 +1806,10 @@ function CreateNewPlace() {
                   name={formFieldNames.CONTAINED_IN_PLACE}
                   className="subheading-wrap"
                   // initialValue={initialPlace && initialPlace[0]?.id}
+                  data-cy="form-item-contains-place"
                   label={t('dashboard.places.createNew.addPlace.containedInPlace.addPlace')}>
                   <Popover
+                    data-cy="popover-place-contained-in-place"
                     open={isPopoverOpen.containedInPlace}
                     onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, containedInPlace: open })}
                     overlayClassName="event-popover"
@@ -1747,13 +1821,14 @@ function CreateNewPlace() {
                       <div>
                         <div>
                           <>
-                            <div className="popover-section-header">
+                            <div className="popover-section-header" data-cy="div-contained-in-place-footlight-title">
                               {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                             </div>
                             <div className="search-scrollable-content">
                               {allPlacesList?.length > 0 ? (
                                 allPlacesList?.map((place, index) => (
                                   <div
+                                    data-cy={`div-contained-in-place-footlight-${index}`}
                                     key={index}
                                     className={`event-popover-options ${
                                       containedInPlace?.value == place?.value ? 'event-popover-options-active' : null
@@ -1776,13 +1851,14 @@ function CreateNewPlace() {
                           </>
                           {quickCreateKeyword !== '' && (
                             <>
-                              <div className="popover-section-header">
+                              <div className="popover-section-header" data-cy="div-contained-in-place-artsdata-title">
                                 {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
                               </div>
                               <div className="search-scrollable-content">
                                 {allPlacesArtsdataList?.length > 0 ? (
                                   allPlacesArtsdataList?.map((place, index) => (
                                     <div
+                                      data-cy={`div-contained-in-place-artsdata-${index}`}
                                       key={index}
                                       className="event-popover-options"
                                       onClick={() => {
@@ -1806,6 +1882,7 @@ function CreateNewPlace() {
                       </div>
                     }>
                     <EventsSearch
+                      data-cy="input-contained-in-place-search"
                       style={{ borderRadius: '4px', width: '423px' }}
                       placeholder={t('dashboard.places.createNew.addPlace.containedInPlace.placeholder')}
                       onChange={(e) => {
@@ -1852,12 +1929,13 @@ function CreateNewPlace() {
                 <>
                   <Row>
                     <Col>
-                      <p className="add-event-date-heading">
+                      <p className="add-event-date-heading" data-cy="para-venue-accessibility-title">
                         {t('dashboard.places.createNew.addPlace.venueAccessibility.subheading')}
                       </p>
                     </Col>
                   </Row>
                   <Form.Item
+                    data-cy="form-item-accessibility-title"
                     name={formFieldNames.PLACE_ACCESSIBILITY}
                     label={taxonomyDetails(
                       allTaxonomyData?.data,
@@ -1881,6 +1959,7 @@ function CreateNewPlace() {
                         ) && 'none',
                     }}>
                     <TreeSelectOption
+                      data-cy="treeselect-venue-accessibility"
                       placeholder={t('dashboard.places.createNew.addPlace.venueAccessibility.placeholder')}
                       allowClear
                       treeDefaultExpandAll
@@ -1897,6 +1976,7 @@ function CreateNewPlace() {
                         const { label, closable, onClose } = props;
                         return (
                           <Tags
+                            data-cy={`tag-venue-accessibility-${label}`}
                             closable={closable}
                             onClose={onClose}
                             closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
@@ -1907,6 +1987,7 @@ function CreateNewPlace() {
                     />
                   </Form.Item>
                   <Form.Item
+                    data-cy="form-item-venue-accessibility-note-title"
                     label={t('dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.note')}
                     name={placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP}
                     className={formFieldNames.ACCESSIBILITY_NOTE_WRAP}
@@ -1933,6 +2014,7 @@ function CreateNewPlace() {
                               resize: 'vertical',
                             }}
                             size="large"
+                            data-cy="input-text-area-venue-accessibility-french"
                           />
                         </Form.Item>
                         <Form.Item
@@ -1951,6 +2033,7 @@ function CreateNewPlace() {
                               resize: 'vertical',
                             }}
                             size="large"
+                            data-cy="input-text-area-venue-accessibility-english"
                           />
                         </Form.Item>
                       </BilingualInput>
@@ -1958,6 +2041,7 @@ function CreateNewPlace() {
                   </Form.Item>
                 </>
                 <Form.Item
+                  data-cy="form-item-add-more-details-label"
                   label={t('dashboard.places.createNew.addPlace.addMoreDetails')}
                   style={{ lineHeight: '2.5' }}>
                   {addedFields?.includes(placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP) ? (

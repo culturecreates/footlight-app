@@ -244,7 +244,7 @@ const AddTaxonomy = () => {
                 <Col>
                   <BreadCrumbButton />
                   <div className="add-Taxonomy-heading">
-                    <h4>
+                    <h4 data-cy="heading-add-edit-taxonomy">
                       {taxonomyId ? t('dashboard.taxonomy.addNew.editHeading') : t('dashboard.taxonomy.addNew.heading')}
                     </h4>
                   </div>
@@ -253,6 +253,7 @@ const AddTaxonomy = () => {
                   <div className="add-event-button-wrap">
                     <Form.Item>
                       <PrimaryButton
+                        data-cy="button-taxonomy-save"
                         label={t('dashboard.taxonomy.addNew.save')}
                         onClick={(e) => saveTaxonomyHandler(e)}
                         // disabled={updateEventLoading || addEventLoading || addImageLoading ? true : false}
@@ -269,10 +270,12 @@ const AddTaxonomy = () => {
                     <Row>
                       <Col flex="423px">
                         <Form.Item
+                          data-cy="form-item-taxonomy-class"
                           label={t('dashboard.taxonomy.addNew.class')}
                           required
                           className={`classType ${taxonomyId != '' ? 'disabled-dropdown' : ''}`}>
                           <Dropdown
+                            data-cy="dropdown-taxonomy-class"
                             overlayClassName="add-user-form-field-dropdown-wrapper"
                             getPopupContainer={(trigger) => trigger.parentNode}
                             overlayStyle={{ minWidth: '100%' }}
@@ -303,7 +306,7 @@ const AddTaxonomy = () => {
                             disabled={!!taxonomyId}
                             trigger={['click']}>
                             <div>
-                              <Typography.Text>
+                              <Typography.Text data-cy="typography-taxonomy-class-placeholder">
                                 {formValues?.classType
                                   ? formValues?.classType
                                   : t('dashboard.taxonomy.selectType.classPlaceHolder')}
@@ -311,15 +314,22 @@ const AddTaxonomy = () => {
                               <DownOutlined style={{ fontSize: '16px' }} />
                             </div>
                           </Dropdown>
-                          <span className="field-description">{t(`dashboard.taxonomy.addNew.destinationHeading`)}</span>
+                          <span className="field-description" data-cy="span-taxonomy-class-helper-text">
+                            {t(`dashboard.taxonomy.addNew.destinationHeading`)}
+                          </span>
                         </Form.Item>
                       </Col>
                     </Row>
                     {(location.state?.dynamic === 'dynamic' || (taxonomyId && !taxonomyData?.isDynamicField)) && (
                       <Row>
                         <Col flex="423px">
-                          <Form.Item label={t('dashboard.taxonomy.addNew.mapToField')} required className="classType">
+                          <Form.Item
+                            label={t('dashboard.taxonomy.addNew.mapToField')}
+                            required
+                            className="classType"
+                            data-cy="form-item-taxonomy-mapped-field-title">
                             <Dropdown
+                              data-cy="dropdown-taxonomy-mapped-field"
                               overlayClassName="add-user-form-field-dropdown-wrapper"
                               getPopupContainer={(trigger) => trigger.parentNode}
                               overlayStyle={{ minWidth: '100%' }}
@@ -350,7 +360,7 @@ const AddTaxonomy = () => {
                               }
                               trigger={['click']}>
                               <div>
-                                <Typography.Text>
+                                <Typography.Text data-cy="typography-taxonomy-mapped-field-placeholder">
                                   {formValues?.mapToField
                                     ? getStandardFieldArrayForClass(formValues?.classType).find(
                                         (i) => i.key == formValues?.mapToField,
@@ -360,7 +370,7 @@ const AddTaxonomy = () => {
                                 <DownOutlined style={{ fontSize: '16px' }} />
                               </div>
                             </Dropdown>
-                            <span className="field-description">
+                            <span className="field-description" data-cy="span-taxonomy-mapped-field-helper-text">
                               {t(`dashboard.taxonomy.addNew.mapToFieldDescription`)}
                             </span>
                           </Form.Item>
@@ -369,7 +379,10 @@ const AddTaxonomy = () => {
                     )}
                     <Row>
                       <Col flex="423px">
-                        <Form.Item label={t('dashboard.taxonomy.addNew.name')} required>
+                        <Form.Item
+                          label={t('dashboard.taxonomy.addNew.name')}
+                          required
+                          data-cy="form-item-taxonomy-name">
                           <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                             <BilingualInput fieldData={formValues?.name}>
                               <Form.Item
@@ -390,6 +403,7 @@ const AddTaxonomy = () => {
                                   }),
                                 ]}>
                                 <TextArea
+                                  data-cy="input-text-area-taxonomy-name-french"
                                   autoSize
                                   autoComplete="off"
                                   placeholder={t('dashboard.taxonomy.addNew.frNamePlaceHolder')}
@@ -424,6 +438,7 @@ const AddTaxonomy = () => {
                                   }),
                                 ]}>
                                 <TextArea
+                                  data-cy="input-text-area-taxonomy-english"
                                   autoSize
                                   defaultValue={formValues?.name?.en}
                                   autoComplete="off"
@@ -442,7 +457,9 @@ const AddTaxonomy = () => {
                               </Form.Item>
                             </BilingualInput>
                           </ContentLanguageInput>
-                          <span className="field-description">{t(`dashboard.taxonomy.addNew.nameDescription`)}</span>
+                          <span className="field-description" data-cy="span-taxonomy-name-helper-text">
+                            {t(`dashboard.taxonomy.addNew.nameDescription`)}
+                          </span>
                           {/* {location.state?.dynamic === 'dynamic' && (
                             <Form.Item name="useTaxonomyName" valuePropName="checked">
                               <Checkbox className="name-checkbox">
@@ -455,7 +472,9 @@ const AddTaxonomy = () => {
                     </Row>
                     <Row>
                       <Col flex="423px">
-                        <Form.Item label={t('dashboard.taxonomy.addNew.description')}>
+                        <Form.Item
+                          label={t('dashboard.taxonomy.addNew.description')}
+                          data-cy="form-item-taxonomy-description-title">
                           <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                             <BilingualInput fieldData={formValues?.description} key="description">
                               <Form.Item
@@ -473,6 +492,7 @@ const AddTaxonomy = () => {
                                 // ]}
                               >
                                 <TextArea
+                                  data-cy="input-text-area-taxonomy-description-french"
                                   autoSize
                                   autoComplete="off"
                                   defaultValue={formValues?.description?.fr}
@@ -503,6 +523,7 @@ const AddTaxonomy = () => {
                                 // ]}
                               >
                                 <TextArea
+                                  data-cy="input-text-area-taxonomy-description-english"
                                   autoSize
                                   defaultValue={formValues?.description?.en}
                                   autoComplete="off"
@@ -520,7 +541,7 @@ const AddTaxonomy = () => {
                               </Form.Item>
                             </BilingualInput>
                           </ContentLanguageInput>
-                          <span className="field-description">
+                          <span className="field-description" data-cy="span-taxonomy-description-helper-text">
                             {t(`dashboard.taxonomy.addNew.descriptionExplation`)}
                           </span>
                         </Form.Item>
@@ -533,6 +554,7 @@ const AddTaxonomy = () => {
                             label={t('dashboard.taxonomy.addNew.userAccess')}
                             name="userAccess"
                             className="user-access"
+                            data-cy="form-item-user-access-title"
                             // rules={[
                             // ({ getFieldValue }) => ({
                             // validator(_, value) {
@@ -544,6 +566,7 @@ const AddTaxonomy = () => {
                             // ]}
                           >
                             <SearchableCheckbox
+                              data-cy="searchable-checkbox-user-roles"
                               // disabled={true}
                               onFilterChange={(values) => {
                                 setFormValues({ ...formValues, userAccess: values });
@@ -553,6 +576,7 @@ const AddTaxonomy = () => {
                                   key: userRolesWithTranslation[0].key,
                                   label: (
                                     <Checkbox
+                                      data-cy="checkbox-user-roles"
                                       key={userRolesWithTranslation[0].key}
                                       style={{ marginLeft: '8px' }}
                                       value={t(`dashboard.taxonomy.addNew.adminOnly`)}>
@@ -569,7 +593,10 @@ const AddTaxonomy = () => {
                                 : t(`dashboard.taxonomy.addNew.userAccessPlaceHolder`)}
                               <DownOutlined style={{ fontSize: '16px' }} />
                             </SearchableCheckbox>
-                            <div className="field-description" style={{ marginTop: 8 }}>
+                            <div
+                              className="field-description"
+                              style={{ marginTop: 8 }}
+                              data-cy="div-user-access-helper-text">
                               {t(`dashboard.taxonomy.addNew.userAccessDescription`)}
                             </div>
                           </Form.Item>
@@ -612,6 +639,7 @@ const AddTaxonomy = () => {
                   </Col>
                   <Col>
                     <Outlined
+                      data-cy="button-taxonomy-add-item"
                       label={t('dashboard.taxonomy.addNew.concepts.item')}
                       onClick={openAddNewConceptModal}
                       style={{

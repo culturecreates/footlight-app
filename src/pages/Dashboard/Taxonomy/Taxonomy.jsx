@@ -211,14 +211,20 @@ const Taxonomy = () => {
           <Row justify="space-between" align="top">
             <Col>
               <div className="events-heading-wrapper">
-                <h4 className="events-heading">{t('dashboard.taxonomy.listing.heading')}</h4>
+                <h4 className="events-heading" data-cy="para-taxonomy-listing-heading">
+                  {t('dashboard.taxonomy.listing.heading')}
+                </h4>
               </div>
             </Col>
 
             {adminCheckHandler() && (
               <Col flex={'140px'} className="add-btn-container">
                 <ReadOnlyProtectedComponent creator={user?.id}>
-                  <AddEvent label={t('dashboard.taxonomy.listing.addNew')} onClick={addTaxonomyHandler} />
+                  <AddEvent
+                    label={t('dashboard.taxonomy.listing.addNew')}
+                    onClick={addTaxonomyHandler}
+                    data-cy="button-add-taxonomy"
+                  />
                 </ReadOnlyProtectedComponent>
               </Col>
             )}
@@ -233,15 +239,19 @@ const Taxonomy = () => {
                     defaultValue={filters.query}
                     allowClear={true}
                     onChange={onSearchChangeHandler}
+                    data-cy="input-taxonomy-search"
                   />
                 </Col>
                 <Col>
                   <Row align="middle" className="sort-option-row" gutter={8}>
-                    <span style={{ fontSize: '16px', fontWeight: 700, marginRight: 8 }}>
+                    <span
+                      style={{ fontSize: '16px', fontWeight: 700, marginRight: 8 }}
+                      data-cy="span-taxonomy-sort-title">
                       {t('dashboard.settings.userManagement.sort')}
                     </span>
 
                     <Dropdown
+                      data-cy="dropdown-taxonomy-sort"
                       overlayClassName="filter-sort-dropdown-wrapper"
                       overlayStyle={{ minWidth: '200px' }}
                       getPopupContainer={(trigger) => trigger.parentNode}
@@ -252,7 +262,7 @@ const Taxonomy = () => {
                         onSelect: onSortSelect,
                       }}
                       trigger={['click']}>
-                      <Button size="large" className="filter-sort-button">
+                      <Button size="large" className="filter-sort-button" data-cy="button-taxonomy-sort">
                         <Space>
                           {sortByOptionsTaxonomy?.map((sortBy, index) => {
                             if (sortBy?.key === filters?.sort) return <span key={index}>{sortBy?.label}</span>;
@@ -275,6 +285,7 @@ const Taxonomy = () => {
                         )
                       }
                       size={'large'}
+                      data-cy="button-taxonomy-sort-order"
                     />
                   </Row>
                 </Col>
@@ -284,6 +295,7 @@ const Taxonomy = () => {
           <Row gutter={[16, 16]}>
             <Col>
               <SearchableCheckbox
+                data-cy="search-checkbox-taxonomy-class"
                 overlayClassName="filter-sort-dropdown-wrapper"
                 getPopupContainer={(trigger) => trigger.parentNode}
                 overlayStyle={{ minWidth: '200px' }}
@@ -292,7 +304,11 @@ const Taxonomy = () => {
                   return {
                     key: classType.key,
                     label: (
-                      <Checkbox value={classType.key} key={classType.key} style={{ marginLeft: '8px' }}>
+                      <Checkbox
+                        value={classType.key}
+                        key={classType.key}
+                        style={{ marginLeft: '8px' }}
+                        data-cy="checkbox-taxonomy-class">
                         {classType.label}
                       </Checkbox>
                     ),
@@ -303,6 +319,7 @@ const Taxonomy = () => {
                 value={filters?.class}
                 trigger={['click']}>
                 <Button
+                  data-cy="button-taxonomy-class-type"
                   size="large"
                   className="filter-buttons"
                   style={{ borderColor: filters?.class?.length > 0 && filters?.class[0] !== '' && '#607EFC' }}>
@@ -325,6 +342,7 @@ const Taxonomy = () => {
                 filters.sort !== `${sortByOptionsTaxonomy[0].key}` ||
                 (filters?.class?.length > 0 && filters?.class[0] !== '')) && (
                 <Button
+                  data-cy="button-taxonomy-filter-clear"
                   size="large"
                   className="filter-buttons"
                   style={{ color: '#1B3DE6' }}
@@ -342,6 +360,7 @@ const Taxonomy = () => {
               <Col span={24}>
                 {allTaxonomy?.data.length && !isTaxonomyFetching > 0 ? (
                   <List
+                    data-cy="list-taxonomy"
                     className={`event-list-wrapper ${adminCheckHandler() ? '' : 'non-admin-class'}`}
                     itemLayout={screens.xs ? 'vertical' : 'horizontal'}
                     dataSource={allTaxonomy?.data}
@@ -363,6 +382,7 @@ const Taxonomy = () => {
                     }}
                     renderItem={(item, index) => (
                       <ListItem
+                        data-cy="list-item-taxonomy"
                         key={index}
                         id={index}
                         styles={handleListCardStyles()}
@@ -388,6 +408,7 @@ const Taxonomy = () => {
                         actions={[
                           adminCheckHandler() && (
                             <DeleteOutlined
+                              data-cy="icon-taxonomy-delete"
                               key={'delete-icon'}
                               style={{ color: '#222732', fontSize: '24px' }}
                               onClick={(e) => {
@@ -409,7 +430,7 @@ const Taxonomy = () => {
         ) : (
           <div
             style={{ height: '400px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <LoadingIndicator />
+            <LoadingIndicator data-cy="loading-indicator-taxonomy-list" />
           </div>
         )}
       </Row>
