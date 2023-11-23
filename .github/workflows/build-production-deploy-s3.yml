@@ -39,5 +39,4 @@ jobs:
           
       - name: Send Email on Success
         if: success()
-        run: curl --request POST --url https://api.sendgrid.com/v3/mail/send --header  "Authorization:Bearer ${{ secrets.SENDGRID_API_KEY }}" --header "Content-Type:application/json" --data '{"personalizations":[{"to":[{"email":"${{ secrets.SENDGRID_TO_EMAIL }}"}],"subject":"Footlight CMS Deployment"}],"from":{"email":"${{ secrets.SENDGRID_FROM_EMAIL }}"},"content":[{"type":"text/html","value":"${{ vars.NEW_RELEASE_HTML_PAGE }}"}]}'
-        
+        run: curl --request POST --url https://api.sendgrid.com/v3/mail/send --header  "Authorization:Bearer ${{ secrets.SENDGRID_API_KEY }}" --header "Content-Type:application/json" --data '{"personalizations":[{"to":[{"email":"${{ secrets.SENDGRID_TO_EMAIL }}"}],"subject":"Footlight CMS Deployment"}],"from":{"email":"${{ secrets.SENDGRID_FROM_EMAIL }}"},"content":[{"type":"text/html","value":"<div>Hi,<br>I'm excited to announce that we have just released a new version of Footlight CMS!  The latest release not can be found <a href = 'https://github.com/culturecreates/footlight-app/releases/latest'>here</a>.<br><br>Best,<br>Footlight admin</div>"}]}'        
