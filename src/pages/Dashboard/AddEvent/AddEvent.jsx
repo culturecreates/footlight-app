@@ -1258,6 +1258,9 @@ function AddEvent() {
           case eventFormRequiredFieldNames.IMAGE:
             publishValidateFields.push('draggerWrap');
             break;
+          case eventFormRequiredFieldNames.ORGANIZERS:
+            publishValidateFields.push('organizers');
+            break;
           default:
             break;
         }
@@ -2204,6 +2207,7 @@ function AddEvent() {
 
               <Form.Item
                 label={t('dashboard.events.addEditEvent.otherInformation.organizer.title')}
+                required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.ORGANIZERS)}
                 data-cy="form-item-organizer-title">
                 <Row>
                   <Col>
@@ -2212,7 +2216,24 @@ function AddEvent() {
                     </p>
                   </Col>
                 </Row>
-                <Form.Item name="organizers" initialValue={selectedOrganizers}>
+                <Form.Item
+                  name="organizers"
+                  initialValue={selectedOrganizers}
+                  required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.ORGANIZERS)}
+                  rules={[
+                    () => ({
+                      validator() {
+                        if (requiredFieldNames?.includes(eventFormRequiredFieldNames?.ORGANIZERS)) {
+                          if (selectedOrganizers?.length > 0) {
+                            return Promise.resolve();
+                          } else
+                            return Promise.reject(
+                              new Error(t('dashboard.events.addEditEvent.validations.organizer.required')),
+                            );
+                        }
+                      },
+                    }),
+                  ]}>
                   <Popover
                     open={isPopoverOpen.organizer}
                     onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, organizer: open })}
