@@ -47,17 +47,17 @@ jobs:
           "personalizations":[
           {
             "to":[
-               {"email":"${{ var.SENDGRID_TO_EMAIL }}"},
-               {"email":"${{ var.SUPPORT_EMAIL}}"}
+               {"email":"${{ vars.SENDGRID_TO_EMAIL }}"},
+               {"email":"${{ vars.SUPPORT_EMAIL}}"}
             ]
            }
           ],
-          "from":{"email":"${{ var.SENDGRID_FROM_EMAIL }}"},
+          "from":{"email":"${{ vars.SENDGRID_FROM_EMAIL }}"},
           "subject":"Footlight CMS Deployment",
           "content":[
           {
           "type":"text/html",
-          "value":"${{ var.NEW_RELEASE_HTML_PAGE }}"
+          "value":"${{ vars.NEW_RELEASE_HTML_PAGE }}"
           }
           ]
           }'
