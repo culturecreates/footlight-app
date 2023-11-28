@@ -39,6 +39,10 @@ jobs:
           
       - name: Send Email on Success
         if: success()
+        run: echo ${{ vars.SUPPORT_EMAIL}}
+        
+      - name: Send Email on Success
+        if: success()
         run: curl -X "POST" \
           'https://api.sendgrid.com/v3/mail/send' \
           -H 'Authorization:Bearer ${{ secrets.SENDGRID_API_KEY }}' \
