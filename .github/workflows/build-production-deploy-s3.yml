@@ -39,10 +39,10 @@ jobs:
           
       - name: Send Email on Success
         if: success()
-        run: curl --request POST \
-          --url 'https://api.sendgrid.com/v3/mail/send' \
-          --header 'Authorization:Bearer ${{ secrets.SENDGRID_API_KEY }}' \
-          --header 'Content-Type:application/json' \
+        run: curl -X "POST" \
+          'https://api.sendgrid.com/v3/mail/send' \
+          -H 'Authorization:Bearer ${{ secrets.SENDGRID_API_KEY }}' \
+          -H 'Content-Type:application/json' \
           --data '{
           "personalizations":[
           {
