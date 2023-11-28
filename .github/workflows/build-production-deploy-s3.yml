@@ -36,10 +36,6 @@ jobs:
         env:
           DISTRIBUTION: E3S97I9K4Q2UXB
           PATHS: "/*"
-          
-      - name: Send Email on Success
-        if: success()
-        run: echo ${{ vars.SUPPORT_EMAIL}}
         
       - name: Send Email on Success
         if: success()
@@ -47,7 +43,7 @@ jobs:
           'https://api.sendgrid.com/v3/mail/send' \
           -H 'Authorization:Bearer ${{ secrets.SENDGRID_API_KEY }}' \
           -H 'Content-Type:application/json' \
-          --data '{
+          -d '{
           "personalizations":[
           {
             "to":[
