@@ -39,7 +39,8 @@ function SearchPerson() {
   const [selectedPeople, setSelectedPeople] = useState([]);
 
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
-  const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
+  const [getExternalSource, { isFetching: isExternalSourceFetching, isSuccess: isExternalSourceSuccess }] =
+    useLazyGetExternalSourceQuery();
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.person);
@@ -185,6 +186,7 @@ function SearchPerson() {
                       </div>
                     )}
                     {!isExternalSourceFetching &&
+                      isExternalSourceSuccess &&
                       (peopleListArtsData?.length > 0 ? (
                         peopleListArtsData?.map((person, index) => (
                           <div
