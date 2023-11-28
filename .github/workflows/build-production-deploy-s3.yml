@@ -39,25 +39,26 @@ jobs:
         
       - name: Send Email on Success
         if: success()
-        run: curl -X "POST" \
+        run: |
+          curl -X "POST" \
           'https://api.sendgrid.com/v3/mail/send' \
           -H 'Authorization:Bearer ${{ secrets.SENDGRID_API_KEY }}' \
           -H 'Content-Type:application/json' \
           -d '{
-          "personalizations":[
-          {
-            "to":[
-               {"email":"${{ vars.SENDGRID_TO_EMAIL }}"},
-               {"email":"${{ vars.SUPPORT_EMAIL}}"}
+            "personalizations":[
+              {
+                "to":[
+                {"email":"${{ vars.SENDGRID_TO_EMAIL }}"},
+                {"email":"${{ vars.SUPPORT_EMAIL}}"}
+                ]
+              }
+            ],
+            "from":{"email":"${{ vars.SENDGRID_FROM_EMAIL }}"},
+            "subject":"Footlight CMS Deployment",
+            "content":[
+              {
+                "type":"text/html",
+                "value":"${{ vars.NEW_RELEASE_HTML_PAGE }}"
+              }
             ]
-           }
-          ],
-          "from":{"email":"${{ vars.SENDGRID_FROM_EMAIL }}"},
-          "subject":"Footlight CMS Deployment",
-          "content":[
-          {
-          "type":"text/html",
-          "value":"${{ vars.NEW_RELEASE_HTML_PAGE }}"
-          }
-          ]
           }'
