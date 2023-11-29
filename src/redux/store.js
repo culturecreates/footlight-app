@@ -18,6 +18,7 @@ import { organizationApi } from '../services/organization';
 import { peopleApi } from '../services/people';
 import { postalAddressApi } from '../services/postalAddress';
 import ErrorSliceReducer from './reducer/ErrorSlice';
+import { externalSourceApi } from '../services/externalSource';
 // import localforage from 'localforage';
 
 const persistConfig = {
@@ -37,6 +38,7 @@ const middlewares = [
   organizationApi.middleware,
   peopleApi.middleware,
   postalAddressApi.middleware,
+  externalSourceApi.middleware,
 ];
 
 const appReducer = combineReducers({
@@ -56,6 +58,7 @@ const appReducer = combineReducers({
   [organizationApi.reducerPath]: organizationApi.reducer,
   [peopleApi.reducerPath]: peopleApi.reducer,
   [postalAddressApi.reducerPath]: postalAddressApi.reducer,
+  [externalSourceApi.reducerPath]: externalSourceApi.reducer,
 });
 
 const rootReducer = (state, action) => appReducer(state, action);

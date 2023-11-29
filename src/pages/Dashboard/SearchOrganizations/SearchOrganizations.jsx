@@ -19,6 +19,8 @@ import { Popover } from 'antd';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
+import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
+import LoadingIndicator from '../../../components/LoadingIndicator';
 
 function SearchOrganizations() {
   const { t } = useTranslation();
@@ -35,7 +37,8 @@ function SearchOrganizations() {
   const [organizationListArtsData, setOrganizationListArtsData] = useState([]);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
-  const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+  const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+  const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.organization);
@@ -46,13 +49,19 @@ function SearchOrganizations() {
     includeArtsdata: true,
     sessionId: timestampRef,
   });
+  const { currentData: initialExternalSource, isFetching: initialExternalSourceLoading } = useGetExternalSourceQuery({
+    calendarId,
+    searchKey: '',
+    classes: decodeURIComponent(query.toString()),
+    sessionId: timestampRef,
+  });
 
   // effects
 
   useEffect(() => {
-    if (initialEntities && currentCalendarData) {
-      setOrganizationList(initialEntities?.cms);
-      setOrganizationListArtsData(initialEntities?.artsdata);
+    if (initialEntities && currentCalendarData && initialExternalSourceLoading) {
+      setOrganizationList(initialEntities);
+      setOrganizationListArtsData(initialExternalSource?.artsdata);
     }
   }, [initialOrganizersLoading]);
 
@@ -67,10 +76,20 @@ function SearchOrganizations() {
   const searchHandler = (value) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.organization);
-    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId, includeArtsdata: true })
+    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
       .unwrap()
       .then((response) => {
-        setOrganizationList(response?.cms);
+        setOrganizationList(response);
+      })
+      .catch((error) => console.log(error));
+    getExternalSource({
+      searchKey: value,
+      classes: decodeURIComponent(query.toString()),
+      calendarId,
+      excludeExistingCMS: true,
+    })
+      .unwrap()
+      .then((response) => {
         setOrganizationListArtsData(response?.artsdata);
       })
       .catch((error) => console.log(error));
@@ -104,51 +123,59 @@ function SearchOrganizations() {
                   {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                 </div>
                 <div className="search-scrollable-content">
-                  {organizationList?.length > 0 ? (
-                    organizationList?.map((organizer, index) => (
-                      <div
-                        key={index}
-                        className="search-popover-options"
-                        onClick={() => {
-                          setIsPopoverOpen(false);
-                        }}
-                        data-cy={`div-organization-footlight-${index}`}>
-                        <EntityCard
-                          title={contentLanguageBilingual({
-                            en: organizer?.name?.en,
-                            fr: organizer?.name?.fr,
-                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                            calendarContentLanguage: calendarContentLanguage,
-                          })}
-                          description={contentLanguageBilingual({
-                            en: organizer?.disambiguatingDescription?.en,
-                            fr: organizer?.disambiguatingDescription?.fr,
-                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                            calendarContentLanguage: calendarContentLanguage,
-                          })}
-                          artsDataLink={artsDataLinkChecker(organizer?.uri)}
-                          Logo={
-                            organizer.logo ? (
-                              <img src={organizer.logo?.thumbnail?.uri} data-cy={`img-entity-logo-${index}`} />
-                            ) : (
-                              <Logo />
-                            )
-                          }
-                          linkText={t('dashboard.organization.createNew.search.linkText')}
-                          onClick={() => {
-                            if (routinghandler(user, calendarId, organizer?.creator?.userId, null, true)) {
-                              navigate(
-                                `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizer?.id}`,
-                              );
-                            } else
-                              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${organizer?.id}`);
-                          }}
-                        />
-                      </div>
-                    ))
-                  ) : (
-                    <NoContent />
+                  {isEntitiesFetching && (
+                    <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <LoadingIndicator />
+                    </div>
                   )}
+                  {!isEntitiesFetching &&
+                    (organizationList?.length > 0 ? (
+                      organizationList?.map((organizer, index) => (
+                        <div
+                          key={index}
+                          className="search-popover-options"
+                          onClick={() => {
+                            setIsPopoverOpen(false);
+                          }}
+                          data-cy={`div-organization-footlight-${index}`}>
+                          <EntityCard
+                            title={contentLanguageBilingual({
+                              en: organizer?.name?.en,
+                              fr: organizer?.name?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            })}
+                            description={contentLanguageBilingual({
+                              en: organizer?.disambiguatingDescription?.en,
+                              fr: organizer?.disambiguatingDescription?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            })}
+                            artsDataLink={artsDataLinkChecker(organizer?.uri)}
+                            Logo={
+                              organizer.logo ? (
+                                <img src={organizer.logo?.thumbnail?.uri} data-cy={`img-entity-logo-${index}`} />
+                              ) : (
+                                <Logo />
+                              )
+                            }
+                            linkText={t('dashboard.organization.createNew.search.linkText')}
+                            onClick={() => {
+                              if (routinghandler(user, calendarId, organizer?.creator?.userId, null, true)) {
+                                navigate(
+                                  `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizer?.id}`,
+                                );
+                              } else
+                                navigate(
+                                  `${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${organizer?.id}`,
+                                );
+                            }}
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      <NoContent />
+                    ))}
                 </div>
                 {quickCreateKeyword !== '' && (
                   <>
@@ -156,33 +183,40 @@ function SearchOrganizations() {
                       {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
                     </div>
                     <div className="search-scrollable-content">
-                      {organizationListArtsData?.length > 0 ? (
-                        organizationListArtsData?.map((organizer, index) => (
-                          <div
-                            key={index}
-                            className="search-popover-options"
-                            data-cy={`div-orgnanization--artsdata-entity-${index}`}
-                            onClick={() => {
-                              setIsPopoverOpen(false);
-                            }}>
-                            <EntityCard
-                              title={contentLanguageBilingual({
-                                en: organizer?.name?.en,
-                                fr: organizer?.name?.fr,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                calendarContentLanguage: calendarContentLanguage,
-                              })}
-                              description={organizer?.description}
-                              artsDataLink={organizer?.uri}
-                              Logo={organizer.logo ? <img src={organizer?.logo?.thumbnail?.uri} /> : <Logo />}
-                              linkText={t('dashboard.organization.createNew.search.linkText')}
-                              onClick={() => artsDataClickHandler(organizer)}
-                            />
-                          </div>
-                        ))
-                      ) : (
-                        <NoContent />
+                      {isExternalSourceFetching && (
+                        <div
+                          style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <LoadingIndicator />
+                        </div>
                       )}
+                      {!isExternalSourceFetching &&
+                        (organizationListArtsData?.length > 0 ? (
+                          organizationListArtsData?.map((organizer, index) => (
+                            <div
+                              key={index}
+                              className="search-popover-options"
+                              data-cy={`div-orgnanization--artsdata-entity-${index}`}
+                              onClick={() => {
+                                setIsPopoverOpen(false);
+                              }}>
+                              <EntityCard
+                                title={contentLanguageBilingual({
+                                  en: organizer?.name?.en,
+                                  fr: organizer?.name?.fr,
+                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  calendarContentLanguage: calendarContentLanguage,
+                                })}
+                                description={organizer?.description}
+                                artsDataLink={organizer?.uri}
+                                Logo={organizer.logo ? <img src={organizer?.logo?.thumbnail?.uri} /> : <Logo />}
+                                linkText={t('dashboard.organization.createNew.search.linkText')}
+                                onClick={() => artsDataClickHandler(organizer)}
+                              />
+                            </div>
+                          ))
+                        ) : (
+                          <NoContent />
+                        ))}
                     </div>
                   </>
                 )}

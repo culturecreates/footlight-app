@@ -19,6 +19,8 @@ import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
+import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
+import LoadingIndicator from '../../../components/LoadingIndicator';
 
 function SearchPlaces() {
   const { t } = useTranslation();
@@ -36,22 +38,29 @@ function SearchPlaces() {
   const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
-  const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+  const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+  const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.place);
-  const { currentData: initialEntities, isLoading: initialPlacesLoading } = useGetEntitiesQuery({
+  const { currentData: initialEntities, isFetching: initialPlacesLoading } = useGetEntitiesQuery({
     calendarId,
     searchKey: '',
     classes: decodeURIComponent(query.toString()),
     sessionId: timestampRef,
     includeArtsdata: true,
   });
+  const { currentData: initialExternalSource, isFetching: initialExternalSourceLoading } = useGetExternalSourceQuery({
+    calendarId,
+    searchKey: '',
+    classes: decodeURIComponent(query.toString()),
+    sessionId: timestampRef,
+  });
 
   useEffect(() => {
-    if (initialEntities && currentCalendarData) {
-      setPlacesList(initialEntities?.cms);
-      setPlacesListArtsData(initialEntities?.artsdata);
+    if (initialEntities && currentCalendarData && initialExternalSourceLoading) {
+      setPlacesList(initialEntities);
+      setPlacesListArtsData(initialExternalSource?.artsdata);
     }
   }, [initialPlacesLoading]);
 
@@ -64,10 +73,20 @@ function SearchPlaces() {
   const searchHandler = (value) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
-    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId, includeArtsdata: true })
+    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
       .unwrap()
       .then((response) => {
-        setPlacesList(response?.cms);
+        setPlacesList(response);
+      })
+      .catch((error) => console.log(error));
+    getExternalSource({
+      searchKey: value,
+      classes: decodeURIComponent(query.toString()),
+      calendarId,
+      excludeExistingCMS: true,
+    })
+      .unwrap()
+      .then((response) => {
         setPlacesListArtsData(response?.artsdata);
       })
       .catch((error) => console.log(error));
@@ -101,51 +120,57 @@ function SearchPlaces() {
                   {t('dashboard.places.createNew.search.footlightSectionHeading')}
                 </div>
                 <div className="search-scrollable-content">
-                  {placesList?.length > 0 ? (
-                    placesList?.map((place, index) => (
-                      <div
-                        key={index}
-                        className="search-popover-options"
-                        onClick={() => {
-                          setSelectedPlaces([...selectedPlaces, place]);
-                          setIsPopoverOpen(false);
-                        }}
-                        data-cy={`div-place-footlight-${index}`}>
-                        <EntityCard
-                          title={contentLanguageBilingual({
-                            en: place?.name?.en,
-                            fr: place?.name?.fr,
-                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                            calendarContentLanguage: calendarContentLanguage,
-                          })}
-                          description={contentLanguageBilingual({
-                            en: place?.disambiguatingDescription?.en,
-                            fr: place?.disambiguatingDescription?.fr,
-                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                            calendarContentLanguage: calendarContentLanguage,
-                          })}
-                          artsDataLink={artsDataLinkChecker(place?.uri)}
-                          Logo={
-                            place.logo ? (
-                              place.logo?.thumbnail?.uri
-                            ) : (
-                              <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
-                            )
-                          }
-                          linkText={t('dashboard.places.createNew.search.linkText')}
-                          onClick={() => {
-                            if (routinghandler(user, calendarId, place?.creator?.userId, null, true)) {
-                              navigate(
-                                `${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${place?.id}`,
-                              );
-                            } else navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}/${place?.id}`);
-                          }}
-                        />
-                      </div>
-                    ))
-                  ) : (
-                    <NoContent />
+                  {isEntitiesFetching && (
+                    <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <LoadingIndicator />
+                    </div>
                   )}
+                  {!isEntitiesFetching &&
+                    (placesList?.length > 0 ? (
+                      placesList?.map((place, index) => (
+                        <div
+                          key={index}
+                          className="search-popover-options"
+                          onClick={() => {
+                            setSelectedPlaces([...selectedPlaces, place]);
+                            setIsPopoverOpen(false);
+                          }}
+                          data-cy={`div-place-footlight-${index}`}>
+                          <EntityCard
+                            title={contentLanguageBilingual({
+                              en: place?.name?.en,
+                              fr: place?.name?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            })}
+                            description={contentLanguageBilingual({
+                              en: place?.disambiguatingDescription?.en,
+                              fr: place?.disambiguatingDescription?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              calendarContentLanguage: calendarContentLanguage,
+                            })}
+                            artsDataLink={artsDataLinkChecker(place?.uri)}
+                            Logo={
+                              place.logo ? (
+                                place.logo?.thumbnail?.uri
+                              ) : (
+                                <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
+                              )
+                            }
+                            linkText={t('dashboard.places.createNew.search.linkText')}
+                            onClick={() => {
+                              if (routinghandler(user, calendarId, place?.creator?.userId, null, true)) {
+                                navigate(
+                                  `${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${place?.id}`,
+                                );
+                              } else navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}/${place?.id}`);
+                            }}
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      <NoContent />
+                    ))}
                 </div>
 
                 {quickCreateKeyword.length > 0 && (
@@ -154,39 +179,46 @@ function SearchPlaces() {
                       {t('dashboard.places.createNew.search.artsDataSectionHeading')}
                     </div>
                     <div className="search-scrollable-content">
-                      {placesListArtsData?.length > 0 ? (
-                        placesListArtsData?.map((place, index) => (
-                          <div
-                            key={index}
-                            className="search-popover-options"
-                            onClick={() => {
-                              setIsPopoverOpen(false);
-                            }}
-                            data-cy={`div-place-artsdata-${index}`}>
-                            <EntityCard
-                              title={contentLanguageBilingual({
-                                en: place?.name?.en,
-                                fr: place?.name?.fr,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                calendarContentLanguage: calendarContentLanguage,
-                              })}
-                              description={place?.description}
-                              artsDataLink={place?.uri}
-                              Logo={
-                                place.logo ? (
-                                  place.logo?.thumbnail?.uri
-                                ) : (
-                                  <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
-                                )
-                              }
-                              linkText={t('dashboard.places.createNew.search.linkText')}
-                              onClick={() => artsDataClickHandler(place)}
-                            />
-                          </div>
-                        ))
-                      ) : (
-                        <NoContent />
+                      {isExternalSourceFetching && (
+                        <div
+                          style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <LoadingIndicator />
+                        </div>
                       )}
+                      {!isExternalSourceFetching &&
+                        (placesListArtsData?.length > 0 ? (
+                          placesListArtsData?.map((place, index) => (
+                            <div
+                              key={index}
+                              className="search-popover-options"
+                              onClick={() => {
+                                setIsPopoverOpen(false);
+                              }}
+                              data-cy={`div-place-artsdata-${index}`}>
+                              <EntityCard
+                                title={contentLanguageBilingual({
+                                  en: place?.name?.en,
+                                  fr: place?.name?.fr,
+                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  calendarContentLanguage: calendarContentLanguage,
+                                })}
+                                description={place?.description}
+                                artsDataLink={place?.uri}
+                                Logo={
+                                  place.logo ? (
+                                    place.logo?.thumbnail?.uri
+                                  ) : (
+                                    <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
+                                  )
+                                }
+                                linkText={t('dashboard.places.createNew.search.linkText')}
+                                onClick={() => artsDataClickHandler(place)}
+                              />
+                            </div>
+                          ))
+                        ) : (
+                          <NoContent />
+                        ))}
                     </div>
                   </>
                 )}

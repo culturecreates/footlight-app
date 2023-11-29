@@ -70,6 +70,7 @@ import { SEARCH_DELAY } from '../../../constants/search';
 import { userRoles } from '../../../constants/userRoles';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { sourceOptions } from '../../../constants/sourceOptions';
+import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 
 const { TextArea } = Input;
 
@@ -134,7 +135,8 @@ function CreateNewPlace() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
-  const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+  const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+  const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
   const [addImage, { error: isAddImageError, isLoading: addImageLoading }] = useAddImageMutation();
   const [addPlace, { isLoading: addPlaceLoading }] = useAddPlaceMutation();
   const [updatePlace, { isLoading: updatePlaceLoading }] = useUpdatePlaceMutation();
@@ -626,15 +628,24 @@ function CreateNewPlace() {
       searchKey: inputValue,
       classes: decodeURIComponent(query.toString()),
       calendarId,
-      includeArtsdata: true,
     })
       .unwrap()
       .then((response) => {
         let containedInPlaceFilter = [];
-        if (placeId) containedInPlaceFilter = response?.cms?.filter((place) => place?.id != placeId);
-        else containedInPlaceFilter = response?.cms;
+        if (placeId) containedInPlaceFilter = response?.filter((place) => place?.id != placeId);
+        else containedInPlaceFilter = response;
 
         setAllPlacesList(placesOptions(containedInPlaceFilter, user, calendarContentLanguage, sourceOptions.CMS));
+      })
+      .catch((error) => console.log(error));
+    getExternalSource({
+      searchKey: inputValue,
+      classes: decodeURIComponent(query.toString()),
+      calendarId,
+      excludeExistingCMS: true,
+    })
+      .unwrap()
+      .then((response) => {
         setAllPlacesArtsdataList(
           placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
         );
@@ -1700,25 +1711,37 @@ function CreateNewPlace() {
                               {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                             </div>
                             <div className="search-scrollable-content">
-                              {allPlacesList?.length > 0 ? (
-                                allPlacesList?.map((place, index) => (
-                                  <div
-                                    key={index}
-                                    className={`event-popover-options`}
-                                    onClick={() => {
-                                      setSelectedContainsPlaces([...selectedContainsPlaces, place]);
-                                      setIsPopoverOpen({
-                                        ...isPopoverOpen,
-                                        containsPlace: false,
-                                      });
-                                    }}
-                                    data-cy="div-place-footlight">
-                                    {place?.label}
-                                  </div>
-                                ))
-                              ) : (
-                                <NoContent />
+                              {isEntitiesFetching && (
+                                <div
+                                  style={{
+                                    height: '200px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                  }}>
+                                  <LoadingIndicator />
+                                </div>
                               )}
+                              {!isEntitiesFetching &&
+                                (allPlacesList?.length > 0 ? (
+                                  allPlacesList?.map((place, index) => (
+                                    <div
+                                      key={index}
+                                      className={`event-popover-options`}
+                                      onClick={() => {
+                                        setSelectedContainsPlaces([...selectedContainsPlaces, place]);
+                                        setIsPopoverOpen({
+                                          ...isPopoverOpen,
+                                          containsPlace: false,
+                                        });
+                                      }}
+                                      data-cy="div-place-footlight">
+                                      {place?.label}
+                                    </div>
+                                  ))
+                                ) : (
+                                  <NoContent />
+                                ))}
                             </div>
                           </>
                           {quickCreateKeyword !== '' && (
@@ -1727,25 +1750,37 @@ function CreateNewPlace() {
                                 {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
                               </div>
                               <div className="search-scrollable-content">
-                                {allPlacesArtsdataList?.length > 0 ? (
-                                  allPlacesArtsdataList?.map((place, index) => (
-                                    <div
-                                      key={index}
-                                      className="event-popover-options"
-                                      onClick={() => {
-                                        setSelectedContainsPlaces([...selectedContainsPlaces, place]);
-                                        setIsPopoverOpen({
-                                          ...isPopoverOpen,
-                                          containsPlace: false,
-                                        });
-                                      }}
-                                      data-cy="div-place-artsdata">
-                                      {place?.label}
-                                    </div>
-                                  ))
-                                ) : (
-                                  <NoContent />
+                                {isExternalSourceFetching && (
+                                  <div
+                                    style={{
+                                      height: '200px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                    }}>
+                                    <LoadingIndicator />
+                                  </div>
                                 )}
+                                {!isExternalSourceFetching &&
+                                  (allPlacesArtsdataList?.length > 0 ? (
+                                    allPlacesArtsdataList?.map((place, index) => (
+                                      <div
+                                        key={index}
+                                        className="event-popover-options"
+                                        onClick={() => {
+                                          setSelectedContainsPlaces([...selectedContainsPlaces, place]);
+                                          setIsPopoverOpen({
+                                            ...isPopoverOpen,
+                                            containsPlace: false,
+                                          });
+                                        }}
+                                        data-cy="div-place-artsdata">
+                                        {place?.label}
+                                      </div>
+                                    ))
+                                  ) : (
+                                    <NoContent />
+                                  ))}
                               </div>
                             </>
                           )}
@@ -1825,45 +1860,29 @@ function CreateNewPlace() {
                               {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                             </div>
                             <div className="search-scrollable-content">
-                              {allPlacesList?.length > 0 ? (
-                                allPlacesList?.map((place, index) => (
-                                  <div
-                                    data-cy={`div-contained-in-place-footlight-${index}`}
-                                    key={index}
-                                    className={`event-popover-options ${
-                                      containedInPlace?.value == place?.value ? 'event-popover-options-active' : null
-                                    }`}
-                                    onClick={() => {
-                                      setContainedInPlace(place);
-                                      form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.value);
-                                      setIsPopoverOpen({
-                                        ...isPopoverOpen,
-                                        containedInPlace: false,
-                                      });
-                                    }}>
-                                    {place?.label}
-                                  </div>
-                                ))
-                              ) : (
-                                <NoContent />
+                              {isEntitiesFetching && (
+                                <div
+                                  style={{
+                                    height: '200px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                  }}>
+                                  <LoadingIndicator />
+                                </div>
                               )}
-                            </div>
-                          </>
-                          {quickCreateKeyword !== '' && (
-                            <>
-                              <div className="popover-section-header" data-cy="div-contained-in-place-artsdata-title">
-                                {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
-                              </div>
-                              <div className="search-scrollable-content">
-                                {allPlacesArtsdataList?.length > 0 ? (
-                                  allPlacesArtsdataList?.map((place, index) => (
+                              {!isEntitiesFetching &&
+                                (allPlacesList?.length > 0 ? (
+                                  allPlacesList?.map((place, index) => (
                                     <div
-                                      data-cy={`div-contained-in-place-artsdata-${index}`}
+                                      data-cy={`div-contained-in-place-footlight-${index}`}
                                       key={index}
-                                      className="event-popover-options"
+                                      className={`event-popover-options ${
+                                        containedInPlace?.value == place?.value ? 'event-popover-options-active' : null
+                                      }`}
                                       onClick={() => {
                                         setContainedInPlace(place);
-                                        form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.uri);
+                                        form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.value);
                                         setIsPopoverOpen({
                                           ...isPopoverOpen,
                                           containedInPlace: false,
@@ -1874,7 +1893,47 @@ function CreateNewPlace() {
                                   ))
                                 ) : (
                                   <NoContent />
+                                ))}
+                            </div>
+                          </>
+                          {quickCreateKeyword !== '' && (
+                            <>
+                              <div className="popover-section-header" data-cy="div-contained-in-place-artsdata-title">
+                                {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                              </div>
+                              <div className="search-scrollable-content">
+                                {isExternalSourceFetching && (
+                                  <div
+                                    style={{
+                                      height: '200px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                    }}>
+                                    <LoadingIndicator />
+                                  </div>
                                 )}
+                                {!isExternalSourceFetching &&
+                                  (allPlacesArtsdataList?.length > 0 ? (
+                                    allPlacesArtsdataList?.map((place, index) => (
+                                      <div
+                                        data-cy={`div-contained-in-place-artsdata-${index}`}
+                                        key={index}
+                                        className="event-popover-options"
+                                        onClick={() => {
+                                          setContainedInPlace(place);
+                                          form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.uri);
+                                          setIsPopoverOpen({
+                                            ...isPopoverOpen,
+                                            containedInPlace: false,
+                                          });
+                                        }}>
+                                        {place?.label}
+                                      </div>
+                                    ))
+                                  ) : (
+                                    <NoContent />
+                                  ))}
                               </div>
                             </>
                           )}

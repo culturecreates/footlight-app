@@ -18,6 +18,7 @@ import SelectionItem from '../components/List/SelectionItem';
 import BilingualTextEditor from '../components/BilingualTextEditor';
 import Outlined from '../components/Button/Outlined';
 import { sourceOptions } from './sourceOptions';
+import LoadingIndicator from '../components/LoadingIndicator';
 
 const { TextArea } = Input;
 
@@ -359,6 +360,8 @@ export const formFieldValue = [
       allPlacesArtsdataList,
       placeNavigationHandler,
       mappedField,
+      isEntitiesFetching,
+      isExternalSourceFetching,
     }) => {
       return (
         <>
@@ -379,25 +382,32 @@ export const formFieldValue = [
                       {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                     </div>
                     <div className="search-scrollable-content">
-                      {allPlacesList?.length > 0 ? (
-                        allPlacesList?.map((place, index) => (
-                          <div
-                            key={index}
-                            className={`event-popover-options ${
-                              locationPlace?.value == place?.value ? 'event-popover-options-active' : null
-                            }`}
-                            onClick={() => {
-                              setLocationPlace(place);
-                              form.setFieldValue(name, place?.value);
-                              setIsPopoverOpen(false);
-                            }}
-                            data-cy={`div-${mappedField}-footlight-place-${index}`}>
-                            {place?.label}
-                          </div>
-                        ))
-                      ) : (
-                        <NoContent />
+                      {isEntitiesFetching && (
+                        <div
+                          style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <LoadingIndicator />
+                        </div>
                       )}
+                      {!isEntitiesFetching &&
+                        (allPlacesList?.length > 0 ? (
+                          allPlacesList?.map((place, index) => (
+                            <div
+                              key={index}
+                              className={`event-popover-options ${
+                                locationPlace?.value == place?.value ? 'event-popover-options-active' : null
+                              }`}
+                              onClick={() => {
+                                setLocationPlace(place);
+                                form.setFieldValue(name, place?.value);
+                                setIsPopoverOpen(false);
+                              }}
+                              data-cy={`div-${mappedField}-footlight-place-${index}`}>
+                              {place?.label}
+                            </div>
+                          ))
+                        ) : (
+                          <NoContent />
+                        ))}
                     </div>
                   </>
 
@@ -405,23 +415,29 @@ export const formFieldValue = [
                     {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
                   </div>
                   <div className="search-scrollable-content">
-                    {allPlacesArtsdataList?.length > 0 ? (
-                      allPlacesArtsdataList?.map((place, index) => (
-                        <div
-                          key={index}
-                          className="event-popover-options"
-                          onClick={() => {
-                            setLocationPlace(place);
-                            form.setFieldValue(name, place?.uri);
-                            setIsPopoverOpen(false);
-                          }}
-                          data-cy={`div-${mappedField}-artsdata-place-${index}`}>
-                          {place?.label}
-                        </div>
-                      ))
-                    ) : (
-                      <NoContent />
+                    {isExternalSourceFetching && (
+                      <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <LoadingIndicator />
+                      </div>
                     )}
+                    {!isExternalSourceFetching &&
+                      (allPlacesArtsdataList?.length > 0 ? (
+                        allPlacesArtsdataList?.map((place, index) => (
+                          <div
+                            key={index}
+                            className="event-popover-options"
+                            onClick={() => {
+                              setLocationPlace(place);
+                              form.setFieldValue(name, place?.uri);
+                              setIsPopoverOpen(false);
+                            }}
+                            data-cy={`div-${mappedField}-artsdata-place-${index}`}>
+                            {place?.label}
+                          </div>
+                        ))
+                      ) : (
+                        <NoContent />
+                      ))}
                   </div>
                 </div>
               </div>
@@ -570,6 +586,8 @@ export const returnFormDataWithFields = ({
   form,
   style,
   placeNavigationHandler,
+  isExternalSourceFetching,
+  isEntitiesFetching,
 }) => {
   return renderFormFields({
     name: [field?.mappedField],
@@ -638,6 +656,8 @@ export const returnFormDataWithFields = ({
       form,
       taxonomyAlias: field?.taxonomyAlias,
       placeNavigationHandler,
+      isExternalSourceFetching,
+      isEntitiesFetching,
     }),
     key: index,
     initialValue: formInitialValueHandler(field?.type, field?.mappedField, field?.datatype, entityData),

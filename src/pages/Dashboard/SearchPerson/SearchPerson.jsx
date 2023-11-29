@@ -19,6 +19,8 @@ import './searchPerson.css';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
+import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
+import LoadingIndicator from '../../../components/LoadingIndicator';
 
 function SearchPerson() {
   const { t } = useTranslation();
@@ -36,24 +38,31 @@ function SearchPerson() {
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
   const [selectedPeople, setSelectedPeople] = useState([]);
 
-  const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+  const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+  const [getExternalSource, { isFetching: isExternalSourceFetching, isSuccess: isExternalSourceSuccess }] =
+    useLazyGetExternalSourceQuery();
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.person);
-  const { currentData: initialEntities, isLoading: initialPersonLoading } = useGetEntitiesQuery({
+  const { currentData: initialEntities, isFetching: initialPersonLoading } = useGetEntitiesQuery({
     calendarId,
     searchKey: '',
     classes: decodeURIComponent(query.toString()),
     sessionId: timestampRef,
-    includeArtsdata: true,
+  });
+  const { currentData: initialExternalSource, isFetching: initialExternalSourceLoading } = useGetExternalSourceQuery({
+    calendarId,
+    searchKey: '',
+    classes: decodeURIComponent(query.toString()),
+    sessionId: timestampRef,
   });
 
   // effects
 
   useEffect(() => {
-    if (initialEntities && currentCalendarData) {
-      setPeopleList(initialEntities?.cms);
-      setPeopleListArtsData(initialEntities?.artsdata);
+    if (initialEntities && currentCalendarData && initialExternalSourceLoading) {
+      setPeopleList(initialEntities);
+      setPeopleListArtsData(initialExternalSource?.artsdata);
     }
   }, [initialPersonLoading]);
 
@@ -66,10 +75,20 @@ function SearchPerson() {
   const searchHandler = (value) => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.person);
-    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId, includeArtsdata: true })
+    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
       .unwrap()
       .then((response) => {
-        setPeopleList(response?.cms);
+        setPeopleList(response);
+      })
+      .catch((error) => console.log(error));
+    getExternalSource({
+      searchKey: value,
+      classes: decodeURIComponent(query.toString()),
+      calendarId,
+      excludeExistingCMS: true,
+    })
+      .unwrap()
+      .then((response) => {
         setPeopleListArtsData(response?.artsdata);
       })
       .catch((error) => console.log(error));
@@ -102,51 +121,57 @@ function SearchPerson() {
                 {t('dashboard.people.createNew.search.footlightSectionHeading')}
               </div>
               <div className="search-scrollable-content">
-                {peopleList?.length > 0 ? (
-                  peopleList?.map((person, index) => (
-                    <div
-                      key={index}
-                      className="search-popover-options"
-                      onClick={() => {
-                        setSelectedPeople([...selectedPeople, person]);
-                        setIsPopoverOpen(false);
-                      }}
-                      data-cy={`div-person-footlight-${index}`}>
-                      <EntityCard
-                        title={contentLanguageBilingual({
-                          en: person?.name?.en,
-                          fr: person?.name?.fr,
-                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                          calendarContentLanguage: calendarContentLanguage,
-                        })}
-                        description={contentLanguageBilingual({
-                          en: person?.disambiguatingDescription?.en,
-                          fr: person?.disambiguatingDescription?.fr,
-                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                          calendarContentLanguage: calendarContentLanguage,
-                        })}
-                        artsDataLink={artsDataLinkChecker(person?.uri)}
-                        Logo={
-                          person.logo ? (
-                            person.logo?.thumbnail?.uri
-                          ) : (
-                            <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
-                          )
-                        }
-                        linkText={t('dashboard.people.createNew.search.linkText')}
-                        onClick={() => {
-                          if (routinghandler(user, calendarId, person?.creator?.userId, null, true)) {
-                            navigate(
-                              `${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${person?.id}`,
-                            );
-                          } else navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}/${person?.id}`);
-                        }}
-                      />
-                    </div>
-                  ))
-                ) : (
-                  <NoContent />
+                {isEntitiesFetching && (
+                  <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <LoadingIndicator />
+                  </div>
                 )}
+                {!isEntitiesFetching &&
+                  (peopleList?.length > 0 ? (
+                    peopleList?.map((person, index) => (
+                      <div
+                        key={index}
+                        className="search-popover-options"
+                        onClick={() => {
+                          setSelectedPeople([...selectedPeople, person]);
+                          setIsPopoverOpen(false);
+                        }}
+                        data-cy={`div-person-footlight-${index}`}>
+                        <EntityCard
+                          title={contentLanguageBilingual({
+                            en: person?.name?.en,
+                            fr: person?.name?.fr,
+                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                            calendarContentLanguage: calendarContentLanguage,
+                          })}
+                          description={contentLanguageBilingual({
+                            en: person?.disambiguatingDescription?.en,
+                            fr: person?.disambiguatingDescription?.fr,
+                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                            calendarContentLanguage: calendarContentLanguage,
+                          })}
+                          artsDataLink={artsDataLinkChecker(person?.uri)}
+                          Logo={
+                            person.logo ? (
+                              person.logo?.thumbnail?.uri
+                            ) : (
+                              <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
+                            )
+                          }
+                          linkText={t('dashboard.people.createNew.search.linkText')}
+                          onClick={() => {
+                            if (routinghandler(user, calendarId, person?.creator?.userId, null, true)) {
+                              navigate(
+                                `${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${person?.id}`,
+                              );
+                            } else navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}/${person?.id}`);
+                          }}
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <NoContent />
+                  ))}
               </div>
 
               {quickCreateKeyword.length > 0 && (
@@ -155,40 +180,47 @@ function SearchPerson() {
                     {t('dashboard.people.createNew.search.artsDataSectionHeading')}
                   </div>
                   <div className="search-scrollable-content">
-                    {peopleListArtsData?.length > 0 ? (
-                      peopleListArtsData?.map((person, index) => (
-                        <div
-                          key={index}
-                          className="search-popover-options"
-                          onClick={() => {
-                            setSelectedPeople([...selectedPeople, person]);
-                            setIsPopoverOpen(false);
-                          }}
-                          data-cy={`div-person-artsdata-${index}`}>
-                          <EntityCard
-                            title={contentLanguageBilingual({
-                              en: person?.name?.en,
-                              fr: person?.name?.fr,
-                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              calendarContentLanguage: calendarContentLanguage,
-                            })}
-                            description={person?.description}
-                            artsDataLink={person?.uri}
-                            Logo={
-                              person.logo ? (
-                                person.logo?.thumbnail?.uri
-                              ) : (
-                                <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
-                              )
-                            }
-                            linkText={t('dashboard.people.createNew.search.linkText')}
-                            onClick={() => artsDataClickHandler(person)}
-                          />
-                        </div>
-                      ))
-                    ) : (
-                      <NoContent />
+                    {isExternalSourceFetching && (
+                      <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <LoadingIndicator />
+                      </div>
                     )}
+                    {!isExternalSourceFetching &&
+                      isExternalSourceSuccess &&
+                      (peopleListArtsData?.length > 0 ? (
+                        peopleListArtsData?.map((person, index) => (
+                          <div
+                            key={index}
+                            className="search-popover-options"
+                            onClick={() => {
+                              setSelectedPeople([...selectedPeople, person]);
+                              setIsPopoverOpen(false);
+                            }}
+                            data-cy={`div-person-artsdata-${index}`}>
+                            <EntityCard
+                              title={contentLanguageBilingual({
+                                en: person?.name?.en,
+                                fr: person?.name?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              })}
+                              description={person?.description}
+                              artsDataLink={person?.uri}
+                              Logo={
+                                person.logo ? (
+                                  person.logo?.thumbnail?.uri
+                                ) : (
+                                  <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
+                                )
+                              }
+                              linkText={t('dashboard.people.createNew.search.linkText')}
+                              onClick={() => artsDataClickHandler(person)}
+                            />
+                          </div>
+                        ))
+                      ) : (
+                        <NoContent />
+                      ))}
                   </div>
                 </>
               )}
