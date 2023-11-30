@@ -85,6 +85,8 @@ import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
+import useElementVisibility from '../../../hooks/useElementVisibility';
+import { handleKeyPress } from '../../../utils/handleKeyPress';
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -174,6 +176,7 @@ function AddEvent() {
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
   const [selectedOrganizerPerformerSupporterType, setSelectedOrganizerPerformerSupporterType] = useState();
   const [imageCropOpen, setImageCropOpen] = useState(false);
+  const [selectedItemIndex, setSelectedItemIndex] = useState(-1);
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -819,6 +822,29 @@ function AddEvent() {
       );
     else return roleCheckHandler();
   };
+
+  useElementVisibility(`event-popover-options-${selectedItemIndex}`);
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e) => {
+      if (isPopoverOpen.locationPlace) {
+        handleKeyPress({
+          e,
+          selectedItemIndex,
+          data: allPlacesList,
+          setSelectedItemIndex,
+          setItem: setLocationPlace,
+          form,
+          popOverHandler: setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false }),
+        });
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleGlobalKeyDown);
+    };
+  }, [isPopoverOpen.locationPlace, selectedItemIndex]);
 
   const placesSearch = (inputValue = '') => {
     let query = new URLSearchParams();
@@ -1851,7 +1877,10 @@ function AddEvent() {
                 data-cy="form-item-place-label">
                 <Popover
                   open={isPopoverOpen.locationPlace}
-                  onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open })}
+                  onOpenChange={(open) => {
+                    setSelectedItemIndex(-1);
+                    setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open });
+                  }}
                   overlayClassName="event-popover"
                   placement="bottom"
                   autoAdjustOverflow={false}
@@ -1884,7 +1913,12 @@ function AddEvent() {
                                     key={index}
                                     className={`event-popover-options ${
                                       locationPlace?.value == place?.value ? 'event-popover-options-active' : null
+                                    } ${`event-popover-options-${index}`} ${
+                                      selectedItemIndex == index ? 'event-popover-options-active-hover' : ''
                                     }`}
+                                    onMouseEnter={() => {
+                                      setSelectedItemIndex(index);
+                                    }}
                                     onClick={() => {
                                       setLocationPlace(place);
                                       form.setFieldValue('locationPlace', place?.value);

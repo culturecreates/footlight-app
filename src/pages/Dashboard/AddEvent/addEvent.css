@@ -124,6 +124,10 @@
   background: #eff2ff;
 }
 
+.event-popover-options-active-hover > .selection-item-wrapper {
+  background: #eff2ff;
+}
+
 .add-edit-wrapper .quick-create {
   background-color: #eff2ff;
   display: flex;
