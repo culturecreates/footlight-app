@@ -178,6 +178,7 @@ function AddEvent() {
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [selectedItemIndex, setSelectedItemIndex] = useState(-1);
 
+  useElementVisibility(`event-popover-options-${selectedItemIndex}`, '.search-scrollable-content'); // hook to handle scroll for popover components
   usePrompt(t('common.unsavedChanges'), showDialog);
 
   const reactQuillRefFr = useRef(null);
@@ -823,29 +824,6 @@ function AddEvent() {
     else return roleCheckHandler();
   };
 
-  useElementVisibility(`event-popover-options-${selectedItemIndex}`);
-
-  useEffect(() => {
-    const handleGlobalKeyDown = (e) => {
-      if (isPopoverOpen.locationPlace) {
-        handleKeyPress({
-          e,
-          selectedItemIndex,
-          data: allPlacesList,
-          setSelectedItemIndex,
-          setItem: setLocationPlace,
-          form,
-          popOverHandler: setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false }),
-        });
-      }
-    };
-    window.addEventListener('keydown', handleGlobalKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleGlobalKeyDown);
-    };
-  }, [isPopoverOpen.locationPlace, selectedItemIndex]);
-
   const placesSearch = (inputValue = '') => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
@@ -1010,6 +988,39 @@ function AddEvent() {
   useEffect(() => {
     if (isError) navigate(`${PathName.NotFound}`);
   }, [isError]);
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e) => {
+      if (isPopoverOpen.locationPlace) {
+        handleKeyPress({
+          e,
+          selectedItemIndex,
+          data: allPlacesList,
+          setSelectedItemIndex,
+          setItem: setLocationPlace,
+          form,
+          popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false }),
+        });
+      }
+      if (isPopoverOpen.organizer) {
+        handleKeyPress({
+          e,
+          selectedItemIndex,
+          data: organizersList,
+          setSelectedItemIndex,
+          setItem: setOrganizersArtsdataList,
+          form,
+          popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, organizer: false }),
+        });
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleGlobalKeyDown);
+    };
+  }, [isPopoverOpen.locationPlace, selectedItemIndex]);
 
   useEffect(() => {
     if (addedFields?.length > 0) {
@@ -1919,6 +1930,9 @@ function AddEvent() {
                                     onMouseEnter={() => {
                                       setSelectedItemIndex(index);
                                     }}
+                                    onMouseLeave={() => {
+                                      setSelectedItemIndex(-1);
+                                    }}
                                     onClick={() => {
                                       setLocationPlace(place);
                                       form.setFieldValue('locationPlace', place?.value);
@@ -2325,7 +2339,10 @@ function AddEvent() {
                   ]}>
                   <Popover
                     open={isPopoverOpen.organizer}
-                    onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, organizer: open })}
+                    onOpenChange={(open) => {
+                      setSelectedItemIndex(-1);
+                      setIsPopoverOpen({ ...isPopoverOpen, organizer: open });
+                    }}
                     overlayClassName="event-popover"
                     placement="bottom"
                     autoAdjustOverflow={false}
@@ -2356,13 +2373,21 @@ function AddEvent() {
                                   organizersList?.map((organizer, index) => (
                                     <div
                                       key={index}
-                                      className="event-popover-options"
+                                      className={`event-popover-options ${`event-popover-options-${index}`} ${
+                                        selectedItemIndex == index ? 'event-popover-options-active-hover' : ''
+                                      }`}
                                       onClick={() => {
                                         setSelectedOrganizers([...selectedOrganizers, organizer]);
                                         setIsPopoverOpen({
                                           ...isPopoverOpen,
                                           organizer: false,
                                         });
+                                      }}
+                                      onMouseEnter={() => {
+                                        setSelectedItemIndex(index);
+                                      }}
+                                      onMouseLeave={() => {
+                                        setSelectedItemIndex(-1);
                                       }}
                                       data-cy={`div-select-organizer-${index}`}>
                                       {organizer?.label}
@@ -2395,7 +2420,7 @@ function AddEvent() {
                                     organizersArtsdataList?.map((organizer, index) => (
                                       <div
                                         key={index}
-                                        className="event-popover-options"
+                                        className={`event-popover-option`}
                                         onClick={() => {
                                           setSelectedOrganizers([...selectedOrganizers, organizer]);
                                           setIsPopoverOpen({
@@ -2737,13 +2762,21 @@ function AddEvent() {
                                 performerList?.map((performer, index) => (
                                   <div
                                     key={index}
-                                    className="event-popover-options"
+                                    className={`event-popover-options ${`event-popover-options-${index}`} ${
+                                      selectedItemIndex == index ? 'event-popover-options-active-hover' : ''
+                                    }`}
                                     onClick={() => {
                                       setSelectedPerformers([...selectedPerformers, performer]);
                                       setIsPopoverOpen({
                                         ...isPopoverOpen,
                                         performer: false,
                                       });
+                                    }}
+                                    onMouseEnter={() => {
+                                      setSelectedItemIndex(index);
+                                    }}
+                                    onMouseLeave={() => {
+                                      setSelectedItemIndex(-1);
                                     }}
                                     data-cy={`div-select-performer-${index}`}>
                                     {performer?.label}

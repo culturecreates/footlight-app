@@ -8,7 +8,6 @@ export const handleKeyPress = ({ e, selectedItemIndex, data, setSelectedItemInde
     const newIndex = Math.max(selectedItemIndex - 1, -1);
     setSelectedItemIndex(newIndex);
   } else if (e.key === 'Enter' && selectedItemIndex !== -1) {
-    console.log(e, 'e');
     e.preventDefault();
     const selectedPlace = data[selectedItemIndex];
     setItem(selectedPlace);
