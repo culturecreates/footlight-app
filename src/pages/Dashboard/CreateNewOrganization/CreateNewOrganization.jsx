@@ -45,6 +45,7 @@ import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
+import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -75,7 +76,8 @@ function CreateNewOrganization() {
   });
   const [getPlace] = useLazyGetPlaceQuery();
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
-  const [getEntities] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+  const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
+  const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
   const [addOrganization, { isLoading: addOrganizationLoading }] = useAddOrganizationMutation();
   const [updateOrganization, { isLoading: updateOrganizationLoading }] = useUpdateOrganizationMutation();
   const [addImage, { isLoading: imageUploadLoading }] = useAddImageMutation();
@@ -518,11 +520,20 @@ function CreateNewOrganization() {
       searchKey: inputValue,
       classes: decodeURIComponent(query.toString()),
       calendarId,
-      includeArtsdata: true,
     })
       .unwrap()
       .then((response) => {
-        setAllPlacesList(placesOptions(response?.cms, user, calendarContentLanguage, sourceOptions.CMS));
+        setAllPlacesList(placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS));
+      })
+      .catch((error) => console.log(error));
+    getExternalSource({
+      searchKey: inputValue,
+      classes: decodeURIComponent(query.toString()),
+      calendarId,
+      excludeExistingCMS: true,
+    })
+      .unwrap()
+      .then((response) => {
         setAllPlacesArtsdataList(
           placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
         );
@@ -835,6 +846,8 @@ function CreateNewOrganization() {
                                   : '',
                               },
                               placeNavigationHandler,
+                              isEntitiesFetching,
+                              isExternalSourceFetching,
                             });
                           }
                         });
