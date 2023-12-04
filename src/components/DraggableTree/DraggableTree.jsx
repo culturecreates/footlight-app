@@ -459,7 +459,15 @@ const DraggableTree = ({
                       onChange={(e) => {
                         setNewConceptName({ ...newConceptName, fr: e.target.value });
                       }}
-                      style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                      style={{
+                        borderRadius: '4px',
+                        border: `${
+                          calendarContentLanguage === contentLanguage.BILINGUAL
+                            ? '4px solid #E8E8E8'
+                            : '1px solid #b6c1c9'
+                        }`,
+                        width: '423px',
+                      }}
                       size="large"
                     />
                   </Form.Item>
@@ -486,7 +494,15 @@ const DraggableTree = ({
                         setNewConceptName({ ...newConceptName, en: e.target.value });
                       }}
                       placeholder={t('dashboard.taxonomy.addNew.concepts.placeHolderEn')}
-                      style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                      style={{
+                        borderRadius: '4px',
+                        border: `${
+                          calendarContentLanguage === contentLanguage.BILINGUAL
+                            ? '4px solid #E8E8E8'
+                            : '1px solid #b6c1c9'
+                        }`,
+                        width: '423px',
+                      }}
                       size="large"
                     />
                   </Form.Item>

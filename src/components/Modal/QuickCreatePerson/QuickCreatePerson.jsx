@@ -394,7 +394,7 @@ function QuickCreatePerson(props) {
                     ]}
                     data-cy="form-item-quick-create-person-website-label">
                     <StyledInput
-                      addonBefore="https://"
+                      addonBefore="URL"
                       autoComplete="off"
                       placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.websitePlaceholder')}
                       data-cy="input-quick-create-person-website"
