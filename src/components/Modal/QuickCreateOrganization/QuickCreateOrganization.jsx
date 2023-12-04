@@ -394,7 +394,7 @@ function QuickCreateOrganization(props) {
                   ]}
                   data-cy="form-item-quick-create-organizer-website-label">
                   <StyledInput
-                    addonBefore="https://"
+                    addonBefore="URL"
                     autoComplete="off"
                     placeholder={t(
                       'dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.websitePlaceholder',
