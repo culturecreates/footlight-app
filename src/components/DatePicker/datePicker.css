@@ -28,10 +28,6 @@
   border-radius: 4px;
 }
 
-.date-picker-calendar .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
-  border: 0px;
-}
-
 .date-picker-calendar .ant-picker-header {
   border-bottom: 1px solid #b6c1c9;
 }

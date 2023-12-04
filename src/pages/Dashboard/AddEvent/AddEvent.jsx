@@ -2121,7 +2121,7 @@ function AddEvent() {
                 ]}
                 data-cy="form-item-virtual-location-link-title">
                 <StyledInput
-                  addonBefore="https://"
+                  // addonBefore="https://"
                   autoComplete="off"
                   placeholder={t('dashboard.events.addEditEvent.location.placeHolderOnlineLink')}
                   data-cy="input-virtual-location-link"
@@ -2615,7 +2615,7 @@ function AddEvent() {
                   ]}
                   data-cy="form-item-event-contact-website-label">
                   <StyledInput
-                    addonBefore="https://"
+                    // addonBefore="https://"
                     autoComplete="off"
                     placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
                     data-cy="input-contact-website"
@@ -3070,7 +3070,6 @@ function AddEvent() {
                 ]}
                 data-cy="form-item-event-link">
                 <StyledInput
-                  addonBefore="https://"
                   autoComplete="off"
                   placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
                   data-cy="input-event-link"
@@ -3092,7 +3091,6 @@ function AddEvent() {
                 ]}
                 data-cy="form-item-video-link">
                 <StyledInput
-                  addonBefore="https://"
                   autoComplete="off"
                   placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
                   data-cy="input-video-link"
@@ -3116,7 +3114,6 @@ function AddEvent() {
                   ]}
                   data-cy="form-item-facebook-link">
                   <StyledInput
-                    addonBefore="https://"
                     autoComplete="off"
                     placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
                     data-cy="input-facebook-link"
@@ -3438,7 +3435,6 @@ function AddEvent() {
                   ]}
                   data-cy="form-item-register-link-label">
                   <StyledInput
-                    addonBefore="https://"
                     autoComplete="off"
                     placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderLinks')}
                     data-cy="input-ticket-registration-link"
@@ -3478,7 +3474,6 @@ function AddEvent() {
                       }),
                     ]}>
                     <StyledInput
-                      addonBefore="https://"
                       autoComplete="off"
                       placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderLinks')}
                       data-cy="input-ticket-buy-link"
