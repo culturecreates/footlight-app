@@ -161,7 +161,6 @@ function Events() {
   // let userFilterData = allUsersData?.data?.filter((item) => user?.id != item._id);
   // userFilterData = [{ _id: user?.id, ...user }]?.concat(userFilterData);
 
-  console.log(user);
   const userSearch = (userSearchKey) => {
     getAllUsers({
       page: pageNumber,
