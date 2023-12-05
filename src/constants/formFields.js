@@ -267,7 +267,13 @@ export const formFieldValue = [
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         })}
-        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+        style={{
+          borderRadius: '4px',
+          border: `${
+            calendarContentLanguage === contentLanguage.BILINGUAL ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
+          }`,
+          width: '423px',
+        }}
         size="large"
         data-cy={`input-text-area-${mappedField}`}
       />

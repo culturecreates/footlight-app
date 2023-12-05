@@ -302,7 +302,15 @@ function QuickCreatePerson(props) {
                           autoSize
                           autoComplete="off"
                           placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.namePlaceholder')}
-                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
+                          style={{
+                            borderRadius: '4px',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
+                            width: '100%',
+                          }}
                           size="large"
                           data-cy="input-quick-create-person-name-french"
                         />
@@ -338,7 +346,15 @@ function QuickCreatePerson(props) {
                           autoSize
                           autoComplete="off"
                           placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.namePlaceholder')}
-                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
+                          style={{
+                            borderRadius: '4px',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
+                            width: '100%',
+                          }}
                           size="large"
                           data-cy="input-quick-create-person-name-english"
                         />
