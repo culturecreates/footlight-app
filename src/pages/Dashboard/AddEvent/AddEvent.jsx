@@ -3278,7 +3278,11 @@ function AddEvent() {
                           )}
                           style={{
                             borderRadius: '4px',
-                            border: '4px solid #E8E8E8',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
                             width: '423px',
                             resize: 'vertical',
                           }}
@@ -3297,7 +3301,11 @@ function AddEvent() {
                           )}
                           style={{
                             borderRadius: '4px',
-                            border: '4px solid #E8E8E8',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
                             width: '423px',
                             resize: 'vertical',
                           }}
