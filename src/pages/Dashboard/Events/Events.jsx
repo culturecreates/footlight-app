@@ -385,7 +385,7 @@ function Events() {
       return currentUsersFilter[key];
     });
     selectedUsersData = usersData?.filter((userData) => {
-      if (filteredUsers?.includes(userData?.id)) return true;
+      if (filteredUsers?.includes(userData?._id)) return true;
       else return false;
     });
     setUserFilter(filteredUsers);
