@@ -247,6 +247,7 @@ function SearchPerson() {
               setQuickCreateKeyword(e.target.value);
               setIsPopoverOpen(true);
             }}
+            autoFocus={true}
             onChange={(e) => {
               setQuickCreateKeyword(e.target.value);
               debounceSearch(e.target.value);
