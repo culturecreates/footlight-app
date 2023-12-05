@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import './events.css';
 import { Checkbox, Col, Row, Badge, Button, Dropdown, Space, Popover, Divider } from 'antd';
 import { CloseCircleOutlined, DownOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
@@ -28,6 +28,9 @@ import NoContent from '../../../components/NoContent/NoContent';
 import LoadingIndicator from '../../../components/LoadingIndicator/index';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useLazyGetAllOrganizationQuery } from '../../../services/organization';
+import { removeObjectArrayDuplicates } from '../../../utils/removeObjectArrayDuplicates';
+import { SEARCH_DELAY } from '../../../constants/search';
+import { useDebounce } from '../../../hooks/debounce';
 
 function Events() {
   const { t } = useTranslation();
@@ -39,10 +42,9 @@ function Events() {
   const [currentCalendarData, pageNumber, setPageNumber] = useOutletContext();
 
   const [getEvents, { currentData: eventsData, isLoading, isFetching }] = useLazyGetEventsQuery();
-  const [getAllUsers, { currentData: allUsersData, isLoading: allUsersLoading }] = useLazyGetAllUsersQuery();
+  const [getAllUsers, { isFetching: allUsersLoading }] = useLazyGetAllUsersQuery();
 
-  const [getAllOrganization, { currentData: organizersData, isLoading: organizerLoading }] =
-    useLazyGetAllOrganizationQuery();
+  const [getAllOrganization, { isFetching: organizerLoading }] = useLazyGetAllOrganizationQuery();
 
   const [searchKey, setSearchKey] = useState();
   const [organizationSearchKey, setOrganizationSearchKey] = useState();
@@ -116,12 +118,16 @@ function Events() {
   }
 
   for (let index = 0; index < organizerFilter?.length; index++) {
-    Object.assign(initialSelectedUsers, { [userFilter[index]]: true });
+    Object.assign(initialSelectedOrganizers, { [organizerFilter[index]]: true });
   }
-
+  let selectedOrganizersData = [],
+    selectedUsersData = [];
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState(initialSelectedUsers ?? {});
   const [selectedOrganizer, setSelectedOrganizers] = useState(initialSelectedOrganizers ?? {});
+  const [organizersData, setOrganizersData] = useState([]);
+  const [usersData, setUsersData] = useState([]);
+
   const [selectedDates, setSelectedDates] = useState(
     (searchParams.get('startDateRange') || sessionStorage.getItem('startDateRange')) &&
       (searchParams.get('endDateRange') || sessionStorage.getItem('endDateRange'))
@@ -152,32 +158,48 @@ function Events() {
   //   return x?._id == user?.id ? -1 : y?._id == user?.id ? 1 : 0;
   // });
 
-  let userFilterData = allUsersData?.data?.filter((item) => user?.id != item._id);
-  userFilterData = [{ _id: user?.id, ...user }]?.concat(userFilterData);
+  // let userFilterData = allUsersData?.data?.filter((item) => user?.id != item._id);
+  // userFilterData = [{ _id: user?.id, ...user }]?.concat(userFilterData);
 
-  const userSearch = () => {
+  console.log(user);
+  const userSearch = (userSearchKey) => {
     getAllUsers({
       page: pageNumber,
       limit: 30,
-      query: searchKey,
+      query: userSearchKey,
       filters: `sort=asc(${sortByOptionsUsers[1].key})`,
       sessionId: timestampRef,
       calendarId: calendarId,
       includeCalenderFilter: true,
-    });
+    })
+      .then((response) => {
+        let currentUserList = selectedUsersData?.concat(response?.data?.data);
+        currentUserList = [{ _id: user?.id, ...user }]?.concat(currentUserList);
+        let uniqueArray = removeObjectArrayDuplicates(currentUserList, '_id');
+        setUsersData(uniqueArray);
+      })
+      .catch((error) => console.log(error));
   };
 
-  const organizersPersonPlaceSearch = () => {
+  const organizersPersonPlaceSearch = (searchKey) => {
     getAllOrganization({
       calendarId,
       sessionId: timestampRef,
       pageNumber: 1,
-      query: organizationSearchKey,
+      query: searchKey,
       sort: `sort=asc(${sortByOptionsOrgsPlacesPerson[0]?.key})`,
-    });
+    })
+      .unwrap()
+      .then((response) => {
+        let uniqueArray = removeObjectArrayDuplicates(selectedOrganizersData?.concat(response?.data), 'id');
+        setOrganizersData(uniqueArray);
+      })
+      .catch((error) => console.log(error));
   };
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
+  const debounceSearchOrganizationSearch = useCallback(useDebounce(organizersPersonPlaceSearch, SEARCH_DELAY), []);
+  const debounceUsersSearch = useCallback(useDebounce(userSearch, SEARCH_DELAY), []);
 
   useEffect(() => {
     let query = new URLSearchParams();
@@ -268,24 +290,83 @@ function Events() {
   }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter, organizerFilter]);
 
   useEffect(() => {
-    getAllUsers({
-      page: pageNumber,
-      limit: 30,
-      query: '',
-      filters: `sort=asc(${sortByOptionsUsers[1].key})`,
-      sessionId: timestampRef,
-      calendarId: calendarId,
-      includeCalenderFilter: true,
-    });
+    let allOrganizersWithSelected = [],
+      allUsersWithSelected = [];
+    if (calendarId)
+      if (user?.id !== '' && user?.id) {
+        getAllUsers({
+          page: 1,
+          limit: 30,
+          query: '',
+          filters: `sort=asc(${sortByOptionsUsers[1].key})`,
+          sessionId: timestampRef,
+          calendarId: calendarId,
+          includeCalenderFilter: true,
+        })
+          .unwrap()
+          .then((response) => {
+            allUsersWithSelected = [{ _id: user?.id, ...user }]?.concat(response?.data);
+            allUsersWithSelected = removeObjectArrayDuplicates(allUsersWithSelected, '_id');
+            if (userFilter?.length > 0) {
+              let userIds = new URLSearchParams();
+              userFilter?.forEach((userId) => userIds.append('ids', userId));
+              getAllUsers({
+                page: 1,
+                limit: 30,
+                query: '',
+                filters: `sort=asc(${sortByOptionsUsers[1].key})&${userIds}`,
+                sessionId: timestampRef,
+                calendarId: calendarId,
+                includeCalenderFilter: true,
+              })
+                .unwrap()
+                .then((response) => {
+                  selectedUsersData = response?.data;
+                  allUsersWithSelected = response?.data?.concat(allUsersWithSelected);
+                  allUsersWithSelected = [{ _id: user?.id, ...user }]?.concat(allUsersWithSelected);
+                  let uniqueArray = removeObjectArrayDuplicates(allUsersWithSelected, '_id');
+                  setUsersData(uniqueArray);
+                })
+                .catch((error) => console.log(error));
+            } else setUsersData(allUsersWithSelected);
+          })
+          .catch((error) => console.log(error));
+      }
     getAllOrganization({
       calendarId,
       limit: 30,
       sessionId: timestampRef,
       pageNumber: 1,
-      query: organizationSearchKey,
+      query: '',
       sort: `sort=asc(${sortByOptionsOrgsPlacesPerson[0]?.key})`,
-    });
-  }, [calendarId]);
+    })
+      .unwrap()
+      .then((response) => {
+        allOrganizersWithSelected = response?.data;
+        if (organizerFilter?.length > 0) {
+          let organizerIds = new URLSearchParams();
+          organizerFilter?.forEach((organizerId) => organizerIds.append('ids', organizerId));
+          getAllOrganization({
+            calendarId,
+            limit: 30,
+            sessionId: timestampRef,
+            pageNumber: 1,
+            query: '',
+            sort: `sort=asc(${sortByOptionsOrgsPlacesPerson[0]?.key})`,
+            ids: organizerIds,
+          })
+            .unwrap()
+            .then((response) => {
+              selectedOrganizersData = response?.data;
+              allOrganizersWithSelected = response?.data?.concat(allOrganizersWithSelected);
+              let uniqueArray = removeObjectArrayDuplicates(allOrganizersWithSelected, 'id');
+              setOrganizersData(uniqueArray);
+            })
+            .catch((error) => console.log(error));
+        } else setOrganizersData(allOrganizersWithSelected);
+      })
+      .catch((error) => console.log(error));
+  }, [calendarId, user]);
 
   const onSearchHandler = (event) => {
     setPageNumber(1);
@@ -314,6 +395,10 @@ function Events() {
     setSelectedOrganizers(currentOrganizerFilter);
     let filteredOrganizers = Object.keys(currentOrganizerFilter).filter(function (key) {
       return currentOrganizerFilter[key];
+    });
+    selectedOrganizersData = organizersData?.filter((organizerData) => {
+      if (filteredOrganizers?.includes(organizerData?.id)) return true;
+      else return false;
     });
     setOrganizerFilter(filteredOrganizers);
     setPageNumber(1);
@@ -507,10 +592,10 @@ function Events() {
                     allowSearch={true}
                     loading={allUsersLoading}
                     overlayStyle={{ height: '304px' }}
-                    searchImplementation={userSearch}
+                    searchImplementation={debounceUsersSearch}
                     setSearchKey={setSearchKey}
                     searchKey={searchKey}
-                    data={userFilterData?.map((userDetail) => {
+                    data={usersData?.map((userDetail) => {
                       return {
                         key: userDetail?._id,
                         label: (
@@ -618,10 +703,10 @@ function Events() {
                     allowSearch={true}
                     loading={organizerLoading}
                     overlayStyle={{ height: '304px' }}
-                    searchImplementation={organizersPersonPlaceSearch}
+                    searchImplementation={debounceSearchOrganizationSearch}
                     setSearchKey={setOrganizationSearchKey}
                     searchKey={organizationSearchKey}
-                    data={organizersData?.data?.map((organizer) => {
+                    data={organizersData?.map((organizer) => {
                       return {
                         key: organizer?.id,
                         label: (

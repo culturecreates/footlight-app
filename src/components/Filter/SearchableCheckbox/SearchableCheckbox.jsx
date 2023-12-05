@@ -13,8 +13,8 @@ function SearchableCheckbox(props) {
   let items = data ?? [];
 
   useEffect(() => {
-    if (allowSearch) {
-      props.searchImplementation();
+    if (allowSearch && props?.searchKey != undefined) {
+      props.searchImplementation(props?.searchKey);
     }
   }, [props.searchKey]);
 
