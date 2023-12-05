@@ -373,7 +373,15 @@ function QuickCreatePlace(props) {
                           autoSize
                           autoComplete="off"
                           placeholder={t('dashboard.events.addEditEvent.location.quickCreatePlace.namePlaceholder')}
-                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
+                          style={{
+                            borderRadius: '4px',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
+                            width: '100%',
+                          }}
                           size="large"
                           data-cy="text-area-quick-create-place-name-french"
                         />
@@ -409,7 +417,15 @@ function QuickCreatePlace(props) {
                           autoSize
                           autoComplete="off"
                           placeholder={t('dashboard.events.addEditEvent.location.quickCreatePlace.namePlaceholder')}
-                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '100%' }}
+                          style={{
+                            borderRadius: '4px',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
+                            width: '100%',
+                          }}
                           size="large"
                           data-cy="text-area-quick-create-place-name-english"
                         />
