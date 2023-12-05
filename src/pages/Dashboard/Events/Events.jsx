@@ -384,6 +384,10 @@ function Events() {
     let filteredUsers = Object.keys(currentUsersFilter).filter(function (key) {
       return currentUsersFilter[key];
     });
+    selectedUsersData = usersData?.filter((userData) => {
+      if (filteredUsers?.includes(userData?.id)) return true;
+      else return false;
+    });
     setUserFilter(filteredUsers);
     setPageNumber(1);
   };
