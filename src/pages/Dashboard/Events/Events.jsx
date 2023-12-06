@@ -388,6 +388,12 @@ function Events() {
       if (filteredUsers?.includes(userData?._id)) return true;
       else return false;
     });
+
+    let uniqueArray = removeObjectArrayDuplicates(
+      [{ _id: user?.id, ...user }]?.concat(selectedUsersData)?.concat(usersData),
+      '_id',
+    );
+    setUsersData(uniqueArray);
     setUserFilter(filteredUsers);
     setPageNumber(1);
   };
@@ -403,6 +409,8 @@ function Events() {
       if (filteredOrganizers?.includes(organizerData?.id)) return true;
       else return false;
     });
+    let uniqueArray = removeObjectArrayDuplicates(selectedOrganizersData?.concat(organizersData), 'id');
+    setOrganizersData(uniqueArray);
     setOrganizerFilter(filteredOrganizers);
     setPageNumber(1);
   };
