@@ -23,12 +23,6 @@ export const PLACE = [
 
 export const EVENT = [
   {
-    label: <Translation>{(t) => t('dashboard.taxonomy.standardFields.place.inLanguage')}</Translation>,
-    key: 'inLanguage',
-    en: 'Language of event',
-    fr: "Langue de l'événement",
-  },
-  {
     label: <Translation>{(t) => t('dashboard.taxonomy.standardFields.Event.EventAccessibility')}</Translation>,
     key: 'EventAccessibility',
     en: 'Event accessibility',
@@ -45,6 +39,12 @@ export const EVENT = [
     key: 'EventType',
     en: 'Event type',
     fr: "Type d'événement",
+  },
+  {
+    label: <Translation>{(t) => t('dashboard.taxonomy.standardFields.place.inLanguage')}</Translation>,
+    key: 'inLanguage',
+    en: 'Language of event',
+    fr: "Langue de l'événement",
   },
   // {
   //   label: <Translation>{(t) => t('dashboard.taxonomy.standardFields.Event.PerformerRole')}</Translation>,
