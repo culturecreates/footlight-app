@@ -2,12 +2,6 @@ import { Translation } from 'react-i18next';
 
 export const PLACE = [
   {
-    label: <Translation>{(t) => t('dashboard.taxonomy.standardFields.place.inLanguage')}</Translation>,
-    key: 'inLanguage',
-    en: 'Language of event',
-    fr: "Langue de l'événement",
-  },
-  {
     label: <Translation>{(t) => t('dashboard.taxonomy.standardFields.place.PlaceAccessibility')}</Translation>,
     key: 'PlaceAccessibility',
     en: 'Place accessibility',
@@ -28,6 +22,12 @@ export const PLACE = [
 ];
 
 export const EVENT = [
+  {
+    label: <Translation>{(t) => t('dashboard.taxonomy.standardFields.place.inLanguage')}</Translation>,
+    key: 'inLanguage',
+    en: 'Language of event',
+    fr: "Langue de l'événement",
+  },
   {
     label: <Translation>{(t) => t('dashboard.taxonomy.standardFields.Event.EventAccessibility')}</Translation>,
     key: 'EventAccessibility',
