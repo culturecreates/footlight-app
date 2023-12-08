@@ -444,6 +444,7 @@ function QuickCreatePlace(props) {
                     required
                     data-cy="form-item-quick-create-place-address-label">
                     <PlacesAutocomplete
+                      searchOptions={{ componentRestrictions: { country: 'CA' } }}
                       value={address}
                       onChange={handleChange}
                       onSelect={handleSelect}
