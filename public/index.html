@@ -25,7 +25,17 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Footlight Calendar</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA34hPcJ7CKANXj1ZPcEMX5d89563wexsw&libraries=places"></script>
+    <script>
+      window.myCallbackFunc = function () {
+        window.initOne && window.initOne();
+        window.initTwo && window.initTwo();
+      };
+    </script>
+    <script
+      async
+      defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA34hPcJ7CKANXj1ZPcEMX5d89563wexsw&libraries=places&callback=myCallbackFunc"
+    ></script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
