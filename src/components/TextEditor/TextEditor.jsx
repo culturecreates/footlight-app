@@ -49,13 +49,16 @@ function TextEditor(props) {
   };
 
   const onChange = () => {
-    const count = currentReactQuillRef?.current?.unprivilegedEditor?.getText()?.split(' ');
-    const filteredCount = count.filter((n) => n != '');
-    setWordCount(
-      filteredCount[filteredCount.length - 1] === '\n' && filteredCount?.length == 1
-        ? filteredCount?.length - 1
-        : filteredCount?.length,
-    );
+    const filteredCount = currentReactQuillRef?.current?.unprivilegedEditor
+      ?.getText()
+      ?.split(' ')
+      ?.filter((n) => n != '');
+    filteredCount &&
+      setWordCount(
+        filteredCount[filteredCount.length - 1] === '\n' && filteredCount?.length == 1
+          ? filteredCount?.length - 1
+          : filteredCount?.length,
+      );
   };
 
   const translateHandler = () => {
@@ -69,13 +72,16 @@ function TextEditor(props) {
   };
 
   useEffect(() => {
-    const count = currentReactQuillRef?.current?.unprivilegedEditor?.getText()?.split(' ');
-    const filteredCount = count.filter((n) => n != '');
-    setWordCount(
-      filteredCount[filteredCount.length - 1] === '\n' && filteredCount?.length == 1
-        ? filteredCount?.length - 1
-        : filteredCount?.length,
-    );
+    const filteredCount = currentReactQuillRef?.current?.unprivilegedEditor
+      ?.getText()
+      ?.split(' ')
+      ?.filter((n) => n != '');
+    filteredCount &&
+      setWordCount(
+        filteredCount[filteredCount.length - 1] === '\n' && filteredCount?.length == 1
+          ? filteredCount?.length - 1
+          : filteredCount?.length,
+      );
   }, [
     currentReactQuillRef?.current?.unprivilegedEditor
       ?.getText()
