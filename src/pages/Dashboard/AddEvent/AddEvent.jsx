@@ -67,7 +67,7 @@ import { locationType, locationTypeOptions, virtualLocationFieldNames } from '..
 import { otherInformationFieldNames, otherInformationOptions } from '../../../constants/otherInformationOptions';
 import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../../constants/eventAccessibilityOptions';
 import { usePrompt } from '../../../hooks/usePrompt';
-import { bilingual } from '../../../utils/bilingual';
+import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import RecurringEvents from '../../../components/RecurringEvents';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequiredFieldNames';
@@ -85,6 +85,9 @@ import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
+import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
+import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -195,7 +198,9 @@ function AddEvent() {
     let dateTime = moment.tz(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a', 'Canada/Eastern');
     return dateTime.toISOString();
   };
-
+  let artsDataLink = eventData?.sameAs?.map((item) => {
+    return item?.type === 'ArtsdataIdentifier';
+  });
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
@@ -966,6 +971,65 @@ function AddEvent() {
     </Row>
   );
 
+  const ArtsDataLinkJSX =
+    artsDataLink?.length > 0 ? (
+      <Row>
+        <Col span={24}>
+          <p className="add-entity-label" data-cy="para-place-data-source">
+            {t('dashboard.events.addEditEvent.dataSource')}
+          </p>
+        </Col>
+        <Col span={24}>
+          <ArtsDataInfo
+            artsDataLink={artsDataLinkChecker(artsDataLink[0]?.uri)}
+            name={contentLanguageBilingual({
+              en: eventData?.name?.en,
+              fr: eventData?.name?.fr,
+              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+              calendarContentLanguage: calendarContentLanguage,
+            })}
+            disambiguatingDescription={contentLanguageBilingual({
+              en: eventData?.disambiguatingDescription?.en,
+              fr: eventData?.disambiguatingDescription?.fr,
+              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+              calendarContentLanguage: calendarContentLanguage,
+            })}
+          />
+        </Col>
+        <Col span={24}>
+          <div style={{ display: 'inline' }}>
+            <span className="add-event-date-heading" data-cy="span-place-question-part-one">
+              {t('dashboard.events.addEditEvent.question.firstPart')}
+            </span>
+            <span
+              data-cy="span-place-question-part-two"
+              className="add-event-date-heading"
+              style={{
+                color: '#1b3de6',
+                textDecoration: 'underline',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+              onClick={() => {
+                window.location.pathname = `${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}`;
+              }}>
+              {t('dashboard.events.addEditEvent.question.secondPart')}
+            </span>
+            <span className="add-event-date-heading" data-cy="span-place-question-part-three">
+              {t('dashboard.events.addEditEvent.question.thirdPart')}
+            </span>
+          </div>
+        </Col>
+        <Col span={24}>
+          <div>
+            <br />
+          </div>
+        </Col>
+      </Row>
+    ) : (
+      <></>
+    );
+
   const copyOrganizerContactHandler = () => {
     if (selectedOrganizers?.length > 0) {
       if (selectedOrganizers[0]?.contact) {
@@ -1360,7 +1424,7 @@ function AddEvent() {
             </Row>
           </Col>
 
-          <CardEvent>
+          <CardEvent ArtsDataLinkJSX={ArtsDataLinkJSX}>
             <Form.Item
               label={t('dashboard.events.addEditEvent.language.title')}
               hidden={
