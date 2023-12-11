@@ -129,7 +129,12 @@
           "targetAudience": "Target audience",
           "placeHolderTargetAudience": "Select target audience"
         },
-
+        "dataSource": "Data source",
+        "question": {
+          "firstPart": "Is this the right event? If not, ",
+          "secondPart": "create a new event",
+          "thirdPart": " and do not select this data source."
+        },
         "dates": {
           "dates": "Dates",
           "date": "Date",
