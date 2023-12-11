@@ -815,7 +815,7 @@ function CreateNewPlace() {
 
   return !isPlaceLoading && !artsDataLoading && !taxonomyLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-      <div className="add-edit-wrapper add-organization-wrapper">
+      <div className="add-edit-wrapper add-organization-wrapper create-new-place-wrapper">
         <Form form={form} layout="vertical" name="place" onValuesChange={onValuesChangeHandler}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
@@ -958,7 +958,15 @@ function CreateNewPlace() {
                           autoSize
                           autoComplete="off"
                           placeholder={t('dashboard.places.createNew.addPlace.name.placeholder.french')}
-                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          style={{
+                            borderRadius: '4px',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
+                            width: '423px',
+                          }}
                           size="large"
                         />
                       </Form.Item>
@@ -985,7 +993,15 @@ function CreateNewPlace() {
                           autoSize
                           autoComplete="off"
                           placeholder={t('dashboard.places.createNew.addPlace.name.placeholder.english')}
-                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          style={{
+                            borderRadius: '4px',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
+                            width: '423px',
+                          }}
                           size="large"
                         />
                       </Form.Item>
@@ -1075,7 +1091,15 @@ function CreateNewPlace() {
                           placeholder={t(
                             'dashboard.places.createNew.addPlace.disambiguatingDescription.placeholder.french',
                           )}
-                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          style={{
+                            borderRadius: '4px',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
+                            width: '423px',
+                          }}
                           size="large"
                           data-cy="input-place-disambiguating-description-french"
                         />
@@ -1095,7 +1119,15 @@ function CreateNewPlace() {
                           placeholder={t(
                             'dashboard.places.createNew.addPlace.disambiguatingDescription.placeholder.english',
                           )}
-                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          style={{
+                            borderRadius: '4px',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
+                            width: '423px',
+                          }}
                           size="large"
                           data-cy="input-place-disambiguating-description-english"
                         />
@@ -1267,6 +1299,8 @@ function CreateNewPlace() {
                 </Row>
                 <Form.Item name="addressSearch">
                   <PlacesAutocomplete
+                    googleCallbackName="initTwo"
+                    searchOptions={{ componentRestrictions: { country: 'CA' } }}
                     value={address}
                     onChange={handleChange}
                     onSelect={handleSelect}
@@ -1348,7 +1382,15 @@ function CreateNewPlace() {
                           autoSize
                           autoComplete="off"
                           placeholder={t('dashboard.places.createNew.addPlace.address.streetAddressPlaceholder.french')}
-                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          style={{
+                            borderRadius: '4px',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
+                            width: '423px',
+                          }}
                           size="large"
                         />
                       </Form.Item>
@@ -1380,7 +1422,15 @@ function CreateNewPlace() {
                           placeholder={t(
                             'dashboard.places.createNew.addPlace.address.streetAddressPlaceholder.english',
                           )}
-                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          style={{
+                            borderRadius: '4px',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
+                            width: '423px',
+                          }}
                           size="large"
                         />
                       </Form.Item>
@@ -1411,7 +1461,15 @@ function CreateNewPlace() {
                           autoSize
                           autoComplete="off"
                           placeholder={t('dashboard.places.createNew.addPlace.address.city.placeholder.french')}
-                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          style={{
+                            borderRadius: '4px',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
+                            width: '423px',
+                          }}
                           size="large"
                         />
                       </Form.Item>
@@ -1429,7 +1487,15 @@ function CreateNewPlace() {
                           autoSize
                           autoComplete="off"
                           placeholder={t('dashboard.places.createNew.addPlace.address.city.placeholder.english')}
-                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          style={{
+                            borderRadius: '4px',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
+                            width: '423px',
+                          }}
                           size="large"
                         />
                       </Form.Item>
@@ -1482,7 +1548,15 @@ function CreateNewPlace() {
                               autoSize
                               autoComplete="off"
                               placeholder={t('dashboard.places.createNew.addPlace.address.province.placeholder.french')}
-                              style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                              style={{
+                                borderRadius: '4px',
+                                border: `${
+                                  calendarContentLanguage === contentLanguage.BILINGUAL
+                                    ? '4px solid #E8E8E8'
+                                    : '1px solid #b6c1c9'
+                                }`,
+                                width: '423px',
+                              }}
                               size="large"
                             />
                           </Form.Item>
@@ -1502,7 +1576,15 @@ function CreateNewPlace() {
                               placeholder={t(
                                 'dashboard.places.createNew.addPlace.address.province.placeholder.english',
                               )}
-                              style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                              style={{
+                                borderRadius: '4px',
+                                border: `${
+                                  calendarContentLanguage === contentLanguage.BILINGUAL
+                                    ? '4px solid #E8E8E8'
+                                    : '1px solid #b6c1c9'
+                                }`,
+                                width: '423px',
+                              }}
                               size="large"
                             />
                           </Form.Item>
@@ -1535,7 +1617,15 @@ function CreateNewPlace() {
                               autoSize
                               autoComplete="off"
                               placeholder={t('dashboard.places.createNew.addPlace.address.country.placeholder.french')}
-                              style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                              style={{
+                                borderRadius: '4px',
+                                border: `${
+                                  calendarContentLanguage === contentLanguage.BILINGUAL
+                                    ? '4px solid #E8E8E8'
+                                    : '1px solid #b6c1c9'
+                                }`,
+                                width: '423px',
+                              }}
                               size="large"
                             />
                           </Form.Item>
@@ -1553,7 +1643,15 @@ function CreateNewPlace() {
                               autoSize
                               autoComplete="off"
                               placeholder={t('dashboard.places.createNew.addPlace.address.country.placeholder.english')}
-                              style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                              style={{
+                                borderRadius: '4px',
+                                border: `${
+                                  calendarContentLanguage === contentLanguage.BILINGUAL
+                                    ? '4px solid #E8E8E8'
+                                    : '1px solid #b6c1c9'
+                                }`,
+                                width: '423px',
+                              }}
                               size="large"
                             />
                           </Form.Item>
@@ -1651,7 +1749,7 @@ function CreateNewPlace() {
                   ]}>
                   <StyledInput
                     data-cy="input-place-opening-hours"
-                    addonBefore="https://"
+                    addonBefore="URL"
                     autoComplete="off"
                     placeholder={t('dashboard.places.createNew.addPlace.address.openingHours.placeholder')}
                   />
@@ -2068,7 +2166,11 @@ function CreateNewPlace() {
                             )}
                             style={{
                               borderRadius: '4px',
-                              border: '4px solid #E8E8E8',
+                              border: `${
+                                calendarContentLanguage === contentLanguage.BILINGUAL
+                                  ? '4px solid #E8E8E8'
+                                  : '1px solid #b6c1c9'
+                              }`,
                               width: '423px',
                               resize: 'vertical',
                             }}
@@ -2087,7 +2189,11 @@ function CreateNewPlace() {
                             )}
                             style={{
                               borderRadius: '4px',
-                              border: '4px solid #E8E8E8',
+                              border: `${
+                                calendarContentLanguage === contentLanguage.BILINGUAL
+                                  ? '4px solid #E8E8E8'
+                                  : '1px solid #b6c1c9'
+                              }`,
                               width: '423px',
                               resize: 'vertical',
                             }}

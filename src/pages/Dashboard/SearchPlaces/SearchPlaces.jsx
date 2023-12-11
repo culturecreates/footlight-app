@@ -241,6 +241,7 @@ function SearchPlaces() {
               data-cy="input-place-search"
               style={{ borderRadius: '4px' }}
               placeholder="Search places"
+              autoFocus={true}
               onClick={(e) => {
                 setQuickCreateKeyword(e.target.value);
                 setIsPopoverOpen(true);

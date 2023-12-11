@@ -416,7 +416,15 @@ const AddTaxonomy = () => {
                                       name: { ...formValues.name, fr: e.target.value },
                                     });
                                   }}
-                                  style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                                  style={{
+                                    borderRadius: '4px',
+                                    border: `${
+                                      calendarContentLanguage === contentLanguage.BILINGUAL
+                                        ? '4px solid #E8E8E8'
+                                        : '1px solid #b6c1c9'
+                                    }`,
+                                    width: '423px',
+                                  }}
                                   size="large"
                                 />
                               </Form.Item>
@@ -451,7 +459,15 @@ const AddTaxonomy = () => {
                                       name: { ...formValues.name, en: e.target.value },
                                     });
                                   }}
-                                  style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                                  style={{
+                                    borderRadius: '4px',
+                                    border: `${
+                                      calendarContentLanguage === contentLanguage.BILINGUAL
+                                        ? '4px solid #E8E8E8'
+                                        : '1px solid #b6c1c9'
+                                    }`,
+                                    width: '423px',
+                                  }}
                                   size="large"
                                 />
                               </Form.Item>
@@ -504,7 +520,15 @@ const AddTaxonomy = () => {
                                     });
                                   }}
                                   placeholder={t('dashboard.taxonomy.addNew.frDescriptionPlaceHolder')}
-                                  style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                                  style={{
+                                    borderRadius: '4px',
+                                    border: `${
+                                      calendarContentLanguage === contentLanguage.BILINGUAL
+                                        ? '4px solid #E8E8E8'
+                                        : '1px solid #b6c1c9'
+                                    }`,
+                                    width: '423px',
+                                  }}
                                   size="large"
                                 />
                               </Form.Item>
@@ -535,7 +559,15 @@ const AddTaxonomy = () => {
                                     });
                                   }}
                                   placeholder={t('dashboard.taxonomy.addNew.enDescriptionPlaceHolder')}
-                                  style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                                  style={{
+                                    borderRadius: '4px',
+                                    border: `${
+                                      calendarContentLanguage === contentLanguage.BILINGUAL
+                                        ? '4px solid #E8E8E8'
+                                        : '1px solid #b6c1c9'
+                                    }`,
+                                    width: '423px',
+                                  }}
                                   size="large"
                                 />
                               </Form.Item>

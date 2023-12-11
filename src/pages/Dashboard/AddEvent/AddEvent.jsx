@@ -1399,7 +1399,15 @@ function AddEvent() {
                       autoSize
                       autoComplete="off"
                       placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
-                      style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                      style={{
+                        borderRadius: '4px',
+                        border: `${
+                          calendarContentLanguage === contentLanguage.BILINGUAL
+                            ? '4px solid #E8E8E8'
+                            : '1px solid #b6c1c9'
+                        }`,
+                        width: '423px',
+                      }}
                       size="large"
                       data-cy="text-area-event-french-name"
                     />
@@ -1424,7 +1432,15 @@ function AddEvent() {
                       autoSize
                       autoComplete="off"
                       placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
-                      style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                      style={{
+                        borderRadius: '4px',
+                        border: `${
+                          calendarContentLanguage === contentLanguage.BILINGUAL
+                            ? '4px solid #E8E8E8'
+                            : '1px solid #b6c1c9'
+                        }`,
+                        width: '423px',
+                      }}
                       size="large"
                       data-cy="text-area-event-english-name"
                     />
@@ -2035,7 +2051,15 @@ function AddEvent() {
                         autoSize
                         autoComplete="off"
                         placeholder={t('dashboard.events.addEditEvent.location.placeHolderVirtualLocationFr')}
-                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                        style={{
+                          borderRadius: '4px',
+                          border: `${
+                            calendarContentLanguage === contentLanguage.BILINGUAL
+                              ? '4px solid #E8E8E8'
+                              : '1px solid #b6c1c9'
+                          }`,
+                          width: '423px',
+                        }}
                         size="large"
                         data-cy="text-area-virtual-location-french"
                       />
@@ -2049,7 +2073,15 @@ function AddEvent() {
                         autoSize
                         autoComplete="off"
                         placeholder={t('dashboard.events.addEditEvent.location.placeHolderVirtualLocationEn')}
-                        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                        style={{
+                          borderRadius: '4px',
+                          border: `${
+                            calendarContentLanguage === contentLanguage.BILINGUAL
+                              ? '4px solid #E8E8E8'
+                              : '1px solid #b6c1c9'
+                          }`,
+                          width: '423px',
+                        }}
                         size="large"
                         data-cy="text-area-virtual-location-english"
                       />
@@ -2073,7 +2105,7 @@ function AddEvent() {
                 ]}
                 data-cy="form-item-virtual-location-link-title">
                 <StyledInput
-                  addonBefore="https://"
+                  addonBefore="URL"
                   autoComplete="off"
                   placeholder={t('dashboard.events.addEditEvent.location.placeHolderOnlineLink')}
                   data-cy="input-virtual-location-link"
@@ -2519,7 +2551,15 @@ function AddEvent() {
                           placeholder={t(
                             'dashboard.events.addEditEvent.otherInformation.contact.placeHolderContactTitleFrench',
                           )}
-                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          style={{
+                            borderRadius: '4px',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
+                            width: '423px',
+                          }}
                           size="large"
                           data-cy="input-contact-title-french"
                         />
@@ -2534,7 +2574,15 @@ function AddEvent() {
                           placeholder={t(
                             'dashboard.events.addEditEvent.otherInformation.contact.placeHolderContactTitleEnglish',
                           )}
-                          style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                          style={{
+                            borderRadius: '4px',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
+                            width: '423px',
+                          }}
                           size="large"
                           data-cy="input-contact-title-english"
                         />
@@ -2556,7 +2604,7 @@ function AddEvent() {
                   ]}
                   data-cy="form-item-event-contact-website-label">
                   <StyledInput
-                    addonBefore="https://"
+                    addonBefore="URL"
                     autoComplete="off"
                     placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
                     data-cy="input-contact-website"
@@ -3003,7 +3051,7 @@ function AddEvent() {
                 ]}
                 data-cy="form-item-event-link">
                 <StyledInput
-                  addonBefore="https://"
+                  addonBefore="URL"
                   autoComplete="off"
                   placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
                   data-cy="input-event-link"
@@ -3025,7 +3073,7 @@ function AddEvent() {
                 ]}
                 data-cy="form-item-video-link">
                 <StyledInput
-                  addonBefore="https://"
+                  addonBefore="URL"
                   autoComplete="off"
                   placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
                   data-cy="input-video-link"
@@ -3049,7 +3097,7 @@ function AddEvent() {
                   ]}
                   data-cy="form-item-facebook-link">
                   <StyledInput
-                    addonBefore="https://"
+                    addonBefore="URL"
                     autoComplete="off"
                     placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
                     data-cy="input-facebook-link"
@@ -3230,7 +3278,11 @@ function AddEvent() {
                           )}
                           style={{
                             borderRadius: '4px',
-                            border: '4px solid #E8E8E8',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
                             width: '423px',
                             resize: 'vertical',
                           }}
@@ -3249,7 +3301,11 @@ function AddEvent() {
                           )}
                           style={{
                             borderRadius: '4px',
-                            border: '4px solid #E8E8E8',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
                             width: '423px',
                             resize: 'vertical',
                           }}
@@ -3371,7 +3427,7 @@ function AddEvent() {
                   ]}
                   data-cy="form-item-register-link-label">
                   <StyledInput
-                    addonBefore="https://"
+                    addonBefore="URL"
                     autoComplete="off"
                     placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderLinks')}
                     data-cy="input-ticket-registration-link"
@@ -3411,7 +3467,7 @@ function AddEvent() {
                       }),
                     ]}>
                     <StyledInput
-                      addonBefore="https://"
+                      addonBefore="URL"
                       autoComplete="off"
                       placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderLinks')}
                       data-cy="input-ticket-buy-link"
@@ -3536,7 +3592,11 @@ function AddEvent() {
                           placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderNotes')}
                           style={{
                             borderRadius: '4px',
-                            border: '4px solid #E8E8E8',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
                             width: '423px',
                             resize: 'vertical',
                           }}
@@ -3580,7 +3640,11 @@ function AddEvent() {
                           placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderNotes')}
                           style={{
                             borderRadius: '4px',
-                            border: '4px solid #E8E8E8',
+                            border: `${
+                              calendarContentLanguage === contentLanguage.BILINGUAL
+                                ? '4px solid #E8E8E8'
+                                : '1px solid #b6c1c9'
+                            }`,
                             width: '423px',
                             resize: 'vertical',
                           }}

@@ -8,13 +8,13 @@ import NoContent from '../../NoContent/NoContent';
 import LoadingIndicator from '../../LoadingIndicator';
 
 function SearchableCheckbox(props) {
-  const { children, allowSearch, data, onFilterChange, open, value, loading = false } = props;
+  const { children, allowSearch, data, onFilterChange, open, value, loading = false, selectedData, setOpen } = props;
   const { t } = useTranslation();
   let items = data ?? [];
 
   useEffect(() => {
-    if (allowSearch) {
-      props.searchImplementation();
+    if (allowSearch && props?.searchKey != undefined) {
+      props.searchImplementation(props?.searchKey, selectedData);
     }
   }, [props.searchKey]);
 
@@ -28,6 +28,7 @@ function SearchableCheckbox(props) {
           multiple: true,
         }}
         open={open}
+        onOpenChange={(open) => setOpen(open)}
         trigger={['click']}
         dropdownRender={() => (
           <div className="searchable-checkbox-dropdown-wrapper">

@@ -89,6 +89,11 @@ function TextEditor(props) {
           placeholder={placeholder}
           className="text-editor"
           modules={modules}
+          style={{
+            border: `${
+              calendarContentLanguage === contentLanguage.BILINGUAL ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
+            }`,
+          }}
           preserveWhitespace
           onChange={onChange}
           data-cy="text-editor"

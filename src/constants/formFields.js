@@ -120,7 +120,13 @@ export const formFieldValue = [
                   autoSize
                   autoComplete="off"
                   placeholder={placeholder?.fr}
-                  style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                  style={{
+                    borderRadius: '4px',
+                    border: `${
+                      calendarContentLanguage === contentLanguage.BILINGUAL ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
+                    }`,
+                    width: '423px',
+                  }}
                   size="large"
                   data-cy={`input-text-area-${mappedField}-french`}
                 />
@@ -148,7 +154,13 @@ export const formFieldValue = [
                   autoSize
                   autoComplete="off"
                   placeholder={placeholder?.en}
-                  style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+                  style={{
+                    borderRadius: '4px',
+                    border: `${
+                      calendarContentLanguage === contentLanguage.BILINGUAL ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
+                    }`,
+                    width: '423px',
+                  }}
                   size="large"
                   data-cy={`input-text-area-${mappedField}-english`}
                 />
@@ -159,7 +171,7 @@ export const formFieldValue = [
       else if (datatype === dataTypes.URI_STRING)
         return (
           <StyledInput
-            addonBefore="https://"
+            addonBefore="URL"
             autoComplete="off"
             style={{ width: '423px' }}
             placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
@@ -198,7 +210,7 @@ export const formFieldValue = [
                             },
                           ]}>
                           <StyledInput
-                            addonBefore="https://"
+                            addonBefore="URL"
                             autoComplete="off"
                             placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
                             data-cy={`input-${mappedField}-${field.key}`}
@@ -255,7 +267,13 @@ export const formFieldValue = [
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         })}
-        style={{ borderRadius: '4px', border: '4px solid #E8E8E8', width: '423px' }}
+        style={{
+          borderRadius: '4px',
+          border: `${
+            calendarContentLanguage === contentLanguage.BILINGUAL ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
+          }`,
+          width: '423px',
+        }}
         size="large"
         data-cy={`input-text-area-${mappedField}`}
       />
