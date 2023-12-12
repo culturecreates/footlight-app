@@ -49,12 +49,16 @@ function TextEditor(props) {
   };
 
   const onChange = () => {
-    setWordCount(
-      currentReactQuillRef?.current?.unprivilegedEditor
-        ?.getText()
-        ?.split(' ')
-        .filter((n) => n != '')?.length,
-    );
+    const filteredCount = currentReactQuillRef?.current?.unprivilegedEditor
+      ?.getText()
+      ?.split(' ')
+      ?.filter((n) => n != '');
+    filteredCount &&
+      setWordCount(
+        filteredCount[filteredCount.length - 1] === '\n' && filteredCount?.length == 1
+          ? filteredCount?.length - 1
+          : filteredCount?.length,
+      );
   };
 
   const translateHandler = () => {
@@ -68,12 +72,16 @@ function TextEditor(props) {
   };
 
   useEffect(() => {
-    setWordCount(
-      currentReactQuillRef?.current?.unprivilegedEditor
-        ?.getText()
-        ?.split(' ')
-        .filter((n) => n != '')?.length,
-    );
+    const filteredCount = currentReactQuillRef?.current?.unprivilegedEditor
+      ?.getText()
+      ?.split(' ')
+      ?.filter((n) => n != '');
+    filteredCount &&
+      setWordCount(
+        filteredCount[filteredCount.length - 1] === '\n' && filteredCount?.length == 1
+          ? filteredCount?.length - 1
+          : filteredCount?.length,
+      );
   }, [
     currentReactQuillRef?.current?.unprivilegedEditor
       ?.getText()
