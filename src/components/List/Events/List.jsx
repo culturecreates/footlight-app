@@ -38,7 +38,11 @@ function Lists(props) {
   const calendar = user?.roles?.filter((calendar) => {
     return calendar?.calendarId === calendarId;
   });
-  console.log(typeof currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio);
+
+  let artsDataLinkChecker = (data) => {
+    return data?.sameAs?.filter((item) => item?.type === 'ArtsdataIdentifier');
+  };
+
   const listItemHandler = (id, creatorId, publishState) => {
     if (routinghandler(user, calendarId, creatorId, publishState))
       navigate(`${location.pathname}${PathName.AddEvent}/${id}`);
@@ -140,6 +144,7 @@ function Lists(props) {
                       (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) &&
                       eventItem?.isFeatured &&
                       '3px solid #1B3DE6',
+                    aspectRatio: currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio.replace(/:/g, '/'),
                   }}
                   data-cy="image-event-thumbnail"
                 />
@@ -219,9 +224,21 @@ function Lists(props) {
             className="event-status-list-item"
             onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId, eventItem?.publishState)}
             title={
-              <div>
+              <div className="event-status-list-item-title-container">
                 <EventStatus label={eventItem?.publishState} />
-                <LinkOutlined />
+                {artsDataLinkChecker(eventItem)?.length > 0 && (
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(`${artsDataLinkChecker(eventItem)[0]?.uri}`, '_blank', 'noopener,noreferrer');
+                    }}
+                    className="artsdata-link-outlined-icon"
+                    data-cy="artsdata-link-outlined-icon">
+                    <span>
+                      <LinkOutlined style={{ fontSize: '12px' }} />
+                    </span>
+                  </div>
+                )}
               </div>
             }
             description={
