@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import './list.css';
 import { List, Grid, Dropdown } from 'antd';
 import { MoreOutlined, StarOutlined } from '@ant-design/icons';
@@ -19,6 +19,7 @@ import { dateTypes } from '../../../constants/dateTypes';
 import { userRoles } from '../../../constants/userRoles';
 import { eventStatus } from '../../../constants/eventStatus';
 import moment from 'moment-timezone';
+import { LinkOutlined } from '@ant-design/icons';
 
 const { useBreakpoint } = Grid;
 
@@ -31,12 +32,13 @@ function Lists(props) {
   let { calendarId } = useParams();
   const lang = i18n.language;
   const { user } = useSelector(getUserDetails);
+  const [currentCalendarData] = useOutletContext();
   const totalCount = data?.totalCount;
 
   const calendar = user?.roles?.filter((calendar) => {
     return calendar?.calendarId === calendarId;
   });
-
+  console.log(typeof currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio);
   const listItemHandler = (id, creatorId, publishState) => {
     if (routinghandler(user, calendarId, creatorId, publishState))
       navigate(`${location.pathname}${PathName.AddEvent}/${id}`);
@@ -120,7 +122,9 @@ function Lists(props) {
             className="event-list-item-meta"
             onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId, eventItem?.publishState)}
             avatar={
-              <div className="event-list-image-wrapper">
+              <div
+                className="event-list-image-wrapper"
+                style={{ aspectRatio: currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio + '' }}>
                 {(calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) && eventItem?.isFeatured && (
                   <div className="image-featured-badge">
                     <StarOutlined
@@ -214,7 +218,12 @@ function Lists(props) {
           <List.Item.Meta
             className="event-status-list-item"
             onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId, eventItem?.publishState)}
-            title={<EventStatus label={eventItem?.publishState} />}
+            title={
+              <div>
+                <EventStatus label={eventItem?.publishState} />
+                <LinkOutlined />
+              </div>
+            }
             description={
               <div className="event-list-status" data-cy="span-event-creator">
                 <span className="event-list-status-created-by">
