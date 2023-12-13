@@ -39,6 +39,8 @@ import { contentLanguage } from '../../../constants/contentLanguage';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import { sourceOptions } from '../../../constants/sourceOptions';
+import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
+import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -87,6 +89,7 @@ function EventReadOnly() {
   let standardAdminOnlyFields = requiredFields?.adminOnlyFields?.standardFields;
   let dynamicAdminOnlyFields = requiredFields?.adminOnlyFields?.dynamicFields;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
+  let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === 'ArtsdataIdentifier');
 
   const adminCheckHandler = () => {
     if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
@@ -213,6 +216,31 @@ function EventReadOnly() {
               </Col>
             </Row>
           </Col>
+
+          {artsDataLink?.length > 0 && (
+            <Col flex="723px" className="events-readonly-artsdata-link-wrapper">
+              <Row>
+                <Col flex={'723px'}>
+                  <ArtsDataInfo
+                    artsDataLink={artsDataLinkChecker(artsDataLink[0]?.uri)}
+                    name={contentLanguageBilingual({
+                      en: eventData?.name?.en,
+                      fr: eventData?.name?.fr,
+                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                    disambiguatingDescription={contentLanguageBilingual({
+                      en: eventData?.disambiguatingDescription?.en,
+                      fr: eventData?.disambiguatingDescription?.fr,
+                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                  />
+                </Col>
+              </Row>
+            </Col>
+          )}
+
           <Col flex="723px">
             {eventPublishStateOptions?.map((state, index) => {
               if (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import './list.css';
 import { List, Grid, Dropdown } from 'antd';
 import { MoreOutlined, StarOutlined } from '@ant-design/icons';
@@ -19,6 +19,7 @@ import { dateTypes } from '../../../constants/dateTypes';
 import { userRoles } from '../../../constants/userRoles';
 import { eventStatus } from '../../../constants/eventStatus';
 import moment from 'moment-timezone';
+import { LinkOutlined } from '@ant-design/icons';
 
 const { useBreakpoint } = Grid;
 
@@ -31,11 +32,16 @@ function Lists(props) {
   let { calendarId } = useParams();
   const lang = i18n.language;
   const { user } = useSelector(getUserDetails);
+  const [currentCalendarData] = useOutletContext();
   const totalCount = data?.totalCount;
 
   const calendar = user?.roles?.filter((calendar) => {
     return calendar?.calendarId === calendarId;
   });
+
+  let artsDataLinkChecker = (data) => {
+    return data?.sameAs?.filter((item) => item?.type === 'ArtsdataIdentifier');
+  };
 
   const listItemHandler = (id, creatorId, publishState) => {
     if (routinghandler(user, calendarId, creatorId, publishState))
@@ -120,7 +126,9 @@ function Lists(props) {
             className="event-list-item-meta"
             onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId, eventItem?.publishState)}
             avatar={
-              <div className="event-list-image-wrapper">
+              <div
+                className="event-list-image-wrapper"
+                style={{ aspectRatio: currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio + '' }}>
                 {(calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) && eventItem?.isFeatured && (
                   <div className="image-featured-badge">
                     <StarOutlined
@@ -136,6 +144,7 @@ function Lists(props) {
                       (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) &&
                       eventItem?.isFeatured &&
                       '3px solid #1B3DE6',
+                    aspectRatio: currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio.replace(/:/g, '/'),
                   }}
                   data-cy="image-event-thumbnail"
                 />
@@ -214,7 +223,24 @@ function Lists(props) {
           <List.Item.Meta
             className="event-status-list-item"
             onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId, eventItem?.publishState)}
-            title={<EventStatus label={eventItem?.publishState} />}
+            title={
+              <div className="event-status-list-item-title-container">
+                <EventStatus label={eventItem?.publishState} />
+                {artsDataLinkChecker(eventItem)?.length > 0 && (
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(`${artsDataLinkChecker(eventItem)[0]?.uri}`, '_blank', 'noopener,noreferrer');
+                    }}
+                    className="artsdata-link-outlined-icon"
+                    data-cy="artsdata-link-outlined-icon">
+                    <span>
+                      <LinkOutlined style={{ fontSize: '12px' }} />
+                    </span>
+                  </div>
+                )}
+              </div>
+            }
             description={
               <div className="event-list-status" data-cy="span-event-creator">
                 <span className="event-list-status-created-by">

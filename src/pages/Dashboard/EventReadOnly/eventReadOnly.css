@@ -67,3 +67,8 @@ th {
   font-size: 12px;
   cursor: default;
 }
+
+.read-only-wrapper .events-readonly-artsdata-link-wrapper {
+  /* margin-left: 16px; */
+  padding: 0 !important;
+}
