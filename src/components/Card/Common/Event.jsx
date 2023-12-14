@@ -3,7 +3,7 @@ import { Row, Col } from 'antd';
 import './event.css';
 
 function Event(props) {
-  const { title, required, hidden } = props;
+  const { title, required, hidden, marginTop } = props;
   return (
     <Col
       className="add-event-section-col"
@@ -25,7 +25,7 @@ function Event(props) {
           </div>
         </Col>
         <Col flex={'253px'}>
-          <div style={{ width: '100%', marginTop: '35%' }}>{props?.children[1]}</div>
+          <div style={{ width: '100%', marginTop: marginTop ? marginTop : '35%' }}>{props?.children[1]}</div>
         </Col>
       </Row>
     </Col>

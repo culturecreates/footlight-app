@@ -954,7 +954,7 @@ function AddEvent() {
       .catch((error) => console.log(error));
   };
   const FeaturedJSX = (
-    <Row justify={'end'} align={'top'} gutter={[8, 0]}>
+    <Row justify={'start'} align={'top'} gutter={[8, 0]}>
       <Col>
         <Form.Item valuePropName="checked" name="isFeatured" initialValue={eventData?.isFeatured}>
           <StyledSwitch defaultChecked={eventData?.isFeatured} />
@@ -1360,16 +1360,11 @@ function AddEvent() {
                 <div className="add-event-button-wrap">
                   <ButtonDisplayHandler />
                 </div>
-                {standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.FEATURED)
-                  ? adminCheckHandler()
-                    ? FeaturedJSX
-                    : null
-                  : FeaturedJSX}
               </Col>
             </Row>
           </Col>
 
-          <CardEvent>
+          <CardEvent marginTop="5%">
             <>
               {artsDataLink?.length > 0 && (
                 <Row>
@@ -1657,7 +1652,13 @@ function AddEvent() {
                 })}
               </Form.Item>
             </>
-            <></>
+            <div>
+              {standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.FEATURED)
+                ? adminCheckHandler()
+                  ? FeaturedJSX
+                  : null
+                : FeaturedJSX}
+            </div>
           </CardEvent>
           <CardEvent title={t('dashboard.events.addEditEvent.dates.dates')} required={true}>
             <>
