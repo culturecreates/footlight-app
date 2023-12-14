@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import './list.css';
 import { List, Grid, Dropdown } from 'antd';
@@ -32,6 +32,8 @@ function Lists(props) {
   const lang = i18n.language;
   const { user } = useSelector(getUserDetails);
   const totalCount = data?.totalCount;
+
+  const [selectedItemId, setSelectedItemId] = useState(null);
 
   const calendar = user?.roles?.filter((calendar) => {
     return calendar?.calendarId === calendarId;
@@ -67,6 +69,10 @@ function Lists(props) {
             (calendar[0]?.role === userRoles.CONTRIBUTOR && eventItem?.creator?.userId != user?.id) ? (
               <Dropdown
                 className="calendar-dropdown-wrapper"
+                onOpenChange={(open) => {
+                  if (open) setSelectedItemId(eventItem?.id);
+                  else setSelectedItemId(null);
+                }}
                 overlayStyle={{
                   minWidth: '150px',
                 }}
@@ -84,11 +90,19 @@ function Lists(props) {
                 }}
                 trigger={['click']}>
                 <span>
-                  <MoreOutlined className="event-list-more-icon" key={index} />
+                  <MoreOutlined
+                    className="event-list-more-icon"
+                    style={{ color: selectedItemId === eventItem?.id && '#1B3DE6' }}
+                    key={index}
+                  />
                 </span>
               </Dropdown>
             ) : (
               <EventStatusOptions
+                onOpenChange={(open) => {
+                  if (open) setSelectedItemId(eventItem?.id);
+                  else setSelectedItemId(null);
+                }}
                 key={index}
                 publishState={eventItem?.publishState}
                 isFeatured={eventItem?.isFeatured}
@@ -96,7 +110,11 @@ function Lists(props) {
                 creator={eventItem?.creator}
                 eventId={eventItem?.id}>
                 <span>
-                  <MoreOutlined className="event-list-more-icon" key={index} />
+                  <MoreOutlined
+                    className="event-list-more-icon"
+                    style={{ color: selectedItemId === eventItem?.id && '#1B3DE6' }}
+                    key={index}
+                  />
                 </span>
               </EventStatusOptions>
             ),
