@@ -133,7 +133,7 @@
         "question": {
           "firstPart": "Is this the right event? If not, ",
           "secondPart": "create a new event",
-          "thirdPart": " and do not select this data source."
+          "thirdPart": " and do not edit this one."
         },
         "dates": {
           "dates": "Dates",
@@ -489,7 +489,7 @@
           "question": {
             "firstPart": "Is this the right organization? If not, ",
             "secondPart": "create a new organization",
-            "thirdPart": " and do not select this data source."
+            "thirdPart": " and do not edit this one."
           },
           "addSocialMediaLinks": "Add media link"
         },
@@ -559,7 +559,7 @@
           "question": {
             "firstPart": "Is this the right place? If not, ",
             "secondPart": "create a new place",
-            "thirdPart": " and do not select this data source."
+            "thirdPart": " and do not edit this one."
           },
           "name": {
             "name": "Place Name",
@@ -710,7 +710,7 @@
           "question": {
             "firstPart": "Is this the right person? If not, ",
             "secondPart": "create a new person",
-            "thirdPart": " and do not select this data source."
+            "thirdPart": " and do not edit this one."
           },
 
           "dataSource": "Data source",

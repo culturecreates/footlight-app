@@ -123,7 +123,7 @@
           "question": {
             "firstPart": "Est-ce la bonne événement ? Si non, ",
             "secondPart": "créez une nouvelle événement",
-            "thirdPart": " et ne sélectionnez pas cette source de données."
+            "thirdPart": " et ne modifiez pas celui-ci."
           },
         "language": {
           "title": "Titre de l'événement",
@@ -489,7 +489,7 @@
           "question": {
             "firstPart": "Est-ce la bonne organisation ? Si non, ",
             "secondPart": "créez une nouvelle organisation",
-            "thirdPart": " et ne sélectionnez pas cette source de données."
+            "thirdPart": " et ne modifiez pas celui-ci."
           },
           "addSocialMediaLinks": "Ajouter un lien"
         },
@@ -558,7 +558,7 @@
           "question": {
             "firstPart": "S'agit-il de la bonne lieu ? Si non, ",
             "secondPart": "créez une nouvelle lieu",
-            "thirdPart": " et ne sélectionnez pas cette source de données."
+            "thirdPart": " et ne modifiez pas celui-ci."
           },
           "name": {
             "name": "Nom du lieu",
@@ -707,7 +707,7 @@
           "question": {
             "firstPart": "S'agit-il de la bonne personne ? Si non, ",
             "secondPart": "créez une nouvelle personne",
-            "thirdPart": " et ne sélectionnez pas cette source de données."
+            "thirdPart": " et ne modifiez pas celui-ci."
           },
           "dataSource": "Source de la donnée",
           "notification": {
