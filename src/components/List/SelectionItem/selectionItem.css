@@ -10,9 +10,11 @@
 }
 .selection-item-list-wrapper {
   padding: 0px;
-  align-items: self-start;
+  align-items: center;
 }
-
+.selection-item-wrapper .ant-list-item-meta {
+  align-items: center;
+}
 .selection-item-wrapper .ant-list-item-meta-title {
   line-height: 1;
 }
@@ -21,6 +23,9 @@
   font-weight: 700;
   font-size: 16px;
   color: #222732;
+}
+.selection-item-list-wrapper .ant-list-item-action-split {
+  display: none;
 }
 
 .selection-item-list-wrapper .selection-item-subheading,
