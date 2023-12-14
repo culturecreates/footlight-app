@@ -6,15 +6,18 @@ function ChangeType(props) {
   const { primaryIcon, disabled, label, secondaryIcon, promptText, onClick } = props;
   return (
     <div className="change-type-wrapper">
-      <Button
-        type="primary"
-        icon={primaryIcon}
-        disabled={disabled}
-        size="small"
-        className="first-button"
-        onClick={onClick}
-        data-cy="button-select-change-type"
-      />
+      <TooltipStyled title={promptText}>
+        <Button
+          type="primary"
+          icon={primaryIcon}
+          disabled={disabled}
+          size="small"
+          className="first-button"
+          onClick={onClick}
+          data-cy="button-select-change-type"
+        />
+      </TooltipStyled>
+
       <Button
         type="text"
         disabled={disabled}
@@ -23,16 +26,15 @@ function ChangeType(props) {
         data-cy="button-select-change-type">
         {label}
       </Button>
-      <TooltipStyled title={promptText}>
-        <Button
-          type="text"
-          icon={secondaryIcon}
-          disabled={disabled}
-          size="small"
-          className="third-button"
-          data-cy="button-select-change-type"
-        />
-      </TooltipStyled>
+
+      <Button
+        type="text"
+        icon={secondaryIcon}
+        disabled={disabled}
+        size="small"
+        className="third-button"
+        data-cy="button-select-change-type"
+      />
     </div>
   );
 }
