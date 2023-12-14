@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './searchableCheckbox.css';
 import { Dropdown, Space, Typography, Checkbox } from 'antd';
 import AuthenticationInput from '../../Input/Common/AuthenticationInput';
@@ -8,13 +8,14 @@ import NoContent from '../../NoContent/NoContent';
 import LoadingIndicator from '../../LoadingIndicator';
 
 function SearchableCheckbox(props) {
-  const { children, allowSearch, data, onFilterChange, open, value, loading = false } = props;
+  const { children, allowSearch, data, onFilterChange, value, loading = false, selectedData, open, setOpen } = props;
   const { t } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
   let items = data ?? [];
 
   useEffect(() => {
     if (allowSearch && props?.searchKey != undefined) {
-      props.searchImplementation(props?.searchKey);
+      props.searchImplementation(props?.searchKey, selectedData);
     }
   }, [props.searchKey]);
 
@@ -27,7 +28,11 @@ function SearchableCheckbox(props) {
           selectable: true,
           multiple: true,
         }}
-        open={open}
+        open={open == undefined ? isOpen : open}
+        onOpenChange={(show) => {
+          if (open == undefined) setIsOpen(show);
+          else setOpen(show);
+        }}
         trigger={['click']}
         dropdownRender={() => (
           <div className="searchable-checkbox-dropdown-wrapper">

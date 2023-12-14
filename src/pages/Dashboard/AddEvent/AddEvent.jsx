@@ -67,7 +67,7 @@ import { locationType, locationTypeOptions, virtualLocationFieldNames } from '..
 import { otherInformationFieldNames, otherInformationOptions } from '../../../constants/otherInformationOptions';
 import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../../constants/eventAccessibilityOptions';
 import { usePrompt } from '../../../hooks/usePrompt';
-import { bilingual } from '../../../utils/bilingual';
+import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import RecurringEvents from '../../../components/RecurringEvents';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequiredFieldNames';
@@ -87,6 +87,9 @@ import { sourceOptions } from '../../../constants/sourceOptions';
 import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import useElementVisibility from '../../../hooks/useElementVisibility';
 import { handleKeyPress } from '../../../utils/handleKeyPress';
+import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
+import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+
 const { TextArea } = Input;
 
 function AddEvent() {
@@ -199,6 +202,7 @@ function AddEvent() {
     let dateTime = moment.tz(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a', 'Canada/Eastern');
     return dateTime.toISOString();
   };
+  let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === 'ArtsdataIdentifier');
 
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
@@ -970,6 +974,11 @@ function AddEvent() {
     </Row>
   );
 
+  // const ArtsDataLinkJSX =
+  //   : (
+  //     <></>
+  //   );
+
   const copyOrganizerContactHandler = () => {
     if (selectedOrganizers?.length > 0) {
       if (selectedOrganizers[0]?.contact) {
@@ -1398,230 +1407,294 @@ function AddEvent() {
           </Col>
 
           <CardEvent>
-            <Form.Item
-              label={t('dashboard.events.addEditEvent.language.title')}
-              hidden={
-                standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME) ||
-                standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_EN) ||
-                standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_FR)
-                  ? adminCheckHandler()
-                    ? false
-                    : true
-                  : false
-              }
-              required={
-                requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME) ||
-                requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME_EN) ||
-                requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME_FR)
-              }>
-              <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                <BilingualInput fieldData={eventData?.name}>
-                  <Form.Item
-                    name="french"
-                    key={contentLanguage.FRENCH}
-                    initialValue={
-                      duplicateId ? eventData?.name?.fr && 'Copie de ' + eventData?.name?.fr : eventData?.name?.fr
-                    }
-                    dependencies={['english']}
-                    rules={[
-                      ({ getFieldValue }) => ({
-                        validator(_, value) {
-                          if (value || getFieldValue('english')) {
-                            return Promise.resolve();
-                          } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
-                        },
-                      }),
-                    ]}>
-                    <TextArea
-                      autoSize
-                      autoComplete="off"
-                      placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
-                      style={{
-                        borderRadius: '4px',
-                        border: `${
-                          calendarContentLanguage === contentLanguage.BILINGUAL
-                            ? '4px solid #E8E8E8'
-                            : '1px solid #b6c1c9'
-                        }`,
-                        width: '423px',
-                      }}
-                      size="large"
-                      data-cy="text-area-event-french-name"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="english"
-                    key={contentLanguage.ENGLISH}
-                    initialValue={
-                      duplicateId ? eventData?.name?.en && 'Copy of ' + eventData?.name?.en : eventData?.name?.en
-                    }
-                    dependencies={['french']}
-                    rules={[
-                      ({ getFieldValue }) => ({
-                        validator(_, value) {
-                          if (value || getFieldValue('french')) {
-                            return Promise.resolve();
-                          } else return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
-                        },
-                      }),
-                    ]}>
-                    <TextArea
-                      autoSize
-                      autoComplete="off"
-                      placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
-                      style={{
-                        borderRadius: '4px',
-                        border: `${
-                          calendarContentLanguage === contentLanguage.BILINGUAL
-                            ? '4px solid #E8E8E8'
-                            : '1px solid #b6c1c9'
-                        }`,
-                        width: '423px',
-                      }}
-                      size="large"
-                      data-cy="text-area-event-english-name"
-                    />
-                  </Form.Item>
-                </BilingualInput>
-              </ContentLanguageInput>
-
-              <Form.Item
-                name="eventType"
-                label={taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false)}
-                initialValue={eventData?.additionalType?.map((type) => {
-                  return type?.entityId;
-                })}
-                hidden={
-                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_TYPE)
-                    ? adminCheckHandler()
-                      ? false
-                      : true
-                    : false
-                }
-                style={{ display: !taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false) && 'none' }}
-                rules={[
-                  {
-                    required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EVENT_TYPE),
-                    message: t('dashboard.events.addEditEvent.validations.eventType'),
-                  },
-                ]}
-                data-cy="form-item-event-type-label">
-                <TreeSelectOption
-                  placeholder={t('dashboard.events.addEditEvent.language.placeHolderEventType')}
-                  allowClear
-                  treeDefaultExpandAll
-                  notFoundContent={<NoContent />}
-                  clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                  treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType', false, calendarContentLanguage)}
-                  tagRender={(props) => {
-                    const { label, closable, onClose } = props;
-                    return (
-                      <Tags
-                        closable={closable}
-                        onClose={onClose}
-                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}
-                        data-cy={`tag-event-type-${label}`}>
-                        {label}
-                      </Tags>
-                    );
-                  }}
-                  data-cy="treeselect-event-type"
-                />
-              </Form.Item>
-              <Form.Item
-                name="targetAudience"
-                label={taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false)}
-                initialValue={eventData?.audience?.map((audience) => {
-                  return audience?.entityId;
-                })}
-                style={{ display: !taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false) && 'none' }}
-                hidden={
-                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.AUDIENCE)
-                    ? adminCheckHandler()
-                      ? false
-                      : true
-                    : false
-                }
-                rules={[
-                  {
-                    required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.AUDIENCE),
-                    message: t('dashboard.events.addEditEvent.validations.targetAudience'),
-                  },
-                ]}
-                data-cy="form-item-audience-label">
-                <TreeSelectOption
-                  allowClear
-                  treeDefaultExpandAll
-                  notFoundContent={<NoContent />}
-                  clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                  treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience', false, calendarContentLanguage)}
-                  placeholder={t('dashboard.events.addEditEvent.language.placeHolderTargetAudience')}
-                  data-cy="treeselect-audience"
-                  tagRender={(props) => {
-                    const { closable, onClose, label } = props;
-                    return (
-                      <Tags
-                        data-cy={`tag-audience-${label}`}
-                        closable={closable}
-                        onClose={onClose}
-                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                        {label}
-                      </Tags>
-                    );
-                  }}
-                />
-              </Form.Item>
-              {allTaxonomyData?.data?.map((taxonomy, index) => {
-                if (taxonomy?.isDynamicField) {
-                  let initialValues;
-                  eventData?.dynamicFields?.forEach((dynamicField) => {
-                    if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
-                  });
-                  return (
-                    <Form.Item
-                      key={index}
-                      name={['dynamicFields', taxonomy?.id]}
-                      label={bilingual({
-                        en: taxonomy?.name?.en,
-                        fr: taxonomy?.name?.fr,
+            <>
+              {artsDataLink?.length > 0 && (
+                <Row>
+                  <Col span={24}>
+                    <p className="add-entity-label" data-cy="para-place-data-source">
+                      {t('dashboard.events.addEditEvent.dataSource')}
+                    </p>
+                  </Col>
+                  <Col span={24}>
+                    <ArtsDataInfo
+                      artsDataLink={artsDataLinkChecker(artsDataLink[0]?.uri)}
+                      name={contentLanguageBilingual({
+                        en: eventData?.name?.en,
+                        fr: eventData?.name?.fr,
                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
                       })}
-                      initialValue={
-                        dynamicAdminOnlyFields?.includes(taxonomy?.id)
-                          ? adminCheckHandler()
-                            ? initialValues
-                            : []
-                          : initialValues
-                      }
-                      hidden={
-                        dynamicAdminOnlyFields?.includes(taxonomy?.id) ? (adminCheckHandler() ? false : true) : false
-                      }
-                      data-cy={`form-item-${taxonomy?.id}`}>
-                      <TreeSelectOption
-                        allowClear
-                        treeDefaultExpandAll
-                        notFoundContent={<NoContent />}
-                        clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                        treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
-                        data-cy={`treeselect-${taxonomy?.id}`}
-                        tagRender={(props) => {
-                          const { label, closable, onClose } = props;
-                          return (
-                            <Tags
-                              data-cy={`tag-${taxonomy?.id}`}
-                              closable={closable}
-                              onClose={onClose}
-                              closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                              {label}
-                            </Tags>
-                          );
+                      disambiguatingDescription={contentLanguageBilingual({
+                        en: eventData?.disambiguatingDescription?.en,
+                        fr: eventData?.disambiguatingDescription?.fr,
+                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      })}
+                    />
+                  </Col>
+                  <Col span={24}>
+                    <div style={{ display: 'inline' }}>
+                      <span className="add-event-date-heading" data-cy="span-place-question-part-one">
+                        {t('dashboard.events.addEditEvent.question.firstPart')}
+                      </span>
+                      <span
+                        data-cy="span-place-question-part-two"
+                        className="add-event-date-heading"
+                        style={{
+                          color: '#1b3de6',
+                          textDecoration: 'underline',
+                          fontWeight: 700,
+                          cursor: 'pointer',
                         }}
+                        onClick={() => {
+                          window.location.pathname = `${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}`;
+                        }}>
+                        {t('dashboard.events.addEditEvent.question.secondPart')}
+                      </span>
+                      <span className="add-event-date-heading" data-cy="span-place-question-part-three">
+                        {t('dashboard.events.addEditEvent.question.thirdPart')}
+                      </span>
+                    </div>
+                  </Col>
+                  <Col span={24}>
+                    <div>
+                      <br />
+                    </div>
+                  </Col>
+                </Row>
+              )}
+              <Form.Item
+                label={t('dashboard.events.addEditEvent.language.title')}
+                hidden={
+                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME) ||
+                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_EN) ||
+                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_FR)
+                    ? adminCheckHandler()
+                      ? false
+                      : true
+                    : false
+                }
+                required={
+                  requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME) ||
+                  requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME_EN) ||
+                  requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME_FR)
+                }>
+                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <BilingualInput fieldData={eventData?.name}>
+                    <Form.Item
+                      name="french"
+                      key={contentLanguage.FRENCH}
+                      initialValue={
+                        duplicateId ? eventData?.name?.fr && 'Copie de ' + eventData?.name?.fr : eventData?.name?.fr
+                      }
+                      dependencies={['english']}
+                      rules={[
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value || getFieldValue('english')) {
+                              return Promise.resolve();
+                            } else
+                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                          },
+                        }),
+                      ]}>
+                      <TextArea
+                        autoSize
+                        autoComplete="off"
+                        placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
+                        style={{
+                          borderRadius: '4px',
+                          border: `${
+                            calendarContentLanguage === contentLanguage.BILINGUAL
+                              ? '4px solid #E8E8E8'
+                              : '1px solid #b6c1c9'
+                          }`,
+                          width: '423px',
+                        }}
+                        size="large"
+                        data-cy="text-area-event-french-name"
                       />
                     </Form.Item>
-                  );
-                }
-              })}
-            </Form.Item>
+                    <Form.Item
+                      name="english"
+                      key={contentLanguage.ENGLISH}
+                      initialValue={
+                        duplicateId ? eventData?.name?.en && 'Copy of ' + eventData?.name?.en : eventData?.name?.en
+                      }
+                      dependencies={['french']}
+                      rules={[
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value || getFieldValue('french')) {
+                              return Promise.resolve();
+                            } else
+                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
+                          },
+                        }),
+                      ]}>
+                      <TextArea
+                        autoSize
+                        autoComplete="off"
+                        placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
+                        style={{
+                          borderRadius: '4px',
+                          border: `${
+                            calendarContentLanguage === contentLanguage.BILINGUAL
+                              ? '4px solid #E8E8E8'
+                              : '1px solid #b6c1c9'
+                          }`,
+                          width: '423px',
+                        }}
+                        size="large"
+                        data-cy="text-area-event-english-name"
+                      />
+                    </Form.Item>
+                  </BilingualInput>
+                </ContentLanguageInput>
+
+                <Form.Item
+                  name="eventType"
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false)}
+                  initialValue={eventData?.additionalType?.map((type) => {
+                    return type?.entityId;
+                  })}
+                  hidden={
+                    standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_TYPE)
+                      ? adminCheckHandler()
+                        ? false
+                        : true
+                      : false
+                  }
+                  style={{
+                    display: !taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false) && 'none',
+                  }}
+                  rules={[
+                    {
+                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EVENT_TYPE),
+                      message: t('dashboard.events.addEditEvent.validations.eventType'),
+                    },
+                  ]}
+                  data-cy="form-item-event-type-label">
+                  <TreeSelectOption
+                    placeholder={t('dashboard.events.addEditEvent.language.placeHolderEventType')}
+                    allowClear
+                    treeDefaultExpandAll
+                    notFoundContent={<NoContent />}
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType', false, calendarContentLanguage)}
+                    tagRender={(props) => {
+                      const { label, closable, onClose } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}
+                          data-cy={`tag-event-type-${label}`}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                    data-cy="treeselect-event-type"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="targetAudience"
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false)}
+                  initialValue={eventData?.audience?.map((audience) => {
+                    return audience?.entityId;
+                  })}
+                  style={{
+                    display: !taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false) && 'none',
+                  }}
+                  hidden={
+                    standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.AUDIENCE)
+                      ? adminCheckHandler()
+                        ? false
+                        : true
+                      : false
+                  }
+                  rules={[
+                    {
+                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.AUDIENCE),
+                      message: t('dashboard.events.addEditEvent.validations.targetAudience'),
+                    },
+                  ]}
+                  data-cy="form-item-audience-label">
+                  <TreeSelectOption
+                    allowClear
+                    treeDefaultExpandAll
+                    notFoundContent={<NoContent />}
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience', false, calendarContentLanguage)}
+                    placeholder={t('dashboard.events.addEditEvent.language.placeHolderTargetAudience')}
+                    data-cy="treeselect-audience"
+                    tagRender={(props) => {
+                      const { closable, onClose, label } = props;
+                      return (
+                        <Tags
+                          data-cy={`tag-audience-${label}`}
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                  />
+                </Form.Item>
+                {allTaxonomyData?.data?.map((taxonomy, index) => {
+                  if (taxonomy?.isDynamicField) {
+                    let initialValues;
+                    eventData?.dynamicFields?.forEach((dynamicField) => {
+                      if (taxonomy?.id === dynamicField?.taxonomyId) initialValues = dynamicField?.conceptIds;
+                    });
+                    return (
+                      <Form.Item
+                        key={index}
+                        name={['dynamicFields', taxonomy?.id]}
+                        label={bilingual({
+                          en: taxonomy?.name?.en,
+                          fr: taxonomy?.name?.fr,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                        })}
+                        initialValue={
+                          dynamicAdminOnlyFields?.includes(taxonomy?.id)
+                            ? adminCheckHandler()
+                              ? initialValues
+                              : []
+                            : initialValues
+                        }
+                        hidden={
+                          dynamicAdminOnlyFields?.includes(taxonomy?.id) ? (adminCheckHandler() ? false : true) : false
+                        }
+                        data-cy={`form-item-${taxonomy?.id}`}>
+                        <TreeSelectOption
+                          allowClear
+                          treeDefaultExpandAll
+                          notFoundContent={<NoContent />}
+                          clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                          treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
+                          data-cy={`treeselect-${taxonomy?.id}`}
+                          tagRender={(props) => {
+                            const { label, closable, onClose } = props;
+                            return (
+                              <Tags
+                                data-cy={`tag-${taxonomy?.id}`}
+                                closable={closable}
+                                onClose={onClose}
+                                closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                                {label}
+                              </Tags>
+                            );
+                          }}
+                        />
+                      </Form.Item>
+                    );
+                  }
+                })}
+              </Form.Item>
+            </>
+            <></>
           </CardEvent>
           <CardEvent title={t('dashboard.events.addEditEvent.dates.dates')} required={true}>
             <>

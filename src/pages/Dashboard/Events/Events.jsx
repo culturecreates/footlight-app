@@ -120,14 +120,16 @@ function Events() {
   for (let index = 0; index < organizerFilter?.length; index++) {
     Object.assign(initialSelectedOrganizers, { [organizerFilter[index]]: true });
   }
-  let selectedOrganizersData = [],
-    selectedUsersData = [];
+
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState(initialSelectedUsers ?? {});
   const [selectedOrganizer, setSelectedOrganizers] = useState(initialSelectedOrganizers ?? {});
   const [organizersData, setOrganizersData] = useState([]);
   const [usersData, setUsersData] = useState([]);
-
+  const [selectedOrganizersData, setSelectedOrganizersData] = useState([]);
+  const [selectedUsersData, setSelectedUsersData] = useState([]);
+  const [isOrganizerOpen, setIsOrganizerOpen] = useState(false);
+  const [isUserOpen, setIsUserOpen] = useState(false);
   const [selectedDates, setSelectedDates] = useState(
     (searchParams.get('startDateRange') || sessionStorage.getItem('startDateRange')) &&
       (searchParams.get('endDateRange') || sessionStorage.getItem('endDateRange'))
@@ -161,7 +163,7 @@ function Events() {
   // let userFilterData = allUsersData?.data?.filter((item) => user?.id != item._id);
   // userFilterData = [{ _id: user?.id, ...user }]?.concat(userFilterData);
 
-  const userSearch = (userSearchKey) => {
+  const userSearch = (userSearchKey, selectedData) => {
     getAllUsers({
       page: pageNumber,
       limit: 30,
@@ -172,7 +174,7 @@ function Events() {
       includeCalenderFilter: true,
     })
       .then((response) => {
-        let currentUserList = selectedUsersData?.concat(response?.data?.data);
+        let currentUserList = selectedData?.concat(response?.data?.data);
         currentUserList = [{ _id: user?.id, ...user }]?.concat(currentUserList);
         let uniqueArray = removeObjectArrayDuplicates(currentUserList, '_id');
         setUsersData(uniqueArray);
@@ -180,7 +182,7 @@ function Events() {
       .catch((error) => console.log(error));
   };
 
-  const organizersPersonPlaceSearch = (searchKey) => {
+  const organizersPersonPlaceSearch = (searchKey, selectedData) => {
     getAllOrganization({
       calendarId,
       sessionId: timestampRef,
@@ -190,7 +192,7 @@ function Events() {
     })
       .unwrap()
       .then((response) => {
-        let uniqueArray = removeObjectArrayDuplicates(selectedOrganizersData?.concat(response?.data), 'id');
+        let uniqueArray = removeObjectArrayDuplicates(selectedData?.concat(response?.data), 'id');
         setOrganizersData(uniqueArray);
       })
       .catch((error) => console.log(error));
@@ -199,6 +201,134 @@ function Events() {
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const debounceSearchOrganizationSearch = useCallback(useDebounce(organizersPersonPlaceSearch, SEARCH_DELAY), []);
   const debounceUsersSearch = useCallback(useDebounce(userSearch, SEARCH_DELAY), []);
+
+  const onSearchHandler = (event) => {
+    setPageNumber(1);
+    setEventSearchQuery(event.target.value);
+  };
+  const addEventHandler = () => {
+    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}`);
+  };
+  const onChangeHandler = (event) => {
+    if (event.target.value === '') setEventSearchQuery('');
+  };
+  const onCheckboxChange = (e) => {
+    let currentUsersFilter = selectedUsers ?? {};
+    Object.assign(currentUsersFilter, { [e?.target?.value]: e?.target?.checked });
+    setSelectedUsers(currentUsersFilter);
+    let filteredUsers = Object.keys(currentUsersFilter).filter(function (key) {
+      return currentUsersFilter[key];
+    });
+    setSelectedUsersData(
+      usersData?.filter((userData) => {
+        if (filteredUsers?.includes(userData?._id)) return true;
+        else return false;
+      }),
+    );
+
+    setUserFilter(filteredUsers);
+    setPageNumber(1);
+  };
+
+  const onOrganizerCheckboxChange = (e) => {
+    let currentOrganizerFilter = selectedOrganizer ?? {};
+    Object.assign(currentOrganizerFilter, { [e?.target?.value]: e?.target?.checked });
+    setSelectedOrganizers(currentOrganizerFilter);
+    let filteredOrganizers = Object.keys(currentOrganizerFilter).filter(function (key) {
+      return currentOrganizerFilter[key];
+    });
+    setSelectedOrganizersData(
+      organizersData?.filter((organizerData) => {
+        if (filteredOrganizers?.includes(organizerData?.id)) return true;
+        else return false;
+      }),
+    );
+
+    setOrganizerFilter(filteredOrganizers);
+    setPageNumber(1);
+  };
+
+  const onFilterChange = (values, filterType) => {
+    if (filterType === filterTypes.PUBLICATION)
+      setFilter({
+        ...filter,
+        publication: values,
+      });
+    setPageNumber(1);
+  };
+
+  const onSortSelect = ({ selectedKeys }) => {
+    setFilter({
+      ...filter,
+      sort: selectedKeys[0],
+      order: sortOrder?.ASC,
+    });
+    setPageNumber(1);
+  };
+
+  const onSortOrderChange = () => {
+    if (filter?.order == sortOrder?.ASC)
+      setFilter({
+        ...filter,
+        order: sortOrder?.DESC,
+      });
+    else if (filter?.order == sortOrder?.DESC)
+      setFilter({
+        ...filter,
+        order: sortOrder?.ASC,
+      });
+    setPageNumber(1);
+  };
+
+  const handlePopoverOpenChange = (newOpen) => {
+    setIsPopoverOpen(newOpen);
+  };
+
+  const filterClearHandler = () => {
+    setFilter({
+      publication: [],
+      sort: sortByOptions[2]?.key,
+      order: sortOrder?.ASC,
+      dates: [],
+    });
+    setUserFilter([]);
+    setSelectedDates([]);
+    setOrganizerFilter([]);
+    let usersToClear = selectedUsers;
+    Object.keys(usersToClear)?.forEach(function (key) {
+      usersToClear[key] = false;
+    });
+    setSelectedUsers(Object.assign({}, usersToClear));
+
+    let organizerToClear = selectedOrganizer;
+    Object.keys(organizerToClear)?.forEach(function (key) {
+      organizerToClear[key] = false;
+    });
+    setSelectedOrganizers(Object.assign({}, organizerToClear));
+
+    setPageNumber(1);
+    sessionStorage.removeItem('page');
+    sessionStorage.removeItem('query');
+    sessionStorage.removeItem('order');
+    sessionStorage.removeItem('sortBy');
+    sessionStorage.removeItem('users');
+    sessionStorage.removeItem('organizers');
+    sessionStorage.removeItem('publication');
+    sessionStorage.removeItem('startDateRange');
+    sessionStorage.removeItem('endDateRange');
+  };
+  useEffect(() => {
+    let uniqueArray = removeObjectArrayDuplicates(
+      [{ _id: user?.id, ...user }]?.concat(selectedUsersData)?.concat(usersData),
+      '_id',
+    );
+    setUsersData(uniqueArray);
+  }, [isUserOpen]);
+
+  useEffect(() => {
+    let uniqueArray = removeObjectArrayDuplicates(selectedOrganizersData?.concat(organizersData), 'id');
+    setOrganizersData(uniqueArray);
+  }, [isOrganizerOpen]);
 
   useEffect(() => {
     let query = new URLSearchParams();
@@ -320,7 +450,7 @@ function Events() {
               })
                 .unwrap()
                 .then((response) => {
-                  selectedUsersData = response?.data;
+                  setSelectedUsersData(response?.data);
                   allUsersWithSelected = response?.data?.concat(allUsersWithSelected);
                   allUsersWithSelected = [{ _id: user?.id, ...user }]?.concat(allUsersWithSelected);
                   let uniqueArray = removeObjectArrayDuplicates(allUsersWithSelected, '_id');
@@ -356,7 +486,7 @@ function Events() {
           })
             .unwrap()
             .then((response) => {
-              selectedOrganizersData = response?.data;
+              setSelectedOrganizersData(response?.data);
               allOrganizersWithSelected = response?.data?.concat(allOrganizersWithSelected);
               let uniqueArray = removeObjectArrayDuplicates(allOrganizersWithSelected, 'id');
               setOrganizersData(uniqueArray);
@@ -367,115 +497,6 @@ function Events() {
       .catch((error) => console.log(error));
   }, [calendarId, user]);
 
-  const onSearchHandler = (event) => {
-    setPageNumber(1);
-    setEventSearchQuery(event.target.value);
-  };
-  const addEventHandler = () => {
-    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}`);
-  };
-  const onChangeHandler = (event) => {
-    if (event.target.value === '') setEventSearchQuery('');
-  };
-  const onCheckboxChange = (e) => {
-    let currentUsersFilter = selectedUsers ?? {};
-    Object.assign(currentUsersFilter, { [e?.target?.value]: e?.target?.checked });
-    setSelectedUsers(currentUsersFilter);
-    let filteredUsers = Object.keys(currentUsersFilter).filter(function (key) {
-      return currentUsersFilter[key];
-    });
-    selectedUsersData = usersData?.filter((userData) => {
-      if (filteredUsers?.includes(userData?._id)) return true;
-      else return false;
-    });
-    setUserFilter(filteredUsers);
-    setPageNumber(1);
-  };
-
-  const onOrganizerCheckboxChange = (e) => {
-    let currentOrganizerFilter = selectedOrganizer ?? {};
-    Object.assign(currentOrganizerFilter, { [e?.target?.value]: e?.target?.checked });
-    setSelectedOrganizers(currentOrganizerFilter);
-    let filteredOrganizers = Object.keys(currentOrganizerFilter).filter(function (key) {
-      return currentOrganizerFilter[key];
-    });
-    selectedOrganizersData = organizersData?.filter((organizerData) => {
-      if (filteredOrganizers?.includes(organizerData?.id)) return true;
-      else return false;
-    });
-    setOrganizerFilter(filteredOrganizers);
-    setPageNumber(1);
-  };
-
-  const onFilterChange = (values, filterType) => {
-    if (filterType === filterTypes.PUBLICATION)
-      setFilter({
-        ...filter,
-        publication: values,
-      });
-    setPageNumber(1);
-  };
-
-  const onSortSelect = ({ selectedKeys }) => {
-    setFilter({
-      ...filter,
-      sort: selectedKeys[0],
-      order: sortOrder?.ASC,
-    });
-    setPageNumber(1);
-  };
-
-  const onSortOrderChange = () => {
-    if (filter?.order == sortOrder?.ASC)
-      setFilter({
-        ...filter,
-        order: sortOrder?.DESC,
-      });
-    else if (filter?.order == sortOrder?.DESC)
-      setFilter({
-        ...filter,
-        order: sortOrder?.ASC,
-      });
-    setPageNumber(1);
-  };
-
-  const handlePopoverOpenChange = (newOpen) => {
-    setIsPopoverOpen(newOpen);
-  };
-
-  const filterClearHandler = () => {
-    setFilter({
-      publication: [],
-      sort: sortByOptions[2]?.key,
-      order: sortOrder?.ASC,
-      dates: [],
-    });
-    setUserFilter([]);
-    setSelectedDates([]);
-    setOrganizerFilter([]);
-    let usersToClear = selectedUsers;
-    Object.keys(usersToClear)?.forEach(function (key) {
-      usersToClear[key] = false;
-    });
-    setSelectedUsers(Object.assign({}, usersToClear));
-
-    let organizerToClear = selectedOrganizer;
-    Object.keys(organizerToClear)?.forEach(function (key) {
-      organizerToClear[key] = false;
-    });
-    setSelectedOrganizers(Object.assign({}, organizerToClear));
-
-    setPageNumber(1);
-    sessionStorage.removeItem('page');
-    sessionStorage.removeItem('query');
-    sessionStorage.removeItem('order');
-    sessionStorage.removeItem('sortBy');
-    sessionStorage.removeItem('users');
-    sessionStorage.removeItem('organizers');
-    sessionStorage.removeItem('publication');
-    sessionStorage.removeItem('startDateRange');
-    sessionStorage.removeItem('endDateRange');
-  };
   return (
     !isLoading && (
       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
@@ -594,6 +615,9 @@ function Events() {
                   <SearchableCheckbox
                     allowSearch={true}
                     loading={allUsersLoading}
+                    open={isUserOpen}
+                    setOpen={setIsUserOpen}
+                    selectedData={selectedUsersData}
                     overlayStyle={{ height: '304px' }}
                     searchImplementation={debounceUsersSearch}
                     setSearchKey={setSearchKey}
@@ -706,9 +730,12 @@ function Events() {
                     allowSearch={true}
                     loading={organizerLoading}
                     overlayStyle={{ height: '304px' }}
+                    selectedData={selectedOrganizersData}
                     searchImplementation={debounceSearchOrganizationSearch}
                     setSearchKey={setOrganizationSearchKey}
                     searchKey={organizationSearchKey}
+                    open={isOrganizerOpen}
+                    setOpen={setIsOrganizerOpen}
                     data={organizersData?.map((organizer) => {
                       return {
                         key: organizer?.id,

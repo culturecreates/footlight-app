@@ -815,7 +815,7 @@ function CreateNewPlace() {
 
   return !isPlaceLoading && !artsDataLoading && !taxonomyLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-      <div className="add-edit-wrapper add-organization-wrapper">
+      <div className="add-edit-wrapper add-organization-wrapper create-new-place-wrapper">
         <Form form={form} layout="vertical" name="place" onValuesChange={onValuesChangeHandler}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
@@ -1299,6 +1299,8 @@ function CreateNewPlace() {
                 </Row>
                 <Form.Item name="addressSearch">
                   <PlacesAutocomplete
+                    googleCallbackName="initTwo"
+                    searchOptions={{ componentRestrictions: { country: 'CA' } }}
                     value={address}
                     onChange={handleChange}
                     onSelect={handleSelect}

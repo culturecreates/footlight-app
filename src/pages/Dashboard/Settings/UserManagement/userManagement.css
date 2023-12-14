@@ -36,7 +36,7 @@
   font-style: normal;
   font-weight: 600;
   line-height: 16px;
-  text-decoration-line: underline;
+  /* text-decoration-line: underline; */
   display: flex;
   align-items: center;
 }
