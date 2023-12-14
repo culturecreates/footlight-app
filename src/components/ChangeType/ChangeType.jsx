@@ -25,16 +25,15 @@ function ChangeType(props) {
         onClick={onClick}
         data-cy="button-select-change-type">
         {label}
+        <Button
+          type="text"
+          icon={secondaryIcon}
+          disabled={disabled}
+          size="small"
+          className="third-button"
+          data-cy="button-select-change-type"
+        />
       </Button>
-
-      <Button
-        type="text"
-        icon={secondaryIcon}
-        disabled={disabled}
-        size="small"
-        className="third-button"
-        data-cy="button-select-change-type"
-      />
     </div>
   );
 }
