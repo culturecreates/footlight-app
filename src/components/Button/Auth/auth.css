@@ -22,3 +22,8 @@
   color: #ffffff;
   cursor: pointer;
 }
+
+.login-form-button:hover {
+  background-color: #0f0e98;
+  border-color: #0f0e98;
+}
