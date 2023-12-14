@@ -46,7 +46,11 @@ function EventStatus(props) {
   }, [props.label]);
 
   return (
-    <Tag {...props} color={backgroundColor} className="event-status-tag" style={{ color: fontColor }}>
+    <Tag
+      {...props}
+      color={backgroundColor}
+      className="event-status-tag"
+      style={{ color: fontColor, display: 'grid', placeContent: 'center' }}>
       {label}
     </Tag>
   );
