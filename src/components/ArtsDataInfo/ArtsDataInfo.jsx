@@ -20,14 +20,18 @@ function ArtsDataInfo(props) {
           <Col className="arts-data-name">
             <span data-cy="span-artsdata-name">{name}</span>
           </Col>
-          <Col>
-            <span>
-              <Badge color="#1B3DE6" style={{ height: '2px', width: '2px' }} />
-            </span>
-          </Col>
-          <Col className="arts-data-description" data-cy="col-artsdata-disambiguating-description">
-            {disambiguatingDescription}
-          </Col>
+          {disambiguatingDescription && (
+            <>
+              <Col>
+                <span>
+                  <Badge color="#1B3DE6" style={{ height: '2px', width: '2px' }} />
+                </span>
+              </Col>
+              <Col className="arts-data-description" data-cy="col-artsdata-disambiguating-description">
+                {disambiguatingDescription}
+              </Col>
+            </>
+          )}
         </Row>
       </Col>
       <Col
