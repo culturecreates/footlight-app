@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const useElementVisibility = ({ data, setItem, setFieldValue, popOverHandler }) => {
+const useScroll = ({ data, setItem, setFieldValue, popOverHandler }) => {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const itemContainersArray = document?.querySelectorAll('.search-scrollable-content');
   let focusedProjectIndex = -1;
@@ -82,4 +82,4 @@ const useElementVisibility = ({ data, setItem, setFieldValue, popOverHandler }) 
   }, [itemContainersArray]);
 };
 
-export default useElementVisibility;
+export default useScroll;

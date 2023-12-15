@@ -85,7 +85,7 @@ import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
-import useElementVisibility from '../../../hooks/useElementVisibility';
+import useScroll from '../../../hooks/useScroll';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 
@@ -180,7 +180,7 @@ function AddEvent() {
   const [imageCropOpen, setImageCropOpen] = useState(false);
 
   usePrompt(t('common.unsavedChanges'), showDialog);
-  useElementVisibility({
+  useScroll({
     setItem: setLocationPlace,
     data: [allPlacesList, allPlacesArtsdataList],
     setFieldValue: (selectedItem) => form.setFieldValue('locationPlace', selectedItem),
