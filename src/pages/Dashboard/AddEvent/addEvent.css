@@ -110,6 +110,10 @@
   cursor: pointer;
 }
 
+.add-edit-wrapper .event-popover-options:focus > .selection-item-wrapper {
+  background: #eff2ff;
+}
+
 .add-edit-wrapper .recurring-day-buttons {
   background-color: #f9faff;
   border: 1px solid #b6c1c9;

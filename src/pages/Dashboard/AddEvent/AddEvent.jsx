@@ -86,7 +86,6 @@ import { SEARCH_DELAY } from '../../../constants/search';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import useElementVisibility from '../../../hooks/useElementVisibility';
-import { handleKeyPress } from '../../../utils/handleKeyPress';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 
@@ -179,10 +178,14 @@ function AddEvent() {
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
   const [selectedOrganizerPerformerSupporterType, setSelectedOrganizerPerformerSupporterType] = useState();
   const [imageCropOpen, setImageCropOpen] = useState(false);
-  const [selectedItemIndex, setSelectedItemIndex] = useState(-1);
 
-  useElementVisibility(`event-popover-options-${selectedItemIndex}`, '.search-scrollable-content'); // hook to handle scroll for popover components
   usePrompt(t('common.unsavedChanges'), showDialog);
+  useElementVisibility({
+    setItem: setLocationPlace,
+    data: [allPlacesList, allPlacesArtsdataList],
+    setFieldValue: (selectedItem) => form.setFieldValue('locationPlace', selectedItem),
+    popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false }),
+  }); // hook to handle scroll for popover components
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -974,11 +977,6 @@ function AddEvent() {
     </Row>
   );
 
-  // const ArtsDataLinkJSX =
-  //   : (
-  //     <></>
-  //   );
-
   const copyOrganizerContactHandler = () => {
     if (selectedOrganizers?.length > 0) {
       if (selectedOrganizers[0]?.contact) {
@@ -997,39 +995,6 @@ function AddEvent() {
   useEffect(() => {
     if (isError) navigate(`${PathName.NotFound}`);
   }, [isError]);
-
-  useEffect(() => {
-    const handleGlobalKeyDown = (e) => {
-      if (isPopoverOpen.locationPlace) {
-        handleKeyPress({
-          e,
-          selectedItemIndex,
-          data: allPlacesList,
-          setSelectedItemIndex,
-          setItem: setLocationPlace,
-          form,
-          popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false }),
-        });
-      }
-      if (isPopoverOpen.organizer) {
-        handleKeyPress({
-          e,
-          selectedItemIndex,
-          data: organizersList,
-          setSelectedItemIndex,
-          setItem: setOrganizersArtsdataList,
-          form,
-          popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, organizer: false }),
-        });
-      }
-    };
-
-    window.addEventListener('keydown', handleGlobalKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleGlobalKeyDown);
-    };
-  }, [isPopoverOpen.locationPlace, selectedItemIndex]);
 
   useEffect(() => {
     if (addedFields?.length > 0) {
@@ -1978,7 +1943,6 @@ function AddEvent() {
                 <Popover
                   open={isPopoverOpen.locationPlace}
                   onOpenChange={(open) => {
-                    setSelectedItemIndex(-1);
                     setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open });
                   }}
                   overlayClassName="event-popover"
@@ -2011,17 +1975,7 @@ function AddEvent() {
                                 allPlacesList?.map((place, index) => (
                                   <div
                                     key={index}
-                                    className={`event-popover-options ${
-                                      locationPlace?.value == place?.value ? 'event-popover-options-active' : null
-                                    } ${`event-popover-options-${index}`} ${
-                                      selectedItemIndex == index ? 'event-popover-options-active-hover' : ''
-                                    }`}
-                                    onMouseEnter={() => {
-                                      setSelectedItemIndex(index);
-                                    }}
-                                    onMouseLeave={() => {
-                                      setSelectedItemIndex(-1);
-                                    }}
+                                    className="event-popover-options"
                                     onClick={() => {
                                       setLocationPlace(place);
                                       form.setFieldValue('locationPlace', place?.value);
@@ -2061,7 +2015,7 @@ function AddEvent() {
                                   allPlacesArtsdataList?.map((place, index) => (
                                     <div
                                       key={index}
-                                      className="event-popover-options"
+                                      className="event-popover-options event-popover-options-arts-data"
                                       onClick={() => {
                                         setLocationPlace(place);
                                         form.setFieldValue('locationPlace', place?.uri);
@@ -2445,7 +2399,6 @@ function AddEvent() {
                   <Popover
                     open={isPopoverOpen.organizer}
                     onOpenChange={(open) => {
-                      setSelectedItemIndex(-1);
                       setIsPopoverOpen({ ...isPopoverOpen, organizer: open });
                     }}
                     overlayClassName="event-popover"
@@ -2478,21 +2431,13 @@ function AddEvent() {
                                   organizersList?.map((organizer, index) => (
                                     <div
                                       key={index}
-                                      className={`event-popover-options ${`event-popover-options-${index}`} ${
-                                        selectedItemIndex == index ? 'event-popover-options-active-hover' : ''
-                                      }`}
+                                      className="event-popover-options"
                                       onClick={() => {
                                         setSelectedOrganizers([...selectedOrganizers, organizer]);
                                         setIsPopoverOpen({
                                           ...isPopoverOpen,
                                           organizer: false,
                                         });
-                                      }}
-                                      onMouseEnter={() => {
-                                        setSelectedItemIndex(index);
-                                      }}
-                                      onMouseLeave={() => {
-                                        setSelectedItemIndex(-1);
                                       }}
                                       data-cy={`div-select-organizer-${index}`}>
                                       {organizer?.label}
@@ -2883,21 +2828,13 @@ function AddEvent() {
                                 performerList?.map((performer, index) => (
                                   <div
                                     key={index}
-                                    className={`event-popover-options ${`event-popover-options-${index}`} ${
-                                      selectedItemIndex == index ? 'event-popover-options-active-hover' : ''
-                                    }`}
+                                    className="event-popover-options"
                                     onClick={() => {
                                       setSelectedPerformers([...selectedPerformers, performer]);
                                       setIsPopoverOpen({
                                         ...isPopoverOpen,
                                         performer: false,
                                       });
-                                    }}
-                                    onMouseEnter={() => {
-                                      setSelectedItemIndex(index);
-                                    }}
-                                    onMouseLeave={() => {
-                                      setSelectedItemIndex(-1);
                                     }}
                                     data-cy={`div-select-performer-${index}`}>
                                     {performer?.label}
