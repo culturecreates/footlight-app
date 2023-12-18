@@ -132,15 +132,7 @@ function Dashboard() {
             style={{
               background: '#ffffff',
             }}>
-            <Content
-              className="site-layout-background"
-              style={{
-                padding: '34px 32px 32px 32px',
-                margin: 0,
-                minHeight: 280,
-                overflowY: 'scroll',
-                background: '#F9FAFF',
-              }}>
+            <Content className="site-layout-background">
               <Outlet context={[currentCalendarData, pageNumber, setPageNumber, getCalendar]} />
             </Content>
           </Layout>
