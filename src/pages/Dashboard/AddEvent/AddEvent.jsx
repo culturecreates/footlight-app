@@ -180,12 +180,45 @@ function AddEvent() {
   const [imageCropOpen, setImageCropOpen] = useState(false);
 
   usePrompt(t('common.unsavedChanges'), showDialog);
+
+  // hook to handle scroll for popover components
   useScroll({
     setItem: setLocationPlace,
     data: [allPlacesList, allPlacesArtsdataList],
     setFieldValue: (selectedItem) => form.setFieldValue('locationPlace', selectedItem),
     popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false }),
-  }); // hook to handle scroll for popover components
+    isPopoverOpen: isPopoverOpen.locationPlace,
+  });
+
+  useScroll({
+    setItem: (organizer) => setSelectedOrganizers([...selectedOrganizers, organizer]),
+    data: [organizersList, organizersArtsdataList],
+    setFieldValue: () => {
+      return;
+    },
+    popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, organizer: false }),
+    isPopoverOpen: isPopoverOpen.organizer,
+  });
+
+  useScroll({
+    setItem: (performer) => setSelectedPerformers([...selectedPerformers, performer]),
+    data: [performerList, performerArtsdataList],
+    setFieldValue: () => {
+      return;
+    },
+    popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, performer: false }),
+    isPopoverOpen: isPopoverOpen.performer,
+  });
+
+  useScroll({
+    setItem: (supporter) => setSelectedSupporters([...selectedSupporters, supporter]),
+    data: [supporterList, supporterArtsdataList],
+    setFieldValue: () => {
+      return;
+    },
+    popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, supporter: false }),
+    isPopoverOpen: isPopoverOpen.supporter,
+  });
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -1945,6 +1978,7 @@ function AddEvent() {
                   onOpenChange={(open) => {
                     setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open });
                   }}
+                  destroyTooltipOnHide={true}
                   overlayClassName="event-popover"
                   placement="bottom"
                   autoAdjustOverflow={false}
@@ -2401,6 +2435,7 @@ function AddEvent() {
                     onOpenChange={(open) => {
                       setIsPopoverOpen({ ...isPopoverOpen, organizer: open });
                     }}
+                    destroyTooltipOnHide={true}
                     overlayClassName="event-popover"
                     placement="bottom"
                     autoAdjustOverflow={false}
@@ -2470,7 +2505,7 @@ function AddEvent() {
                                     organizersArtsdataList?.map((organizer, index) => (
                                       <div
                                         key={index}
-                                        className={`event-popover-option`}
+                                        className="event-popover-options"
                                         onClick={() => {
                                           setSelectedOrganizers([...selectedOrganizers, organizer]);
                                           setIsPopoverOpen({
@@ -2802,6 +2837,7 @@ function AddEvent() {
                     overlayClassName="event-popover"
                     placement="bottom"
                     autoAdjustOverflow={false}
+                    destroyTooltipOnHide={true}
                     trigger={['click']}
                     getPopupContainer={(trigger) => trigger.parentNode}
                     data-cy="popover-performer"
@@ -2967,6 +3003,7 @@ function AddEvent() {
                     overlayClassName="event-popover"
                     placement="bottom"
                     autoAdjustOverflow={false}
+                    destroyTooltipOnHide={true}
                     trigger={['click']}
                     getPopupContainer={(trigger) => trigger.parentNode}
                     data-cy="popover-supporter"
