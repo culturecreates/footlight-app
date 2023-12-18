@@ -204,8 +204,8 @@ const AddUser = () => {
         .validateFields()
         .then((values) => {
           inviteUser({
-            firstName: values.firstName,
-            lastName: values.lastName,
+            firstName: values.firstName?.trim(),
+            lastName: values.lastName?.trim(),
             email: values.email,
             role: values.userType,
             language: values?.languagePreference?.key,
@@ -242,8 +242,8 @@ const AddUser = () => {
           updateCurrentUser({
             calendarId,
             body: {
-              firstName: values?.firstName,
-              lastName: values?.lastName,
+              firstName: values?.firstName?.trim(),
+              lastName: values?.lastName?.trim(),
               email: values?.email,
               interfaceLanguage: values?.languagePreference?.key,
             },
@@ -284,8 +284,8 @@ const AddUser = () => {
                   refreshToken,
                   user: {
                     id: user?.id,
-                    firstName: values?.firstName,
-                    lastName: values?.lastName,
+                    firstName: values?.firstName?.trim(),
+                    lastName: values?.lastName?.trim(),
                     email: values?.email,
                     profileImage: user?.profileImage,
                     roles: user?.roles,
@@ -329,8 +329,8 @@ const AddUser = () => {
             id: userId,
             calendarId,
             body: {
-              firstName: values.firstName,
-              lastName: values.lastName,
+              firstName: values.firstName?.trim(),
+              lastName: values.lastName?.trim(),
               email: values.email,
               interfaceLanguage: values?.languagePreference?.key,
               modifyRole: {
