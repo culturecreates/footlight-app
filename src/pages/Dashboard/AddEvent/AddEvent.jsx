@@ -85,9 +85,9 @@ import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
-import useScroll from '../../../hooks/useScroll';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import useKeyboardAccessiblePopOver from '../../../hooks/useKeyboardAccessiblePopOver';
 
 const { TextArea } = Input;
 
@@ -182,7 +182,7 @@ function AddEvent() {
   usePrompt(t('common.unsavedChanges'), showDialog);
 
   // hook to handle scroll for popover components
-  useScroll({
+  useKeyboardAccessiblePopOver({
     setItem: setLocationPlace,
     data: [allPlacesList, allPlacesArtsdataList],
     setFieldValue: (selectedItem) => form.setFieldValue('locationPlace', selectedItem),
@@ -190,7 +190,7 @@ function AddEvent() {
     isPopoverOpen: isPopoverOpen.locationPlace,
   });
 
-  useScroll({
+  useKeyboardAccessiblePopOver({
     setItem: (organizer) => setSelectedOrganizers([...selectedOrganizers, organizer]),
     data: [organizersList, organizersArtsdataList],
     setFieldValue: () => {
@@ -200,7 +200,7 @@ function AddEvent() {
     isPopoverOpen: isPopoverOpen.organizer,
   });
 
-  useScroll({
+  useKeyboardAccessiblePopOver({
     setItem: (performer) => setSelectedPerformers([...selectedPerformers, performer]),
     data: [performerList, performerArtsdataList],
     setFieldValue: () => {
@@ -210,7 +210,7 @@ function AddEvent() {
     isPopoverOpen: isPopoverOpen.performer,
   });
 
-  useScroll({
+  useKeyboardAccessiblePopOver({
     setItem: (supporter) => setSelectedSupporters([...selectedSupporters, supporter]),
     data: [supporterList, supporterArtsdataList],
     setFieldValue: () => {

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-const useScroll = ({ data, setItem, setFieldValue, popOverHandler, isPopoverOpen }) => {
+const useKeyboardAccessiblePopOver = ({ data, setItem, setFieldValue, popOverHandler, isPopoverOpen }) => {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let focusedItemIndex = -1;
   let itemsRef = useRef([]);
@@ -88,7 +88,7 @@ const useScroll = ({ data, setItem, setFieldValue, popOverHandler, isPopoverOpen
   }, [isPopoverOpen, data]);
 };
 
-export default useScroll;
+export default useKeyboardAccessiblePopOver;
 
 // initial method
 
