@@ -14,6 +14,7 @@ export const formPayloadHandler = (value, mappedField, formFields) => {
   const currentField = formFields?.filter((field) => field?.mappedField === mappedField);
   let currentMappedField = mappedField?.split('.');
   let payload;
+
   if (currentField?.length > 0) {
     let currentDatatype = currentField[0]?.datatype;
     switch (currentDatatype) {
