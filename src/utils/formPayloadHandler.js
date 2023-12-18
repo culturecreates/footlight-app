@@ -1,4 +1,4 @@
-import { dataTypes } from '../constants/formFields';
+import { dataTypes, formTypes } from '../constants/formFields';
 
 const write = (object, path, value) => {
   return path.reduceRight((obj, next, idx, fullPath) => {
@@ -18,6 +18,12 @@ export const formPayloadHandler = (value, mappedField, formFields) => {
     let currentDatatype = currentField[0]?.datatype;
     switch (currentDatatype) {
       case dataTypes.MULTI_LINGUAL:
+        if (currentField[0]?.type === formTypes.INPUT) {
+          value = {
+            en: value?.en?.trim(),
+            fr: value?.fr?.trim(),
+          };
+        }
         if (currentMappedField?.length > 1) return write({}, currentMappedField, value ?? { en: '', fr: '' });
         else return { [mappedField]: value };
 
