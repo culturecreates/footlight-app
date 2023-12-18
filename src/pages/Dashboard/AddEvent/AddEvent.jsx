@@ -396,8 +396,8 @@ function AddEvent() {
               ...locationId,
               virtualLocation: {
                 name: {
-                  en: values?.englishVirtualLocation,
-                  fr: values?.frenchVirtualLocation,
+                  en: values?.englishVirtualLocation?.trim(),
+                  fr: values?.frenchVirtualLocation?.trim(),
                 },
                 description: {},
                 dynamicFields: [],
@@ -416,8 +416,8 @@ function AddEvent() {
           ) {
             contactPoint = {
               name: {
-                en: values?.englishContactTitle,
-                fr: values?.frenchContactTitle,
+                en: values?.englishContactTitle?.trim(),
+                fr: values?.frenchContactTitle?.trim(),
               },
               url: {
                 uri: urlProtocolCheck(values?.contactWebsiteUrl),
@@ -436,8 +436,8 @@ function AddEvent() {
 
           if (values?.englishAccessibilityNote || values?.frenchAccessibilityNote) {
             accessibilityNote = {
-              ...(values?.englishAccessibilityNote && { en: values?.englishAccessibilityNote }),
-              ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote }),
+              ...(values?.englishAccessibilityNote && { en: values?.englishAccessibilityNote?.trim() }),
+              ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote?.trim() }),
             };
           }
           if (values?.keywords?.length > 0) {
@@ -448,8 +448,8 @@ function AddEvent() {
               category: ticketType,
               ...((values?.englishTicketNote || values?.frenchTicketNote) && {
                 name: {
-                  en: values?.englishTicketNote,
-                  fr: values?.frenchTicketNote,
+                  en: values?.englishTicketNote?.trim(),
+                  fr: values?.frenchTicketNote?.trim(),
                 },
               }),
               ...(ticketType === offerTypes.PAYING &&
@@ -528,8 +528,8 @@ function AddEvent() {
 
           eventObj = {
             name: {
-              en: values?.english,
-              fr: values?.french,
+              en: values?.english?.trim(),
+              fr: values?.french?.trim(),
             },
             ...(values?.startTime && { startDateTime }),
             ...(!values?.startTime && { startDate: startDateTime }),
