@@ -235,7 +235,7 @@ function Lists(props) {
                     className="artsdata-link-outlined-icon"
                     data-cy="artsdata-link-outlined-icon">
                     <span>
-                      <LinkOutlined style={{ fontSize: '12px' }} />
+                      <LinkOutlined style={{ fontSize: '14px' }} />
                     </span>
                   </div>
                 )}

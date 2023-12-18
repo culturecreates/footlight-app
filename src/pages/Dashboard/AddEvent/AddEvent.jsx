@@ -87,6 +87,7 @@ import { sourceOptions } from '../../../constants/sourceOptions';
 import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import useKeyboardAccessiblePopOver from '../../../hooks/useKeyboardAccessiblePopOver';
 
 const { TextArea } = Input;
 
@@ -179,6 +180,45 @@ function AddEvent() {
   const [imageCropOpen, setImageCropOpen] = useState(false);
 
   usePrompt(t('common.unsavedChanges'), showDialog);
+
+  // hook to handle scroll for popover components
+  useKeyboardAccessiblePopOver({
+    setItem: setLocationPlace,
+    data: [allPlacesList, allPlacesArtsdataList],
+    setFieldValue: (selectedItem) => form.setFieldValue('locationPlace', selectedItem),
+    popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false }),
+    isPopoverOpen: isPopoverOpen.locationPlace,
+  });
+
+  useKeyboardAccessiblePopOver({
+    setItem: (organizer) => setSelectedOrganizers([...selectedOrganizers, organizer]),
+    data: [organizersList, organizersArtsdataList],
+    setFieldValue: () => {
+      return;
+    },
+    popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, organizer: false }),
+    isPopoverOpen: isPopoverOpen.organizer,
+  });
+
+  useKeyboardAccessiblePopOver({
+    setItem: (performer) => setSelectedPerformers([...selectedPerformers, performer]),
+    data: [performerList, performerArtsdataList],
+    setFieldValue: () => {
+      return;
+    },
+    popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, performer: false }),
+    isPopoverOpen: isPopoverOpen.performer,
+  });
+
+  useKeyboardAccessiblePopOver({
+    setItem: (supporter) => setSelectedSupporters([...selectedSupporters, supporter]),
+    data: [supporterList, supporterArtsdataList],
+    setFieldValue: () => {
+      return;
+    },
+    popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, supporter: false }),
+    isPopoverOpen: isPopoverOpen.supporter,
+  });
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -969,11 +1009,6 @@ function AddEvent() {
       </Col>
     </Row>
   );
-
-  // const ArtsDataLinkJSX =
-  //   : (
-  //     <></>
-  //   );
 
   const copyOrganizerContactHandler = () => {
     if (selectedOrganizers?.length > 0) {
@@ -1940,7 +1975,10 @@ function AddEvent() {
                 data-cy="form-item-place-label">
                 <Popover
                   open={isPopoverOpen.locationPlace}
-                  onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open })}
+                  onOpenChange={(open) => {
+                    setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open });
+                  }}
+                  destroyTooltipOnHide={true}
                   overlayClassName="event-popover"
                   placement="bottom"
                   autoAdjustOverflow={false}
@@ -1971,9 +2009,7 @@ function AddEvent() {
                                 allPlacesList?.map((place, index) => (
                                   <div
                                     key={index}
-                                    className={`event-popover-options ${
-                                      locationPlace?.value == place?.value ? 'event-popover-options-active' : null
-                                    }`}
+                                    className="event-popover-options"
                                     onClick={() => {
                                       setLocationPlace(place);
                                       form.setFieldValue('locationPlace', place?.value);
@@ -2013,7 +2049,7 @@ function AddEvent() {
                                   allPlacesArtsdataList?.map((place, index) => (
                                     <div
                                       key={index}
-                                      className="event-popover-options"
+                                      className="event-popover-options event-popover-options-arts-data"
                                       onClick={() => {
                                         setLocationPlace(place);
                                         form.setFieldValue('locationPlace', place?.uri);
@@ -2396,7 +2432,10 @@ function AddEvent() {
                   ]}>
                   <Popover
                     open={isPopoverOpen.organizer}
-                    onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, organizer: open })}
+                    onOpenChange={(open) => {
+                      setIsPopoverOpen({ ...isPopoverOpen, organizer: open });
+                    }}
+                    destroyTooltipOnHide={true}
                     overlayClassName="event-popover"
                     placement="bottom"
                     autoAdjustOverflow={false}
@@ -2798,6 +2837,7 @@ function AddEvent() {
                     overlayClassName="event-popover"
                     placement="bottom"
                     autoAdjustOverflow={false}
+                    destroyTooltipOnHide={true}
                     trigger={['click']}
                     getPopupContainer={(trigger) => trigger.parentNode}
                     data-cy="popover-performer"
@@ -2963,6 +3003,7 @@ function AddEvent() {
                     overlayClassName="event-popover"
                     placement="bottom"
                     autoAdjustOverflow={false}
+                    destroyTooltipOnHide={true}
                     trigger={['click']}
                     getPopupContainer={(trigger) => trigger.parentNode}
                     data-cy="popover-supporter"
