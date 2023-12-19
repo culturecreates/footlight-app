@@ -128,10 +128,7 @@ function Dashboard() {
             pageNumber={pageNumber}
             setPageNumber={setPageNumber}
           />
-          <Layout
-            style={{
-              background: '#ffffff',
-            }}>
+          <Layout>
             <Content
               className="site-layout-background"
               style={{
@@ -139,7 +136,7 @@ function Dashboard() {
                 margin: 0,
                 minHeight: 280,
                 overflowY: 'scroll',
-                background: '#ffffff',
+                background: '#F9FAFF',
               }}>
               <Outlet context={[currentCalendarData, pageNumber, setPageNumber, getCalendar]} />
             </Content>
