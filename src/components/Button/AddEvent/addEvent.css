@@ -8,3 +8,7 @@
   font-weight: 600;
   font-size: 16px;
 }
+.add-event-button:hover {
+  background-color: #0f0e98;
+  border-color: #0f0e98;
+}

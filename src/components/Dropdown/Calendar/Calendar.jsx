@@ -50,7 +50,6 @@ function Calendar({ children, allCalendarsData, setPageNumber }) {
       setPageNumber(1);
       sessionStorage.clear();
       setOpen(false);
-      console.log(window.location.origin);
       const origin = window.location.origin;
       const newUrl = `${origin}${PathName.Dashboard}/${key}${PathName.Events}`;
       window.location.href = newUrl;
@@ -68,7 +67,8 @@ function Calendar({ children, allCalendarsData, setPageNumber }) {
       }}
       open={open}
       onOpenChange={handleOpenChange}
-      trigger={['click']}>
+      trigger={['click']}
+      overlayClassName="calendar-dropdown">
       {children}
     </Dropdown>
   );

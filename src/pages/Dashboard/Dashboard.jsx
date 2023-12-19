@@ -128,10 +128,7 @@ function Dashboard() {
             pageNumber={pageNumber}
             setPageNumber={setPageNumber}
           />
-          <Layout
-            style={{
-              background: '#ffffff',
-            }}>
+          <Layout>
             <Content
               className="site-layout-background"
               style={{

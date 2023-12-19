@@ -25,11 +25,13 @@
   margin-top: 24px;
 }
 
-.sidebar-wrapper .sidebar-main-menu .ant-menu-light .ant-menu-item:hover:not(.sidebar-wrapper .sidebar-main-menu .ant-menu-item-selected) {
+.sidebar-wrapper
+  .sidebar-main-menu
+  .ant-menu-light
+  .ant-menu-item:hover:not(.sidebar-wrapper .sidebar-main-menu .ant-menu-item-selected) {
   background-color: #f9faff;
-  color: #1B3DE6
+  color: #1b3de6;
 }
-
 
 .sidebar-wrapper .sidebar-calendar {
   gap: 8px;
@@ -52,6 +54,10 @@
 .sidebar-wrapper .sidebar-calendar .calendar-icon-container {
   display: grid;
   place-content: center;
+}
+
+.sidebar-calendar-menu .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
+  background-color: #fff;
 }
 @media only screen and (max-width: 600px) {
   .sidebar-wrapper {

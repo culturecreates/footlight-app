@@ -1,6 +1,7 @@
 .event-list-wrapper .event-list-more-icon {
   font-size: 24px;
   cursor: pointer;
+  border-radius: 50%;
 }
 
 .event-list-wrapper .event-list-item-wrapper {
@@ -105,6 +106,9 @@
   height: 32.04px;
   background-color: #1b3de6;
   clip-path: polygon(0 0, 0% 100%, 100% 0);
+}
+.event-list-wrapper .event-list-more-icon:hover {
+  background-color: #eff2ff;
 }
 @media only screen and (max-width: 1024px) {
   .event-list-wrapper {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './sidebar.css';
+import { DownOutlined } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
 import { sidebarItems } from '../../../constants/sidebarItems';
 import { useTranslation } from 'react-i18next';
@@ -54,7 +55,19 @@ function Sidebar(props) {
             />
           </div>
         ),
-        label,
+        label: (
+          <>
+            {label}{' '}
+            <DownOutlined
+              style={{
+                position: 'relative',
+                top: '50%',
+                left: '100%',
+                fontSize: '8px',
+              }}
+            />
+          </>
+        ),
         className: 'sidebar-calendar',
       },
     ];

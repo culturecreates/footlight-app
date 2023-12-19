@@ -1,0 +1,30 @@
+.ant-pagination-item {
+  background-color: #fff;
+  border: none;
+  font-weight: 400;
+}
+
+.ant-pagination-item > a {
+  color: #222732;
+}
+
+.ant-pagination-item-active {
+  border-radius: 4px;
+  background: var(--content-action-default, #1b3de6);
+  font-weight: 700;
+}
+
+.ant-pagination-item-active > a {
+  color: #fff;
+}
+
+.ant-pagination-prev .ant-pagination-item-link,
+.ant-pagination-next .ant-pagination-item-link {
+  border: none;
+}
+
+.ant-pagination-jump-prev .ant-pagination-item-container .ant-pagination-item-ellipsis,
+.ant-pagination-jump-next .ant-pagination-item-container .ant-pagination-item-ellipsis {
+  color: #222732;
+  font-size: 12px;
+}
