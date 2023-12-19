@@ -174,14 +174,14 @@ const AddTaxonomy = () => {
         setFormValues({
           ...formValues,
           description: {
-            french: values?.frenchdescription,
-            english: values?.englishdescription,
+            french: values?.frenchdescription?.trim(),
+            english: values?.englishdescription?.trim(),
           },
         });
         const body = {
           name: {
-            en: values?.englishname,
-            fr: values?.frenchname,
+            en: values?.englishname?.trim(),
+            fr: values?.frenchname?.trim(),
           },
           taxonomyClass: formValues.classType,
           isDynamicField: location.state?.dynamic
@@ -191,8 +191,8 @@ const AddTaxonomy = () => {
           mappedToField: formValues?.mapToField,
           isAdminOnly: formValues.userAccess.length > 0,
           disambiguatingDescription: {
-            en: values?.frenchdescription,
-            fr: values?.englishdescription,
+            en: values?.frenchdescription?.trim(),
+            fr: values?.englishdescription?.trim(),
           },
           concepts: { concepts: [...filteredConceptData] },
         };

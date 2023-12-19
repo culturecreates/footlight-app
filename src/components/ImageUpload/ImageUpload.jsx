@@ -5,6 +5,7 @@ import { LoadingOutlined, DownloadOutlined, DeleteOutlined, EditOutlined } from 
 import Outlined from '../Button/Outlined';
 import { useTranslation } from 'react-i18next';
 import ImageCrop from '../ImageCrop';
+import { useOutletContext } from 'react-router-dom';
 
 function ImageUpload(props) {
   const {
@@ -23,6 +24,7 @@ function ImageUpload(props) {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(props?.imageUrl ?? null);
   const [originalImage, setOriginalImage] = useState(originalImageUrl ?? null);
+  const [currentCalendarData] = useOutletContext();
 
   const [cropValues, setCropValues] = useState({
     large: {
@@ -132,7 +134,13 @@ function ImageUpload(props) {
             return (
               <span className="image-footer">
                 <span className="image-contents">
-                  <img className="image-thumbnail" src={file?.url ?? file?.thumbUrl} />
+                  <img
+                    className="image-thumbnail"
+                    style={{
+                      aspectRatio: currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio.replace(/:/g, '/'),
+                    }}
+                    src={file?.url ?? file?.thumbUrl}
+                  />
                   <a
                     className="image-name"
                     target="_blank"
@@ -190,7 +198,7 @@ function ImageUpload(props) {
               alt="avatar"
               style={{
                 width: '423px',
-                objectFit: 'cover',
+                aspectRatio: currentCalendarData?.imageConfig[0]?.large?.aspectRatio.replace(/:/g, '/'),
               }}
             />
           ) : (

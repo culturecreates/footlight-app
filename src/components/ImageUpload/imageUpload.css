@@ -32,8 +32,9 @@
 .image-footer .image-thumbnail {
   display: block;
   height: 48px;
+  min-height: 48px;
   overflow: hidden;
-  width: 48px;
+  /* width: 48px; */
 }
 
 .image-footer .edit-image {

@@ -87,6 +87,7 @@ import { sourceOptions } from '../../../constants/sourceOptions';
 import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import useKeyboardAccessiblePopOver from '../../../hooks/useKeyboardAccessiblePopOver';
 
 const { TextArea } = Input;
 
@@ -179,6 +180,45 @@ function AddEvent() {
   const [imageCropOpen, setImageCropOpen] = useState(false);
 
   usePrompt(t('common.unsavedChanges'), showDialog);
+
+  // hook to handle scroll for popover components
+  useKeyboardAccessiblePopOver({
+    setItem: setLocationPlace,
+    data: [allPlacesList, allPlacesArtsdataList],
+    setFieldValue: (selectedItem) => form.setFieldValue('locationPlace', selectedItem),
+    popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false }),
+    isPopoverOpen: isPopoverOpen.locationPlace,
+  });
+
+  useKeyboardAccessiblePopOver({
+    setItem: (organizer) => setSelectedOrganizers([...selectedOrganizers, organizer]),
+    data: [organizersList, organizersArtsdataList],
+    setFieldValue: () => {
+      return;
+    },
+    popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, organizer: false }),
+    isPopoverOpen: isPopoverOpen.organizer,
+  });
+
+  useKeyboardAccessiblePopOver({
+    setItem: (performer) => setSelectedPerformers([...selectedPerformers, performer]),
+    data: [performerList, performerArtsdataList],
+    setFieldValue: () => {
+      return;
+    },
+    popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, performer: false }),
+    isPopoverOpen: isPopoverOpen.performer,
+  });
+
+  useKeyboardAccessiblePopOver({
+    setItem: (supporter) => setSelectedSupporters([...selectedSupporters, supporter]),
+    data: [supporterList, supporterArtsdataList],
+    setFieldValue: () => {
+      return;
+    },
+    popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, supporter: false }),
+    isPopoverOpen: isPopoverOpen.supporter,
+  });
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -396,8 +436,8 @@ function AddEvent() {
               ...locationId,
               virtualLocation: {
                 name: {
-                  en: values?.englishVirtualLocation,
-                  fr: values?.frenchVirtualLocation,
+                  en: values?.englishVirtualLocation?.trim(),
+                  fr: values?.frenchVirtualLocation?.trim(),
                 },
                 description: {},
                 dynamicFields: [],
@@ -416,8 +456,8 @@ function AddEvent() {
           ) {
             contactPoint = {
               name: {
-                en: values?.englishContactTitle,
-                fr: values?.frenchContactTitle,
+                en: values?.englishContactTitle?.trim(),
+                fr: values?.frenchContactTitle?.trim(),
               },
               url: {
                 uri: urlProtocolCheck(values?.contactWebsiteUrl),
@@ -436,8 +476,8 @@ function AddEvent() {
 
           if (values?.englishAccessibilityNote || values?.frenchAccessibilityNote) {
             accessibilityNote = {
-              ...(values?.englishAccessibilityNote && { en: values?.englishAccessibilityNote }),
-              ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote }),
+              ...(values?.englishAccessibilityNote && { en: values?.englishAccessibilityNote?.trim() }),
+              ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote?.trim() }),
             };
           }
           if (values?.keywords?.length > 0) {
@@ -448,8 +488,8 @@ function AddEvent() {
               category: ticketType,
               ...((values?.englishTicketNote || values?.frenchTicketNote) && {
                 name: {
-                  en: values?.englishTicketNote,
-                  fr: values?.frenchTicketNote,
+                  en: values?.englishTicketNote?.trim(),
+                  fr: values?.frenchTicketNote?.trim(),
                 },
               }),
               ...(ticketType === offerTypes.PAYING &&
@@ -528,8 +568,8 @@ function AddEvent() {
 
           eventObj = {
             name: {
-              en: values?.english,
-              fr: values?.french,
+              en: values?.english?.trim(),
+              fr: values?.french?.trim(),
             },
             ...(values?.startTime && { startDateTime }),
             ...(!values?.startTime && { startDate: startDateTime }),
@@ -969,11 +1009,6 @@ function AddEvent() {
       </Col>
     </Row>
   );
-
-  // const ArtsDataLinkJSX =
-  //   : (
-  //     <></>
-  //   );
 
   const copyOrganizerContactHandler = () => {
     if (selectedOrganizers?.length > 0) {
@@ -1941,7 +1976,10 @@ function AddEvent() {
                 data-cy="form-item-place-label">
                 <Popover
                   open={isPopoverOpen.locationPlace}
-                  onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open })}
+                  onOpenChange={(open) => {
+                    setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open });
+                  }}
+                  destroyTooltipOnHide={true}
                   overlayClassName="event-popover"
                   placement="bottom"
                   autoAdjustOverflow={false}
@@ -1972,9 +2010,7 @@ function AddEvent() {
                                 allPlacesList?.map((place, index) => (
                                   <div
                                     key={index}
-                                    className={`event-popover-options ${
-                                      locationPlace?.value == place?.value ? 'event-popover-options-active' : null
-                                    }`}
+                                    className="event-popover-options"
                                     onClick={() => {
                                       setLocationPlace(place);
                                       form.setFieldValue('locationPlace', place?.value);
@@ -2014,7 +2050,7 @@ function AddEvent() {
                                   allPlacesArtsdataList?.map((place, index) => (
                                     <div
                                       key={index}
-                                      className="event-popover-options"
+                                      className="event-popover-options event-popover-options-arts-data"
                                       onClick={() => {
                                         setLocationPlace(place);
                                         form.setFieldValue('locationPlace', place?.uri);
@@ -2397,7 +2433,10 @@ function AddEvent() {
                   ]}>
                   <Popover
                     open={isPopoverOpen.organizer}
-                    onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, organizer: open })}
+                    onOpenChange={(open) => {
+                      setIsPopoverOpen({ ...isPopoverOpen, organizer: open });
+                    }}
+                    destroyTooltipOnHide={true}
                     overlayClassName="event-popover"
                     placement="bottom"
                     autoAdjustOverflow={false}
@@ -2799,6 +2838,7 @@ function AddEvent() {
                     overlayClassName="event-popover"
                     placement="bottom"
                     autoAdjustOverflow={false}
+                    destroyTooltipOnHide={true}
                     trigger={['click']}
                     getPopupContainer={(trigger) => trigger.parentNode}
                     data-cy="popover-performer"
@@ -2964,6 +3004,7 @@ function AddEvent() {
                     overlayClassName="event-popover"
                     placement="bottom"
                     autoAdjustOverflow={false}
+                    destroyTooltipOnHide={true}
                     trigger={['click']}
                     getPopupContainer={(trigger) => trigger.parentNode}
                     data-cy="popover-supporter"
