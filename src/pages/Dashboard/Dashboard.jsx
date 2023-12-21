@@ -46,6 +46,7 @@ function Dashboard() {
   const [pageNumber, setPageNumber] = useState(
     searchParams.get('page') ? searchParams.get('page') : Cookies.get('page') ?? 1,
   );
+  const [contentBackgroundColor, setContentBackgroundColor] = useState('#fff');
 
   useEffect(() => {
     if (!accessToken && accessToken === '') {
@@ -136,9 +137,11 @@ function Dashboard() {
                 margin: 0,
                 minHeight: 280,
                 overflowY: 'scroll',
-                background: '#F9FAFF',
+                background: contentBackgroundColor,
               }}>
-              <Outlet context={[currentCalendarData, pageNumber, setPageNumber, getCalendar]} />
+              <Outlet
+                context={[currentCalendarData, pageNumber, setPageNumber, getCalendar, setContentBackgroundColor]}
+              />
             </Content>
           </Layout>
         </Layout>

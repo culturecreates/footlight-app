@@ -103,7 +103,13 @@ function AddEvent() {
   let duplicateId = searchParams.get('duplicateId');
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
-  const [currentCalendarData] = useOutletContext();
+  const [
+    currentCalendarData, // eslint-disable-next-line no-unused-vars
+    _pageNumber, // eslint-disable-next-line no-unused-vars
+    _setPageNumber, // eslint-disable-next-line no-unused-vars
+    _getCalendar,
+    setContentBackgroundColor,
+  ] = useOutletContext();
   const {
     currentData: eventData,
     isError,
@@ -180,6 +186,8 @@ function AddEvent() {
   const [imageCropOpen, setImageCropOpen] = useState(false);
 
   usePrompt(t('common.unsavedChanges'), showDialog);
+
+  setContentBackgroundColor('#F9FAFF');
 
   // hook to handle scroll for popover components
   useKeyboardAccessiblePopOver({
