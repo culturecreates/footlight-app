@@ -47,7 +47,14 @@ const AddUser = () => {
   const location = useLocation();
   let [searchParams, setSearchParams] = useSearchParams();
   const [formInstance] = Form.useForm();
-  const [currentCalendarData] = useOutletContext();
+  const [
+    currentCalendarData, // eslint-disable-next-line no-unused-vars
+    _pageNumber, // eslint-disable-next-line no-unused-vars
+    _setPageNumber, // eslint-disable-next-line no-unused-vars
+    _getCalendar,
+    setContentBackgroundColor,
+  ] = useOutletContext();
+  setContentBackgroundColor('#F9FAFF');
   const userId = searchParams.get('id');
   const timestampRef = useRef(Date.now()).current;
 

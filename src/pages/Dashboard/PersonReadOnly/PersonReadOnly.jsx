@@ -34,7 +34,14 @@ function PersonReadOnly() {
   const { personId, calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
   const navigate = useNavigate();
-  const [currentCalendarData] = useOutletContext();
+  const [
+    currentCalendarData, // eslint-disable-next-line no-unused-vars
+    _pageNumber, // eslint-disable-next-line no-unused-vars
+    _setPageNumber, // eslint-disable-next-line no-unused-vars
+    _getCalendar,
+    setContentBackgroundColor,
+  ] = useOutletContext();
+  setContentBackgroundColor('#F9FAFF');
 
   const {
     data: personData,

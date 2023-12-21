@@ -40,7 +40,14 @@ const Taxonomy = () => {
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
   const screens = useBreakpoint();
-  const [currentCalendarData, , , getCalendar] = useOutletContext();
+  const [
+    currentCalendarData, // eslint-disable-next-line no-unused-vars
+    _pageNumber, // eslint-disable-next-line no-unused-vars
+    _setPageNumber, // eslint-disable-next-line no-unused-vars
+    getCalendar,
+    setContentBackgroundColor,
+  ] = useOutletContext();
+  setContentBackgroundColor('#fff');
   const navigate = useNavigate();
 
   const [getAllTaxonomy, { currentData: allTaxonomy, isFetching: isTaxonomyFetching }] = useLazyGetAllTaxonomyQuery({
