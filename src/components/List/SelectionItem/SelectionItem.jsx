@@ -76,7 +76,6 @@ function SelectionItem(props) {
           ),
         ]}>
         <List.Item.Meta
-          style={{ alignItems: 'flex-start' }}
           avatar={
             <Avatar
               shape="square"
