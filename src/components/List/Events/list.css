@@ -8,6 +8,10 @@
 .event-list-wrapper .event-list-item-wrapper {
   border-bottom: none;
 }
+
+.event-list-wrapper .event-list-item-wrapper:hover {
+  background-color: #f9faff;
+}
 .event-list-wrapper .event-list-image-wrapper {
   position: relative;
   height: 104px;
