@@ -20,6 +20,9 @@
   font-size: 16px;
   color: #0f0e98;
 }
+.sidebar-wrapper .sidebar-calendar:hover {
+  background-color: #f9faff;
+}
 
 .sidebar-wrapper .sidebar-main-menu {
   margin-top: 24px;
