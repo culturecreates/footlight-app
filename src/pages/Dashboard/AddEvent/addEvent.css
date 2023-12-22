@@ -114,6 +114,14 @@
   background: #eff2ff;
 }
 
+/* .add-edit-wrapper .event-popover-options .selection-item-wrapper:focus-visible {
+  outline: none;
+}
+
+.add-edit-wrapper .event-popover-options:focus-visible {
+  outline: none;
+} */
+
 .add-edit-wrapper .recurring-day-buttons {
   background-color: #f9faff;
   border: 1px solid #b6c1c9;
