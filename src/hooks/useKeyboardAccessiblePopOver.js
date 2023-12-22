@@ -55,7 +55,6 @@ const useKeyboardAccessiblePopOver = ({ data, setItem, setFieldValue, popOverHan
     if (e.key === 'Enter') {
       e.preventDefault();
       const selectedItem = findData(focusedItemIndex);
-      console.log(selectedItem, data);
       setItem(selectedItem);
       setFieldValue(selectedItem?.value);
       popOverHandler();
