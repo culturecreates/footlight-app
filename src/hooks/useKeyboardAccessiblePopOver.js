@@ -13,6 +13,15 @@ const useKeyboardAccessiblePopOver = ({ data, setItem, setFieldValue, popOverHan
     }
   };
 
+  const handleSingleResult = (flag) => {
+    if (flag) {
+      const onlyChild = itemsRef.current[0];
+      focusedItemIndex = 0;
+      onlyChild.setAttribute('tabIndex', 0);
+      onlyChild.focus({ preventScroll: true });
+    }
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       if (itemsRef.current.length > 0) {
@@ -46,6 +55,7 @@ const useKeyboardAccessiblePopOver = ({ data, setItem, setFieldValue, popOverHan
     if (e.key === 'Enter') {
       e.preventDefault();
       const selectedItem = findData(focusedItemIndex);
+      console.log(selectedItem, data);
       setItem(selectedItem);
       setFieldValue(selectedItem?.value);
       popOverHandler();
@@ -69,6 +79,7 @@ const useKeyboardAccessiblePopOver = ({ data, setItem, setFieldValue, popOverHan
             itemsRef.current?.forEach((child) => child.setAttribute('tabIndex', -1));
             itemContainersArray[0]?.setAttribute('tabIndex', 0);
             itemsRef.current[0]?.setAttribute('tabIndex', 0);
+            handleSingleResult(itemsRef.current.length === 1);
           }
         }
       };
