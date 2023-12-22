@@ -30,6 +30,7 @@ import AddUser from '../pages/Dashboard/AddUser/AddUser';
 import Taxonomy from '../pages/Dashboard/Taxonomy/Taxonomy';
 import SelectTaxonomyType from '../pages/Dashboard/SelectTaxonomyType/SelectTaxonomyType';
 import AddTaxonomy from '../pages/Dashboard/AddTaxonomy/AddTaxonomy';
+import RcCalendar from '../components/RC_Calendar/RcCalendar';
 
 export const router = createBrowserRouter([
   {
@@ -52,6 +53,10 @@ export const router = createBrowserRouter([
   {
     path: PathName.Join,
     element: <CreateAccount />,
+  },
+  {
+    path: 'calendar',
+    element: <RcCalendar />,
   },
   {
     path: PathName.Dashboard,
