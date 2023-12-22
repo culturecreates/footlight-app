@@ -156,8 +156,8 @@ function Lists(props) {
                   <div
                     className="event-list-image-wrapper"
                     style={{
-                  width: width,
-                }}>
+                      width: width,
+                    }}>
                     {(calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) && eventItem?.isFeatured && (
                       <div className="image-featured-badge">
                         <StarOutlined
@@ -173,7 +173,7 @@ function Lists(props) {
                           (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) &&
                           eventItem?.isFeatured &&
                           '3px solid #1B3DE6',
-                          }}
+                      }}
                       data-cy="image-event-thumbnail"
                     />
                   </div>
