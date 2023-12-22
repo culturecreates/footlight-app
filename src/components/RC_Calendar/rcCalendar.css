@@ -1,0 +1,52 @@
+/* Apply your own primary color */
+:root {
+}
+
+/* Style the calendar container */
+.rc-calendar {
+  font-family: 'Arial', sans-serif;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+}
+
+/* Style the header */
+.rc-calendar-header {
+  background-color: var(--primary-color);
+  color: #fff;
+  text-align: center;
+  padding: 8px;
+}
+
+/* Style the days in the calendar */
+.rc-calendar-date-panel {
+  padding: 8px;
+}
+
+/* Style the selected range */
+.rc-calendar-selected-range {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+/* Style the range tip */
+.rc-calendar-range-tip {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+/* Style the hover range */
+.rc-calendar-range-hover-start,
+.rc-calendar-range-hover-end {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.rc-calendar-selected-day .rc-calendar-date {
+  background-color: #607efc;
+  color: #fff;
+}
+
+.rc-calendar-range.rc-calendar-week-number,
+.rc-calendar-range {
+  width: max-content;
+}
