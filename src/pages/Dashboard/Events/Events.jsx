@@ -163,13 +163,6 @@ function Events() {
       : [],
   );
 
-  // let userFilterDataTest = allUsersData?.data?.slice()?.sort(function (x, y) {
-  //   return x?._id == user?.id ? -1 : y?._id == user?.id ? 1 : 0;
-  // });
-
-  // let userFilterData = allUsersData?.data?.filter((item) => user?.id != item._id);
-  // userFilterData = [{ _id: user?.id, ...user }]?.concat(userFilterData);
-
   const userSearch = (userSearchKey, selectedData) => {
     getAllUsers({
       page: pageNumber,
@@ -507,7 +500,7 @@ function Events() {
   return (
     !isLoading && (
       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
-        <Col span={24}>
+        <Col span={24} className="events-wrapper-cloumn">
           <Col style={{ paddingLeft: 0 }}>
             <Row justify="space-between">
               <Col>
@@ -584,8 +577,8 @@ function Events() {
               </div>
             </Col>
 
-            <Col span={24}>
-              <Row gutter={20}>
+            <Col span={24} className="filter-container">
+              <Row gutter={[16, { xs: 8 }]}>
                 <Space>
                   <Col>
                     <SearchableCheckbox
@@ -618,7 +611,7 @@ function Events() {
                     </SearchableCheckbox>
                   </Col>
                 </Space>
-                <Col>
+                <Col className="event-filter-item-mobile-full-width">
                   <SearchableCheckbox
                     allowSearch={true}
                     loading={allUsersLoading}
@@ -732,7 +725,7 @@ function Events() {
                     </Button>
                   </Popover>
                 </Col>
-                <Col>
+                <Col className="event-filter-item-mobile-full-width">
                   <SearchableCheckbox
                     allowSearch={true}
                     loading={organizerLoading}
