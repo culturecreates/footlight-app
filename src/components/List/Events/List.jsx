@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import './list.css';
 import { List, Grid, Dropdown } from 'antd';
@@ -35,6 +35,8 @@ function Lists(props) {
   const [currentCalendarData] = useOutletContext();
   const totalCount = data?.totalCount;
 
+  const [selectedItemId, setSelectedItemId] = useState(null);
+
   const calendar = user?.roles?.filter((calendar) => {
     return calendar?.calendarId === calendarId;
   });
@@ -42,6 +44,13 @@ function Lists(props) {
   let artsDataLinkChecker = (data) => {
     return data?.sameAs?.filter((item) => item?.type === 'ArtsdataIdentifier');
   };
+  const aspectRatioString = currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio;
+  let width = 104;
+
+  if (aspectRatioString) {
+    const [aspectRatioNumerator, aspectRatioDenominator] = aspectRatioString.replace(/:/g, '/').split('/').map(Number);
+    width = (104 * aspectRatioNumerator) / aspectRatioDenominator;
+  }
 
   const listItemHandler = (id, creatorId, publishState) => {
     if (routinghandler(user, calendarId, creatorId, publishState))
@@ -73,6 +82,10 @@ function Lists(props) {
             (calendar[0]?.role === userRoles.CONTRIBUTOR && eventItem?.creator?.userId != user?.id) ? (
               <Dropdown
                 className="calendar-dropdown-wrapper"
+                onOpenChange={(open) => {
+                  if (open) setSelectedItemId(eventItem?.id);
+                  else setSelectedItemId(null);
+                }}
                 overlayStyle={{
                   minWidth: '150px',
                 }}
@@ -90,11 +103,19 @@ function Lists(props) {
                 }}
                 trigger={['click']}>
                 <span>
-                  <MoreOutlined className="event-list-more-icon" key={index} />
+                  <MoreOutlined
+                    className="event-list-more-icon"
+                    style={{ color: selectedItemId === eventItem?.id && '#1B3DE6' }}
+                    key={index}
+                  />
                 </span>
               </Dropdown>
             ) : (
               <EventStatusOptions
+                onOpenChange={(open) => {
+                  if (open) setSelectedItemId(eventItem?.id);
+                  else setSelectedItemId(null);
+                }}
                 key={index}
                 publishState={eventItem?.publishState}
                 isFeatured={eventItem?.isFeatured}
@@ -102,7 +123,11 @@ function Lists(props) {
                 creator={eventItem?.creator}
                 eventId={eventItem?.id}>
                 <span>
-                  <MoreOutlined className="event-list-more-icon" key={index} />
+                  <MoreOutlined
+                    className="event-list-more-icon"
+                    style={{ color: selectedItemId === eventItem?.id && '#1B3DE6' }}
+                    key={index}
+                  />
                 </span>
               </EventStatusOptions>
             ),
@@ -130,7 +155,9 @@ function Lists(props) {
                 {screens.md && (
                   <div
                     className="event-list-image-wrapper"
-                    style={{ aspectRatio: currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio + '' }}>
+                    style={{
+                  width: width,
+                }}>
                     {(calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) && eventItem?.isFeatured && (
                       <div className="image-featured-badge">
                         <StarOutlined
@@ -146,8 +173,7 @@ function Lists(props) {
                           (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) &&
                           eventItem?.isFeatured &&
                           '3px solid #1B3DE6',
-                        aspectRatio: currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio.replace(/:/g, '/'),
-                      }}
+                          }}
                       data-cy="image-event-thumbnail"
                     />
                   </div>
@@ -246,7 +272,7 @@ function Lists(props) {
                     className="artsdata-link-outlined-icon"
                     data-cy="artsdata-link-outlined-icon">
                     <span>
-                      <LinkOutlined style={{ fontSize: '12px' }} />
+                      <LinkOutlined style={{ fontSize: '14px' }} />
                     </span>
                   </div>
                 )}

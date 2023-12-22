@@ -10,7 +10,7 @@ import { useDeleteEventMutation, useUpdateEventMutation, useUpdateEventStateMuta
 import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 const { confirm } = Modal;
-function EventStatusOptions({ children, publishState, creator, eventId, isFeatured, eventData }) {
+function EventStatusOptions({ children, publishState, creator, eventId, isFeatured, eventData, ...rest }) {
   const { t } = useTranslation();
   const { calendarId } = useParams();
   const navigate = useNavigate();
@@ -129,6 +129,7 @@ function EventStatusOptions({ children, publishState, creator, eventId, isFeatur
   return (
     <ProtectedComponents creator={creator}>
       <Dropdown
+        {...rest}
         className="calendar-dropdown-wrapper"
         overlayClassName="event-dropdown-popup"
         overlayStyle={{

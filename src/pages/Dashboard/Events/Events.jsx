@@ -39,7 +39,14 @@ function Events() {
   let [searchParams, setSearchParams] = useSearchParams();
   const timestampRef = useRef(Date.now()).current;
   const { user } = useSelector(getUserDetails);
-  const [currentCalendarData, pageNumber, setPageNumber] = useOutletContext();
+  const [
+    currentCalendarData,
+    pageNumber,
+    setPageNumber, // eslint-disable-next-line no-unused-vars
+    _getCalendar,
+    setContentBackgroundColor,
+  ] = useOutletContext();
+  setContentBackgroundColor('#fff');
 
   const [getEvents, { currentData: eventsData, isLoading, isFetching }] = useLazyGetEventsQuery();
   const [getAllUsers, { isFetching: allUsersLoading }] = useLazyGetAllUsersQuery();
@@ -513,7 +520,7 @@ function Events() {
               </Col>
             </Row>
           </Col>
-          <Row gutter={[20, 10]}>
+          <Row gutter={[20, 20]}>
             <Col xs={24} sm={24} md={12} lg={10} xl={8}>
               <EventsSearch
                 placeholder={t('dashboard.events.searchPlaceholder')}

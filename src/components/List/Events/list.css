@@ -1,6 +1,8 @@
 .event-list-wrapper .event-list-more-icon {
   font-size: 24px;
   cursor: pointer;
+  border-radius: 50%;
+  color: #222732;
 }
 
 .event-list-wrapper .event-list-item-wrapper {
@@ -91,6 +93,11 @@
   place-content: center;
 }
 
+.event-list-wrapper .event-status-list-item-title-container .artsdata-link-outlined-icon > span {
+  display: grid;
+  place-content: center;
+}
+
 .event-list-wrapper .event-list-item-meta .image-featured-badge {
   border-radius: 4px;
   position: absolute;
@@ -107,10 +114,13 @@
   gap: 8px;
 }
 
+.event-list-wrapper .event-list-more-icon:hover {
+  background-color: #eff2ff;
+}
 @media only screen and (max-width: 1024px) {
   /* .event-list-wrapper {
     width: 592px;
-  } */
+  }
   /* .event-list-wrapper .event-list-status-updated-by {
     margin-left: auto;
   } */

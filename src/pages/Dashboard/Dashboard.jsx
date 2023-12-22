@@ -46,6 +46,7 @@ function Dashboard() {
   const [pageNumber, setPageNumber] = useState(
     searchParams.get('page') ? searchParams.get('page') : Cookies.get('page') ?? 1,
   );
+  const [contentBackgroundColor, setContentBackgroundColor] = useState('#fff');
 
   useEffect(() => {
     if (!accessToken && accessToken === '') {
@@ -128,12 +129,19 @@ function Dashboard() {
             pageNumber={pageNumber}
             setPageNumber={setPageNumber}
           />
-          <Layout
-            style={{
-              background: '#ffffff',
-            }}>
-            <Content className="site-layout-background">
-              <Outlet context={[currentCalendarData, pageNumber, setPageNumber, getCalendar]} />
+          <Layout>
+            <Content
+              className="site-layout-background"
+              style={{
+                padding: '34px 32px 32px 32px',
+                margin: 0,
+                minHeight: 280,
+                overflowY: 'scroll',
+                background: contentBackgroundColor,
+              }}>
+              <Outlet
+                context={[currentCalendarData, pageNumber, setPageNumber, getCalendar, setContentBackgroundColor]}
+              />
             </Content>
           </Layout>
         </Layout>

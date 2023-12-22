@@ -63,6 +63,7 @@ const UserManagement = () => {
     userStatus: decodeURIComponent(defaultUserStatus),
   });
   const [userSearchQuery, setUserSearchQuery] = useState(decodeURIComponent(defaultQuery));
+  const [selectedItemId, setSelectedItemId] = useState(null);
 
   const [getAllUsers, { currentData: userData, isFetching: isUsersLoading }] = useLazyGetAllUsersQuery();
   const [inviteUserMutation] = useInviteUserMutation();
@@ -593,6 +594,10 @@ const UserManagement = () => {
                         actions={[
                           adminCheckHandler() && (
                             <Dropdown
+                              onOpenChange={(open) => {
+                                if (open) setSelectedItemId(item?._id);
+                                else setSelectedItemId(null);
+                              }}
                               data-cy="dropdown-user-actions"
                               overlayClassName="filter-sort-dropdown-wrapper"
                               overlayStyle={{ minWidth: '200px' }}
@@ -606,7 +611,11 @@ const UserManagement = () => {
                               trigger={['click']}>
                               <span>
                                 {!item?.isSuperAdmin || item._id == user.id ? (
-                                  <MoreOutlined className="event-list-more-icon" key={index} />
+                                  <MoreOutlined
+                                    className="event-list-more-icon"
+                                    key={index}
+                                    style={{ color: selectedItemId === item?._id && '#1B3DE6' }}
+                                  />
                                 ) : (
                                   <div style={{ width: 24 }}></div>
                                 )}

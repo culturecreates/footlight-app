@@ -198,7 +198,7 @@ function ImageUpload(props) {
               alt="avatar"
               style={{
                 width: '423px',
-                objectFit: 'cover',
+                aspectRatio: currentCalendarData?.imageConfig[0]?.large?.aspectRatio.replace(/:/g, '/'),
               }}
             />
           ) : (
