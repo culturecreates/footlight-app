@@ -101,41 +101,43 @@
   background-color: #1b3de6;
   clip-path: polygon(0 0, 0% 100%, 100% 0);
 }
+
+.event-list-wrapper .event-list-description-name-container {
+  display: flex;
+  gap: 8px;
+}
+
 @media only screen and (max-width: 1024px) {
-  .event-list-wrapper {
+  /* .event-list-wrapper {
     width: 592px;
-  }
+  } */
+  /* .event-list-wrapper .event-list-status-updated-by {
+    margin-left: auto;
+  } */
 
   .event-list-wrapper .event-list-title-heading {
     white-space: nowrap;
   }
 
-  .event-list-wrapper .event-list-status-updated-by {
-    margin-left: auto;
-  }
   .event-list-wrapper .event-list-description-place {
     width: auto;
   }
 }
-@media only screen and (max-width: 428px) {
+@media only screen and (max-width: 768px) {
   .event-list-wrapper {
-    width: 328px;
+    width: calc(100% - 16px);
   }
 
   .event-list-wrapper .ant-list-item-meta-avatar {
     display: none;
   }
-  .event-list-wrapper .event-status-list-item {
+  /* .event-list-wrapper .event-status-list-item {
     text-align: left;
   }
   .event-list-wrapper .event-list-status-updated-by {
     width: initial;
     margin-left: initial;
-  }
-
-  .event-list-wrapper .ant-list-item-action {
-    display: none;
-  }
+  } */
 
   .event-list-wrapper .event-list-item-wrapper {
     margin-top: 8px;
@@ -151,5 +153,23 @@
   }
   .event-list-wrapper .event-list-description-place {
     width: auto;
+  }
+
+  .event-list-wrapper .event-list-status-created-by {
+    text-align: left;
+    width: fit-content;
+  }
+
+  .event-list-wrapper .event-list-status-updated-by {
+    text-align: left;
+    width: fit-content;
+  }
+
+  .event-list-wrapper .event-status-list-item-title-container {
+    width: fit-content;
+  }
+
+  .event-list-wrapper .ant-list-item-action {
+    display: none;
   }
 }

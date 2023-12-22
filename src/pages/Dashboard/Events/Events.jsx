@@ -604,7 +604,7 @@ function Events() {
                     </SearchableCheckbox>
                   </Col>
                 </Space>
-                <Col>
+                <Col className="event-filter-item-mobile-full-width">
                   <SearchableCheckbox
                     allowSearch={true}
                     loading={allUsersLoading}
@@ -718,7 +718,7 @@ function Events() {
                     </Button>
                   </Popover>
                 </Col>
-                <Col>
+                <Col className="event-filter-item-mobile-full-width">
                   <SearchableCheckbox
                     allowSearch={true}
                     loading={organizerLoading}
