@@ -14,7 +14,8 @@ jobs:
       AWS_REGION: ca-central-1
       WEBHOSTING_BUCKET_NAME: staging.cms.footlight.io
       DISTRIBUTION: E2R70C1WYD9KB
-
+    container:
+      image: sleavely/node-awscli:14.x
     steps:
       - name: Checkout
         uses: actions/checkout@v2
