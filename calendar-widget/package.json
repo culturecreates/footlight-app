@@ -20,6 +20,9 @@
     "lint:fix": "eslint --fix",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
   },
+  "engines": {
+    "node": "^14.17.0"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
