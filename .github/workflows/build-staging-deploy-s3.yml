@@ -1,33 +1,48 @@
-name: Staging build and deploy to S3
+name: Build and deploy to S3
+
 on:
   push:
     branches:
       - develop
+
 jobs:
   build-and-deploy:
+    runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-      AWS_REGION: ca-central-1 
+      AWS_REGION: ca-central-1
       WEBHOSTING_BUCKET_NAME: staging.cms.footlight.io
-    runs-on: ubuntu-latest
-    container:
-      image: sleavely/node-awscli:14.x
+      DISTRIBUTION: E2R70C1WYD9KB
+
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v2
-      - name: setup node
-        run: npm install
-      - name: build
-        run: npm run build:staging
-      # Upload to S3
-      - name: sync s3
-        run: aws s3 sync ./build s3://${{env.WEBHOSTING_BUCKET_NAME}}/ --acl public-read --delete --exclude index.html
-      - name: set cache-control on index.html 
-        run: aws s3 cp ./build/index.html s3://${{env.WEBHOSTING_BUCKET_NAME}}/index.html --metadata-directive REPLACE --cache-control max-age=0,s-maxage=86400 --acl public-read --content-type text/html
-      # Invalidate CloudFront
-      - name: Invalidate CloudFront
+
+      - name: Setup Node for CMS
+        run: |
+          cd footlight-cms
+          npm install
+          npm run build:staging
+
+      - name: Sync CMS to S3
+        run: |
+          aws s3 sync ./build s3://${{ env.WEBHOSTING_BUCKET_NAME }}/ --acl public-read --delete --exclude index.html
+          aws s3 cp ./build/index.html s3://${{ env.WEBHOSTING_BUCKET_NAME }}/index.html --metadata-directive REPLACE --cache-control max-age=0,s-maxage=86400 --acl public-read --content-type text/html
+
+      - name: Invalidate CloudFront for CMS
         uses: chetan/invalidate-cloudfront-action@v2
-        env:
-          DISTRIBUTION: E2R70C1WYD9KB
+        with:
+          DISTRIBUTION: ${{ env.DISTRIBUTION }}
           PATHS: "/*"
+
+      - name: Setup Node for Widget
+        run: |
+          cd ../calendar-widget
+          npm install
+          npm run build
+          npm run build:widget
+
+      - name: Sync Widget to S3
+        run: |
+          aws s3 sync ./build s3://${{ env.WEBHOSTING_BUCKET_NAME }}/calendar-widget/ --acl public-read --delete --cache-control max-age=3600
