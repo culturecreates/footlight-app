@@ -8,7 +8,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-      AWS_REGION: ca-central-1
+      AWS_REGION: ca-central-1 
       WEBHOSTING_BUCKET_NAME: staging.cms.footlight.io
     runs-on: ubuntu-latest
     container:
@@ -16,8 +16,6 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
-      - name: change into footlight-cms directory
-        run: cd footlight-cms
       - name: setup node
         run: npm install
       - name: build
@@ -25,7 +23,7 @@ jobs:
       # Upload to S3
       - name: sync s3
         run: aws s3 sync ./build s3://${{env.WEBHOSTING_BUCKET_NAME}}/ --acl public-read --delete --exclude index.html
-      - name: set cache-control on index.html
+      - name: set cache-control on index.html 
         run: aws s3 cp ./build/index.html s3://${{env.WEBHOSTING_BUCKET_NAME}}/index.html --metadata-directive REPLACE --cache-control max-age=0,s-maxage=86400 --acl public-read --content-type text/html
       # Invalidate CloudFront
       - name: Invalidate CloudFront
@@ -33,13 +31,3 @@ jobs:
         env:
           DISTRIBUTION: E2R70C1WYD9KB
           PATHS: "/*"
-    - name: Setup Node for Widget
-        run: |
-          cd ../calendar-widget
-          npm install
-          npm run build
-          npm run build:widget
-
-      - name: Sync Widget to S3
-        run: |
-          aws s3 sync ./build s3://${{ env.WEBHOSTING_BUCKET_NAME }}/calendar-widget/ --acl public-read --delete --cache-control max-age=3600
