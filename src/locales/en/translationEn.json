@@ -103,7 +103,11 @@
         "dates": {
           "dates": "Dates",
           "allTime": "All time",
-          "past": "Past"
+          "past": "Past",
+          "allEvents": "All events",
+          "pastEvents": "Past events",
+          "upcomingEvents": "Upcoming events",
+          "dateRange": "Date range"
         },
         "organizer": { "label": "Organizations", "placeholderSearch": "Search name" },
         "clear": "Clear"

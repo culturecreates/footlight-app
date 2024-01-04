@@ -5,8 +5,9 @@
 /* Style the calendar container */
 .rc-calendar {
   font-family: 'Arial', sans-serif;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
+  box-shadow: none;
+  border: 0px;
+  border-radius: 0px;
 }
 
 /* Style the header */
@@ -15,6 +16,10 @@
   color: #fff;
   text-align: center;
   padding: 8px;
+  border-bottom: 0px;
+}
+.rc-calendar-range .rc-calendar-body {
+  border-bottom: 0px;
 }
 
 /* Style the days in the calendar */
@@ -49,4 +54,46 @@
 .rc-calendar-range.rc-calendar-week-number,
 .rc-calendar-range {
   width: max-content;
+}
+
+.rc-calendar-month-select,
+.rc-calendar-year-select {
+  font-weight: 700;
+  font-size: 16px;
+  color: #222732;
+}
+
+.rc-calendar-range-middle {
+}
+
+.rc-calendar-range .rc-calendar-input,
+.rc-calendar-range .rc-time-picker-input {
+  padding: 1px 7px;
+  height: 22px;
+  font-size: 16px;
+  font-weight: 400;
+  color: #222732;
+}
+
+.rc-calendar-range-left .rc-calendar-input-wrap {
+  border-left: 1px solid #b6c1c9;
+  border-bottom: 1px solid #b6c1c9;
+  border-top: 1px solid #b6c1c9;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.rc-calendar-range-right .rc-calendar-input-wrap {
+  border-right: 1px solid #b6c1c9;
+  border-bottom: 1px solid #b6c1c9;
+  border-top: 1px solid #b6c1c9;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.rc-calendar-year-select:hover,
+.rc-calendar-month-select:hover,
+.rc-calendar-day-select:hover {
+  background-color: #f9faff;
+  color: #1b3de6;
 }
