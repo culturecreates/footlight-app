@@ -49,7 +49,7 @@
   padding-top: 0px;
 }
 .date-filter-popover .ant-popover-content {
-  min-width: 340px;
+  min-width: 200px;
 }
 
 .date-filter-popover .ant-popover-arrow {
