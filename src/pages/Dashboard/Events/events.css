@@ -73,6 +73,14 @@
   background-color: #eff2ff;
 }
 
+.date-filter-popover .ant-popover-content .ant-radio-inner::after {
+  background-color: #1b3de6;
+}
+
+.date-filter-popover .ant-popover-content .ant-radio-inner {
+  border-color: #1b3de6;
+}
+
 @media only screen and (max-width: 428px) {
   .events-wrapper .events-heading-wrapper .events-heading {
     font-size: 24px;
