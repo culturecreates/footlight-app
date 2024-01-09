@@ -702,7 +702,8 @@
           "linkText": "Artsdata",
           "create": "Create",
           "footlightSectionHeading": "From Footlight",
-          "artsDataSectionHeading": "Imports from Artsdata"
+          "artsDataSectionHeading": "Imports from Artsdata",
+          "importsFromFootlight": "Imports from Footlight"
         },
         "addPerson": {
           "newPerson": "New Person",

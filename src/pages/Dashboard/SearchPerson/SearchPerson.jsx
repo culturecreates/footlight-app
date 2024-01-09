@@ -21,6 +21,7 @@ import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import LoadingIndicator from '../../../components/LoadingIndicator';
+import { externalSourceOptions } from '../../../constants/sourceOptions';
 
 function SearchPerson() {
   const { t } = useTranslation();
@@ -41,7 +42,7 @@ function SearchPerson() {
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [peopleList, setPeopleList] = useState([]);
-  const [peopleListArtsData, setPeopleListArtsData] = useState([]);
+  const [peopleListExternalSource, setPeopleListExternalSource] = useState([]);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
   const [selectedPeople, setSelectedPeople] = useState([]);
 
@@ -51,6 +52,11 @@ function SearchPerson() {
 
   let query = new URLSearchParams();
   query.append('classes', entitiesClass.person);
+
+  let sourceQuery = new URLSearchParams();
+  sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
+  sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
+
   const { currentData: initialEntities, isFetching: initialPersonLoading } = useGetEntitiesQuery({
     calendarId,
     searchKey: '',
@@ -61,6 +67,7 @@ function SearchPerson() {
     calendarId,
     searchKey: '',
     classes: decodeURIComponent(query.toString()),
+    sources: decodeURIComponent(sourceQuery.toString()),
     sessionId: timestampRef,
   });
 
@@ -69,7 +76,7 @@ function SearchPerson() {
   useEffect(() => {
     if (initialEntities && currentCalendarData && initialExternalSourceLoading) {
       setPeopleList(initialEntities);
-      setPeopleListArtsData(initialExternalSource?.artsdata);
+      setPeopleListExternalSource(initialExternalSource);
     }
   }, [initialPersonLoading]);
 
@@ -91,12 +98,13 @@ function SearchPerson() {
     getExternalSource({
       searchKey: value,
       classes: decodeURIComponent(query.toString()),
+      sources: decodeURIComponent(sourceQuery.toString()),
       calendarId,
       excludeExistingCMS: true,
     })
       .unwrap()
       .then((response) => {
-        setPeopleListArtsData(response?.artsdata);
+        setPeopleListExternalSource(response);
       })
       .catch((error) => console.log(error));
   };
@@ -194,8 +202,8 @@ function SearchPerson() {
                     )}
                     {!isExternalSourceFetching &&
                       isExternalSourceSuccess &&
-                      (peopleListArtsData?.length > 0 ? (
-                        peopleListArtsData?.map((person, index) => (
+                      (peopleListExternalSource?.artsdata?.length > 0 ? (
+                        peopleListExternalSource?.artsdata?.map((person, index) => (
                           <div
                             key={index}
                             className="search-popover-options"
@@ -222,6 +230,65 @@ function SearchPerson() {
                               }
                               linkText={t('dashboard.people.createNew.search.linkText')}
                               onClick={() => artsDataClickHandler(person)}
+                            />
+                          </div>
+                        ))
+                      ) : (
+                        <NoContent />
+                      ))}
+                  </div>
+                </>
+              )}
+              {quickCreateKeyword.length > 0 && (
+                <>
+                  <div className="popover-section-header" data-cy="div-person-artsdata-title">
+                    {t('dashboard.people.createNew.search.importsFromFootlight')}
+                  </div>
+                  <div className="search-scrollable-content">
+                    {isExternalSourceFetching && (
+                      <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <LoadingIndicator />
+                      </div>
+                    )}
+                    {!isExternalSourceFetching &&
+                      isExternalSourceSuccess &&
+                      (peopleListExternalSource?.footlight?.length > 0 ? (
+                        peopleListExternalSource?.footlight?.map((person, index) => (
+                          <div
+                            key={index}
+                            className="search-popover-options"
+                            onClick={() => {
+                              setSelectedPeople([...selectedPeople, person]);
+                              setIsPopoverOpen(false);
+                            }}
+                            data-cy={`div-person-artsdata-${index}`}>
+                            <EntityCard
+                              title={contentLanguageBilingual({
+                                en: person?.name?.en,
+                                fr: person?.name?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              })}
+                              description={contentLanguageBilingual({
+                                en: person?.disambiguatingDescription?.en,
+                                fr: person?.disambiguatingDescription?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              })}
+                              artsDataLink={artsDataLinkChecker(person?.uri)}
+                              Logo={
+                                person.logo ? (
+                                  person.logo?.thumbnail?.uri
+                                ) : (
+                                  <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
+                                )
+                              }
+                              linkText={t('dashboard.people.createNew.search.linkText')}
+                              onClick={() =>
+                                navigate(
+                                  `${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?entityId=${person?.id}`,
+                                )
+                              }
                             />
                           </div>
                         ))

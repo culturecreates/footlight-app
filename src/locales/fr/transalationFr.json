@@ -120,11 +120,11 @@
         "allDone": "Terminé",
         "featuredEvent": "Événement vedette",
         "dataSource": "Data source",
-          "question": {
-            "firstPart": "Est-ce la bonne événement ? Si non, ",
-            "secondPart": "créez une nouvelle événement",
-            "thirdPart": " et ne modifiez pas celui-ci."
-          },
+        "question": {
+          "firstPart": "Est-ce la bonne événement ? Si non, ",
+          "secondPart": "créez une nouvelle événement",
+          "thirdPart": " et ne modifiez pas celui-ci."
+        },
         "language": {
           "title": "Titre de l'événement",
           "titleLabel": "English",
@@ -479,7 +479,8 @@
           "createNew": "Créer une nouvelle organisation",
           "create": "Créer",
           "footlightSectionHeading": "From Footlight",
-          "artsDataSectionHeading": "Imports from Artsdata"
+          "artsDataSectionHeading": "Imports from Artsdata",
+          "importsFromFootlight": "Imports from Footlight"
         },
         "addOrganization": {
           "newOrganization": "Nouvelle organisation",
