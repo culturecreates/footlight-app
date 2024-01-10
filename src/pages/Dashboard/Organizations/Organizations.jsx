@@ -43,7 +43,14 @@ function Organizations() {
   const { calendarId } = useParams();
   let [searchParams, setSearchParams] = useSearchParams();
   const { user } = useSelector(getUserDetails);
-  const [currentCalendarData] = useOutletContext();
+  const [
+    currentCalendarData, // eslint-disable-next-line no-unused-vars
+    _pageNumber, // eslint-disable-next-line no-unused-vars
+    _setPageNumber, // eslint-disable-next-line no-unused-vars
+    _getCalendar,
+    setContentBackgroundColor,
+  ] = useOutletContext();
+  setContentBackgroundColor('#fff');
 
   const [
     getAllOrganization,

@@ -12,3 +12,7 @@
   align-items: flex-end;
   gap: 4px;
 }
+
+.users-list-item-wrapper:hover {
+  background-color: #f9faff;
+}

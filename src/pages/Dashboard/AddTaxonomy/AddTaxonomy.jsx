@@ -31,7 +31,14 @@ const AddTaxonomy = () => {
   const taxonomyId = searchParams.get('id');
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
-  const [currentCalendarData, , , getCalendar] = useOutletContext();
+  const [
+    currentCalendarData, // eslint-disable-next-line no-unused-vars
+    _pageNumber, // eslint-disable-next-line no-unused-vars
+    _setPageNumber, // eslint-disable-next-line no-unused-vars
+    getCalendar,
+    setContentBackgroundColor,
+  ] = useOutletContext();
+  setContentBackgroundColor('#F9FAFF');
   const timestampRef = useRef(Date.now()).current;
   const navigate = useNavigate();
   const dispatch = useDispatch();

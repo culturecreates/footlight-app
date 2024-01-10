@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './dashboard.css';
-import { Layout } from 'antd';
+import { Grid, Layout } from 'antd';
 import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import NavigationBar from '../../components/NavigationBar/Dashboard';
 import Sidebar from '../../components/Sidebar/Main';
@@ -21,6 +21,7 @@ import { useLazyGetCurrentUserQuery } from '../../services/users';
 import ErrorLayout from '../../layout/ErrorLayout/ErrorLayout';
 
 const { Header, Content } = Layout;
+const { useBreakpoint } = Grid;
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ function Dashboard() {
   const { accessToken, user } = useSelector(getUserDetails);
   const [getCalendar, { currentData: currentCalendarData }] = useLazyGetCalendarQuery();
   const reloadStatus = useSelector(getReloadStatusForCalendar);
+  const screens = useBreakpoint();
 
   const {
     currentData: allCalendarsData,
@@ -46,6 +48,7 @@ function Dashboard() {
   const [pageNumber, setPageNumber] = useState(
     searchParams.get('page') ? searchParams.get('page') : Cookies.get('page') ?? 1,
   );
+  const [contentBackgroundColor, setContentBackgroundColor] = useState('#fff');
 
   useEffect(() => {
     if (!accessToken && accessToken === '') {
@@ -132,13 +135,15 @@ function Dashboard() {
             <Content
               className="site-layout-background"
               style={{
-                padding: '34px 32px 32px 32px',
+                padding: `${screens.md ? '34px 32px 32px 32px' : '16px'}`,
                 margin: 0,
                 minHeight: 280,
                 overflowY: 'scroll',
-                background: '#F9FAFF',
+                background: contentBackgroundColor,
               }}>
-              <Outlet context={[currentCalendarData, pageNumber, setPageNumber, getCalendar]} />
+              <Outlet
+                context={[currentCalendarData, pageNumber, setPageNumber, getCalendar, setContentBackgroundColor]}
+              />
             </Content>
           </Layout>
         </Layout>

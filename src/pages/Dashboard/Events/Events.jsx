@@ -40,7 +40,14 @@ function Events() {
   let [searchParams, setSearchParams] = useSearchParams();
   const timestampRef = useRef(Date.now()).current;
   const { user } = useSelector(getUserDetails);
-  const [currentCalendarData, pageNumber, setPageNumber] = useOutletContext();
+  const [
+    currentCalendarData,
+    pageNumber,
+    setPageNumber, // eslint-disable-next-line no-unused-vars
+    _getCalendar,
+    setContentBackgroundColor,
+  ] = useOutletContext();
+  setContentBackgroundColor('#fff');
 
   const [getEvents, { currentData: eventsData, isLoading, isFetching }] = useLazyGetEventsQuery();
   const [getAllUsers, { isFetching: allUsersLoading }] = useLazyGetAllUsersQuery();
@@ -542,7 +549,7 @@ function Events() {
   return (
     !isLoading && (
       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
-        <Col span={24}>
+        <Col span={24} className="events-wrapper-cloumn">
           <Col style={{ paddingLeft: 0 }}>
             <Row justify="space-between">
               <Col>
@@ -619,8 +626,8 @@ function Events() {
               </div>
             </Col>
 
-            <Col span={24}>
-              <Row gutter={20}>
+            <Col span={24} className="filter-container">
+              <Row gutter={[16, { xs: 8 }]}>
                 <Space>
                   <Col>
                     <SearchableCheckbox
@@ -653,7 +660,7 @@ function Events() {
                     </SearchableCheckbox>
                   </Col>
                 </Space>
-                <Col>
+                <Col className="event-filter-item-mobile-full-width">
                   <SearchableCheckbox
                     allowSearch={true}
                     loading={allUsersLoading}
@@ -748,7 +755,7 @@ function Events() {
                     </Button>
                   </Popover>
                 </Col>
-                <Col>
+                <Col className="event-filter-item-mobile-full-width">
                   <SearchableCheckbox
                     allowSearch={true}
                     loading={organizerLoading}

@@ -5,10 +5,20 @@ import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import './settings.css';
 import UserManagement from './UserManagement/UserManagement';
+import { useOutletContext } from 'react-router';
 
 const Settings = () => {
   const { t } = useTranslation();
   const [tabKey, setTabKey] = useState('tab1');
+  const [
+    // eslint-disable-next-line no-unused-vars
+    _currentCalendarData, // eslint-disable-next-line no-unused-vars
+    _pageNumber, // eslint-disable-next-line no-unused-vars
+    _setPageNumber, // eslint-disable-next-line no-unused-vars
+    _getCalendar,
+    setContentBackgroundColor,
+  ] = useOutletContext();
+  setContentBackgroundColor('#fff');
 
   const onTabChange = (key) => {
     setTabKey(key);

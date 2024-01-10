@@ -53,7 +53,14 @@ function CreateNewOrganization() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const [currentCalendarData] = useOutletContext();
+  const [
+    currentCalendarData, // eslint-disable-next-line no-unused-vars
+    _pageNumber, // eslint-disable-next-line no-unused-vars
+    _setPageNumber, // eslint-disable-next-line no-unused-vars
+    _getCalendar,
+    setContentBackgroundColor,
+  ] = useOutletContext();
+  setContentBackgroundColor('#F9FAFF');
   const { user } = useSelector(getUserDetails);
   const { calendarId } = useParams();
   let [searchParams] = useSearchParams();
