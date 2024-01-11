@@ -711,8 +711,14 @@ function Events() {
                     placement="bottom"
                     getPopupContainer={(trigger) => trigger.parentNode}
                     content={
-                      <div style={{ display: 'flex', gap: '8px', width: 'max-content' }}>
-                        <Radio.Group onChange={(e) => dateFilterHandler(e)} value={selectedDateType}>
+                      <div style={{ display: 'flex', width: 'max-content' }}>
+                        <Radio.Group
+                          onChange={(e) => dateFilterHandler(e)}
+                          value={selectedDateType}
+                          style={{
+                            padding: '12px',
+                            borderRight: selectedDateType === dateFilterTypes.DATE_RANGE && '1px solid #B6C1C9',
+                          }}>
                           <Space direction="vertical">
                             {dateFilterOptions.map((option) => (
                               <Radio value={option.type} key={option.type}>
@@ -721,17 +727,18 @@ function Events() {
                             ))}
                           </Space>
                         </Radio.Group>
-                        {selectedDateType === dateFilterTypes.DATE_RANGE && (
+                        {/* {selectedDateType === dateFilterTypes.DATE_RANGE && (
                           <Divider type="vertical" style={{ height: 'auto', borderLeft: '1px solid #B6C1C9' }} />
-                        )}
+                        )} */}
                         {selectedDateType === dateFilterTypes.DATE_RANGE && (
                           <RcCalendar
-                            onStandaloneSelect={(dates) => {
+                            onApply={(dates) => {
                               setSelectedDates(dates);
                               setFilter({ ...filter, dates: dates });
                               setIsDatePopoverOpen(false);
                             }}
                             selectedValue={selectedDates?.length > 0 ? selectedDates : []}
+                            setSelectedValue={setSelectedDates}
                           />
                         )}
                       </div>

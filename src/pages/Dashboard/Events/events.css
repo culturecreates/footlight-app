@@ -56,6 +56,9 @@
   display: none;
 }
 
+.date-filter-popover .ant-popover-inner-content {
+  padding: 0px;
+}
 .date-filter-popover .date-range-picker-filter-footer {
   display: flex;
   align-items: center;
