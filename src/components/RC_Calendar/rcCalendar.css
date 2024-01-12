@@ -1,0 +1,130 @@
+/* Apply your own primary color */
+:root {
+}
+
+.rc-year-calendar-wrapper .ant-input-group.ant-input-group-compact {
+  padding: 8px;
+}
+/* Style the calendar container */
+.rc-calendar {
+  font-family: 'Arial', sans-serif;
+  box-shadow: none;
+  border: 0px;
+  border-radius: 0px;
+  border-top: 1px solid #b6c1c9;
+}
+
+/* Style the header */
+.rc-calendar-header {
+  background-color: var(--primary-color);
+  color: #fff;
+  text-align: center;
+  padding: 8px;
+  border-bottom: 0px;
+}
+.rc-calendar-range .rc-calendar-body {
+  border-bottom: 0px;
+}
+
+/* Style the days in the calendar */
+.rc-calendar-date-panel {
+  padding: 8px;
+}
+
+/* Style the selected range */
+.rc-calendar-selected-range {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+/* Style the range tip */
+.rc-calendar-range-tip {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+/* Style the hover range */
+.rc-calendar-range-hover-start,
+.rc-calendar-range-hover-end {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.rc-calendar-selected-day .rc-calendar-date,
+.rc-calendar-year-panel-selected-cell .rc-calendar-year-panel-year,
+.rc-calendar-month-panel-selected-cell .rc-calendar-month-panel-month {
+  background-color: #607efc;
+  color: #fff;
+}
+
+.rc-calendar-range.rc-calendar-week-number,
+.rc-calendar-range {
+  width: max-content;
+}
+
+.rc-calendar-month-select,
+.rc-calendar-year-select {
+  font-weight: 700;
+  font-size: 16px;
+  color: #222732;
+}
+
+.rc-calendar-range-middle {
+  display: none;
+}
+
+.rc-calendar-range .rc-calendar-input,
+.rc-calendar-range .rc-time-picker-input {
+  padding: 1px 7px;
+  height: 22px;
+  font-size: 16px;
+  font-weight: 400;
+  color: #222732;
+}
+
+.rc-calendar-range-left .rc-calendar-input-wrap {
+  border-left: 1px solid #b6c1c9;
+  border-bottom: 1px solid #b6c1c9;
+  border-top: 1px solid #b6c1c9;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-right: 0px;
+}
+
+.rc-calendar-range-right .rc-calendar-input-wrap {
+  border-right: 1px solid #b6c1c9;
+  border-bottom: 1px solid #b6c1c9;
+  border-top: 1px solid #b6c1c9;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-left: 0px;
+}
+
+.rc-calendar-year-select:hover,
+.rc-calendar-month-select:hover,
+.rc-calendar-day-select:hover,
+.rc-calendar-year-panel-selected-cell .rc-calendar-year-panel-year:hover {
+  background-color: #f9faff;
+  color: #1b3de6;
+}
+
+.rc-calendar-range .rc-calendar-footer-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.rc-calendar-range .rc-calendar-in-range-cell {
+  background-color: #eff2ff;
+  color: #0f0e98;
+}
+.rc-calendar-range .rc-calendar-in-range-cell .rc-calendar-date {
+  color: #0f0e98;
+}
+
+.rc-calendar-prev-month-btn,
+.rc-calendar-next-month-btn,
+.rc-calendar-prev-year-btn,
+.rc-calendar-next-year-btn {
+  color: #1b3de6;
+}
