@@ -49,13 +49,16 @@
   padding-top: 0px;
 }
 .date-filter-popover .ant-popover-content {
-  min-width: 340px;
+  min-width: 200px;
 }
 
 .date-filter-popover .ant-popover-arrow {
   display: none;
 }
 
+.date-filter-popover .ant-popover-inner-content {
+  padding: 0px;
+}
 .date-filter-popover .date-range-picker-filter-footer {
   display: flex;
   align-items: center;
@@ -71,6 +74,14 @@
 
 .date-filter-popover .date-range-picker-filter-footer-button-selected {
   background-color: #eff2ff;
+}
+
+.date-filter-popover .ant-popover-content .ant-radio-inner::after {
+  background-color: #1b3de6;
+}
+
+.date-filter-popover .ant-popover-content .ant-radio-inner {
+  border-color: #1b3de6;
 }
 
 @media only screen and (max-width: 768px) {
