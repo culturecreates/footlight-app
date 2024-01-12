@@ -727,9 +727,7 @@ function Events() {
                             ))}
                           </Space>
                         </Radio.Group>
-                        {/* {selectedDateType === dateFilterTypes.DATE_RANGE && (
-                          <Divider type="vertical" style={{ height: 'auto', borderLeft: '1px solid #B6C1C9' }} />
-                        )} */}
+
                         {selectedDateType === dateFilterTypes.DATE_RANGE && (
                           <RcCalendar
                             onApply={(dates) => {

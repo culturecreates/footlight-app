@@ -38,8 +38,6 @@ function RcCalendar(props) {
     setCurrentSelectedDates(dates);
   };
 
-  // const onApplyHandler = (dates) => {};
-
   return (
     <div className="rc-year-calendar-wrapper">
       <Input.Group compact>
