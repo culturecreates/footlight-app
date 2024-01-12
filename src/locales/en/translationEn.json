@@ -482,8 +482,9 @@
           "linkText": "Artsdata",
           "createNew": "Create new organization",
           "create": "Create",
-          "footlightSectionHeading": "From Footlight",
-          "artsDataSectionHeading": "Imports from Artsdata"
+          "footlightSectionHeading": "My Footlight",
+          "artsDataSectionHeading": "Imports from Artsdata",
+          "importsFromFootlight": "Imports from Footlight"
         },
         "addOrganization": {
           "newOrganization": "New Organization",
@@ -554,8 +555,9 @@
           "breadcrumb": "Back to previous screen",
           "linkText": "Artsdata",
           "create": "Create",
-          "footlightSectionHeading": "From Footlight",
-          "artsDataSectionHeading": "Imports from Artsdata"
+          "footlightSectionHeading": "My Footlight",
+          "artsDataSectionHeading": "Imports from Artsdata",
+          "importsFromFootlight": "Imports from Footlight"
         },
         "addPlace": {
           "newPlace": "New place",
@@ -705,7 +707,7 @@
           "breadcrumb": "Back to previous screen",
           "linkText": "Artsdata",
           "create": "Create",
-          "footlightSectionHeading": "From Footlight",
+          "footlightSectionHeading": "My Footlight",
           "artsDataSectionHeading": "Imports from Artsdata",
           "importsFromFootlight": "Imports from Footlight"
         },
