@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './responsiveSidebar.css';
 import { Drawer, List, Avatar, Menu, Button } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
+import { DownOutlined } from '@ant-design/icons';
 import './index';
 import { userNameItems } from '../../../constants/userNameItems';
 import { sidebarItems } from '../../../constants/sidebarItems';
@@ -56,7 +57,19 @@ function ResponsiveSidebar(props) {
             src={uri}
           />
         ),
-        label,
+        label: (
+          <>
+            {label}{' '}
+            <DownOutlined
+              style={{
+                position: 'relative',
+                top: '45%',
+                left: '88%',
+                fontSize: '8px',
+              }}
+            />
+          </>
+        ),
         className: 'sidebar-calendar',
       },
     ];
@@ -123,6 +136,7 @@ function ResponsiveSidebar(props) {
           <List itemLayout="horizontal">
             <List.Item>
               <List.Item.Meta
+                className="user-details-responsive"
                 avatar={<Avatar className="dropdown-avatar" src={user.profileImage} size={32} />}
                 title={
                   <span className="username-responsive">
