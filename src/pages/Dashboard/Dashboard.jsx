@@ -122,7 +122,12 @@ function Dashboard() {
     <ErrorLayout>
       <Layout className="dashboard-wrapper">
         <Header className="dashboard-header">
-          <NavigationBar currentCalendarData={currentCalendarData} allCalendarsData={allCalendarsData} />
+          <NavigationBar
+            currentCalendarData={currentCalendarData}
+            allCalendarsData={allCalendarsData}
+            pageNumber={pageNumber}
+            setPageNumber={setPageNumber}
+          />
         </Header>
         <Layout>
           <Sidebar

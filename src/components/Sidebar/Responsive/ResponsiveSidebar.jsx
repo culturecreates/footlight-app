@@ -15,7 +15,7 @@ import { contentLanguageBilingual } from '../../../utils/bilingual';
 import i18n from 'i18next';
 
 function ResponsiveSidebar(props) {
-  const { allCalendarsData, currentCalendarData, onClose, open } = props;
+  const { allCalendarsData, currentCalendarData, onClose, open, pageNumber, setPageNumber } = props;
   const { t } = useTranslation();
   let { calendarId } = useParams();
   const navigate = useNavigate();
@@ -63,11 +63,13 @@ function ResponsiveSidebar(props) {
   };
 
   const onSidebarClickHandler = ({ item }) => {
+    onClose();
     navigate(`${PathName.Dashboard}/${calendarId}${item.props.path}`);
   };
   const logoutHandler = ({ key }) => {
     switch (key) {
       case 'userProfile':
+        onClose();
         navigate(`${PathName.Dashboard}/${calendarId}${PathName.Profile}/${user?.id}`);
         break;
       case 'help':
@@ -95,7 +97,7 @@ function ResponsiveSidebar(props) {
       className="sidebar-navigation-menu-responsive-drawer"
       title={
         <div className="sidebar-calendar-menu-responsive">
-          <CalendarList allCalendarsData={allCalendarsData}>
+          <CalendarList pageNumber={pageNumber} setPageNumber={setPageNumber} allCalendarsData={allCalendarsData}>
             <Menu
               defaultSelectedKeys={['1']}
               style={{
@@ -135,7 +137,7 @@ function ResponsiveSidebar(props) {
             itemLayout="horizontal"
             dataSource={items}
             renderItem={(item) => (
-              <List.Item onClick={() => logoutHandler(item)}>
+              <List.Item className="sidebar-footer-item" onClick={() => logoutHandler(item)}>
                 <List.Item.Meta avatar={item.icon} title={<span>{item.label}</span>} />
               </List.Item>
             )}
