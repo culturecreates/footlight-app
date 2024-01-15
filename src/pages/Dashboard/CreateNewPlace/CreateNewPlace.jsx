@@ -45,7 +45,11 @@ import Tags from '../../../components/Tags/Common/Tags';
 import StyledInput from '../../../components/Input/Common';
 import SelectionItem from '../../../components/List/SelectionItem';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
-import { useLazyGetEntitiesQuery } from '../../../services/entities';
+import {
+  useGetEntitiesByIdQuery,
+  useLazyGetEntitiesByIdQuery,
+  useLazyGetEntitiesQuery,
+} from '../../../services/entities';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
 import TextEditor from '../../../components/TextEditor';
@@ -69,8 +73,9 @@ import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { userRoles } from '../../../constants/userRoles';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
-import { sourceOptions } from '../../../constants/sourceOptions';
+import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
+import { sameAsTypes } from '../../../constants/sameAsTypes';
 
 const { TextArea } = Input;
 
@@ -124,6 +129,8 @@ function CreateNewPlace() {
     CONTAINS_PLACE: 'containsPlace',
   };
   const placeId = searchParams.get('id');
+  const externalCalendarEntityId = searchParams.get('entityId');
+
   const artsDataId = location?.state?.data?.id ?? null;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
   const isRoutingToOrganization = location?.state?.data?.isRoutingToOrganization;
@@ -135,6 +142,14 @@ function CreateNewPlace() {
     { placeId: placeId, calendarId, sessionId: timestampRef },
     { skip: placeId ? false : true },
   );
+
+  let placeIdsQuery = new URLSearchParams();
+  placeIdsQuery.append('ids', externalCalendarEntityId);
+  const { data: externalCalendarEntityData, isLoading: externalEntityLoading } = useGetEntitiesByIdQuery(
+    { ids: placeIdsQuery, calendarId, sessionId: timestampRef },
+    { skip: externalCalendarEntityId ? false : true },
+  );
+
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
@@ -151,6 +166,7 @@ function CreateNewPlace() {
   const [getPlace] = useLazyGetPlaceQuery();
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
   const [updatePostalAddress] = useUpdatePostalAddressMutation();
+  const [getEntitiesById] = useLazyGetEntitiesByIdQuery();
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -165,6 +181,7 @@ function CreateNewPlace() {
   const [selectedContainsPlaces, setSelectedContainsPlaces] = useState([]);
   const [allPlacesList, setAllPlacesList] = useState([]);
   const [allPlacesArtsdataList, setAllPlacesArtsdataList] = useState([]);
+  const [allPlacesImportsFootlight, setAllPlacesImportsFootlight] = useState([]);
   const [descriptionMinimumWordCount] = useState(1);
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [addedFields, setAddedFields] = useState([]);
@@ -175,6 +192,14 @@ function CreateNewPlace() {
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
   usePrompt(t('common.unsavedChanges'), showDialog);
+
+  let externalEntityData = externalCalendarEntityData?.length > 0 && externalCalendarEntityData[0];
+  externalEntityData = {
+    ...externalEntityData,
+    regions: [],
+    additionalType: [],
+    accessibility: [],
+  };
 
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
@@ -198,6 +223,21 @@ function CreateNewPlace() {
               ...placeObj,
               sameAs: [artsData?.sameAs],
             };
+        }
+
+        if (externalCalendarEntityId) {
+          let sameAs = [
+            {
+              uri: externalCalendarEntityId,
+              type: sameAsTypes.FOOTLIGHT_IDENTIFIER,
+            },
+          ];
+          if (externalEntityData?.sameAs) {
+            placeObj = {
+              ...placeObj,
+              sameAs: externalEntityData?.sameAs?.concat(sameAs),
+            };
+          }
         }
         addPostalAddress({ data: postalObj, calendarId })
           .unwrap()
@@ -634,6 +674,9 @@ function CreateNewPlace() {
   const placesSearch = (inputValue = '') => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
+    let sourceQuery = new URLSearchParams();
+    sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
+    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
     getEntities({
       searchKey: inputValue,
       classes: decodeURIComponent(query.toString()),
@@ -651,6 +694,7 @@ function CreateNewPlace() {
     getExternalSource({
       searchKey: inputValue,
       classes: decodeURIComponent(query.toString()),
+      sources: decodeURIComponent(sourceQuery.toString()),
       calendarId,
       excludeExistingCMS: true,
     })
@@ -658,6 +702,9 @@ function CreateNewPlace() {
       .then((response) => {
         setAllPlacesArtsdataList(
           placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+        );
+        setAllPlacesImportsFootlight(
+          placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
         );
       })
       .catch((error) => console.log(error));
@@ -706,83 +753,167 @@ function CreateNewPlace() {
   }, [selectedContainsPlaces]);
 
   useEffect(() => {
-    if (calendarId && placeData && currentCalendarData) {
+    if (calendarId && currentCalendarData) {
       let initialAddedFields = [],
         initialPlaceAccessibiltiy = [],
         initialPlace;
-      if (routinghandler(user, calendarId, placeData?.createdByUserId, null, true)) {
-        if (placeData?.derivedFrom?.uri) {
-          let sourceId = getExternalSourceId(placeData?.derivedFrom?.uri);
+      if (placeData) {
+        if (routinghandler(user, calendarId, placeData?.createdByUserId, null, true)) {
+          if (placeData?.derivedFrom?.uri) {
+            let sourceId = getExternalSourceId(placeData?.derivedFrom?.uri);
+            getArtsDataPlace(sourceId);
+          }
+          if (placeData?.containedInPlace?.entityId) {
+            getPlace({ placeId: placeData?.containedInPlace?.entityId, calendarId })
+              .unwrap()
+              .then((response) => {
+                if (response?.accessibility?.length > 0) {
+                  getAllTaxonomy({
+                    calendarId,
+                    search: '',
+                    taxonomyClass: taxonomyClass.PLACE,
+                    includeConcepts: true,
+                    sessionId: timestampRef,
+                  })
+                    .unwrap()
+                    .then((res) => {
+                      res?.data?.forEach((taxonomy) => {
+                        if (taxonomy?.mappedToField === 'PlaceAccessibility') {
+                          response?.accessibility?.forEach((accessibility) => {
+                            taxonomy?.concept?.forEach((concept) => {
+                              if (concept?.id == accessibility?.entityId) {
+                                initialPlaceAccessibiltiy = initialPlaceAccessibiltiy?.concat([concept]);
+                              }
+                            });
+                          });
+                        }
+                      });
+                      initialPlace = {
+                        ...response,
+                        ['accessibility']: initialPlaceAccessibiltiy,
+                      };
+                      setContainedInPlace(placesOptions([initialPlace], user, calendarContentLanguage)[0]);
+                    })
+                    .catch((error) => console.log(error));
+                } else {
+                  initialPlace = {
+                    ...response,
+                    ['accessibility']: [],
+                  };
+                  setContainedInPlace(placesOptions([response], user, calendarContentLanguage)[0]);
+                }
+              })
+              .catch((error) => console.log(error));
+            form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, placeData?.containedInPlace?.entityId);
+          }
+          if (placeData?.image) {
+            form.setFieldsValue({
+              imageCrop: {
+                large: {
+                  x: placeData?.image?.large?.xCoordinate,
+                  y: placeData?.image?.large?.yCoordinate,
+                  height: placeData?.image?.large?.height,
+                  width: placeData?.image?.large?.width,
+                },
+                original: {
+                  entityId: placeData?.image?.original?.entityId ?? null,
+                  height: placeData?.image?.original?.height,
+                  width: placeData?.image?.original?.width,
+                },
+                thumbnail: {
+                  x: placeData?.image?.thumbnail?.xCoordinate,
+                  y: placeData?.image?.thumbnail?.yCoordinate,
+                  height: placeData?.image?.thumbnail?.height,
+                  width: placeData?.image?.thumbnail?.width,
+                },
+              },
+            });
+          }
+          if (placeData?.containsPlace?.length > 0) {
+            let initialContainsPlace = placeData?.containsPlace?.map((place) => {
+              return {
+                disambiguatingDescription: place?.disambiguatingDescription,
+                id: place?.id,
+                name: place?.name,
+                image: place?.image,
+                uri: place?.derivedFrom?.uri,
+              };
+            });
+            setSelectedContainsPlaces(
+              placesOptions(initialContainsPlace, user, calendarContentLanguage, sourceOptions.CMS),
+            );
+          }
+          if (placeData?.openingHours) initialAddedFields = initialAddedFields?.concat(formFieldNames?.OPENING_HOURS);
+          if (placeData?.accessibilityNote)
+            initialAddedFields = initialAddedFields?.concat(formFieldNames?.ACCESSIBILITY_NOTE_WRAP);
+          form.setFieldsValue({
+            latitude: placeData.geoCoordinates && '' + placeData.geoCoordinates.latitude,
+            longitude: placeData.geoCoordinates && '' + placeData.geoCoordinates.longitude,
+          });
+          setAddedFields(initialAddedFields);
+        } else
+          window.location.replace(
+            `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Places}/${placeId}`,
+          );
+      }
+
+      if (externalCalendarEntityData?.length > 0 && externalCalendarEntityId) {
+        if (externalCalendarEntityData[0]?.derivedFrom?.uri) {
+          let sourceId = getExternalSourceId(externalCalendarEntityData[0]?.derivedFrom?.uri);
           getArtsDataPlace(sourceId);
         }
-        if (placeData?.containedInPlace?.entityId) {
-          getPlace({ placeId: placeData?.containedInPlace?.entityId, calendarId })
-            .unwrap()
-            .then((response) => {
-              if (response?.accessibility?.length > 0) {
-                getAllTaxonomy({
-                  calendarId,
-                  search: '',
-                  taxonomyClass: taxonomyClass.PLACE,
-                  includeConcepts: true,
-                  sessionId: timestampRef,
-                })
-                  .unwrap()
-                  .then((res) => {
-                    res?.data?.forEach((taxonomy) => {
-                      if (taxonomy?.mappedToField === 'PlaceAccessibility') {
-                        response?.accessibility?.forEach((accessibility) => {
-                          taxonomy?.concept?.forEach((concept) => {
-                            if (concept?.id == accessibility?.entityId) {
-                              initialPlaceAccessibiltiy = initialPlaceAccessibiltiy?.concat([concept]);
-                            }
-                          });
-                        });
-                      }
-                    });
-                    initialPlace = {
-                      ...response,
-                      ['accessibility']: initialPlaceAccessibiltiy,
-                    };
-                    setContainedInPlace(placesOptions([initialPlace], user, calendarContentLanguage)[0]);
-                  })
-                  .catch((error) => console.log(error));
-              } else {
-                initialPlace = {
-                  ...response,
-                  ['accessibility']: [],
-                };
-                setContainedInPlace(placesOptions([response], user, calendarContentLanguage)[0]);
-              }
-            })
-            .catch((error) => console.log(error));
-          form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, placeData?.containedInPlace?.entityId);
-        }
-        if (placeData?.image) {
+
+        if (externalCalendarEntityData[0]?.image) {
           form.setFieldsValue({
             imageCrop: {
               large: {
-                x: placeData?.image?.large?.xCoordinate,
-                y: placeData?.image?.large?.yCoordinate,
-                height: placeData?.image?.large?.height,
-                width: placeData?.image?.large?.width,
+                x: externalCalendarEntityData[0]?.image?.large?.xCoordinate,
+                y: externalCalendarEntityData[0]?.image?.large?.yCoordinate,
+                height: externalCalendarEntityData[0]?.image?.large?.height,
+                width: externalCalendarEntityData[0]?.image?.large?.width,
               },
               original: {
-                entityId: placeData?.image?.original?.entityId ?? null,
-                height: placeData?.image?.original?.height,
-                width: placeData?.image?.original?.width,
+                entityId: externalCalendarEntityData[0]?.image?.original?.entityId ?? null,
+                height: externalCalendarEntityData[0]?.image?.original?.height,
+                width: externalCalendarEntityData[0]?.image?.original?.width,
               },
               thumbnail: {
-                x: placeData?.image?.thumbnail?.xCoordinate,
-                y: placeData?.image?.thumbnail?.yCoordinate,
-                height: placeData?.image?.thumbnail?.height,
-                width: placeData?.image?.thumbnail?.width,
+                x: externalCalendarEntityData[0]?.image?.thumbnail?.xCoordinate,
+                y: externalCalendarEntityData[0]?.image?.thumbnail?.yCoordinate,
+                height: externalCalendarEntityData[0]?.image?.thumbnail?.height,
+                width: externalCalendarEntityData[0]?.image?.thumbnail?.width,
               },
             },
           });
         }
-        if (placeData?.containsPlace?.length > 0) {
-          let initialContainsPlace = placeData?.containsPlace?.map((place) => {
+
+        if (externalCalendarEntityData[0]?.place?.entityId) {
+          let placeIdsQuery = new URLSearchParams();
+          placeIdsQuery.append('ids', externalCalendarEntityData[0]?.place?.entityId);
+          getEntitiesById({ ids: placeIdsQuery, calendarId })
+            .unwrap()
+            .then((response) => {
+              if (response?.length > 0) {
+                initialPlace = {
+                  ...response[0],
+                  ['accessibility']: [],
+                  ['type']: entitiesClass?.place,
+                };
+                setContainedInPlace(
+                  placesOptions([initialPlace], user, calendarContentLanguage)[0],
+                  externalSourceOptions.FOOTLIGHT,
+                );
+              }
+            })
+            .catch((error) => console.log(error));
+          form.setFieldValue(
+            formFieldNames.CONTAINED_IN_PLACE,
+            externalCalendarEntityData[0]?.containedInPlace?.entityId,
+          );
+        }
+
+        if (externalCalendarEntityData[0]?.containsPlace?.length > 0) {
+          let initialContainsPlace = externalCalendarEntityData[0]?.containsPlace?.map((place) => {
             return {
               disambiguatingDescription: place?.disambiguatingDescription,
               id: place?.id,
@@ -792,23 +923,21 @@ function CreateNewPlace() {
             };
           });
           setSelectedContainsPlaces(
-            placesOptions(initialContainsPlace, user, calendarContentLanguage, sourceOptions.CMS),
+            placesOptions(initialContainsPlace, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
           );
         }
-        if (placeData?.openingHours) initialAddedFields = initialAddedFields?.concat(formFieldNames?.OPENING_HOURS);
-        if (placeData?.accessibilityNote)
+        if (externalCalendarEntityData[0]?.openingHours)
+          initialAddedFields = initialAddedFields?.concat(formFieldNames?.OPENING_HOURS);
+        if (externalCalendarEntityData[0]?.accessibilityNote)
           initialAddedFields = initialAddedFields?.concat(formFieldNames?.ACCESSIBILITY_NOTE_WRAP);
         form.setFieldsValue({
-          latitude: placeData.geoCoordinates && '' + placeData.geoCoordinates.latitude,
-          longitude: placeData.geoCoordinates && '' + placeData.geoCoordinates.longitude,
+          latitude: externalCalendarEntityData[0].geo && '' + externalCalendarEntityData[0].geo.latitude,
+          longitude: externalCalendarEntityData[0].geo && '' + externalCalendarEntityData[0].geo.longitude,
         });
         setAddedFields(initialAddedFields);
-      } else
-        window.location.replace(
-          `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Places}/${placeId}`,
-        );
+      }
     }
-  }, [isPlaceLoading, currentCalendarData]);
+  }, [isPlaceLoading, currentCalendarData, externalEntityLoading]);
 
   useEffect(() => {
     if (artsDataId) {
@@ -944,12 +1073,29 @@ function CreateNewPlace() {
                 )}
                 <Form.Item label={t('dashboard.places.createNew.addPlace.name.name')} required={true}>
                   <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                    <BilingualInput fieldData={placeData?.name ? placeData?.name : artsDataId && artsData?.name}>
+                    <BilingualInput
+                      fieldData={
+                        placeData?.name
+                          ? placeData?.name
+                          : artsDataId
+                          ? artsData?.name
+                          : externalCalendarEntityId &&
+                            externalCalendarEntityData?.length > 0 &&
+                            externalCalendarEntityData[0]?.name
+                      }>
                       <Form.Item
                         data-cy="form-item-place-name-french"
                         name={formFieldNames.FRENCH}
                         key={contentLanguage.FRENCH}
-                        initialValue={placeData?.name?.fr ? placeData?.name?.fr : artsDataId && artsData?.name?.fr}
+                        initialValue={
+                          placeData?.name?.fr
+                            ? placeData?.name?.fr
+                            : artsDataId
+                            ? artsData?.name?.fr
+                            : externalCalendarEntityId &&
+                              externalCalendarEntityData?.length > 0 &&
+                              externalCalendarEntityData[0].name?.fr
+                        }
                         dependencies={[formFieldNames.ENGLISH]}
                         rules={[
                           ({ getFieldValue }) => ({
@@ -984,7 +1130,15 @@ function CreateNewPlace() {
                         data-cy="form-item-place-name-english"
                         name={formFieldNames.ENGLISH}
                         key={contentLanguage.ENGLISH}
-                        initialValue={placeData?.name?.en ? placeData?.name?.en : artsDataId && artsData?.name?.en}
+                        initialValue={
+                          placeData?.name?.en
+                            ? placeData?.name?.en
+                            : artsDataId
+                            ? artsData?.name?.en
+                            : externalCalendarEntityId &&
+                              externalCalendarEntityData?.length > 0 &&
+                              externalCalendarEntityData[0].name?.en
+                        }
                         dependencies={[formFieldNames.FRENCH]}
                         rules={[
                           ({ getFieldValue }) => ({
@@ -1084,7 +1238,11 @@ function CreateNewPlace() {
                       fieldData={
                         placeData?.disambiguatingDescription
                           ? placeData?.disambiguatingDescription
-                          : artsDataId && artsData?.disambiguatingDescription
+                          : artsDataId
+                          ? artsData?.disambiguatingDescription
+                          : externalCalendarEntityId &&
+                            externalCalendarEntityData?.length > 0 &&
+                            externalCalendarEntityData[0].disambiguatingDescription
                       }>
                       <Form.Item
                         name={formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH}
@@ -1092,7 +1250,11 @@ function CreateNewPlace() {
                         initialValue={
                           placeData?.disambiguatingDescription?.fr
                             ? placeData?.disambiguatingDescription?.fr
-                            : artsDataId && artsData?.disambiguatingDescription?.fr
+                            : artsDataId
+                            ? artsData?.disambiguatingDescription?.fr
+                            : externalCalendarEntityId &&
+                              externalCalendarEntityData?.length > 0 &&
+                              externalCalendarEntityData[0].disambiguatingDescription?.fr
                         }
                         dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH]}>
                         <TextArea
@@ -1120,7 +1282,11 @@ function CreateNewPlace() {
                         initialValue={
                           placeData?.disambiguatingDescription?.en
                             ? placeData?.disambiguatingDescription?.en
-                            : artsDataId && artsData?.disambiguatingDescription?.en
+                            : artsDataId
+                            ? artsData?.disambiguatingDescription?.en
+                            : externalCalendarEntityId &&
+                              externalCalendarEntityData?.length > 0 &&
+                              externalCalendarEntityData[0].disambiguatingDescription?.en
                         }
                         dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH]}>
                         <TextArea
@@ -1153,7 +1319,11 @@ function CreateNewPlace() {
                       fieldData={
                         placeData?.description
                           ? placeData?.description
-                          : artsData?.description && artsDataId && artsData?.description
+                          : artsData?.description && artsDataId
+                          ? artsData?.description
+                          : externalCalendarEntityId &&
+                            externalCalendarEntityData?.length > 0 &&
+                            externalCalendarEntityData[0].description
                       }>
                       <TextEditor
                         data-cy="editor-place-description-french"
@@ -1163,7 +1333,11 @@ function CreateNewPlace() {
                         initialValue={
                           placeData?.description?.fr
                             ? placeData?.description?.fr
-                            : artsDataId && artsData?.description?.fr
+                            : artsDataId
+                            ? artsData?.description?.fr
+                            : externalCalendarEntityId &&
+                              externalCalendarEntityData?.length > 0 &&
+                              externalCalendarEntityData[0].description?.fr
                         }
                         dependencies={[formFieldNames.EDITOR_ENGLISH]}
                         currentReactQuillRef={reactQuillRefFr}
@@ -1179,7 +1353,11 @@ function CreateNewPlace() {
                         initialValue={
                           placeData?.description?.en
                             ? placeData?.description?.en
-                            : artsDataId && artsData?.description?.en
+                            : artsDataId
+                            ? artsData?.description?.en
+                            : externalCalendarEntityId &&
+                              externalCalendarEntityData?.length > 0 &&
+                              externalCalendarEntityData[0].description?.en
                         }
                         calendarContentLanguage={calendarContentLanguage}
                         dependencies={[formFieldNames.EDITOR_FRENCH]}
@@ -1196,7 +1374,14 @@ function CreateNewPlace() {
                   label={t('dashboard.places.createNew.addPlace.image.image')}
                   name={formFieldNames.DRAGGER_WRAP}
                   className="draggerWrap"
-                  initialValue={placeData?.image && placeData?.image?.original?.uri}
+                  initialValue={
+                    placeData?.image
+                      ? placeData?.image?.original?.uri
+                      : externalCalendarEntityId &&
+                        externalCalendarEntityData?.length > 0 &&
+                        externalCalendarEntityData[0].image &&
+                        externalCalendarEntityData[0].image?.original?.uri
+                  }
                   {...(isAddImageError && {
                     help: t('dashboard.events.addEditEvent.validations.errorImage'),
                     validateStatus: 'error',
@@ -1227,14 +1412,32 @@ function CreateNewPlace() {
                   </Row>
                   <ImageUpload
                     data-cy="image-upload-place"
-                    imageUrl={placeData?.image?.large?.uri}
-                    originalImageUrl={placeData?.image?.original?.uri}
+                    imageUrl={
+                      placeId
+                        ? placeData?.image?.large?.uri
+                        : externalCalendarEntityId &&
+                          externalCalendarEntityData?.length > 0 &&
+                          externalCalendarEntityData[0]?.image?.large?.uri
+                    }
+                    originalImageUrl={
+                      placeId
+                        ? placeData?.image?.original?.uri
+                        : externalCalendarEntityId &&
+                          externalCalendarEntityData?.length > 0 &&
+                          externalCalendarEntityData[0]?.image?.original?.uri
+                    }
                     imageReadOnly={false}
                     preview={true}
                     setImageCropOpen={setImageCropOpen}
                     imageCropOpen={imageCropOpen}
                     form={form}
-                    eventImageData={placeData?.image}
+                    eventImageData={
+                      placeId
+                        ? placeData?.image
+                        : externalCalendarEntityId &&
+                          externalCalendarEntityData?.length > 0 &&
+                          externalCalendarEntityData[0]?.image
+                    }
                     largeAspectRatio={
                       currentCalendarData?.imageConfig?.length > 0
                         ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio
@@ -1364,7 +1567,11 @@ function CreateNewPlace() {
                       fieldData={
                         placeData?.address?.streetAddress
                           ? placeData?.address?.streetAddress
-                          : artsDataId && artsData?.address?.streetAddress
+                          : artsDataId
+                          ? artsData?.address?.streetAddress
+                          : externalCalendarEntityId &&
+                            externalCalendarEntityData?.length > 0 &&
+                            externalCalendarEntityData[0]?.address?.streetAddress
                       }>
                       <Form.Item
                         name={formFieldNames.STREET_ADDRESS_FRENCH}
@@ -1372,7 +1579,11 @@ function CreateNewPlace() {
                         initialValue={
                           placeData?.address?.streetAddress?.fr
                             ? placeData?.address?.streetAddress?.fr
-                            : artsDataId && artsData?.address?.streetAddress?.fr
+                            : artsDataId
+                            ? artsData?.address?.streetAddress?.fr
+                            : externalCalendarEntityId &&
+                              externalCalendarEntityData?.length > 0 &&
+                              externalCalendarEntityData[0]?.address?.streetAddress?.fr
                         }
                         dependencies={[formFieldNames.STREET_ADDRESS_ENGLISH]}
                         rules={[
@@ -1410,7 +1621,11 @@ function CreateNewPlace() {
                         initialValue={
                           placeData?.address?.streetAddress?.en
                             ? placeData?.address?.streetAddress?.en
-                            : artsDataId && artsData?.address?.streetAddress?.en
+                            : artsDataId
+                            ? artsData?.address?.streetAddress?.en
+                            : externalCalendarEntityId &&
+                              externalCalendarEntityData?.length > 0 &&
+                              externalCalendarEntityData[0]?.address?.streetAddress?.en
                         }
                         dependencies={[formFieldNames.STREET_ADDRESS_FRENCH]}
                         rules={[
@@ -1455,7 +1670,11 @@ function CreateNewPlace() {
                       fieldData={
                         placeData?.address?.addressLocality
                           ? placeData?.address?.addressLocality
-                          : artsDataId && artsData?.address?.addressLocality
+                          : artsDataId
+                          ? artsData?.address?.addressLocality
+                          : externalCalendarEntityId &&
+                            externalCalendarEntityData?.length > 0 &&
+                            externalCalendarEntityData[0]?.address?.addressLocality
                       }>
                       <Form.Item
                         name={formFieldNames.CITY_FRENCH}
@@ -1463,7 +1682,11 @@ function CreateNewPlace() {
                         initialValue={
                           placeData?.address?.addressLocality?.fr
                             ? placeData?.address?.addressLocality?.fr
-                            : artsDataId && artsData?.address?.addressLocality?.fr
+                            : artsDataId
+                            ? artsData?.address?.addressLocality?.fr
+                            : externalCalendarEntityId &&
+                              externalCalendarEntityData?.length > 0 &&
+                              externalCalendarEntityData[0]?.address?.addressLocality?.fr
                         }
                         dependencies={[formFieldNames.CITY_ENGLISH]}>
                         <TextArea
@@ -1489,7 +1712,11 @@ function CreateNewPlace() {
                         initialValue={
                           placeData?.address?.addressLocality?.en
                             ? placeData?.address?.addressLocality?.en
-                            : artsDataId && artsData?.address?.addressLocality?.en
+                            : artsDataId
+                            ? artsData?.address?.addressLocality?.en
+                            : externalCalendarEntityId &&
+                              externalCalendarEntityData?.length > 0 &&
+                              externalCalendarEntityData[0]?.address?.addressLocality?.en
                         }
                         dependencies={[formFieldNames.CITY_FRENCH]}>
                         <TextArea
@@ -1518,7 +1745,11 @@ function CreateNewPlace() {
                   initialValue={
                     placeData?.address?.postalCode
                       ? placeData?.address?.postalCode
-                      : artsDataId && artsData?.address?.postalCode
+                      : artsDataId
+                      ? artsData?.address?.postalCode
+                      : externalCalendarEntityId &&
+                        externalCalendarEntityData?.length > 0 &&
+                        externalCalendarEntityData[0]?.address?.postalCode
                   }
                   label={t('dashboard.places.createNew.addPlace.address.postalCode.postalCode')}
                   rules={[
@@ -1542,7 +1773,11 @@ function CreateNewPlace() {
                           fieldData={
                             placeData?.address?.addressRegion
                               ? placeData?.address?.addressRegion
-                              : artsDataId && artsData?.address?.addressRegion
+                              : artsDataId
+                              ? artsData?.address?.addressRegion
+                              : externalCalendarEntityId &&
+                                externalCalendarEntityData?.length > 0 &&
+                                externalCalendarEntityData[0]?.address?.addressRegion
                           }>
                           <Form.Item
                             name={formFieldNames.PROVINCE_FRENCH}
@@ -1550,7 +1785,11 @@ function CreateNewPlace() {
                             initialValue={
                               placeData?.address?.addressRegion?.fr
                                 ? placeData?.address?.addressRegion?.fr
-                                : artsDataId && artsData?.address?.addressRegion?.fr
+                                : artsDataId
+                                ? artsData?.address?.addressRegion?.fr
+                                : externalCalendarEntityId &&
+                                  externalCalendarEntityData?.length > 0 &&
+                                  externalCalendarEntityData[0]?.address?.addressRegion?.fr
                             }
                             dependencies={[formFieldNames.PROVINCE_ENGLISH]}>
                             <TextArea
@@ -1576,7 +1815,11 @@ function CreateNewPlace() {
                             initialValue={
                               placeData?.address?.addressRegion?.en
                                 ? placeData?.address?.addressRegion?.en
-                                : artsDataId && artsData?.address?.addressRegion?.en
+                                : artsDataId
+                                ? artsData?.address?.addressRegion?.en
+                                : externalCalendarEntityId &&
+                                  externalCalendarEntityData?.length > 0 &&
+                                  externalCalendarEntityData[0]?.address?.addressRegion?.en
                             }
                             dependencies={[formFieldNames.PROVINCE_FRENCH]}>
                             <TextArea
@@ -1611,7 +1854,11 @@ function CreateNewPlace() {
                           fieldData={
                             placeData?.address?.addressCountry
                               ? placeData?.address?.addressCountry
-                              : artsDataId && artsData?.address?.addressCountry
+                              : artsDataId
+                              ? artsData?.address?.addressCountry
+                              : externalCalendarEntityId &&
+                                externalCalendarEntityData?.length > 0 &&
+                                externalCalendarEntityData[0]?.address?.addressCountry
                           }>
                           <Form.Item
                             name={formFieldNames.COUNTRY_FRENCH}
@@ -1619,7 +1866,11 @@ function CreateNewPlace() {
                             initialValue={
                               placeData?.address?.addressCountry?.fr
                                 ? placeData?.address?.addressCountry?.fr
-                                : artsDataId && artsData?.address?.addressCountry?.fr
+                                : artsDataId
+                                ? artsData?.address?.addressCountry?.fr
+                                : externalCalendarEntityId &&
+                                  externalCalendarEntityData?.length > 0 &&
+                                  externalCalendarEntityData[0]?.address?.addressCountry?.fr
                             }
                             dependencies={[formFieldNames.COUNTRY_ENGLISH]}>
                             <TextArea
@@ -1645,7 +1896,11 @@ function CreateNewPlace() {
                             initialValue={
                               placeData?.address?.addressCountry?.en
                                 ? placeData?.address?.addressCountry?.en
-                                : artsDataId && artsData?.address?.addressCountry?.en
+                                : artsDataId
+                                ? artsData?.address?.addressCountry?.en
+                                : externalCalendarEntityId &&
+                                  externalCalendarEntityData?.length > 0 &&
+                                  externalCalendarEntityData[0]?.address?.addressCountry?.en
                             }
                             dependencies={[formFieldNames.COUNTRY_FRENCH]}>
                             <TextArea
@@ -1675,9 +1930,15 @@ function CreateNewPlace() {
                   initialValue={
                     placeData?.geoCoordinates?.latitude || placeData?.geoCoordinates?.longitude
                       ? placeData?.geoCoordinates?.latitude + ',' + placeData?.geoCoordinates?.longitude
-                      : artsDataId &&
-                        (artsData?.geo?.latitude || artsData?.geo?.longitude) &&
-                        artsData?.geo?.latitude + '' + artsData?.geo?.longitude
+                      : artsDataId && (artsData?.geo?.latitude || artsData?.geo?.longitude)
+                      ? artsData?.geo?.latitude + '' + artsData?.geo?.longitude
+                      : externalCalendarEntityId &&
+                        externalCalendarEntityData?.length > 0 &&
+                        (externalCalendarEntityData[0]?.geo?.latitude ||
+                          externalCalendarEntityData[0]?.geo?.longitude) &&
+                        externalCalendarEntityData[0]?.geo?.latitude +
+                          ',' +
+                          externalCalendarEntityData[0]?.geo?.longitude
                   }
                   data-cy="form--item-place-coordinates-title"
                   label={t('dashboard.places.createNew.addPlace.address.coordinates.coordinates')}>
@@ -1747,7 +2008,13 @@ function CreateNewPlace() {
                   name={formFieldNames.OPENING_HOURS}
                   className={`${formFieldNames.OPENING_HOURS} subheading-wrap`}
                   label={t('dashboard.places.createNew.addPlace.address.openingHours.openingHours')}
-                  initialValue={placeData?.openingHours?.uri}
+                  initialValue={
+                    placeId
+                      ? placeData?.openingHours?.uri
+                      : externalCalendarEntityId &&
+                        externalCalendarEntityData?.length > 0 &&
+                        externalCalendarEntityData[0]?.openingHours?.uri
+                  }
                   style={{
                     display: !addedFields?.includes(addressTypeOptionsFieldNames.OPENING_HOURS) && 'none',
                   }}
@@ -1883,6 +2150,46 @@ function CreateNewPlace() {
                                           });
                                         }}
                                         data-cy="div-place-artsdata">
+                                        {place?.label}
+                                      </div>
+                                    ))
+                                  ) : (
+                                    <NoContent />
+                                  ))}
+                              </div>
+                            </>
+                          )}
+                          {quickCreateKeyword !== '' && (
+                            <>
+                              <div className="popover-section-header" data-cy="div-place-artsdata-title">
+                                {t('dashboard.organization.createNew.search.importsFromFootlight')}
+                              </div>
+                              <div className="search-scrollable-content">
+                                {isExternalSourceFetching && (
+                                  <div
+                                    style={{
+                                      height: '200px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                    }}>
+                                    <LoadingIndicator />
+                                  </div>
+                                )}
+                                {!isExternalSourceFetching &&
+                                  (allPlacesImportsFootlight?.length > 0 ? (
+                                    allPlacesImportsFootlight?.map((place, index) => (
+                                      <div
+                                        key={index}
+                                        className="event-popover-options"
+                                        onClick={() => {
+                                          setSelectedContainsPlaces([...selectedContainsPlaces, place]);
+                                          setIsPopoverOpen({
+                                            ...isPopoverOpen,
+                                            containsPlace: false,
+                                          });
+                                        }}
+                                        data-cy="div-place-footlight-import">
                                         {place?.label}
                                       </div>
                                     ))
@@ -2031,6 +2338,47 @@ function CreateNewPlace() {
                                         onClick={() => {
                                           setContainedInPlace(place);
                                           form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.uri);
+                                          setIsPopoverOpen({
+                                            ...isPopoverOpen,
+                                            containedInPlace: false,
+                                          });
+                                        }}>
+                                        {place?.label}
+                                      </div>
+                                    ))
+                                  ) : (
+                                    <NoContent />
+                                  ))}
+                              </div>
+                            </>
+                          )}
+                          {quickCreateKeyword !== '' && (
+                            <>
+                              <div className="popover-section-header" data-cy="div-contained-in-place-artsdata-title">
+                                {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                              </div>
+                              <div className="search-scrollable-content">
+                                {isExternalSourceFetching && (
+                                  <div
+                                    style={{
+                                      height: '200px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                    }}>
+                                    <LoadingIndicator />
+                                  </div>
+                                )}
+                                {!isExternalSourceFetching &&
+                                  (allPlacesImportsFootlight?.length > 0 ? (
+                                    allPlacesImportsFootlight?.map((place, index) => (
+                                      <div
+                                        data-cy={`div-contained-in-place-artsdata-${index}`}
+                                        key={index}
+                                        className="event-popover-options"
+                                        onClick={() => {
+                                          setContainedInPlace(place);
+                                          form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.value);
                                           setIsPopoverOpen({
                                             ...isPopoverOpen,
                                             containedInPlace: false,
