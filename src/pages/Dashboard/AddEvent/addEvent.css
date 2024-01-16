@@ -114,6 +114,11 @@
   background: #eff2ff;
 }
 
+.add-edit-wrapper .event-popover-options:focus-visible,
+.add-edit-wrapper .event-popover-options:focus > .selection-item-wrapper:focus-visible {
+  outline: none;
+}
+
 /* .add-edit-wrapper .event-popover-options .selection-item-wrapper:focus-visible {
   outline: none;
 }
