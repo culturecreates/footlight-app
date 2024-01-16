@@ -228,7 +228,7 @@ function Lists(props) {
             description={
               <div className="event-list-description">
                 <div className="event-list-description-name-container">
-                  {!screens.md && (
+                  {!screens.md && eventItem?.isFeatured && (
                     <span>
                       <StarFilled style={{ color: '#1B3DE6' }} />
                     </span>
