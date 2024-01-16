@@ -83,7 +83,7 @@ import QuickCreatePerson from '../../../components/Modal/QuickCreatePerson';
 import QuickCreatePlace from '../../../components/Modal/QuickCreatePlace';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
-import { sourceOptions } from '../../../constants/sourceOptions';
+import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
 import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
@@ -159,6 +159,10 @@ function AddEvent() {
   const [supporterArtsdataList, setSupporterArtsdataList] = useState([]);
   const [allPlacesList, setAllPlacesList] = useState([]);
   const [allPlacesArtsdataList, setAllPlacesArtsdataList] = useState([]);
+  const [organizersImportsFootlightList, setOrganizersImportsFootlightList] = useState([]);
+  const [performerImportsFootlightList, setPerformerImportsFootlightList] = useState([]);
+  const [supporterImportsFootlightList, setSupporterImportsFootlightList] = useState([]);
+  const [allPlacesImportsFootlightList, setAllPlacesImportsFootlightList] = useState([]);
   const [locationPlace, setLocationPlace] = useState();
   const [selectedOrganizers, setSelectedOrganizers] = useState([]);
   const [selectedPerformers, setSelectedPerformers] = useState([]);
@@ -427,7 +431,10 @@ function AddEvent() {
           }
           if (values?.locationPlace || values?.locationPlace?.length > 0) {
             let place;
-            if (locationPlace?.source === sourceOptions.CMS)
+            if (
+              locationPlace?.source === sourceOptions.CMS ||
+              locationPlace?.source === externalSourceOptions.FOOTLIGHT
+            )
               place = {
                 entityId: values?.locationPlace,
               };
@@ -523,7 +530,7 @@ function AddEvent() {
 
           if (values?.organizers) {
             organizers = values?.organizers?.map((organizer) => {
-              if (organizer?.source === sourceOptions.CMS)
+              if (organizer?.source === sourceOptions.CMS || organizer?.source === externalSourceOptions.FOOTLIGHT)
                 return {
                   entityId: organizer?.value,
                   type: organizer?.type,
@@ -538,7 +545,7 @@ function AddEvent() {
 
           if (values?.performers) {
             performers = values?.performers?.map((performer) => {
-              if (performer?.source === sourceOptions.CMS)
+              if (performer?.source === sourceOptions.CMS || performer?.source === externalSourceOptions.FOOTLIGHT)
                 return {
                   entityId: performer?.value,
                   type: performer?.type,
@@ -553,7 +560,7 @@ function AddEvent() {
 
           if (values?.supporters) {
             collaborators = values?.supporters?.map((supporter) => {
-              if (supporter?.source === sourceOptions.CMS)
+              if (supporter?.source === sourceOptions.CMS || supporter?.source === externalSourceOptions.FOOTLIGHT)
                 return {
                   entityId: supporter?.value,
                   type: supporter?.type,
@@ -875,6 +882,10 @@ function AddEvent() {
   const placesSearch = (inputValue = '') => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
+
+    let sourceQuery = new URLSearchParams();
+    sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
+    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
     getEntities({
       searchKey: inputValue,
       classes: decodeURIComponent(query.toString()),
@@ -888,6 +899,7 @@ function AddEvent() {
     getExternalSource({
       searchKey: inputValue,
       classes: decodeURIComponent(query.toString()),
+      sources: decodeURIComponent(sourceQuery.toString()),
       calendarId,
       excludeExistingCMS: true,
     })
@@ -895,6 +907,9 @@ function AddEvent() {
       .then((response) => {
         setAllPlacesArtsdataList(
           placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+        );
+        setAllPlacesImportsFootlightList(
+          placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
         );
       })
       .catch((error) => console.log(error));
@@ -904,6 +919,10 @@ function AddEvent() {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.organization);
     query.append('classes', entitiesClass.person);
+
+    let sourceQuery = new URLSearchParams();
+    sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
+    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
     getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
       .unwrap()
       .then((response) => {
@@ -919,6 +938,7 @@ function AddEvent() {
     getExternalSource({
       searchKey: value,
       classes: decodeURIComponent(query.toString()),
+      sources: decodeURIComponent(sourceQuery.toString()),
       calendarId,
       excludeExistingCMS: true,
     })
@@ -928,13 +948,22 @@ function AddEvent() {
           setOrganizersArtsdataList(
             treeEntitiesOption(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
           );
+          setOrganizersImportsFootlightList(
+            treeEntitiesOption(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+          );
         } else if (type == 'performers') {
           setPerformerArtsdataList(
             treeEntitiesOption(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
           );
+          setPerformerImportsFootlightList(
+            treeEntitiesOption(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+          );
         } else if (type == 'supporters') {
           setSupporterArtsdataList(
             treeEntitiesOption(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+          );
+          setSupporterImportsFootlightList(
+            treeEntitiesOption(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
           );
         }
       })
@@ -1365,8 +1394,32 @@ function AddEvent() {
       );
       setOrganizersArtsdataList(
         treeEntitiesOption(initialExternalSource?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
-      ),
-        placesSearch();
+      );
+      setOrganizersImportsFootlightList(
+        treeEntitiesOption(
+          initialExternalSource?.footlight,
+          user,
+          calendarContentLanguage,
+          externalSourceOptions.FOOTLIGHT,
+        ),
+      );
+      setPerformerImportsFootlightList(
+        treeEntitiesOption(
+          initialExternalSource?.footlight,
+          user,
+          calendarContentLanguage,
+          externalSourceOptions.FOOTLIGHT,
+        ),
+      );
+      setSupporterImportsFootlightList(
+        treeEntitiesOption(
+          initialExternalSource?.footlight,
+          user,
+          calendarContentLanguage,
+          externalSourceOptions.FOOTLIGHT,
+        ),
+      );
+      placesSearch('');
     }
   }, [initialEntityLoading, currentCalendarData, initialExternalSourceLoading]);
 
@@ -2077,6 +2130,47 @@ function AddEvent() {
                             </div>
                           </>
                         )}
+                        {quickCreateKeyword !== '' && (
+                          <>
+                            <div className="popover-section-header" data-cy="div-place-artsdata-title">
+                              {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                            </div>
+                            <div className="search-scrollable-content">
+                              {isExternalSourceFetching && (
+                                <div
+                                  style={{
+                                    height: '200px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                  }}>
+                                  <LoadingIndicator />
+                                </div>
+                              )}
+                              {!isExternalSourceFetching &&
+                                (allPlacesImportsFootlightList?.length > 0 ? (
+                                  allPlacesImportsFootlightList?.map((place, index) => (
+                                    <div
+                                      key={index}
+                                      className="event-popover-options event-popover-options-arts-data"
+                                      onClick={() => {
+                                        setLocationPlace(place);
+                                        form.setFieldValue('locationPlace', place?.value);
+                                        setIsPopoverOpen({
+                                          ...isPopoverOpen,
+                                          locationPlace: false,
+                                        });
+                                      }}
+                                      data-cy={`div-select-import-footlight-data-place-${index}`}>
+                                      {place?.label}
+                                    </div>
+                                  ))
+                                ) : (
+                                  <NoContent />
+                                ))}
+                            </div>
+                          </>
+                        )}
                       </div>
                       <FeatureFlag isFeatureEnabled={featureFlags.quickCreatePersonPlace}>
                         {quickCreateKeyword?.length > 0 && (
@@ -2532,6 +2626,46 @@ function AddEvent() {
                               </div>
                             </>
                           )}
+                          {quickCreateKeyword !== '' && (
+                            <>
+                              <div className="popover-section-header" data-cy="div-organizers-artsdata-entity-heading">
+                                {t('dashboard.organization.createNew.search.importsFromFootlight')}
+                              </div>
+                              <div className="search-scrollable-content">
+                                {isExternalSourceFetching && (
+                                  <div
+                                    style={{
+                                      height: '200px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                    }}>
+                                    <LoadingIndicator />
+                                  </div>
+                                )}
+                                {!isExternalSourceFetching &&
+                                  (organizersImportsFootlightList?.length > 0 ? (
+                                    organizersImportsFootlightList?.map((organizer, index) => (
+                                      <div
+                                        key={index}
+                                        className="event-popover-options"
+                                        onClick={() => {
+                                          setSelectedOrganizers([...selectedOrganizers, organizer]);
+                                          setIsPopoverOpen({
+                                            ...isPopoverOpen,
+                                            organizer: false,
+                                          });
+                                        }}
+                                        data-cy={`div-select-import-footlight-organizer-${index}`}>
+                                        {organizer?.label}
+                                      </div>
+                                    ))
+                                  ) : (
+                                    <NoContent />
+                                  ))}
+                              </div>
+                            </>
+                          )}
                         </div>
                         <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>
                           {quickCreateKeyword?.length > 0 && (
@@ -2931,6 +3065,47 @@ function AddEvent() {
                             </div>
                           </>
                         )}
+
+                        {quickCreateKeyword !== '' && (
+                          <>
+                            <div className="popover-section-header" data-cy="performer-artsdata-entity-heading">
+                              {t('dashboard.organization.createNew.search.importsFromFootlight')}
+                            </div>
+                            <div className="search-scrollable-content">
+                              {isExternalSourceFetching && (
+                                <div
+                                  style={{
+                                    height: '200px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                  }}>
+                                  <LoadingIndicator />
+                                </div>
+                              )}
+                              {!isExternalSourceFetching &&
+                                (performerImportsFootlightList?.length > 0 ? (
+                                  performerImportsFootlightList?.map((performer, index) => (
+                                    <div
+                                      key={index}
+                                      className="event-popover-options"
+                                      onClick={() => {
+                                        setSelectedPerformers([...selectedPerformers, performer]);
+                                        setIsPopoverOpen({
+                                          ...isPopoverOpen,
+                                          performer: false,
+                                        });
+                                      }}
+                                      data-cy={`div-select-import-footlight-performer-${index}`}>
+                                      {performer?.label}
+                                    </div>
+                                  ))
+                                ) : (
+                                  <NoContent />
+                                ))}
+                            </div>
+                          </>
+                        )}
                         <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>
                           {quickCreateKeyword?.length > 0 && (
                             <div
@@ -3089,6 +3264,46 @@ function AddEvent() {
                                           });
                                         }}
                                         data-cy={`div-select-artsdata-supporter-${index}`}>
+                                        {supporter?.label}
+                                      </div>
+                                    ))
+                                  ) : (
+                                    <NoContent />
+                                  ))}
+                              </div>
+                            </>
+                          )}
+                          {quickCreateKeyword !== '' && (
+                            <>
+                              <div className="popover-section-header" data-cy="supporter-artsdata-entity-heading">
+                                {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                              </div>
+                              <div className="search-scrollable-content">
+                                {isExternalSourceFetching && (
+                                  <div
+                                    style={{
+                                      height: '200px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                    }}>
+                                    <LoadingIndicator />
+                                  </div>
+                                )}
+                                {!isExternalSourceFetching &&
+                                  (supporterImportsFootlightList?.length > 0 ? (
+                                    supporterImportsFootlightList?.map((supporter, index) => (
+                                      <div
+                                        key={index}
+                                        className="event-popover-options"
+                                        onClick={() => {
+                                          setSelectedSupporters([...selectedSupporters, supporter]);
+                                          setIsPopoverOpen({
+                                            ...isPopoverOpen,
+                                            supporter: false,
+                                          });
+                                        }}
+                                        data-cy={`div-select-import-footlight-supporter-${index}`}>
                                         {supporter?.label}
                                       </div>
                                     ))
