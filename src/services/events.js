@@ -59,6 +59,16 @@ export const eventsApi = createApi({
         body: data,
       }),
     }),
+    featureEvents: builder.mutation({
+      query: ({ eventIds, state, calendarId }) => ({
+        url: `events/toggle-featured?${eventIds}&state=${state}`,
+        method: 'PUT',
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: 'Events', id: arg.id }],
+    }),
     updateEvent: builder.mutation({
       query: ({ data, calendarId, eventId }) => ({
         url: `events/${eventId}`,
@@ -80,4 +90,5 @@ export const {
   useAddEventMutation,
   useGetEventQuery,
   useUpdateEventMutation,
+  useFeatureEventsMutation,
 } = eventsApi;
