@@ -62,9 +62,6 @@ function ResponsiveSidebar(props) {
             {label}{' '}
             <DownOutlined
               style={{
-                position: 'relative',
-                top: '45%',
-                left: '88%',
                 fontSize: '8px',
               }}
             />
