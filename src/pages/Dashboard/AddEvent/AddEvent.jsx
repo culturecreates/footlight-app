@@ -196,7 +196,7 @@ function AddEvent() {
   // hook to handle scroll for popover components
   useKeyboardAccessiblePopOver({
     setItem: setLocationPlace,
-    data: [allPlacesList, allPlacesArtsdataList],
+    data: [allPlacesList, allPlacesArtsdataList, allPlacesImportsFootlightList],
     setFieldValue: (selectedItem) => form.setFieldValue('locationPlace', selectedItem),
     popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false }),
     isPopoverOpen: isPopoverOpen.locationPlace,
@@ -204,7 +204,7 @@ function AddEvent() {
 
   useKeyboardAccessiblePopOver({
     setItem: (organizer) => setSelectedOrganizers([...selectedOrganizers, organizer]),
-    data: [organizersList, organizersArtsdataList],
+    data: [organizersList, organizersArtsdataList, organizersImportsFootlightList],
     setFieldValue: () => {
       return;
     },
@@ -214,7 +214,7 @@ function AddEvent() {
 
   useKeyboardAccessiblePopOver({
     setItem: (performer) => setSelectedPerformers([...selectedPerformers, performer]),
-    data: [performerList, performerArtsdataList],
+    data: [performerList, performerArtsdataList, performerImportsFootlightList],
     setFieldValue: () => {
       return;
     },
@@ -224,7 +224,7 @@ function AddEvent() {
 
   useKeyboardAccessiblePopOver({
     setItem: (supporter) => setSelectedSupporters([...selectedSupporters, supporter]),
-    data: [supporterList, supporterArtsdataList],
+    data: [supporterList, supporterArtsdataList, supporterImportsFootlightList],
     setFieldValue: () => {
       return;
     },
