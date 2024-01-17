@@ -3,12 +3,20 @@ on:
   push:
     branches:
       - develop
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - closed
+      - reopened
+
 jobs:
   build-and-deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-      AWS_REGION: ca-central-1 
+      AWS_REGION: ca-central-1
       WEBHOSTING_BUCKET_NAME: staging.cms.footlight.io
     runs-on: ubuntu-latest
     container:
@@ -23,11 +31,35 @@ jobs:
       # Upload to S3
       - name: sync s3
         run: aws s3 sync ./build s3://${{env.WEBHOSTING_BUCKET_NAME}}/ --acl public-read --delete --exclude index.html
-      - name: set cache-control on index.html 
+      - name: set cache-control on index.html
         run: aws s3 cp ./build/index.html s3://${{env.WEBHOSTING_BUCKET_NAME}}/index.html --metadata-directive REPLACE --cache-control max-age=0,s-maxage=86400 --acl public-read --content-type text/html
       # Invalidate CloudFront
       - name: Invalidate CloudFront
         uses: chetan/invalidate-cloudfront-action@v2
         env:
           DISTRIBUTION: E2R70C1WYD9KB
-          PATHS: "/*"
+          PATHS: '/*'
+
+  build-and-deploy-preview:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Install Dependencies
+        run: npm install
+      - name: Build for Preview
+        run: npm run build
+      - name: Deploy to Preview Channel
+        run: |
+          PR_NUMBER=$(echo $GITHUB_REF | awk -F'/' '{print $3}')
+          BUCKET_NAME="preview-channel-${PR_NUMBER}"
+          aws s3 sync .build/ "s3://${BUCKET_NAME}/"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
