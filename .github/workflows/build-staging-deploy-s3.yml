@@ -46,5 +46,5 @@ jobs:
         run: |
           PR_NUMBER=$(echo "${{ github.event.pull_request.number }}")
           PREVIEW_BUCKET="your-preview-bucket-${PR_NUMBER}"
-          aws s3 sync build/ s3://${PREVIEW_BUCKET}
+          aws s3 sync ./build s3://${PREVIEW_BUCKET}
           echo "Preview deployed to ${PREVIEW_BUCKET}"
