@@ -43,6 +43,7 @@ jobs:
           PR_NUMBER=$(echo "${{ github.event.pull_request.number }}")
           PREVIEW_BUCKET="preview-bucket-${PR_NUMBER}"
           REGION=$(aws configure get region)
+          echo "Creating bucket $PREVIEW_BUCKET in region $REGION"
           aws s3api create-bucket --bucket $PREVIEW_BUCKET --region $REGION
           echo "Preview bucket created: ${PREVIEW_BUCKET}"
 
