@@ -376,6 +376,7 @@ export const formFieldValue = [
       placesSearch,
       calendarContentLanguage,
       allPlacesArtsdataList,
+      allPlacesImportsFootlight,
       placeNavigationHandler,
       mappedField,
       isEntitiesFetching,
@@ -450,6 +451,36 @@ export const formFieldValue = [
                               setIsPopoverOpen(false);
                             }}
                             data-cy={`div-${mappedField}-artsdata-place-${index}`}>
+                            {place?.label}
+                          </div>
+                        ))
+                      ) : (
+                        <NoContent />
+                      ))}
+                  </div>
+                  <div className="popover-section-header" data-cy={`div-${mappedField}-footlight-place-title`}>
+                    {t('dashboard.organization.createNew.search.importsFromFootlight')}
+                  </div>
+                  <div className="search-scrollable-content">
+                    {isExternalSourceFetching && (
+                      <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <LoadingIndicator />
+                      </div>
+                    )}
+                    {!isExternalSourceFetching &&
+                      (allPlacesImportsFootlight?.length > 0 ? (
+                        allPlacesImportsFootlight?.map((place, index) => (
+                          <div
+                            key={index}
+                            className={`event-popover-options ${
+                              locationPlace?.value == place?.value ? 'event-popover-options-active' : null
+                            }`}
+                            onClick={() => {
+                              setLocationPlace(place);
+                              form.setFieldValue(name, place?.value);
+                              setIsPopoverOpen(false);
+                            }}
+                            data-cy={`div-${mappedField}-footlight-place-${index}`}>
                             {place?.label}
                           </div>
                         ))
@@ -597,6 +628,7 @@ export const returnFormDataWithFields = ({
   placesSearch,
   allPlacesList,
   allPlacesArtsdataList,
+  allPlacesImportsFootlight,
   locationPlace,
   setLocationPlace,
   setIsPopoverOpen,
@@ -667,6 +699,7 @@ export const returnFormDataWithFields = ({
       placesSearch,
       allPlacesList,
       allPlacesArtsdataList,
+      allPlacesImportsFootlight,
       locationPlace,
       setLocationPlace,
       setIsPopoverOpen,

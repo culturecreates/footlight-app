@@ -33,6 +33,8 @@ import { userRoles } from '../../../constants/userRoles';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { usePrompt } from '../../../hooks/usePrompt';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
+import { useGetEntitiesByIdQuery } from '../../../services/entities';
+import { sameAsTypes } from '../../../constants/sameAsTypes';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -53,6 +55,8 @@ function CreateNewPerson() {
   let [searchParams] = useSearchParams();
 
   const personId = searchParams.get('id');
+  const externalCalendarEntityId = searchParams.get('entityId');
+
   const artsDataId = location?.state?.data?.id ?? null;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
 
@@ -61,6 +65,12 @@ function CreateNewPerson() {
     { skip: personId ? false : true },
   );
 
+  let personIdsQuery = new URLSearchParams();
+  personIdsQuery.append('ids', externalCalendarEntityId);
+  const { data: externalCalendarEntityData, isLoading: externalEntityLoading } = useGetEntitiesByIdQuery(
+    { ids: personIdsQuery, calendarId, sessionId: timestampRef },
+    { skip: externalCalendarEntityId ? false : true },
+  );
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
@@ -84,6 +94,11 @@ function CreateNewPerson() {
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.people);
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.people);
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
+  let externalEntityData = externalCalendarEntityData?.length > 0 && externalCalendarEntityData[0];
+  externalEntityData = {
+    ...externalEntityData,
+    occupation: [],
+  };
 
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
@@ -109,6 +124,21 @@ function CreateNewPerson() {
               ...personObj,
               sameAs: [artsData?.sameAs],
             };
+        }
+
+        if (externalCalendarEntityId) {
+          let sameAs = [
+            {
+              uri: externalCalendarEntityId,
+              type: sameAsTypes.FOOTLIGHT_IDENTIFIER,
+            },
+          ];
+          if (externalEntityData?.sameAs) {
+            personObj = {
+              ...personObj,
+              sameAs: externalEntityData?.sameAs?.concat(sameAs),
+            };
+          }
         }
         addPerson({
           data: personObj,
@@ -260,7 +290,7 @@ function CreateNewPerson() {
           if (values?.image) {
             if (values?.image && values?.image?.length == 0) personPayload['image'] = null;
             else personPayload['image'] = imageCrop;
-          }
+          } else if (values?.imageCrop) personPayload['image'] = imageCrop;
           addUpdatePersonApiHandler(personPayload);
         }
       })
@@ -303,41 +333,70 @@ function CreateNewPerson() {
   };
 
   useEffect(() => {
-    if (calendarId && personData && currentCalendarData) {
-      if (routinghandler(user, calendarId, personData?.createdByUserId, null, true)) {
-        if (personData?.image) {
-          form.setFieldsValue({
-            imageCrop: {
-              large: {
-                x: personData?.image?.large?.xCoordinate,
-                y: personData?.image?.large?.yCoordinate,
-                height: personData?.image?.large?.height,
-                width: personData?.image?.large?.width,
+    if (calendarId && currentCalendarData) {
+      if (personData) {
+        if (routinghandler(user, calendarId, personData?.createdByUserId, null, true)) {
+          if (personData?.image) {
+            form.setFieldsValue({
+              imageCrop: {
+                large: {
+                  x: personData?.image?.large?.xCoordinate,
+                  y: personData?.image?.large?.yCoordinate,
+                  height: personData?.image?.large?.height,
+                  width: personData?.image?.large?.width,
+                },
+                original: {
+                  entityId: personData?.image?.original?.entityId ?? null,
+                  height: personData?.image?.original?.height,
+                  width: personData?.image?.original?.width,
+                },
+                thumbnail: {
+                  x: personData?.image?.thumbnail?.xCoordinate,
+                  y: personData?.image?.thumbnail?.yCoordinate,
+                  height: personData?.image?.thumbnail?.height,
+                  width: personData?.image?.thumbnail?.width,
+                },
               },
-              original: {
-                entityId: personData?.image?.original?.entityId ?? null,
-                height: personData?.image?.original?.height,
-                width: personData?.image?.original?.width,
-              },
-              thumbnail: {
-                x: personData?.image?.thumbnail?.xCoordinate,
-                y: personData?.image?.thumbnail?.yCoordinate,
-                height: personData?.image?.thumbnail?.height,
-                width: personData?.image?.thumbnail?.width,
-              },
+            });
+          }
+          if (personData?.derivedFrom?.uri) {
+            let sourceId = getExternalSourceId(personData?.derivedFrom?.uri);
+            getArtsData(sourceId);
+          }
+        } else
+          window.location.replace(
+            `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.People}/${personId}`,
+          );
+      }
+      if (externalCalendarEntityData?.length > 0 && externalCalendarEntityId) {
+        form.setFieldsValue({
+          imageCrop: {
+            large: {
+              x: externalCalendarEntityData[0]?.image?.large?.xCoordinate,
+              y: externalCalendarEntityData[0]?.image?.large?.yCoordinate,
+              height: externalCalendarEntityData[0]?.image?.large?.height,
+              width: externalCalendarEntityData[0]?.image?.large?.width,
             },
-          });
-        }
-        if (personData?.derivedFrom?.uri) {
-          let sourceId = getExternalSourceId(personData?.derivedFrom?.uri);
+            original: {
+              entityId: externalCalendarEntityData[0]?.image?.original?.entityId ?? null,
+              height: externalCalendarEntityData[0]?.image?.original?.height,
+              width: externalCalendarEntityData[0]?.image?.original?.width,
+            },
+            thumbnail: {
+              x: externalCalendarEntityData[0]?.image?.thumbnail?.xCoordinate,
+              y: externalCalendarEntityData[0]?.image?.thumbnail?.yCoordinate,
+              height: externalCalendarEntityData[0]?.image?.thumbnail?.height,
+              width: externalCalendarEntityData[0]?.image?.thumbnail?.width,
+            },
+          },
+        });
+        if (externalCalendarEntityData[0]?.derivedFrom?.uri) {
+          let sourceId = getExternalSourceId(externalCalendarEntityData[0]?.derivedFrom?.uri);
           getArtsData(sourceId);
         }
-      } else
-        window.location.replace(
-          `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.People}/${personId}`,
-        );
+      }
     }
-  }, [personLoading, currentCalendarData]);
+  }, [personLoading, currentCalendarData, externalEntityLoading]);
 
   useEffect(() => {
     if (artsDataId) {
@@ -474,7 +533,13 @@ function CreateNewPerson() {
                               allTaxonomyData,
                               user,
                               calendarContentLanguage,
-                              entityData: personData ? personData : artsDataId ? artsData : newEntityData,
+                              entityData: personData
+                                ? personData
+                                : artsDataId
+                                ? artsData
+                                : externalCalendarEntityId && externalCalendarEntityData?.length > 0
+                                ? externalEntityData
+                                : newEntityData,
                               index,
                               t,
                               adminCheckHandler,
