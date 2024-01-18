@@ -1,33 +1,50 @@
-name: Staging build and deploy to S3
+name: Deploy Preview
+
 on:
-  push:
-    branches:
-      - develop
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
 jobs:
-  build-and-deploy:
+  build:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
       AWS_REGION: ca-central-1 
-      WEBHOSTING_BUCKET_NAME: staging.cms.footlight.io
     runs-on: ubuntu-latest
-    container:
-      image: sleavely/node-awscli:14.x
+
     steps:
-      - name: checkout
+      - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: setup node
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install Dependencies
         run: npm install
-      - name: build
-        run: npm run build:staging
-      # Upload to S3
-      - name: sync s3
-        run: aws s3 sync ./build s3://${{env.WEBHOSTING_BUCKET_NAME}}/ --acl public-read --delete --exclude index.html
-      - name: set cache-control on index.html 
-        run: aws s3 cp ./build/index.html s3://${{env.WEBHOSTING_BUCKET_NAME}}/index.html --metadata-directive REPLACE --cache-control max-age=0,s-maxage=86400 --acl public-read --content-type text/html
-      # Invalidate CloudFront
-      - name: Invalidate CloudFront
-        uses: chetan/invalidate-cloudfront-action@v2
-        env:
-          DISTRIBUTION: E2R70C1WYD9KB
-          PATHS: "/*"
+
+      - name: Build
+        run: npm run build
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    needs: build
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.S3_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+          aws-region: ca-central-1
+
+      - name: Deploy to S3
+        run: |
+          PR_NUMBER=$(echo "${{ github.event.pull_request.number }}")
+          PREVIEW_BUCKET="your-preview-bucket-${PR_NUMBER}"
+          aws s3 sync ./build s3://${PREVIEW_BUCKET}
+          echo "Preview deployed to ${PREVIEW_BUCKET}"
