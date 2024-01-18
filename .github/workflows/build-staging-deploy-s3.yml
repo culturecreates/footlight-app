@@ -45,7 +45,7 @@ jobs:
           PREVIEW_BUCKET="preview-bucket-${PR_NUMBER}-${TIMESTAMP}"
           REGION=$(aws configure get region)
           echo "Creating bucket $PREVIEW_BUCKET in region $REGION"
-          if ! aws s3api create-bucket --bucket $PREVIEW_BUCKET --region $REGION 2>&1; then
+          if ! aws s3 mb s3://$PREVIEW_BUCKET --region $REGION 2>&1; then
             echo "Error creating bucket!"
           fi
           echo "Preview bucket created: ${PREVIEW_BUCKET}"
