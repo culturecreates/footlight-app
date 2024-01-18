@@ -1,40 +1,50 @@
-name: Staging build and deploy to S3
+name: Deploy Preview
 
 on:
-  push:
-    branches:
-      - develop
-
   pull_request:
     types:
       - opened
       - synchronize
-      - closed
-      - reopened
 
 jobs:
- build-and-deploy-preview:
+  build:
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+      AWS_REGION: ca-central-1 
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: 14
 
       - name: Install Dependencies
         run: npm install
 
-      - name: Build for Preview
+      - name: Build
         run: npm run build
 
-      - name: Deploy to Preview Channel
-        run: |
-          BUCKET_NAME="preview-channel-${GITHUB_RUN_ID}"
-          aws s3 sync .build/ "s3://${BUCKET_NAME}/"
+  deploy:
+    runs-on: ubuntu-latest
 
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+    needs: build
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.S3_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+          aws-region: ca-central-1
+
+      - name: Deploy to S3
+        run: |
+          PR_NUMBER=$(echo "${{ github.event.pull_request.number }}")
+          PREVIEW_BUCKET="your-preview-bucket-${PR_NUMBER}"
+          aws s3 sync build/ s3://${PREVIEW_BUCKET}
+          echo "Preview deployed to ${PREVIEW_BUCKET}"
