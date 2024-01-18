@@ -88,6 +88,8 @@ import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import useKeyboardAccessiblePopOver from '../../../hooks/useKeyboardAccessiblePopOver';
+import CustomPopover from '../../../components/Popover/Popover';
+import KeyboardAccessibleLayout from '../../../layout/KeyboardAccessibleLayout/KeyboardAccessibleLayout';
 
 const { TextArea } = Input;
 
@@ -190,13 +192,15 @@ function AddEvent() {
   setContentBackgroundColor('#F9FAFF');
 
   // hook to handle scroll for popover components
-  useKeyboardAccessiblePopOver({
-    setItem: setLocationPlace,
-    data: [allPlacesList, allPlacesArtsdataList],
-    setFieldValue: (selectedItem) => form.setFieldValue('locationPlace', selectedItem),
-    popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false }),
-    isPopoverOpen: isPopoverOpen.locationPlace,
-  });
+  // useKeyboardAccessiblePopOver({
+  //   setItem: setLocationPlace,
+  //   data: [allPlacesList, allPlacesArtsdataList],
+  //   setFieldValue: (selectedItem) => form.setFieldValue('locationPlace', selectedItem),
+  //   popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false }),
+  //   isPopoverOpen: isPopoverOpen.locationPlace,
+  //   setQuickCreateKeyword,
+  //   quickCreateKeyword,
+  // });
 
   useKeyboardAccessiblePopOver({
     setItem: (organizer) => setSelectedOrganizers([...selectedOrganizers, organizer]),
@@ -230,6 +234,7 @@ function AddEvent() {
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
+  const inputRef = useRef(null);
 
   let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
   let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
@@ -1982,67 +1987,36 @@ function AddEvent() {
                     : false
                 }
                 data-cy="form-item-place-label">
-                <Popover
-                  open={isPopoverOpen.locationPlace}
-                  onOpenChange={(open) => {
-                    setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open });
-                  }}
-                  destroyTooltipOnHide={true}
-                  overlayClassName="event-popover"
-                  placement="bottom"
-                  autoAdjustOverflow={false}
-                  getPopupContainer={(trigger) => trigger.parentNode}
-                  trigger={['click']}
-                  data-cy="popover-event-place"
-                  content={
-                    <div>
+                <KeyboardAccessibleLayout
+                  setItem={setLocationPlace}
+                  data={[allPlacesList, allPlacesArtsdataList]}
+                  setFieldValue={(selectedItem) => form.setFieldValue('locationPlace', selectedItem)}
+                  popOverHandler={() => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false })}
+                  isPopoverOpen={isPopoverOpen.locationPlace}
+                  setQuickCreateKeyword={setQuickCreateKeyword}
+                  quickCreateKeyword={quickCreateKeyword}>
+                  <CustomPopover
+                    open={isPopoverOpen.locationPlace}
+                    onOpenChange={(open) => {
+                      setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open });
+                    }}
+                    destroyTooltipOnHide={true}
+                    overlayClassName="event-popover"
+                    placement="bottom"
+                    autoAdjustOverflow={false}
+                    getPopupContainer={(trigger) => trigger.parentNode}
+                    trigger={['click']}
+                    data-cy="popover-event-place"
+                    ref={inputRef}
+                    content={
                       <div>
-                        <>
-                          <div className="popover-section-header" data-cy="div-place-footlight-title">
-                            {t('dashboard.organization.createNew.search.footlightSectionHeading')}
-                          </div>
-                          <div className="search-scrollable-content">
-                            {isEntitiesFetching && (
-                              <div
-                                style={{
-                                  height: '200px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                }}>
-                                <LoadingIndicator />
-                              </div>
-                            )}
-                            {!isEntitiesFetching &&
-                              (allPlacesList?.length > 0 ? (
-                                allPlacesList?.map((place, index) => (
-                                  <div
-                                    key={index}
-                                    className="event-popover-options"
-                                    onClick={() => {
-                                      setLocationPlace(place);
-                                      form.setFieldValue('locationPlace', place?.value);
-                                      setIsPopoverOpen({
-                                        ...isPopoverOpen,
-                                        locationPlace: false,
-                                      });
-                                    }}
-                                    data-cy={`div-select-place-${index}`}>
-                                    {place?.label}
-                                  </div>
-                                ))
-                              ) : (
-                                <NoContent />
-                              ))}
-                          </div>
-                        </>
-                        {quickCreateKeyword !== '' && (
+                        <div>
                           <>
-                            <div className="popover-section-header" data-cy="div-place-artsdata-title">
-                              {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                            <div className="popover-section-header" data-cy="div-place-footlight-title">
+                              {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                             </div>
                             <div className="search-scrollable-content">
-                              {isExternalSourceFetching && (
+                              {isEntitiesFetching && (
                                 <div
                                   style={{
                                     height: '200px',
@@ -2053,21 +2027,21 @@ function AddEvent() {
                                   <LoadingIndicator />
                                 </div>
                               )}
-                              {!isExternalSourceFetching &&
-                                (allPlacesArtsdataList?.length > 0 ? (
-                                  allPlacesArtsdataList?.map((place, index) => (
+                              {!isEntitiesFetching &&
+                                (allPlacesList?.length > 0 ? (
+                                  allPlacesList?.map((place, index) => (
                                     <div
                                       key={index}
-                                      className="event-popover-options event-popover-options-arts-data"
+                                      className="event-popover-options"
                                       onClick={() => {
                                         setLocationPlace(place);
-                                        form.setFieldValue('locationPlace', place?.uri);
+                                        form.setFieldValue('locationPlace', place?.value);
                                         setIsPopoverOpen({
                                           ...isPopoverOpen,
                                           locationPlace: false,
                                         });
                                       }}
-                                      data-cy={`div-select-arts-data-place-${index}`}>
+                                      data-cy={`div-select-place-${index}`}>
                                       {place?.label}
                                     </div>
                                   ))
@@ -2076,40 +2050,82 @@ function AddEvent() {
                                 ))}
                             </div>
                           </>
-                        )}
+                          {quickCreateKeyword !== '' && (
+                            <>
+                              <div className="popover-section-header" data-cy="div-place-artsdata-title">
+                                {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                              </div>
+                              <div className="search-scrollable-content">
+                                {isExternalSourceFetching && (
+                                  <div
+                                    style={{
+                                      height: '200px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                    }}>
+                                    <LoadingIndicator />
+                                  </div>
+                                )}
+                                {!isExternalSourceFetching &&
+                                  (allPlacesArtsdataList?.length > 0 ? (
+                                    allPlacesArtsdataList?.map((place, index) => (
+                                      <div
+                                        key={index}
+                                        className="event-popover-options event-popover-options-arts-data"
+                                        onClick={() => {
+                                          setLocationPlace(place);
+                                          form.setFieldValue('locationPlace', place?.uri);
+                                          setIsPopoverOpen({
+                                            ...isPopoverOpen,
+                                            locationPlace: false,
+                                          });
+                                        }}
+                                        data-cy={`div-select-arts-data-place-${index}`}>
+                                        {place?.label}
+                                      </div>
+                                    ))
+                                  ) : (
+                                    <NoContent />
+                                  ))}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                        <FeatureFlag isFeatureEnabled={featureFlags.quickCreatePersonPlace}>
+                          {quickCreateKeyword?.length > 0 && (
+                            <div
+                              className="quick-create"
+                              onClick={() => {
+                                setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false });
+                                setQuickCreatePlaceModal(true);
+                              }}
+                              data-cy="div-select-quick-create-keyword">
+                              <PlusCircleOutlined />
+                              &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
+                              {quickCreateKeyword}&#34;
+                            </div>
+                          )}
+                        </FeatureFlag>
                       </div>
-                      <FeatureFlag isFeatureEnabled={featureFlags.quickCreatePersonPlace}>
-                        {quickCreateKeyword?.length > 0 && (
-                          <div
-                            className="quick-create"
-                            onClick={() => {
-                              setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false });
-                              setQuickCreatePlaceModal(true);
-                            }}
-                            data-cy="div-select-quick-create-keyword">
-                            <PlusCircleOutlined />
-                            &nbsp;{t('dashboard.events.addEditEvent.quickCreate.create')}&nbsp;&#34;
-                            {quickCreateKeyword}&#34;
-                          </div>
-                        )}
-                      </FeatureFlag>
-                    </div>
-                  }>
-                  <EventsSearch
-                    style={{ borderRadius: '4px', width: '423px' }}
-                    placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
-                    onChange={(e) => {
-                      setQuickCreateKeyword(e.target.value);
-                      debounceSearchPlace(e.target.value);
-                      setIsPopoverOpen({ ...isPopoverOpen, locationPlace: true });
-                    }}
-                    onClick={(e) => {
-                      setQuickCreateKeyword(e.target.value);
-                      setIsPopoverOpen({ ...isPopoverOpen, locationPlace: true });
-                    }}
-                    data-cy="input-quick-create-keyword-place"
-                  />
-                </Popover>
+                    }>
+                    <EventsSearch
+                      style={{ borderRadius: '4px', width: '423px' }}
+                      placeholder={t('dashboard.events.addEditEvent.location.placeHolderLocation')}
+                      onChange={(e) => {
+                        setQuickCreateKeyword(e.target.value);
+                        debounceSearchPlace(e.target.value);
+                        setIsPopoverOpen({ ...isPopoverOpen, locationPlace: true });
+                      }}
+                      onClick={(e) => {
+                        setQuickCreateKeyword(e.target.value);
+                        setIsPopoverOpen({ ...isPopoverOpen, locationPlace: true });
+                      }}
+                      value={quickCreateKeyword}
+                      data-cy="input-quick-create-keyword-place"
+                    />
+                  </CustomPopover>
+                </KeyboardAccessibleLayout>
                 {locationPlace && (
                   <SelectionItem
                     icon={locationPlace?.label?.props?.icon}
