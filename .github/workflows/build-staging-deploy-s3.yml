@@ -41,13 +41,14 @@ jobs:
       - name: Create Preview Bucket
         run: |
           PR_NUMBER=$(echo "${{ github.event.pull_request.number }}")
-          PREVIEW_BUCKET="your-preview-bucket-${PR_NUMBER}"
-          aws s3api create-bucket --bucket $PREVIEW_BUCKET
+          PREVIEW_BUCKET="preview-bucket-${PR_NUMBER}"
+          REGION=$(aws configure get region)
+          aws s3api create-bucket --bucket $PREVIEW_BUCKET --region $REGION
           echo "Preview bucket created: ${PREVIEW_BUCKET}"
 
       - name: Deploy to S3
         run: |
           PR_NUMBER=$(echo "${{ github.event.pull_request.number }}")
-          PREVIEW_BUCKET="your-preview-bucket-${PR_NUMBER}"
+          PREVIEW_BUCKET="preview-bucket-${PR_NUMBER}"
           aws s3 sync ./build s3://${PREVIEW_BUCKET}
           echo "Preview deployed to ${PREVIEW_BUCKET}"
