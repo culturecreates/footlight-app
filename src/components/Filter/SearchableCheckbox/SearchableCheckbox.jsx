@@ -33,6 +33,7 @@ function SearchableCheckbox(props) {
           if (open == undefined) setIsOpen(show);
           else setOpen(show);
         }}
+        overlayClassName="searchable-checkbox-overlay"
         trigger={['click']}
         dropdownRender={() => (
           <div className="searchable-checkbox-dropdown-wrapper">

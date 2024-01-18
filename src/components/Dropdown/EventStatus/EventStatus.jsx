@@ -6,17 +6,21 @@ import { eventPublishOptions } from '../../../constants/eventPublishOptions';
 import './eventStatus.css';
 import ProtectedComponents from '../../../layout/ProtectedComponents';
 import { eventPublishState } from '../../../constants/eventPublishState';
-import { useDeleteEventMutation, useUpdateEventMutation, useUpdateEventStateMutation } from '../../../services/events';
+import {
+  useDeleteEventMutation,
+  useFeatureEventsMutation,
+  useUpdateEventStateMutation,
+} from '../../../services/events';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 const { confirm } = Modal;
-function EventStatusOptions({ children, publishState, creator, eventId, isFeatured, eventData }) {
+function EventStatusOptions({ children, publishState, creator, eventId, isFeatured, eventData, ...rest }) {
   const { t } = useTranslation();
   const { calendarId } = useParams();
   const navigate = useNavigate();
   const [updateEventState] = useUpdateEventStateMutation();
   const [deleteEvent] = useDeleteEventMutation();
-  const [updateEvent] = useUpdateEventMutation();
+  const [featureEvents] = useFeatureEventsMutation();
 
   const items = eventPublishOptions.map((item) => {
     if (publishState == eventPublishState.PUBLISHED) {
@@ -100,14 +104,10 @@ function EventStatusOptions({ children, publishState, creator, eventId, isFeatur
         });
     } else if (key === '3') navigate(`${location.pathname}${PathName.AddEvent}?duplicateId=${eventId}`);
     else if (key === '4' || key === '5') {
-      const eventObj = {
-        ...eventData,
-        isFeatured: !isFeatured,
-      };
-      updateEvent({
-        data: eventObj,
+      featureEvents({
+        eventIds: `eventIds=${eventData?.id}`,
         calendarId,
-        eventId: eventData.id,
+        state: eventData?.isFeatured ? !eventData?.isFeatured : false,
       })
         .unwrap()
         .then((res) => {
@@ -129,6 +129,7 @@ function EventStatusOptions({ children, publishState, creator, eventId, isFeatur
   return (
     <ProtectedComponents creator={creator}>
       <Dropdown
+        {...rest}
         className="calendar-dropdown-wrapper"
         overlayClassName="event-dropdown-popup"
         overlayStyle={{

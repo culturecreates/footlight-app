@@ -5,7 +5,7 @@ import { MenuOutlined } from '@ant-design/icons';
 import ResponsiveSidebar from '../../Sidebar/Responsive';
 
 function NavigationBar(props) {
-  const { currentCalendarData, allCalendarsData } = props;
+  const { currentCalendarData, allCalendarsData, pageNumber, setPageNumber } = props;
 
   const [open, setOpen] = useState(false);
 
@@ -31,6 +31,8 @@ function NavigationBar(props) {
       <ResponsiveSidebar
         allCalendarsData={allCalendarsData}
         currentCalendarData={currentCalendarData}
+        pageNumber={pageNumber}
+        setPageNumber={setPageNumber}
         onClose={onClose}
         open={open}
       />

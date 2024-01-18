@@ -103,7 +103,11 @@
         "dates": {
           "dates": "Dates",
           "allTime": "Toutes les dates",
-          "past": "Passé"
+          "past": "Passé",
+          "allEvents": "Tous les événements",
+          "pastEvents": "Evénements passés",
+          "upcomingEvents": "Événements à venir",
+          "dateRange": "Plage de dates"
         },
         "organizer": { "label": "Organisations", "placeholderSearch": "Rechercher un nom" },
         "clear": "Éffacer"
@@ -120,11 +124,11 @@
         "allDone": "Terminé",
         "featuredEvent": "Événement vedette",
         "dataSource": "Data source",
-          "question": {
-            "firstPart": "Est-ce la bonne événement ? Si non, ",
-            "secondPart": "créez une nouvelle événement",
-            "thirdPart": " et ne modifiez pas celui-ci."
-          },
+        "question": {
+          "firstPart": "Est-ce la bonne événement ? Si non, ",
+          "secondPart": "créez une nouvelle événement",
+          "thirdPart": " et ne modifiez pas celui-ci."
+        },
         "language": {
           "title": "Titre de l'événement",
           "titleLabel": "English",

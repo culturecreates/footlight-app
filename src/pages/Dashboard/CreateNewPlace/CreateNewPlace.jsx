@@ -80,7 +80,14 @@ function CreateNewPlace() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const [currentCalendarData] = useOutletContext();
+  const [
+    currentCalendarData, // eslint-disable-next-line no-unused-vars
+    _pageNumber, // eslint-disable-next-line no-unused-vars
+    _setPageNumber, // eslint-disable-next-line no-unused-vars
+    _getCalendar,
+    setContentBackgroundColor,
+  ] = useOutletContext();
+  setContentBackgroundColor('#F9FAFF');
   const { user } = useSelector(getUserDetails);
   const { calendarId } = useParams();
   let [searchParams] = useSearchParams();
@@ -360,25 +367,28 @@ function CreateNewPlace() {
           if (calendarContentLanguage == contentLanguage.ENGLISH) languageKey = 'en';
           else if (calendarContentLanguage == contentLanguage.FRENCH) languageKey = 'fr';
           let postalObj = {
-            ...(values?.addressCountry && { addressCountry: { [languageKey]: values?.addressCountry } }),
-            ...(values?.addressLocality && { addressLocality: { [languageKey]: values?.addressLocality } }),
-            ...(values?.addressRegion && { addressRegion: { [languageKey]: values?.addressRegion } }),
-            postalCode: values?.postalCode,
-            ...(values?.streetAddress && { streetAddress: { [languageKey]: values?.streetAddress } }),
+            ...(values?.addressCountry && { addressCountry: { [languageKey]: values?.addressCountry?.trim() } }),
+            ...(values?.addressLocality && { addressLocality: { [languageKey]: values?.addressLocality?.trim() } }),
+            ...(values?.addressRegion && { addressRegion: { [languageKey]: values?.addressRegion?.trim() } }),
+            postalCode: values?.postalCode?.trim(),
+            ...(values?.streetAddress && { streetAddress: { [languageKey]: values?.streetAddress?.trim() } }),
           };
 
           if (calendarContentLanguage == contentLanguage.BILINGUAL) {
             postalObj.addressCountry = {
-              ...(values?.addressCountry && { fr: values.addressCountry, en: values.addressCountryEn }),
+              ...(values?.addressCountry && { fr: values.addressCountry?.trim(), en: values.addressCountryEn?.trim() }),
             };
             postalObj.addressLocality = {
-              ...(values?.addressLocality && { fr: values.addressLocality, en: values.addressLocalityEn }),
+              ...(values?.addressLocality && {
+                fr: values.addressLocality?.trim(),
+                en: values.addressLocalityEn?.trim(),
+              }),
             };
             postalObj.addressRegion = {
-              ...(values?.addressRegion && { fr: values.addressRegion, en: values.addressRegionEn }),
+              ...(values?.addressRegion && { fr: values.addressRegion?.trim(), en: values.addressRegionEn?.trim() }),
             };
             postalObj.streetAddress = {
-              ...(values?.streetAddress && { fr: values.streetAddress, en: values.streetAddressEn }),
+              ...(values?.streetAddress && { fr: values.streetAddress?.trim(), en: values.streetAddressEn?.trim() }),
             };
           }
 
@@ -436,8 +446,8 @@ function CreateNewPlace() {
 
           placeObj = {
             name: {
-              ...(values?.english && { en: values?.english }),
-              ...(values?.french && { fr: values?.french }),
+              ...(values?.english && { en: values?.english?.trim() }),
+              ...(values?.french && { fr: values?.french?.trim() }),
             },
             ...((values?.frenchEditor || values?.englishEditor) && {
               description: {
@@ -456,8 +466,8 @@ function CreateNewPlace() {
 
             ...((values?.frenchAccessibilityNote || values?.englishAccessibilityNote) && {
               accessibilityNote: {
-                fr: values?.frenchAccessibilityNote,
-                en: values?.englishAccessibilityNote,
+                fr: values?.frenchAccessibilityNote?.trim(),
+                en: values?.englishAccessibilityNote?.trim(),
               },
             }),
             accessibility: values?.placeAccessibility
@@ -487,8 +497,8 @@ function CreateNewPlace() {
 
             ...((values.frenchDisambiguatingDescription || values.englishDisambiguatingDescription) && {
               disambiguatingDescription: {
-                fr: values.frenchDisambiguatingDescription,
-                en: values.englishDisambiguatingDescription,
+                fr: values.frenchDisambiguatingDescription?.trim(),
+                en: values.englishDisambiguatingDescription?.trim(),
               },
             }),
             ...(values?.dynamicFields && { dynamicFields }),

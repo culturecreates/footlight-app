@@ -29,6 +29,14 @@
   align-items: center;
   padding: 8px;
 }
+
+.sidebar-navigation-menu-responsive-drawer .sidebar-calendar .ant-menu-title-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
 .sidebar-navigation-menu-responsive-drawer .ant-drawer-extra {
   margin-left: 17px;
 }
@@ -43,4 +51,18 @@
 
 .sidebar-navigation-menu-responsive-drawer .username-responsive {
   text-transform: lowercase;
+}
+
+.sidebar-navigation-menu-responsive-drawer .ant-drawer-footer .username-responsive {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0em;
+  text-align: left;
+}
+
+.sidebar-navigation-menu-responsive-drawer .ant-drawer-footer .user-details-responsive:first-child div {
+  display: flex;
+  align-items: center;
+  min-height: 32px;
 }

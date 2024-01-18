@@ -47,7 +47,14 @@ const AddUser = () => {
   const location = useLocation();
   let [searchParams, setSearchParams] = useSearchParams();
   const [formInstance] = Form.useForm();
-  const [currentCalendarData] = useOutletContext();
+  const [
+    currentCalendarData, // eslint-disable-next-line no-unused-vars
+    _pageNumber, // eslint-disable-next-line no-unused-vars
+    _setPageNumber, // eslint-disable-next-line no-unused-vars
+    _getCalendar,
+    setContentBackgroundColor,
+  ] = useOutletContext();
+  setContentBackgroundColor('#F9FAFF');
   const userId = searchParams.get('id');
   const timestampRef = useRef(Date.now()).current;
 
@@ -204,8 +211,8 @@ const AddUser = () => {
         .validateFields()
         .then((values) => {
           inviteUser({
-            firstName: values.firstName,
-            lastName: values.lastName,
+            firstName: values.firstName?.trim(),
+            lastName: values.lastName?.trim(),
             email: values.email,
             role: values.userType,
             language: values?.languagePreference?.key,
@@ -242,8 +249,8 @@ const AddUser = () => {
           updateCurrentUser({
             calendarId,
             body: {
-              firstName: values?.firstName,
-              lastName: values?.lastName,
+              firstName: values?.firstName?.trim(),
+              lastName: values?.lastName?.trim(),
               email: values?.email,
               interfaceLanguage: values?.languagePreference?.key,
             },
@@ -284,8 +291,8 @@ const AddUser = () => {
                   refreshToken,
                   user: {
                     id: user?.id,
-                    firstName: values?.firstName,
-                    lastName: values?.lastName,
+                    firstName: values?.firstName?.trim(),
+                    lastName: values?.lastName?.trim(),
                     email: values?.email,
                     profileImage: user?.profileImage,
                     roles: user?.roles,
@@ -329,8 +336,8 @@ const AddUser = () => {
             id: userId,
             calendarId,
             body: {
-              firstName: values.firstName,
-              lastName: values.lastName,
+              firstName: values.firstName?.trim(),
+              lastName: values.lastName?.trim(),
               email: values.email,
               interfaceLanguage: values?.languagePreference?.key,
               modifyRole: {

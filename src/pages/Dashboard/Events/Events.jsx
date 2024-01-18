@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import './events.css';
-import { Checkbox, Col, Row, Badge, Button, Dropdown, Space, Popover, Divider } from 'antd';
+import { Checkbox, Col, Row, Badge, Button, Dropdown, Space, Popover, Divider, Radio } from 'antd';
 import { CloseCircleOutlined, DownOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
@@ -22,7 +22,6 @@ import {
   sortByOptionsUsers,
   sortOrder,
 } from '../../../constants/sortByOptions';
-import DateRangePicker from '../../../components/DateRangePicker';
 import moment from 'moment';
 import NoContent from '../../../components/NoContent/NoContent';
 import LoadingIndicator from '../../../components/LoadingIndicator/index';
@@ -31,6 +30,8 @@ import { useLazyGetAllOrganizationQuery } from '../../../services/organization';
 import { removeObjectArrayDuplicates } from '../../../utils/removeObjectArrayDuplicates';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { useDebounce } from '../../../hooks/debounce';
+import RcCalendar from '../../../components/RC_Calendar/RcCalendar';
+import { dateFilterOptions, dateFilterTypes } from '../../../constants/dateFilterOptions';
 
 function Events() {
   const { t } = useTranslation();
@@ -39,7 +40,14 @@ function Events() {
   let [searchParams, setSearchParams] = useSearchParams();
   const timestampRef = useRef(Date.now()).current;
   const { user } = useSelector(getUserDetails);
-  const [currentCalendarData, pageNumber, setPageNumber] = useOutletContext();
+  const [
+    currentCalendarData,
+    pageNumber,
+    setPageNumber, // eslint-disable-next-line no-unused-vars
+    _getCalendar,
+    setContentBackgroundColor,
+  ] = useOutletContext();
+  setContentBackgroundColor('#fff');
 
   const [getEvents, { currentData: eventsData, isLoading, isFetching }] = useLazyGetEventsQuery();
   const [getAllUsers, { isFetching: allUsersLoading }] = useLazyGetAllUsersQuery();
@@ -121,7 +129,8 @@ function Events() {
     Object.assign(initialSelectedOrganizers, { [organizerFilter[index]]: true });
   }
 
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false);
+
   const [selectedUsers, setSelectedUsers] = useState(initialSelectedUsers ?? {});
   const [selectedOrganizer, setSelectedOrganizers] = useState(initialSelectedOrganizers ?? {});
   const [organizersData, setOrganizersData] = useState([]);
@@ -155,6 +164,16 @@ function Events() {
         ]
       : [],
   );
+
+  const dateTypeSelector = (dates) => {
+    if (dates?.length == 2) {
+      if (dates?.every((date) => date === 'any')) return dateFilterTypes.ALL_EVENTS;
+      else if (dates?.some((date) => date === 'any')) return dateFilterTypes.PAST_EVENTS;
+      else if (dates?.every((date) => dateValidChecker(date))) return dateFilterTypes.DATE_RANGE;
+    } else return dateFilterTypes.UPCOMING_EVENTS;
+  };
+
+  const [selectedDateType, setSelectedDateType] = useState(dateTypeSelector(filter.dates));
 
   // let userFilterDataTest = allUsersData?.data?.slice()?.sort(function (x, y) {
   //   return x?._id == user?.id ? -1 : y?._id == user?.id ? 1 : 0;
@@ -280,10 +299,6 @@ function Events() {
     setPageNumber(1);
   };
 
-  const handlePopoverOpenChange = (newOpen) => {
-    setIsPopoverOpen(newOpen);
-  };
-
   const filterClearHandler = () => {
     setFilter({
       publication: [],
@@ -293,6 +308,8 @@ function Events() {
     });
     setUserFilter([]);
     setSelectedDates([]);
+    setSelectedDateType(dateFilterTypes.UPCOMING_EVENTS);
+
     setOrganizerFilter([]);
     let usersToClear = selectedUsers;
     Object.keys(usersToClear)?.forEach(function (key) {
@@ -316,6 +333,38 @@ function Events() {
     sessionStorage.removeItem('publication');
     sessionStorage.removeItem('startDateRange');
     sessionStorage.removeItem('endDateRange');
+  };
+
+  const dateFilterHandler = (e) => {
+    switch (e.target.value) {
+      case dateFilterTypes.ALL_EVENTS:
+        setSelectedDateType(dateFilterTypes.ALL_EVENTS);
+        setSelectedDates([]);
+        setFilter({ ...filter, dates: ['any', 'any'] });
+        setIsDatePopoverOpen(false);
+        break;
+      case dateFilterTypes.UPCOMING_EVENTS:
+        setSelectedDateType(dateFilterTypes.UPCOMING_EVENTS);
+        setSelectedDates([]);
+        setFilter({ ...filter, dates: [] });
+        setIsDatePopoverOpen(false);
+        break;
+      case dateFilterTypes.PAST_EVENTS:
+        setSelectedDateType(dateFilterTypes.PAST_EVENTS);
+        setSelectedDates([]);
+        setFilter({ ...filter, dates: ['any', moment().subtract(1, 'days')] });
+        setIsDatePopoverOpen(false);
+        break;
+      case dateFilterTypes.DATE_RANGE:
+        setSelectedDateType(dateFilterTypes.DATE_RANGE);
+        break;
+
+      default:
+        setSelectedDateType(dateFilterTypes.UPCOMING_EVENTS);
+        setSelectedDates([]);
+        setFilter({ ...filter, dates: [] });
+        break;
+    }
   };
   useEffect(() => {
     let uniqueArray = removeObjectArrayDuplicates(
@@ -500,7 +549,7 @@ function Events() {
   return (
     !isLoading && (
       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
-        <Col span={24}>
+        <Col span={24} className="events-wrapper-cloumn">
           <Col style={{ paddingLeft: 0 }}>
             <Row justify="space-between">
               <Col>
@@ -520,7 +569,7 @@ function Events() {
               </Col>
             </Row>
           </Col>
-          <Row gutter={[20, 10]}>
+          <Row gutter={[20, 20]}>
             <Col xs={24} sm={24} md={12} lg={10} xl={8}>
               <EventsSearch
                 placeholder={t('dashboard.events.searchPlaceholder')}
@@ -577,8 +626,8 @@ function Events() {
               </div>
             </Col>
 
-            <Col span={24}>
-              <Row gutter={20}>
+            <Col span={24} className="filter-container">
+              <Row gutter={[16, { xs: 8 }]}>
                 <Space>
                   <Col>
                     <SearchableCheckbox
@@ -611,7 +660,7 @@ function Events() {
                     </SearchableCheckbox>
                   </Col>
                 </Space>
-                <Col>
+                <Col className="event-filter-item-mobile-full-width">
                   <SearchableCheckbox
                     allowSearch={true}
                     loading={allUsersLoading}
@@ -662,55 +711,41 @@ function Events() {
                     placement="bottom"
                     getPopupContainer={(trigger) => trigger.parentNode}
                     content={
-                      <DateRangePicker
-                        value={selectedDates}
-                        onChange={(dates) => {
-                          setSelectedDates(dates);
-                          setFilter({ ...filter, dates: dates });
-                        }}
-                        onOpenChange={(open) => setIsPopoverOpen(open)}
-                        renderExtraFooter={() => (
-                          <div className="date-range-picker-filter-footer">
-                            <Button
-                              type="text"
-                              className={`date-range-picker-filter-footer-label ${
-                                filter?.dates?.length == 2 &&
-                                filter?.dates[0] === 'any' &&
-                                filter?.dates[1] === 'any' &&
-                                'date-range-picker-filter-footer-button-selected'
-                              }`}
-                              onClick={() => {
-                                setSelectedDates([]);
-                                setFilter({ ...filter, dates: ['any', 'any'] });
-                                setIsPopoverOpen(false);
-                              }}
-                              data-cy="button-filter-datepicker-past-events">
-                              {t('dashboard.events.filter.dates.allTime')}
-                            </Button>
-                            <Button
-                              type="text"
-                              className={`date-range-picker-filter-footer-label ${
-                                filter?.dates?.length == 2 &&
-                                filter?.dates[0] === 'any' &&
-                                filter?.dates[1] !== 'any' &&
-                                'date-range-picker-filter-footer-button-selected'
-                              }`}
-                              onClick={() => {
-                                setSelectedDates([]);
-                                setFilter({ ...filter, dates: ['any', moment().subtract(1, 'days')] });
-                                setIsPopoverOpen(false);
-                              }}
-                              data-cy="button-filter-datepicker-all-events">
-                              {t('dashboard.events.filter.dates.past')}
-                            </Button>
-                          </div>
+                      <div style={{ display: 'flex', width: 'max-content' }}>
+                        <Radio.Group
+                          onChange={(e) => dateFilterHandler(e)}
+                          value={selectedDateType}
+                          style={{
+                            padding: '12px',
+                            borderRight: selectedDateType === dateFilterTypes.DATE_RANGE && '1px solid #B6C1C9',
+                          }}>
+                          <Space direction="vertical">
+                            {dateFilterOptions.map((option) => (
+                              <Radio value={option.type} key={option.type}>
+                                {option.label}
+                              </Radio>
+                            ))}
+                          </Space>
+                        </Radio.Group>
+
+                        {selectedDateType === dateFilterTypes.DATE_RANGE && (
+                          <RcCalendar
+                            onApply={(dates) => {
+                              setSelectedDates(dates);
+                              setFilter({ ...filter, dates: dates });
+                              setIsDatePopoverOpen(false);
+                            }}
+                            selectedValue={selectedDates?.length > 0 ? selectedDates : []}
+                            setSelectedValue={setSelectedDates}
+                          />
                         )}
-                      />
+                      </div>
                     }
                     trigger="click"
                     overlayClassName="date-filter-popover"
-                    open={isPopoverOpen}
-                    onOpenChange={handlePopoverOpenChange}>
+                    style={{ minWidth: '200px' }}
+                    open={isDatePopoverOpen}
+                    onOpenChange={(open) => setIsDatePopoverOpen(open)}>
                     <Button
                       size="large"
                       className="filter-buttons"
@@ -725,7 +760,7 @@ function Events() {
                     </Button>
                   </Popover>
                 </Col>
-                <Col>
+                <Col className="event-filter-item-mobile-full-width">
                   <SearchableCheckbox
                     allowSearch={true}
                     loading={organizerLoading}
@@ -773,6 +808,7 @@ function Events() {
                     </Button>
                   </SearchableCheckbox>
                 </Col>
+
                 <Col>
                   {(userFilter.length > 0 ||
                     filter?.publication?.length > 0 ||

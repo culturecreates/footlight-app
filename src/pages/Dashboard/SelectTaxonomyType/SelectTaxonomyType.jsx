@@ -18,7 +18,14 @@ const SelectTaxonomyType = () => {
   const navigate = useNavigate();
   const [formInstance] = Form.useForm();
   const { calendarId } = useParams();
-  const [currentCalendarData] = useOutletContext();
+  const [
+    currentCalendarData, // eslint-disable-next-line no-unused-vars
+    _pageNumber, // eslint-disable-next-line no-unused-vars
+    _setPageNumber, // eslint-disable-next-line no-unused-vars
+    _getCalendar,
+    setContentBackgroundColor,
+  ] = useOutletContext();
+  setContentBackgroundColor('#F9FAFF');
   const { user } = useSelector(getUserDetails);
   const dispatch = useDispatch();
 

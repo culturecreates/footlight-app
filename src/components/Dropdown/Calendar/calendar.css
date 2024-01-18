@@ -20,3 +20,8 @@
 .calendar-name-wrapper:hover {
   color: #0f0e98;
 }
+
+.calendar-dropdown .ant-dropdown-menu-item:hover {
+  background-color: #eff2ff;
+  color: #0f0e98;
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import './list.css';
 import { List, Grid, Dropdown } from 'antd';
@@ -19,7 +19,7 @@ import { dateTypes } from '../../../constants/dateTypes';
 import { userRoles } from '../../../constants/userRoles';
 import { eventStatus } from '../../../constants/eventStatus';
 import moment from 'moment-timezone';
-import { LinkOutlined } from '@ant-design/icons';
+import { LinkOutlined, StarFilled } from '@ant-design/icons';
 
 const { useBreakpoint } = Grid;
 
@@ -34,6 +34,8 @@ function Lists(props) {
   const { user } = useSelector(getUserDetails);
   const [currentCalendarData] = useOutletContext();
   const totalCount = data?.totalCount;
+
+  const [selectedItemId, setSelectedItemId] = useState(null);
 
   const calendar = user?.roles?.filter((calendar) => {
     return calendar?.calendarId === calendarId;
@@ -58,7 +60,7 @@ function Lists(props) {
   return (
     <List
       className="event-list-wrapper"
-      itemLayout={screens.xs ? 'vertical' : 'horizontal'}
+      itemLayout={!screens.md ? 'vertical' : 'horizontal'}
       dataSource={data?.data}
       bordered={false}
       pagination={{
@@ -80,6 +82,10 @@ function Lists(props) {
             (calendar[0]?.role === userRoles.CONTRIBUTOR && eventItem?.creator?.userId != user?.id) ? (
               <Dropdown
                 className="calendar-dropdown-wrapper"
+                onOpenChange={(open) => {
+                  if (open) setSelectedItemId(eventItem?.id);
+                  else setSelectedItemId(null);
+                }}
                 overlayStyle={{
                   minWidth: '150px',
                 }}
@@ -97,11 +103,19 @@ function Lists(props) {
                 }}
                 trigger={['click']}>
                 <span>
-                  <MoreOutlined className="event-list-more-icon" key={index} />
+                  <MoreOutlined
+                    className="event-list-more-icon"
+                    style={{ color: selectedItemId === eventItem?.id && '#1B3DE6' }}
+                    key={index}
+                  />
                 </span>
               </Dropdown>
             ) : (
               <EventStatusOptions
+                onOpenChange={(open) => {
+                  if (open) setSelectedItemId(eventItem?.id);
+                  else setSelectedItemId(null);
+                }}
                 key={index}
                 publishState={eventItem?.publishState}
                 isFeatured={eventItem?.isFeatured}
@@ -109,7 +123,11 @@ function Lists(props) {
                 creator={eventItem?.creator}
                 eventId={eventItem?.id}>
                 <span>
-                  <MoreOutlined className="event-list-more-icon" key={index} />
+                  <MoreOutlined
+                    className="event-list-more-icon"
+                    style={{ color: selectedItemId === eventItem?.id && '#1B3DE6' }}
+                    key={index}
+                  />
                 </span>
               </EventStatusOptions>
             ),
@@ -133,30 +151,34 @@ function Lists(props) {
             className="event-list-item-meta"
             onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId, eventItem?.publishState)}
             avatar={
-              <div
-                className="event-list-image-wrapper"
-                style={{
-                  width: width,
-                }}>
-                {(calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) && eventItem?.isFeatured && (
-                  <div className="image-featured-badge">
-                    <StarOutlined
-                      style={{ fontSize: '12px', color: '#FFFFFF', position: 'absolute', top: '15%', left: '10%' }}
+              <>
+                {screens.md && (
+                  <div
+                    className="event-list-image-wrapper"
+                    style={{
+                      width: width,
+                    }}>
+                    {(calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) && eventItem?.isFeatured && (
+                      <div className="image-featured-badge">
+                        <StarOutlined
+                          style={{ fontSize: '12px', color: '#FFFFFF', position: 'absolute', top: '15%', left: '10%' }}
+                        />
+                      </div>
+                    )}
+                    <img
+                      src={eventItem?.image?.thumbnail?.uri}
+                      className="event-list-image"
+                      style={{
+                        border:
+                          (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) &&
+                          eventItem?.isFeatured &&
+                          '3px solid #1B3DE6',
+                      }}
+                      data-cy="image-event-thumbnail"
                     />
                   </div>
                 )}
-                <img
-                  src={eventItem?.image?.thumbnail?.uri}
-                  className="event-list-image"
-                  style={{
-                    border:
-                      (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) &&
-                      eventItem?.isFeatured &&
-                      '3px solid #1B3DE6',
-                  }}
-                  data-cy="image-event-thumbnail"
-                />
-              </div>
+              </>
             }
             title={
               <div className="event-list-title">
@@ -205,14 +227,21 @@ function Lists(props) {
             }
             description={
               <div className="event-list-description">
-                <span className="event-list-description-name" data-cy="span-event-name">
-                  {contentLanguageBilingual({
-                    en: eventItem?.name?.en,
-                    fr: eventItem?.name?.fr,
-                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                    calendarContentLanguage: calendarContentLanguage,
-                  })}
-                </span>
+                <div className="event-list-description-name-container">
+                  {!screens.md && eventItem?.isFeatured && (
+                    <span>
+                      <StarFilled style={{ color: '#1B3DE6' }} />
+                    </span>
+                  )}
+                  <span className="event-list-description-name" data-cy="span-event-name">
+                    {contentLanguageBilingual({
+                      en: eventItem?.name?.en,
+                      fr: eventItem?.name?.fr,
+                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      calendarContentLanguage: calendarContentLanguage,
+                    })}
+                  </span>
+                </div>
                 <span className="event-list-description-place" data-cy="span-event-location">
                   {eventItem?.location
                     ?.map((place) => {
@@ -243,7 +272,7 @@ function Lists(props) {
                     className="artsdata-link-outlined-icon"
                     data-cy="artsdata-link-outlined-icon">
                     <span>
-                      <LinkOutlined style={{ fontSize: '12px' }} />
+                      <LinkOutlined style={{ fontSize: '14px' }} />
                     </span>
                   </div>
                 )}
