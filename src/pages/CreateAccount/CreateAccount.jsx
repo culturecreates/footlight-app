@@ -59,6 +59,7 @@ function CreateAccount() {
         navigate(PathName.Login);
       });
   };
+
   useEffect(() => {
     if (invitationId) {
       getInviteDetails({
