@@ -40,7 +40,7 @@ jobs:
       - name: sync preview to S3
         run: aws s3 sync ./build s3://${{env.PREVIEW_BUCKET_NAME}}/ --acl public-read --delete --exclude index.html
       - name: set cache-control on preview index.html 
-        run: aws s3 cp ./build/index.html s3://${{env.PREVIEW_BUCKET_NAME}}/index.html --metadata-directive REPLACE --cache-control max-age=0,s-maxage=86400 --acl public-read --content-type text/html
+        run: aws s3 cp ./build s3://${{env.PREVIEW_BUCKET_NAME}}/ --metadata-directive REPLACE --cache-control max-age=0,s-maxage=86400 --acl public-read --content-type text/html
 
       
 
