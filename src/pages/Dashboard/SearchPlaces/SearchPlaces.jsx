@@ -191,56 +191,6 @@ function SearchPlaces() {
                 {quickCreateKeyword.length > 0 && (
                   <>
                     <div className="popover-section-header" data-cy="div-place-artsdata-title">
-                      {t('dashboard.places.createNew.search.artsDataSectionHeading')}
-                    </div>
-                    <div className="search-scrollable-content">
-                      {isExternalSourceFetching && (
-                        <div
-                          style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <LoadingIndicator />
-                        </div>
-                      )}
-                      {!isExternalSourceFetching &&
-                        (placeListExternalSource?.artsdata?.length > 0 ? (
-                          placeListExternalSource?.artsdata?.map((place, index) => (
-                            <div
-                              key={index}
-                              className="search-popover-options"
-                              onClick={() => {
-                                setIsPopoverOpen(false);
-                              }}
-                              data-cy={`div-place-artsdata-${index}`}>
-                              <EntityCard
-                                title={contentLanguageBilingual({
-                                  en: place?.name?.en,
-                                  fr: place?.name?.fr,
-                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                  calendarContentLanguage: calendarContentLanguage,
-                                })}
-                                description={place?.description}
-                                artsDataLink={place?.uri}
-                                Logo={
-                                  place.logo ? (
-                                    place.logo?.thumbnail?.uri
-                                  ) : (
-                                    <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
-                                  )
-                                }
-                                linkText={t('dashboard.places.createNew.search.linkText')}
-                                onClick={() => artsDataClickHandler(place)}
-                              />
-                            </div>
-                          ))
-                        ) : (
-                          <NoContent />
-                        ))}
-                    </div>
-                  </>
-                )}
-
-                {quickCreateKeyword.length > 0 && (
-                  <>
-                    <div className="popover-section-header" data-cy="div-place-artsdata-title">
                       {t('dashboard.places.createNew.search.importsFromFootlight')}
                     </div>
                     <div className="search-scrollable-content">
@@ -287,6 +237,56 @@ function SearchPlaces() {
                                     `${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?entityId=${place?.id}`,
                                   )
                                 }
+                              />
+                            </div>
+                          ))
+                        ) : (
+                          <NoContent />
+                        ))}
+                    </div>
+                  </>
+                )}
+
+                {quickCreateKeyword.length > 0 && (
+                  <>
+                    <div className="popover-section-header" data-cy="div-place-artsdata-title">
+                      {t('dashboard.places.createNew.search.artsDataSectionHeading')}
+                    </div>
+                    <div className="search-scrollable-content">
+                      {isExternalSourceFetching && (
+                        <div
+                          style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <LoadingIndicator />
+                        </div>
+                      )}
+                      {!isExternalSourceFetching &&
+                        (placeListExternalSource?.artsdata?.length > 0 ? (
+                          placeListExternalSource?.artsdata?.map((place, index) => (
+                            <div
+                              key={index}
+                              className="search-popover-options"
+                              onClick={() => {
+                                setIsPopoverOpen(false);
+                              }}
+                              data-cy={`div-place-artsdata-${index}`}>
+                              <EntityCard
+                                title={contentLanguageBilingual({
+                                  en: place?.name?.en,
+                                  fr: place?.name?.fr,
+                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  calendarContentLanguage: calendarContentLanguage,
+                                })}
+                                description={place?.description}
+                                artsDataLink={place?.uri}
+                                Logo={
+                                  place.logo ? (
+                                    place.logo?.thumbnail?.uri
+                                  ) : (
+                                    <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
+                                  )
+                                }
+                                linkText={t('dashboard.places.createNew.search.linkText')}
+                                onClick={() => artsDataClickHandler(place)}
                               />
                             </div>
                           ))

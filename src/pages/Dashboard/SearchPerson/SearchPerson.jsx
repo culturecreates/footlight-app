@@ -188,57 +188,6 @@ function SearchPerson() {
                     <NoContent />
                   ))}
               </div>
-
-              {quickCreateKeyword.length > 0 && (
-                <>
-                  <div className="popover-section-header" data-cy="div-person-artsdata-title">
-                    {t('dashboard.people.createNew.search.artsDataSectionHeading')}
-                  </div>
-                  <div className="search-scrollable-content">
-                    {isExternalSourceFetching && (
-                      <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <LoadingIndicator />
-                      </div>
-                    )}
-                    {!isExternalSourceFetching &&
-                      isExternalSourceSuccess &&
-                      (peopleListExternalSource?.artsdata?.length > 0 ? (
-                        peopleListExternalSource?.artsdata?.map((person, index) => (
-                          <div
-                            key={index}
-                            className="search-popover-options"
-                            onClick={() => {
-                              setSelectedPeople([...selectedPeople, person]);
-                              setIsPopoverOpen(false);
-                            }}
-                            data-cy={`div-person-artsdata-${index}`}>
-                            <EntityCard
-                              title={contentLanguageBilingual({
-                                en: person?.name?.en,
-                                fr: person?.name?.fr,
-                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                calendarContentLanguage: calendarContentLanguage,
-                              })}
-                              description={person?.description}
-                              artsDataLink={person?.uri}
-                              Logo={
-                                person.logo ? (
-                                  person.logo?.thumbnail?.uri
-                                ) : (
-                                  <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
-                                )
-                              }
-                              linkText={t('dashboard.people.createNew.search.linkText')}
-                              onClick={() => artsDataClickHandler(person)}
-                            />
-                          </div>
-                        ))
-                      ) : (
-                        <NoContent />
-                      ))}
-                  </div>
-                </>
-              )}
               {quickCreateKeyword.length > 0 && (
                 <>
                   <div className="popover-section-header" data-cy="div-person-artsdata-title">
@@ -289,6 +238,56 @@ function SearchPerson() {
                                   `${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?entityId=${person?.id}`,
                                 )
                               }
+                            />
+                          </div>
+                        ))
+                      ) : (
+                        <NoContent />
+                      ))}
+                  </div>
+                </>
+              )}
+              {quickCreateKeyword.length > 0 && (
+                <>
+                  <div className="popover-section-header" data-cy="div-person-artsdata-title">
+                    {t('dashboard.people.createNew.search.artsDataSectionHeading')}
+                  </div>
+                  <div className="search-scrollable-content">
+                    {isExternalSourceFetching && (
+                      <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <LoadingIndicator />
+                      </div>
+                    )}
+                    {!isExternalSourceFetching &&
+                      isExternalSourceSuccess &&
+                      (peopleListExternalSource?.artsdata?.length > 0 ? (
+                        peopleListExternalSource?.artsdata?.map((person, index) => (
+                          <div
+                            key={index}
+                            className="search-popover-options"
+                            onClick={() => {
+                              setSelectedPeople([...selectedPeople, person]);
+                              setIsPopoverOpen(false);
+                            }}
+                            data-cy={`div-person-artsdata-${index}`}>
+                            <EntityCard
+                              title={contentLanguageBilingual({
+                                en: person?.name?.en,
+                                fr: person?.name?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                calendarContentLanguage: calendarContentLanguage,
+                              })}
+                              description={person?.description}
+                              artsDataLink={person?.uri}
+                              Logo={
+                                person.logo ? (
+                                  person.logo?.thumbnail?.uri
+                                ) : (
+                                  <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
+                                )
+                              }
+                              linkText={t('dashboard.people.createNew.search.linkText')}
+                              onClick={() => artsDataClickHandler(person)}
                             />
                           </div>
                         ))
