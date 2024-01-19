@@ -41,6 +41,8 @@ jobs:
         run: aws s3 sync ./build s3://${{env.PREVIEW_BUCKET_NAME}}/ --acl public-read --delete --exclude index.html
       - name: set cache-control on preview index.html 
         run: aws s3 cp ./build/index.html s3://${{env.PREVIEW_BUCKET_NAME}}/index.html --metadata-directive REPLACE --cache-control max-age=0,s-maxage=86400 --acl public-read --content-type text/html
+              PREVIEW_URL="https://${{env.PREVIEW_BUCKET_NAME}}.s3.${{env.AWS_REGION}}.amazonaws.com/index.html"
+              echo "Preview URL is $PREVIEW_URL"
 
       
 
