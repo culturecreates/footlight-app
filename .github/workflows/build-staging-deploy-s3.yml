@@ -1,10 +1,14 @@
 name: Staging build and deploy to S3
 on:
-  push:
+  pull_request:
     branches:
       - develop
+    types:
+      - opened
+      - synchronize
+
 jobs:
-  build-and-deploy:
+  build-and-preview:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
@@ -18,16 +22,32 @@ jobs:
         uses: actions/checkout@v2
       - name: setup node
         run: npm install
-      - name: build
+
+      - name: Build
         run: npm run build:staging
-      # Upload to S3
-      - name: sync s3
-        run: aws s3 sync ./build s3://${{env.WEBHOSTING_BUCKET_NAME}}/ --acl public-read --delete --exclude index.html
-      - name: set cache-control on index.html 
-        run: aws s3 cp ./build/index.html s3://${{env.WEBHOSTING_BUCKET_NAME}}/index.html --metadata-directive REPLACE --cache-control max-age=0,s-maxage=86400 --acl public-read --content-type text/html
-      # Invalidate CloudFront
-      - name: Invalidate CloudFront
-        uses: chetan/invalidate-cloudfront-action@v2
-        env:
-          DISTRIBUTION: E2R70C1WYD9KB
-          PATHS: "/*"
+ 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.S3_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+          aws-region: ca-central-1
+
+      - name: Create Preview Bucket
+        run: |
+          PR_NUMBER=$(echo "${{ github.event.pull_request.number }}")
+          TIMESTAMP=$(date +%s)
+          PREVIEW_BUCKET="preview-bucket-${PR_NUMBER}-${TIMESTAMP}"
+          REGION=$(aws configure get region)
+          echo "Creating bucket $PREVIEW_BUCKET in region $REGION"
+          if ! aws s3 mb s3://$PREVIEW_BUCKET --region $REGION 2>&1; then
+            echo "Error creating bucket!"
+          fi
+          echo "Preview bucket created: ${PREVIEW_BUCKET}"
+
+      - name: Deploy to S3
+        run: |
+          PR_NUMBER=$(echo "${{ github.event.pull_request.number }}")
+          PREVIEW_BUCKET="preview-bucket-${PR_NUMBER}"
+          aws s3 sync ./build s3://${PREVIEW_BUCKET}
+          echo "Preview deployed to ${PREVIEW_BUCKET}"
