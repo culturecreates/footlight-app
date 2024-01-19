@@ -2122,46 +2122,6 @@ function CreateNewPlace() {
                           {quickCreateKeyword !== '' && (
                             <>
                               <div className="popover-section-header" data-cy="div-place-artsdata-title">
-                                {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
-                              </div>
-                              <div className="search-scrollable-content">
-                                {isExternalSourceFetching && (
-                                  <div
-                                    style={{
-                                      height: '200px',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                    }}>
-                                    <LoadingIndicator />
-                                  </div>
-                                )}
-                                {!isExternalSourceFetching &&
-                                  (allPlacesArtsdataList?.length > 0 ? (
-                                    allPlacesArtsdataList?.map((place, index) => (
-                                      <div
-                                        key={index}
-                                        className="event-popover-options"
-                                        onClick={() => {
-                                          setSelectedContainsPlaces([...selectedContainsPlaces, place]);
-                                          setIsPopoverOpen({
-                                            ...isPopoverOpen,
-                                            containsPlace: false,
-                                          });
-                                        }}
-                                        data-cy="div-place-artsdata">
-                                        {place?.label}
-                                      </div>
-                                    ))
-                                  ) : (
-                                    <NoContent />
-                                  ))}
-                              </div>
-                            </>
-                          )}
-                          {quickCreateKeyword !== '' && (
-                            <>
-                              <div className="popover-section-header" data-cy="div-place-artsdata-title">
                                 {t('dashboard.organization.createNew.search.importsFromFootlight')}
                               </div>
                               <div className="search-scrollable-content">
@@ -2190,6 +2150,46 @@ function CreateNewPlace() {
                                           });
                                         }}
                                         data-cy="div-place-footlight-import">
+                                        {place?.label}
+                                      </div>
+                                    ))
+                                  ) : (
+                                    <NoContent />
+                                  ))}
+                              </div>
+                            </>
+                          )}
+                          {quickCreateKeyword !== '' && (
+                            <>
+                              <div className="popover-section-header" data-cy="div-place-artsdata-title">
+                                {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                              </div>
+                              <div className="search-scrollable-content">
+                                {isExternalSourceFetching && (
+                                  <div
+                                    style={{
+                                      height: '200px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                    }}>
+                                    <LoadingIndicator />
+                                  </div>
+                                )}
+                                {!isExternalSourceFetching &&
+                                  (allPlacesArtsdataList?.length > 0 ? (
+                                    allPlacesArtsdataList?.map((place, index) => (
+                                      <div
+                                        key={index}
+                                        className="event-popover-options"
+                                        onClick={() => {
+                                          setSelectedContainsPlaces([...selectedContainsPlaces, place]);
+                                          setIsPopoverOpen({
+                                            ...isPopoverOpen,
+                                            containsPlace: false,
+                                          });
+                                        }}
+                                        data-cy="div-place-artsdata">
                                         {place?.label}
                                       </div>
                                     ))
@@ -2314,7 +2314,7 @@ function CreateNewPlace() {
                           {quickCreateKeyword !== '' && (
                             <>
                               <div className="popover-section-header" data-cy="div-contained-in-place-artsdata-title">
-                                {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                                {t('dashboard.organization.createNew.search.importsFromFootlight')}
                               </div>
                               <div className="search-scrollable-content">
                                 {isExternalSourceFetching && (
@@ -2329,15 +2329,15 @@ function CreateNewPlace() {
                                   </div>
                                 )}
                                 {!isExternalSourceFetching &&
-                                  (allPlacesArtsdataList?.length > 0 ? (
-                                    allPlacesArtsdataList?.map((place, index) => (
+                                  (allPlacesImportsFootlight?.length > 0 ? (
+                                    allPlacesImportsFootlight?.map((place, index) => (
                                       <div
                                         data-cy={`div-contained-in-place-artsdata-${index}`}
                                         key={index}
                                         className="event-popover-options"
                                         onClick={() => {
                                           setContainedInPlace(place);
-                                          form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.uri);
+                                          form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.value);
                                           setIsPopoverOpen({
                                             ...isPopoverOpen,
                                             containedInPlace: false,
@@ -2370,15 +2370,15 @@ function CreateNewPlace() {
                                   </div>
                                 )}
                                 {!isExternalSourceFetching &&
-                                  (allPlacesImportsFootlight?.length > 0 ? (
-                                    allPlacesImportsFootlight?.map((place, index) => (
+                                  (allPlacesArtsdataList?.length > 0 ? (
+                                    allPlacesArtsdataList?.map((place, index) => (
                                       <div
                                         data-cy={`div-contained-in-place-artsdata-${index}`}
                                         key={index}
                                         className="event-popover-options"
                                         onClick={() => {
                                           setContainedInPlace(place);
-                                          form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.value);
+                                          form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, place?.uri);
                                           setIsPopoverOpen({
                                             ...isPopoverOpen,
                                             containedInPlace: false,
