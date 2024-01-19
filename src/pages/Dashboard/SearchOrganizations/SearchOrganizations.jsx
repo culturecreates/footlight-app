@@ -192,49 +192,7 @@ function SearchOrganizations() {
                       <NoContent />
                     ))}
                 </div>
-                {quickCreateKeyword !== '' && (
-                  <>
-                    <div className="popover-section-header" data-cy="organization-artsdata-heading">
-                      {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
-                    </div>
-                    <div className="search-scrollable-content">
-                      {isExternalSourceFetching && (
-                        <div
-                          style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <LoadingIndicator />
-                        </div>
-                      )}
-                      {!isExternalSourceFetching &&
-                        (organizationListExternalSource?.artsdata?.length > 0 ? (
-                          organizationListExternalSource?.artsdata?.map((organizer, index) => (
-                            <div
-                              key={index}
-                              className="search-popover-options"
-                              data-cy={`div-orgnanization--artsdata-entity-${index}`}
-                              onClick={() => {
-                                setIsPopoverOpen(false);
-                              }}>
-                              <EntityCard
-                                title={contentLanguageBilingual({
-                                  en: organizer?.name?.en,
-                                  fr: organizer?.name?.fr,
-                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                  calendarContentLanguage: calendarContentLanguage,
-                                })}
-                                description={organizer?.description}
-                                artsDataLink={organizer?.uri}
-                                Logo={organizer.logo ? <img src={organizer?.logo?.thumbnail?.uri} /> : <Logo />}
-                                linkText={t('dashboard.organization.createNew.search.linkText')}
-                                onClick={() => artsDataClickHandler(organizer)}
-                              />
-                            </div>
-                          ))
-                        ) : (
-                          <NoContent />
-                        ))}
-                    </div>
-                  </>
-                )}
+
                 {quickCreateKeyword !== '' && (
                   <>
                     <div className="popover-section-header" data-cy="organization-artsdata-heading">
@@ -284,6 +242,49 @@ function SearchOrganizations() {
                                     `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?entityId=${organizer?.id}`,
                                   )
                                 }
+                              />
+                            </div>
+                          ))
+                        ) : (
+                          <NoContent />
+                        ))}
+                    </div>
+                  </>
+                )}
+                {quickCreateKeyword !== '' && (
+                  <>
+                    <div className="popover-section-header" data-cy="organization-artsdata-heading">
+                      {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
+                    </div>
+                    <div className="search-scrollable-content">
+                      {isExternalSourceFetching && (
+                        <div
+                          style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <LoadingIndicator />
+                        </div>
+                      )}
+                      {!isExternalSourceFetching &&
+                        (organizationListExternalSource?.artsdata?.length > 0 ? (
+                          organizationListExternalSource?.artsdata?.map((organizer, index) => (
+                            <div
+                              key={index}
+                              className="search-popover-options"
+                              data-cy={`div-orgnanization--artsdata-entity-${index}`}
+                              onClick={() => {
+                                setIsPopoverOpen(false);
+                              }}>
+                              <EntityCard
+                                title={contentLanguageBilingual({
+                                  en: organizer?.name?.en,
+                                  fr: organizer?.name?.fr,
+                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  calendarContentLanguage: calendarContentLanguage,
+                                })}
+                                description={organizer?.description}
+                                artsDataLink={organizer?.uri}
+                                Logo={organizer.logo ? <img src={organizer?.logo?.thumbnail?.uri} /> : <Logo />}
+                                linkText={t('dashboard.organization.createNew.search.linkText')}
+                                onClick={() => artsDataClickHandler(organizer)}
                               />
                             </div>
                           ))
