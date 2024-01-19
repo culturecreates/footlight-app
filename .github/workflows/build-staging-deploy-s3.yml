@@ -1,49 +1,28 @@
-name: Staging build and deploy to S3
+name: PR
+
 on:
-  push:
-    branches:
-      - develop
   pull_request:
-    branches:
-      - develop
+    branches: [ develop ]
 
 jobs:
-  build-and-deploy:
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-      AWS_REGION: ca-central-1 
-      WEBHOSTING_BUCKET_NAME: staging.cms.footlight.io
-      PREVIEW_BUCKET_NAME: preview.cms.footlight.io
+  build-and-preview:
     runs-on: ubuntu-latest
-    container:
-      image: sleavely/node-awscli:14.x
     steps:
       - name: checkout
         uses: actions/checkout@v2
+
       - name: setup node
         run: npm install
       - name: build
         run: npm run build:staging
 
-      # Upload to S3 (only during push to develop)
-      - name: sync staging to S3
-        run: |
-          if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
-            aws s3 sync ./build s3://${{env.WEBHOSTING_BUCKET_NAME}}/ --acl public-read --delete --exclude index.html
-            aws s3 cp ./build/index.html s3://${{env.WEBHOSTING_BUCKET_NAME}}/index.html --metadata-directive REPLACE --cache-control max-age=0,s-maxage=86400 --acl public-read --content-type text/html
-          else
-            echo "Skipping S3 upload since it's not a push to develop branch."
-          fi
-
-      # Upload to Preview channel (always during push to develop)
-      - name: sync preview to S3
-        run: aws s3 sync ./build s3://${{env.PREVIEW_BUCKET_NAME}}/ --acl public-read --delete --exclude index.html
-      - name: set cache-control on preview index.html 
-        run: aws s3 cp ./build/index.html s3://${{env.PREVIEW_BUCKET_NAME}}/index.html --metadata-directive REPLACE --cache-control max-age=0,s-maxage=86400 --acl public-read --content-type text/html
-              PREVIEW_URL="https://${{env.PREVIEW_BUCKET_NAME}}.s3.${{env.AWS_REGION}}.amazonaws.com/index.html"
-              echo "Preview URL is $PREVIEW_URL"
-
-      
-
-     
+      - name: Deploy S3 Website
+        uses: danburtenshaw/s3-website-pr-action@v2
+        with:
+          bucket-prefix: "preview.cms.footlight.io"
+          folder-to-copy: "./build"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+          AWS_REGION: ca-central-1 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
