@@ -42,16 +42,6 @@ jobs:
       - name: set cache-control on preview index.html 
         run: aws s3 cp ./build/index.html s3://${{env.PREVIEW_BUCKET_NAME}}/index.html --metadata-directive REPLACE --cache-control max-age=0,s-maxage=86400 --acl public-read --content-type text/html
 
-      # Invalidate CloudFront for Staging
-      - name: Invalidate CloudFront for Staging
-        uses: chetan/invalidate-cloudfront-action@v2
-        env:
-          DISTRIBUTION: E2R70C1WYD9KB
-          PATHS: "/*"
+      
 
-      # Invalidate CloudFront for Preview
-      - name: Invalidate CloudFront for Preview
-        uses: chetan/invalidate-cloudfront-action@v2
-        env:
-          DISTRIBUTION: YOUR_PREVIEW_CLOUDFRONT_DISTRIBUTION_ID
-          PATHS: "/*"
+     
