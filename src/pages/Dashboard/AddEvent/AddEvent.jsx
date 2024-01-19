@@ -2667,6 +2667,7 @@ function AddEvent() {
                             </>
                           )}
                         </div>
+
                         <FeatureFlag isFeatureEnabled={featureFlags.quickCreateOrganization}>
                           {quickCreateKeyword?.length > 0 && (
                             <div
