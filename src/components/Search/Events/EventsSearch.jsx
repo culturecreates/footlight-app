@@ -1,10 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import './eventsSearch.css';
 import { Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
-function EventsSearch({ autoFocus, ...props }) {
-  const inputRef = useRef();
+const EventsSearch = forwardRef(function EventsSearch({ autoFocus, ...props }, inputRef) {
   useEffect(() => {
     if (autoFocus) {
       inputRef.current.focus();
@@ -20,6 +19,6 @@ function EventsSearch({ autoFocus, ...props }) {
       prefix={<SearchOutlined className="events-search-icon" style={{ color: props?.defaultValue && '#1B3DE6' }} />}
     />
   );
-}
+});
 
 export default EventsSearch;
