@@ -54,17 +54,22 @@ jobs:
       - name: Create Check
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const output = '${{ steps.set-check-url.outputs.preview_url }}';
-            const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
-            await octokit.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'Preview URL',
-              head_sha: context.sha,
-              status: 'completed',
-              conclusion: 'success',
-              output: {
-                title: 'Preview URL',
-                summary: output,
+           github-token: ${{ secrets.GITHUB_TOKEN }}
+           script: |
+                const output = '${{ steps.set-check-url.outputs.preview_url }}';
+                const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+                 await octokit.checks.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: 'Preview URL',
+                  head_sha: context.sha,
+                  status: 'completed',
+                  conclusion: 'success',
+                  output: {
+                    title: 'Preview URL',
+                    summary: output,
+                  },
+                });
+     
+   
+
