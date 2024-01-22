@@ -30,14 +30,14 @@ jobs:
       - name: Build React App
         run: npm run build
 
-      - name: Deploy to Preview Channel
+      - name: Set deployment status
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-          RESPONSE=$(curl -v -X POST \
-        -H "Accept: application/vnd.github.v3+json" \
-        -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-        "https://api.github.com/repos/${{ github.repository }}/deployments/${{ github.run_id }}/statuses" \
-        -d "{\"state\": \"success\", \"target_url\": \"$PR_PREVIEW_URL\", \"description\": \"Preview URL\"}")
+            RESPONSE=$(curl -v -X POST \
+              -H "Accept: application/vnd.github.v3+json" \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/deployments/${{ github.run_id }}/statuses" \
+              -d "{\"state\": \"success\", \"target_url\": \"$PR_PREVIEW_URL\", \"description\": \"Preview URL\"}")
 
-      echo "GitHub API Response: $RESPONSE"
-    fi
+            echo "GitHub API Response: $RESPONSE"
+          fi
