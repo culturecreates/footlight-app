@@ -42,29 +42,21 @@ jobs:
             PR_PREVIEW_URL="https://${{env.WEBHOSTING_BUCKET_NAME}}.s3.amazonaws.com/${{ github.event.number }}/index.html"
             echo "Preview URL: $PR_PREVIEW_URL"
 
+          
             echo "::set-output name=preview_url::$PR_PREVIEW_URL"
           fi
 
       - name: Set Check URL
-        id: set-check-url
-        run: echo "Preview URL: ${{ steps.deploy.outputs.preview_url }}"
+        run: echo "Preview URL ${{ steps.deploy.outputs.preview_url }}" > check_url.txt
 
-      - name: Create Check
-        uses: actions/github-script@v7
+      - name: Upload Check URL
+        uses: actions/upload-artifact@v2
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const output = '${{ steps.set-check-url.outputs.preview_url }}';
-            const octokit = require('@octokit/rest')();
-            await octokit.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'Preview URL',
-              head_sha: context.sha,
-              status: 'completed',
-              conclusion: 'success',
-              output: {
-                title: 'Preview URL',
-                summary: output,
-              },
-            });
+          name: check_url
+          path: check_url.txt
+
+      - name: Debug Information
+        run: |
+          echo "Repository Owner: ${{ github.repository_owner }}"
+          echo "Repository Name: ${{ github.repository }}"
+          echo "Run ID: ${{ github.run_id }}"
