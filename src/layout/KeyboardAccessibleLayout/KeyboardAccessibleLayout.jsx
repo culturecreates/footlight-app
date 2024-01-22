@@ -8,10 +8,17 @@ const KeyboardAccessibleLayout = ({ children, data, setItem, setFieldValue, popO
   let focusedItemIndex = -1;
 
   const findData = (focusedItemIndex) => {
-    if (focusedItemIndex > data[0].length - 1) {
-      return data[1][focusedItemIndex - data[0].length];
-    } else {
-      return data[0][focusedItemIndex];
+    let currentIndex = 0;
+
+    for (let i = 0; i < data.length; i++) {
+      const currentArray = data[i];
+      const nextIndex = currentIndex + currentArray.length;
+
+      if (focusedItemIndex < nextIndex) {
+        return currentArray[focusedItemIndex - currentIndex];
+      }
+
+      currentIndex = nextIndex;
     }
   };
 
@@ -83,13 +90,17 @@ const KeyboardAccessibleLayout = ({ children, data, setItem, setFieldValue, popO
         const itemContainersArray = document?.querySelectorAll('.search-scrollable-content');
 
         if (itemContainersArray) {
-          const itemContainer1 = itemContainersArray[0]?.querySelectorAll('.event-popover-options');
-          const itemContainer2 = itemContainersArray[1]?.querySelectorAll('.event-popover-options');
+          const itemsRefArray = [];
 
-          itemsRef.current = [
-            ...(itemContainer1?.length > 0 ? itemContainer1 : []),
-            ...(itemContainer2?.length > 0 ? itemContainer2 : []),
-          ];
+          for (let i = 0; i < itemContainersArray.length; i++) {
+            const currentContainer = itemContainersArray[i];
+            const currentItems = currentContainer?.querySelectorAll('.event-popover-options');
+
+            itemsRefArray.push(currentItems?.length > 0 ? currentItems : []);
+          }
+
+          itemsRef.current = itemsRefArray.reduce((accumulator, currentItems) => [...accumulator, ...currentItems], []);
+
           if (itemsRef.current.length > 0) {
             itemsRef.current?.forEach((child) => child.setAttribute('tabIndex', -1));
             itemContainersArray[0]?.setAttribute('tabIndex', 0);

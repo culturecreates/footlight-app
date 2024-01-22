@@ -21,6 +21,7 @@ import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import LoadingIndicator from '../../../components/LoadingIndicator';
+import { externalSourceOptions } from '../../../constants/sourceOptions';
 
 function SearchPlaces() {
   const { t } = useTranslation();
@@ -41,7 +42,8 @@ function SearchPlaces() {
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [placesList, setPlacesList] = useState([]);
-  const [placesListArtsData, setPlacesListArtsData] = useState([]);
+  const [placeListExternalSource, setPlaceListExternalSource] = useState([]);
+
   const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
@@ -57,17 +59,22 @@ function SearchPlaces() {
     sessionId: timestampRef,
     includeArtsdata: true,
   });
+
+  let sourceQuery = new URLSearchParams();
+  sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
+  sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
   const { currentData: initialExternalSource, isFetching: initialExternalSourceLoading } = useGetExternalSourceQuery({
     calendarId,
     searchKey: '',
     classes: decodeURIComponent(query.toString()),
+    sources: decodeURIComponent(sourceQuery.toString()),
     sessionId: timestampRef,
   });
 
   useEffect(() => {
     if (initialEntities && currentCalendarData && initialExternalSourceLoading) {
       setPlacesList(initialEntities);
-      setPlacesListArtsData(initialExternalSource?.artsdata);
+      setPlaceListExternalSource(initialExternalSource);
     }
   }, [initialPlacesLoading]);
 
@@ -89,12 +96,13 @@ function SearchPlaces() {
     getExternalSource({
       searchKey: value,
       classes: decodeURIComponent(query.toString()),
+      sources: decodeURIComponent(sourceQuery.toString()),
       calendarId,
       excludeExistingCMS: true,
     })
       .unwrap()
       .then((response) => {
-        setPlacesListArtsData(response?.artsdata);
+        setPlaceListExternalSource(response);
       })
       .catch((error) => console.log(error));
   };
@@ -183,6 +191,65 @@ function SearchPlaces() {
                 {quickCreateKeyword.length > 0 && (
                   <>
                     <div className="popover-section-header" data-cy="div-place-artsdata-title">
+                      {t('dashboard.places.createNew.search.importsFromFootlight')}
+                    </div>
+                    <div className="search-scrollable-content">
+                      {isExternalSourceFetching && (
+                        <div
+                          style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <LoadingIndicator />
+                        </div>
+                      )}
+                      {!isExternalSourceFetching &&
+                        (placeListExternalSource?.footlight?.length > 0 ? (
+                          placeListExternalSource?.footlight?.map((place, index) => (
+                            <div
+                              key={index}
+                              className="search-popover-options"
+                              onClick={() => {
+                                setIsPopoverOpen(false);
+                              }}
+                              data-cy={`div-place-artsdata-${index}`}>
+                              <EntityCard
+                                title={contentLanguageBilingual({
+                                  en: place?.name?.en,
+                                  fr: place?.name?.fr,
+                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  calendarContentLanguage: calendarContentLanguage,
+                                })}
+                                description={contentLanguageBilingual({
+                                  en: place?.disambiguatingDescription?.en,
+                                  fr: place?.disambiguatingDescription?.fr,
+                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  calendarContentLanguage: calendarContentLanguage,
+                                })}
+                                artsDataLink={artsDataLinkChecker(place?.uri)}
+                                Logo={
+                                  place.logo ? (
+                                    place.logo?.thumbnail?.uri
+                                  ) : (
+                                    <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} />
+                                  )
+                                }
+                                linkText={t('dashboard.places.createNew.search.linkText')}
+                                onClick={() =>
+                                  navigate(
+                                    `${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?entityId=${place?.id}`,
+                                  )
+                                }
+                              />
+                            </div>
+                          ))
+                        ) : (
+                          <NoContent />
+                        ))}
+                    </div>
+                  </>
+                )}
+
+                {quickCreateKeyword.length > 0 && (
+                  <>
+                    <div className="popover-section-header" data-cy="div-place-artsdata-title">
                       {t('dashboard.places.createNew.search.artsDataSectionHeading')}
                     </div>
                     <div className="search-scrollable-content">
@@ -193,8 +260,8 @@ function SearchPlaces() {
                         </div>
                       )}
                       {!isExternalSourceFetching &&
-                        (placesListArtsData?.length > 0 ? (
-                          placesListArtsData?.map((place, index) => (
+                        (placeListExternalSource?.artsdata?.length > 0 ? (
+                          placeListExternalSource?.artsdata?.map((place, index) => (
                             <div
                               key={index}
                               className="search-popover-options"

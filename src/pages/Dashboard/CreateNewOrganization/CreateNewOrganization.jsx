@@ -31,7 +31,11 @@ import { formPayloadHandler } from '../../../utils/formPayloadHandler';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import { loadArtsDataEntity } from '../../../services/artsData';
 import { userRoles } from '../../../constants/userRoles';
-import { useLazyGetEntitiesQuery } from '../../../services/entities';
+import {
+  useGetEntitiesByIdQuery,
+  useLazyGetEntitiesByIdQuery,
+  useLazyGetEntitiesQuery,
+} from '../../../services/entities';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
 import ChangeType from '../../../components/ChangeType';
 import { PathName } from '../../../constants/pathName';
@@ -43,9 +47,10 @@ import { useLazyGetPlaceQuery } from '../../../services/places';
 import { usePrompt } from '../../../hooks/usePrompt';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
-import { sourceOptions } from '../../../constants/sourceOptions';
+import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
+import { sameAsTypes } from '../../../constants/sameAsTypes';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -66,12 +71,21 @@ function CreateNewOrganization() {
   let [searchParams] = useSearchParams();
 
   const organizationId = searchParams.get('id');
+  const externalCalendarEntityId = searchParams.get('entityId');
+
   const artsDataId = location?.state?.data?.id ?? null;
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
 
   const { data: organizationData, isLoading: organizationLoading } = useGetOrganizationQuery(
     { id: organizationId, calendarId, sessionId: timestampRef },
     { skip: organizationId ? false : true },
+  );
+
+  let organizationIdsQuery = new URLSearchParams();
+  organizationIdsQuery.append('ids', externalCalendarEntityId);
+  const { data: externalCalendarEntityData, isLoading: externalEntityLoading } = useGetEntitiesByIdQuery(
+    { ids: organizationIdsQuery, calendarId, sessionId: timestampRef },
+    { skip: externalCalendarEntityId ? false : true },
   );
 
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
@@ -88,12 +102,14 @@ function CreateNewOrganization() {
   const [addOrganization, { isLoading: addOrganizationLoading }] = useAddOrganizationMutation();
   const [updateOrganization, { isLoading: updateOrganizationLoading }] = useUpdateOrganizationMutation();
   const [addImage, { isLoading: imageUploadLoading }] = useAddImageMutation();
+  const [getEntitiesById] = useLazyGetEntitiesByIdQuery();
 
   const [artsData, setArtsData] = useState(null);
   const [newEntityData, setNewEntityData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
   const [allPlacesList, setAllPlacesList] = useState([]);
   const [allPlacesArtsdataList, setAllPlacesArtsdataList] = useState([]);
+  const [allPlacesImportsFootlight, setAllPlacesImportsFootlight] = useState([]);
   const [locationPlace, setLocationPlace] = useState();
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -110,6 +126,7 @@ function CreateNewOrganization() {
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
+  let externalEntityData = externalCalendarEntityData?.length > 0 && externalCalendarEntityData[0];
 
   const adminCheckHandler = () => {
     if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
@@ -131,6 +148,20 @@ function CreateNewOrganization() {
               ...organizationObj,
               sameAs: [artsData?.sameAs],
             };
+        }
+        if (externalCalendarEntityId) {
+          let sameAs = [
+            {
+              uri: externalCalendarEntityId,
+              type: sameAsTypes.FOOTLIGHT_IDENTIFIER,
+            },
+          ];
+          if (externalEntityData?.sameAs) {
+            organizationObj = {
+              ...organizationObj,
+              sameAs: externalEntityData?.sameAs?.concat(sameAs),
+            };
+          }
         }
         addOrganization({
           data: organizationObj,
@@ -523,6 +554,9 @@ function CreateNewOrganization() {
   const placesSearch = (inputValue = '') => {
     let query = new URLSearchParams();
     query.append('classes', entitiesClass.place);
+    let sourceQuery = new URLSearchParams();
+    sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
+    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
     getEntities({
       searchKey: inputValue,
       classes: decodeURIComponent(query.toString()),
@@ -536,6 +570,7 @@ function CreateNewOrganization() {
     getExternalSource({
       searchKey: inputValue,
       classes: decodeURIComponent(query.toString()),
+      sources: decodeURIComponent(sourceQuery.toString()),
       calendarId,
       excludeExistingCMS: true,
     })
@@ -543,6 +578,9 @@ function CreateNewOrganization() {
       .then((response) => {
         setAllPlacesArtsdataList(
           placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+        );
+        setAllPlacesImportsFootlight(
+          placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
         );
       })
       .catch((error) => console.log(error));
@@ -600,93 +638,147 @@ function CreateNewOrganization() {
   }, [addedFields]);
 
   useEffect(() => {
-    if (calendarId && organizationData && currentCalendarData) {
+    if (calendarId && currentCalendarData) {
       let initialPlaceAccessibiltiy = [],
         initialPlace;
-      if (routinghandler(user, calendarId, organizationData?.createdByUserId, null, true)) {
-        if (organizationData?.image) {
+      if (organizationData) {
+        if (routinghandler(user, calendarId, organizationData?.createdByUserId, null, true)) {
+          if (organizationData?.image) {
+            form.setFieldsValue({
+              imageCrop: {
+                large: {
+                  x: organizationData?.image?.large?.xCoordinate,
+                  y: organizationData?.image?.large?.yCoordinate,
+                  height: organizationData?.image?.large?.height,
+                  width: organizationData?.image?.large?.width,
+                },
+                original: {
+                  entityId: organizationData?.image?.original?.entityId ?? null,
+                  height: organizationData?.image?.original?.height,
+                  width: organizationData?.image?.original?.width,
+                },
+                thumbnail: {
+                  x: organizationData?.image?.thumbnail?.xCoordinate,
+                  y: organizationData?.image?.thumbnail?.yCoordinate,
+                  height: organizationData?.image?.thumbnail?.height,
+                  width: organizationData?.image?.thumbnail?.width,
+                },
+              },
+            });
+          }
+          if (organizationData?.derivedFrom?.uri) {
+            let sourceId = getExternalSourceId(organizationData?.derivedFrom?.uri);
+            getArtsData(sourceId);
+          }
+          if (organizationData?.place?.entityId) {
+            getPlace({ placeId: organizationData?.place?.entityId, calendarId })
+              .unwrap()
+              .then((response) => {
+                if (response?.accessibility?.length > 0) {
+                  getAllTaxonomy({
+                    calendarId,
+                    search: '',
+                    taxonomyClass: taxonomyClass.PLACE,
+                    includeConcepts: true,
+                    sessionId: timestampRef,
+                  })
+                    .unwrap()
+                    .then((res) => {
+                      res?.data?.forEach((taxonomy) => {
+                        if (taxonomy?.mappedToField === 'PlaceAccessibility') {
+                          response?.accessibility?.forEach((accessibility) => {
+                            taxonomy?.concept?.forEach((concept) => {
+                              if (concept?.id == accessibility?.entityId) {
+                                initialPlaceAccessibiltiy = initialPlaceAccessibiltiy?.concat([concept]);
+                              }
+                            });
+                          });
+                        }
+                      });
+                      initialPlace = {
+                        ...response,
+                        ['accessibility']: initialPlaceAccessibiltiy,
+                        ['type']: entitiesClass?.place,
+                      };
+                      setLocationPlace(
+                        placesOptions([initialPlace], user, calendarContentLanguage)[0],
+                        sourceOptions.CMS,
+                      );
+                    })
+                    .catch((error) => console.log(error));
+                } else {
+                  initialPlace = {
+                    ...response,
+                    ['accessibility']: [],
+                    ['type']: entitiesClass?.place,
+                  };
+                  setLocationPlace(placesOptions([initialPlace], user, calendarContentLanguage)[0], sourceOptions.CMS);
+                }
+              })
+              .catch((error) => console.log(error));
+            form.setFieldValue('place', organizationData?.place?.entityId);
+          }
+          let organizationKeys = Object.keys(organizationData);
+          if (organizationKeys?.length > 0) setAddedFields(organizationKeys);
+        } else
+          window.location.replace(
+            `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${organizationId}`,
+          );
+      }
+      if (externalCalendarEntityData?.length > 0 && externalCalendarEntityId) {
+        if (externalCalendarEntityData[0]?.image) {
           form.setFieldsValue({
             imageCrop: {
               large: {
-                x: organizationData?.image?.large?.xCoordinate,
-                y: organizationData?.image?.large?.yCoordinate,
-                height: organizationData?.image?.large?.height,
-                width: organizationData?.image?.large?.width,
+                x: externalCalendarEntityData[0]?.image?.large?.xCoordinate,
+                y: externalCalendarEntityData[0]?.image?.large?.yCoordinate,
+                height: externalCalendarEntityData[0]?.image?.large?.height,
+                width: externalCalendarEntityData[0]?.image?.large?.width,
               },
               original: {
-                entityId: organizationData?.image?.original?.entityId ?? null,
-                height: organizationData?.image?.original?.height,
-                width: organizationData?.image?.original?.width,
+                entityId: externalCalendarEntityData[0]?.image?.original?.entityId ?? null,
+                height: externalCalendarEntityData[0]?.image?.original?.height,
+                width: externalCalendarEntityData[0]?.image?.original?.width,
               },
               thumbnail: {
-                x: organizationData?.image?.thumbnail?.xCoordinate,
-                y: organizationData?.image?.thumbnail?.yCoordinate,
-                height: organizationData?.image?.thumbnail?.height,
-                width: organizationData?.image?.thumbnail?.width,
+                x: externalCalendarEntityData[0]?.image?.thumbnail?.xCoordinate,
+                y: externalCalendarEntityData[0]?.image?.thumbnail?.yCoordinate,
+                height: externalCalendarEntityData[0]?.image?.thumbnail?.height,
+                width: externalCalendarEntityData[0]?.image?.thumbnail?.width,
               },
             },
           });
         }
-        if (organizationData?.derivedFrom?.uri) {
-          let sourceId = getExternalSourceId(organizationData?.derivedFrom?.uri);
+        if (externalCalendarEntityData[0]?.derivedFrom?.uri) {
+          let sourceId = getExternalSourceId(externalCalendarEntityData[0]?.derivedFrom?.uri);
           getArtsData(sourceId);
         }
-        if (organizationData?.place?.entityId) {
-          getPlace({ placeId: organizationData?.place?.entityId, calendarId })
+        if (externalCalendarEntityData[0]?.place?.entityId) {
+          let organizationIdsQuery = new URLSearchParams();
+          organizationIdsQuery.append('ids', externalCalendarEntityData[0]?.place?.entityId);
+          getEntitiesById({ ids: organizationIdsQuery, calendarId })
             .unwrap()
             .then((response) => {
-              if (response?.accessibility?.length > 0) {
-                getAllTaxonomy({
-                  calendarId,
-                  search: '',
-                  taxonomyClass: taxonomyClass.PLACE,
-                  includeConcepts: true,
-                  sessionId: timestampRef,
-                })
-                  .unwrap()
-                  .then((res) => {
-                    res?.data?.forEach((taxonomy) => {
-                      if (taxonomy?.mappedToField === 'PlaceAccessibility') {
-                        response?.accessibility?.forEach((accessibility) => {
-                          taxonomy?.concept?.forEach((concept) => {
-                            if (concept?.id == accessibility?.entityId) {
-                              initialPlaceAccessibiltiy = initialPlaceAccessibiltiy?.concat([concept]);
-                            }
-                          });
-                        });
-                      }
-                    });
-                    initialPlace = {
-                      ...response,
-                      ['accessibility']: initialPlaceAccessibiltiy,
-                      ['type']: entitiesClass?.place,
-                    };
-                    setLocationPlace(
-                      placesOptions([initialPlace], user, calendarContentLanguage)[0],
-                      sourceOptions.CMS,
-                    );
-                  })
-                  .catch((error) => console.log(error));
-              } else {
+              if (response?.length > 0) {
                 initialPlace = {
-                  ...response,
+                  ...response[0],
                   ['accessibility']: [],
                   ['type']: entitiesClass?.place,
                 };
-                setLocationPlace(placesOptions([initialPlace], user, calendarContentLanguage)[0], sourceOptions.CMS);
+                setLocationPlace(
+                  placesOptions([initialPlace], user, calendarContentLanguage)[0],
+                  externalSourceOptions.FOOTLIGHT,
+                );
               }
             })
             .catch((error) => console.log(error));
-          form.setFieldValue('place', organizationData?.place?.entityId);
+          form.setFieldValue('place', externalCalendarEntityData[0]?.place?.entityId);
         }
-        let organizationKeys = Object.keys(organizationData);
+        let organizationKeys = Object.keys(externalCalendarEntityData[0]);
         if (organizationKeys?.length > 0) setAddedFields(organizationKeys);
-      } else
-        window.location.replace(
-          `${window.location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${organizationId}`,
-        );
+      }
     }
-  }, [organizationLoading, currentCalendarData]);
+  }, [organizationLoading, currentCalendarData, externalEntityLoading]);
 
   useEffect(() => {
     if (artsDataId) {
@@ -830,7 +922,13 @@ function CreateNewOrganization() {
                               allTaxonomyData,
                               user,
                               calendarContentLanguage,
-                              entityData: organizationData ? organizationData : artsDataId ? artsData : newEntityData,
+                              entityData: organizationData
+                                ? organizationData
+                                : artsDataId
+                                ? artsData
+                                : externalCalendarEntityId && externalCalendarEntityData?.length > 0
+                                ? externalEntityData
+                                : newEntityData,
                               index,
                               t,
                               adminCheckHandler,
@@ -840,6 +938,7 @@ function CreateNewOrganization() {
                               placesSearch: debounceSearchPlace,
                               allPlacesList,
                               allPlacesArtsdataList,
+                              allPlacesImportsFootlight,
                               locationPlace,
                               setLocationPlace,
                               setIsPopoverOpen,
