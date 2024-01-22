@@ -44,7 +44,7 @@ jobs:
       - name: Deploy to Preview Channel
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-          aws s3 sync ./build s3://${{env.WEBHOSTING_BUCKET_NAME}}/${{ github.event.number }}/ --acl public-read --delete --cache-control
+          aws s3 sync ./build s3://${{env.WEBHOSTING_BUCKET_NAME}}/${{ github.event.number }}/ --acl public-read --delete --cache-control "max-age=3600, s-maxage=7200, public"
                          
           PR_PREVIEW_URL="https://${{env.WEBHOSTING_BUCKET_NAME}}.s3.amazonaws.com/${{ github.event.number }}/index.html"
           echo "Preview URL: $PR_PREVIEW_URL"
