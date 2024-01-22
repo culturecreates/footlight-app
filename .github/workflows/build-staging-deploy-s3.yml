@@ -38,6 +38,6 @@ jobs:
               -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
               "https://api.github.com/repos/${{ github.repository }}/deployments/${{ github.run_id }}/statuses" \
               -d "{\"state\": \"success\", \"target_url\": \"$PR_PREVIEW_URL\", \"description\": \"Preview URL\"}")
-
+      
             echo "GitHub API Response: $RESPONSE"
           fi
