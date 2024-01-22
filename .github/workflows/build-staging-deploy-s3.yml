@@ -47,7 +47,7 @@ jobs:
 
       - name: Set Check URL
         id: set-check-url
-        run: echo "Preview URL ${{ steps.deploy.outputs.preview_url }}"
+        run: echo "Preview URL: ${{ steps.deploy.outputs.preview_url }}"
 
       - name: Create Check
         uses: actions/github-script@v7
@@ -55,7 +55,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const output = '${{ steps.set-check-url.outputs.preview_url }}';
-            const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+            const octokit = require('@octokit/rest')();
             await octokit.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
