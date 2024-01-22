@@ -7,6 +7,9 @@ on:
 
 jobs:
   build-and-deploy:
+    permissions:
+      contents: read
+      packages: write
     runs-on: ubuntu-latest
 
     env:
@@ -39,7 +42,10 @@ jobs:
       - name: Deploy to Preview Channel
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            aws s3 sync ./build s3://${{env.WEBHOSTING_BUCKET_NAME}}/${{ github.event.number }}/ --acl public-read --delete
+            PR_PATH="${{ github.event.number }}_$(date +'%Y%m%d%H%M%S')"
+            aws s3 sync ./build s3://${{env.WEBHOSTING_BUCKET_NAME}}/${PR_PATH}/ --acl public-read --delete
+
+            
             PR_PREVIEW_URL="https://${{env.WEBHOSTING_BUCKET_NAME}}.s3.amazonaws.com/${{ github.event.number }}/index.html"
             echo "Preview URL: $PR_PREVIEW_URL"
 
