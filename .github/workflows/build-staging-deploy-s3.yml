@@ -55,6 +55,14 @@ jobs:
           name: check_url
           path: check_url.txt
 
+      - name: Create Check
+        uses: actions/create-check@v1
+        with:
+          name: "Preview URL"
+          conclusion: "success"
+          status: "completed"
+          output: ${{ steps.set-check-url.outputs.preview_url }}
+
       - name: Debug Information
         run: |
           echo "Repository Owner: ${{ github.repository_owner }}"
