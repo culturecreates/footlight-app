@@ -33,8 +33,8 @@ jobs:
       - name: Deploy to Preview Channel
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            aws s3 sync ./build s3://your-preview-bucket/${{ github.event.number }}/ --acl public-read --delete
-            PR_PREVIEW_URL="https://your-preview-bucket.s3.amazonaws.com/${{ github.event.number }}/index.html"
+            aws s3 sync ./build s3://preview.cms.footlight.io/${{ github.event.number }}/ --acl public-read --delete
+            PR_PREVIEW_URL="https://preview.cms.footlight.io.s3.amazonaws.com/${{ github.event.number }}/index.html"
             echo "Preview URL: $PR_PREVIEW_URL"
 
             # Set deployment status
