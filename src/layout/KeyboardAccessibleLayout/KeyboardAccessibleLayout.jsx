@@ -1,9 +1,11 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-const useKeyboardAccessiblePopOver = ({ data, setItem, setFieldValue, popOverHandler, isPopoverOpen }) => {
+const KeyboardAccessibleLayout = ({ children, data, setItem, setFieldValue, popOverHandler, isPopoverOpen }) => {
+  const inputRef = useRef(); // ref for input elemet inside popover
+  let itemsRef = useRef([]);
+
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let focusedItemIndex = -1;
-  let itemsRef = useRef([]);
 
   const findData = (focusedItemIndex) => {
     let currentIndex = 0;
@@ -66,6 +68,20 @@ const useKeyboardAccessiblePopOver = ({ data, setItem, setFieldValue, popOverHan
       setFieldValue(selectedItem?.value);
       popOverHandler();
     }
+
+    const isAlphabetOrSpace = /^[a-zA-Z\s]$/.test(e.key);
+    if (isAlphabetOrSpace) {
+      console.log(document.activeElement !== inputRef.current);
+      if (document.activeElement !== inputRef.current) {
+        inputRef.current.focus();
+      }
+    }
+
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      if (document.activeElement !== inputRef.current) {
+        inputRef.current.focus();
+      }
+    }
   };
 
   useEffect(() => {
@@ -107,6 +123,8 @@ const useKeyboardAccessiblePopOver = ({ data, setItem, setFieldValue, popOverHan
       };
     }
   }, [isPopoverOpen, data]);
+
+  return <>{React.cloneElement(children, { ...children.props, ref: inputRef })}</>;
 };
 
-export default useKeyboardAccessiblePopOver;
+export default KeyboardAccessibleLayout;
