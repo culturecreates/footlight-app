@@ -56,6 +56,7 @@ function CreateAccount() {
           description: t('createAccount.errorNotification'),
           placement: 'top',
         });
+
         navigate(PathName.Login);
       });
   };
