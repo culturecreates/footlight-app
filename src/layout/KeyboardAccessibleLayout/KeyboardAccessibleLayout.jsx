@@ -64,14 +64,15 @@ const KeyboardAccessibleLayout = ({ children, data, setItem, setFieldValue, popO
     if (e.key === 'Enter') {
       e.preventDefault();
       const selectedItem = findData(focusedItemIndex);
-      setItem(selectedItem);
-      setFieldValue(selectedItem?.value);
-      popOverHandler();
+      if (selectedItem) {
+        setItem(selectedItem);
+        setFieldValue(selectedItem?.value);
+        popOverHandler();
+      } else popOverHandler();
     }
 
     const isAlphabetOrSpace = /^[a-zA-Z\s]$/.test(e.key);
     if (isAlphabetOrSpace) {
-      console.log(document.activeElement !== inputRef.current);
       if (document.activeElement !== inputRef.current) {
         inputRef.current.focus();
       }
