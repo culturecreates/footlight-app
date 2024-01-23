@@ -6,6 +6,7 @@ import { featureFlags } from '../../../utils/featureFlags';
 import './settings.css';
 import UserManagement from './UserManagement/UserManagement';
 import { useOutletContext } from 'react-router';
+import WidgetSettings from './WidgetSettings/WidgetSettings';
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -26,7 +27,7 @@ const Settings = () => {
 
   const items = [
     { label: t('dashboard.settings.tab1'), key: 'tab1', children: <UserManagement /> },
-    { label: t('dashboard.settings.tab2'), key: 'tab2', children: 'Coming soon', disabled: true },
+    { label: t('dashboard.settings.tab2'), key: 'tab2', children: <WidgetSettings /> },
   ];
 
   return (

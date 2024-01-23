@@ -1,0 +1,35 @@
+.widget-settings .heading {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: #222732;
+}
+
+.widget-settings .page-description {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: #646d7b;
+}
+
+.widget-settings .preview-section-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.widget-settings .form-item-input .ant-input-group-addon:first-child {
+  background-color: #ffffff;
+}
+
+.widget-settings .color-select-wrapper .ant-input-group > .ant-input:last-child {
+  border-left: 0;
+}
+
+.widget-settings .color-select-wrapper .ant-input-lg {
+  padding-left: 0px;
+}

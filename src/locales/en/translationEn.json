@@ -760,7 +760,8 @@
     "settings": {
       "heading": "Settings",
       "tab1": "User management",
-      "tab2": "Calendar metadata",
+      "tab2": "Calendar Widget",
+      "tab3": "Calendar Widget",
       "userManagement": {
         "searchPlaceholder": "Search users",
         "sort": "Sort by",
@@ -887,6 +888,17 @@
         "deactivate": "Deactivate",
         "leaveCalender": "Are you sure you want to leave this calendar?",
         "confirmLeave": "confirm leave"
+      },
+      "widgetSettings": {
+        "title": "Appearance",
+        "pageDescription": "Customize the display for the destination website.",
+        "preview": "Preview widget",
+        "limit": "Number of events to display",
+        "color": "Dominant color",
+        "colorDescreption": "Enter the hex code of the main colour. Choose a colour that provides enough contrast for reading.",
+        "colorPlaceHolder": "Paste your colour code or select a colour",
+        "height": "Height",
+        "width": "Width"
       }
     },
     "taxonomy": {
