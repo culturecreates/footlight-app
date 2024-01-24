@@ -89,6 +89,7 @@ import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import KeyboardAccessibleLayout from '../../../layout/KeyboardAccessibleLayout/KeyboardAccessibleLayout';
 import CustomPopover from '../../../components/Popover/Popover';
+import { removeEmptyParagraphsAtEnd } from '../../../utils/removeEmptyParagraphsAtEnd';
 
 const { TextArea } = Input;
 
@@ -360,9 +361,13 @@ function AddEvent() {
             collaborators = [],
             dynamicFields = [],
             recurringEvent,
+            description = {},
             inLanguage = [];
 
           let eventObj;
+
+          // Use a regular expression to remove <p><br></p> tags at the end
+
           if (dateType === dateTypes.SINGLE) {
             if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
             else
@@ -582,6 +587,16 @@ function AddEvent() {
             });
           }
 
+          if (values?.frenchEditor)
+            description = {
+              fr: removeEmptyParagraphsAtEnd(values?.frenchEditor),
+            };
+          if (values?.englishEditor)
+            description = {
+              ...description,
+              en: removeEmptyParagraphsAtEnd(values?.englishEditor),
+            };
+
           eventObj = {
             name: {
               en: values?.english?.trim(),
@@ -592,12 +607,7 @@ function AddEvent() {
             ...(values?.endTime && { endDateTime }),
             ...(!values?.endTime && { endDate: endDateTime }),
             eventStatus: values?.eventStatus,
-            ...((values?.englishEditor || values?.frenchEditor) && {
-              description: {
-                en: values?.englishEditor,
-                fr: values?.frenchEditor,
-              },
-            }),
+            ...((values?.englishEditor || values?.frenchEditor) && { description }),
             ...(values?.eventAccessibility && {
               accessibility,
             }),
