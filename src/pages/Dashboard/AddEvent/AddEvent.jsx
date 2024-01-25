@@ -147,7 +147,7 @@ function AddEvent() {
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
   const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
   const [updateEventState, { isLoading: updateEventStateLoading }] = useUpdateEventStateMutation();
-  const [updateEvent, { isLoading: updateEventLoading }] = useUpdateEventMutation();
+  const [updateEvent, { isLoading: updateEventLoading, isSuccess: updateEventSuccess }] = useUpdateEventMutation();
   const [addImage, { error: isAddImageError, isLoading: addImageLoading }] = useAddImageMutation();
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
 
@@ -589,12 +589,12 @@ function AddEvent() {
 
           if (values?.frenchEditor)
             description = {
-              fr: removeEmptyParagraphsAtEnd(values?.frenchEditor),
+              fr: values?.frenchEditor,
             };
           if (values?.englishEditor)
             description = {
               ...description,
-              en: removeEmptyParagraphsAtEnd(values?.englishEditor),
+              en: values?.englishEditor,
             };
 
           eventObj = {
@@ -992,7 +992,9 @@ function AddEvent() {
   };
 
   const onValuesChangeHandler = () => {
-    setShowDialog(true);
+    if (!updateEventSuccess) {
+      if (!showDialog) setShowDialog(true);
+    }
   };
 
   const adminCheckHandler = () => {
@@ -2389,7 +2391,9 @@ function AddEvent() {
                       formName="frenchEditor"
                       key={contentLanguage.FRENCH}
                       calendarContentLanguage={calendarContentLanguage}
-                      initialValue={eventData?.description?.fr}
+                      initialValue={
+                        eventData?.description?.fr ? removeEmptyParagraphsAtEnd(eventData?.description?.fr) : undefined
+                      }
                       dependencies={['englishEditor']}
                       currentReactQuillRef={reactQuillRefFr}
                       editorLanguage={'fr'}
@@ -2455,7 +2459,9 @@ function AddEvent() {
                     <TextEditor
                       formName="englishEditor"
                       key={contentLanguage.ENGLISH}
-                      initialValue={eventData?.description?.en}
+                      initialValue={
+                        eventData?.description?.en ? removeEmptyParagraphsAtEnd(eventData?.description?.en) : undefined
+                      }
                       calendarContentLanguage={calendarContentLanguage}
                       dependencies={['frenchEditor']}
                       currentReactQuillRef={reactQuillRefEn}
