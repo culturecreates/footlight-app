@@ -125,8 +125,8 @@
         "featuredEvent": "Événement vedette",
         "dataSource": "Data source",
         "question": {
-          "firstPart": "Est-ce la bonne événement ? Si non, ",
-          "secondPart": "créez une nouvelle événement",
+          "firstPart": "Est-ce le bon événement ? Si non, ",
+          "secondPart": "créez un nouvel événement",
           "thirdPart": " et ne modifiez pas celui-ci."
         },
         "language": {
