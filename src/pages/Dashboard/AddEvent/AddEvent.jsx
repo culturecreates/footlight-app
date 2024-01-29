@@ -143,7 +143,7 @@ function AddEvent() {
     classes: decodeURIComponent(query.toString()),
     sessionId: timestampRef,
   });
-  const [addEvent, { isLoading: addEventLoading }] = useAddEventMutation();
+  const [addEvent, { isLoading: addEventLoading, isSuccess: addEventSuccess }] = useAddEventMutation();
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
   const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
   const [updateEventState, { isLoading: updateEventStateLoading }] = useUpdateEventStateMutation();
@@ -992,8 +992,14 @@ function AddEvent() {
   };
 
   const onValuesChangeHandler = () => {
-    if (!updateEventSuccess) {
-      if (!showDialog) setShowDialog(true);
+    if (eventId) {
+      if (!updateEventSuccess) {
+        if (!showDialog) setShowDialog(true);
+      }
+    } else {
+      if (!addEventSuccess) {
+        if (!showDialog) setShowDialog(true);
+      }
     }
   };
 
