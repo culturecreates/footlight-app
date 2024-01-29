@@ -892,13 +892,26 @@
       "widgetSettings": {
         "title": "Appearance",
         "pageDescription": "Customize the display for the destination website.",
-        "preview": "Preview widget",
+        "preview": "Preview desktop version",
         "limit": "Number of events to display",
         "color": "Dominant color",
         "colorDescreption": "Enter the hex code of the main colour. Choose a colour that provides enough contrast for reading.",
         "colorPlaceHolder": "Paste your colour code or select a colour",
         "height": "Height",
-        "width": "Width"
+        "width": "Width",
+        "language": "Language selection",
+        "eventType": "Event type",
+        "region": "Region",
+        "location": "Location",
+        "organizer": "Event Organiser",
+        "person": "Performing group/artist/event animator",
+        "filterHeading": "Content filters",
+        "filterSectionDescription": "Apply filters to select language and which events to include.",
+        "codeSectionTitle": "Share the widget",
+        "codeSectionInfo": "Place this code where you want the widget to appear on your webpage.",
+        "copy": "Copy",
+        "copyNotification": "Code copied to clipboard",
+        "placeholder": "Select"
       }
     },
     "taxonomy": {

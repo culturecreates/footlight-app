@@ -1,5 +1,5 @@
 import { Col, Row, Tabs } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
@@ -19,9 +19,21 @@ const Settings = () => {
     _getCalendar,
     setContentBackgroundColor,
   ] = useOutletContext();
+
+  // Set content background color
   setContentBackgroundColor('#fff');
 
+  useEffect(() => {
+    // Check if tabKey exists in sessionStorage
+    const storedTabKey = sessionStorage.getItem('tabKey');
+    if (storedTabKey) {
+      setTabKey(storedTabKey);
+    }
+  }, []);
+
   const onTabChange = (key) => {
+    // Update tabKey in sessionStorage on tab change
+    sessionStorage.setItem('tabKey', key);
     setTabKey(key);
   };
 
