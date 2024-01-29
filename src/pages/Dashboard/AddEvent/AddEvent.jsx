@@ -1401,7 +1401,7 @@ function AddEvent() {
   }, [currentCalendarData]);
 
   useEffect(() => {
-    if (initialEntities && currentCalendarData && initialExternalSourceLoading) {
+    if (initialEntities && currentCalendarData && !initialExternalSourceLoading) {
       setOrganizersList(treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS));
       setPerformerList(treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS));
       setSupporterList(treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS));
