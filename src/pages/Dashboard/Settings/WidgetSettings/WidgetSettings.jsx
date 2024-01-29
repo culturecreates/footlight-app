@@ -116,13 +116,14 @@ const WidgetSettings = () => {
     const locale = onLanguageSelect(allValues?.language);
     const temp = new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html');
 
+    console.log(locale);
     // Add query parameters to the URL
     temp.searchParams.append('width', width);
+    temp.searchParams.append('limit', limit);
     temp.searchParams.append('height', height);
     temp.searchParams.append('searchEventsFilters', searchEventsFilters);
     temp.searchParams.append('locale', locale?.key.toLowerCase());
     temp.searchParams.append('color', color);
-    temp.searchParams.append('limit', limit);
 
     setUrl(temp);
     setIframeCode(`<iframe src="${url.href}" width=${width} height=${height}></iframe>`);
@@ -254,6 +255,18 @@ const WidgetSettings = () => {
     }
   }, [initialEntitiesOrganization]);
 
+  useEffect(() => {
+    const URL = url;
+    const height = form.getFieldValue('height') ?? 600;
+    const limit = form.getFieldValue('limit') ?? 9;
+    URL.searchParams.append('locale', 'en');
+    URL.searchParams.append('limit', limit);
+    URL.searchParams.append('height', height);
+    URL.searchParams.append('color', color);
+
+    setUrl(URL);
+  }, []);
+
   function arrayToQueryParam(arr, paramName) {
     if (!arr || arr.length === 0) {
       return '';
@@ -362,7 +375,7 @@ const WidgetSettings = () => {
                         <Form.Item
                           name="width"
                           label={t(`${localePath}.width`)}
-                          initialValue="100%"
+                          initialValue="1000"
                           rules={[
                             {
                               type: 'width',
@@ -433,6 +446,7 @@ const WidgetSettings = () => {
                     <Form.Item
                       name="language"
                       label={t(`${localePath}.language`)}
+                      initialValue={languageOptions[0].value}
                       rules={[
                         {
                           type: 'language',
