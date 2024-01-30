@@ -2235,6 +2235,7 @@ function AddEvent() {
                     closable
                     onClose={() => {
                       setLocationPlace();
+                      setShowDialog(true);
                       form.setFieldValue('locationPlace', undefined);
                     }}
                     edit={locationPlace?.source === sourceOptions.CMS && true}
