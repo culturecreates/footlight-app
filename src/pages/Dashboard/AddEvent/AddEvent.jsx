@@ -97,6 +97,7 @@ function AddEvent() {
   const navigate = useNavigate();
   const location = useLocation();
   const [form] = Form.useForm();
+  const locationChangeFlag = Form.useWatch('locationPlace', form); // to set setShowDialog value so publishing work in reviewPublishHandler
   Form.useWatch('startTime', form);
   Form.useWatch('endTime', form);
   const timestampRef = useRef(Date.now()).current;
@@ -195,45 +196,6 @@ function AddEvent() {
 
   setContentBackgroundColor('#F9FAFF');
 
-  // hook to handle scroll for popover components
-  // useKeyboardAccessiblePopOver({
-  //   setItem: setLocationPlace,
-  //   data: [allPlacesList, allPlacesArtsdataList, allPlacesImportsFootlightList],
-  //   setFieldValue: (selectedItem) => form.setFieldValue('locationPlace', selectedItem),
-  //   popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false }),
-  //   isPopoverOpen: isPopoverOpen.locationPlace,
-  // });
-
-  // useKeyboardAccessiblePopOver({
-  //   setItem: (organizer) => setSelectedOrganizers([...selectedOrganizers, organizer]),
-  //   data: [organizersList, organizersArtsdataList, organizersImportsFootlightList],
-  //   setFieldValue: () => {
-  //     return;
-  //   },
-  //   popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, organizer: false }),
-  //   isPopoverOpen: isPopoverOpen.organizer,
-  // });
-
-  // useKeyboardAccessiblePopOver({
-  //   setItem: (performer) => setSelectedPerformers([...selectedPerformers, performer]),
-  //   data: [performerList, performerArtsdataList, performerImportsFootlightList],
-  //   setFieldValue: () => {
-  //     return;
-  //   },
-  //   popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, performer: false }),
-  //   isPopoverOpen: isPopoverOpen.performer,
-  // });
-
-  // useKeyboardAccessiblePopOver({
-  //   setItem: (supporter) => setSelectedSupporters([...selectedSupporters, supporter]),
-  //   data: [supporterList, supporterArtsdataList, supporterImportsFootlightList],
-  //   setFieldValue: () => {
-  //     return;
-  //   },
-  //   popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, supporter: false }),
-  //   isPopoverOpen: isPopoverOpen.supporter,
-  // });
-
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
 
@@ -324,7 +286,7 @@ function AddEvent() {
     });
     return promise;
   };
-  const saveAsDraftHandler = (event, toggle = false) => {
+  const saveAsDraftHandler = (event, toggle = false, type = eventPublishState.PUBLISHED) => {
     event?.preventDefault();
     setShowDialog(false);
     var promise = new Promise(function (resolve, reject) {
@@ -341,7 +303,9 @@ function AddEvent() {
             'eventLink',
             'videoLink',
             'facebookLink',
-            ...(eventData?.publishState === eventPublishState.PUBLISHED ? validateFields : []),
+            ...(eventData?.publishState === eventPublishState.PUBLISHED && type !== eventPublishState.DRAFT
+              ? validateFields
+              : []),
           ]),
         ])
         .then(() => {
@@ -734,15 +698,15 @@ function AddEvent() {
     return promise;
   };
 
-  const reviewPublishHandler = (event) => {
+  const reviewPublishHandler = (event, type = 'PUBLISH') => {
     event?.preventDefault();
     const isValuesChanged = showDialog;
     setShowDialog(false);
     form
-      .validateFields(validateFields)
+      .validateFields(type === 'PUBLISH' ? validateFields : [])
       .then(() => {
-        if (isValuesChanged)
-          saveAsDraftHandler(event, true)
+        if (isValuesChanged) {
+          saveAsDraftHandler(event, type === 'PUBLISH', eventPublishState.DRAFT)
             .then((id) => {
               updateEventState({ id: eventId ?? id, calendarId })
                 .unwrap()
@@ -764,7 +728,7 @@ function AddEvent() {
                 .catch((error) => console.log(error));
             })
             .catch((error) => console.log(error));
-        else
+        } else {
           updateEventState({ id: eventId, calendarId })
             .unwrap()
             .then(() => {
@@ -783,6 +747,7 @@ function AddEvent() {
               navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
             })
             .catch((error) => console.log(error));
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -873,7 +838,7 @@ function AddEvent() {
       return (
         <>
           <Form.Item>
-            <PublishState eventId={eventId} reviewPublishHandler={(e) => reviewPublishHandler(e)}>
+            <PublishState eventId={eventId} reviewPublishHandler={(e) => reviewPublishHandler(e, 'DRAFT')}>
               <span data-cy="span-published-text">{t('dashboard.events.publishState.published')}</span>
             </PublishState>
           </Form.Item>
@@ -1084,6 +1049,12 @@ function AddEvent() {
   useEffect(() => {
     if (isError) navigate(`${PathName.NotFound}`);
   }, [isError]);
+
+  useEffect(() => {
+    if (eventId && locationChangeFlag) {
+      setShowDialog(true);
+    }
+  }, [locationChangeFlag]);
 
   useEffect(() => {
     if (addedFields?.length > 0) {
