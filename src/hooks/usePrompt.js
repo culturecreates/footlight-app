@@ -40,7 +40,6 @@ export function usePrompt(message, when) {
         return message;
       };
     }
-
     return () => {
       window.onbeforeunload = null;
     };
