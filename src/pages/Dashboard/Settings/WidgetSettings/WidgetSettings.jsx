@@ -698,7 +698,6 @@ const WidgetSettings = () => {
                 centered
                 className="widget-settings-page-iframe-modal"
                 width={form.getFieldValue('width') ? `${form.getFieldValue('width')}px` : '90%'}
-                height={form.getFieldValue('height') ? `${Number(form.getFieldValue('height')) + 60 + 48}px` : '90%'}
                 title={
                   <span className="quick-create-organization-modal-title" data-cy="widget-settings-page-modal-title">
                     {!screens.lg ? t(`${localePath}.previewMobileBtn`) : t(`${localePath}.previewDesktop`)}
@@ -709,7 +708,7 @@ const WidgetSettings = () => {
                 <iframe
                   width="100%"
                   height={form.getFieldValue('height') ? `${form.getFieldValue('height')}px` : '100%'}
-                  style={{ border: 'none', maxHeight: '75vh' }}
+                  style={{ border: 'none' }}
                   src={url.href}></iframe>
               </CustomModal>
               <iframe src={url.href}></iframe>
