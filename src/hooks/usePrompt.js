@@ -10,6 +10,7 @@ function useConfirmExit(confirmExit, when = true) {
     }
 
     const push = navigator.push;
+    const go = navigator.go;
 
     navigator.push = (...args) => {
       const result = confirmExit();
@@ -18,8 +19,16 @@ function useConfirmExit(confirmExit, when = true) {
       }
     };
 
+    navigator.go = (...args) => {
+      const result = confirmExit();
+      if (result !== false) {
+        go(...args);
+      }
+    };
+
     return () => {
       navigator.push = push;
+      navigator.go = go;
     };
   }, [navigator, confirmExit, when]);
 }
@@ -31,7 +40,6 @@ export function usePrompt(message, when) {
         return message;
       };
     }
-
     return () => {
       window.onbeforeunload = null;
     };
