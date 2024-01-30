@@ -48,6 +48,7 @@ function QuickCreatePlace(props) {
     saveAsDraftHandler,
     setLoaderModalOpen,
     loaderModalOpen,
+    setShowDialog,
   } = props;
 
   const [form] = Form.useForm();
@@ -257,6 +258,7 @@ function QuickCreatePlace(props) {
                         });
                       }
                       setKeyword('');
+                      setShowDialog(true);
                       getSelectedPlace(response?.id);
                       setOpen(false);
                       resolve(response);
