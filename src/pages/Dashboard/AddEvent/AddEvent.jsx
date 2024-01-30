@@ -97,7 +97,6 @@ function AddEvent() {
   const navigate = useNavigate();
   const location = useLocation();
   const [form] = Form.useForm();
-  const locationChangeFlag = Form.useWatch('locationPlace', form); // to set setShowDialog value so publishing work in reviewPublishHandler
   Form.useWatch('startTime', form);
   Form.useWatch('endTime', form);
   const timestampRef = useRef(Date.now()).current;
@@ -705,7 +704,30 @@ function AddEvent() {
     form
       .validateFields(type === 'PUBLISH' ? validateFields : [])
       .then(() => {
-        if (isValuesChanged) {
+        if (isValuesChanged && type !== 'PUBLISH') {
+          updateEventState({ id: eventId ?? eventData?.id, calendarId })
+            .unwrap()
+            .then(() => {
+              saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
+                .then(() => {
+                  notification.success({
+                    description:
+                      calendar[0]?.role === userRoles.GUEST
+                        ? t('dashboard.events.addEditEvent.notification.sendToReview')
+                        : eventData?.publishState === eventPublishState.DRAFT
+                        ? t('dashboard.events.addEditEvent.notification.publish')
+                        : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+                    placement: 'top',
+                    closeIcon: <></>,
+                    maxCount: 1,
+                    duration: 3,
+                  });
+                  navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+                })
+                .catch((error) => console.log(error));
+            })
+            .catch((error) => console.log(error));
+        } else if (isValuesChanged && type === 'PUBLISH') {
           saveAsDraftHandler(event, type === 'PUBLISH', eventPublishState.DRAFT)
             .then((id) => {
               updateEventState({ id: eventId ?? id, calendarId })
@@ -1049,12 +1071,6 @@ function AddEvent() {
   useEffect(() => {
     if (isError) navigate(`${PathName.NotFound}`);
   }, [isError]);
-
-  useEffect(() => {
-    if (eventId && locationChangeFlag) {
-      setShowDialog(true);
-    }
-  }, [locationChangeFlag]);
 
   useEffect(() => {
     if (addedFields?.length > 0) {
@@ -2071,6 +2087,7 @@ function AddEvent() {
                                       onClick={() => {
                                         setLocationPlace(place);
                                         form.setFieldValue('locationPlace', place?.value);
+                                        setShowDialog(true);
                                         setIsPopoverOpen({
                                           ...isPopoverOpen,
                                           locationPlace: false,
@@ -2111,6 +2128,7 @@ function AddEvent() {
                                         onClick={() => {
                                           setLocationPlace(place);
                                           form.setFieldValue('locationPlace', place?.value);
+                                          setShowDialog(true);
                                           setIsPopoverOpen({
                                             ...isPopoverOpen,
                                             locationPlace: false,
@@ -2152,6 +2170,7 @@ function AddEvent() {
                                         onClick={() => {
                                           setLocationPlace(place);
                                           form.setFieldValue('locationPlace', place?.uri);
+                                          setShowDialog(true);
                                           setIsPopoverOpen({
                                             ...isPopoverOpen,
                                             locationPlace: false,
