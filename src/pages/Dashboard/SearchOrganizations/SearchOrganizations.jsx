@@ -21,6 +21,7 @@ import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import LoadingIndicator from '../../../components/LoadingIndicator';
+import { externalSourceOptions } from '../../../constants/sourceOptions';
 
 function SearchOrganizations() {
   const { t } = useTranslation();
@@ -41,7 +42,7 @@ function SearchOrganizations() {
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [organizationList, setOrganizationList] = useState([]);
-  const [organizationListArtsData, setOrganizationListArtsData] = useState([]);
+  const [organizationListExternalSource, setOrganizationListExternalSource] = useState([]);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
@@ -56,10 +57,16 @@ function SearchOrganizations() {
     includeArtsdata: true,
     sessionId: timestampRef,
   });
+
+  let sourceQuery = new URLSearchParams();
+  sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
+  sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
+
   const { currentData: initialExternalSource, isFetching: initialExternalSourceLoading } = useGetExternalSourceQuery({
     calendarId,
     searchKey: '',
     classes: decodeURIComponent(query.toString()),
+    sources: decodeURIComponent(sourceQuery.toString()),
     sessionId: timestampRef,
   });
 
@@ -68,7 +75,7 @@ function SearchOrganizations() {
   useEffect(() => {
     if (initialEntities && currentCalendarData && initialExternalSourceLoading) {
       setOrganizationList(initialEntities);
-      setOrganizationListArtsData(initialExternalSource?.artsdata);
+      setOrganizationListExternalSource(initialExternalSource);
     }
   }, [initialOrganizersLoading]);
 
@@ -92,12 +99,13 @@ function SearchOrganizations() {
     getExternalSource({
       searchKey: value,
       classes: decodeURIComponent(query.toString()),
+      sources: decodeURIComponent(sourceQuery.toString()),
       calendarId,
       excludeExistingCMS: true,
     })
       .unwrap()
       .then((response) => {
-        setOrganizationListArtsData(response?.artsdata);
+        setOrganizationListExternalSource(response);
       })
       .catch((error) => console.log(error));
   };
@@ -184,6 +192,65 @@ function SearchOrganizations() {
                       <NoContent />
                     ))}
                 </div>
+
+                {quickCreateKeyword !== '' && (
+                  <>
+                    <div className="popover-section-header" data-cy="organization-artsdata-heading">
+                      {t('dashboard.organization.createNew.search.importsFromFootlight')}
+                    </div>
+                    <div className="search-scrollable-content">
+                      {isExternalSourceFetching && (
+                        <div
+                          style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <LoadingIndicator />
+                        </div>
+                      )}
+                      {!isExternalSourceFetching &&
+                        (organizationListExternalSource?.footlight?.length > 0 ? (
+                          organizationListExternalSource?.footlight?.map((organizer, index) => (
+                            <div
+                              key={index}
+                              className="search-popover-options"
+                              onClick={() => {
+                                setIsPopoverOpen(false);
+                              }}
+                              data-cy={`div-organization-footlight-${index}`}>
+                              <EntityCard
+                                title={contentLanguageBilingual({
+                                  en: organizer?.name?.en,
+                                  fr: organizer?.name?.fr,
+                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  calendarContentLanguage: calendarContentLanguage,
+                                })}
+                                description={contentLanguageBilingual({
+                                  en: organizer?.disambiguatingDescription?.en,
+                                  fr: organizer?.disambiguatingDescription?.fr,
+                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  calendarContentLanguage: calendarContentLanguage,
+                                })}
+                                artsDataLink={artsDataLinkChecker(organizer?.uri)}
+                                Logo={
+                                  organizer.logo ? (
+                                    <img src={organizer.logo?.thumbnail?.uri} data-cy={`img-entity-logo-${index}`} />
+                                  ) : (
+                                    <Logo />
+                                  )
+                                }
+                                linkText={t('dashboard.organization.createNew.search.linkText')}
+                                onClick={() =>
+                                  navigate(
+                                    `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?entityId=${organizer?.id}`,
+                                  )
+                                }
+                              />
+                            </div>
+                          ))
+                        ) : (
+                          <NoContent />
+                        ))}
+                    </div>
+                  </>
+                )}
                 {quickCreateKeyword !== '' && (
                   <>
                     <div className="popover-section-header" data-cy="organization-artsdata-heading">
@@ -197,8 +264,8 @@ function SearchOrganizations() {
                         </div>
                       )}
                       {!isExternalSourceFetching &&
-                        (organizationListArtsData?.length > 0 ? (
-                          organizationListArtsData?.map((organizer, index) => (
+                        (organizationListExternalSource?.artsdata?.length > 0 ? (
+                          organizationListExternalSource?.artsdata?.map((organizer, index) => (
                             <div
                               key={index}
                               className="search-popover-options"
@@ -227,6 +294,7 @@ function SearchOrganizations() {
                     </div>
                   </>
                 )}
+
                 {quickCreateKeyword?.length > 0 && (
                   <CreateEntityButton
                     quickCreateKeyword={quickCreateKeyword}
