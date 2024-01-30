@@ -89,6 +89,7 @@ import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import KeyboardAccessibleLayout from '../../../layout/KeyboardAccessibleLayout/KeyboardAccessibleLayout';
 import CustomPopover from '../../../components/Popover/Popover';
+import { removeEmptyParagraphsAtEnd } from '../../../utils/removeEmptyParagraphsAtEnd';
 
 const { TextArea } = Input;
 
@@ -142,11 +143,11 @@ function AddEvent() {
     classes: decodeURIComponent(query.toString()),
     sessionId: timestampRef,
   });
-  const [addEvent, { isLoading: addEventLoading }] = useAddEventMutation();
+  const [addEvent, { isLoading: addEventLoading, isSuccess: addEventSuccess }] = useAddEventMutation();
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
   const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
   const [updateEventState, { isLoading: updateEventStateLoading }] = useUpdateEventStateMutation();
-  const [updateEvent, { isLoading: updateEventLoading }] = useUpdateEventMutation();
+  const [updateEvent, { isLoading: updateEventLoading, isSuccess: updateEventSuccess }] = useUpdateEventMutation();
   const [addImage, { error: isAddImageError, isLoading: addImageLoading }] = useAddImageMutation();
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
 
@@ -360,9 +361,13 @@ function AddEvent() {
             collaborators = [],
             dynamicFields = [],
             recurringEvent,
+            description = {},
             inLanguage = [];
 
           let eventObj;
+
+          // Use a regular expression to remove <p><br></p> tags at the end
+
           if (dateType === dateTypes.SINGLE) {
             if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
             else
@@ -582,6 +587,16 @@ function AddEvent() {
             });
           }
 
+          if (values?.frenchEditor)
+            description = {
+              fr: values?.frenchEditor,
+            };
+          if (values?.englishEditor)
+            description = {
+              ...description,
+              en: values?.englishEditor,
+            };
+
           eventObj = {
             name: {
               en: values?.english?.trim(),
@@ -592,12 +607,7 @@ function AddEvent() {
             ...(values?.endTime && { endDateTime }),
             ...(!values?.endTime && { endDate: endDateTime }),
             eventStatus: values?.eventStatus,
-            ...((values?.englishEditor || values?.frenchEditor) && {
-              description: {
-                en: values?.englishEditor,
-                fr: values?.frenchEditor,
-              },
-            }),
+            ...((values?.englishEditor || values?.frenchEditor) && { description }),
             ...(values?.eventAccessibility && {
               accessibility,
             }),
@@ -982,7 +992,15 @@ function AddEvent() {
   };
 
   const onValuesChangeHandler = () => {
-    setShowDialog(true);
+    if (eventId) {
+      if (!updateEventSuccess) {
+        if (!showDialog) setShowDialog(true);
+      }
+    } else {
+      if (!addEventSuccess) {
+        if (!showDialog) setShowDialog(true);
+      }
+    }
   };
 
   const adminCheckHandler = () => {
@@ -1383,7 +1401,7 @@ function AddEvent() {
   }, [currentCalendarData]);
 
   useEffect(() => {
-    if (initialEntities && currentCalendarData && initialExternalSourceLoading) {
+    if (initialEntities && currentCalendarData && !initialExternalSourceLoading) {
       setOrganizersList(treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS));
       setPerformerList(treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS));
       setSupporterList(treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS));
@@ -2250,6 +2268,7 @@ function AddEvent() {
                   saveAsDraftHandler={saveAsDraftHandler}
                   setLoaderModalOpen={setLoaderModalOpen}
                   loaderModalOpen={loaderModalOpen}
+                  setShowDialog={setShowDialog}
                 />
               </Form.Item>
               <Form.Item
@@ -2379,7 +2398,9 @@ function AddEvent() {
                       formName="frenchEditor"
                       key={contentLanguage.FRENCH}
                       calendarContentLanguage={calendarContentLanguage}
-                      initialValue={eventData?.description?.fr}
+                      initialValue={
+                        eventData?.description?.fr ? removeEmptyParagraphsAtEnd(eventData?.description?.fr) : undefined
+                      }
                       dependencies={['englishEditor']}
                       currentReactQuillRef={reactQuillRefFr}
                       editorLanguage={'fr'}
@@ -2445,7 +2466,9 @@ function AddEvent() {
                     <TextEditor
                       formName="englishEditor"
                       key={contentLanguage.ENGLISH}
-                      initialValue={eventData?.description?.en}
+                      initialValue={
+                        eventData?.description?.en ? removeEmptyParagraphsAtEnd(eventData?.description?.en) : undefined
+                      }
                       calendarContentLanguage={calendarContentLanguage}
                       dependencies={['frenchEditor']}
                       currentReactQuillRef={reactQuillRefEn}
@@ -2771,6 +2794,7 @@ function AddEvent() {
                   saveAsDraftHandler={saveAsDraftHandler}
                   setLoaderModalOpen={setLoaderModalOpen}
                   loaderModalOpen={loaderModalOpen}
+                  setShowDialog={setShowDialog}
                 />
                 <QuickCreatePerson
                   open={quickCreatePersonModal}
@@ -2791,6 +2815,7 @@ function AddEvent() {
                   saveAsDraftHandler={saveAsDraftHandler}
                   setLoaderModalOpen={setLoaderModalOpen}
                   loaderModalOpen={loaderModalOpen}
+                  setShowDialog={setShowDialog}
                 />
               </Form.Item>
               <Form.Item
@@ -3757,7 +3782,10 @@ function AddEvent() {
                           style={{ backgroundColor: ticketType == offerTypes.FREE && '#EFF2FF' }}
                           iconrender={<MoneyFree />}
                           label={t('dashboard.events.addEditEvent.tickets.free')}
-                          onClick={() => setTicketType(offerTypes.FREE)}
+                          onClick={() => {
+                            setTicketType(offerTypes.FREE);
+                            setShowDialog(true);
+                          }}
                           data-cy="button-select-ticket-free"
                         />
                         <DateAction

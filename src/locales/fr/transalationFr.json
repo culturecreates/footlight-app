@@ -125,8 +125,8 @@
         "featuredEvent": "Événement vedette",
         "dataSource": "Data source",
         "question": {
-          "firstPart": "Est-ce la bonne événement ? Si non, ",
-          "secondPart": "créez une nouvelle événement",
+          "firstPart": "Est-ce le bon événement ? Si non, ",
+          "secondPart": "créez un nouvel événement",
           "thirdPart": " et ne modifiez pas celui-ci."
         },
         "language": {
@@ -494,7 +494,7 @@
           "question": {
             "firstPart": "Est-ce la bonne organisation ? Si non, ",
             "secondPart": "créez une nouvelle organisation",
-            "thirdPart": " et ne modifiez pas celui-ci."
+            "thirdPart": " et ne modifiez pas celle-ci."
           },
           "addSocialMediaLinks": "Ajouter un lien"
         },
@@ -562,8 +562,8 @@
           "newPlace": "Nouveau lieu",
           "editPlace": "Modifier lieu",
           "question": {
-            "firstPart": "S'agit-il de la bonne lieu ? Si non, ",
-            "secondPart": "créez une nouvelle lieu",
+            "firstPart": "Est-ce le bon lieu ? Si non, ",
+            "secondPart": "créez un nouvel lieu",
             "thirdPart": " et ne modifiez pas celui-ci."
           },
           "name": {
@@ -712,9 +712,9 @@
           "newPerson": "Nouvelle personne",
           "editPerson": "Modifier personne",
           "question": {
-            "firstPart": "S'agit-il de la bonne personne ? Si non, ",
-            "secondPart": "créez une nouvelle personne",
-            "thirdPart": " et ne modifiez pas celui-ci."
+            "firstPart": "Est-ce la bonne personne ? Si non,",
+            "secondPart": " créez une nouvelle personne",
+            "thirdPart": " et ne modifiez pas celle-ci."
           },
           "dataSource": "Source de la donnée",
           "notification": {
