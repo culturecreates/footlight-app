@@ -5,12 +5,17 @@ import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import './settings.css';
 import UserManagement from './UserManagement/UserManagement';
-import { useOutletContext } from 'react-router';
+import { useOutletContext, useParams } from 'react-router';
 import WidgetSettings from './WidgetSettings/WidgetSettings';
+import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { useSelector } from 'react-redux';
+import { userRoles } from '../../../constants/userRoles';
 
 const Settings = () => {
   const { t } = useTranslation();
   const [tabKey, setTabKey] = useState('tab1');
+  const { user } = useSelector(getUserDetails);
+  const { calendarId } = useParams();
   const [
     // eslint-disable-next-line no-unused-vars
     _currentCalendarData, // eslint-disable-next-line no-unused-vars
@@ -37,9 +42,18 @@ const Settings = () => {
     setTabKey(key);
   };
 
+  const calendar = user?.roles.filter((calendar) => {
+    return calendar.calendarId === calendarId;
+  });
+
+  const adminCheckHandler = () => {
+    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
+    else return false;
+  };
+
   const items = [
     { label: t('dashboard.settings.tab1'), key: 'tab1', children: <UserManagement /> },
-    { label: t('dashboard.settings.tab2'), key: 'tab2', children: <WidgetSettings /> },
+    { label: t('dashboard.settings.tab2'), key: 'tab2', children: <WidgetSettings />, disabled: !adminCheckHandler() },
   ];
 
   return (

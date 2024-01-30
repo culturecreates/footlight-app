@@ -892,7 +892,9 @@
       "widgetSettings": {
         "title": "Appearance",
         "pageDescription": "Customize the display for the destination website.",
-        "preview": "Preview desktop version",
+        "previewDesktop": "Preview desktop",
+        "previewMobileBtn": "Preview mobile",
+        "previewMobile": "Preview of mobile version",
         "limit": "Number of events to display",
         "color": "Dominant color",
         "colorDescreption": "Enter the hex code of the main colour. Choose a colour that provides enough contrast for reading.",
@@ -911,7 +913,12 @@
         "codeSectionInfo": "Place this code where you want the widget to appear on your webpage.",
         "copy": "Copy",
         "copyNotification": "Code copied to clipboard",
-        "placeholder": "Select"
+        "placeholder": {
+          "eventType": "Select event type",
+          "region": "Select region",
+          "place": "Select place",
+          "OrganizationsAndPeople": "Search Organizations and People"
+        }
       }
     },
     "taxonomy": {

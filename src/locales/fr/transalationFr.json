@@ -886,7 +886,9 @@
       "widgetSettings": {
         "title": "Apparence",
         "pageDescription": "Définissez l'apparence du module sur votre plateforme.",
-        "preview": "Aperçu du module",
+        "previewDesktop": "Vue écran",
+        "previewMobileBtn": "Vue mobile",
+        "previewMobile": "Version mobile",
         "limit": "Nombre d'événements à afficher",
         "color": "Couleur principale du thème",
         "colorDescreption": "Entrez le code hexadécimal de la couleur principale. Choisissez une couleur qui donne suffisamment de contraste pour que l'utilisateur puisse lire le contenu.",
@@ -905,7 +907,12 @@
         "codeSectionInfo": "Mettez ce code à l'endroit où vous souhaitez que le widget apparaisse sur une page web.",
         "copy": "Copier",
         "copyNotification": "Code copied to clipboard",
-        "placeholder": "Select"
+        "placeholder": {
+          "eventType": "Sélectionner un type d'événement",
+          "region": "Sélectionner une région",
+          "place": "Sélectionner un lieu",
+          "OrganizationsAndPeople": "Recherchez des Organisations ou des Personnes"
+        }
       }
     },
     "taxonomy": {

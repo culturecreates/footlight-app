@@ -287,7 +287,7 @@ const WidgetSettings = () => {
           </h4>
           <Outlined
             size="large"
-            label={t(`${localePath}.preview`)}
+            label={!screens.lg ? t(`${localePath}.previewMobileBtn`) : t(`${localePath}.previewDesktop`)}
             style={{ display: `${screens.xl ? 'none' : 'flex'}` }}
             data-cy="button-preview"
             onClick={() => {
@@ -423,6 +423,7 @@ const WidgetSettings = () => {
                     <Form.Item
                       name="eventType"
                       label={t(`${localePath}.eventType`)}
+                      className="widget-settings-event-type"
                       rules={[
                         {
                           type: 'eventType',
@@ -432,7 +433,7 @@ const WidgetSettings = () => {
                       ]}
                       data-cy="widget-settings-event-type">
                       <TreeSelectOption
-                        placeholder={<span>{t(`${localePath}.placeholder`)}</span>}
+                        placeholder={<span>{t(`${localePath}.placeholder.eventType`)}</span>}
                         allowClear
                         treeDefaultExpandAll
                         notFoundContent={<NoContent />}
@@ -480,7 +481,7 @@ const WidgetSettings = () => {
                           minWidth: '100%',
                           padding: '8px 0px',
                         }}
-                        placeholder={<span>{t(`${localePath}.placeholder`)}</span>}
+                        // placeholder={<span>{t(`${localePath}.placeholder`)}</span>}
                         options={languageOptions}
                       />
                     </Form.Item>
@@ -503,6 +504,7 @@ const WidgetSettings = () => {
                         allowClear
                         treeDefaultExpandAll
                         notFoundContent={<NoContent />}
+                        placeholder={<span>{t(`${localePath}.placeholder.region`)}</span>}
                         clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                         treeData={treeTaxonomyOptions(
                           taxonomyDataRegion,
@@ -542,7 +544,7 @@ const WidgetSettings = () => {
                           debounceSearchPlace('');
                         }}
                         allowClear
-                        placeholder={<span>{t(`${localePath}.placeholder`)}</span>}
+                        placeholder={<span>{t(`${localePath}.placeholder.place`)}</span>}
                         clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                         options={locationOptions}
                         notFoundContent={
@@ -581,7 +583,7 @@ const WidgetSettings = () => {
                         onSearch={debounceSearchOrganizer}
                         showSearch
                         allowClear
-                        placeholder={<span>{t(`${localePath}.placeholder`)}</span>}
+                        placeholder={<span>{t(`${localePath}.placeholder.OrganizationsAndPeople`)}</span>}
                         clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                         notFoundContent={
                           isEntitiesFetching ? (
@@ -617,7 +619,7 @@ const WidgetSettings = () => {
                         onSearch={debounceSearchPerson}
                         showSearch
                         allowClear
-                        placeholder={<span>{t(`${localePath}.placeholder`)}</span>}
+                        placeholder={<span>{t(`${localePath}.placeholder.OrganizationsAndPeople`)}</span>}
                         clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                         notFoundContent={
                           isEntitiesFetching ? (
@@ -659,7 +661,7 @@ const WidgetSettings = () => {
 
                   <Col flex="448px" className="widget-settings-code">
                     <div className="widget-settings-code-container">
-                      <span style={{ display: 'grid', placeContent: 'center' }}>{iframeCode}</span>
+                      <span style={{ display: 'flex', alignItems: 'center' }}>{iframeCode}</span>
                       <Outlined
                         size="large"
                         label={t(`${localePath}.copy`)}
@@ -680,22 +682,26 @@ const WidgetSettings = () => {
           </Col>
           <Col flex={'448px'} style={{ display: `${!screens.xl ? 'none' : 'block'}` }}>
             <div className="preview-section-wrapper">
-              <Outlined
-                size="large"
-                label={t(`${localePath}.preview`)}
-                data-cy="button-preview"
-                onClick={() => {
-                  setPreviewModal(true);
-                }}
-              />
+              <div className="preview-section-wrapper-header">
+                <span>{t(`${localePath}.previewMobile`)}</span>
+                <Outlined
+                  size="large"
+                  label={t(`${localePath}.previewDesktop`)}
+                  data-cy="button-preview"
+                  onClick={() => {
+                    setPreviewModal(true);
+                  }}
+                />
+              </div>
               <CustomModal
                 open={previewModal}
                 centered
+                className="widget-settings-page-iframe-modal"
                 width={form.getFieldValue('width') ? `${form.getFieldValue('width')}px` : '90%'}
                 height={form.getFieldValue('height') ? `${Number(form.getFieldValue('height')) + 60 + 48}px` : '90%'}
                 title={
                   <span className="quick-create-organization-modal-title" data-cy="widget-settings-page-modal-title">
-                    {t(`${localePath}.preview`)}
+                    {!screens.lg ? t(`${localePath}.previewMobileBtn`) : t(`${localePath}.previewDesktop`)}
                   </span>
                 }
                 footer={null}
@@ -703,7 +709,7 @@ const WidgetSettings = () => {
                 <iframe
                   width="100%"
                   height={form.getFieldValue('height') ? `${form.getFieldValue('height')}px` : '100%'}
-                  style={{ border: 'none' }}
+                  style={{ border: 'none', maxHeight: '75vh' }}
                   src={url.href}></iframe>
               </CustomModal>
               <iframe src={url.href}></iframe>
