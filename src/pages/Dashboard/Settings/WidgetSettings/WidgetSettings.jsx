@@ -102,6 +102,7 @@ const WidgetSettings = () => {
   });
 
   const handleFormValuesChange = (changedValues, allValues) => {
+    console.log(changedValues);
     const width = form.getFieldValue('width') ?? 0;
     const height = form.getFieldValue('height') ?? 0;
     const limit = form.getFieldValue('limit') ?? 9;
@@ -116,14 +117,15 @@ const WidgetSettings = () => {
     const locale = onLanguageSelect(allValues?.language);
     const temp = new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html');
 
-    console.log(locale);
     // Add query parameters to the URL
     temp.searchParams.append('width', width);
     temp.searchParams.append('limit', limit);
     temp.searchParams.append('height', height);
     temp.searchParams.append('searchEventsFilters', searchEventsFilters);
     temp.searchParams.append('locale', locale?.key.toLowerCase());
-    temp.searchParams.append('color', color);
+    if (changedValues.color) {
+      temp.searchParams.append('color', changedValues.color);
+    } else temp.searchParams.append('color', color);
 
     setUrl(temp);
     setIframeCode(`<iframe src="${url.href}" width=${width} height=${height}></iframe>`);
@@ -328,11 +330,20 @@ const WidgetSettings = () => {
                       label={t(`${localePath}.color`)}
                       rules={[
                         {
-                          type: 'limit',
-                          message: 'need to be added',
+                          required: true,
+                          message: 'Please enter the color.',
+                        },
+                        {
+                          validator: (_, value) => {
+                            console.log(value);
+                            if (!/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(value)) {
+                              return Promise.reject('Please enter a valid hex color code.');
+                            }
+                            return Promise.resolve();
+                          },
                         },
                       ]}
-                      data-cy="widget-settings-limit">
+                      data-cy="widget-settings-color">
                       <StyledInput
                         addonBefore={
                           <ColorPicker
@@ -343,6 +354,10 @@ const WidgetSettings = () => {
                             }}
                           />
                         }
+                        onChange={(color) => {
+                          setColor(color?.target?.value);
+                          handleFormValuesChange({ color: color?.target?.value }, form.getFieldsValue(true));
+                        }}
                         placeholder={t(`${localePath}.colorPlaceHolder`)}
                         value={color}
                       />
@@ -361,11 +376,15 @@ const WidgetSettings = () => {
                           initialValue="600"
                           rules={[
                             {
-                              type: 'height',
-                              message: 'need to be added',
-                              // message: t('dashboard.events.addEditEvent.validations.url'),
+                              required: true,
+                              message: 'Please enter the height.',
+                            },
+                            {
+                              pattern: /^[0-9]+$/,
+                              message: 'Please enter a valid numeric height.',
                             },
                           ]}
+                          validateTrigger={['onChange', 'onBlur']}
                           data-cy="widget-settings-height">
                           <StyledInput />
                         </Form.Item>

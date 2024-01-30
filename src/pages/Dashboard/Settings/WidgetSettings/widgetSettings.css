@@ -72,6 +72,8 @@
   height: 600px;
   width: 100%;
   border: 1px solid #c8c1c1;
+  padding: 10px;
+  border-radius: 6px;
 }
 
 .widget-settings .preview-section-wrapper {
