@@ -12,13 +12,6 @@ function useConfirmExit(confirmExit, when = true) {
     const push = navigator.push;
     const go = navigator.go;
 
-    navigator.go = (...args) => {
-      const result = confirmExit();
-      if (result !== false) {
-        go(...args);
-      }
-    };
-
     navigator.push = (...args) => {
       const result = confirmExit();
       if (result !== false) {
@@ -26,9 +19,16 @@ function useConfirmExit(confirmExit, when = true) {
       }
     };
 
-    console.log(navigator);
+    navigator.go = (...args) => {
+      const result = confirmExit();
+      if (result !== false) {
+        go(...args);
+      }
+    };
+
     return () => {
       navigator.push = push;
+      navigator.go = go;
     };
   }, [navigator, confirmExit, when]);
 }
