@@ -49,6 +49,7 @@ function QuickCreatePerson(props) {
     saveAsDraftHandler,
     setLoaderModalOpen,
     loaderModalOpen,
+    setShowDialog,
   } = props;
   const [form] = Form.useForm();
   const { t } = useTranslation();
@@ -188,6 +189,7 @@ function QuickCreatePerson(props) {
               setKeyword('');
               setOpen(false);
               getSelectedPerson(response?.id);
+              setShowDialog(true);
               resolve(response);
             })
             .catch((error) => {
