@@ -44,6 +44,7 @@ function QuickCreateOrganization(props) {
     saveAsDraftHandler,
     setLoaderModalOpen,
     loaderModalOpen,
+    setShowDialog,
   } = props;
   const [form] = Form.useForm();
   const { t } = useTranslation();
@@ -180,6 +181,7 @@ function QuickCreateOrganization(props) {
                         setKeyword('');
                         getSelectedOrganizer(response?.id);
                       }
+                      setShowDialog(true);
                       resolve(response);
                     })
                     .catch((error) => {
@@ -212,6 +214,7 @@ function QuickCreateOrganization(props) {
                   getSelectedOrganizer(response?.id);
                   setOpen(false);
                 }
+                setShowDialog(true);
                 resolve(response);
               })
               .catch((error) => {

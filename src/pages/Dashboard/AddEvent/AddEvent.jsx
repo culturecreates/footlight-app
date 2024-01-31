@@ -2268,6 +2268,7 @@ function AddEvent() {
                   saveAsDraftHandler={saveAsDraftHandler}
                   setLoaderModalOpen={setLoaderModalOpen}
                   loaderModalOpen={loaderModalOpen}
+                  setShowDialog={setShowDialog}
                 />
               </Form.Item>
               <Form.Item
@@ -2793,6 +2794,7 @@ function AddEvent() {
                   saveAsDraftHandler={saveAsDraftHandler}
                   setLoaderModalOpen={setLoaderModalOpen}
                   loaderModalOpen={loaderModalOpen}
+                  setShowDialog={setShowDialog}
                 />
                 <QuickCreatePerson
                   open={quickCreatePersonModal}
@@ -2813,6 +2815,7 @@ function AddEvent() {
                   saveAsDraftHandler={saveAsDraftHandler}
                   setLoaderModalOpen={setLoaderModalOpen}
                   loaderModalOpen={loaderModalOpen}
+                  setShowDialog={setShowDialog}
                 />
               </Form.Item>
               <Form.Item
@@ -3779,7 +3782,10 @@ function AddEvent() {
                           style={{ backgroundColor: ticketType == offerTypes.FREE && '#EFF2FF' }}
                           iconrender={<MoneyFree />}
                           label={t('dashboard.events.addEditEvent.tickets.free')}
-                          onClick={() => setTicketType(offerTypes.FREE)}
+                          onClick={() => {
+                            setTicketType(offerTypes.FREE);
+                            setShowDialog(true);
+                          }}
                           data-cy="button-select-ticket-free"
                         />
                         <DateAction
