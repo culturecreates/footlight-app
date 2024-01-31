@@ -267,6 +267,7 @@ const WidgetSettings = () => {
     URL.searchParams.append('color', color);
 
     setUrl(URL);
+    setIframeCode(`<iframe src="${url.href}" width="100%" height=${height}></iframe>`);
   }, []);
 
   function arrayToQueryParam(arr, paramName) {

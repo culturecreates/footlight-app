@@ -127,12 +127,17 @@
 }
 
 .widget-settings .widget-settings-code-container > span {
-  display: inline-block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   display: flex;
   align-items: center;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: #646d7b;
 }
 
 .widget-settings .widget-settings-code-container .outlined-label {
