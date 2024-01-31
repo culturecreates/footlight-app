@@ -287,6 +287,7 @@ function AddEvent() {
   };
   const saveAsDraftHandler = (event, toggle = false, type = eventPublishState.PUBLISHED) => {
     event?.preventDefault();
+    const previousShowDialog = showDialog;
     setShowDialog(false);
     var promise = new Promise(function (resolve, reject) {
       form
@@ -676,6 +677,7 @@ function AddEvent() {
         .catch((error) => {
           console.log(error);
           reject(error);
+          setShowDialog(previousShowDialog);
           message.warning({
             duration: 10,
             maxCount: 1,
@@ -773,7 +775,7 @@ function AddEvent() {
       })
       .catch((error) => {
         console.log(error);
-
+        setShowDialog(isValuesChanged);
         message.warning({
           duration: 10,
           maxCount: 1,
