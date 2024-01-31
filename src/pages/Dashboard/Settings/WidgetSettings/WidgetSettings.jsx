@@ -698,7 +698,8 @@ const WidgetSettings = () => {
                 open={previewModal}
                 centered
                 className="widget-settings-page-iframe-modal"
-                width={form.getFieldValue('width') ? `${form.getFieldValue('width')}px` : '90%'}
+                width={form.getFieldValue('width') ? `${form.getFieldValue('width')}px` : '1000px'}
+                height={form.getFieldValue('height') ? `${parseInt(form.getFieldValue('height')) + 100}px` : '600px'}
                 title={
                   <span className="quick-create-organization-modal-title" data-cy="widget-settings-page-modal-title">
                     {!screens.lg ? t(`${localePath}.previewMobileBtn`) : t(`${localePath}.previewDesktop`)}
@@ -708,7 +709,7 @@ const WidgetSettings = () => {
                 onCancel={() => setPreviewModal(false)}>
                 <iframe
                   width="100%"
-                  height={form.getFieldValue('height') ? `${form.getFieldValue('height')}px` : '100%'}
+                  height={form.getFieldValue('height') ? `${form.getFieldValue('height')}px` : '600px'}
                   style={{ border: 'none' }}
                   src={url.href}></iframe>
               </CustomModal>
