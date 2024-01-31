@@ -991,10 +991,13 @@ function AddEvent() {
     setScrollToSelectedField(array?.at(-1));
   };
 
-  const onValuesChangeHandler = () => {
+  const onValuesChangeHandler = (changedValues, allValues) => {
     if (eventId) {
       if (!updateEventSuccess) {
-        if (!showDialog) setShowDialog(true);
+        if (changedValues?.frenchEditor || changedValues?.englishEditor) {
+          if (changedValues?.frenchEditor && allValues?.frenchEditor) setShowDialog(true);
+          if (changedValues?.englishEditor && allValues?.englishEditor) setShowDialog(true);
+        } else if (!showDialog) setShowDialog(true);
       }
     } else {
       if (!addEventSuccess) {
@@ -1087,8 +1090,10 @@ function AddEvent() {
 
   useEffect(() => {
     if (addedFields?.length > 0) {
-      const element = document.getElementsByClassName(scrollToSelectedField);
-      element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      if (scrollToSelectedField) {
+        const element = document.getElementsByClassName(scrollToSelectedField);
+        element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
     }
   }, [addedFields]);
 
