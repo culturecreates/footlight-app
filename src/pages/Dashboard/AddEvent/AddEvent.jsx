@@ -994,6 +994,7 @@ function AddEvent() {
   const onValuesChangeHandler = (changedValues, allValues) => {
     if (eventId) {
       if (!updateEventSuccess) {
+        //Check if the initial values are changed by quill editor
         if (changedValues?.frenchEditor || changedValues?.englishEditor) {
           if (changedValues?.frenchEditor && allValues?.frenchEditor) setShowDialog(true);
           if (changedValues?.englishEditor && allValues?.englishEditor) setShowDialog(true);
