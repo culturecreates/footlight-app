@@ -7,8 +7,8 @@ function StyledNumber(props) {
   return (
     <InputNumber
       {...props}
-      size="large"
       className="form-item-number-input"
+      size="large"
       decimalSeparator={i18n?.language === 'fr' ? ',' : '.'}
       precision={2}
     />
