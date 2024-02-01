@@ -40,6 +40,10 @@ const WidgetSettings = () => {
 
   const localePath = 'dashboard.settings.widgetSettings';
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
+  const { eventDetailsUrlTemplate = '', listEventsUrlTemplate = '' } =
+    currentCalendarData?.languageFallbacks?.widgetSettings || {};
+  const encodedEventDetailsUrlTemplate = encodeURIComponent(eventDetailsUrlTemplate);
+  const encodedListEventsUrlTemplate = encodeURIComponent(listEventsUrlTemplate);
 
   const [color, setColor] = useState('#607EFC');
   const [locationOptions, setLocationOptions] = useState([]);
@@ -102,7 +106,6 @@ const WidgetSettings = () => {
   });
 
   const handleFormValuesChange = (changedValues, allValues) => {
-    console.log(changedValues);
     const width = form.getFieldValue('width') ?? 0;
     const height = form.getFieldValue('height') ?? 0;
     const limit = form.getFieldValue('limit') ?? 9;
@@ -114,6 +117,7 @@ const WidgetSettings = () => {
       arrayToQueryParam([...(allValues?.person ?? []), ...(allValues?.organizer ?? [])], 'person-organization');
 
     const searchEventsFilters = encodeURIComponent(filtersParam);
+
     const locale = onLanguageSelect(allValues?.language);
     const temp = new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html');
 
@@ -121,6 +125,8 @@ const WidgetSettings = () => {
     temp.searchParams.append('width', width);
     temp.searchParams.append('limit', limit);
     temp.searchParams.append('height', height);
+    temp.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
+    temp.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
     temp.searchParams.append('searchEventsFilters', searchEventsFilters);
     temp.searchParams.append('locale', locale?.key.toLowerCase());
     if (changedValues.color) {
@@ -261,6 +267,8 @@ const WidgetSettings = () => {
     const URL = url;
     const height = form.getFieldValue('height') ?? 600;
     const limit = form.getFieldValue('limit') ?? 9;
+    URL.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
+    URL.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
     URL.searchParams.append('locale', 'en');
     URL.searchParams.append('limit', limit);
     URL.searchParams.append('height', height);
