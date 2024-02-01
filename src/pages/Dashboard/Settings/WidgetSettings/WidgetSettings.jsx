@@ -10,6 +10,7 @@ import { CloseCircleOutlined, CopyOutlined } from '@ant-design/icons';
 import NoContent from '../../../../components/NoContent/NoContent';
 import { useGetAllTaxonomyQuery } from '../../../../services/taxonomy';
 import { taxonomyClass } from '../../../../constants/taxonomyClass';
+import { contentLanguage } from '../../../../constants/contentLanguage';
 import { useOutletContext, useParams } from 'react-router-dom';
 import { getUserDetails } from '../../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
@@ -40,8 +41,8 @@ const WidgetSettings = () => {
 
   const localePath = 'dashboard.settings.widgetSettings';
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-  const { eventDetailsUrlTemplate = '', listEventsUrlTemplate = '' } =
-    currentCalendarData?.languageFallbacks?.widgetSettings || {};
+  const { eventDetailsUrlTemplate = '', listEventsUrlTemplate = '' } = currentCalendarData?.widgetSettings || {};
+  const calendarName = currentCalendarData?.slug;
   const encodedEventDetailsUrlTemplate = encodeURIComponent(eventDetailsUrlTemplate);
   const encodedListEventsUrlTemplate = encodeURIComponent(listEventsUrlTemplate);
 
@@ -101,7 +102,17 @@ const WidgetSettings = () => {
     sessionId: timestampRef,
   });
 
-  const languageOptions = userLanguages.map((item) => {
+  const lanFormat = () => {
+    if (calendarContentLanguage === contentLanguage.BILINGUAL) {
+      return userLanguages;
+    } else if (calendarContentLanguage === contentLanguage.ENGLISH) {
+      return [userLanguages[0]];
+    } else {
+      return [userLanguages[1]];
+    }
+  };
+
+  const languageOptions = lanFormat().map((item) => {
     return { label: item.label, value: item.key };
   });
 
@@ -123,7 +134,9 @@ const WidgetSettings = () => {
 
     // Add query parameters to the URL
     temp.searchParams.append('width', width);
+
     temp.searchParams.append('limit', limit);
+    temp.searchParams.append('calendar', calendarName);
     temp.searchParams.append('height', height);
     temp.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
     temp.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
@@ -264,19 +277,20 @@ const WidgetSettings = () => {
   }, [initialEntitiesOrganization]);
 
   useEffect(() => {
-    const URL = url;
+    const urlCopy = new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html');
     const height = form.getFieldValue('height') ?? 600;
     const limit = form.getFieldValue('limit') ?? 9;
-    URL.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
-    URL.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
-    URL.searchParams.append('locale', 'en');
-    URL.searchParams.append('limit', limit);
-    URL.searchParams.append('height', height);
-    URL.searchParams.append('color', color);
+    urlCopy.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
+    urlCopy.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
+    urlCopy.searchParams.append('locale', 'en');
+    urlCopy.searchParams.append('limit', limit);
+    urlCopy.searchParams.append('height', height);
+    urlCopy.searchParams.append('color', color);
+    urlCopy.searchParams.append('calendar', calendarName);
 
-    setUrl(URL);
-    setIframeCode(`<iframe src="${url.href}" width="100%" height=${height}></iframe>`);
-  }, []);
+    setUrl(urlCopy);
+    setIframeCode(`<iframe src="${urlCopy.href}" width="100%" height=${height}></iframe>`);
+  }, [calendarContentLanguage]);
 
   function arrayToQueryParam(arr, paramName) {
     if (!arr || arr.length === 0) {
@@ -344,7 +358,6 @@ const WidgetSettings = () => {
                         },
                         {
                           validator: (_, value) => {
-                            console.log(value);
                             if (!/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(value)) {
                               return Promise.reject('Please enter a valid hex color code.');
                             }
