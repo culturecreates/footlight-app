@@ -82,7 +82,6 @@ function Places() {
     getDependencyDetails({ ids: placeId, calendarId })
       .unwrap()
       .then((res) => {
-        console.log(res, dependencyDetailsFetching);
         Confirm({
           title: t('dashboard.places.deletePlace.title'),
           content: `${t('dashboard.places.deletePlace.description')} ${t('dashboard.places.deletePlace.impact')} [ ${

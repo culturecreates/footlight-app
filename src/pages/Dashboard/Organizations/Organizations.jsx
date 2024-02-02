@@ -86,7 +86,6 @@ function Organizations() {
     getDependencyDetails({ ids: organizationId, calendarId })
       .unwrap()
       .then((res) => {
-        console.log(res, dependencyDetailsFetching);
         Confirm({
           title: t('dashboard.organization.deleteOrganization.title'),
           content: `${t('dashboard.organization.deleteOrganization.description')} ${t(

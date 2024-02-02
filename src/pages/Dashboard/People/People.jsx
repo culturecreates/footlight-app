@@ -82,7 +82,6 @@ function People() {
     getDependencyDetails({ ids: personId, calendarId })
       .unwrap()
       .then((res) => {
-        console.log(res, dependencyDetailsFetching);
         Confirm({
           title: t('dashboard.people.deletePerson.title'),
           content: `${t('dashboard.people.deletePerson.description')} ${t('dashboard.people.deletePerson.impact')} [ ${

@@ -194,7 +194,6 @@ const Taxonomy = () => {
     getDependencyDetails({ ids: id, calendarId })
       .unwrap()
       .then((res) => {
-        console.log(res, dependencyDetailsFetching);
         Confirm({
           title: t('dashboard.taxonomy.listing.modal.titleDelete'),
           onAction: () => {
