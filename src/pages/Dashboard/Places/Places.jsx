@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import './places.css';
-import { List, Grid, Modal } from 'antd';
-import { DeleteOutlined, ExclamationCircleOutlined, EnvironmentOutlined } from '@ant-design/icons';
+import { List, Grid } from 'antd';
+import { DeleteOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
@@ -29,8 +29,9 @@ import { useDeletePlacesMutation, useLazyGetAllPlacesQuery } from '../../../serv
 import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../../constants/sortByOptions';
 import i18n from 'i18next';
 import { PathName } from '../../../constants/pathName';
+import { Confirm } from '../../../components/Modal/Confirm/Confirm';
+import { useLazyGetEntityDependencyQuery } from '../../../services/entities';
 
-const { confirm } = Modal;
 const { useBreakpoint } = Grid;
 
 function Places() {
@@ -54,6 +55,7 @@ function Places() {
   const [getAllPlaces, { currentData: allPlacesData, isFetching: allPlacesFetching, isSuccess: allPlacesSuccess }] =
     useLazyGetAllPlacesQuery();
   const [deletePlaces] = useDeletePlacesMutation();
+  const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyQuery();
 
   const [pageNumber, setPageNumber] = useState(
     searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('placesPage') ?? 1,
@@ -77,18 +79,25 @@ function Places() {
   });
 
   const deletePlaceHandler = (placeId) => {
-    confirm({
-      title: t('dashboard.places.deletePlace.title'),
-      icon: <ExclamationCircleOutlined />,
-      content: t('dashboard.places.deletePlace.description'),
-      okText: t('dashboard.places.deletePlace.ok'),
-      okType: 'danger',
-      cancelText: t('dashboard.places.deletePlace.cancel'),
-      className: 'delete-modal-container',
-      onOk() {
-        deletePlaces({ id: placeId, calendarId: calendarId });
-      },
-    });
+    getDependencyDetails({ ids: placeId, calendarId })
+      .unwrap()
+      .then((res) => {
+        console.log(res, dependencyDetailsFetching);
+        Confirm({
+          title: t('dashboard.places.deletePlace.title'),
+          content: `${t('dashboard.places.deletePlace.description')} ${t('dashboard.places.deletePlace.impact')} [ ${
+            res?.events?.publishedEventsCount
+          } ${t('dashboard.places.deletePlace.published')}, ${res?.events?.draftEventsCount} ${t(
+            'dashboard.places.deletePlace.draft',
+          )} ]`,
+          okText: t('dashboard.places.deletePlace.ok'),
+          cancelText: t('dashboard.places.deletePlace.cancel'),
+          className: 'delete-modal-container',
+          onAction: () => {
+            deletePlaces({ id: placeId, calendarId: calendarId });
+          },
+        });
+      });
   };
 
   const adminCheckHandler = () => {
@@ -142,102 +151,119 @@ function Places() {
     sessionStorage.setItem('placeOrder', filter?.order);
   }, [pageNumber, placesSearchQuery, filter]);
   return (
-    allPlacesSuccess && (
-      <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
-        <Main>
-          <h4 className="events-heading" data-cy="heading-place-title">
-            {t('dashboard.places.places')}
-          </h4>
-          <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-            <AddPlace
-              label={t('dashboard.places.place')}
-              onClick={() => {
-                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`);
-              }}
-              data-cy="button-add-new-place"
-            />
-          </FeatureFlag>
-
-          <PlaceSearch
-            placeholder={t('dashboard.places.search.placeholder')}
-            onPressEnter={(e) => onSearchHandler(e)}
-            defaultValue={placesSearchQuery}
-            allowClear={true}
-            onChange={onChangeHandler}
-            data-cy="input-place-search"
-          />
-          <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
-          <></>
-
-          {!allPlacesFetching ? (
-            allPlacesData?.data?.length > 0 ? (
-              <List
-                data-cy="list-places"
-                className="event-list-wrapper"
-                itemLayout={screens.xs ? 'vertical' : 'horizontal'}
-                dataSource={allPlacesData?.data}
-                bordered={false}
-                pagination={{
-                  onChange: (page) => {
-                    setPageNumber(page);
-                  },
-                  pageSize: 10,
-                  hideOnSinglePage: true,
-                  total: totalCount,
-                  current: Number(pageNumber),
-                  showSizeChanger: false,
+    <>
+      {dependencyDetailsFetching && (
+        <div
+          style={{
+            height: '100%',
+            width: '100%',
+            position: 'absolute',
+            display: 'flex',
+            background: 'rgb(252 252 255 / 46%)',
+            zIndex: 100,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <LoadingIndicator data-cy="loading-indicator-taxonomy-confirm" />
+        </div>
+      )}
+      {allPlacesSuccess && (
+        <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
+          <Main>
+            <h4 className="events-heading" data-cy="heading-place-title">
+              {t('dashboard.places.places')}
+            </h4>
+            <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+              <AddPlace
+                label={t('dashboard.places.place')}
+                onClick={() => {
+                  navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`);
                 }}
-                renderItem={(item, index) => (
-                  <ListItem
-                    data-cy="list-item-place"
-                    key={index}
-                    id={index}
-                    logo={item?.logo?.thumbnail?.uri}
-                    defaultLogo={
-                      <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} data-cy="logo-place" />
-                    }
-                    title={contentLanguageBilingual({
-                      en: item?.name?.en,
-                      fr: item?.name?.fr,
-                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                      calendarContentLanguage: calendarContentLanguage,
-                    })}
-                    description={contentLanguageBilingual({
-                      en: item?.disambiguatingDescription?.en,
-                      fr: item?.disambiguatingDescription?.fr,
-                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                      calendarContentLanguage: calendarContentLanguage,
-                    })}
-                    createdDate={item?.creator?.date}
-                    createdByUserName={item?.creator?.userName}
-                    updatedDate={item?.modifier?.date}
-                    updatedByUserName={item?.modifier?.userName}
-                    artsDataLink={artsDataLinkChecker(item?.sameAs)}
-                    listItemHandler={() => listItemHandler(item?.id)}
-                    actions={[
-                      adminCheckHandler() && (
-                        <DeleteOutlined
-                          data-cy="icon-delete-place"
-                          key={'delete-icon'}
-                          style={{ color: '#222732', fontSize: '24px' }}
-                          onClick={() => deletePlaceHandler(item?.id)}
-                        />
-                      ),
-                    ]}
-                  />
-                )}
+                data-cy="button-add-new-place"
               />
+            </FeatureFlag>
+
+            <PlaceSearch
+              placeholder={t('dashboard.places.search.placeholder')}
+              onPressEnter={(e) => onSearchHandler(e)}
+              defaultValue={placesSearchQuery}
+              allowClear={true}
+              onChange={onChangeHandler}
+              data-cy="input-place-search"
+            />
+            <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
+            <></>
+
+            {!allPlacesFetching ? (
+              allPlacesData?.data?.length > 0 ? (
+                <List
+                  data-cy="list-places"
+                  className="event-list-wrapper"
+                  itemLayout={screens.xs ? 'vertical' : 'horizontal'}
+                  dataSource={allPlacesData?.data}
+                  bordered={false}
+                  pagination={{
+                    onChange: (page) => {
+                      setPageNumber(page);
+                    },
+                    pageSize: 10,
+                    hideOnSinglePage: true,
+                    total: totalCount,
+                    current: Number(pageNumber),
+                    showSizeChanger: false,
+                  }}
+                  renderItem={(item, index) => (
+                    <ListItem
+                      data-cy="list-item-place"
+                      key={index}
+                      id={index}
+                      logo={item?.logo?.thumbnail?.uri}
+                      defaultLogo={
+                        <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} data-cy="logo-place" />
+                      }
+                      title={contentLanguageBilingual({
+                        en: item?.name?.en,
+                        fr: item?.name?.fr,
+                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      })}
+                      description={contentLanguageBilingual({
+                        en: item?.disambiguatingDescription?.en,
+                        fr: item?.disambiguatingDescription?.fr,
+                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      })}
+                      createdDate={item?.creator?.date}
+                      createdByUserName={item?.creator?.userName}
+                      updatedDate={item?.modifier?.date}
+                      updatedByUserName={item?.modifier?.userName}
+                      artsDataLink={artsDataLinkChecker(item?.sameAs)}
+                      listItemHandler={() => listItemHandler(item?.id)}
+                      actions={[
+                        adminCheckHandler() && (
+                          <DeleteOutlined
+                            data-cy="icon-delete-place"
+                            key={'delete-icon'}
+                            style={{ color: '#222732', fontSize: '24px' }}
+                            onClick={() => deletePlaceHandler(item?.id)}
+                          />
+                        ),
+                      ]}
+                    />
+                  )}
+                />
+              ) : (
+                <NoContent style={{ height: '200px' }} />
+              )
             ) : (
-              <NoContent style={{ height: '200px' }} />
-            )
-          ) : (
-            <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <LoadingIndicator data-cy="loading-indicator-place" />
-            </div>
-          )}
-        </Main>
-      </FeatureFlag>
-    )
+              <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <LoadingIndicator data-cy="loading-indicator-place" />
+              </div>
+            )}
+          </Main>
+        </FeatureFlag>
+      )}
+    </>
   );
 }
 

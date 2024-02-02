@@ -145,6 +145,7 @@ function Dashboard() {
                 minHeight: 280,
                 overflowY: 'scroll',
                 background: contentBackgroundColor,
+                position: 'relative',
               }}>
               <Outlet
                 context={[currentCalendarData, pageNumber, setPageNumber, getCalendar, setContentBackgroundColor]}

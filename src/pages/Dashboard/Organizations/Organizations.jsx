@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './organizations.css';
-import { List, Grid, Modal } from 'antd';
-import Icon, { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { List, Grid } from 'antd';
+import Icon, { DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
@@ -30,8 +30,9 @@ import { userRoles } from '../../../constants/userRoles';
 import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
 import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../../constants/sortByOptions';
 import i18n from 'i18next';
+import { Confirm } from '../../../components/Modal/Confirm/Confirm';
+import { useLazyGetEntityDependencyQuery } from '../../../services/entities';
 
-const { confirm } = Modal;
 const { useBreakpoint } = Grid;
 
 function Organizations() {
@@ -56,6 +57,8 @@ function Organizations() {
     getAllOrganization,
     { currentData: allOrganizationData, isFetching: allOrganizationFetching, isSuccess: allOrganizationSuccess },
   ] = useLazyGetAllOrganizationQuery();
+
+  const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyQuery();
   const [deleteOrganization] = useDeleteOrganizationMutation();
 
   const [pageNumber, setPageNumber] = useState(
@@ -80,18 +83,25 @@ function Organizations() {
   });
 
   const deleteOrganizationHandler = (organizationId) => {
-    confirm({
-      title: t('dashboard.organization.deleteOrganization.title'),
-      icon: <ExclamationCircleOutlined />,
-      content: t('dashboard.organization.deleteOrganization.description'),
-      okText: t('dashboard.organization.deleteOrganization.ok'),
-      okType: 'danger',
-      cancelText: t('dashboard.organization.deleteOrganization.cancel'),
-      className: 'delete-modal-container',
-      onOk() {
-        deleteOrganization({ id: organizationId, calendarId: calendarId });
-      },
-    });
+    getDependencyDetails({ ids: organizationId, calendarId })
+      .unwrap()
+      .then((res) => {
+        console.log(res, dependencyDetailsFetching);
+        Confirm({
+          title: t('dashboard.organization.deleteOrganization.title'),
+          content: `${t('dashboard.organization.deleteOrganization.description')} ${t(
+            'dashboard.organization.deleteOrganization.impact',
+          )} [${res?.events?.publishedEventsCount} ${t('dashboard.organization.deleteOrganization.published')}, ${
+            res?.events?.draftEventsCount
+          } ${t('dashboard.organization.deleteOrganization.draft')} ]`,
+          okText: t('dashboard.organization.deleteOrganization.ok'),
+          cancelText: t('dashboard.organization.deleteOrganization.cancel'),
+          className: 'delete-modal-container',
+          onAction: () => {
+            deleteOrganization({ id: organizationId, calendarId: calendarId });
+          },
+        });
+      });
   };
 
   const adminCheckHandler = () => {
@@ -144,104 +154,123 @@ function Organizations() {
     sessionStorage.setItem('organizationOrder', filter?.order);
   }, [pageNumber, organizationSearchQuery, filter]);
   return (
-    allOrganizationSuccess && (
-      <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
-        <Main>
-          <h4 className="events-heading" data-cy="heading-organizations">
-            {t('dashboard.organization.organizations')}
-          </h4>
-          <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-            <AddOrganization
-              label={t('dashboard.organization.organization')}
-              onClick={() => navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.Search}`)}
-              data-cy="button-add-organization"
-            />
-          </FeatureFlag>
-
-          <OrganizationSearch
-            placeholder={t('dashboard.organization.search.placeholder')}
-            onPressEnter={(e) => onSearchHandler(e)}
-            defaultValue={organizationSearchQuery}
-            allowClear={true}
-            onChange={onChangeHandler}
-            data-cy="input-search-organizations"
-          />
-          <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
-          <></>
-
-          {!allOrganizationFetching ? (
-            allOrganizationData?.data?.length > 0 ? (
-              <List
-                data-cy="antd-organizations-list"
-                className="event-list-wrapper"
-                itemLayout={screens.xs ? 'vertical' : 'horizontal'}
-                dataSource={allOrganizationData?.data}
-                bordered={false}
-                pagination={{
-                  onChange: (page) => {
-                    setPageNumber(page);
-                  },
-                  pageSize: 10,
-                  hideOnSinglePage: true,
-                  total: totalCount,
-                  current: Number(pageNumber),
-                  showSizeChanger: false,
-                }}
-                renderItem={(item, index) => (
-                  <ListItem
-                    data-cy={`antd-organization-list-item-${index}`}
-                    key={index}
-                    id={index}
-                    logo={item?.logo?.thumbnail?.uri}
-                    defaultLogo={
-                      <Icon
-                        component={OrganizationLogo}
-                        style={{ color: '#607EFC', fontSize: '18px' }}
-                        data-cy="organization-logo"
-                      />
-                    }
-                    title={contentLanguageBilingual({
-                      en: item?.name?.en,
-                      fr: item?.name?.fr,
-                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                      calendarContentLanguage: calendarContentLanguage,
-                    })}
-                    description={contentLanguageBilingual({
-                      en: item?.disambiguatingDescription?.en,
-                      fr: item?.disambiguatingDescription?.fr,
-                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                      calendarContentLanguage: calendarContentLanguage,
-                    })}
-                    createdDate={item?.creator?.date}
-                    createdByUserName={item?.creator?.userName}
-                    updatedDate={item?.modifier?.date}
-                    updatedByUserName={item?.modifier?.userName}
-                    artsDataLink={artsDataLinkChecker(item?.sameAs)}
-                    listItemHandler={() => listItemHandler(item?.id)}
-                    actions={[
-                      adminCheckHandler() && (
-                        <DeleteOutlined
-                          key={'delete-icon'}
-                          style={{ color: '#222732', fontSize: '24px' }}
-                          onClick={() => deleteOrganizationHandler(item?.id)}
-                          data-cy="delete-organization"
-                        />
-                      ),
-                    ]}
-                  />
-                )}
+    <>
+      {dependencyDetailsFetching && (
+        <div
+          style={{
+            height: '100%',
+            width: '100%',
+            position: 'absolute',
+            display: 'flex',
+            background: 'rgb(252 252 255 / 46%)',
+            zIndex: 100,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <LoadingIndicator data-cy="organizations-listing-loader-confirm" />
+        </div>
+      )}
+      {allOrganizationSuccess && (
+        <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
+          <Main>
+            <h4 className="events-heading" data-cy="heading-organizations">
+              {t('dashboard.organization.organizations')}
+            </h4>
+            <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+              <AddOrganization
+                label={t('dashboard.organization.organization')}
+                onClick={() =>
+                  navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.Search}`)
+                }
+                data-cy="button-add-organization"
               />
+            </FeatureFlag>
+
+            <OrganizationSearch
+              placeholder={t('dashboard.organization.search.placeholder')}
+              onPressEnter={(e) => onSearchHandler(e)}
+              defaultValue={organizationSearchQuery}
+              allowClear={true}
+              onChange={onChangeHandler}
+              data-cy="input-search-organizations"
+            />
+            <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
+            <></>
+
+            {!allOrganizationFetching ? (
+              allOrganizationData?.data?.length > 0 ? (
+                <List
+                  data-cy="antd-organizations-list"
+                  className="event-list-wrapper"
+                  itemLayout={screens.xs ? 'vertical' : 'horizontal'}
+                  dataSource={allOrganizationData?.data}
+                  bordered={false}
+                  pagination={{
+                    onChange: (page) => {
+                      setPageNumber(page);
+                    },
+                    pageSize: 10,
+                    hideOnSinglePage: true,
+                    total: totalCount,
+                    current: Number(pageNumber),
+                    showSizeChanger: false,
+                  }}
+                  renderItem={(item, index) => (
+                    <ListItem
+                      data-cy={`antd-organization-list-item-${index}`}
+                      key={index}
+                      id={index}
+                      logo={item?.logo?.thumbnail?.uri}
+                      defaultLogo={
+                        <Icon
+                          component={OrganizationLogo}
+                          style={{ color: '#607EFC', fontSize: '18px' }}
+                          data-cy="organization-logo"
+                        />
+                      }
+                      title={contentLanguageBilingual({
+                        en: item?.name?.en,
+                        fr: item?.name?.fr,
+                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      })}
+                      description={contentLanguageBilingual({
+                        en: item?.disambiguatingDescription?.en,
+                        fr: item?.disambiguatingDescription?.fr,
+                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      })}
+                      createdDate={item?.creator?.date}
+                      createdByUserName={item?.creator?.userName}
+                      updatedDate={item?.modifier?.date}
+                      updatedByUserName={item?.modifier?.userName}
+                      artsDataLink={artsDataLinkChecker(item?.sameAs)}
+                      listItemHandler={() => listItemHandler(item?.id)}
+                      actions={[
+                        adminCheckHandler() && (
+                          <DeleteOutlined
+                            key={'delete-icon'}
+                            style={{ color: '#222732', fontSize: '24px' }}
+                            onClick={() => deleteOrganizationHandler(item?.id)}
+                            data-cy="delete-organization"
+                          />
+                        ),
+                      ]}
+                    />
+                  )}
+                />
+              ) : (
+                <NoContent style={{ height: '200px' }} data-cy="empty-organization" />
+              )
             ) : (
-              <NoContent style={{ height: '200px' }} data-cy="empty-organization" />
-            )
-          ) : (
-            <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <LoadingIndicator data-cy="organizations-listing-loader" />
-            </div>
-          )}
-        </Main>
-      </FeatureFlag>
-    )
+              <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <LoadingIndicator data-cy="organizations-listing-loader" />
+              </div>
+            )}
+          </Main>
+        </FeatureFlag>
+      )}
+    </>
   );
 }
 
