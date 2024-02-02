@@ -741,7 +741,7 @@ function AddEvent() {
     form
       .validateFields(validateFields)
       .then(() => {
-        if (isValuesChanged)
+        if (isValuesChanged || duplicateId)
           saveAsDraftHandler(event, true)
             .then((id) => {
               updateEventState({ id: eventId ?? id, calendarId })
