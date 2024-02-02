@@ -280,9 +280,11 @@ const WidgetSettings = () => {
     const urlCopy = new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html');
     const height = form.getFieldValue('height') ?? 600;
     const limit = form.getFieldValue('limit') ?? 9;
+    const locale = form.getFieldValue('locale') ?? languageOptions[0].value;
+
     urlCopy.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
     urlCopy.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
-    urlCopy.searchParams.append('locale', 'en');
+    urlCopy.searchParams.append('locale', onLanguageSelect(locale)?.key.toLowerCase());
     urlCopy.searchParams.append('limit', limit);
     urlCopy.searchParams.append('height', height);
     urlCopy.searchParams.append('color', color);
