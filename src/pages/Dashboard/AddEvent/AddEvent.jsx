@@ -504,6 +504,7 @@ function AddEvent() {
           if (values?.keywords?.length > 0) {
             keywords = values?.keywords;
           }
+
           if (ticketType) {
             offerConfiguration = {
               category: ticketType,
