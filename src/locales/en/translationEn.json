@@ -340,7 +340,8 @@
           "publish": "Publish",
           "saveAsDraft": "Save as draft",
           "save": "Save",
-          "sendToReview": "Send to review"
+          "sendToReview": "Send to review",
+          "revertToDraft": "Revert to draft"
         },
         "notification": {
           "saveAsDraft": "Success! Your event has been saved as draft.",
@@ -423,7 +424,8 @@
         "featureEvent": "Feature this event",
         "unFeatureEvent": "Unfeature this event",
         "deleteEvent": "Delete event",
-        "duplicateEvent": "Duplicate Event"
+        "duplicateEvent": "Duplicate Event",
+        "revertToDraft":"Revert to draft"
       },
       "publishState": {
         "published": "Published",

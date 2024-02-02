@@ -339,7 +339,8 @@
           "publish": "Publier",
           "saveAsDraft": "Enregistrer comme brouillon",
           "save": "Sauvegarder",
-          "sendToReview": "Envoyer pour révision"
+          "sendToReview": "Envoyer pour révision",
+          "revertToDraft": "Revenir au brouillon"
         },
         "notification": {
           "saveAsDraft": "Succès! Votre événement a été enregistré comme brouillon.",
@@ -423,7 +424,8 @@
         "deleteEvent": "Supprimer l'événement",
         "duplicateEvent": "Dupliquer l’événement",
         "featureEvent": "Mettre en vedette",
-        "unFeatureEvent": "Retirer la mise en vedette"
+        "unFeatureEvent": "Retirer la mise en vedette",
+        "revertToDraft": "Revenir au brouillon"
       },
       "publishState": {
         "published": "Publié",

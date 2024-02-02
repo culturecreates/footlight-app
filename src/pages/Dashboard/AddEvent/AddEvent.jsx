@@ -734,7 +734,7 @@ function AddEvent() {
     return promise;
   };
 
-  const reviewPublishHandler = (event) => {
+  const reviewPublishHandler = (event, publishState = undefined) => {
     event?.preventDefault();
     const isValuesChanged = showDialog;
     setShowDialog(false);
@@ -744,7 +744,7 @@ function AddEvent() {
         if (isValuesChanged)
           saveAsDraftHandler(event, true)
             .then((id) => {
-              updateEventState({ id: eventId ?? id, calendarId })
+              updateEventState({ id: eventId ?? id, calendarId, publishState })
                 .unwrap()
                 .then(() => {
                   notification.success({
@@ -765,7 +765,7 @@ function AddEvent() {
             })
             .catch((error) => console.log(error));
         else
-          updateEventState({ id: eventId, calendarId })
+          updateEventState({ id: eventId, calendarId, publishState })
             .unwrap()
             .then(() => {
               notification.success({
@@ -823,8 +823,16 @@ function AddEvent() {
           <Form.Item>
             <Outlined
               size="large"
-              label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
-              onClick={(e) => saveAsDraftHandler(e)}
+              label={
+                eventData?.publishState === eventPublishState.PENDING_REVIEW
+                  ? t('dashboard.events.addEditEvent.saveOptions.revertToDraft')
+                  : t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')
+              }
+              onClick={(e) => {
+                if (eventData?.publishState === eventPublishState.PENDING_REVIEW)
+                  reviewPublishHandler(e, eventPublishState.DRAFT);
+                else saveAsDraftHandler(e);
+              }}
               data-cy="button-save-event"
               disabled={updateEventLoading || addEventLoading || addImageLoading ? true : false}
             />
