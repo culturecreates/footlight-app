@@ -227,8 +227,8 @@ const Taxonomy = () => {
       {dependencyDetailsFetching && (
         <div
           style={{
-            height: '100%',
-            width: '100%',
+            height: 'calc(100% - 36px)',
+            width: 'calc(100% - 32px)',
             position: 'absolute',
             display: 'flex',
             background: 'rgb(252 252 255 / 46%)',
