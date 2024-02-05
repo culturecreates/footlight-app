@@ -468,6 +468,7 @@ function AddEvent() {
           if (values?.keywords?.length > 0) {
             keywords = values?.keywords;
           }
+
           if (ticketType) {
             offerConfiguration = {
               category: ticketType,
@@ -729,7 +730,7 @@ function AddEvent() {
                 .catch((error) => console.log(error));
             })
             .catch((error) => console.log(error));
-        } else if (isValuesChanged && type === 'PUBLISH') {
+        } else if ((isValuesChanged || duplicateId) && type === 'PUBLISH') {
           saveAsDraftHandler(event, type === 'PUBLISH', eventPublishState.DRAFT)
             .then((id) => {
               updateEventState({ id: eventId ?? id, calendarId })
