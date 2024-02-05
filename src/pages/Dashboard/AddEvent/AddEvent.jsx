@@ -707,7 +707,7 @@ function AddEvent() {
     form
       .validateFields(type === 'PUBLISH' ? validateFields : [])
       .then(() => {
-        if ((isValuesChanged || duplicateId) && type !== 'PUBLISH') {
+        if (isValuesChanged && type !== 'PUBLISH') {
           updateEventState({ id: eventId ?? eventData?.id, calendarId })
             .unwrap()
             .then(() => {
@@ -730,7 +730,7 @@ function AddEvent() {
                 .catch((error) => console.log(error));
             })
             .catch((error) => console.log(error));
-        } else if (isValuesChanged && type === 'PUBLISH') {
+        } else if ((isValuesChanged || duplicateId) && type === 'PUBLISH') {
           saveAsDraftHandler(event, type === 'PUBLISH', eventPublishState.DRAFT)
             .then((id) => {
               updateEventState({ id: eventId ?? id, calendarId })
