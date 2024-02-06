@@ -152,6 +152,26 @@ const AddTaxonomy = () => {
     setDeleteDisplayFlag(false);
   };
 
+  function transformResponse(response) {
+    const transformedResponse = {
+      id: response.id,
+      name: {
+        ...(response?.name.en && { en: response.name.en }),
+        ...(response?.name.fr && { fr: response.name.fr }),
+      },
+      taxonomyClass: response?.taxonomyClass,
+      mappedToField: response?.mappedToField,
+      includeInFullTextSearch: response?.includeInFullTextSearch || false,
+      concepts: modifyConceptData(response?.concepts),
+      isAdminOnly: response?.isAdminOnly || false,
+      disambiguatingDescription: {
+        ...(response?.disambiguatingDescription?.fr && { fr: response.disambiguatingDescription.fr }),
+        ...(response?.disambiguatingDescription?.en && { en: response.disambiguatingDescription.en }),
+      },
+    };
+    return transformedResponse;
+  }
+
   const modifyConceptData = (conceptData) => {
     return conceptData.map((item) => {
       let modifiedConcept;
