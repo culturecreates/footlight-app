@@ -118,7 +118,7 @@ const WidgetSettings = () => {
 
   const handleFormValuesChange = (changedValues, allValues) => {
     const width = form.getFieldValue('width') ?? 0;
-    const height = form.getFieldValue('height') ?? 0;
+    const height = form.getFieldValue('height') ?? 600;
     const limit = form.getFieldValue('limit') ?? 9;
 
     const filtersParam =
@@ -147,7 +147,7 @@ const WidgetSettings = () => {
     } else temp.searchParams.append('color', color);
 
     setUrl(temp);
-    setIframeCode(`<iframe src="${url.href}" width=${width} height=${height}></iframe>`);
+    setIframeCode(`<iframe src="${temp.href}" width="100%" height="${height}px"></iframe>`);
   };
 
   const onLanguageSelect = (value) => {
@@ -291,7 +291,7 @@ const WidgetSettings = () => {
     urlCopy.searchParams.append('calendar', calendarName);
 
     setUrl(urlCopy);
-    setIframeCode(`<iframe src="${urlCopy.href}" width="100%" height=${height}></iframe>`);
+    setIframeCode(`<iframe src="${urlCopy.href}" width="100%" height="${height}px"></iframe>`);
   }, [calendarContentLanguage]);
 
   function arrayToQueryParam(arr, paramName) {
