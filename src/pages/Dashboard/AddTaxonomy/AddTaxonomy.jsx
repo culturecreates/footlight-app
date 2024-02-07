@@ -20,6 +20,8 @@ import LoadingIndicator from '../../../components/LoadingIndicator';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
+import { usePrompt } from '../../../hooks/usePrompt';
+import { genericObjectCompare } from '../../../utils/genericObjectCompare';
 
 const AddTaxonomy = () => {
   const { TextArea } = Input;
@@ -58,7 +60,23 @@ const AddTaxonomy = () => {
   const [newConceptName, setNewConceptName] = useState({ en: '', fr: '' });
   const [conceptData, setConceptData] = useState([]);
   const [standardFields, setStandardFields] = useState([]);
-  const [taxonomyData, setTaxonomyData] = useState([]);
+  const [taxonomyData, setTaxonomyData] = useState({});
+  const [initialFormData, setInitialFormData] = useState({});
+
+  usePrompt(
+    t('common.unsavedChanges'),
+    genericObjectCompare(transformResponse(initialFormData), transformResponse(taxonomyData)),
+  );
+
+  useEffect(() => {
+    console.log(transformResponse(initialFormData), transformResponse(taxonomyData));
+    // console.log(genericObjectCompare(transformResponse(initialFormData), transformResponse(taxonomyData)));
+  }, [initialFormData, taxonomyData]);
+
+  const handleFieldChange = (changedFields, allFields) => {
+    console.log(changedFields, allFields);
+  };
+
   const [formValues, setFormValues] = useState({
     classType: '',
     mapToField: '',
@@ -117,6 +135,7 @@ const AddTaxonomy = () => {
         .then((res) => {
           setConceptData(res.concepts);
           setTaxonomyData(res);
+          setInitialFormData(res);
           const availableStandardFields = standardFieldsForTaxonomy(
             res?.taxonomyClass,
             currentCalendarData?.fieldTaxonomyMaps,
@@ -127,7 +146,7 @@ const AddTaxonomy = () => {
           ]);
           form.setFieldsValue({
             classType: res?.taxonomyClass,
-            frenchname: res?.name?.fr,
+            fr: res?.name?.fr,
             englishname: res?.name?.en,
             frenchdescription: res?.disambiguatingDescription?.fr,
             englishdescription: res?.disambiguatingDescription?.en,
@@ -152,28 +171,8 @@ const AddTaxonomy = () => {
     setDeleteDisplayFlag(false);
   };
 
-  function transformResponse(response) {
-    const transformedResponse = {
-      id: response.id,
-      name: {
-        ...(response?.name.en && { en: response.name.en }),
-        ...(response?.name.fr && { fr: response.name.fr }),
-      },
-      taxonomyClass: response?.taxonomyClass,
-      mappedToField: response?.mappedToField,
-      includeInFullTextSearch: response?.includeInFullTextSearch || false,
-      concepts: modifyConceptData(response?.concepts),
-      isAdminOnly: response?.isAdminOnly || false,
-      disambiguatingDescription: {
-        ...(response?.disambiguatingDescription?.fr && { fr: response.disambiguatingDescription.fr }),
-        ...(response?.disambiguatingDescription?.en && { en: response.disambiguatingDescription.en }),
-      },
-    };
-    return transformedResponse;
-  }
-
-  const modifyConceptData = (conceptData) => {
-    return conceptData.map((item) => {
+  function modifyConceptData(conceptData) {
+    return conceptData?.map(function (item) {
       let modifiedConcept;
       if (item && item.isNew) {
         modifiedConcept = {
@@ -190,12 +189,32 @@ const AddTaxonomy = () => {
 
       return modifiedConcept;
     });
-  };
+  }
+
+  function transformResponse(response) {
+    const transformedResponse = {
+      id: response.id,
+      name: {
+        ...(response?.name?.en && { en: response.name?.en }),
+        ...(response?.name?.fr && { fr: response.name?.fr }),
+      },
+      taxonomyClass: response?.taxonomyClass,
+      mappedToField: response?.mappedToField,
+      includeInFullTextSearch: response?.includeInFullTextSearch || false,
+      concepts: modifyConceptData(response?.concepts),
+      isAdminOnly: response?.isAdminOnly || false,
+      disambiguatingDescription: {
+        ...(response?.disambiguatingDescription?.fr && { fr: response.disambiguatingDescription?.fr }),
+        ...(response?.disambiguatingDescription?.en && { en: response.disambiguatingDescription?.en }),
+      },
+    };
+    return transformedResponse;
+  }
 
   const saveTaxonomyHandler = () => {
     const filteredConceptData = modifyConceptData(conceptData);
     form
-      .validateFields(['frenchname', 'englishname', 'frenchdescription', 'englishdescription'])
+      .validateFields(['fr', 'englishname', 'frenchdescription', 'englishdescription'])
       .then(() => {
         var values = form.getFieldsValue(true);
         setFormValues({
@@ -208,7 +227,7 @@ const AddTaxonomy = () => {
         const body = {
           name: {
             en: values?.englishname?.trim(),
-            fr: values?.frenchname?.trim(),
+            fr: values?.fr?.trim(),
           },
           taxonomyClass: formValues.classType,
           isDynamicField: location.state?.dynamic
@@ -264,7 +283,7 @@ const AddTaxonomy = () => {
   return (
     <>
       {!loading ? (
-        <Form layout="vertical" form={form}>
+        <Form layout="vertical" form={form} onFieldsChange={handleFieldChange}>
           <Row className="add-taxonomy-wrapper">
             <Col span={24}>
               <Row justify="space-between">
@@ -373,7 +392,7 @@ const AddTaxonomy = () => {
                                         en: item?.en,
                                         fr: item?.fr,
                                       };
-                                      form.setFieldValue('frenchname', item?.fr);
+                                      form.setFieldValue('fr', item?.fr);
                                       form.setFieldValue('englishname', item?.en);
                                       setFormValues({
                                         ...formValues,
@@ -415,7 +434,7 @@ const AddTaxonomy = () => {
                               <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                                 <BilingualInput fieldData={formValues?.name}>
                                   <Form.Item
-                                    name="frenchname"
+                                    name="fr"
                                     key={contentLanguage.FRENCH}
                                     // initialValue={formValues?.name?.fr}
                                     dependencies={['englishname']}
@@ -461,11 +480,11 @@ const AddTaxonomy = () => {
                                     name="englishname"
                                     // initialValue={formValues?.name?.en}
                                     key={contentLanguage.ENGLISH}
-                                    dependencies={['frenchname']}
+                                    dependencies={['fr']}
                                     rules={[
                                       ({ getFieldValue }) => ({
                                         validator(_, value) {
-                                          if (value || getFieldValue('frenchname')) {
+                                          if (value || getFieldValue('fr')) {
                                             return Promise.resolve();
                                           } else
                                             return Promise.reject(

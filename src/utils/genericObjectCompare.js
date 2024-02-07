@@ -1,4 +1,4 @@
-export const recrusiveObjectCompare = (obj1, obj2) => {
+export const genericObjectCompare = (obj1, obj2) => {
   if (typeof obj1 !== 'object' || typeof obj2 !== 'object') {
     return obj1 === obj2;
   }
@@ -11,7 +11,7 @@ export const recrusiveObjectCompare = (obj1, obj2) => {
   }
 
   for (let key of keys1) {
-    if (!keys2.includes(key) || !recrusiveObjectCompare(obj1[key], obj2[key])) {
+    if (!keys2.includes(key) || !genericObjectCompare(obj1[key], obj2[key])) {
       return false;
     }
   }
