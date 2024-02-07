@@ -456,6 +456,7 @@
         "impact": "Événements concernés : ",
         "published": "publié",
         "draft": "brouillon",
+        "inReview": "attente d'approbation",
         "ok": "OK",
         "cancel": "Annuler"
       },
@@ -527,6 +528,7 @@
         "description": "Êtes-vous sûr de vouloir supprimer définitivement ce lieu ? Le lieu sera supprimé partout où il est utilisé.",
         "impact": "Événements concernés : ",
         "published": "publié",
+        "inReview": "attente d'approbation",
         "draft": "brouillon",
         "ok": "OK",
         "cancel": "Annuler"
@@ -692,6 +694,7 @@
         "description": "Êtes-vous sûr de vouloir supprimer définitivement cette personne? Cette personne sera supprimée partout où elle est utilisée.",
         "impact": "Événements concernés : ",
         "published": "publié",
+        "inReview": "attente d'approbation",
         "draft": "brouillon",
         "ok": "OK",
         "cancel": "Annuler"
@@ -928,7 +931,8 @@
             "description": "Êtes-vous sûr de vouloir supprimer définitivement cette taxonomie? Cette taxonomie sera supprimée partout où elle est utilisée.",
             "impact": "Événements concernés : ",
             "published": "publié",
-            "draft": "brouillon"
+            "draft": "brouillon",
+            "inReview": "attente d'approbation"
           }
         }
       },

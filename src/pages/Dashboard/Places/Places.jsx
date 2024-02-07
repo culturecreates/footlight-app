@@ -84,11 +84,11 @@ function Places() {
       .then((res) => {
         Confirm({
           title: t('dashboard.places.deletePlace.title'),
-          content: `${t('dashboard.places.deletePlace.description')} ${t('dashboard.places.deletePlace.impact')} [ ${
+          content: `${t('dashboard.places.deletePlace.description')} ${t('dashboard.places.deletePlace.impact')} ${
             res?.events?.publishedEventsCount
           } ${t('dashboard.places.deletePlace.published')}, ${res?.events?.draftEventsCount} ${t(
             'dashboard.places.deletePlace.draft',
-          )} ]`,
+          )}, ${t('dashboard.places.deletePlace.inReview')}  ${res?.events?.pendingReviewEventsCount} `,
           okText: t('dashboard.places.deletePlace.ok'),
           cancelText: t('dashboard.places.deletePlace.cancel'),
           className: 'delete-modal-container',
