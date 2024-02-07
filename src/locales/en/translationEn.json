@@ -456,7 +456,7 @@
         "impact": "Impacted events: ",
         "published": "published",
         "inReview": "pending review",
-        "draft": "Draft",
+        "draft": "draft",
         "ok": "OK",
         "cancel": "Cancel"
       },
@@ -528,7 +528,7 @@
         "description": "Are you sure you want to permanently delete this place? The organization will be deleted everywhere it is used.",
         "impact": "Impacted events: ",
         "published": "published",
-        "draft": "Draft",
+        "draft": "draft",
         "inReview": "pending review",
         "ok": "OK",
         "cancel": "Cancel"
@@ -696,7 +696,7 @@
         "description": "Are you sure you want to permanently delete this person? The person will be deleted everywhere it is used.",
         "impact": "Impacted events: ",
         "published": "published",
-        "draft": "Draft",
+        "draft": "draft",
         "inReview": "pending review",
         "ok": "OK",
         "cancel": "Cancel"
@@ -935,7 +935,7 @@
             "description": "Are you sure you want to permanently delete this taxonomy? The taxonomy will be deleted everywhere it is used.",
             "impact": "Impacted events: ",
             "published": "published",
-            "draft": "Draft",
+            "draft": "draft",
             "inReview": "pending review"
           }
         }

@@ -211,7 +211,7 @@ const Taxonomy = () => {
             'dashboard.taxonomy.listing.modal.contentDelete.impact',
           )} ${res?.events?.publishedEventsCount} ${t('dashboard.taxonomy.listing.modal.contentDelete.published')}, ${
             res?.events?.draftEventsCount
-          } ${t('dashboard.taxonomy.listing.modal.contentDelete.draft')} , ${res?.events?.pendingReviewEventsCount} ${t(
+          } ${t('dashboard.taxonomy.listing.modal.contentDelete.draft')}, ${res?.events?.pendingReviewEventsCount} ${t(
             'dashboard.taxonomy.listing.modal.contentDelete.inReview',
           )}`,
         });
