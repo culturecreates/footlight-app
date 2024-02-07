@@ -11,7 +11,7 @@ export const recrusiveObjectCompare = (obj1, obj2) => {
   }
 
   for (let key of keys1) {
-    if (!keys2.includes(key) || !deepEqual(obj1[key], obj2[key])) {
+    if (!keys2.includes(key) || !recrusiveObjectCompare(obj1[key], obj2[key])) {
       return false;
     }
   }
