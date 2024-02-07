@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import './events.css';
-import { Checkbox, Col, Row, Badge, Button, Dropdown, Space, Popover, Divider, Radio } from 'antd';
+import { Checkbox, Col, Row, Badge, Button, Dropdown, Space, Popover, Divider, Radio, Grid } from 'antd';
 import { CloseCircleOutlined, DownOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
@@ -33,12 +33,15 @@ import { useDebounce } from '../../../hooks/debounce';
 import RcCalendar from '../../../components/RC_Calendar/RcCalendar';
 import { dateFilterOptions, dateFilterTypes } from '../../../constants/dateFilterOptions';
 
+const { useBreakpoint } = Grid;
+
 function Events() {
   const { t } = useTranslation();
   const { calendarId } = useParams();
   const navigate = useNavigate();
   let [searchParams, setSearchParams] = useSearchParams();
   const timestampRef = useRef(Date.now()).current;
+  const screens = useBreakpoint();
   const { user } = useSelector(getUserDetails);
   const [
     currentCalendarData,
@@ -580,7 +583,7 @@ function Events() {
                 data-cy="input-search-events"
               />
             </Col>
-            <Col>
+            <Col style={{ ...(!screens.md && { marginTop: '-6px' }) }}>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <span style={{ fontSize: '16px', fontWeight: 700 }} data-cy="span-sort-by-text">
                   {t('dashboard.events.filter.sort.sortBy')}
