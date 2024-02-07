@@ -4,6 +4,7 @@ export const removeObjectArrayDuplicates = (array, key = 'id') => {
     let uniqueArray = array.filter((obj) => {
       if (!uniqueIds.has(obj[key])) {
         uniqueIds.add(obj[key]);
+
         if (obj[key] !== '') return true;
       }
       return false;
