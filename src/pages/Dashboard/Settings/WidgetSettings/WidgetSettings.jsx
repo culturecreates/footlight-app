@@ -117,44 +117,37 @@ const WidgetSettings = () => {
   });
 
   const handleFormValuesChange = (changedValues, allValues) => {
-    form
-      .validateFields(['width', 'height', 'limit'])
-      .then(() => {
-        const width = form.getFieldValue('width') ?? 0;
-        const height = form.getFieldValue('height') ?? 600;
-        const limit = form.getFieldValue('limit') ?? 9;
+    const width = form.getFieldValue('width') ?? 0;
+    const height = form.getFieldValue('height') ?? 600;
+    const limit = form.getFieldValue('limit') ?? 9;
 
-        const filtersParam =
-          arrayToQueryParam(allValues?.eventType ?? [], 'type') +
-          arrayToQueryParam(allValues?.location ?? [], 'place') +
-          arrayToQueryParam(allValues?.region ?? [], 'region') +
-          arrayToQueryParam([...(allValues?.person ?? []), ...(allValues?.organizer ?? [])], 'person-organization');
+    const filtersParam =
+      arrayToQueryParam(allValues?.eventType ?? [], 'type') +
+      arrayToQueryParam(allValues?.location ?? [], 'place') +
+      arrayToQueryParam(allValues?.region ?? [], 'region') +
+      arrayToQueryParam([...(allValues?.person ?? []), ...(allValues?.organizer ?? [])], 'person-organization');
 
-        const searchEventsFilters = encodeURIComponent(filtersParam);
+    const searchEventsFilters = encodeURIComponent(filtersParam);
 
-        const locale = onLanguageSelect(allValues?.language);
-        const temp = new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html');
+    const locale = onLanguageSelect(allValues?.language);
+    const urlCopy = new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html');
 
-        // Add query parameters to the URL
-        temp.searchParams.append('width', width);
+    // Add query parameters to the URL
+    urlCopy.searchParams.append('width', width);
 
-        temp.searchParams.append('limit', limit);
-        temp.searchParams.append('calendar', calendarName);
-        temp.searchParams.append('height', height);
-        temp.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
-        temp.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
-        temp.searchParams.append('searchEventsFilters', searchEventsFilters);
-        temp.searchParams.append('locale', locale?.key.toLowerCase());
-        if (changedValues.color) {
-          temp.searchParams.append('color', changedValues.color);
-        } else temp.searchParams.append('color', color);
+    urlCopy.searchParams.append('limit', limit);
+    urlCopy.searchParams.append('calendar', calendarName);
+    urlCopy.searchParams.append('height', height);
+    urlCopy.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
+    urlCopy.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
+    urlCopy.searchParams.append('searchEventsFilters', searchEventsFilters);
+    urlCopy.searchParams.append('locale', locale?.key.toLowerCase());
+    if (changedValues.color) {
+      urlCopy.searchParams.append('color', changedValues.color);
+    } else urlCopy.searchParams.append('color', color);
 
-        setUrl(temp);
-        setIframeCode(`<iframe src="${temp.href}" width="100%" height="${height}px"></iframe>`);
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+    setUrl(urlCopy);
+    setIframeCode(`<iframe src="${urlCopy.href}" width="100%" height="${height}px"></iframe>`);
   };
 
   const onLanguageSelect = (value) => {
@@ -420,7 +413,7 @@ const WidgetSettings = () => {
                           name="height"
                           label={t(`${localePath}.height`)}
                           required
-                          initialValue="600"
+                          initialValue={600}
                           rules={[
                             {
                               required: true,
@@ -438,7 +431,7 @@ const WidgetSettings = () => {
                         <Form.Item
                           name="width"
                           label={t(`${localePath}.width`)}
-                          initialValue="1000"
+                          initialValue={1000}
                           rules={[
                             {
                               required: true,
@@ -743,13 +736,7 @@ const WidgetSettings = () => {
                 centered
                 className="widget-settings-page-iframe-modal"
                 width={form.getFieldValue('width') ? `${form.getFieldValue('width')}px` : '1000px'}
-                height={
-                  form.getFieldValue('height')
-                    ? `${parseInt(form.getFieldValue('height')) + 100}px`
-                    : !screens.lg
-                    ? '790px'
-                    : '700px'
-                }
+                height={form.getFieldValue('height') ? `${parseInt(form.getFieldValue('height')) + 100}px` : '700px'}
                 title={
                   <span className="quick-create-organization-modal-title" data-cy="widget-settings-page-modal-title">
                     {!screens.lg ? t(`${localePath}.previewMobileBtn`) : t(`${localePath}.previewDesktop`)}
