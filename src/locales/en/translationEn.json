@@ -454,9 +454,9 @@
         "title": "Confirm Delete",
         "description": "Are you sure you want to permanently delete this organization? The organization will be deleted everywhere it is used.",
         "impact": "Impacted events: ",
-        "published": "published",
-        "inReview": "pending review",
-        "draft": "draft",
+        "published": "{{number}} published",
+        "inReview": "{{number}} pending review",
+        "draft": "{{number}} draft",
         "ok": "OK",
         "cancel": "Cancel"
       },
@@ -527,9 +527,9 @@
         "title": "Confirm Delete",
         "description": "Are you sure you want to permanently delete this place? The organization will be deleted everywhere it is used.",
         "impact": "Impacted events: ",
-        "published": "published",
-        "draft": "draft",
-        "inReview": "pending review",
+        "published": "{{number}} published",
+        "inReview": "{{number}} pending review",
+        "draft": "{{number}} draft",
         "ok": "OK",
         "cancel": "Cancel"
       },
@@ -695,9 +695,9 @@
         "title": "Confirm Delete",
         "description": "Are you sure you want to permanently delete this person? The person will be deleted everywhere it is used.",
         "impact": "Impacted events: ",
-        "published": "published",
-        "draft": "draft",
-        "inReview": "pending review",
+        "published": "{{number}} published",
+        "inReview": "{{number}} pending review",
+        "draft": "{{number}} draft",
         "ok": "OK",
         "cancel": "Cancel"
       },
@@ -934,9 +934,9 @@
           "contentDelete": {
             "description": "Are you sure you want to permanently delete this taxonomy? The taxonomy will be deleted everywhere it is used.",
             "impact": "Impacted events: ",
-            "published": "published",
-            "draft": "draft",
-            "inReview": "pending review"
+            "published": "{{number}} published",
+            "inReview": "{{number}} pending review",
+            "draft": "{{number}} draft"
           }
         }
       },

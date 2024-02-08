@@ -454,9 +454,9 @@
         "title": "Confirmer la suppression",
         "description": "Êtes-vous sûr de vouloir supprimer définitivement cette organisation? Cette organisation sera supprimée partout où elle est utilisée.",
         "impact": "Événements concernés : ",
-        "published": "publié",
-        "draft": "brouillon",
-        "inReview": "attente d'approbation",
+        "published": "publié - {{number}}",
+        "draft": "brouillon - {{number}}",
+        "inReview": "attente d'approbation - {{number}}",
         "ok": "OK",
         "cancel": "Annuler"
       },
@@ -527,9 +527,9 @@
         "title": "Confirmer la suppression",
         "description": "Êtes-vous sûr de vouloir supprimer définitivement ce lieu ? Le lieu sera supprimé partout où il est utilisé.",
         "impact": "Événements concernés : ",
-        "published": "publié",
-        "inReview": "attente d'approbation",
-        "draft": "brouillon",
+        "published": "publié - {{number}}",
+        "draft": "brouillon - {{number}}",
+        "inReview": "attente d'approbation - {{number}}",
         "ok": "OK",
         "cancel": "Annuler"
       },
@@ -693,9 +693,9 @@
         "title": "Confirmer la suppression",
         "description": "Êtes-vous sûr de vouloir supprimer définitivement cette personne? Cette personne sera supprimée partout où elle est utilisée.",
         "impact": "Événements concernés : ",
-        "published": "publié",
-        "inReview": "attente d'approbation",
-        "draft": "brouillon",
+        "published": "publié - {{number}}",
+        "draft": "brouillon - {{number}}",
+        "inReview": "attente d'approbation - {{number}}",
         "ok": "OK",
         "cancel": "Annuler"
       },
@@ -930,9 +930,9 @@
           "contentDelete": {
             "description": "Êtes-vous sûr de vouloir supprimer définitivement cette taxonomie? Cette taxonomie sera supprimée partout où elle est utilisée.",
             "impact": "Événements concernés : ",
-            "published": "publié",
-            "draft": "brouillon",
-            "inReview": "attente d'approbation"
+            "published": "publié - {{number}}",
+            "draft": "brouillon - {{number}}",
+            "inReview": "attente d'approbation - {{number}}"
           }
         }
       },

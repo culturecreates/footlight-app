@@ -209,11 +209,13 @@ const Taxonomy = () => {
           cancelText: t('dashboard.settings.addUser.cancel'),
           content: `${t('dashboard.taxonomy.listing.modal.contentDelete.description')} ${t(
             'dashboard.taxonomy.listing.modal.contentDelete.impact',
-          )} ${res?.events?.publishedEventsCount} ${t('dashboard.taxonomy.listing.modal.contentDelete.published')}, ${
-            res?.events?.draftEventsCount
-          } ${t('dashboard.taxonomy.listing.modal.contentDelete.draft')}, ${res?.events?.pendingReviewEventsCount} ${t(
-            'dashboard.taxonomy.listing.modal.contentDelete.inReview',
-          )}`,
+          )}  ${t('dashboard.taxonomy.listing.modal.contentDelete.published', {
+            number: `${res?.events?.publishedEventsCount}`,
+          })}, ${t('dashboard.taxonomy.listing.modal.contentDelete.draft', {
+            number: `${res?.events?.draftEventsCount}`,
+          })}, ${t('dashboard.taxonomy.listing.modal.contentDelete.inReview', {
+            number: `${res?.events?.pendingReviewEventsCount}`,
+          })}.`,
         });
       });
   };

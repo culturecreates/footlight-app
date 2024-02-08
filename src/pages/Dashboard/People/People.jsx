@@ -84,11 +84,12 @@ function People() {
       .then((res) => {
         Confirm({
           title: t('dashboard.people.deletePerson.title'),
-          content: `${t('dashboard.people.deletePerson.description')} ${t('dashboard.people.deletePerson.impact')} ${
-            res?.events?.publishedEventsCount
-          } ${t('dashboard.people.deletePerson.published')}, ${res?.events?.draftEventsCount} ${t(
-            'dashboard.people.deletePerson.draft',
-          )}, ${t('dashboard.people.deletePerson.inReview')}  ${res?.events?.pendingReviewEventsCount}`,
+          content: `${t('dashboard.people.deletePerson.description')} ${t('dashboard.people.deletePerson.impact')}${t(
+            'dashboard.people.deletePerson.published',
+            { number: `${res?.events?.publishedEventsCount}` },
+          )}, ${t('dashboard.people.deletePerson.draft', {
+            number: `${res?.events?.draftEventsCount}`,
+          })}, ${t('dashboard.people.deletePerson.inReview', { number: `${res?.events?.pendingReviewEventsCount}` })}.`,
           okText: t('dashboard.people.deletePerson.ok'),
           cancelText: t('dashboard.people.deletePerson.cancel'),
           className: 'delete-modal-container',

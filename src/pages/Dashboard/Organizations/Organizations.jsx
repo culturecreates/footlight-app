@@ -90,11 +90,14 @@ function Organizations() {
           title: t('dashboard.organization.deleteOrganization.title'),
           content: `${t('dashboard.organization.deleteOrganization.description')} ${t(
             'dashboard.organization.deleteOrganization.impact',
-          )} ${res?.events?.publishedEventsCount} ${t('dashboard.organization.deleteOrganization.published')}, ${
-            res?.events?.draftEventsCount
-          } ${t('dashboard.organization.deleteOrganization.draft')}, ${t(
-            'dashboard.organization.deleteOrganization.inReview',
-          )}  ${res?.events?.pendingReviewEventsCount}`,
+          )}  
+          ${t('dashboard.organization.deleteOrganization.published', {
+            number: `${res?.events?.publishedEventsCount}`,
+          })}, 
+          ${t('dashboard.organization.deleteOrganization.draft', { number: `${res?.events?.draftEventsCount}` })}, 
+          ${t('dashboard.organization.deleteOrganization.inReview', {
+            number: `${res?.events?.pendingReviewEventsCount}`,
+          })}.`,
           okText: t('dashboard.organization.deleteOrganization.ok'),
           cancelText: t('dashboard.organization.deleteOrganization.cancel'),
           className: 'delete-modal-container',
