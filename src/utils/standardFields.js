@@ -62,3 +62,21 @@ export const getStandardFieldArrayForClass = (value) => {
   }
   return arr;
 };
+
+export const getStandardFieldTranslation = ({ value, classType }) => {
+  let field = [];
+  switch (classType.toUpperCase()) {
+    case taxonomyClass.PERSON:
+      field = PERSON.find((s) => s.key === value);
+      break;
+    case taxonomyClass.EVENT:
+      field = EVENT.find((s) => s.key === value);
+      break;
+    case taxonomyClass.PLACE:
+      field = PLACE.find((s) => s.key === value);
+      break;
+    default:
+      break;
+  }
+  return field;
+};
