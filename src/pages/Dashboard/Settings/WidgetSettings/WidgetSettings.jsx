@@ -1,4 +1,4 @@
-import { Col, Divider, Form, Grid, Row, Spin } from 'antd';
+import { Col, Divider, Form, Grid, Row, Spin, notification } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import './widgetSettings.css';
@@ -117,37 +117,44 @@ const WidgetSettings = () => {
   });
 
   const handleFormValuesChange = (changedValues, allValues) => {
-    const width = form.getFieldValue('width') ?? 0;
-    const height = form.getFieldValue('height') ?? 600;
-    const limit = form.getFieldValue('limit') ?? 9;
+    form
+      .validateFields(['width', 'height', 'limit'])
+      .then(() => {
+        const width = form.getFieldValue('width') ?? 0;
+        const height = form.getFieldValue('height') ?? 600;
+        const limit = form.getFieldValue('limit') ?? 9;
 
-    const filtersParam =
-      arrayToQueryParam(allValues?.eventType ?? [], 'type') +
-      arrayToQueryParam(allValues?.location ?? [], 'place') +
-      arrayToQueryParam(allValues?.region ?? [], 'region') +
-      arrayToQueryParam([...(allValues?.person ?? []), ...(allValues?.organizer ?? [])], 'person-organization');
+        const filtersParam =
+          arrayToQueryParam(allValues?.eventType ?? [], 'type') +
+          arrayToQueryParam(allValues?.location ?? [], 'place') +
+          arrayToQueryParam(allValues?.region ?? [], 'region') +
+          arrayToQueryParam([...(allValues?.person ?? []), ...(allValues?.organizer ?? [])], 'person-organization');
 
-    const searchEventsFilters = encodeURIComponent(filtersParam);
+        const searchEventsFilters = encodeURIComponent(filtersParam);
 
-    const locale = onLanguageSelect(allValues?.language);
-    const temp = new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html');
+        const locale = onLanguageSelect(allValues?.language);
+        const temp = new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html');
 
-    // Add query parameters to the URL
-    temp.searchParams.append('width', width);
+        // Add query parameters to the URL
+        temp.searchParams.append('width', width);
 
-    temp.searchParams.append('limit', limit);
-    temp.searchParams.append('calendar', calendarName);
-    temp.searchParams.append('height', height);
-    temp.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
-    temp.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
-    temp.searchParams.append('searchEventsFilters', searchEventsFilters);
-    temp.searchParams.append('locale', locale?.key.toLowerCase());
-    if (changedValues.color) {
-      temp.searchParams.append('color', changedValues.color);
-    } else temp.searchParams.append('color', color);
+        temp.searchParams.append('limit', limit);
+        temp.searchParams.append('calendar', calendarName);
+        temp.searchParams.append('height', height);
+        temp.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
+        temp.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
+        temp.searchParams.append('searchEventsFilters', searchEventsFilters);
+        temp.searchParams.append('locale', locale?.key.toLowerCase());
+        if (changedValues.color) {
+          temp.searchParams.append('color', changedValues.color);
+        } else temp.searchParams.append('color', color);
 
-    setUrl(temp);
-    setIframeCode(`<iframe src="${temp.href}" width="100%" height="${height}px"></iframe>`);
+        setUrl(temp);
+        setIframeCode(`<iframe src="${temp.href}" width="100%" height="${height}px"></iframe>`);
+      })
+      .catch((e) => {
+        console.error(e);
+      });
   };
 
   const onLanguageSelect = (value) => {
@@ -316,7 +323,19 @@ const WidgetSettings = () => {
             style={{ display: `${screens.xl ? 'none' : 'flex'}` }}
             data-cy="button-preview"
             onClick={() => {
-              setPreviewModal(true);
+              form
+                .validateFields(['width', 'height', 'limit'])
+                .then(() => {
+                  setPreviewModal(true);
+                })
+                .catch((error) => {
+                  error?.errorFields?.map((e) => {
+                    notification.error({
+                      description: e.errors[0],
+                      placement: 'top',
+                    });
+                  });
+                });
             }}
           />
         </Row>
@@ -340,9 +359,13 @@ const WidgetSettings = () => {
                       initialValue={9}
                       rules={[
                         {
-                          type: 'limit',
-                          message: 'need to be added',
-                          // message: t('dashboard.events.addEditEvent.validations.url'),
+                          required: true,
+                          message: t(`${localePath}.validation.limit`),
+                        },
+                        {
+                          required: true,
+                          pattern: /^[0-9]+$/,
+                          message: t(`${localePath}.validation.limit`),
                         },
                       ]}
                       data-cy="widget-settings-limit">
@@ -401,11 +424,8 @@ const WidgetSettings = () => {
                           rules={[
                             {
                               required: true,
-                              message: 'Please enter the height.',
-                            },
-                            {
+                              message: t(`${localePath}.validation.height`),
                               pattern: /^[0-9]+$/,
-                              message: 'Please enter a valid numeric height.',
                             },
                           ]}
                           validateTrigger={['onChange', 'onBlur']}
@@ -421,8 +441,9 @@ const WidgetSettings = () => {
                           initialValue="1000"
                           rules={[
                             {
-                              type: 'width',
-                              message: 'need to be added',
+                              required: true,
+                              message: t(`${localePath}.validation.width`),
+                              pattern: /^[0-9]+$/,
                             },
                           ]}
                           data-cy="widget-settings-width">
@@ -448,13 +469,6 @@ const WidgetSettings = () => {
                       name="eventType"
                       label={t(`${localePath}.eventType`)}
                       className="widget-settings-event-type"
-                      rules={[
-                        {
-                          type: 'eventType',
-                          message: 'need to be added',
-                          // message: t('dashboard.events.addEditEvent.validations.url'),
-                        },
-                      ]}
                       data-cy="widget-settings-event-type">
                       <TreeSelectOption
                         placeholder={<span>{t(`${localePath}.placeholder.eventType`)}</span>}
@@ -491,13 +505,6 @@ const WidgetSettings = () => {
                       name="language"
                       label={t(`${localePath}.language`)}
                       initialValue={languageOptions[0].value}
-                      rules={[
-                        {
-                          type: 'language',
-                          message: 'need to be added',
-                          // message: t('dashboard.events.addEditEvent.validations.url'),
-                        },
-                      ]}
                       data-cy="widget-settings-language-label">
                       <SelectOption
                         data-cy="widget-settings-language"
@@ -512,17 +519,7 @@ const WidgetSettings = () => {
                   </Col>
 
                   <Col flex="448px" className="widget-settings-region">
-                    <Form.Item
-                      name="region"
-                      label={t(`${localePath}.region`)}
-                      rules={[
-                        {
-                          type: 'region',
-                          message: 'need to be added',
-                          // message: t('dashboard.events.addEditEvent.validations.url'),
-                        },
-                      ]}
-                      data-cy="widget-settings-region-label">
+                    <Form.Item name="region" label={t(`${localePath}.region`)} data-cy="widget-settings-region-label">
                       <TreeSelectOption
                         data-cy="treeselect-place-region"
                         allowClear
@@ -690,10 +687,22 @@ const WidgetSettings = () => {
                         size="large"
                         label={t(`${localePath}.copy`)}
                         onClick={() => {
-                          copyText({
-                            textToCopy: iframeCode,
-                            message: t(`${localePath}.copyNotification`),
-                          });
+                          form
+                            .validateFields(['width', 'height', 'limit'])
+                            .then(() => {
+                              copyText({
+                                textToCopy: iframeCode,
+                                message: t(`${localePath}.copyNotification`),
+                              });
+                            })
+                            .catch((error) => {
+                              error?.errorFields?.map((e) => {
+                                notification.error({
+                                  description: e.errors[0],
+                                  placement: 'top',
+                                });
+                              });
+                            });
                         }}
                         icon={<CopyOutlined style={{ color: '#1B3DE6' }} size="12px" />}
                         data-cy="button-copy"
@@ -713,7 +722,19 @@ const WidgetSettings = () => {
                   label={t(`${localePath}.previewDesktop`)}
                   data-cy="button-preview"
                   onClick={() => {
-                    setPreviewModal(true);
+                    form
+                      .validateFields(['width', 'height', 'limit'])
+                      .then(() => {
+                        setPreviewModal(true);
+                      })
+                      .catch((error) => {
+                        error?.errorFields?.map((e) => {
+                          notification.error({
+                            description: e.errors[0],
+                            placement: 'top',
+                          });
+                        });
+                      });
                   }}
                 />
               </div>
@@ -722,7 +743,13 @@ const WidgetSettings = () => {
                 centered
                 className="widget-settings-page-iframe-modal"
                 width={form.getFieldValue('width') ? `${form.getFieldValue('width')}px` : '1000px'}
-                height={form.getFieldValue('height') ? `${parseInt(form.getFieldValue('height')) + 100}px` : '600px'}
+                height={
+                  form.getFieldValue('height')
+                    ? `${parseInt(form.getFieldValue('height')) + 100}px`
+                    : !screens.lg
+                    ? '790px'
+                    : '700px'
+                }
                 title={
                   <span className="quick-create-organization-modal-title" data-cy="widget-settings-page-modal-title">
                     {!screens.lg ? t(`${localePath}.previewMobileBtn`) : t(`${localePath}.previewDesktop`)}

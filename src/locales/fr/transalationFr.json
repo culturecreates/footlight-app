@@ -894,7 +894,7 @@
         "colorDescreption": "Entrez le code hexadécimal de la couleur principale. Choisissez une couleur qui donne suffisamment de contraste pour que l'utilisateur puisse lire le contenu.",
         "colorPlaceHolder": "Collez votre code couleur ou sélectionnez une couleur",
         "height": "Largeur",
-        "width": "Hauteur",
+        "width": "Largeur maximale",
         "language": "Choix de langue",
         "eventType": "Type d'événement",
         "region": "Région",
@@ -907,6 +907,12 @@
         "codeSectionInfo": "Mettez ce code à l'endroit où vous souhaitez que le widget apparaisse sur une page web.",
         "copy": "Copier",
         "copyNotification": "Code copied to clipboard",
+        "validation": {
+          "width": "Entrez la largeur en pixels",
+          "height": "Entrez la hauteur en pixels",
+          "color": "Collez votre code couleur ou sélectionnez une couleur",
+          "limit": "Entrez le nombre maximum à afficher"
+        },
         "placeholder": {
           "eventType": "Sélectionner un type d'événement",
           "region": "Sélectionner une région",
