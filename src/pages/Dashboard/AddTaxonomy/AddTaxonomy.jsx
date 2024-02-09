@@ -68,11 +68,6 @@ const AddTaxonomy = () => {
     genericObjectCompare(transformResponse(initialFormData), transformResponse(taxonomyData)),
   );
 
-  useEffect(() => {
-    console.log(transformResponse(initialFormData), transformResponse(taxonomyData));
-    // console.log(genericObjectCompare(transformResponse(initialFormData), transformResponse(taxonomyData)));
-  }, [initialFormData, taxonomyData]);
-
   const handleFieldChange = (changedFields, allFields) => {
     console.log(changedFields, allFields);
   };
