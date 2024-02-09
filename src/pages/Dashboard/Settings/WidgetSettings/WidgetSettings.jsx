@@ -40,6 +40,8 @@ const WidgetSettings = () => {
   const [form] = Form.useForm();
 
   const localePath = 'dashboard.settings.widgetSettings';
+  const regexForHexCode = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const { eventDetailsUrlTemplate = '', listEventsUrlTemplate = '' } = currentCalendarData?.widgetSettings || {};
   const calendarName = currentCalendarData?.slug;
@@ -317,7 +319,7 @@ const WidgetSettings = () => {
             data-cy="button-preview"
             onClick={() => {
               form
-                .validateFields(['width', 'height', 'limit'])
+                .validateFields(['width', 'height', 'limit', 'color'])
                 .then(() => {
                   setPreviewModal(true);
                 })
@@ -369,6 +371,10 @@ const WidgetSettings = () => {
                     <Form.Item
                       name="color"
                       label={t(`${localePath}.color`)}
+                      {...(!regexForHexCode.test(color) && {
+                        help: t('login.failure'),
+                        validateStatus: 'error',
+                      })}
                       rules={[
                         {
                           required: true,
@@ -376,7 +382,7 @@ const WidgetSettings = () => {
                         },
                         {
                           validator: (_, value) => {
-                            if (!/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(value)) {
+                            if (!regexForHexCode.test(value)) {
                               return Promise.reject('Please enter a valid hex color code.');
                             }
                             return Promise.resolve();
@@ -390,21 +396,24 @@ const WidgetSettings = () => {
                             color={color}
                             setColor={(color) => {
                               setColor(color);
-                              handleFormValuesChange({ color: color }, form.getFieldsValue(true));
+                              form.setFieldValue('color', color);
                             }}
                           />
                         }
                         onChange={(color) => {
-                          setColor(color?.target?.value);
-                          handleFormValuesChange({ color: color?.target?.value }, form.getFieldsValue(true));
+                          const value = color?.target?.value;
+                          if (regexForHexCode.test(value)) {
+                            setColor(color?.target?.value);
+                            form.setFieldValue('color', color?.target?.value);
+                          }
                         }}
                         placeholder={t(`${localePath}.colorPlaceHolder`)}
                         value={color}
                       />
-                      <p className="page-description" data-cy="widget-settings-page-description">
-                        {t(`${localePath}.colorDescreption`)}
-                      </p>
                     </Form.Item>
+                    <p className="page-description" data-cy="widget-settings-page-description">
+                      {t(`${localePath}.colorDescreption`)}
+                    </p>
                   </Col>
                   <Col flex="448px">
                     <Row gutter={[8, 8]}>
@@ -681,7 +690,7 @@ const WidgetSettings = () => {
                         label={t(`${localePath}.copy`)}
                         onClick={() => {
                           form
-                            .validateFields(['width', 'height', 'limit'])
+                            .validateFields(['width', 'height', 'limit', 'color'])
                             .then(() => {
                               copyText({
                                 textToCopy: iframeCode,
@@ -716,7 +725,7 @@ const WidgetSettings = () => {
                   data-cy="button-preview"
                   onClick={() => {
                     form
-                      .validateFields(['width', 'height', 'limit'])
+                      .validateFields(['width', 'height', 'limit', 'color'])
                       .then(() => {
                         setPreviewModal(true);
                       })
