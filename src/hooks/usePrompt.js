@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useRef } from 'react';
 import { UNSAFE_NavigationContext as NavigationContext } from 'react-router-dom';
-import { useBlocker } from 'react-router-dom';
+import { useBlocker, useBeforeUnload } from 'react-router-dom';
 
 function useConfirmExit(confirmExit, when = true) {
   const { navigator } = useContext(NavigationContext);
@@ -68,29 +68,34 @@ export function usePrompt(message, when = true) {
   useConfirmExit(confirmExit, when);
 }
 
-export function useCustomPrompt(message, shouldPrompt) {
-  const retryFn = useRef(() => {});
+export function useCustomPrompt(message, { beforeUnload } = {}) {
+  let blocker = useBlocker(
+    useCallback(() => (typeof message === 'string' ? !window.confirm(message) : false), [message]),
+  );
+  let prevState = useRef(blocker.state);
 
   useEffect(() => {
-    if (retryFn.current) {
-      retryFn.current();
+    if (blocker.state === 'blocked') {
+      blocker.reset();
     }
-  }, [retryFn.current]);
+    prevState.current = blocker.state;
+  }, [blocker]);
 
-  const handleBlockNavigation = ({ retry }) => {
-    const shouldDisplayPrompt = typeof shouldPrompt === 'boolean' ? shouldPrompt : shouldPrompt();
+  useBeforeUnload(
+    useCallback(
+      (event) => {
+        if (beforeUnload && typeof message === 'string') {
+          event.preventDefault();
+          event.returnValue = message;
+        }
+      },
+      [message, beforeUnload],
+    ),
+    { capture: true },
+  );
+}
 
-    if (shouldDisplayPrompt) {
-      const leaveRoute = window.confirm(message);
-      if (leaveRoute) {
-        retryFn.current = retry;
-      } else {
-        retry();
-      }
-    } else {
-      retry();
-    }
-  };
-
-  useBlocker(handleBlockNavigation, true);
+export function Prompt({ when, message, ...props }) {
+  useCustomPrompt(when ? message : false, props);
+  return null;
 }

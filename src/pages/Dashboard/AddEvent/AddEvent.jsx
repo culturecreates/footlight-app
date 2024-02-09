@@ -66,7 +66,7 @@ import NoContent from '../../../components/NoContent/NoContent';
 import { locationType, locationTypeOptions, virtualLocationFieldNames } from '../../../constants/locationTypeOptions';
 import { otherInformationFieldNames, otherInformationOptions } from '../../../constants/otherInformationOptions';
 import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../../constants/eventAccessibilityOptions';
-import { useCustomPrompt } from '../../../hooks/usePrompt';
+import { Prompt } from '../../../hooks/usePrompt';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import RecurringEvents from '../../../components/RecurringEvents';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
@@ -190,8 +190,6 @@ function AddEvent() {
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
   const [selectedOrganizerPerformerSupporterType, setSelectedOrganizerPerformerSupporterType] = useState();
   const [imageCropOpen, setImageCropOpen] = useState(false);
-
-  useCustomPrompt(t('common.unsavedChanges'), showDialog);
 
   setContentBackgroundColor('#F9FAFF');
 
@@ -1447,6 +1445,7 @@ function AddEvent() {
     !updateEventStateLoading &&
     !initialExternalSourceLoading ? (
     <div>
+      <Prompt when={showDialog} message={t('common.unsavedChanges')} beforeUnload={true} />
       <Form
         form={form}
         layout="vertical"

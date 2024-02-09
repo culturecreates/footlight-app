@@ -26,7 +26,7 @@ import Outlined from '../../../components/Button/Outlined';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
-import { useCustomPrompt } from '../../../hooks/usePrompt';
+import { Prompt } from '../../../hooks/usePrompt';
 import { compareArraysOfObjects } from '../../../utils/genericObjectCompare';
 
 const taxonomyClasses = taxonomyClassTranslations.map((item) => {
@@ -87,12 +87,6 @@ const AddTaxonomyTest = () => {
   });
   const [addTaxonomy] = useAddTaxonomyMutation();
   const [updateTaxonomy] = useUpdateTaxonomyMutation();
-
-  useCustomPrompt(
-    t('common.unsavedChanges'),
-    isDirty.formState ||
-      (!isDirty.isSubmitting ? !compareArraysOfObjects(conceptData ?? [], taxonomyData?.concepts ?? []) : false),
-  );
 
   useEffect(() => {
     if (taxonomyId && currentCalendarData) {
@@ -290,6 +284,14 @@ const AddTaxonomyTest = () => {
 
   return (
     <>
+      <Prompt
+        when={
+          isDirty.formState ||
+          (!isDirty.isSubmitting ? !compareArraysOfObjects(conceptData ?? [], taxonomyData?.concepts ?? []) : false)
+        }
+        message={t('common.unsavedChanges')}
+        beforeUnload={true}
+      />
       {!loading && (isSuccess || !taxonomyId) ? (
         <Form layout="vertical" form={form} onValuesChange={handleValueChange}>
           <Row className="add-taxonomy-wrapper" gutter={[16, 16]}>
