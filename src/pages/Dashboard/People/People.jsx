@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import './people.css';
-import { List, Grid, Modal } from 'antd';
-import { DeleteOutlined, ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { List, Grid } from 'antd';
+import { DeleteOutlined, UserOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
@@ -29,8 +29,9 @@ import { useDeletePersonMutation, useLazyGetAllPeopleQuery } from '../../../serv
 import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../../constants/sortByOptions';
 import i18n from 'i18next';
 import { PathName } from '../../../constants/pathName';
+import { Confirm } from '../../../components/Modal/Confirm/Confirm';
+import { useLazyGetEntityDependencyQuery } from '../../../services/entities';
 
-const { confirm } = Modal;
 const { useBreakpoint } = Grid;
 
 function People() {
@@ -54,6 +55,7 @@ function People() {
   const [getAllPeople, { currentData: allPeopleData, isFetching: allPeopleFetching, isSuccess: allPeopleSuccess }] =
     useLazyGetAllPeopleQuery();
   const [deletePerson] = useDeletePersonMutation();
+  const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyQuery();
 
   const [pageNumber, setPageNumber] = useState(
     searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('peoplePage') ?? 1,
@@ -77,18 +79,25 @@ function People() {
   });
 
   const deletePersonHandler = (personId) => {
-    confirm({
-      title: t('dashboard.people.deletePerson.title'),
-      icon: <ExclamationCircleOutlined />,
-      content: t('dashboard.people.deletePerson.description'),
-      okText: t('dashboard.people.deletePerson.ok'),
-      okType: 'danger',
-      cancelText: t('dashboard.people.deletePerson.cancel'),
-      className: 'delete-modal-container',
-      onOk() {
-        deletePerson({ id: personId, calendarId: calendarId });
-      },
-    });
+    getDependencyDetails({ ids: personId, calendarId })
+      .unwrap()
+      .then((res) => {
+        Confirm({
+          title: t('dashboard.people.deletePerson.title'),
+          content: `${t('dashboard.people.deletePerson.description')} ${t('dashboard.people.deletePerson.impact')}${t(
+            'dashboard.people.deletePerson.published',
+            { number: `${res?.events?.publishedEventsCount}` },
+          )}, ${t('dashboard.people.deletePerson.draft', {
+            number: `${res?.events?.draftEventsCount}`,
+          })}, ${t('dashboard.people.deletePerson.inReview', { number: `${res?.events?.pendingReviewEventsCount}` })}.`,
+          okText: t('dashboard.people.deletePerson.ok'),
+          cancelText: t('dashboard.people.deletePerson.cancel'),
+          className: 'delete-modal-container',
+          onAction: () => {
+            deletePerson({ id: personId, calendarId: calendarId });
+          },
+        });
+      });
   };
 
   const adminCheckHandler = () => {
@@ -141,99 +150,118 @@ function People() {
     sessionStorage.setItem('peopleOrder', filter?.order);
   }, [pageNumber, peopleSearchQuery, filter]);
   return (
-    allPeopleSuccess && (
-      <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
-        <Main>
-          <h4 className="events-heading" data-cy="heading-people-title">
-            {t('dashboard.people.people')}
-          </h4>
-          <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-            <AddPerson
-              label={t('dashboard.people.person')}
-              onClick={() => {
-                navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
-              }}
-              data-cy="button-add-new-person"
-            />
-          </FeatureFlag>
-          <PersonSearch
-            placeholder={t('dashboard.people.search.placeholder')}
-            onPressEnter={(e) => onSearchHandler(e)}
-            defaultValue={peopleSearchQuery}
-            allowClear={true}
-            onChange={onChangeHandler}
-            data-cy="input-person-search"
-          />
-          <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
-          <></>
-
-          {!allPeopleFetching ? (
-            allPeopleData?.data?.length > 0 ? (
-              <List
-                data-cy="list-people"
-                className="event-list-wrapper"
-                itemLayout={screens.xs ? 'vertical' : 'horizontal'}
-                dataSource={allPeopleData?.data}
-                bordered={false}
-                pagination={{
-                  onChange: (page) => {
-                    setPageNumber(page);
-                  },
-                  pageSize: 10,
-                  hideOnSinglePage: true,
-                  total: totalCount,
-                  current: Number(pageNumber),
-                  showSizeChanger: false,
+    <>
+      {dependencyDetailsFetching && (
+        <div
+          style={{
+            height: 'calc(100% - 36px)',
+            width: 'calc(100% - 32px)',
+            position: 'absolute',
+            display: 'flex',
+            background: 'rgb(252 252 255 / 46%)',
+            zIndex: 100,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <LoadingIndicator data-cy="loading-indicator-people-confirm" />
+        </div>
+      )}
+      {allPeopleSuccess && (
+        <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
+          <Main>
+            <h4 className="events-heading" data-cy="heading-people-title">
+              {t('dashboard.people.people')}
+            </h4>
+            <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+              <AddPerson
+                label={t('dashboard.people.person')}
+                onClick={() => {
+                  navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
                 }}
-                renderItem={(item, index) => (
-                  <ListItem
-                    data-cy="list-item-person"
-                    key={index}
-                    id={index}
-                    logo={item?.image?.thumbnail?.uri}
-                    defaultLogo={<UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} data-cy="logo-person" />}
-                    title={contentLanguageBilingual({
-                      en: item?.name?.en,
-                      fr: item?.name?.fr,
-                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                      calendarContentLanguage: calendarContentLanguage,
-                    })}
-                    description={contentLanguageBilingual({
-                      en: item?.disambiguatingDescription?.en,
-                      fr: item?.disambiguatingDescription?.fr,
-                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                      calendarContentLanguage: calendarContentLanguage,
-                    })}
-                    createdDate={item?.creator?.date}
-                    createdByUserName={item?.creator?.userName}
-                    updatedDate={item?.modifier?.date}
-                    updatedByUserName={item?.modifier?.userName}
-                    artsDataLink={artsDataLinkChecker(item?.sameAs)}
-                    listItemHandler={() => listItemHandler(item?.id)}
-                    actions={[
-                      adminCheckHandler() && (
-                        <DeleteOutlined
-                          data-cy="icon-delete-person"
-                          key={'delete-icon'}
-                          style={{ color: '#222732', fontSize: '24px' }}
-                          onClick={() => deletePersonHandler(item?.id)}
-                        />
-                      ),
-                    ]}
-                  />
-                )}
+                data-cy="button-add-new-person"
               />
+            </FeatureFlag>
+            <PersonSearch
+              placeholder={t('dashboard.people.search.placeholder')}
+              onPressEnter={(e) => onSearchHandler(e)}
+              defaultValue={peopleSearchQuery}
+              allowClear={true}
+              onChange={onChangeHandler}
+              data-cy="input-person-search"
+            />
+            <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
+            <></>
+
+            {!allPeopleFetching ? (
+              allPeopleData?.data?.length > 0 ? (
+                <List
+                  data-cy="list-people"
+                  className="event-list-wrapper"
+                  itemLayout={screens.xs ? 'vertical' : 'horizontal'}
+                  dataSource={allPeopleData?.data}
+                  bordered={false}
+                  pagination={{
+                    onChange: (page) => {
+                      setPageNumber(page);
+                    },
+                    pageSize: 10,
+                    hideOnSinglePage: true,
+                    total: totalCount,
+                    current: Number(pageNumber),
+                    showSizeChanger: false,
+                  }}
+                  renderItem={(item, index) => (
+                    <ListItem
+                      data-cy="list-item-person"
+                      key={index}
+                      id={index}
+                      logo={item?.image?.thumbnail?.uri}
+                      defaultLogo={
+                        <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} data-cy="logo-person" />
+                      }
+                      title={contentLanguageBilingual({
+                        en: item?.name?.en,
+                        fr: item?.name?.fr,
+                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      })}
+                      description={contentLanguageBilingual({
+                        en: item?.disambiguatingDescription?.en,
+                        fr: item?.disambiguatingDescription?.fr,
+                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                        calendarContentLanguage: calendarContentLanguage,
+                      })}
+                      createdDate={item?.creator?.date}
+                      createdByUserName={item?.creator?.userName}
+                      updatedDate={item?.modifier?.date}
+                      updatedByUserName={item?.modifier?.userName}
+                      artsDataLink={artsDataLinkChecker(item?.sameAs)}
+                      listItemHandler={() => listItemHandler(item?.id)}
+                      actions={[
+                        adminCheckHandler() && (
+                          <DeleteOutlined
+                            data-cy="icon-delete-person"
+                            key={'delete-icon'}
+                            style={{ color: '#222732', fontSize: '24px' }}
+                            onClick={() => deletePersonHandler(item?.id)}
+                          />
+                        ),
+                      ]}
+                    />
+                  )}
+                />
+              ) : (
+                <NoContent style={{ height: '200px' }} />
+              )
             ) : (
-              <NoContent style={{ height: '200px' }} />
-            )
-          ) : (
-            <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <LoadingIndicator data-cy="loading-indicator-people" />
-            </div>
-          )}
-        </Main>
-      </FeatureFlag>
-    )
+              <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <LoadingIndicator data-cy="loading-indicator-people" />
+              </div>
+            )}
+          </Main>
+        </FeatureFlag>
+      )}
+    </>
   );
 }
 
