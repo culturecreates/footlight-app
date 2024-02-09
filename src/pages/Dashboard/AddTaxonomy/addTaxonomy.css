@@ -135,3 +135,7 @@
   flex-direction: column;
   gap: 24px;
 }
+
+.add-taxonomy-wrapper .ant-tree-switcher_close .ant-tree-switcher-icon svg {
+  height: 16px !important;
+}

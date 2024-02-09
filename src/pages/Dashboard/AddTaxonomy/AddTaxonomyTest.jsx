@@ -70,7 +70,18 @@ const AddTaxonomyTest = () => {
   const [newConceptName, setNewConceptName] = useState({ en: '', fr: '' });
   const [conceptData, setConceptData] = useState([]);
   const [addNewPopup, setAddNewPopup] = useState(false);
-  const [isDirty, setIsDirty] = useState(form.isFieldsTouched());
+  const [isDirty, setIsDirty] = useState({
+    formState: form.isFieldsTouched([
+      'userAccess',
+      'englishdescription',
+      'frenchdescription',
+      'englishname',
+      'frenchName',
+      'mappedToField',
+      'class',
+    ]),
+    isSubmitting: false,
+  });
 
   const [getTaxonomy, { data: taxonomyData, isSuccess: isSuccess, isFetching: loading }] = useLazyGetTaxonomyQuery({
     sessionId: timestampRef,
@@ -78,7 +89,12 @@ const AddTaxonomyTest = () => {
   const [addTaxonomy] = useAddTaxonomyMutation();
   const [updateTaxonomy] = useUpdateTaxonomyMutation();
 
-  usePrompt(t('common.unsavedChanges'), isDirty || compareArraysOfObjects(conceptData, taxonomyData?.concepts));
+  usePrompt(
+    t('common.unsavedChanges'),
+    isDirty.formState || !isDirty.isSubmitting
+      ? !compareArraysOfObjects(conceptData ?? [], taxonomyData?.concepts ?? [])
+      : false,
+  );
 
   useEffect(() => {
     if (taxonomyId && currentCalendarData) {
@@ -149,7 +165,10 @@ const AddTaxonomyTest = () => {
   const saveTaxonomyHandler = (e) => {
     e.preventDefault();
     const filteredConceptData = modifyConceptData(conceptData);
-    setIsDirty(false);
+    setIsDirty({
+      formState: false,
+      isSubmitting: true,
+    });
     form
       .validateFields(['frenchName', 'englishname', 'frenchdescription', 'englishdescription'])
       .then(() => {
@@ -209,7 +228,18 @@ const AddTaxonomyTest = () => {
       })
       .catch((error) => {
         console.error(error);
-        setIsDirty(form.isFieldsTouched());
+        setIsDirty({
+          formState: form.isFieldsTouched([
+            'userAccess',
+            'englishdescription',
+            'frenchdescription',
+            'englishname',
+            'frenchName',
+            'mappedToField',
+            'class',
+          ]),
+          isSubmitting: false,
+        });
       });
   };
 
@@ -263,9 +293,19 @@ const AddTaxonomyTest = () => {
     setDeleteDisplayFlag(false);
   };
 
-  const handleValueChange = (changedValues, allValues) => {
-    console.log(changedValues, allValues);
-    setIsDirty(form.isFieldsTouched());
+  const handleValueChange = () => {
+    setIsDirty({
+      formState: form.isFieldsTouched([
+        'userAccess',
+        'englishdescription',
+        'frenchdescription',
+        'englishname',
+        'frenchName',
+        'mappedToField',
+        'class',
+      ]),
+      isSubmitting: false,
+    });
   };
 
   return (
@@ -544,7 +584,7 @@ const AddTaxonomyTest = () => {
                             }}>
                             <DraggableTree
                               data={conceptData}
-                              // form={form}
+                              form={form}
                               setData={setConceptData}
                               addNewPopup={addNewPopup}
                               setAddNewPopup={setAddNewPopup}

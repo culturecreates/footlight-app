@@ -25,9 +25,9 @@ export const genericObjectCompare = (obj1, obj2) => {
   }
 
   for (let key of keys1) {
-    if (!keys2.includes(key) || !genericObjectCompare(obj1[key], obj2[key])) {
-      return false;
-    }
+    if (key === 'children') {
+      if (!compareArraysOfObjects(obj1[key], obj2[key])) return false;
+    } else if (!keys2.includes(key) || !genericObjectCompare(obj1[key], obj2[key])) return false;
   }
 
   return true;
