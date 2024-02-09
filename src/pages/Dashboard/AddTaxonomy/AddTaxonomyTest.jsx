@@ -57,8 +57,7 @@ const AddTaxonomyTest = () => {
     return calendar.calendarId === calendarId;
   });
   const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
+    return calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin;
   };
 
   const taxonomyId = searchParams.get('id');
@@ -116,10 +115,10 @@ const AddTaxonomyTest = () => {
   }, [taxonomyId, currentCalendarData]);
 
   useEffect(() => {
-    if (!adminCheckHandler) {
-      dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Not Authorized' }));
+    if (user && calendar.length > 0) {
+      !adminCheckHandler() && dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Not Authorized' }));
     }
-  }, []);
+  }, [user, calendar]);
 
   useEffect(() => {
     // setting class initial value
