@@ -119,37 +119,39 @@ const WidgetSettings = () => {
   });
 
   const handleFormValuesChange = (changedValues, allValues) => {
-    const width = form.getFieldValue('width') ?? 0;
-    const height = form.getFieldValue('height') ?? 600;
-    const limit = form.getFieldValue('limit') ?? 9;
+    if (regexForHexCode.test(color)) {
+      const width = form.getFieldValue('width') ?? 0;
+      const height = form.getFieldValue('height') ?? 600;
+      const limit = form.getFieldValue('limit') ?? 9;
 
-    const filtersParam =
-      arrayToQueryParam(allValues?.eventType ?? [], 'type') +
-      arrayToQueryParam(allValues?.location ?? [], 'place') +
-      arrayToQueryParam(allValues?.region ?? [], 'region') +
-      arrayToQueryParam([...(allValues?.person ?? []), ...(allValues?.organizer ?? [])], 'person-organization');
+      const filtersParam =
+        arrayToQueryParam(allValues?.eventType ?? [], 'type') +
+        arrayToQueryParam(allValues?.location ?? [], 'place') +
+        arrayToQueryParam(allValues?.region ?? [], 'region') +
+        arrayToQueryParam([...(allValues?.person ?? []), ...(allValues?.organizer ?? [])], 'person-organization');
 
-    const searchEventsFilters = encodeURIComponent(filtersParam);
+      const searchEventsFilters = encodeURIComponent(filtersParam);
 
-    const locale = onLanguageSelect(allValues?.language);
-    const urlCopy = new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html');
+      const locale = onLanguageSelect(allValues?.language);
+      const urlCopy = new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html');
 
-    // Add query parameters to the URL
-    urlCopy.searchParams.append('width', width);
+      // Add query parameters to the URL
+      urlCopy.searchParams.append('width', width);
 
-    urlCopy.searchParams.append('limit', limit);
-    urlCopy.searchParams.append('calendar', calendarName);
-    urlCopy.searchParams.append('height', height);
-    urlCopy.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
-    urlCopy.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
-    urlCopy.searchParams.append('searchEventsFilters', searchEventsFilters);
-    urlCopy.searchParams.append('locale', locale?.key.toLowerCase());
-    if (changedValues.color) {
-      urlCopy.searchParams.append('color', changedValues.color);
-    } else urlCopy.searchParams.append('color', color);
+      urlCopy.searchParams.append('limit', limit);
+      urlCopy.searchParams.append('calendar', calendarName);
+      urlCopy.searchParams.append('height', height);
+      urlCopy.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
+      urlCopy.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
+      urlCopy.searchParams.append('searchEventsFilters', searchEventsFilters);
+      urlCopy.searchParams.append('locale', locale?.key.toLowerCase());
+      if (changedValues.color) {
+        urlCopy.searchParams.append('color', changedValues.color);
+      } else urlCopy.searchParams.append('color', color);
 
-    setUrl(urlCopy);
-    setIframeCode(`<iframe src="${urlCopy.href}" width="100%" height="${height}px"></iframe>`);
+      setUrl(urlCopy);
+      setIframeCode(`<iframe src="${urlCopy.href}" width="100%" height="${height}px"></iframe>`);
+    }
   };
 
   const onLanguageSelect = (value) => {
@@ -326,7 +328,7 @@ const WidgetSettings = () => {
                 .catch((error) => {
                   error?.errorFields?.map((e) => {
                     notification.error({
-                      description: e.errors[0],
+                      description: e.errors[0] == '' ? e.errors[0] : t(`${localePath}.validation.color`),
                       placement: 'top',
                     });
                   });
@@ -354,13 +356,12 @@ const WidgetSettings = () => {
                       initialValue={9}
                       rules={[
                         {
-                          required: true,
-                          message: t(`${localePath}.validation.limit`),
-                        },
-                        {
-                          required: true,
-                          pattern: /^[0-9]+$/,
-                          message: t(`${localePath}.validation.limit`),
+                          validator: (_, value) => {
+                            if (!value || !/^[0-9]+$/.test(value)) {
+                              return Promise.reject(t(`${localePath}.validation.limit`));
+                            }
+                            return Promise.resolve();
+                          },
                         },
                       ]}
                       data-cy="widget-settings-limit">
@@ -371,19 +372,16 @@ const WidgetSettings = () => {
                     <Form.Item
                       name="color"
                       label={t(`${localePath}.color`)}
-                      {...(!regexForHexCode.test(color) && {
-                        help: t('login.failure'),
+                      {...(!regexForHexCode.test(form.getFieldValue('color')) && {
+                        help: t(`${localePath}.validation.color`),
                         validateStatus: 'error',
                       })}
+                      initialValue={color}
                       rules={[
-                        {
-                          required: true,
-                          message: 'Please enter the color.',
-                        },
                         {
                           validator: (_, value) => {
                             if (!regexForHexCode.test(value)) {
-                              return Promise.reject('Please enter a valid hex color code.');
+                              return Promise.reject();
                             }
                             return Promise.resolve();
                           },
@@ -397,6 +395,7 @@ const WidgetSettings = () => {
                             setColor={(color) => {
                               setColor(color);
                               form.setFieldValue('color', color);
+                              handleFormValuesChange({ color }, form.getFieldsValue(true));
                             }}
                           />
                         }
@@ -700,7 +699,7 @@ const WidgetSettings = () => {
                             .catch((error) => {
                               error?.errorFields?.map((e) => {
                                 notification.error({
-                                  description: e.errors[0],
+                                  description: e.errors[0] == '' ? e.errors[0] : t(`${localePath}.validation.color`),
                                   placement: 'top',
                                 });
                               });
@@ -732,7 +731,7 @@ const WidgetSettings = () => {
                       .catch((error) => {
                         error?.errorFields?.map((e) => {
                           notification.error({
-                            description: e.errors[0],
+                            description: e.errors[0] == '' ? e.errors[0] : t(`${localePath}.validation.color`),
                             placement: 'top',
                           });
                         });
