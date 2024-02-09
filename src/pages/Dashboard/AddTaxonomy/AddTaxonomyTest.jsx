@@ -95,10 +95,6 @@ const AddTaxonomyTest = () => {
   );
 
   useEffect(() => {
-    console.log(isDirty, !compareArraysOfObjects(conceptData ?? [], taxonomyData?.concepts ?? []));
-  }, [isDirty, conceptData]);
-
-  useEffect(() => {
     if (taxonomyId && currentCalendarData) {
       getTaxonomy({ id: taxonomyId, includeConcepts: true, calendarId })
         .unwrap()
