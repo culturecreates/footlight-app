@@ -66,7 +66,7 @@ import NoContent from '../../../components/NoContent/NoContent';
 import { locationType, locationTypeOptions, virtualLocationFieldNames } from '../../../constants/locationTypeOptions';
 import { otherInformationFieldNames, otherInformationOptions } from '../../../constants/otherInformationOptions';
 import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../../constants/eventAccessibilityOptions';
-import { usePrompt } from '../../../hooks/usePrompt';
+import { useCustomPrompt } from '../../../hooks/usePrompt';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import RecurringEvents from '../../../components/RecurringEvents';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
@@ -191,7 +191,7 @@ function AddEvent() {
   const [selectedOrganizerPerformerSupporterType, setSelectedOrganizerPerformerSupporterType] = useState();
   const [imageCropOpen, setImageCropOpen] = useState(false);
 
-  usePrompt(t('common.unsavedChanges'), showDialog);
+  useCustomPrompt(t('common.unsavedChanges'), showDialog);
 
   setContentBackgroundColor('#F9FAFF');
 

@@ -26,7 +26,7 @@ import Outlined from '../../../components/Button/Outlined';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
-import { usePrompt } from '../../../hooks/usePrompt';
+import { useCustomPrompt } from '../../../hooks/usePrompt';
 import { compareArraysOfObjects } from '../../../utils/genericObjectCompare';
 
 const taxonomyClasses = taxonomyClassTranslations.map((item) => {
@@ -88,12 +88,15 @@ const AddTaxonomyTest = () => {
   const [addTaxonomy] = useAddTaxonomyMutation();
   const [updateTaxonomy] = useUpdateTaxonomyMutation();
 
-  usePrompt(
+  useCustomPrompt(
     t('common.unsavedChanges'),
-    isDirty.formState || !isDirty.isSubmitting
-      ? !compareArraysOfObjects(conceptData ?? [], taxonomyData?.concepts ?? [])
-      : false,
+    isDirty.formState ||
+      (!isDirty.isSubmitting ? !compareArraysOfObjects(conceptData ?? [], taxonomyData?.concepts ?? []) : false),
   );
+
+  useEffect(() => {
+    console.log(isDirty, !compareArraysOfObjects(conceptData ?? [], taxonomyData?.concepts ?? []));
+  }, [isDirty, conceptData]);
 
   useEffect(() => {
     if (taxonomyId && currentCalendarData) {
@@ -248,24 +251,6 @@ const AddTaxonomyTest = () => {
       englishname: option?.en,
     });
   };
-
-  //   const classSelectionRoutine = (selectedKeys) => {
-  //     if (selectedKeys) {
-  //       const classItem = taxonomyClassTranslations.find((item) => {
-  //         return item.key === selectedKeys[0];
-  //       });
-
-  //       const availableStandardFields = standardFieldsForTaxonomy(
-  //         selectedKeys[0],
-  //         currentCalendarData?.fieldTaxonomyMaps,
-  //       );
-  //       setStandardFields([
-  //         ...availableStandardFields,
-  //         getStandardFieldArrayForClass(classItem?.key).find((i) => i.key == form.getFieldValue('mappedToField')),
-  //       ]);
-  //       return taxonomyClassTranslations[0];
-  //     } else return { ...taxonomyClassTranslations[0], value: taxonomyClassTranslations[0].key };
-  //   };
 
   function modifyConceptData(conceptData) {
     return conceptData?.map(function (item) {
