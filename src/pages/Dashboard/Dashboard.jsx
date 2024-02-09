@@ -136,7 +136,7 @@ function Dashboard() {
             pageNumber={pageNumber}
             setPageNumber={setPageNumber}
           />
-          <Layout>
+          <Layout style={{ position: 'relative' }}>
             <Content
               className="site-layout-background"
               style={{
