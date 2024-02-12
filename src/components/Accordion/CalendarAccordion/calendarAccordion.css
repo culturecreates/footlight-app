@@ -1,0 +1,28 @@
+.collapse-wrapper {
+  border: 1px solid rgb(96, 126, 252);
+  border-radius: 8px;
+}
+
+.collapse-wrapper .ant-collapse-header {
+  border-radius: 4px;
+  background: #f9faff;
+  font-weight: 700;
+  font-size: 16px;
+  color: #222732;
+}
+
+.collapse-wrapper > .ant-collapse-item:last-child > .ant-collapse-header,
+.collapse-wrapper > .ant-collapse-item:last-child > .ant-collapse-header {
+  border-radius: 8px;
+}
+
+.collapse-wrapper .ant-input {
+  border: 0px;
+}
+
+.collapse-wrapper .ant-form-item-label > label {
+  font-size: 12px;
+}
+.collapse-wrapper .ant-collapse-item:last-child > .ant-collapse-content{
+    border-radius: 8px;
+}

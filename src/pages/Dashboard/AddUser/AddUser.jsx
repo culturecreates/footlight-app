@@ -1,5 +1,10 @@
 import React, { useCallback, useRef } from 'react';
-import { LeftOutlined, CalendarOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import {
+  LeftOutlined,
+  //  CalendarOutlined,
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+} from '@ant-design/icons';
 import { Button, Card, Col, Dropdown, Form, Input, message, notification, Popover, Row, Typography } from 'antd';
 import PrimaryButton from '../../../components/Button/Primary';
 import { createSearchParams, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -11,7 +16,7 @@ import './addUser.css';
 import i18n from 'i18next';
 import { DownOutlined } from '@ant-design/icons';
 import {
-  useCurrentUserLeaveCalendarMutation,
+  // useCurrentUserLeaveCalendarMutation,
   useLazyGetAllUsersQuery,
   useLazyGetCurrentUserQuery,
   // useDeleteUserMutation,
@@ -22,22 +27,30 @@ import {
 import AuthenticationInput from '../../../components/Input/Common/AuthenticationInput';
 import { userLanguages } from '../../../constants/userLanguagesÏ';
 import { useState, useEffect } from 'react';
-import { userRoles, userRolesWithTranslation } from '../../../constants/userRoles';
+import {
+  userRoles,
+  // userRolesWithTranslation
+} from '../../../constants/userRoles';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearUser, getUserDetails, setUser } from '../../../redux/reducer/userSlice';
+import {
+  //  clearUser,
+  getUserDetails,
+  setUser,
+} from '../../../redux/reducer/userSlice';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useOutletContext } from 'react-router-dom';
-import CalendarSelect from '../../../components/List/User/CalenderSelect/CalendarSelect';
+// import CalendarSelect from '../../../components/List/User/CalenderSelect/CalendarSelect';
 import ChangePassword from '../../../components/Modal/ChangePassword/ChangePassword';
 import { useInviteUserMutation } from '../../../services/invite';
-import { Confirm } from '../../../components/Modal/Confirm/Confirm';
+// import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
-import { PathName } from '../../../constants/pathName';
+// import { PathName } from '../../../constants/pathName';
 import { userActivityStatus } from '../../../constants/userActivityStatus';
 import LoadingIndicator from '../../../components/LoadingIndicator';
-import { setReloadCalendar } from '../../../redux/reducer/selectedCalendarSlice';
+// import { setReloadCalendar } from '../../../redux/reducer/selectedCalendarSlice';
+import CalendarAccordion from '../../../components/Accordion/CalendarAccordion';
 
 const AddUser = () => {
   const navigate = useNavigate();
@@ -88,10 +101,10 @@ const AddUser = () => {
   const [getUser, { isFetching: isUserFetching }] = useLazyGetUserByIdQuery({ sessionId: timestampRef });
   const [getUserSearch] = useLazyGetAllUsersQuery({ sessionId: timestampRef });
 
-  const [
-    currentUserLeaveCalendar,
-    // { isSuccess: isCurrentUserLeaveCalendarSuccess, isError: isCurrentUserLeaveCalendarError },
-  ] = useCurrentUserLeaveCalendarMutation();
+  // const [
+  // currentUserLeaveCalendar,
+  // { isSuccess: isCurrentUserLeaveCalendarSuccess, isError: isCurrentUserLeaveCalendarError },
+  // ] = useCurrentUserLeaveCalendarMutation();
   // const [deleteUser] = useDeleteUserMutation();
   const [inviteUser] = useInviteUserMutation();
   const [updateUserById] = useUpdateUserByIdMutation();
@@ -390,14 +403,14 @@ const AddUser = () => {
     setUserData({ ...userData, [fieldType]: value });
   };
 
-  const getUserTypeLabelFromKey = (key) => {
-    if (userData?.isSuperAdmin) {
-      return t('dashboard.settings.userManagement.superAdmin');
-    }
+  // const getUserTypeLabelFromKey = (key) => {
+  //   if (userData?.isSuperAdmin) {
+  //     return t('dashboard.settings.userManagement.superAdmin');
+  //   }
 
-    const label = userRolesWithTranslation.filter((u) => u.key == key);
-    return label[0]?.label;
-  };
+  //   const label = userRolesWithTranslation.filter((u) => u.key == key);
+  //   return label[0]?.label;
+  // };
 
   const searchHandlerUserSearch = (value) => {
     value != ''
@@ -414,50 +427,50 @@ const AddUser = () => {
 
   const debounceSearch = useCallback(useDebounce(searchHandlerUserSearch, SEARCH_DELAY), []);
 
-  const removeCalendarHandler = ({ item, index }) => {
-    if (isCurrentUser) {
-      Confirm({
-        title: t('dashboard.settings.addUser.confirmLeave'),
-        onAction: () => {
-          isCurrentUser &&
-            currentUserLeaveCalendar({ calendarId: item?.calendarId })
-              .unwrap()
-              .then(() => {
-                if (selectedCalendars.length <= 1) {
-                  dispatch(clearUser());
-                  navigate(PathName.Login, { state: { previousPath: 'logout' } });
-                }
-                setSelectedCalendars((prevState) => {
-                  const updatedArray = prevState.filter((_, i) => index !== i);
-                  if (calendarId === item.calendarId) {
-                    const newcalendar = userData.calendars.filter((i) => i.calendarId != item.calendarId);
-                    navigate(`${PathName.Dashboard}/${newcalendar[0].calendarId}${PathName.Events}`);
-                  }
-                  return updatedArray;
-                });
-                dispatch(setReloadCalendar(true));
-              });
-        },
-        content: t('dashboard.settings.addUser.leaveCalender'),
-        okText: t('dashboard.settings.addUser.leave'),
-        cancelText: t('dashboard.events.deleteEvent.cancel'),
-      });
-    } else if (userId) {
-      Confirm({
-        title: t('dashboard.settings.addUser.confirmLeave'),
-        onAction: () => {
-          currentUserLeaveCalendar({ calendarId });
-          setSelectedCalendars((prevState) => {
-            const updatedArray = prevState.filter((_, i) => index !== i);
-            return updatedArray;
-          });
-        },
-        content: t('dashboard.settings.addUser.leaveCalender'),
-        okText: t('dashboard.settings.addUser.leave'),
-        cancelText: t('dashboard.events.deleteEvent.cancel'),
-      });
-    }
-  };
+  // const removeCalendarHandler = ({ item, index }) => {
+  //   if (isCurrentUser) {
+  //     Confirm({
+  //       title: t('dashboard.settings.addUser.confirmLeave'),
+  //       onAction: () => {
+  //         isCurrentUser &&
+  //           currentUserLeaveCalendar({ calendarId: item?.calendarId })
+  //             .unwrap()
+  //             .then(() => {
+  //               if (selectedCalendars.length <= 1) {
+  //                 dispatch(clearUser());
+  //                 navigate(PathName.Login, { state: { previousPath: 'logout' } });
+  //               }
+  //               setSelectedCalendars((prevState) => {
+  //                 const updatedArray = prevState.filter((_, i) => index !== i);
+  //                 if (calendarId === item.calendarId) {
+  //                   const newcalendar = userData.calendars.filter((i) => i.calendarId != item.calendarId);
+  //                   navigate(`${PathName.Dashboard}/${newcalendar[0].calendarId}${PathName.Events}`);
+  //                 }
+  //                 return updatedArray;
+  //               });
+  //               dispatch(setReloadCalendar(true));
+  //             });
+  //       },
+  //       content: t('dashboard.settings.addUser.leaveCalender'),
+  //       okText: t('dashboard.settings.addUser.leave'),
+  //       cancelText: t('dashboard.events.deleteEvent.cancel'),
+  //     });
+  //   } else if (userId) {
+  //     Confirm({
+  //       title: t('dashboard.settings.addUser.confirmLeave'),
+  //       onAction: () => {
+  //         currentUserLeaveCalendar({ calendarId });
+  //         setSelectedCalendars((prevState) => {
+  //           const updatedArray = prevState.filter((_, i) => index !== i);
+  //           return updatedArray;
+  //         });
+  //       },
+  //       content: t('dashboard.settings.addUser.leaveCalender'),
+  //       okText: t('dashboard.settings.addUser.leave'),
+  //       cancelText: t('dashboard.events.deleteEvent.cancel'),
+  //     });
+  //   }
+  // };
 
   return (
     <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
@@ -716,7 +729,7 @@ const AddUser = () => {
                       </Row>
                     </Form.Item>
 
-                    <Form.Item
+                    {/* <Form.Item
                       data-cy="form-item-user-usertype-title"
                       name="userType"
                       required
@@ -754,7 +767,7 @@ const AddUser = () => {
                           </Dropdown>
                         </Col>
                       </Row>
-                    </Form.Item>
+                    </Form.Item> */}
 
                     <Form.Item
                       data-cy="form-item-user-language-title"
@@ -837,7 +850,7 @@ const AddUser = () => {
                           <Row gutter={[0, 4]}>
                             <Col flex={'423px'}>
                               <Col>
-                                {selectedCalendars?.length > 0 &&
+                                {/* {selectedCalendars?.length > 0 &&
                                   selectedCalendars.map(
                                     (item, index) =>
                                       item.status == userActivityStatus[0].key && (
@@ -877,7 +890,22 @@ const AddUser = () => {
                                           }}
                                         />
                                       ),
-                                  )}
+                                  )} */}
+                                <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
+                                  {selectedCalendars?.map((calendar, index) => (
+                                    <CalendarAccordion
+                                      data-cy="accordion-selected-calendars"
+                                      key={index}
+                                      name={contentLanguageBilingual({
+                                        en: calendar?.name?.en,
+                                        fr: calendar?.name?.fr,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        calendarContentLanguage: calendarContentLanguage,
+                                      })}
+                                      role={calendar?.role}
+                                    />
+                                  ))}
+                                </div>
                               </Col>
                             </Col>
                           </Row>
