@@ -43,15 +43,14 @@ const SelectTaxonomyType = () => {
   });
 
   const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
+    return calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin;
   };
 
   useEffect(() => {
-    if (!adminCheckHandler()) {
-      dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Not Authorized' }));
+    if (user && calendar.length > 0) {
+      !adminCheckHandler() && dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Not Authorized' }));
     }
-  }, []);
+  }, [user, calendar]);
 
   const onSaveHandler = () => {
     console.log('clicked field option');

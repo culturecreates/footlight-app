@@ -116,12 +116,26 @@
   background: var(--background-neutrals-underground-0, #f7f7f7);
 }
 
-.add-taxonomy-wrapper .ant-form-item-required{
+.add-taxonomy-wrapper .ant-form-item-required {
   display: flex;
   flex-direction: row-reverse;
   gap: 4px;
 }
 
-.add-taxonomy-wrapper .ant-form-item-label{
+.add-taxonomy-wrapper .ant-form-item-label {
   width: fit-content;
+}
+
+.add-taxonomy-wrapper .ant-form-item {
+  margin-bottom: 8px;
+}
+
+.add-taxonomy-wrapper .add-event-section-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.add-taxonomy-wrapper .ant-tree-switcher_close .ant-tree-switcher-icon svg {
+  height: 16px !important;
 }
