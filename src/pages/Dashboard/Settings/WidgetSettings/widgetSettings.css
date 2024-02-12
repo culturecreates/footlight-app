@@ -81,9 +81,13 @@
   border-radius: 6px;
 }
 
-/* .widget-settings-page-iframe-modal {
-  max-height: 90vh;
-} */
+.widget-notification .ant-notification-notice-message {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.widget-notification .ant-notification-notice-with-icon .ant-notification-notice-description {
+  width: 80%;
+}
 
 .widget-settings .preview-section-wrapper {
   display: flex;

@@ -1,4 +1,4 @@
-import { Col, Divider, Form, Grid, Row, Spin, notification } from 'antd';
+import { Button, Col, Divider, Form, Grid, Row, Spin, message, notification } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import './widgetSettings.css';
@@ -6,7 +6,7 @@ import Outlined from '../../../../components/Button/Outlined';
 import StyledInput from '../../../../components/Input/Common';
 import ColorPicker from '../../../../components/ColorPicker/ColorPicker';
 import TreeSelectOption from '../../../../components/TreeSelectOption';
-import { CloseCircleOutlined, CopyOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, CopyOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import NoContent from '../../../../components/NoContent/NoContent';
 import { useGetAllTaxonomyQuery } from '../../../../services/taxonomy';
 import { taxonomyClass } from '../../../../constants/taxonomyClass';
@@ -117,6 +117,24 @@ const WidgetSettings = () => {
   const languageOptions = lanFormat().map((item) => {
     return { label: item.label, value: item.key };
   });
+
+  const notify = ({ index, messageText }) => {
+    notification.warning({
+      duration: 2,
+      className: 'widget-notification',
+      key: `view-notification-warning-${index}`,
+      description: messageText,
+      placement: 'top',
+      icon: <ExclamationCircleOutlined style={{ color: '#faad14' }} />,
+      closeIcon: (
+        <Button
+          type="text"
+          icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+          onClick={() => message.destroy(`view-notification-warning-${index}`)}
+        />
+      ),
+    });
+  };
 
   const handleFormValuesChange = (changedValues, allValues) => {
     if (regexForHexCode.test(color)) {
@@ -326,10 +344,10 @@ const WidgetSettings = () => {
                   setPreviewModal(true);
                 })
                 .catch((error) => {
-                  error?.errorFields?.map((e) => {
-                    notification.error({
-                      description: e.errors[0] == '' ? e.errors[0] : t(`${localePath}.validation.color`),
-                      placement: 'top',
+                  error?.errorFields?.map((e, index) => {
+                    notify({
+                      index,
+                      messageText: e.errors[0] != ' ' ? e.errors[0] : t(`${localePath}.validation.color`),
                     });
                   });
                 });
@@ -357,7 +375,7 @@ const WidgetSettings = () => {
                       rules={[
                         {
                           validator: (_, value) => {
-                            if (!value || !/^[0-9]+$/.test(value)) {
+                            if (!value || !/^[1-9][0-9]*$/.test(value)) {
                               return Promise.reject(t(`${localePath}.validation.limit`));
                             }
                             return Promise.resolve();
@@ -424,9 +442,12 @@ const WidgetSettings = () => {
                           initialValue={600}
                           rules={[
                             {
-                              required: true,
-                              message: t(`${localePath}.validation.height`),
-                              pattern: /^[0-9]+$/,
+                              validator: (_, value) => {
+                                if (!value || !/^[1-9][0-9]*$/.test(value)) {
+                                  return Promise.reject(t(`${localePath}.validation.height`));
+                                }
+                                return Promise.resolve();
+                              },
                             },
                           ]}
                           validateTrigger={['onChange', 'onBlur']}
@@ -442,9 +463,12 @@ const WidgetSettings = () => {
                           initialValue={1000}
                           rules={[
                             {
-                              required: true,
-                              message: t(`${localePath}.validation.width`),
-                              pattern: /^[0-9]+$/,
+                              validator: (_, value) => {
+                                if (!value || !/^[1-9][0-9]*$/.test(value)) {
+                                  return Promise.reject(t(`${localePath}.validation.width`));
+                                }
+                                return Promise.resolve();
+                              },
                             },
                           ]}
                           data-cy="widget-settings-width">
@@ -697,10 +721,10 @@ const WidgetSettings = () => {
                               });
                             })
                             .catch((error) => {
-                              error?.errorFields?.map((e) => {
-                                notification.error({
-                                  description: e.errors[0] == '' ? e.errors[0] : t(`${localePath}.validation.color`),
-                                  placement: 'top',
+                              error?.errorFields?.map((e, index) => {
+                                notify({
+                                  index,
+                                  messageText: e.errors[0] != ' ' ? e.errors[0] : t(`${localePath}.validation.color`),
                                 });
                               });
                             });
@@ -729,10 +753,10 @@ const WidgetSettings = () => {
                         setPreviewModal(true);
                       })
                       .catch((error) => {
-                        error?.errorFields?.map((e) => {
-                          notification.error({
-                            description: e.errors[0] == '' ? e.errors[0] : t(`${localePath}.validation.color`),
-                            placement: 'top',
+                        error?.errorFields?.map((e, index) => {
+                          notify({
+                            index,
+                            messageText: e.errors[0] != ' ' ? e.errors[0] : t(`${localePath}.validation.color`),
                           });
                         });
                       });
