@@ -841,6 +841,7 @@ function Events() {
                 </div>
               )}
               {!isFetching &&
+                currentCalendarData &&
                 (eventsData?.data?.length > 0 ? (
                   <EventList
                     data={eventsData}
