@@ -7,6 +7,7 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
+  min-height: 170px;
 }
 
 .draggable-tree .ant-tree-list {
@@ -24,10 +25,32 @@
   border-radius: 0px 4px 4px 0px;
   border: solid 4px #eff2ff;
   border-right: none;
-  height: 140px;
   overflow-y: scroll;
   color: var(--content-neutral-primary, #222732);
-  height: 196px;
+  flex: 1;
+}
+
+.draggable-tree > .ant-form-item,
+.draggable-tree > .ant-form-item > .ant-form-item-row,
+.draggable-tree > .ant-form-item > .ant-form-item-row > .ant-form-item-control,
+.draggable-tree > .ant-form-item > .ant-form-item-row > .ant-form-item-control > .ant-form-item-control-input,
+.draggable-tree
+  > .ant-form-item
+  > .ant-form-item-row
+  > .ant-form-item-control
+  > .ant-form-item-control-input
+  > .ant-form-item-control-input-content {
+  height: 100%;
+}
+
+.draggable-tree
+  > .ant-form-item
+  > .ant-form-item-row
+  > .ant-form-item-control
+  > .ant-form-item-control-input
+  > .ant-form-item-control-input-content {
+  display: flex;
+  flex-direction: column;
 }
 
 .draggable-tree .ant-tree .ant-tree-treenode-draggable .ant-tree-draggable-icon {
