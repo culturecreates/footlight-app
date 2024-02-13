@@ -14,14 +14,9 @@
 }
 .event-list-wrapper .event-list-image-wrapper {
   position: relative;
-  height: 104px;
-  /* min-height: 104px; */
-  /* width: 104px; */
 }
 .event-list-wrapper .event-list-image {
-  height: 100%;
-  width: 100%;
-  /* object-fit: cover; */
+  height: 104px;
   border-radius: 4px;
 }
 .event-list-wrapper .event-list-title {

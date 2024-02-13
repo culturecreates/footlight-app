@@ -45,12 +45,6 @@ function Lists(props) {
     return data?.sameAs?.filter((item) => item?.type === 'ArtsdataIdentifier');
   };
   const aspectRatioString = currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio;
-  let width = 104;
-
-  if (aspectRatioString) {
-    const [aspectRatioNumerator, aspectRatioDenominator] = aspectRatioString.replace(/:/g, '/').split('/').map(Number);
-    width = (104 * aspectRatioNumerator) / aspectRatioDenominator;
-  }
 
   const listItemHandler = (id, creatorId, publishState) => {
     if (routinghandler(user, calendarId, creatorId, publishState))
@@ -153,11 +147,7 @@ function Lists(props) {
             avatar={
               <>
                 {screens.md && (
-                  <div
-                    className="event-list-image-wrapper"
-                    style={{
-                      width: width,
-                    }}>
+                  <div className="event-list-image-wrapper">
                     {(calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) && eventItem?.isFeatured && (
                       <div className="image-featured-badge">
                         <StarOutlined
@@ -173,6 +163,7 @@ function Lists(props) {
                           (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) &&
                           eventItem?.isFeatured &&
                           '3px solid #1B3DE6',
+                        ...(aspectRatioString && { maxWidth: '150px' }),
                       }}
                       data-cy="image-event-thumbnail"
                     />

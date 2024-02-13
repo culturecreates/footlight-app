@@ -85,9 +85,9 @@
 }
 
 @media only screen and (max-width: 768px) {
-  .events-wrapper .filter-container {
+  /* .events-wrapper .filter-container {
     margin-top: 16px;
-  }
+  } */
 
   .events-wrapper .events-heading-wrapper .events-heading {
     font-size: 24px;
@@ -100,7 +100,7 @@
   .events-wrapper > .events-wrapper-cloumn {
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 24px;
   }
 
   .events-wrapper .filter-container .event-filter-item-mobile-full-width .searchable-checkbox-dropdown-wrapper {

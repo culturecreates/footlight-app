@@ -452,7 +452,11 @@
       },
       "deleteOrganization": {
         "title": "Confirmer la suppression",
-        "description": "Confirmer la suppression Êtes-vous sûr de vouloir supprimer définitivement cette organisation? Cette action supprimera également toutes les données qui lui sont associées et tous les endroits où elle a été utilisée",
+        "description": "Êtes-vous sûr de vouloir supprimer définitivement cette organisation? Cette organisation sera supprimée partout où elle est utilisée.",
+        "impact": "Événements concernés : ",
+        "published": "publié - {{number}}",
+        "draft": "brouillon - {{number}}",
+        "inReview": "attente d'approbation - {{number}}",
         "ok": "OK",
         "cancel": "Annuler"
       },
@@ -521,7 +525,11 @@
       },
       "deletePlace": {
         "title": "Confirmer la suppression",
-        "description": "Confirmer la suppression Êtes-vous sûr de vouloir supprimer définitivement cette lieu ? Cette action supprimera également toutes les données qui lui sont associées et tous les endroits où elle a été utilisée",
+        "description": "Êtes-vous sûr de vouloir supprimer définitivement ce lieu ? Le lieu sera supprimé partout où il est utilisé.",
+        "impact": "Événements concernés : ",
+        "published": "publié - {{number}}",
+        "draft": "brouillon - {{number}}",
+        "inReview": "attente d'approbation - {{number}}",
         "ok": "OK",
         "cancel": "Annuler"
       },
@@ -683,7 +691,11 @@
       },
       "deletePerson": {
         "title": "Confirmer la suppression",
-        "description": "Confirmer la suppression Êtes-vous sûr de vouloir supprimer définitivement cette personne? Cette action supprimera également toutes les données qui lui sont associées et tous les endroits où elle a été utilisée",
+        "description": "Êtes-vous sûr de vouloir supprimer définitivement cette personne? Cette personne sera supprimée partout où elle est utilisée.",
+        "impact": "Événements concernés : ",
+        "published": "publié - {{number}}",
+        "draft": "brouillon - {{number}}",
+        "inReview": "attente d'approbation - {{number}}",
         "ok": "OK",
         "cancel": "Annuler"
       },
@@ -914,7 +926,14 @@
         },
         "modal": {
           "titleDelete": "Confirmer la suppression",
-          "contentDelete": "Êtes-vous sûr de vouloir supprimer définitivement cette taxonomie? Cette action supprimera également toutes les données qui lui sont associées et tous les endroits où elle a été utilisée"
+
+          "contentDelete": {
+            "description": "Êtes-vous sûr de vouloir supprimer définitivement cette taxonomie? Cette taxonomie sera supprimée partout où elle est utilisée.",
+            "impact": "Événements concernés : ",
+            "published": "publié - {{number}}",
+            "draft": "brouillon - {{number}}",
+            "inReview": "attente d'approbation - {{number}}"
+          }
         }
       },
       "selectType": {

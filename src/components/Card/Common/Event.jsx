@@ -27,7 +27,9 @@ function Event(props) {
               </div>
             </Col>
             <Col flex={'253px'}>
-              <div style={{ width: '100%', marginTop: marginTop ? marginTop : '35%' }}>{props?.children[1]}</div>
+              <div className="side-wrapper-container" style={{ width: '100%', marginTop: marginTop && marginTop }}>
+                {props?.children[1]}
+              </div>
             </Col>
           </Row>
         </Col>
