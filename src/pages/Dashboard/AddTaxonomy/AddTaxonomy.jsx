@@ -543,19 +543,37 @@ const AddTaxonomyTest = () => {
                 <Col flex="780px" style={{ margin: '32px 16px 0px 16px' }} className="concept-card">
                   <Card bordered={false}>
                     <Row justify="space-between" wrap={false}>
-                      <Col flex="423px">
+                      <Col>
                         <Row gutter={[24, 24]}>
-                          <Col className="heading-concepts">{t('dashboard.taxonomy.addNew.concepts.heading')}</Col>
-                          <Col className="text-concepts">{t('dashboard.taxonomy.addNew.concepts.description')}</Col>
+                          <Col flex="423px" className="heading-concepts">
+                            {t('dashboard.taxonomy.addNew.concepts.heading')}
+                          </Col>
+                          <Col flex="423px" className="text-concepts">
+                            {t('dashboard.taxonomy.addNew.concepts.description')}
+                          </Col>
                           <Col
-                            flex="423px"
+                            span={24}
                             style={{
                               display: 'flex',
                               paddingTop: '0',
                               paddingRight: '12px',
                               paddingBottom: '0',
                               paddingLeft: '12px',
-                            }}></Col>
+                            }}>
+                            <Row style={{ flex: 1 }}>
+                              <DraggableTree
+                                data={conceptData}
+                                form={form}
+                                setData={setConceptData}
+                                addNewPopup={addNewPopup}
+                                setAddNewPopup={setAddNewPopup}
+                                newConceptName={newConceptName}
+                                setNewConceptName={setNewConceptName}
+                                deleteDisplayFlag={deleteDisplayFlag}
+                                setDeleteDisplayFlag={setDeleteDisplayFlag}
+                              />
+                            </Row>
+                          </Col>
                         </Row>
                       </Col>
                       <Col>
@@ -573,19 +591,6 @@ const AddTaxonomyTest = () => {
                           <PlusOutlined style={{ fontSize: '24px' }} />
                         </Outlined>
                       </Col>
-                    </Row>
-                    <Row>
-                      <DraggableTree
-                        data={conceptData}
-                        form={form}
-                        setData={setConceptData}
-                        addNewPopup={addNewPopup}
-                        setAddNewPopup={setAddNewPopup}
-                        newConceptName={newConceptName}
-                        setNewConceptName={setNewConceptName}
-                        deleteDisplayFlag={deleteDisplayFlag}
-                        setDeleteDisplayFlag={setDeleteDisplayFlag}
-                      />
                     </Row>
                   </Card>
                 </Col>
