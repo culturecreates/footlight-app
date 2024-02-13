@@ -168,7 +168,9 @@ const WidgetSettings = () => {
       } else urlCopy.searchParams.append('color', color);
 
       setUrl(urlCopy);
-      setIframeCode(`<iframe src="${urlCopy.href}" width="100%" height="${height}px"></iframe>`);
+      setIframeCode(
+        `<iframe src="${urlCopy.href}" width="100%" style={{ maxWidth: "${width}px", border: 'none' }} height="${height}px"></iframe>`,
+      );
     }
   };
 
@@ -313,7 +315,9 @@ const WidgetSettings = () => {
     urlCopy.searchParams.append('calendar', calendarName);
 
     setUrl(urlCopy);
-    setIframeCode(`<iframe src="${urlCopy.href}" width="100%" height="${height}px"></iframe>`);
+    setIframeCode(
+      `<iframe src="${urlCopy.href}" width="100%" style={{ maxWidth: "1000px", border: 'none' }} height="${height}px"></iframe>`,
+    );
   }, [calendarContentLanguage]);
 
   function arrayToQueryParam(arr, paramName) {
@@ -370,6 +374,7 @@ const WidgetSettings = () => {
                   <Col flex="448px">
                     <Form.Item
                       name="limit"
+                      required
                       label={t(`${localePath}.limit`)}
                       initialValue={9}
                       rules={[
@@ -389,6 +394,7 @@ const WidgetSettings = () => {
                   <Col flex="448px" className="color-select-wrapper">
                     <Form.Item
                       name="color"
+                      required
                       label={t(`${localePath}.color`)}
                       {...(!regexForHexCode.test(form.getFieldValue('color')) && {
                         help: t(`${localePath}.validation.color`),
@@ -460,10 +466,12 @@ const WidgetSettings = () => {
                         <Form.Item
                           name="width"
                           label={t(`${localePath}.width`)}
-                          initialValue={1000}
+                          initialValue="1000"
                           rules={[
                             {
                               validator: (_, value) => {
+                                console.log(value);
+                                if (value?.trim() === '') return Promise.resolve();
                                 if (!value || !/^[1-9][0-9]*$/.test(value)) {
                                   return Promise.reject(t(`${localePath}.validation.width`));
                                 }
@@ -779,7 +787,10 @@ const WidgetSettings = () => {
                 <iframe
                   width="100%"
                   height={form.getFieldValue('height') ? `${form.getFieldValue('height')}px` : '600px'}
-                  style={{ border: 'none' }}
+                  style={{
+                    border: 'none',
+                    maxWidth: form.getFieldValue('width') ? `${form.getFieldValue('width')}px` : '100%',
+                  }}
                   src={url.href}></iframe>
               </CustomModal>
               <iframe src={url.href}></iframe>
