@@ -99,7 +99,7 @@ const DraggableTree = ({
     return combinedData;
   };
 
-  const onDrop = (info, treeData, setTreeData, counterpartTreeData, setCounterpartTreeData) => {
+  const onDrop = ({ info, treeData, setTreeData, counterpartTreeData, setCounterpartTreeData, treeLanguage }) => {
     const dropKey = info.node.key;
     const dragKey = info.dragNode.key;
     const dropPos = info.node.pos.split('-');
@@ -176,7 +176,9 @@ const DraggableTree = ({
     }
     setTreeData([...treeData]);
     setCounterpartTreeData([...counterpartTreeData]);
-    setData(combineBothTreeData(treeData, counterpartTreeData));
+
+    if (treeLanguage == contentLanguage.FRENCH) setData(combineBothTreeData(treeData, counterpartTreeData));
+    else if (treeLanguage == contentLanguage.ENGLISH) setData(combineBothTreeData(counterpartTreeData, treeData));
   };
 
   const findItem = (key) => {
@@ -347,7 +349,16 @@ const DraggableTree = ({
               draggable
               blockNode
               expandedKeys={expandedKeys}
-              onDrop={(info) => onDrop(info, treeData1, setTreeData1, treeData2, setTreeData2)}
+              onDrop={(info) =>
+                onDrop({
+                  info,
+                  treeData: treeData1,
+                  setTreeData: setTreeData1,
+                  counterpartTreeData: treeData2,
+                  setCounterpartTreeData: setTreeData2,
+                  treeLanguage: contentLanguage.ENGLISH,
+                })
+              }
               onExpand={(key) => {
                 setExpandedKeys(key);
               }}
@@ -370,7 +381,16 @@ const DraggableTree = ({
               draggable
               blockNode
               expandedKeys={expandedKeys}
-              onDrop={(info) => onDrop(info, treeData2, setTreeData2, treeData1, setTreeData1)}
+              onDrop={(info) =>
+                onDrop({
+                  info,
+                  treeData: treeData2,
+                  setTreeData: setTreeData2,
+                  counterpartTreeData: treeData1,
+                  setCounterpartTreeData: setTreeData1,
+                  treeLanguage: contentLanguage.FRENCH,
+                })
+              }
               onExpand={(key) => {
                 setExpandedKeys(key);
               }}
