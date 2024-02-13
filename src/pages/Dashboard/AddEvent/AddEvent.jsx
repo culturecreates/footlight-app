@@ -66,7 +66,7 @@ import NoContent from '../../../components/NoContent/NoContent';
 import { locationType, locationTypeOptions, virtualLocationFieldNames } from '../../../constants/locationTypeOptions';
 import { otherInformationFieldNames, otherInformationOptions } from '../../../constants/otherInformationOptions';
 import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../../constants/eventAccessibilityOptions';
-import { usePrompt } from '../../../hooks/usePrompt';
+import { Prompt } from '../../../hooks/usePrompt';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import RecurringEvents from '../../../components/RecurringEvents';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
@@ -190,8 +190,6 @@ function AddEvent() {
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
   const [selectedOrganizerPerformerSupporterType, setSelectedOrganizerPerformerSupporterType] = useState();
   const [imageCropOpen, setImageCropOpen] = useState(false);
-
-  usePrompt(t('common.unsavedChanges'), showDialog);
 
   setContentBackgroundColor('#F9FAFF');
 
@@ -468,6 +466,7 @@ function AddEvent() {
           if (values?.keywords?.length > 0) {
             keywords = values?.keywords;
           }
+
           if (ticketType) {
             offerConfiguration = {
               category: ticketType,
@@ -729,7 +728,7 @@ function AddEvent() {
                 .catch((error) => console.log(error));
             })
             .catch((error) => console.log(error));
-        } else if (isValuesChanged && type === 'PUBLISH') {
+        } else if ((isValuesChanged || duplicateId) && type === 'PUBLISH') {
           saveAsDraftHandler(event, type === 'PUBLISH', eventPublishState.DRAFT)
             .then((id) => {
               updateEventState({ id: eventId ?? id, calendarId })
@@ -1446,6 +1445,7 @@ function AddEvent() {
     !updateEventStateLoading &&
     !initialExternalSourceLoading ? (
     <div>
+      <Prompt when={showDialog} message={t('common.unsavedChanges')} beforeUnload={true} />
       <Form
         form={form}
         layout="vertical"

@@ -452,7 +452,11 @@
       },
       "deleteOrganization": {
         "title": "Confirm Delete",
-        "description": "Are you sure you want to permanently delete this organization? This action will also delete all its associated data and everywhere it was used, including in events. ",
+        "description": "Are you sure you want to permanently delete this organization? The organization will be deleted everywhere it is used.",
+        "impact": "Impacted events: ",
+        "published": "{{number}} published",
+        "inReview": "{{number}} pending review",
+        "draft": "{{number}} draft",
         "ok": "OK",
         "cancel": "Cancel"
       },
@@ -521,7 +525,11 @@
       },
       "deletePlace": {
         "title": "Confirm Delete",
-        "description": "Are you sure you want to permanently delete this place? This action will also delete all its associated data and everywhere it was used, including in events. ",
+        "description": "Are you sure you want to permanently delete this place? The organization will be deleted everywhere it is used.",
+        "impact": "Impacted events: ",
+        "published": "{{number}} published",
+        "inReview": "{{number}} pending review",
+        "draft": "{{number}} draft",
         "ok": "OK",
         "cancel": "Cancel"
       },
@@ -685,7 +693,11 @@
       },
       "deletePerson": {
         "title": "Confirm Delete",
-        "description": "Are you sure you want to permanently delete this person? This action will also delete all its associated data and everywhere it was used, including in events. ",
+        "description": "Are you sure you want to permanently delete this person? The person will be deleted everywhere it is used.",
+        "impact": "Impacted events: ",
+        "published": "{{number}} published",
+        "inReview": "{{number}} pending review",
+        "draft": "{{number}} draft",
         "ok": "OK",
         "cancel": "Cancel"
       },
@@ -957,7 +969,13 @@
         },
         "modal": {
           "titleDelete": "Confirm delete",
-          "contentDelete": "Are you sure you want to permanently delete this taxonomy? This action will also delete all its associated data and everywhere it was used, including in events."
+          "contentDelete": {
+            "description": "Are you sure you want to permanently delete this taxonomy? The taxonomy will be deleted everywhere it is used.",
+            "impact": "Impacted events: ",
+            "published": "{{number}} published",
+            "inReview": "{{number}} pending review",
+            "draft": "{{number}} draft"
+          }
         }
       },
       "selectType": {
