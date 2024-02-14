@@ -7,6 +7,7 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
+  min-height: 100px;
 }
 
 .draggable-tree .ant-tree-list {
@@ -24,10 +25,37 @@
   border-radius: 0px 4px 4px 0px;
   border: solid 4px #eff2ff;
   border-right: none;
-  height: 140px;
   overflow-y: scroll;
   color: var(--content-neutral-primary, #222732);
-  height: 196px;
+  flex: 1;
+  justify-content: center;
+}
+
+.draggable-tree > .ant-form-item,
+.draggable-tree > .ant-form-item > .ant-form-item-row,
+.draggable-tree > .ant-form-item > .ant-form-item-row > .ant-form-item-control,
+.draggable-tree > .ant-form-item > .ant-form-item-row > .ant-form-item-control > .ant-form-item-control-input,
+.draggable-tree
+  > .ant-form-item
+  > .ant-form-item-row
+  > .ant-form-item-control
+  > .ant-form-item-control-input
+  > .ant-form-item-control-input-content {
+  height: 100%;
+}
+
+.draggable-tree
+  > .ant-form-item
+  > .ant-form-item-row
+  > .ant-form-item-control
+  > .ant-form-item-control-input
+  > .ant-form-item-control-input-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.draggable-tree > .ant-form-item {
+  flex: 1;
 }
 
 .draggable-tree .ant-tree .ant-tree-treenode-draggable .ant-tree-draggable-icon {
@@ -38,10 +66,17 @@
   background-color: #fff;
 }
 
+.draggable-tree .ant-tree .ant-tree-treenode:hover,
+.draggable-tree .ant-tree .ant-tree-treenode:hover .ant-tree-node-content-wrapper,
+.draggable-tree .ant-tree .ant-tree-node-content-wrapper:hover,
+.draggable-tree .ant-tree .ant-tree-node-content-wrapper:hover .ant-tree-treenode,
+.draggable-tree .ant-tree .ant-tree-treenode:hover .ant-tree-node-content-wrapper.ant-tree-node-selected,
+.draggable-tree .ant-tree .ant-tree-treenode:hover .ant-tree-node-content-wrapper.ant-tree-node-selected,
+.draggable-tree .ant-tree .ant-tree-node-content-wrapper:hover .ant-tree-treenode.ant-tree-node-selected,
+.draggable-tree .ant-tree .ant-tree-node-content-wrapper:hover .ant-tree-treenode.ant-tree-node-selected,
 .draggable-tree .ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected:hover,
-.draggable-tree .ant-tree .ant-tree-treenode:hover {
+.draggable-tree .ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected:hover .ant-tree-treenode {
   background-color: #eff2ff;
-  transition: 0.3s;
 }
 
 .draggable-tree .ant-tree .anticon {
@@ -71,7 +106,7 @@
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
-  line-height: 16px; /* 133.333% */
+  line-height: 16px;
 }
 
 .draggable-tree .ant-tree .ant-tree-treenode {
