@@ -65,7 +65,7 @@ import {
 } from '../../../constants/placeAccessibilityTypeOptions';
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { useAddImageMutation } from '../../../services/image';
-import { usePrompt } from '../../../hooks/usePrompt';
+import { Prompt, usePrompt } from '../../../hooks/usePrompt';
 import { useAddPostalAddressMutation, useUpdatePostalAddressMutation } from '../../../services/postalAddress';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequiredFieldNames';
@@ -954,6 +954,7 @@ function CreateNewPlace() {
 
   return !isPlaceLoading && !artsDataLoading && !taxonomyLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+      <Prompt when={showDialog} message={t('common.unsavedChanges')} beforeUnload={true} />
       <div className="add-edit-wrapper add-organization-wrapper create-new-place-wrapper">
         <Form form={form} layout="vertical" name="place" onValuesChange={onValuesChangeHandler}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
