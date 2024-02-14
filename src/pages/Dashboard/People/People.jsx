@@ -191,73 +191,73 @@ function People() {
             />
             <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
             <></>
-
-            {!allPeopleFetching ? (
-              allPeopleData?.data?.length > 0 ? (
-                <List
-                  data-cy="list-people"
-                  className="event-list-wrapper"
-                  itemLayout={screens.xs ? 'vertical' : 'horizontal'}
-                  dataSource={allPeopleData?.data}
-                  bordered={false}
-                  pagination={{
-                    onChange: (page) => {
-                      setPageNumber(page);
-                    },
-                    pageSize: 10,
-                    hideOnSinglePage: true,
-                    total: totalCount,
-                    current: Number(pageNumber),
-                    showSizeChanger: false,
-                  }}
-                  renderItem={(item, index) => (
-                    <ListItem
-                      data-cy="list-item-person"
-                      key={index}
-                      id={index}
-                      logo={item?.image?.thumbnail?.uri}
-                      defaultLogo={
-                        <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} data-cy="logo-person" />
-                      }
-                      title={contentLanguageBilingual({
-                        en: item?.name?.en,
-                        fr: item?.name?.fr,
-                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                        calendarContentLanguage: calendarContentLanguage,
-                      })}
-                      description={contentLanguageBilingual({
-                        en: item?.disambiguatingDescription?.en,
-                        fr: item?.disambiguatingDescription?.fr,
-                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                        calendarContentLanguage: calendarContentLanguage,
-                      })}
-                      createdDate={item?.creator?.date}
-                      createdByUserName={item?.creator?.userName}
-                      updatedDate={item?.modifier?.date}
-                      updatedByUserName={item?.modifier?.userName}
-                      artsDataLink={artsDataLinkChecker(item?.sameAs)}
-                      listItemHandler={() => listItemHandler(item?.id)}
-                      actions={[
-                        adminCheckHandler() && (
-                          <DeleteOutlined
-                            data-cy="icon-delete-person"
-                            key={'delete-icon'}
-                            style={{ color: '#222732', fontSize: '24px' }}
-                            onClick={() => deletePersonHandler(item?.id)}
-                          />
-                        ),
-                      ]}
-                    />
-                  )}
-                />
+            <div className="responsvie-list-wrapper-class">
+              {!allPeopleFetching ? (
+                allPeopleData?.data?.length > 0 ? (
+                  <List
+                    data-cy="list-people"
+                    itemLayout={!screens.sm ? 'vertical' : 'horizontal'}
+                    dataSource={allPeopleData?.data}
+                    bordered={false}
+                    pagination={{
+                      onChange: (page) => {
+                        setPageNumber(page);
+                      },
+                      pageSize: 10,
+                      hideOnSinglePage: true,
+                      total: totalCount,
+                      current: Number(pageNumber),
+                      showSizeChanger: false,
+                    }}
+                    renderItem={(item, index) => (
+                      <ListItem
+                        data-cy="list-item-person"
+                        key={index}
+                        id={index}
+                        logo={item?.image?.thumbnail?.uri}
+                        defaultLogo={
+                          <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} data-cy="logo-person" />
+                        }
+                        title={contentLanguageBilingual({
+                          en: item?.name?.en,
+                          fr: item?.name?.fr,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                          calendarContentLanguage: calendarContentLanguage,
+                        })}
+                        description={contentLanguageBilingual({
+                          en: item?.disambiguatingDescription?.en,
+                          fr: item?.disambiguatingDescription?.fr,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                          calendarContentLanguage: calendarContentLanguage,
+                        })}
+                        createdDate={item?.creator?.date}
+                        createdByUserName={item?.creator?.userName}
+                        updatedDate={item?.modifier?.date}
+                        updatedByUserName={item?.modifier?.userName}
+                        artsDataLink={artsDataLinkChecker(item?.sameAs)}
+                        listItemHandler={() => listItemHandler(item?.id)}
+                        actions={[
+                          adminCheckHandler() && (
+                            <DeleteOutlined
+                              data-cy="icon-delete-person"
+                              key={'delete-icon'}
+                              style={{ color: '#222732', fontSize: '24px' }}
+                              onClick={() => deletePersonHandler(item?.id)}
+                            />
+                          ),
+                        ]}
+                      />
+                    )}
+                  />
+                ) : (
+                  <NoContent style={{ height: '200px' }} />
+                )
               ) : (
-                <NoContent style={{ height: '200px' }} />
-              )
-            ) : (
-              <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <LoadingIndicator data-cy="loading-indicator-people" />
-              </div>
-            )}
+                <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <LoadingIndicator data-cy="loading-indicator-people" />
+                </div>
+              )}
+            </div>
           </Main>
         </FeatureFlag>
       )}
