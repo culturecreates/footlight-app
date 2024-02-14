@@ -45,6 +45,7 @@ const WidgetSettings = () => {
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const { eventDetailsUrlTemplate = '', listEventsUrlTemplate = '' } = currentCalendarData?.widgetSettings || {};
   const calendarName = currentCalendarData?.slug;
+  const encodedCalendarLogoUri = encodeURIComponent(currentCalendarData?.image?.uri || '');
   const encodedEventDetailsUrlTemplate = encodeURIComponent(eventDetailsUrlTemplate);
   const encodedListEventsUrlTemplate = encodeURIComponent(listEventsUrlTemplate);
 
@@ -159,6 +160,7 @@ const WidgetSettings = () => {
       urlCopy.searchParams.append('limit', limit);
       urlCopy.searchParams.append('calendar', calendarName);
       urlCopy.searchParams.append('height', height);
+      urlCopy.searchParams.append('logo', encodedCalendarLogoUri);
       urlCopy.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
       urlCopy.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
       urlCopy.searchParams.append('searchEventsFilters', searchEventsFilters);
@@ -308,6 +310,7 @@ const WidgetSettings = () => {
 
     urlCopy.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
     urlCopy.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
+    urlCopy.searchParams.append('logo', encodedCalendarLogoUri);
     urlCopy.searchParams.append('locale', onLanguageSelect(locale)?.key.toLowerCase());
     urlCopy.searchParams.append('limit', limit);
     urlCopy.searchParams.append('height', height);
@@ -470,7 +473,6 @@ const WidgetSettings = () => {
                           rules={[
                             {
                               validator: (_, value) => {
-                                console.log(value);
                                 if (value?.trim() === '') return Promise.resolve();
                                 if (!value || !/^[1-9][0-9]*$/.test(value)) {
                                   return Promise.reject(t(`${localePath}.validation.width`));
