@@ -1,13 +1,17 @@
 import React from 'react';
 import './main.css';
-import { Col, Row } from 'antd';
+import { Col, Grid, Row } from 'antd';
+
+const { useBreakpoint } = Grid;
 
 function Main(props) {
+  const screens = useBreakpoint();
+
   const { children } = props;
   return (
     <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-wrapper">
       <Col span={24}>
-        <Col style={{ paddingLeft: 0 }}>
+        <Col style={{ paddingLeft: 0, ...(!screens.md && { marginBottom: '16px' }) }}>
           <Row justify="space-between">
             <Col>
               <div className="events-heading-wrapper">{children?.length > 0 ? children[0] : children}</div>
