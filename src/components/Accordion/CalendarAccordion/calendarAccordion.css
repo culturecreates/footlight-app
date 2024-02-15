@@ -14,6 +14,8 @@
 .collapse-wrapper > .ant-collapse-item:last-child > .ant-collapse-header,
 .collapse-wrapper > .ant-collapse-item:last-child > .ant-collapse-header {
   border-radius: 8px;
+  display: flex;
+  align-items: center;
 }
 
 .collapse-wrapper .ant-input {
@@ -23,6 +25,62 @@
 .collapse-wrapper .ant-form-item-label > label {
   font-size: 12px;
 }
-.collapse-wrapper .ant-collapse-item:last-child > .ant-collapse-content{
-    border-radius: 8px;
+
+.collapse-wrapper .ant-collapse-content {
+  border-top: 1px solid rgb(96, 126, 252);
+  border-bottom: 0px;
+  border-radius: 0px;
+}
+
+.collapse-wrapper .ant-collapse > .ant-collapse-item {
+  border-bottom: 0px;
+}
+
+.collapse-wrapper .button-container .ant-btn {
+  color: #ce1111;
+  display: flex;
+  padding: 8px 12px !important;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  color: var(--content-alert-error-darker, #ce1111);
+  text-align: center;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 16px;
+  border-radius: 4px;
+  height: auto;
+  border: 1px solid var(--content-alert-error, #f43131);
+  background: var(--background-neutrals-transparent, rgba(255, 255, 255, 0));
+}
+
+.collapse-wrapper .ant-collapse-item-disabled .ant-collapse-header {
+  color: #222732;
+}
+
+.collapse-wrapper .ant-input {
+  border: 0px !important;
+}
+.collapse-wrapper > .ant-collapse-item {
+  border-bottom: 0px;
+}
+.collapse-wrapper .ant-collapse-item:last-child > .ant-collapse-content {
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.collapse-wrapper .user-role-para {
+  color: #222732;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  text-transform: capitalize;
+}
+
+.collapse-wrapper-read-only .ant-form-item-label > label,
+.collapse-wrapper .span-organization-help-text {
+  font-weight: 400;
+  font-size: 12px;
+  color: #646d7b;
 }
