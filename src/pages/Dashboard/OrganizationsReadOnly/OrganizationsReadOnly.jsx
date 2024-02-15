@@ -155,7 +155,9 @@ function OrganizationsReadOnly() {
               </Col>
               <Col flex="60px">
                 <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-                  <ReadOnlyProtectedComponent creator={organizationData.createdByUserId}>
+                  <ReadOnlyProtectedComponent
+                    creator={organizationData.createdByUserId}
+                    entityId={organizationData?.id}>
                     <div className="button-container">
                       <OutlinedButton
                         data-cy="button-edit-organization"

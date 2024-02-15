@@ -642,7 +642,7 @@ function CreateNewOrganization() {
       let initialPlaceAccessibiltiy = [],
         initialPlace;
       if (organizationData) {
-        if (routinghandler(user, calendarId, organizationData?.createdByUserId, null, true)) {
+        if (routinghandler(user, calendarId, organizationData?.createdByUserId, null, true, organizationData?.id)) {
           if (organizationData?.image) {
             form.setFieldsValue({
               imageCrop: {
