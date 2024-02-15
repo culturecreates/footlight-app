@@ -343,39 +343,39 @@ const AddUser = () => {
                       lastName: response?.lastName,
                       phoneNumber: response?.phoneNumber,
                       email: response?.email,
-                      userType: requiredRole[0]?.role,
+                      userType: requiredRole?.length > 0 && requiredRole[0]?.role,
                       userName: response?.userName,
                       languagePreference: response.interfaceLanguage,
                       calendars: response.roles,
                     });
-                  });
-                notification.success({
-                  description: t(`dashboard.settings.addUser.notification.updateUser`),
-                  key: res.message,
-                  placement: 'top',
-                  closeIcon: <></>,
-                  maxCount: 1,
-                  duration: 3,
-                });
-                let userDetails = {
-                  accessToken,
-                  expiredTime,
-                  refreshToken,
-                  user: {
-                    id: user?.id,
-                    firstName: values?.firstName?.trim(),
-                    lastName: values?.lastName?.trim(),
-                    email: values?.email,
-                    profileImage: user?.profileImage,
-                    roles: user?.roles,
-                    isSuperAdmin: user?.isSuperAdmin,
-                    userName: user?.userName,
-                    interfaceLanguage: values?.languagePreference,
-                  },
-                };
-                dispatch(setUser(userDetails));
+                    notification.success({
+                      description: t(`dashboard.settings.addUser.notification.updateUser`),
+                      key: res.message,
+                      placement: 'top',
+                      closeIcon: <></>,
+                      maxCount: 1,
+                      duration: 3,
+                    });
+                    let userDetails = {
+                      accessToken,
+                      expiredTime,
+                      refreshToken,
+                      user: {
+                        id: response?.id,
+                        firstName: response?.firstName,
+                        lastName: response?.lastName,
+                        email: response?.email,
+                        profileImage: response?.profileImage,
+                        roles: response?.roles,
+                        isSuperAdmin: response?.isSuperAdmin ? true : false,
+                        userName: response?.userName,
+                        interfaceLanguage: response?.languagePreference,
+                      },
+                    };
+                    dispatch(setUser(userDetails));
 
-                navigate(-2);
+                    navigate(-2);
+                  });
               } else {
                 notification.success({
                   description: t(`dashboard.settings.addUser.notification.updateUser`),
