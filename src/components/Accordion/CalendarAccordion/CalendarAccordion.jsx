@@ -121,7 +121,7 @@ function CalendarAccordion(props) {
         .catch((error) => console.log(error));
     } else setSelectedOrganizers([]);
   }, [organizationIds]);
-
+  console.log(readOnly);
   return (
     <Collapse
       className={`collapse-wrapper collapse-wrapper-${readOnly ? 'read-only' : 'editable'}`}
@@ -154,13 +154,7 @@ function CalendarAccordion(props) {
             <Select
               options={userRolesWithTranslation}
               data-cy="select-user-type"
-              disabled={
-                selectedCalendarId === calendarId
-                  ? role === userRoles.ADMIN || role === userRoles.EDITOR
-                    ? false
-                    : true
-                  : true
-              }
+              disabled={selectedCalendarId === calendarId ? false : true}
             />
           ) : (
             <p className="user-role-para" data-cy="para-user-role">

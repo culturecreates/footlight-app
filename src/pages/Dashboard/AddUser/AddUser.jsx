@@ -790,11 +790,7 @@ const AddUser = () => {
                                         calendarContentLanguage: calendarContentLanguage,
                                       })}
                                       role={calendar?.role}
-                                      readOnly={
-                                        calendar?.role === userRoles.GUEST || calendar?.role === userRoles.CONTRIBUTOR
-                                          ? true
-                                          : false
-                                      }
+                                      readOnly={adminCheckHandler() ? false : true}
                                       disabled={calendar?.disabled}
                                       organizationIds={calendar?.organizations}
                                       isCurrentUser={isCurrentUser}
