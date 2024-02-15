@@ -6,7 +6,6 @@
 }
 
 .add-event-section-col .add-event-section-wrapper {
-  padding: 8px !important;
   background-color: #ffffff;
 }
 
@@ -22,7 +21,7 @@
   color: #f43131;
 }
 
-.add-event-section-col .side-wrapper-container {
+/* .add-event-section-col .side-wrapper-container {
   margin-top: 35%;
 }
 
@@ -36,4 +35,4 @@
   .add-event-section-col .side-wrapper-container {
     margin-top: 0px;
   }
-}
+} */
