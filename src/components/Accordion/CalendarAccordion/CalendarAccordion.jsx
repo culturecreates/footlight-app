@@ -9,7 +9,6 @@ import Select from '../../Select';
 import { useTranslation } from 'react-i18next';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
 import { entitiesClass } from '../../../constants/entitiesClass';
-import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import { useOutletContext, useParams } from 'react-router-dom';
 import LoadingIndicator from '../../LoadingIndicator';
 import { treeEntitiesOption } from '../../TreeSelectOption/treeSelectOption.settings';
@@ -57,22 +56,13 @@ function CalendarAccordion(props) {
     classes: decodeURIComponent(query.toString()),
     sessionId: timestampRef,
   });
-  const { currentData: initialExternalSource, isFetching: initialExternalSourceLoading } = useGetExternalSourceQuery({
-    calendarId,
-    searchKey: '',
-    classes: decodeURIComponent(query.toString()),
-    sessionId: timestampRef,
-  });
+
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
-  const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
   const [getAllOrganization] = useLazyGetAllOrganizationQuery();
 
   const [organizersList, setOrganizersList] = useState([]);
-  const [organizersArtsdataList, setOrganizersArtsdataList] = useState([]);
-  const [organizersImportsFootlightList, setOrganizersImportsFootlightList] = useState([]);
   const [selectedOrganizers, setSelectedOrganizers] = useState([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -88,25 +78,6 @@ function CalendarAccordion(props) {
         }
       })
       .catch((error) => console.log(error));
-    getExternalSource({
-      searchKey: value,
-      classes: decodeURIComponent(query.toString()),
-      sources: decodeURIComponent(sourceQuery.toString()),
-      calendarId,
-      excludeExistingCMS: true,
-    })
-      .unwrap()
-      .then((response) => {
-        if (type == 'organizers') {
-          setOrganizersArtsdataList(
-            treeEntitiesOption(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
-          );
-          setOrganizersImportsFootlightList(
-            treeEntitiesOption(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
-          );
-        }
-      })
-      .catch((error) => console.log(error));
   };
 
   const debounceSearchOrganizationPersonSearch = useCallback(useDebounce(organizationPersonSearch, SEARCH_DELAY), []);
@@ -116,21 +87,10 @@ function CalendarAccordion(props) {
   }, [selectedOrganizers]);
 
   useEffect(() => {
-    if (initialEntities && currentCalendarData && !initialExternalSourceLoading) {
+    if (initialEntities && currentCalendarData) {
       setOrganizersList(treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS));
-      setOrganizersArtsdataList(
-        treeEntitiesOption(initialExternalSource?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
-      );
-      setOrganizersImportsFootlightList(
-        treeEntitiesOption(
-          initialExternalSource?.footlight,
-          user,
-          calendarContentLanguage,
-          externalSourceOptions.FOOTLIGHT,
-        ),
-      );
     }
-  }, [initialEntityLoading, currentCalendarData, initialExternalSourceLoading]);
+  }, [initialEntityLoading, currentCalendarData]);
 
   useEffect(() => {
     if (organizationIds?.length > 0) {
@@ -227,7 +187,7 @@ function CalendarAccordion(props) {
           {!readOnly && (
             <KeyboardAccessibleLayout
               setItem={(organizer) => setSelectedOrganizers([...selectedOrganizers, organizer])}
-              data={[organizersList, organizersImportsFootlightList, organizersArtsdataList]}
+              data={[organizersList]}
               setFieldValue={() => {
                 return;
               }}
@@ -283,80 +243,6 @@ function CalendarAccordion(props) {
                             ))}
                         </div>
                       </>
-                      {quickCreateKeyword !== '' && (
-                        <>
-                          <div className="popover-section-header" data-cy="div-organizers-artsdata-entity-heading">
-                            {t('dashboard.organization.createNew.search.importsFromFootlight')}
-                          </div>
-                          <div className="search-scrollable-content">
-                            {isExternalSourceFetching && (
-                              <div
-                                style={{
-                                  height: '200px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                }}>
-                                <LoadingIndicator />
-                              </div>
-                            )}
-                            {!isExternalSourceFetching &&
-                              (organizersImportsFootlightList?.length > 0 ? (
-                                organizersImportsFootlightList?.map((organizer, index) => (
-                                  <div
-                                    key={index}
-                                    className="event-popover-options"
-                                    onClick={() => {
-                                      setSelectedOrganizers([...selectedOrganizers, organizer]);
-                                      setIsPopoverOpen(false);
-                                    }}
-                                    data-cy={`div-select-import-footlight-organizer-${index}`}>
-                                    {organizer?.label}
-                                  </div>
-                                ))
-                              ) : (
-                                <NoContent />
-                              ))}
-                          </div>
-                        </>
-                      )}
-                      {quickCreateKeyword !== '' && (
-                        <>
-                          <div className="popover-section-header" data-cy="div-organizers-artsdata-entity-heading">
-                            {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
-                          </div>
-                          <div className="search-scrollable-content">
-                            {isExternalSourceFetching && (
-                              <div
-                                style={{
-                                  height: '200px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                }}>
-                                <LoadingIndicator />
-                              </div>
-                            )}
-                            {!isExternalSourceFetching &&
-                              (organizersArtsdataList?.length > 0 ? (
-                                organizersArtsdataList?.map((organizer, index) => (
-                                  <div
-                                    key={index}
-                                    className="event-popover-options"
-                                    onClick={() => {
-                                      setSelectedOrganizers([...selectedOrganizers, organizer]);
-                                      setIsPopoverOpen(false);
-                                    }}
-                                    data-cy={`div-select-artsdata-organizer-${index}`}>
-                                    {organizer?.label}
-                                  </div>
-                                ))
-                              ) : (
-                                <NoContent />
-                              ))}
-                          </div>
-                        </>
-                      )}
                     </div>
                   </div>
                 }>
@@ -364,12 +250,10 @@ function CalendarAccordion(props) {
                   style={{ borderRadius: '4px', display: selectedCalendarId === calendarId ? 'flex' : 'none' }}
                   placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
                   onChange={(e) => {
-                    setQuickCreateKeyword(e.target.value);
                     debounceSearchOrganizationPersonSearch(e.target.value, 'organizers');
                     setIsPopoverOpen(true);
                   }}
-                  onClick={(e) => {
-                    setQuickCreateKeyword(e.target.value);
+                  onClick={() => {
                     setIsPopoverOpen(true);
                   }}
                   data-cy="input-quick-create-organizer-keyword"
