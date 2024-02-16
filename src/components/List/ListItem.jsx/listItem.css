@@ -113,6 +113,15 @@
 .responsvie-list-wrapper-class .event-list-more-icon:hover {
   background-color: #eff2ff;
 }
+
+.responsvie-list-wrapper-class .event-list-status {
+  align-items: flex-end;
+}
+
+.responsvie-list-wrapper-class .ant-list-vertical .event-list-status {
+  align-items: flex-start;
+}
+
 @media only screen and (max-width: 1024px) {
   .responsvie-list-wrapper-class .event-list-title-heading {
     white-space: nowrap;
