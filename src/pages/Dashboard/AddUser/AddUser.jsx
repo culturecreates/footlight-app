@@ -876,7 +876,7 @@ const AddUser = () => {
                                       organizationIds={calendar?.organizations}
                                       isCurrentUser={isCurrentUser}
                                       removeCalendarHandler={() => {
-                                        removeCalendarHandler({ calendar, index });
+                                        removeCalendarHandler({ item: calendar, index });
                                       }}
                                     />
                                   ))}
