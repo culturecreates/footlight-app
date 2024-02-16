@@ -343,6 +343,23 @@ const AddUser = () => {
                         languagePreference: response.interfaceLanguage,
                         calendars: response.roles,
                       });
+                      let userDetails = {
+                        accessToken,
+                        expiredTime,
+                        refreshToken,
+                        user: {
+                          id: response?.id,
+                          firstName: response?.firstName,
+                          lastName: response?.lastName,
+                          email: response?.email,
+                          profileImage: response?.profileImage,
+                          roles: response?.roles,
+                          isSuperAdmin: response?.isSuperAdmin ? true : false,
+                          userName: response?.userName,
+                          interfaceLanguage: response?.languagePreference,
+                        },
+                      };
+                      dispatch(setUser(userDetails));
                     });
                   notification.success({
                     description: t('dashboard.userProfile.notification.profileUpdate'),
@@ -351,23 +368,6 @@ const AddUser = () => {
                     maxCount: 1,
                     duration: 3,
                   });
-                  let userDetails = {
-                    accessToken,
-                    expiredTime,
-                    refreshToken,
-                    user: {
-                      id: response?.id,
-                      firstName: response?.firstName,
-                      lastName: response?.lastName,
-                      email: response?.email,
-                      profileImage: response?.profileImage,
-                      roles: response?.roles,
-                      isSuperAdmin: response?.isSuperAdmin ? true : false,
-                      userName: response?.userName,
-                      interfaceLanguage: response?.languagePreference,
-                    },
-                  };
-                  dispatch(setUser(userDetails));
 
                   navigate(-1);
                 }
