@@ -50,4 +50,12 @@
   .person-read-only-wrapper .tags-wrapper {
     font-size: 10px;
   }
+
+  .read-only-wrapper .read-only-event-content-sub-title-primary {
+    font-size: 12px;
+  }
+
+  .read-only-wrapper .read-only-event-content-sub-title-secondary {
+    font-size: 12px;
+  }
 }
