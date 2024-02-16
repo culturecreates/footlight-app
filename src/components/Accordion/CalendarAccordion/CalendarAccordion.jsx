@@ -121,7 +121,6 @@ function CalendarAccordion(props) {
         .catch((error) => console.log(error));
     } else setSelectedOrganizers([]);
   }, [organizationIds]);
-  console.log(readOnly);
   return (
     <Collapse
       className={`collapse-wrapper collapse-wrapper-${readOnly ? 'read-only' : 'editable'}`}

@@ -19,6 +19,7 @@ import {
   useLazyGetAllUsersQuery,
   useLazyGetCurrentUserQuery,
   useLazyGetUserByIdQuery,
+  useUpdateCurrentUserMutation,
   useUpdateUserByIdMutation,
 } from '../../../services/users';
 import AuthenticationInput from '../../../components/Input/Common/AuthenticationInput';
@@ -101,6 +102,7 @@ const AddUser = () => {
   const [getCurrentUserDetails, { isFetching: isCurrentUserFetching }] = useLazyGetCurrentUserQuery({
     sessionId: timestampRef,
   });
+  const [updateCurrentUser] = useUpdateCurrentUserMutation();
 
   useEffect(() => {
     if (userId !== user?.id) {
@@ -310,105 +312,185 @@ const AddUser = () => {
             return { entityId: organizer?.value };
           });
           let userType = values?.userType[calendarId];
-          updateUserById({
-            id: userId,
-            calendarId,
-            body: {
-              firstName: values.firstName?.trim(),
-              lastName: values.lastName?.trim(),
-              email: values.email,
-              interfaceLanguage: values?.languagePreference,
-              modifyRole: {
-                userId: userId,
-                role: userType,
-                calendarId,
-                organizations,
+          if (isCurrentUser && adminCheckHandler() == false) {
+            updateCurrentUser({
+              calendarId,
+              body: {
+                firstName: values?.firstName?.trim(),
+                lastName: values?.lastName?.trim(),
+                email: values?.email,
+                interfaceLanguage: values?.languagePreference?.key,
               },
-            },
-          })
-            .unwrap()
-            .then((res) => {
-              if (isCurrentUser) {
-                i18n.changeLanguage(values?.languagePreference?.toLowerCase());
-                getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
-                  .unwrap()
-                  .then((response) => {
-                    const requiredRole = response?.roles.filter((r) => {
-                      return r.calendarId === calendarId;
-                    });
-                    // const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
+            })
+              .unwrap()
+              .then((response) => {
+                if (response?.statusCode == 202) {
+                  i18n.changeLanguage(values?.languagePreference?.key?.toLowerCase());
+                  getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
+                    .unwrap()
+                    .then((response) => {
+                      const requiredRole = response?.roles.filter((r) => {
+                        return r.calendarId === calendarId;
+                      });
+                      const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
 
-                    setUserData({
-                      firstName: response?.firstName,
-                      lastName: response?.lastName,
-                      phoneNumber: response?.phoneNumber,
-                      email: response?.email,
-                      userType: requiredRole?.length > 0 && requiredRole[0]?.role,
-                      userName: response?.userName,
-                      languagePreference: response.interfaceLanguage,
-                      calendars: response.roles,
-                    });
-                    notification.success({
-                      description: t(`dashboard.settings.addUser.notification.updateUser`),
-                      key: res.message,
-                      placement: 'top',
-                      closeIcon: <></>,
-                      maxCount: 1,
-                      duration: 3,
-                    });
-                    let userDetails = {
-                      accessToken,
-                      expiredTime,
-                      refreshToken,
-                      user: {
-                        id: response?.id,
+                      setUserData({
                         firstName: response?.firstName,
                         lastName: response?.lastName,
+                        phoneNumber: response?.phoneNumber,
                         email: response?.email,
-                        profileImage: response?.profileImage,
-                        roles: response?.roles,
-                        isSuperAdmin: response?.isSuperAdmin ? true : false,
+                        userType: requiredRole[0]?.role,
                         userName: response?.userName,
-                        interfaceLanguage: response?.languagePreference,
-                      },
-                    };
-                    dispatch(setUser(userDetails));
-
-                    navigate(-2);
+                        languagePreference: { key: response.interfaceLanguage, label: selectedLanguage },
+                        calendars: response.roles,
+                      });
+                    });
+                  notification.success({
+                    description: t('dashboard.userProfile.notification.profileUpdate'),
+                    placement: 'top',
+                    closeIcon: <></>,
+                    maxCount: 1,
+                    duration: 3,
                   });
-              } else {
-                notification.success({
-                  description: t(`dashboard.settings.addUser.notification.updateUser`),
-                  key: res.message,
-                  placement: 'top',
-                  closeIcon: <></>,
-                  maxCount: 1,
-                  duration: 3,
-                });
-                navigate(-2);
-              }
-            })
-            .catch((error) => {
-              console.log(error);
-              message.warning({
-                duration: 10,
-                maxCount: 1,
-                key: 'udpate-user-warning',
-                content: (
-                  <>
-                    {error?.data?.message} &nbsp;
-                    <Button
-                      type="text"
-                      icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                      onClick={() => message.destroy('udpate-user-warning')}
-                    />
-                  </>
-                ),
-                icon: <ExclamationCircleOutlined />,
-              });
-            });
-        })
+                  let userDetails = {
+                    accessToken,
+                    expiredTime,
+                    refreshToken,
+                    user: {
+                      id: response?.id,
+                      firstName: response?.firstName,
+                      lastName: response?.lastName,
+                      email: response?.email,
+                      profileImage: response?.profileImage,
+                      roles: response?.roles,
+                      isSuperAdmin: response?.isSuperAdmin ? true : false,
+                      userName: response?.userName,
+                      interfaceLanguage: response?.languagePreference,
+                    },
+                  };
+                  dispatch(setUser(userDetails));
 
+                  navigate(-1);
+                }
+              })
+              .catch((error) => {
+                message.warning({
+                  duration: 10,
+                  maxCount: 1,
+                  key: 'udpate-user-warning',
+                  content: (
+                    <>
+                      {error?.data?.message} &nbsp;
+                      <Button
+                        type="text"
+                        icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                        onClick={() => message.destroy('udpate-user-warning')}
+                      />
+                    </>
+                  ),
+                  icon: <ExclamationCircleOutlined />,
+                });
+              });
+          } else if (adminCheckHandler()) {
+            updateUserById({
+              id: userId,
+              calendarId,
+              body: {
+                firstName: values.firstName?.trim(),
+                lastName: values.lastName?.trim(),
+                email: values.email,
+                interfaceLanguage: values?.languagePreference,
+                modifyRole: {
+                  userId: userId,
+                  role: userType,
+                  calendarId,
+                  organizations,
+                },
+              },
+            })
+              .unwrap()
+              .then((res) => {
+                if (isCurrentUser) {
+                  i18n.changeLanguage(values?.languagePreference?.toLowerCase());
+                  getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
+                    .unwrap()
+                    .then((response) => {
+                      const requiredRole = response?.roles.filter((r) => {
+                        return r.calendarId === calendarId;
+                      });
+                      // const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
+
+                      setUserData({
+                        firstName: response?.firstName,
+                        lastName: response?.lastName,
+                        phoneNumber: response?.phoneNumber,
+                        email: response?.email,
+                        userType: requiredRole?.length > 0 && requiredRole[0]?.role,
+                        userName: response?.userName,
+                        languagePreference: response.interfaceLanguage,
+                        calendars: response.roles,
+                      });
+                      notification.success({
+                        description: t(`dashboard.settings.addUser.notification.updateUser`),
+                        key: res.message,
+                        placement: 'top',
+                        closeIcon: <></>,
+                        maxCount: 1,
+                        duration: 3,
+                      });
+                      let userDetails = {
+                        accessToken,
+                        expiredTime,
+                        refreshToken,
+                        user: {
+                          id: response?.id,
+                          firstName: response?.firstName,
+                          lastName: response?.lastName,
+                          email: response?.email,
+                          profileImage: response?.profileImage,
+                          roles: response?.roles,
+                          isSuperAdmin: response?.isSuperAdmin ? true : false,
+                          userName: response?.userName,
+                          interfaceLanguage: response?.languagePreference,
+                        },
+                      };
+                      dispatch(setUser(userDetails));
+
+                      navigate(-2);
+                    });
+                } else {
+                  notification.success({
+                    description: t(`dashboard.settings.addUser.notification.updateUser`),
+                    key: res.message,
+                    placement: 'top',
+                    closeIcon: <></>,
+                    maxCount: 1,
+                    duration: 3,
+                  });
+                  navigate(-2);
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+                message.warning({
+                  duration: 10,
+                  maxCount: 1,
+                  key: 'udpate-user-warning',
+                  content: (
+                    <>
+                      {error?.data?.message} &nbsp;
+                      <Button
+                        type="text"
+                        icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                        onClick={() => message.destroy('udpate-user-warning')}
+                      />
+                    </>
+                  ),
+                  icon: <ExclamationCircleOutlined />,
+                });
+              });
+          }
+        })
         .catch((errors) => {
           console.error('Validation errors:', errors);
         });

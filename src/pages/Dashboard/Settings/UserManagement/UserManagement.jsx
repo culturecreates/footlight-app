@@ -473,13 +473,15 @@ const UserManagement = () => {
           </Col>
 
           <Col flex={'140px'} className="add-btn-container">
-            <ReadOnlyProtectedComponent>
-              <AddEvent
-                label={t('dashboard.settings.userManagement.addUser')}
-                onClick={addEventHandler}
-                data-cy="button-add-user"
-              />
-            </ReadOnlyProtectedComponent>
+            {adminCheckHandler() && (
+              <ReadOnlyProtectedComponent>
+                <AddEvent
+                  label={t('dashboard.settings.userManagement.addUser')}
+                  onClick={addEventHandler}
+                  data-cy="button-add-user"
+                />
+              </ReadOnlyProtectedComponent>
+            )}
           </Col>
         </Row>
 
