@@ -86,8 +86,8 @@ const AddUser = () => {
   const [userSearchKeyword, setUserSearchKeyword] = useState('');
   const [userSearchData, setUserSearchData] = useState([]);
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
+  const calendar = user?.roles?.filter((calendar) => {
+    return calendar?.calendarId === calendarId;
   });
 
   const [getUser, { isFetching: isUserFetching }] = useLazyGetUserByIdQuery({ sessionId: timestampRef });
@@ -116,7 +116,7 @@ const AddUser = () => {
       getUser({ userId, calendarId })
         .unwrap()
         .then((response) => {
-          const activeCalendars = response?.roles.filter((r) => {
+          const activeCalendars = response?.roles?.filter((r) => {
             return r.status == userActivityStatus[0].key;
           });
           setSelectedCalendars(
@@ -319,20 +319,19 @@ const AddUser = () => {
                 firstName: values?.firstName?.trim(),
                 lastName: values?.lastName?.trim(),
                 email: values?.email,
-                interfaceLanguage: values?.languagePreference?.key,
+                interfaceLanguage: values?.languagePreference,
               },
             })
               .unwrap()
               .then((response) => {
                 if (response?.statusCode == 202) {
-                  i18n.changeLanguage(values?.languagePreference?.key?.toLowerCase());
+                  i18n.changeLanguage(values?.languagePreference?.toLowerCase());
                   getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
                     .unwrap()
                     .then((response) => {
                       const requiredRole = response?.roles.filter((r) => {
                         return r.calendarId === calendarId;
                       });
-                      const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
 
                       setUserData({
                         firstName: response?.firstName,
@@ -341,7 +340,7 @@ const AddUser = () => {
                         email: response?.email,
                         userType: requiredRole[0]?.role,
                         userName: response?.userName,
-                        languagePreference: { key: response.interfaceLanguage, label: selectedLanguage },
+                        languagePreference: response.interfaceLanguage,
                         calendars: response.roles,
                       });
                     });
@@ -819,7 +818,7 @@ const AddUser = () => {
                       rules={[
                         {
                           validator: (_, value) =>
-                            validateNotEmpty(_, value?.key, t('dashboard.settings.addUser.validationTexts.language')),
+                            validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.language')),
                         },
                       ]}>
                       <Select options={userLanguages} data-cy="select-user-language" />

@@ -6,29 +6,31 @@ import { userRoles } from '../../constants/userRoles';
 function ProtectedComponents({ children, creator, isEntity }) {
   let { calendarId } = useParams();
   const { user } = useSelector(getUserDetails);
-  if (user.isSuperAdmin) {
+  if (user?.isSuperAdmin) {
     return children;
   }
 
-  const calendar = user?.roles.filter((calendar) => {
+  const calendar = user?.roles?.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
 
-  switch (calendar[0]?.role) {
-    case userRoles.GUEST:
-      if (isEntity == true) {
+  if (calendar?.length > 0) {
+    switch (calendar[0]?.role) {
+      case userRoles.GUEST:
+        if (isEntity == true) {
+          if (user?.id === creator?.userId) return children;
+        } else return;
+        break;
+      case userRoles.CONTRIBUTOR:
         if (user?.id === creator?.userId) return children;
-      } else return;
-      break;
-    case userRoles.CONTRIBUTOR:
-      if (user?.id === creator?.userId) return children;
-      else return;
-    case userRoles.EDITOR:
-      return children;
-    case userRoles.ADMIN:
-      return children;
-    default:
-      return;
+        else return;
+      case userRoles.EDITOR:
+        return children;
+      case userRoles.ADMIN:
+        return children;
+      default:
+        return;
+    }
   }
 }
 
