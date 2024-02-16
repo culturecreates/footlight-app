@@ -173,3 +173,27 @@
     width: fit-content;
   }
 }
+
+@media only screen and (max-width: 480px) {
+  .responsvie-list-wrapper-class .event-list-description-place {
+    font-size: 12px;
+  }
+
+  .responsvie-list-wrapper-class .event-list-status-created-by,
+  .responsvie-list-wrapper-class .event-list-status-updated-by {
+    font-size: 10px;
+  }
+
+  .responsvie-list-wrapper-class .event-list-description-name {
+    font-size: 16px;
+  }
+
+  .responsvie-list-wrapper-class .ant-list-item-extra > span {
+    font-size: 20px !important;
+  }
+
+  .responsvie-list-wrapper-class .artsdata-tag-wrapper {
+    font-size: 10px;
+    padding: 2px 4px;
+  }
+}
