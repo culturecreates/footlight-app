@@ -37,9 +37,10 @@ function Lists(props) {
 
   const [selectedItemId, setSelectedItemId] = useState(null);
 
-  const calendar = user?.roles?.filter((calendar) => {
+  let calendar = user?.roles?.filter((calendar) => {
     return calendar?.calendarId === calendarId;
   });
+  calendar = calendar?.length > 0 ? calendar : [];
 
   let artsDataLinkChecker = (data) => {
     return data?.sameAs?.filter((item) => item?.type === 'ArtsdataIdentifier');
@@ -78,8 +79,9 @@ function Lists(props) {
           className="event-list-item-wrapper"
           key={index}
           actions={[
-            calendar[0]?.role === userRoles.GUEST ||
-            (calendar[0]?.role === userRoles.CONTRIBUTOR && eventItem?.creator?.userId != user?.id) ? (
+            calendar?.length > 0 &&
+            (calendar[0]?.role === userRoles.GUEST ||
+              (calendar[0]?.role === userRoles.CONTRIBUTOR && eventItem?.creator?.userId != user?.id)) ? (
               <Dropdown
                 className="calendar-dropdown-wrapper"
                 onOpenChange={(open) => {
