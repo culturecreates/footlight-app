@@ -19,5 +19,15 @@
 }
 
 .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
-    border: 0;
+  border: 0;
+}
+
+@media screen and (max-width: 480px) {
+  .bilingual-input-tab .ant-input-lg {
+    font-size: 12px;
   }
+
+  .bilingual-input-tab .ant-tabs-card.ant-tabs-small > .ant-tabs-nav .ant-tabs-tab {
+    font-size: 10px;
+  }
+}

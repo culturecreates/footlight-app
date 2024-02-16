@@ -18,3 +18,13 @@
 .text-editor .ql-editor {
   resize: vertical;
 }
+
+@media (max-width: 480px) {
+  .text-editor .ql-snow .ql-editor h1 {
+    font: 1.2em 'Roboto';
+  }
+
+  .text-editor .ql-container {
+    font-size: 12px;
+  }
+}
