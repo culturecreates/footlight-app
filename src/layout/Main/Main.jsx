@@ -20,8 +20,8 @@ function Main(props) {
             <Col> {children?.length > 1 && children[1]}</Col>
           </Row>
         </Col>
-        <Row gutter={[20, 10]}>
-          <Col xs={24} sm={24} md={12} lg={10} xl={8}>
+        <Row gutter={[20, 10]} style={{ ...(!screens.md && { paddingRight: '4px', marginRight: 0 }) }}>
+          <Col xs={24} sm={24} md={12} lg={10} xl={8} style={{ ...(!screens.md && { paddingRight: '0px' }) }}>
             {children?.length > 2 && children[2]}
           </Col>
           <Col>{children?.length > 3 && children[3]}</Col>

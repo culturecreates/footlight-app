@@ -143,6 +143,7 @@
   .responsvie-list-wrapper-class .event-list-item-wrapper {
     margin-top: 8px;
     margin-bottom: 8px;
+    gap: 8px;
   }
   .event-list-item-wrapper .event-list-options-responsive {
     display: block;

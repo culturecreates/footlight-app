@@ -140,8 +140,8 @@ function OrganizationsReadOnly() {
     !taxonomyLoading &&
     !artsDataLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
-        <Row gutter={[32, 24]} className="read-only-wrapper">
-          <Col span={24} style={{ paddingRight: '0' }}>
+        <Row gutter={[32, 24]} className="read-only-wrapper organization-read-only">
+          <Col span={24} className="top-level-column">
             <Row>
               <Col flex="auto">
                 <Breadcrumbs
@@ -153,7 +153,7 @@ function OrganizationsReadOnly() {
                   })}
                 />
               </Col>
-              <Col flex="60px">
+              <Col flex="60px" style={{ marginLeft: 'auto' }}>
                 <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
                   <ReadOnlyProtectedComponent creator={organizationData.createdByUserId}>
                     <div className="button-container">
@@ -175,7 +175,7 @@ function OrganizationsReadOnly() {
             </Row>
           </Col>
 
-          <Col span={24}>
+          <Col span={24} className="top-level-column">
             <Row>
               <Col flex={'780px'}>
                 <div className="read-only-event-heading">
@@ -200,7 +200,7 @@ function OrganizationsReadOnly() {
             </Row>
           </Col>
           {artsDataLinkChecker(organizationData?.sameAs) && (
-            <Col flex={'780px'} className="artsdata-link-wrapper">
+            <Col flex={'780px'} className="artsdata-link-wrapper top-level-column">
               <Row>
                 <Col flex={'780px'}>
                   <ArtsDataInfo
@@ -223,8 +223,8 @@ function OrganizationsReadOnly() {
             </Col>
           )}
 
-          <Card>
-            <Col>
+          <Card marginResponsive="0px">
+            <Col className="top-level-column">
               <Row>
                 <Col span={24}>
                   <p
@@ -512,9 +512,9 @@ function OrganizationsReadOnly() {
                 )}
               </Row>
             </Col>
-            <Col>
+            <Col className="top-level-column">
               {organizationData?.logo?.original?.uri && (
-                <div style={{ marginTop: '-35%' }}>
+                <div>
                   <img
                     src={organizationData?.logo?.original?.uri}
                     alt="avatar"

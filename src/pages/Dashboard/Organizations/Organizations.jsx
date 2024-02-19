@@ -205,7 +205,7 @@ function Organizations() {
                 allOrganizationData?.data?.length > 0 ? (
                   <List
                     data-cy="antd-organizations-list"
-                    className="event-list-wrapper"
+                    // className="event-list-wrapper"
                     itemLayout={screens.xs ? 'vertical' : 'horizontal'}
                     dataSource={allOrganizationData?.data}
                     bordered={false}
