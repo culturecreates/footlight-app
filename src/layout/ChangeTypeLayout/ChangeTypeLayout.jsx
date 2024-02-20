@@ -6,7 +6,7 @@ import './changeTypeLayout.css';
 const ChangeTypeLayout = ({ children }) => {
   return (
     <>
-      {children ? (
+      {children && (
         <div className="floating-modal-wrapper">
           <Popover
             content={children}
@@ -19,7 +19,7 @@ const ChangeTypeLayout = ({ children }) => {
             <PlusOutlined className="change-type-icon" />
           </Popover>
         </div>
-      ) : null}
+      )}
       {children && <div className="aside-content-wrapper">{children}</div>}
     </>
   );
