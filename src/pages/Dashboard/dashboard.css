@@ -20,6 +20,17 @@
   background: #f9faff;
 }
 
+.calendar-read-only-modal .ant-modal-header .calendar-read-only-title {
+  font-weight: 700;
+  font-size: 20px;
+  color: #222732;
+}
+
+.calendar-read-only-modal .ant-modal-body .calendar-read-only-content {
+  font-weight: 400;
+  font-size: 16px;
+  color: #646d7b;
+}
 @media only screen and (max-width: 428px) {
   .dashboard-wrapper .site-layout-background {
     padding: 16px;

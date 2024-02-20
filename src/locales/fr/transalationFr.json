@@ -68,6 +68,12 @@
     "acceptInvitationSuccess": "Success ! Invitation acceptée."
   },
   "dashboard": {
+    "calendar": {
+      "readOnlyMode": {
+        "heading": "Calendrier en mode lecture seule",
+        "content": "Le calendrier est actuellement en mode lecture seule. Les utilisateurs ne peuvent pas modifier son contenu. Réessayez plus tard ou contactez votre administrateur pour plus de détails."
+      }
+    },
     "topNavigation": {
       "userProfile": "Profil",
       "logOut": "Déconnexion",

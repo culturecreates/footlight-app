@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './dashboard.css';
-import { Grid, Layout } from 'antd';
+import { Grid, Layout, Row, Col } from 'antd';
 import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import NavigationBar from '../../components/NavigationBar/Dashboard';
 import Sidebar from '../../components/Sidebar/Main';
@@ -19,6 +19,9 @@ import i18n from 'i18next';
 import Cookies from 'js-cookie';
 import { useLazyGetCurrentUserQuery } from '../../services/users';
 import ErrorLayout from '../../layout/ErrorLayout/ErrorLayout';
+import CustomModal from '../../components/Modal/Common/CustomModal';
+import { useTranslation } from 'react-i18next';
+import { calendarModes } from '../../constants/calendarModes';
 
 const { Header, Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -32,6 +35,7 @@ function Dashboard() {
   const [getCalendar, { currentData: currentCalendarData }] = useLazyGetCalendarQuery();
   const reloadStatus = useSelector(getReloadStatusForCalendar);
   const screens = useBreakpoint();
+  const { t } = useTranslation();
 
   const {
     currentData: allCalendarsData,
@@ -49,6 +53,7 @@ function Dashboard() {
     searchParams.get('page') ? searchParams.get('page') : Cookies.get('page') ?? 1,
   );
   const [contentBackgroundColor, setContentBackgroundColor] = useState('#fff');
+  const [isReadOnly, setIsReadOnly] = useState(false);
 
   useEffect(() => {
     if (!accessToken && accessToken === '') {
@@ -84,7 +89,18 @@ function Dashboard() {
       }
 
       if (calendarId && accessToken) {
-        getCalendar({ id: calendarId, sessionId: timestampRef });
+        getCalendar({ id: calendarId, sessionId: timestampRef })
+          .unwrap()
+          .then((response) => {
+            if (response?.mode === calendarModes.READ_ONLY) {
+              setIsReadOnly(true);
+            } else setIsReadOnly(false);
+          })
+          .catch((error) => {
+            if (error.status === 404) {
+              navigate(PathName.NotFound);
+            }
+          });
         dispatch(setSelectedCalendar(String(calendarId)));
       } else {
         let activeCalendarId = Cookies.get('calendarId');
@@ -146,6 +162,25 @@ function Dashboard() {
                 overflowY: 'scroll',
                 background: contentBackgroundColor,
               }}>
+              <CustomModal
+                open={isReadOnly}
+                centered
+                className="calendar-read-only-modal"
+                title={
+                  <span className="calendar-read-only-title" data-cy="span-calendar-read-only-title">
+                    {t('dashboard.calendar.readOnlyMode.heading')}
+                  </span>
+                }
+                onCancel={() => setIsReadOnly(false)}
+                footer={false}>
+                <Row gutter={[0, 10]}>
+                  <Col span={24}>
+                    <div className="calendar-read-only-content" data-cy="div-calendar-read-only-content">
+                      {t('dashboard.calendar.readOnlyMode.content')}
+                    </div>
+                  </Col>
+                </Row>
+              </CustomModal>
               <Outlet
                 context={[currentCalendarData, pageNumber, setPageNumber, getCalendar, setContentBackgroundColor]}
               />
