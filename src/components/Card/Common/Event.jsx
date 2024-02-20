@@ -31,7 +31,7 @@ function Event(props) {
                 {props?.children[0] ?? props?.children}
               </div>
             </Col>
-            <Col flex={'253px'}>
+            <Col flex={'253px'} className="responsive-view-control-class">
               <div className="side-wrapper-container" style={{ width: '100%', marginTop: marginTop && marginTop }}>
                 {props?.children[1]}
               </div>
