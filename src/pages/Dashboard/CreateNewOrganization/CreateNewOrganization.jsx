@@ -51,6 +51,7 @@ import { externalSourceOptions, sourceOptions } from '../../../constants/sourceO
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
+import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -126,6 +127,7 @@ function CreateNewOrganization() {
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
+
   let externalEntityData = externalCalendarEntityData?.length > 0 && externalCalendarEntityData[0];
 
   const adminCheckHandler = () => {
@@ -852,7 +854,10 @@ function CreateNewOrganization() {
             {fields?.map((section, index) => {
               if (section?.length > 0)
                 return (
-                  <Card title={section[0]?.category !== formCategory.PRIMARY && section[0]?.category} key={index}>
+                  <Card
+                    marginResponsive="0px"
+                    title={section[0]?.category !== formCategory.PRIMARY && section[0]?.category}
+                    key={index}>
                     <>
                       {(artsDataLinkChecker(organizationData?.sameAs) || artsDataLinkChecker(artsData?.sameAs)) &&
                         section[0]?.category === formCategory.PRIMARY && (
@@ -1007,43 +1012,45 @@ function CreateNewOrganization() {
                         })}
                     </>
                     <>
-                      {section?.filter((field) => !field?.isPreset)?.length > 0 && (
-                        <Form.Item
-                          label={t('dashboard.organization.createNew.addOrganization.addMoreDetails')}
-                          style={{ lineHeight: '2.5' }}>
-                          {section
-                            ?.filter((field) => !field?.isPreset)
-                            ?.map((field) => addedFields?.includes(field?.mappedField))
-                            ?.includes(false) ? (
-                            section?.map((field) => {
-                              if (!addedFields?.includes(field?.mappedField) && !field?.isPreset)
-                                return (
-                                  <ChangeType
-                                    key={field?.mappedField}
-                                    primaryIcon={<PlusOutlined />}
-                                    disabled={false}
-                                    label={contentLanguageBilingual({
-                                      en: field?.label?.en,
-                                      fr: field?.label?.fr,
-                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                      calendarContentLanguage: calendarContentLanguage,
-                                    })}
-                                    promptText={contentLanguageBilingual({
-                                      en: field?.helperText?.en,
-                                      fr: field?.helperText?.fr,
-                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                      calendarContentLanguage: calendarContentLanguage,
-                                    })}
-                                    secondaryIcon={<InfoCircleOutlined />}
-                                    onClick={() => addFieldsHandler(field?.mappedField)}
-                                  />
-                                );
-                            })
-                          ) : (
-                            <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
-                          )}
-                        </Form.Item>
-                      )}
+                      <ChangeTypeLayout>
+                        {section?.filter((field) => !field?.isPreset)?.length > 0 && (
+                          <Form.Item
+                            label={t('dashboard.organization.createNew.addOrganization.addMoreDetails')}
+                            style={{ lineHeight: '2.5' }}>
+                            {section
+                              ?.filter((field) => !field?.isPreset)
+                              ?.map((field) => addedFields?.includes(field?.mappedField))
+                              ?.includes(false) ? (
+                              section?.map((field) => {
+                                if (!addedFields?.includes(field?.mappedField) && !field?.isPreset)
+                                  return (
+                                    <ChangeType
+                                      key={field?.mappedField}
+                                      primaryIcon={<PlusOutlined />}
+                                      disabled={false}
+                                      label={contentLanguageBilingual({
+                                        en: field?.label?.en,
+                                        fr: field?.label?.fr,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        calendarContentLanguage: calendarContentLanguage,
+                                      })}
+                                      promptText={contentLanguageBilingual({
+                                        en: field?.helperText?.en,
+                                        fr: field?.helperText?.fr,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        calendarContentLanguage: calendarContentLanguage,
+                                      })}
+                                      secondaryIcon={<InfoCircleOutlined />}
+                                      onClick={() => addFieldsHandler(field?.mappedField)}
+                                    />
+                                  );
+                              })
+                            ) : (
+                              <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                            )}
+                          </Form.Item>
+                        )}
+                      </ChangeTypeLayout>
                     </>
                   </Card>
                 );

@@ -6,3 +6,17 @@
   padding: 0;
   font-weight: 600;
 }
+
+@media screen and (max-width: 768px) {
+  .add-organization-wrapper .responsive-view-control-class {
+    position: absolute;
+    right: 0;
+    margin-top: 16px;
+  }
+}
+
+@media screen and (max-width: 575px) {
+  .add-organization-wrapper .add-event-section-wrapper .events-search {
+    width: 100% !important;
+  }
+}
