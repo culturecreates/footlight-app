@@ -178,6 +178,7 @@ function Places() {
             <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
               <AddPlace
                 label={t('dashboard.places.place')}
+                disabled={isReadOnly ? true : false}
                 onClick={() => {
                   navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`);
                 }}

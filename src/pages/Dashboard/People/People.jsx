@@ -175,6 +175,7 @@ function People() {
             </h4>
             <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
               <AddPerson
+                disabled={isReadOnly ? true : false}
                 label={t('dashboard.people.person')}
                 onClick={() => {
                   navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);

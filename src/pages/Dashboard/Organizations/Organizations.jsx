@@ -183,6 +183,7 @@ function Organizations() {
             </h4>
             <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
               <AddOrganization
+                disabled={isReadOnly ? true : false}
                 label={t('dashboard.organization.organization')}
                 onClick={() =>
                   navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.Search}`)

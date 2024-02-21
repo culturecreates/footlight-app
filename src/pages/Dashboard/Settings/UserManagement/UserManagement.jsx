@@ -395,7 +395,7 @@ const UserManagement = () => {
     }
   };
 
-  const addEventHandler = () => {
+  const addUserHandler = () => {
     navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}`);
   };
 
@@ -476,8 +476,9 @@ const UserManagement = () => {
           <Col flex={'140px'} className="add-btn-container">
             <ReadOnlyProtectedComponent>
               <AddEvent
+                disabled={isReadOnly ? true : false}
                 label={t('dashboard.settings.userManagement.addUser')}
-                onClick={addEventHandler}
+                onClick={addUserHandler}
                 data-cy="button-add-user"
               />
             </ReadOnlyProtectedComponent>

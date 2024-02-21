@@ -259,6 +259,7 @@ const Taxonomy = () => {
               <Col flex={'140px'} className="add-btn-container">
                 <ReadOnlyProtectedComponent creator={user?.id}>
                   <AddEvent
+                    disabled={isReadOnly ? true : false}
                     label={t('dashboard.taxonomy.listing.addNew')}
                     onClick={addTaxonomyHandler}
                     data-cy="button-add-taxonomy"
