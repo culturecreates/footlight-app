@@ -50,6 +50,7 @@ function Organizations() {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#fff');
 
@@ -251,7 +252,7 @@ function Organizations() {
                       artsDataLink={artsDataLinkChecker(item?.sameAs)}
                       listItemHandler={() => listItemHandler(item?.id)}
                       actions={[
-                        adminCheckHandler() && (
+                        adminCheckHandler() && !isReadOnly && (
                           <DeleteOutlined
                             key={'delete-icon'}
                             style={{ color: '#222732', fontSize: '24px' }}

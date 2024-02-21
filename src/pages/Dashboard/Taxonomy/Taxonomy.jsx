@@ -47,6 +47,7 @@ const Taxonomy = () => {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#fff');
   const navigate = useNavigate();
@@ -442,7 +443,7 @@ const Taxonomy = () => {
                         updatedByUserName={item?.modifier?.userName}
                         listItemHandler={() => listItemHandler(item?.id)}
                         actions={[
-                          adminCheckHandler() && (
+                          adminCheckHandler() && !isReadOnly && (
                             <DeleteOutlined
                               data-cy="icon-taxonomy-delete"
                               key={'delete-icon'}

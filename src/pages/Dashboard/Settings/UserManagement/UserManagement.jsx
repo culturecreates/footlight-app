@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import UserSearch from '../../../../components/Search/Events/EventsSearch';
-import { useNavigate, useParams, useSearchParams, createSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams, createSearchParams, useOutletContext } from 'react-router-dom';
 import {
   useActivateUserMutation,
   useDeactivateUserMutation,
@@ -38,6 +38,7 @@ const UserManagement = () => {
   const { t } = useTranslation();
   const { user } = useSelector(getUserDetails);
   let [searchParams, setSearchParams] = useSearchParams();
+  const [, , , , , isReadOnly] = useOutletContext();
 
   const navigate = useNavigate();
   const screens = useBreakpoint();
@@ -592,7 +593,7 @@ const UserManagement = () => {
                         styles={handleListCardStyles(item)}
                         invitedBy={item?.invitedBy && <Username userName={item?.invitedBy} />}
                         actions={[
-                          adminCheckHandler() && (
+                          adminCheckHandler() && !isReadOnly && (
                             <Dropdown
                               onOpenChange={(open) => {
                                 if (open) setSelectedItemId(item?._id);

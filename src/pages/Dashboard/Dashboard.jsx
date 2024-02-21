@@ -96,7 +96,7 @@ function Dashboard() {
             if (response?.mode === calendarModes.READ_ONLY) {
               setIsReadOnly(true);
               setIsModalVisible(true);
-            } else setIsReadOnly(false);
+            } else setIsReadOnly(true);
           })
           .catch((error) => {
             if (error.status === 404) {
