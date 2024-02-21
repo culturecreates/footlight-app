@@ -70,6 +70,7 @@
   "dashboard": {
     "calendar": {
       "readOnlyMode": {
+        "readOnlyMode": "Read-only mode",
         "heading": "Calendrier en mode lecture seule",
         "content": "Le calendrier est actuellement en mode lecture seule. Les utilisateurs ne peuvent pas modifier son contenu. Réessayez plus tard ou contactez votre administrateur pour plus de détails."
       }
