@@ -66,7 +66,7 @@ import NoContent from '../../../components/NoContent/NoContent';
 import { locationType, locationTypeOptions, virtualLocationFieldNames } from '../../../constants/locationTypeOptions';
 import { otherInformationFieldNames, otherInformationOptions } from '../../../constants/otherInformationOptions';
 import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../../constants/eventAccessibilityOptions';
-import { usePrompt } from '../../../hooks/usePrompt';
+import { Prompt } from '../../../hooks/usePrompt';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import RecurringEvents from '../../../components/RecurringEvents';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
@@ -192,48 +192,7 @@ function AddEvent() {
   const [selectedOrganizerPerformerSupporterType, setSelectedOrganizerPerformerSupporterType] = useState();
   const [imageCropOpen, setImageCropOpen] = useState(false);
 
-  usePrompt(t('common.unsavedChanges'), showDialog);
-
   setContentBackgroundColor('#F9FAFF');
-
-  // hook to handle scroll for popover components
-  // useKeyboardAccessiblePopOver({
-  //   setItem: setLocationPlace,
-  //   data: [allPlacesList, allPlacesArtsdataList, allPlacesImportsFootlightList],
-  //   setFieldValue: (selectedItem) => form.setFieldValue('locationPlace', selectedItem),
-  //   popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, locationPlace: false }),
-  //   isPopoverOpen: isPopoverOpen.locationPlace,
-  // });
-
-  // useKeyboardAccessiblePopOver({
-  //   setItem: (organizer) => setSelectedOrganizers([...selectedOrganizers, organizer]),
-  //   data: [organizersList, organizersArtsdataList, organizersImportsFootlightList],
-  //   setFieldValue: () => {
-  //     return;
-  //   },
-  //   popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, organizer: false }),
-  //   isPopoverOpen: isPopoverOpen.organizer,
-  // });
-
-  // useKeyboardAccessiblePopOver({
-  //   setItem: (performer) => setSelectedPerformers([...selectedPerformers, performer]),
-  //   data: [performerList, performerArtsdataList, performerImportsFootlightList],
-  //   setFieldValue: () => {
-  //     return;
-  //   },
-  //   popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, performer: false }),
-  //   isPopoverOpen: isPopoverOpen.performer,
-  // });
-
-  // useKeyboardAccessiblePopOver({
-  //   setItem: (supporter) => setSelectedSupporters([...selectedSupporters, supporter]),
-  //   data: [supporterList, supporterArtsdataList, supporterImportsFootlightList],
-  //   setFieldValue: () => {
-  //     return;
-  //   },
-  //   popOverHandler: () => setIsPopoverOpen({ ...isPopoverOpen, supporter: false }),
-  //   isPopoverOpen: isPopoverOpen.supporter,
-  // });
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -325,8 +284,9 @@ function AddEvent() {
     });
     return promise;
   };
-  const saveAsDraftHandler = (event, toggle = false) => {
+  const saveAsDraftHandler = (event, toggle = false, type = eventPublishState.PUBLISHED) => {
     event?.preventDefault();
+    const previousShowDialog = showDialog;
     setShowDialog(false);
     var promise = new Promise(function (resolve, reject) {
       form
@@ -342,7 +302,9 @@ function AddEvent() {
             'eventLink',
             'videoLink',
             'facebookLink',
-            ...(eventData?.publishState === eventPublishState.PUBLISHED ? validateFields : []),
+            ...(eventData?.publishState === eventPublishState.PUBLISHED && type !== eventPublishState.DRAFT
+              ? validateFields
+              : []),
           ]),
         ])
         .then(() => {
@@ -505,6 +467,7 @@ function AddEvent() {
           if (values?.keywords?.length > 0) {
             keywords = values?.keywords;
           }
+
           if (ticketType) {
             offerConfiguration = {
               category: ticketType,
@@ -714,6 +677,7 @@ function AddEvent() {
         .catch((error) => {
           console.log(error);
           reject(error);
+          setShowDialog(previousShowDialog);
           message.warning({
             duration: 10,
             maxCount: 1,
@@ -735,15 +699,38 @@ function AddEvent() {
     return promise;
   };
 
-  const reviewPublishHandler = (event, publishState = undefined) => {
+  const reviewPublishHandler = ({ event, publishState = undefined, type = 'PUBLISH' }) => {
     event?.preventDefault();
     const isValuesChanged = showDialog;
     setShowDialog(false);
     form
-      .validateFields(validateFields)
+      .validateFields(type === 'PUBLISH' ? validateFields : [])
       .then(() => {
-        if (isValuesChanged)
-          saveAsDraftHandler(event, true)
+        if (isValuesChanged && type !== 'PUBLISH') {
+          updateEventState({ id: eventId ?? eventData?.id, calendarId })
+            .unwrap()
+            .then(() => {
+              saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
+                .then(() => {
+                  notification.success({
+                    description:
+                      calendar[0]?.role === userRoles.GUEST
+                        ? t('dashboard.events.addEditEvent.notification.sendToReview')
+                        : eventData?.publishState === eventPublishState.DRAFT
+                        ? t('dashboard.events.addEditEvent.notification.publish')
+                        : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+                    placement: 'top',
+                    closeIcon: <></>,
+                    maxCount: 1,
+                    duration: 3,
+                  });
+                  navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+                })
+                .catch((error) => console.log(error));
+            })
+            .catch((error) => console.log(error));
+        } else if ((isValuesChanged || duplicateId) && type === 'PUBLISH') {
+          saveAsDraftHandler(event, type === 'PUBLISH', eventPublishState.DRAFT)
             .then((id) => {
               updateEventState({ id: eventId ?? id, calendarId, publishState })
                 .unwrap()
@@ -765,7 +752,7 @@ function AddEvent() {
                 .catch((error) => console.log(error));
             })
             .catch((error) => console.log(error));
-        else
+        } else {
           updateEventState({ id: eventId, calendarId, publishState })
             .unwrap()
             .then(() => {
@@ -784,10 +771,11 @@ function AddEvent() {
               navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
             })
             .catch((error) => console.log(error));
+        }
       })
       .catch((error) => {
         console.log(error);
-
+        setShowDialog(isValuesChanged);
         message.warning({
           duration: 10,
           maxCount: 1,
@@ -831,7 +819,7 @@ function AddEvent() {
               }
               onClick={(e) => {
                 if (eventData?.publishState === eventPublishState.PENDING_REVIEW)
-                  reviewPublishHandler(e, eventPublishState.DRAFT);
+                  ({ event: e, publishState: eventPublishState.DRAFT });
                 else saveAsDraftHandler(e);
               }}
               data-cy="button-save-event"
@@ -842,7 +830,7 @@ function AddEvent() {
             <PrimaryButton
               label={t('dashboard.events.addEditEvent.saveOptions.publish')}
               data-cy="button-publish-event"
-              onClick={(e) => reviewPublishHandler(e, eventPublishState.PUBLISHED)}
+              onClick={(e) => reviewPublishHandler({ event: e, publishState: eventPublishState.PUBLISHED })}
               disabled={
                 updateEventLoading || addEventLoading || updateEventStateLoading || addImageLoading ? true : false
               }
@@ -882,7 +870,9 @@ function AddEvent() {
       return (
         <>
           <Form.Item>
-            <PublishState eventId={eventId} reviewPublishHandler={(e) => reviewPublishHandler(e)}>
+            <PublishState
+              eventId={eventId}
+              reviewPublishHandler={(e) => reviewPublishHandler({ event: e, type: 'DRAFT' })}>
               <span data-cy="span-published-text">{t('dashboard.events.publishState.published')}</span>
             </PublishState>
           </Form.Item>
@@ -1466,6 +1456,7 @@ function AddEvent() {
     !updateEventStateLoading &&
     !initialExternalSourceLoading ? (
     <div>
+      <Prompt when={showDialog} message={t('common.unsavedChanges')} beforeUnload={true} />
       <Form
         form={form}
         layout="vertical"
@@ -2137,6 +2128,7 @@ function AddEvent() {
                                       onClick={() => {
                                         setLocationPlace(place);
                                         form.setFieldValue('locationPlace', place?.value);
+                                        setShowDialog(true);
                                         setIsPopoverOpen({
                                           ...isPopoverOpen,
                                           locationPlace: false,
@@ -2177,6 +2169,7 @@ function AddEvent() {
                                         onClick={() => {
                                           setLocationPlace(place);
                                           form.setFieldValue('locationPlace', place?.value);
+                                          setShowDialog(true);
                                           setIsPopoverOpen({
                                             ...isPopoverOpen,
                                             locationPlace: false,
@@ -2218,6 +2211,7 @@ function AddEvent() {
                                         onClick={() => {
                                           setLocationPlace(place);
                                           form.setFieldValue('locationPlace', place?.uri);
+                                          setShowDialog(true);
                                           setIsPopoverOpen({
                                             ...isPopoverOpen,
                                             locationPlace: false,
@@ -2282,6 +2276,7 @@ function AddEvent() {
                     closable
                     onClose={() => {
                       setLocationPlace();
+                      setShowDialog(true);
                       form.setFieldValue('locationPlace', undefined);
                     }}
                     edit={locationPlace?.source === sourceOptions.CMS && true}

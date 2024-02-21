@@ -455,7 +455,11 @@
       },
       "deleteOrganization": {
         "title": "Confirmer la suppression",
-        "description": "Confirmer la suppression Êtes-vous sûr de vouloir supprimer définitivement cette organisation? Cette action supprimera également toutes les données qui lui sont associées et tous les endroits où elle a été utilisée",
+        "description": "Êtes-vous sûr de vouloir supprimer définitivement cette organisation? Cette organisation sera supprimée partout où elle est utilisée.",
+        "impact": "Événements concernés : ",
+        "published": "publié - {{number}}",
+        "draft": "brouillon - {{number}}",
+        "inReview": "attente d'approbation - {{number}}",
         "ok": "OK",
         "cancel": "Annuler"
       },
@@ -524,7 +528,11 @@
       },
       "deletePlace": {
         "title": "Confirmer la suppression",
-        "description": "Confirmer la suppression Êtes-vous sûr de vouloir supprimer définitivement cette lieu ? Cette action supprimera également toutes les données qui lui sont associées et tous les endroits où elle a été utilisée",
+        "description": "Êtes-vous sûr de vouloir supprimer définitivement ce lieu ? Le lieu sera supprimé partout où il est utilisé.",
+        "impact": "Événements concernés : ",
+        "published": "publié - {{number}}",
+        "draft": "brouillon - {{number}}",
+        "inReview": "attente d'approbation - {{number}}",
         "ok": "OK",
         "cancel": "Annuler"
       },
@@ -686,7 +694,11 @@
       },
       "deletePerson": {
         "title": "Confirmer la suppression",
-        "description": "Confirmer la suppression Êtes-vous sûr de vouloir supprimer définitivement cette personne? Cette action supprimera également toutes les données qui lui sont associées et tous les endroits où elle a été utilisée",
+        "description": "Êtes-vous sûr de vouloir supprimer définitivement cette personne? Cette personne sera supprimée partout où elle est utilisée.",
+        "impact": "Événements concernés : ",
+        "published": "publié - {{number}}",
+        "draft": "brouillon - {{number}}",
+        "inReview": "attente d'approbation - {{number}}",
         "ok": "OK",
         "cancel": "Annuler"
       },
@@ -758,7 +770,7 @@
     },
     "settings": {
       "heading": "Paramètres",
-      "tab2": "Métadonnées du calendrier",
+      "tab2": "Composante du module",
       "tab1": "Gestion des utilisateurs",
       "userManagement": {
         "searchPlaceholder": "Recherche d'utilisateurs",
@@ -885,6 +897,43 @@
         "deactivate": "Désactivé",
         "leaveCalender": "Êtes-vous sûr de vouloir quitter définitivement ce calendrier?",
         "confirmLeave": "confirmer le congé"
+      },
+      "widgetSettings": {
+        "title": "Apparence",
+        "pageDescription": "Définissez l'apparence du module sur votre plateforme.",
+        "previewDesktop": "Vue écran",
+        "previewMobileBtn": "Vue mobile",
+        "previewMobile": "Version mobile",
+        "limit": "Nombre d'événements à afficher",
+        "color": "Couleur principale du thème",
+        "colorDescreption": "Entrez le code hexadécimal de la couleur principale. Choisissez une couleur qui donne suffisamment de contraste pour que l'utilisateur puisse lire le contenu.",
+        "colorPlaceHolder": "Collez votre code couleur ou sélectionnez une couleur",
+        "height": "Largeur",
+        "width": "Largeur maximale",
+        "language": "Choix de langue",
+        "eventType": "Type d'événement",
+        "region": "Région",
+        "location": "Lieu",
+        "organizer": "Organisateur",
+        "person": "Compagnie/groupe/artiste/animateur de l'événement",
+        "filterHeading": "Filtres de contenu",
+        "filterSectionDescription": "Appliquer des filtres pour définir la langue et les événements à inclure.",
+        "codeSectionTitle": "Partager le widget",
+        "codeSectionInfo": "Mettez ce code à l'endroit où vous souhaitez que le widget apparaisse sur une page web.",
+        "copy": "Copier",
+        "copyNotification": "Code copied to clipboard",
+        "validation": {
+          "width": "Entrez la largeur en pixels",
+          "height": "Entrez la hauteur en pixels",
+          "color": "Collez votre code couleur ou sélectionnez une couleur",
+          "limit": "Entrez le nombre maximum à afficher"
+        },
+        "placeholder": {
+          "eventType": "Sélectionner un type d'événement",
+          "region": "Sélectionner une région",
+          "place": "Sélectionner un lieu",
+          "OrganizationsAndPeople": "Recherchez des Organisations ou des Personnes"
+        }
       }
     },
     "taxonomy": {
@@ -917,7 +966,14 @@
         },
         "modal": {
           "titleDelete": "Confirmer la suppression",
-          "contentDelete": "Êtes-vous sûr de vouloir supprimer définitivement cette taxonomie? Cette action supprimera également toutes les données qui lui sont associées et tous les endroits où elle a été utilisée"
+
+          "contentDelete": {
+            "description": "Êtes-vous sûr de vouloir supprimer définitivement cette taxonomie? Cette taxonomie sera supprimée partout où elle est utilisée.",
+            "impact": "Événements concernés : ",
+            "published": "publié - {{number}}",
+            "draft": "brouillon - {{number}}",
+            "inReview": "attente d'approbation - {{number}}"
+          }
         }
       },
       "selectType": {

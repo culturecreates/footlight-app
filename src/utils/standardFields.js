@@ -13,8 +13,8 @@ export const standardFieldsForTaxonomy = (value, takenFields) => {
         takenFields.map((takenItem) => {
           if (takenItem?.mappedToField !== null) {
             if (
-              item?.key.toLowerCase() === takenItem?.mappedToField.toLowerCase() &&
-              taxonomyClass.toLowerCase() === takenItem?.taxonomyClass.toLowerCase()
+              item?.key?.toLowerCase() === takenItem?.mappedToField?.toLowerCase() &&
+              taxonomyClass?.toLowerCase() === takenItem?.taxonomyClass?.toLowerCase()
             ) {
               returnArr = returnArr.filter((e) => e?.key !== item.key);
             }
@@ -24,13 +24,13 @@ export const standardFieldsForTaxonomy = (value, takenFields) => {
     }
   };
 
-  if (value.toLowerCase() === taxonomyClass.EVENT.toLowerCase()) {
+  if (value?.toLowerCase() === taxonomyClass.EVENT?.toLowerCase()) {
     filter(EVENT, taxonomyClass.EVENT);
     return [...new Set(returnArr)];
-  } else if (value.toLowerCase() === taxonomyClass.PLACE.toLowerCase()) {
+  } else if (value.toLowerCase() === taxonomyClass.PLACE?.toLowerCase()) {
     filter(PLACE, taxonomyClass.PLACE);
     return [...new Set(returnArr)];
-  } else if (value.toLowerCase() === taxonomyClass.PERSON.toLowerCase()) {
+  } else if (value.toLowerCase() === taxonomyClass.PERSON?.toLowerCase()) {
     filter(PERSON, taxonomyClass.PERSON);
     return [...new Set(returnArr)];
   } else {
@@ -47,7 +47,7 @@ export const standardFieldsForTaxonomy = (value, takenFields) => {
 
 export const getStandardFieldArrayForClass = (value) => {
   let arr = [];
-  switch (value.toUpperCase()) {
+  switch (value?.toUpperCase()) {
     case taxonomyClass.PERSON:
       arr = PERSON;
       break;
@@ -61,4 +61,22 @@ export const getStandardFieldArrayForClass = (value) => {
       break;
   }
   return arr;
+};
+
+export const getStandardFieldTranslation = ({ value, classType }) => {
+  let field = [];
+  switch (classType?.toUpperCase()) {
+    case taxonomyClass.PERSON:
+      field = PERSON.find((s) => s.key === value);
+      break;
+    case taxonomyClass.EVENT:
+      field = EVENT.find((s) => s.key === value);
+      break;
+    case taxonomyClass.PLACE:
+      field = PLACE.find((s) => s.key === value);
+      break;
+    default:
+      break;
+  }
+  return field;
 };
