@@ -54,6 +54,7 @@ function Dashboard() {
   );
   const [contentBackgroundColor, setContentBackgroundColor] = useState('#fff');
   const [isReadOnly, setIsReadOnly] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     if (!accessToken && accessToken === '') {
@@ -94,6 +95,7 @@ function Dashboard() {
           .then((response) => {
             if (response?.mode === calendarModes.READ_ONLY) {
               setIsReadOnly(true);
+              setIsModalVisible(true);
             } else setIsReadOnly(false);
           })
           .catch((error) => {
@@ -163,7 +165,7 @@ function Dashboard() {
                 background: contentBackgroundColor,
               }}>
               <CustomModal
-                open={isReadOnly}
+                open={isModalVisible}
                 centered
                 className="calendar-read-only-modal"
                 title={
@@ -171,7 +173,7 @@ function Dashboard() {
                     {t('dashboard.calendar.readOnlyMode.heading')}
                   </span>
                 }
-                onCancel={() => setIsReadOnly(false)}
+                onCancel={() => setIsModalVisible(false)}
                 footer={false}>
                 <Row gutter={[0, 10]}>
                   <Col span={24}>
@@ -182,7 +184,14 @@ function Dashboard() {
                 </Row>
               </CustomModal>
               <Outlet
-                context={[currentCalendarData, pageNumber, setPageNumber, getCalendar, setContentBackgroundColor]}
+                context={[
+                  currentCalendarData,
+                  pageNumber,
+                  setPageNumber,
+                  getCalendar,
+                  setContentBackgroundColor,
+                  isReadOnly,
+                ]}
               />
             </Content>
           </Layout>
