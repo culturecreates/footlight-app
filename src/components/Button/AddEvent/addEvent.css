@@ -12,3 +12,10 @@
   background-color: #0f0e98;
   border-color: #0f0e98;
 }
+
+.add-event-button[disabled],
+.add-event-button[disabled]:hover {
+  background-color: #9196a3;
+  border-color: #9196a3;
+  color: #ffffff;
+}
