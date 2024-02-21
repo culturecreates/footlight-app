@@ -30,8 +30,8 @@ export const eventsApi = createApi({
       transformResponse: (response) => response,
     }),
     updateEventState: builder.mutation({
-      query: ({ id, calendarId }) => ({
-        url: `events/${id}/toggle-publish`,
+      query: ({ id, calendarId, publishState = undefined }) => ({
+        url: `events/${id}/toggle-publish?publishState=${publishState ?? ''}`,
         method: 'PATCH',
         headers: {
           'calendar-id': calendarId,

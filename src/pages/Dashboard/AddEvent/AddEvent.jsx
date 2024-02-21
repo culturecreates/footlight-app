@@ -90,6 +90,7 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import KeyboardAccessibleLayout from '../../../layout/KeyboardAccessibleLayout/KeyboardAccessibleLayout';
 import CustomPopover from '../../../components/Popover/Popover';
 import { removeEmptyParagraphsAtEnd } from '../../../utils/removeEmptyParagraphsAtEnd';
+import Alert from '../../../components/Alert';
 
 const { TextArea } = Input;
 
@@ -301,7 +302,7 @@ function AddEvent() {
             'eventLink',
             'videoLink',
             'facebookLink',
-            ...(eventData?.publishState === eventPublishState.PUBLISHED && type !== eventPublishState.DRAFT
+            ...(eventId && eventData?.publishState === eventPublishState.PUBLISHED && type !== eventPublishState.DRAFT
               ? validateFields
               : []),
           ]),
@@ -698,7 +699,7 @@ function AddEvent() {
     return promise;
   };
 
-  const reviewPublishHandler = (event, type = 'PUBLISH') => {
+  const reviewPublishHandler = ({ event, publishState = undefined, type = 'PUBLISH' }) => {
     event?.preventDefault();
     const isValuesChanged = showDialog;
     setShowDialog(false);
@@ -731,7 +732,7 @@ function AddEvent() {
         } else if ((isValuesChanged || duplicateId) && type === 'PUBLISH') {
           saveAsDraftHandler(event, type === 'PUBLISH', eventPublishState.DRAFT)
             .then((id) => {
-              updateEventState({ id: eventId ?? id, calendarId })
+              updateEventState({ id: eventId ?? id, calendarId, publishState })
                 .unwrap()
                 .then(() => {
                   notification.success({
@@ -752,7 +753,7 @@ function AddEvent() {
             })
             .catch((error) => console.log(error));
         } else {
-          updateEventState({ id: eventId, calendarId })
+          updateEventState({ id: eventId, calendarId, publishState })
             .unwrap()
             .then(() => {
               notification.success({
@@ -811,8 +812,16 @@ function AddEvent() {
           <Form.Item>
             <Outlined
               size="large"
-              label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
-              onClick={(e) => saveAsDraftHandler(e)}
+              label={
+                eventData?.publishState === eventPublishState.PENDING_REVIEW
+                  ? t('dashboard.events.addEditEvent.saveOptions.revertToDraft')
+                  : t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')
+              }
+              onClick={(e) => {
+                if (eventData?.publishState === eventPublishState.PENDING_REVIEW)
+                  ({ event: e, publishState: eventPublishState.DRAFT });
+                else saveAsDraftHandler(e);
+              }}
               data-cy="button-save-event"
               disabled={updateEventLoading || addEventLoading || addImageLoading ? true : false}
             />
@@ -821,7 +830,7 @@ function AddEvent() {
             <PrimaryButton
               label={t('dashboard.events.addEditEvent.saveOptions.publish')}
               data-cy="button-publish-event"
-              onClick={(e) => reviewPublishHandler(e)}
+              onClick={(e) => reviewPublishHandler({ event: e, publishState: eventPublishState.PUBLISHED })}
               disabled={
                 updateEventLoading || addEventLoading || updateEventStateLoading || addImageLoading ? true : false
               }
@@ -861,7 +870,9 @@ function AddEvent() {
       return (
         <>
           <Form.Item>
-            <PublishState eventId={eventId} reviewPublishHandler={(e) => reviewPublishHandler(e, 'DRAFT')}>
+            <PublishState
+              eventId={eventId}
+              reviewPublishHandler={(e) => reviewPublishHandler({ event: e, type: 'DRAFT' })}>
               <span data-cy="span-published-text">{t('dashboard.events.publishState.published')}</span>
             </PublishState>
           </Form.Item>
@@ -1473,6 +1484,28 @@ function AddEvent() {
               </Col>
             </Row>
           </Col>
+          {eventData?.publishState === eventPublishState.DRAFT &&
+            eventData?.reviewFailed &&
+            calendar[0]?.role === userRoles.GUEST &&
+            eventData?.creator?.userId == user?.id && (
+              <Col span={24}>
+                <Row>
+                  <Col flex={'780px'}>
+                    <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                      <Col span={24} style={{ margin: ' 0 16px' }}>
+                        <Alert
+                          message={t('dashboard.events.addEditEvent.notification.editFailedReviewForGuest')}
+                          type="info"
+                          showIcon
+                          icon={<InfoCircleOutlined style={{ color: '#EDAB01', fontSize: '21px' }} />}
+                          additionalClassName="alert-warning"
+                        />
+                      </Col>
+                    </Row>
+                  </Col>
+                </Row>
+              </Col>
+            )}
 
           <CardEvent marginTop="5%">
             <>

@@ -114,7 +114,7 @@
       },
       "readOnlyEvent": {
         "notification": {
-          "underReview": "Cet événement est en train d'être valider.",
+          "underReview": "Cet événement est en train d'être validé.",
           "underPublished": "Cet événement a été publié. Si vous voulez faire des changements, veuillez contacter l'administrateur du calendrier."
         }
       },
@@ -339,13 +339,15 @@
           "publish": "Publier",
           "saveAsDraft": "Enregistrer comme brouillon",
           "save": "Sauvegarder",
-          "sendToReview": "Envoyer pour révision"
+          "sendToReview": "Envoyer pour révision",
+          "revertToDraft": "Revenir au brouillon"
         },
         "notification": {
           "saveAsDraft": "Succès! Votre événement a été enregistré comme brouillon.",
           "sendToReview": "Succès! Votre événement a été envoyé pour validation.",
           "publish": "Succès! Votre événement a été publié.",
-          "updateEvent": "Succès! Votre événement a été mis à jour."
+          "updateEvent": "Succès! Votre événement a été mis à jour.",
+          "editFailedReviewForGuest": "Cet événement a besoin de plus d'attention. Réviser et mettre à jour si nécessaire, puis envoyer pour validation."
         },
         "validations": {
           "title": "Le titre de l'événement est requis.",
@@ -423,7 +425,8 @@
         "deleteEvent": "Supprimer l'événement",
         "duplicateEvent": "Dupliquer l’événement",
         "featureEvent": "Mettre en vedette",
-        "unFeatureEvent": "Retirer la mise en vedette"
+        "unFeatureEvent": "Retirer la mise en vedette",
+        "revertToDraft": "Revenir au brouillon"
       },
       "publishState": {
         "published": "Publié",
