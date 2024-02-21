@@ -1,0 +1,65 @@
+.place-read-only .read-only-detail-heading {
+  font-size: 24px;
+}
+
+.place-read-only .ant-select-arrow {
+  display: none;
+}
+
+.place-read-only .events-content {
+  flex-wrap: wrap-reverse;
+  gap: 24px;
+  padding: 16px 0px;
+}
+
+.place-read-only .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  padding-left: 0px;
+}
+
+.place-read-only .artsdata-link-wrapper {
+  margin-left: 0px;
+  padding: 0 16px !important;
+}
+
+@media only screen and (max-width: 480px) {
+  .place-read-only .read-only-event-heading h4 {
+    font-size: 24px;
+  }
+
+  .place-read-only .read-only-event-content {
+    font-size: 12px;
+  }
+
+  .read-only-event-content .place-read-only .read-only-detail-heading {
+    font-size: 20px;
+  }
+
+  .place-read-only .read-only-event-content-sub-title-primary {
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .place-read-only .url-links {
+    font-size: 12px;
+  }
+
+  .place-read-only .tags-wrapper {
+    font-size: 10px;
+    white-space: wrap;
+    height: auto;
+  }
+
+  .read-only-wrapper .read-only-event-content-sub-title-primary {
+    font-size: 12px;
+  }
+
+  .read-only-wrapper .read-only-event-content-sub-title-secondary {
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-width: 575px) {
+  .place-read-only .selection-item-wrapper {
+    width: auto !important;
+  }
+}

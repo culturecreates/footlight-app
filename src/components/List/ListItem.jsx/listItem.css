@@ -207,3 +207,10 @@
     padding: 2px 4px;
   }
 }
+
+@media screen and (max-width: 320px) {
+  .responsvie-list-wrapper-class .ant-list-vertical .ant-list-item {
+    flex-wrap: wrap;
+    gap: 0px;
+  }
+}
