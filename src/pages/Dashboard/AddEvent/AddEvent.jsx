@@ -302,7 +302,7 @@ function AddEvent() {
             'eventLink',
             'videoLink',
             'facebookLink',
-            ...(eventData?.publishState === eventPublishState.PUBLISHED && type !== eventPublishState.DRAFT
+            ...(eventId && eventData?.publishState === eventPublishState.PUBLISHED && type !== eventPublishState.DRAFT
               ? validateFields
               : []),
           ]),
