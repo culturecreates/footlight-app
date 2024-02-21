@@ -189,6 +189,7 @@ const Taxonomy = () => {
   };
   const listItemHandler = (id) => {
     adminCheckHandler() &&
+      !isReadOnly &&
       navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomy}?id=${id}`);
   };
   const deleteOrganizationHandler = (id) => {
