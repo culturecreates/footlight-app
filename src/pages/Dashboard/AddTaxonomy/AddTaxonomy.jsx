@@ -28,6 +28,7 @@ import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
 import { Prompt } from '../../../hooks/usePrompt';
 import { compareArraysOfObjects } from '../../../utils/genericObjectCompare';
+import { PathName } from '../../../constants/pathName';
 
 const taxonomyClasses = taxonomyClassTranslations.map((item) => {
   return { ...item, value: item.key };
@@ -41,6 +42,7 @@ const AddTaxonomyTest = () => {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   let [searchParams, setSearchParams] = useSearchParams();
   const [form] = Form.useForm();
@@ -274,6 +276,9 @@ const AddTaxonomyTest = () => {
     });
   };
 
+  useEffect(() => {
+    if (isReadOnly) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}`, { replace: true });
+  }, [isReadOnly]);
   return (
     <>
       <Prompt
