@@ -64,7 +64,7 @@ function ResponsiveSidebar(props) {
               display: 'flex',
               flexDirection: 'column',
             }}>
-            <span style={{ height: currentCalendarData?.mode !== calendarModes.READ_ONLY && '16px' }}>
+            <span style={{ height: currentCalendarData?.mode === calendarModes.READ_ONLY && '16px' }}>
               {label}
               <DownOutlined
                 style={{
@@ -76,7 +76,7 @@ function ResponsiveSidebar(props) {
               />
             </span>
 
-            {currentCalendarData?.mode !== calendarModes.READ_ONLY && (
+            {currentCalendarData?.mode === calendarModes.READ_ONLY && (
               <span style={{ fontSize: '12px', fontWeight: 400 }}>
                 {t('dashboard.calendar.readOnlyMode.readOnlyMode')}
               </span>
