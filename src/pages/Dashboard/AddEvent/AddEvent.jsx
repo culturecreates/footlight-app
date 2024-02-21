@@ -1912,7 +1912,7 @@ function AddEvent() {
                             },
                           ]}
                           data-cy="form-item-date-range-label">
-                          <DateRangePicker style={{ width: '423px' }} data-cy="date-range" />
+                          <DateRangePicker style={{ width: '100%' }} data-cy="date-range" />
                         </Form.Item>
                       )}
                       {dateType === dateTypes.MULTIPLE && (
