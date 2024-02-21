@@ -36,6 +36,7 @@ export const userSlice = createSlice({
     clearUser: () => {
       Cookies.remove('accessToken');
       Cookies.remove('refreshToken');
+      localStorage.removeItem('persist:root');
       return initialState;
     },
   },
