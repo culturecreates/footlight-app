@@ -92,6 +92,7 @@ function CreateNewPlace() {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
   const { user } = useSelector(getUserDetails);
@@ -939,6 +940,13 @@ function CreateNewPlace() {
       }
     }
   }, [isPlaceLoading, currentCalendarData, externalEntityLoading]);
+
+  useEffect(() => {
+    if (isReadOnly) {
+      if (placeId) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}/${placeId}`, { replace: true });
+      else navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`, { replace: true });
+    }
+  }, [isReadOnly]);
 
   useEffect(() => {
     if (artsDataId) {

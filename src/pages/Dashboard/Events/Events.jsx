@@ -49,6 +49,7 @@ function Events() {
     setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#fff');
 
@@ -565,6 +566,7 @@ function Events() {
 
               <Col>
                 <AddEvent
+                  disabled={isReadOnly ? true : false}
                   label={t('dashboard.events.addEvent')}
                   onClick={addEventHandler}
                   data-cy="button-add-new-event"

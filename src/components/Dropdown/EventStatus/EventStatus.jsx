@@ -11,20 +11,21 @@ import {
   useFeatureEventsMutation,
   useUpdateEventStateMutation,
 } from '../../../services/events';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 const { confirm } = Modal;
 function EventStatusOptions({ children, publishState, creator, eventId, isFeatured, eventData, ...rest }) {
   const { t } = useTranslation();
   const { calendarId } = useParams();
   const navigate = useNavigate();
+  const [, , , , , isReadOnly] = useOutletContext();
   const [updateEventState] = useUpdateEventStateMutation();
   const [deleteEvent] = useDeleteEventMutation();
   const [featureEvents] = useFeatureEventsMutation();
 
   const items = eventPublishOptions.map((item) => {
     if (publishState == eventPublishState.PUBLISHED) {
-      if (item.key != '0') {
+      if (item.key != '0' && item.key != '6') {
         if (isFeatured) {
           if (item.key !== '4') {
             return {
@@ -45,12 +46,21 @@ function EventStatusOptions({ children, publishState, creator, eventId, isFeatur
       }
     } else {
       if (publishState == eventPublishState.DRAFT || publishState === eventPublishState.PENDING_REVIEW)
-        if (item.key != '1' && item.key !== '5' && item.key !== '4')
-          return {
-            key: item?.key,
-            label: item?.label,
-            type: item?.type,
-          };
+        if (item.key != '1' && item.key !== '5' && item.key !== '4') {
+          if (item.key === '6') {
+            if (publishState === eventPublishState.PENDING_REVIEW)
+              return {
+                key: item?.key,
+                label: item?.label,
+                type: item?.type,
+              };
+          } else
+            return {
+              key: item?.key,
+              label: item?.label,
+              type: item?.type,
+            };
+        }
       if (item?.type === 'divider')
         return {
           key: item?.key,
@@ -76,8 +86,13 @@ function EventStatusOptions({ children, publishState, creator, eventId, isFeatur
   };
   const onClick = ({ key }) => {
     if (key == '2') showDeleteConfirm();
-    else if (key === '0' || key === '1') {
-      updateEventState({ id: eventId, calendarId: calendarId })
+    else if (key === '0' || key === '1' || key === '6') {
+      updateEventState({
+        id: eventId,
+        calendarId: calendarId,
+        publishState:
+          key === '6' || key === '1' ? eventPublishState.DRAFT : key === '0' ? eventPublishState.PUBLISHED : undefined,
+      })
         .unwrap()
         .then(() => {})
         .catch(() => {
@@ -127,7 +142,7 @@ function EventStatusOptions({ children, publishState, creator, eventId, isFeatur
     }
   };
   return (
-    <ProtectedComponents creator={creator}>
+    <ProtectedComponents creator={creator} isReadOnly={isReadOnly}>
       <Dropdown
         {...rest}
         className="calendar-dropdown-wrapper"

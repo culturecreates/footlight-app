@@ -40,6 +40,7 @@ function PersonReadOnly() {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
 
@@ -111,7 +112,7 @@ function PersonReadOnly() {
               </Col>
               <Col flex="60px" style={{ marginLeft: 'auto' }}>
                 <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-                  <ReadOnlyProtectedComponent creator={personData.createdByUserId}>
+                  <ReadOnlyProtectedComponent creator={personData.createdByUserId} isReadOnly={isReadOnly}>
                     <div className="button-container">
                       <OutlinedButton
                         data-cy="button-edit-person"

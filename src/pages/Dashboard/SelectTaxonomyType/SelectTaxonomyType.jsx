@@ -24,6 +24,7 @@ const SelectTaxonomyType = () => {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
   const { user } = useSelector(getUserDetails);
@@ -70,6 +71,12 @@ const SelectTaxonomyType = () => {
     setStandardFields(standardFieldsForTaxonomy(selectedLabel[0].key, currentCalendarData?.fieldTaxonomyMaps));
     formInstance.setFieldsValue({ [fieldType]: value });
   };
+
+  useEffect(() => {
+    if (isReadOnly) {
+      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}`, { replace: true });
+    }
+  }, [isReadOnly]);
 
   return (
     <div className="select-taxonomy-type-wrapper">
