@@ -1454,7 +1454,7 @@ function AddEvent() {
         onFieldsChange={() => {
           setFormValue(form.getFieldsValue(true));
         }}>
-        <Row gutter={[32, 24]} className="add-edit-wrapper">
+        <Row gutter={[32, 24]} className="add-edit-wrapper event-form-wrapper">
           <Col span={24}>
             <Row justify="space-between">
               <Col>
@@ -1474,7 +1474,7 @@ function AddEvent() {
             </Row>
           </Col>
 
-          <CardEvent marginTop="5%">
+          <CardEvent marginResponsive="0px" marginTop="5%">
             <>
               {artsDataLink?.length > 0 && (
                 <Row>
@@ -1770,7 +1770,7 @@ function AddEvent() {
                 : FeaturedJSX}
             </div>
           </CardEvent>
-          <CardEvent title={t('dashboard.events.addEditEvent.dates.dates')} required={true}>
+          <CardEvent marginResponsive="0px" title={t('dashboard.events.addEditEvent.dates.dates')} required={true}>
             <>
               {!dateType ? (
                 <Row>
@@ -2372,7 +2372,7 @@ function AddEvent() {
               )}
             </Form.Item>
           </CardEvent>
-          <CardEvent title={t('dashboard.events.addEditEvent.otherInformation.title')}>
+          <CardEvent marginResponsive="0px" title={t('dashboard.events.addEditEvent.otherInformation.title')}>
             <>
               <Form.Item
                 label={t('dashboard.events.addEditEvent.otherInformation.description.title')}
@@ -3601,7 +3601,7 @@ function AddEvent() {
             </Form.Item>
           </CardEvent>
           {taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false) && (
-            <CardEvent title={t('dashboard.events.addEditEvent.eventAccessibility.title')}>
+            <CardEvent marginResponsive="0px" title={t('dashboard.events.addEditEvent.eventAccessibility.title')}>
               <>
                 <p className="add-event-date-heading" data-cy="event-accessibility-subheading">
                   {t('dashboard.events.addEditEvent.eventAccessibility.subHeading')}

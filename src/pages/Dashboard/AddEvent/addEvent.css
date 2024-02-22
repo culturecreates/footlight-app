@@ -180,6 +180,10 @@
     font-size: 12px;
   }
 
+  .add-edit-wrapper .add-event-section-wrapper {
+    padding: 16px;
+  }
+
   .add-edit-wrapper .tags-wrapper {
     font-size: 10px;
     padding: 4px 8px;
