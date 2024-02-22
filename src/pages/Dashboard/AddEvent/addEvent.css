@@ -168,6 +168,20 @@
   width: 100% !important;
 }
 
+.event-form-wrapper .eventAccessibility .ant-select {
+  width: 100% !important;
+  margin-bottom: 4px;
+}
+
+.event-form-wrapper .events-search,
+.event-form-wrapper .date-range-picker-wrapper {
+  width: 100% !important;
+}
+
+.event-form-wrapper .responsive-view-control-class .aside-content-wrapper {
+  padding: 0px;
+}
+
 @media screen and (max-width: 480px) {
   .add-edit-wrapper .add-edit-event-heading h4 {
     font-size: 24px;
@@ -188,11 +202,28 @@
     font-size: 10px;
     padding: 4px 8px;
   }
+
+  .event-form-wrapper .arts-data-info {
+    margin-top: 8px;
+  }
+
+  .event-form-wrapper .add-edit-event-heading h4,
+  .event-form-wrapper .add-event-button-wrap > * {
+    margin-bottom: 8px;
+  }
 }
 
 @media screen and (max-width: 575px) {
   .add-edit-wrapper .add-event-section-col {
     padding: 0px;
     margin: 0px !important;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .event-form-wrapper .responsive-view-control-class {
+    position: absolute;
+    right: 0;
+    margin-top: 16px;
   }
 }

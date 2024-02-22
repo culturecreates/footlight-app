@@ -91,6 +91,7 @@ import KeyboardAccessibleLayout from '../../../layout/KeyboardAccessibleLayout/K
 import CustomPopover from '../../../components/Popover/Popover';
 import { removeEmptyParagraphsAtEnd } from '../../../utils/removeEmptyParagraphsAtEnd';
 import Alert from '../../../components/Alert';
+import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 
 const { TextArea } = Input;
 
@@ -1519,7 +1520,7 @@ function AddEvent() {
               </Col>
             )}
 
-          <CardEvent marginResponsive="0px" marginTop="5%">
+          <CardEvent marginTop="5%" marginResponsive="0px">
             <>
               {artsDataLink?.length > 0 && (
                 <Row>
@@ -1815,7 +1816,7 @@ function AddEvent() {
                 : FeaturedJSX}
             </div>
           </CardEvent>
-          <CardEvent marginResponsive="0px" title={t('dashboard.events.addEditEvent.dates.dates')} required={true}>
+          <CardEvent title={t('dashboard.events.addEditEvent.dates.dates')} required={true} marginResponsive="0px">
             <>
               {!dateType ? (
                 <Row>
@@ -2035,34 +2036,39 @@ function AddEvent() {
             </>
 
             {dateType && (
-              <Form.Item label={t('dashboard.events.addEditEvent.dates.changeDateType')} style={{ lineHeight: '2.5' }}>
-                {dateTypeOptions.map((type) => {
-                  if (dateType != type.type)
-                    return (
-                      <ChangeType
-                        key={type.type}
-                        primaryIcon={<SyncOutlined />}
-                        disabled={type.disabled}
-                        label={type.label}
-                        promptText={type.tooltip}
-                        secondaryIcon={<InfoCircleOutlined />}
-                        onClick={() => {
-                          setDateType(type.type);
-                          form.setFieldsValue({
-                            datePicker: undefined,
-                            dateRangePicker: undefined,
-                            startDateRecur: undefined,
-                          });
-                          form.resetFields(['frequency']);
-                          setFormValue(null);
-                        }}
-                      />
-                    );
-                })}
-              </Form.Item>
+              <ChangeTypeLayout>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.dates.changeDateType')}
+                  style={{ lineHeight: '2.5' }}>
+                  {dateTypeOptions.map((type) => {
+                    if (dateType != type.type)
+                      return (
+                        <ChangeType
+                          key={type.type}
+                          primaryIcon={<SyncOutlined />}
+                          disabled={type.disabled}
+                          label={type.label}
+                          promptText={type.tooltip}
+                          secondaryIcon={<InfoCircleOutlined />}
+                          onClick={() => {
+                            setDateType(type.type);
+                            form.setFieldsValue({
+                              datePicker: undefined,
+                              dateRangePicker: undefined,
+                              startDateRecur: undefined,
+                            });
+                            form.resetFields(['frequency']);
+                            setFormValue(null);
+                          }}
+                        />
+                      );
+                  })}
+                </Form.Item>
+              </ChangeTypeLayout>
             )}
           </CardEvent>
           <CardEvent
+            marginResponsive="0px"
             title={t('dashboard.events.addEditEvent.location.title')}
             required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.LOCATION)}>
             <Form.Item
@@ -2396,28 +2402,30 @@ function AddEvent() {
               </Form.Item>
             </Form.Item>
 
-            <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
-              {addedFields?.includes(virtualLocationFieldNames.virtualLocationOnlineLink) &&
-              addedFields?.includes(virtualLocationFieldNames.virtualLocationName) ? (
-                <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
-              ) : (
-                locationTypeOptions.map((type) => {
-                  return (
-                    <ChangeType
-                      key={type.type}
-                      primaryIcon={<PlusOutlined />}
-                      disabled={type.disabled}
-                      label={type.label}
-                      promptText={type.tooltip}
-                      secondaryIcon={<InfoCircleOutlined />}
-                      onClick={() => addFieldsHandler(type?.fieldNames)}
-                    />
-                  );
-                })
-              )}
-            </Form.Item>
+            <ChangeTypeLayout>
+              <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
+                {addedFields?.includes(virtualLocationFieldNames.virtualLocationOnlineLink) &&
+                addedFields?.includes(virtualLocationFieldNames.virtualLocationName) ? (
+                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                ) : (
+                  locationTypeOptions.map((type) => {
+                    return (
+                      <ChangeType
+                        key={type.type}
+                        primaryIcon={<PlusOutlined />}
+                        disabled={type.disabled}
+                        label={type.label}
+                        promptText={type.tooltip}
+                        secondaryIcon={<InfoCircleOutlined />}
+                        onClick={() => addFieldsHandler(type?.fieldNames)}
+                      />
+                    );
+                  })
+                )}
+              </Form.Item>
+            </ChangeTypeLayout>
           </CardEvent>
-          <CardEvent marginResponsive="0px" title={t('dashboard.events.addEditEvent.otherInformation.title')}>
+          <CardEvent title={t('dashboard.events.addEditEvent.otherInformation.title')} marginResponsive="0px">
             <>
               <Form.Item
                 label={t('dashboard.events.addEditEvent.otherInformation.description.title')}
@@ -3617,36 +3625,38 @@ function AddEvent() {
                 />
               </Form.Item>
             </>
-            <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
-              {addedFields?.includes(otherInformationFieldNames.contact) &&
-              addedFields?.includes(otherInformationFieldNames.performerWrap) &&
-              addedFields?.includes(otherInformationFieldNames.supporterWrap) &&
-              addedFields?.includes(otherInformationFieldNames.eventLink) &&
-              addedFields?.includes(otherInformationFieldNames.videoLink) &&
-              addedFields?.includes(otherInformationFieldNames.facebookLinkWrap) &&
-              addedFields?.includes(otherInformationFieldNames.keywords) &&
-              addedFields?.includes(otherInformationFieldNames.inLanguage) ? (
-                <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
-              ) : (
-                otherInformationOptions.map((type) => {
-                  if (!addedFields?.includes(type.fieldNames))
-                    return (
-                      <ChangeType
-                        key={type.type}
-                        primaryIcon={<PlusOutlined />}
-                        disabled={type.disabled}
-                        label={type.label}
-                        promptText={type.tooltip}
-                        secondaryIcon={<InfoCircleOutlined />}
-                        onClick={() => addFieldsHandler(type?.fieldNames)}
-                      />
-                    );
-                })
-              )}
-            </Form.Item>
+            <ChangeTypeLayout>
+              <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
+                {addedFields?.includes(otherInformationFieldNames.contact) &&
+                addedFields?.includes(otherInformationFieldNames.performerWrap) &&
+                addedFields?.includes(otherInformationFieldNames.supporterWrap) &&
+                addedFields?.includes(otherInformationFieldNames.eventLink) &&
+                addedFields?.includes(otherInformationFieldNames.videoLink) &&
+                addedFields?.includes(otherInformationFieldNames.facebookLinkWrap) &&
+                addedFields?.includes(otherInformationFieldNames.keywords) &&
+                addedFields?.includes(otherInformationFieldNames.inLanguage) ? (
+                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                ) : (
+                  otherInformationOptions.map((type) => {
+                    if (!addedFields?.includes(type.fieldNames))
+                      return (
+                        <ChangeType
+                          key={type.type}
+                          primaryIcon={<PlusOutlined />}
+                          disabled={type.disabled}
+                          label={type.label}
+                          promptText={type.tooltip}
+                          secondaryIcon={<InfoCircleOutlined />}
+                          onClick={() => addFieldsHandler(type?.fieldNames)}
+                        />
+                      );
+                  })
+                )}
+              </Form.Item>
+            </ChangeTypeLayout>
           </CardEvent>
           {taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false) && (
-            <CardEvent marginResponsive="0px" title={t('dashboard.events.addEditEvent.eventAccessibility.title')}>
+            <CardEvent title={t('dashboard.events.addEditEvent.eventAccessibility.title')} marginResponsive="0px">
               <>
                 <p className="add-event-date-heading" data-cy="event-accessibility-subheading">
                   {t('dashboard.events.addEditEvent.eventAccessibility.subHeading')}
@@ -3760,29 +3770,32 @@ function AddEvent() {
                   </ContentLanguageInput>
                 </Form.Item>
               </>
-              <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
-                {addedFields?.includes(eventAccessibilityFieldNames.noteWrap) ? (
-                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
-                ) : (
-                  eventAccessibilityOptions.map((type) => {
-                    if (!addedFields?.includes(type.fieldNames))
-                      return (
-                        <ChangeType
-                          key={type.type}
-                          primaryIcon={<PlusOutlined />}
-                          disabled={type.disabled}
-                          label={type.label}
-                          promptText={type.tooltip}
-                          secondaryIcon={<InfoCircleOutlined />}
-                          onClick={() => addFieldsHandler(type?.fieldNames)}
-                        />
-                      );
-                  })
-                )}
-              </Form.Item>
+              <ChangeTypeLayout>
+                <Form.Item label={t('dashboard.events.addEditEvent.addMoreDetails')} style={{ lineHeight: '2.5' }}>
+                  {addedFields?.includes(eventAccessibilityFieldNames.noteWrap) ? (
+                    <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                  ) : (
+                    eventAccessibilityOptions.map((type) => {
+                      if (!addedFields?.includes(type.fieldNames))
+                        return (
+                          <ChangeType
+                            key={type.type}
+                            primaryIcon={<PlusOutlined />}
+                            disabled={type.disabled}
+                            label={type.label}
+                            promptText={type.tooltip}
+                            secondaryIcon={<InfoCircleOutlined />}
+                            onClick={() => addFieldsHandler(type?.fieldNames)}
+                          />
+                        );
+                    })
+                  )}
+                </Form.Item>
+              </ChangeTypeLayout>
             </CardEvent>
           )}
           <CardEvent
+            marginResponsive="0px"
             title={t('dashboard.events.addEditEvent.tickets.title')}
             required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.TICKET_INFO)}
             hidden={
@@ -4104,28 +4117,30 @@ function AddEvent() {
               )}
             </>
             {ticketType && (ticketType == offerTypes.PAYING || ticketType == offerTypes.REGISTER) && (
-              <Form.Item
-                label={t('dashboard.events.addEditEvent.tickets.changeTicketType')}
-                data-cy="form-item-change-ticket-type-label"
-                style={{ lineHeight: '2.5' }}>
-                {offerTypeOptions.map((type) => {
-                  if (ticketType != type.type)
-                    return (
-                      <ChangeType
-                        key={type.type}
-                        primaryIcon={<SyncOutlined />}
-                        disabled={type.disabled}
-                        label={type.label}
-                        promptText={type.tooltip}
-                        secondaryIcon={<InfoCircleOutlined />}
-                        onClick={() => {
-                          setTicketType(type.type);
-                          form.resetFields(['prices', 'ticketLink']);
-                        }}
-                      />
-                    );
-                })}
-              </Form.Item>
+              <ChangeTypeLayout>
+                <Form.Item
+                  label={t('dashboard.events.addEditEvent.tickets.changeTicketType')}
+                  data-cy="form-item-change-ticket-type-label"
+                  style={{ lineHeight: '2.5' }}>
+                  {offerTypeOptions.map((type) => {
+                    if (ticketType != type.type)
+                      return (
+                        <ChangeType
+                          key={type.type}
+                          primaryIcon={<SyncOutlined />}
+                          disabled={type.disabled}
+                          label={type.label}
+                          promptText={type.tooltip}
+                          secondaryIcon={<InfoCircleOutlined />}
+                          onClick={() => {
+                            setTicketType(type.type);
+                            form.resetFields(['prices', 'ticketLink']);
+                          }}
+                        />
+                      );
+                  })}
+                </Form.Item>
+              </ChangeTypeLayout>
             )}
           </CardEvent>
         </Row>

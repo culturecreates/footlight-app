@@ -48,3 +48,32 @@
   border-top: 1px solid #b6c1c9;
   border-bottom: 1px solid #b6c1c9;
 }
+
+/* @media (max-width: 575px) {
+  .date-range-picker-wrapper {
+    width: 100% !important;
+  }
+
+  .date-range-picker-calendar .ant-picker-panels {
+    flex-direction: column;
+  }
+} */
+
+@media (max-width: 768px) {
+  .date-range-picker-calendar .ant-picker-panel:last-child .ant-picker-date-panel {
+    display: none !important;
+  }
+
+  .date-range-picker-calendar .ant-picker-panel:first-child .ant-picker-date-panel .ant-picker-header-next-btn,
+  .date-range-picker-calendar .ant-picker-panel:first-child .ant-picker-date-panel .ant-picker-header-super-next-btn {
+    visibility: initial !important;
+  }
+
+  .date-range-picker-calendar .ant-picker-panel .ant-picker-range-wrapper {
+    min-width: 288px !important;
+  }
+
+  .date-range-picker-calendar .ant-picker-presets {
+    display: none !important;
+  }
+}
