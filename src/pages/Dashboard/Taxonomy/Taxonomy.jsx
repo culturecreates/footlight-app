@@ -47,6 +47,7 @@ const Taxonomy = () => {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#fff');
   const navigate = useNavigate();
@@ -188,6 +189,7 @@ const Taxonomy = () => {
   };
   const listItemHandler = (id) => {
     adminCheckHandler() &&
+      !isReadOnly &&
       navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomy}?id=${id}`);
   };
   const deleteOrganizationHandler = (id) => {
@@ -257,6 +259,7 @@ const Taxonomy = () => {
               <Col flex={'140px'} className="add-btn-container">
                 <ReadOnlyProtectedComponent creator={user?.id}>
                   <AddEvent
+                    disabled={isReadOnly ? true : false}
                     label={t('dashboard.taxonomy.listing.addNew')}
                     onClick={addTaxonomyHandler}
                     data-cy="button-add-taxonomy"
@@ -442,7 +445,7 @@ const Taxonomy = () => {
                         updatedByUserName={item?.modifier?.userName}
                         listItemHandler={() => listItemHandler(item?.id)}
                         actions={[
-                          adminCheckHandler() && (
+                          adminCheckHandler() && !isReadOnly && (
                             <DeleteOutlined
                               data-cy="icon-taxonomy-delete"
                               key={'delete-icon'}

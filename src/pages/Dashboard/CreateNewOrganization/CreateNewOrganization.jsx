@@ -64,6 +64,7 @@ function CreateNewOrganization() {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
   const { user } = useSelector(getUserDetails);
@@ -779,6 +780,14 @@ function CreateNewOrganization() {
       }
     }
   }, [organizationLoading, currentCalendarData, externalEntityLoading]);
+
+  useEffect(() => {
+    if (isReadOnly) {
+      if (organizationId)
+        navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${organizationId}`, { replace: true });
+      else navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}`, { replace: true });
+    }
+  }, [isReadOnly]);
 
   useEffect(() => {
     if (artsDataId) {

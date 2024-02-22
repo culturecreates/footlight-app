@@ -32,6 +32,7 @@ function SearchPerson() {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
   const navigate = useNavigate();
@@ -108,6 +109,12 @@ function SearchPerson() {
       })
       .catch((error) => console.log(error));
   };
+
+  useEffect(() => {
+    if (isReadOnly) {
+      navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}`, { replace: true });
+    }
+  }, [isReadOnly]);
 
   const debounceSearch = useCallback(useDebounce(searchHandler, SEARCH_DELAY), []);
 

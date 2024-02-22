@@ -50,6 +50,7 @@ function Organizations() {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#fff');
 
@@ -182,6 +183,7 @@ function Organizations() {
             </h4>
             <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
               <AddOrganization
+                disabled={isReadOnly ? true : false}
                 label={t('dashboard.organization.organization')}
                 onClick={() =>
                   navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.Search}`)
@@ -251,7 +253,7 @@ function Organizations() {
                       artsDataLink={artsDataLinkChecker(item?.sameAs)}
                       listItemHandler={() => listItemHandler(item?.id)}
                       actions={[
-                        adminCheckHandler() && (
+                        adminCheckHandler() && !isReadOnly && (
                           <DeleteOutlined
                             key={'delete-icon'}
                             style={{ color: '#222732', fontSize: '24px' }}

@@ -43,6 +43,7 @@ function PlaceReadOnly() {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
 
@@ -174,7 +175,7 @@ function PlaceReadOnly() {
               </Col>
               <Col flex="60px">
                 <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-                  <ReadOnlyProtectedComponent creator={placeData.createdByUserId}>
+                  <ReadOnlyProtectedComponent creator={placeData.createdByUserId} isReadOnly={isReadOnly}>
                     <div className="button-container">
                       <OutlinedButton
                         data-cy="button-edit-place"

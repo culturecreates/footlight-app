@@ -49,6 +49,7 @@ function People() {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#fff');
 
@@ -174,6 +175,7 @@ function People() {
             </h4>
             <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
               <AddPerson
+                disabled={isReadOnly ? true : false}
                 label={t('dashboard.people.person')}
                 onClick={() => {
                   navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.Search}`);
@@ -238,7 +240,7 @@ function People() {
                       artsDataLink={artsDataLinkChecker(item?.sameAs)}
                       listItemHandler={() => listItemHandler(item?.id)}
                       actions={[
-                        adminCheckHandler() && (
+                        adminCheckHandler() && !isReadOnly && (
                           <DeleteOutlined
                             data-cy="icon-delete-person"
                             key={'delete-icon'}

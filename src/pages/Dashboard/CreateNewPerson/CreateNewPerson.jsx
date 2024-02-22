@@ -48,6 +48,7 @@ function CreateNewPerson() {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
   const { user } = useSelector(getUserDetails);
@@ -397,6 +398,13 @@ function CreateNewPerson() {
       }
     }
   }, [personLoading, currentCalendarData, externalEntityLoading]);
+
+  useEffect(() => {
+    if (isReadOnly) {
+      if (personId) navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}/${personId}`, { replace: true });
+      else navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}`, { replace: true });
+    }
+  }, [isReadOnly]);
 
   useEffect(() => {
     if (artsDataId) {
