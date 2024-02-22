@@ -68,6 +68,13 @@
     "acceptInvitationSuccess": "Success! Invitation accepted."
   },
   "dashboard": {
+    "calendar": {
+      "readOnlyMode": {
+        "readOnlyMode": "Read-only mode",
+        "heading": "Calendar in read only mode",
+        "content": "The calendar is currently read only. Editing is unavailable for users. Try again later or contact your admin for details."
+      }
+    },
     "topNavigation": {
       "userProfile": "User Profile",
       "logOut": "Log out",
@@ -340,13 +347,15 @@
           "publish": "Publish",
           "saveAsDraft": "Save as draft",
           "save": "Save",
-          "sendToReview": "Send to review"
+          "sendToReview": "Send to review",
+          "revertToDraft": "Revert to draft"
         },
         "notification": {
           "saveAsDraft": "Success! Your event has been saved as draft.",
           "sendToReview": "Success! Your event has been sent for review.",
           "publish": "Success! Your event has been published",
-          "updateEvent": "Success! Your event has been updated."
+          "updateEvent": "Success! Your event has been updated.",
+          "editFailedReviewForGuest": "This event needs attention. Review and update as needed, and then send to review."
         },
         "validations": {
           "title": "Event title is required.",
@@ -423,7 +432,8 @@
         "featureEvent": "Feature this event",
         "unFeatureEvent": "Unfeature this event",
         "deleteEvent": "Delete event",
-        "duplicateEvent": "Duplicate Event"
+        "duplicateEvent": "Duplicate Event",
+        "revertToDraft": "Revert to draft"
       },
       "publishState": {
         "published": "Published",

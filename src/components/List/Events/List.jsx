@@ -32,7 +32,7 @@ function Lists(props) {
   let { calendarId } = useParams();
   const lang = i18n.language;
   const { user } = useSelector(getUserDetails);
-  const [currentCalendarData] = useOutletContext();
+  const [currentCalendarData, , , , , isReadOnly] = useOutletContext();
   const totalCount = data?.totalCount;
 
   const [selectedItemId, setSelectedItemId] = useState(null);
@@ -47,7 +47,7 @@ function Lists(props) {
   const aspectRatioString = currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio;
 
   const listItemHandler = (id, creatorId, publishState) => {
-    if (routinghandler(user, calendarId, creatorId, publishState))
+    if (routinghandler(user, calendarId, creatorId, publishState, false, isReadOnly))
       navigate(`${location.pathname}${PathName.AddEvent}/${id}`);
     else navigate(`${location.pathname}/${id}`);
   };
@@ -74,36 +74,39 @@ function Lists(props) {
           actions={[
             calendar[0]?.role === userRoles.GUEST ||
             (calendar[0]?.role === userRoles.CONTRIBUTOR && eventItem?.creator?.userId != user?.id) ? (
-              <Dropdown
-                className="calendar-dropdown-wrapper"
-                onOpenChange={(open) => {
-                  if (open) setSelectedItemId(eventItem?.id);
-                  else setSelectedItemId(null);
-                }}
-                overlayStyle={{
-                  minWidth: '150px',
-                }}
-                getPopupContainer={(trigger) => trigger.parentNode}
-                menu={{
-                  items: [
-                    {
-                      key: '0',
-                      label: t('dashboard.events.publishOptions.duplicateEvent'),
+              !isReadOnly && (
+                <Dropdown
+                  className="calendar-dropdown-wrapper"
+                  onOpenChange={(open) => {
+                    if (open) setSelectedItemId(eventItem?.id);
+                    else setSelectedItemId(null);
+                  }}
+                  overlayStyle={{
+                    minWidth: '150px',
+                  }}
+                  getPopupContainer={(trigger) => trigger.parentNode}
+                  menu={{
+                    items: [
+                      {
+                        key: '0',
+                        label: t('dashboard.events.publishOptions.duplicateEvent'),
+                      },
+                    ],
+                    onClick: ({ key }) => {
+                      if (key === '0')
+                        navigate(`${location.pathname}${PathName.AddEvent}?duplicateId=${eventItem?.id}`);
                     },
-                  ],
-                  onClick: ({ key }) => {
-                    if (key === '0') navigate(`${location.pathname}${PathName.AddEvent}?duplicateId=${eventItem?.id}`);
-                  },
-                }}
-                trigger={['click']}>
-                <span>
-                  <MoreOutlined
-                    className="event-list-more-icon"
-                    style={{ color: selectedItemId === eventItem?.id && '#1B3DE6' }}
-                    key={index}
-                  />
-                </span>
-              </Dropdown>
+                  }}
+                  trigger={['click']}>
+                  <span>
+                    <MoreOutlined
+                      className="event-list-more-icon"
+                      style={{ color: selectedItemId === eventItem?.id && '#1B3DE6' }}
+                      key={index}
+                    />
+                  </span>
+                </Dropdown>
+              )
             ) : (
               <EventStatusOptions
                 onOpenChange={(open) => {
