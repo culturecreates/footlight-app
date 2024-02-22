@@ -112,6 +112,7 @@ function AddEvent() {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   const {
     currentData: eventData,
@@ -1113,7 +1114,8 @@ function AddEvent() {
     if (calendarId && eventData && currentCalendarData) {
       let initialAddedFields = [],
         isRecurring = false;
-      if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState) || duplicateId) {
+
+      if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState, false) || duplicateId) {
         if (eventData?.recurringEvent && Object.keys(eventData?.recurringEvent)?.length > 0) isRecurring = true;
         setDateType(
           dateTimeTypeHandler(
@@ -1337,8 +1339,11 @@ function AddEvent() {
             },
           });
         }
-      } else
-        window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
+      } else {
+        navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`, {
+          replace: true,
+        });
+      }
     }
   }, [isLoading, currentCalendarData]);
 
@@ -1446,6 +1451,13 @@ function AddEvent() {
       placesSearch('');
     }
   }, [initialEntityLoading, currentCalendarData, initialExternalSourceLoading]);
+
+  useEffect(() => {
+    if (isReadOnly) {
+      if (eventId) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`, { replace: true });
+      else navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`, { replace: true });
+    }
+  }, [isReadOnly]);
 
   return !isLoading &&
     !taxonomyLoading &&

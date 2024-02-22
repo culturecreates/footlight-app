@@ -49,6 +49,7 @@ function Places() {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#fff');
 
@@ -177,6 +178,7 @@ function Places() {
             <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
               <AddPlace
                 label={t('dashboard.places.place')}
+                disabled={isReadOnly ? true : false}
                 onClick={() => {
                   navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.Search}`);
                 }}
@@ -241,7 +243,7 @@ function Places() {
                       artsDataLink={artsDataLinkChecker(item?.sameAs)}
                       listItemHandler={() => listItemHandler(item?.id)}
                       actions={[
-                        adminCheckHandler() && (
+                        adminCheckHandler() && !isReadOnly && (
                           <DeleteOutlined
                             data-cy="icon-delete-place"
                             key={'delete-icon'}

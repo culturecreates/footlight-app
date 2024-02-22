@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import CalendarList from '../../Dropdown/Calendar';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import i18n from 'i18next';
+import { calendarModes } from '../../../constants/calendarModes';
 
 function ResponsiveSidebar(props) {
   const { allCalendarsData, currentCalendarData, onClose, open, pageNumber, setPageNumber } = props;
@@ -58,14 +59,29 @@ function ResponsiveSidebar(props) {
           />
         ),
         label: (
-          <>
-            {label}{' '}
-            <DownOutlined
-              style={{
-                fontSize: '8px',
-              }}
-            />
-          </>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+            }}>
+            <span style={{ height: currentCalendarData?.mode === calendarModes.READ_ONLY && '16px' }}>
+              {label}
+              <DownOutlined
+                style={{
+                  position: 'relative',
+                  left: '70%',
+                  top: '50%',
+                  fontSize: '8px',
+                }}
+              />
+            </span>
+
+            {currentCalendarData?.mode === calendarModes.READ_ONLY && (
+              <span style={{ fontSize: '12px', fontWeight: 400 }}>
+                {t('dashboard.calendar.readOnlyMode.readOnlyMode')}
+              </span>
+            )}
+          </div>
         ),
         className: 'sidebar-calendar',
       },

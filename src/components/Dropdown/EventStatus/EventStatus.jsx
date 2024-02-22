@@ -11,13 +11,14 @@ import {
   useFeatureEventsMutation,
   useUpdateEventStateMutation,
 } from '../../../services/events';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 const { confirm } = Modal;
 function EventStatusOptions({ children, publishState, creator, eventId, isFeatured, eventData, ...rest }) {
   const { t } = useTranslation();
   const { calendarId } = useParams();
   const navigate = useNavigate();
+  const [, , , , , isReadOnly] = useOutletContext();
   const [updateEventState] = useUpdateEventStateMutation();
   const [deleteEvent] = useDeleteEventMutation();
   const [featureEvents] = useFeatureEventsMutation();
@@ -141,7 +142,7 @@ function EventStatusOptions({ children, publishState, creator, eventId, isFeatur
     }
   };
   return (
-    <ProtectedComponents creator={creator}>
+    <ProtectedComponents creator={creator} isReadOnly={isReadOnly}>
       <Dropdown
         {...rest}
         className="calendar-dropdown-wrapper"
