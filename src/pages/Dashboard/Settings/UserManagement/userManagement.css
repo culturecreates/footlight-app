@@ -145,6 +145,17 @@
   margin-right: 8px;
 }
 
+.user-management-wrapper .ant-list-vertical .user-item-content {
+  width: fit-content;
+  align-items: flex-start;
+}
+
+@media screen and (max-width: 768px) {
+  .user-management-wrapper .users-list-item-wrapper {
+    padding: 24px 0px !important;
+  }
+}
+
 @media only screen and (max-width: 480px) {
   .user-management-wrapper .events-heading-wrapper .events-heading {
     font-size: 24px;
@@ -155,11 +166,6 @@
   }
   .user-management-wrapper .events-heading-wrapper {
     width: 200px;
-  }
-
-  .user-management-wrapper .ant-list-vertical .user-item-content {
-    width: fit-content;
-    align-items: flex-start;
   }
 
   .user-management-wrapper .users-list-item-wrapper {
