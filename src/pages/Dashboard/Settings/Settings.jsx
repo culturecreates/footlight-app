@@ -52,10 +52,26 @@ const Settings = () => {
   };
 
   const items = [
-    { label: t('dashboard.settings.tab1'), key: 'tab1', children: <UserManagement /> },
-    { label: t('dashboard.settings.tab2'), key: 'tab2', children: <WidgetSettings />, disabled: !adminCheckHandler() },
+    {
+      label: t('dashboard.settings.tab1'),
+      key: 'tab1',
+      children: <UserManagement />,
+      disabled: false,
+      adminOnly: false,
+    },
+    {
+      label: t('dashboard.settings.tab2'),
+      key: 'tab2',
+      children: <WidgetSettings />,
+      disabled: false,
+      adminOnly: true,
+    },
   ];
 
+  let tabItems = items?.filter((item) => {
+    if (item.adminOnly) return adminCheckHandler();
+    else return true;
+  });
   return (
     <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
       <Row className="settings-wrapper">
@@ -65,7 +81,7 @@ const Settings = () => {
           </h4>
         </Col>
         <Col span={24}>
-          <Tabs items={items} activeKey={tabKey} onChange={onTabChange} />
+          <Tabs items={tabItems} activeKey={tabKey} onChange={onTabChange} />
         </Col>
       </Row>
     </FeatureFlag>

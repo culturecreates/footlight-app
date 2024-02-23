@@ -19,6 +19,7 @@ export const sidebarItems = [
     component: <div>events</div>,
     icon: <CalendarOutlined style={iconStyle} />,
     disabled: false,
+    adminOnly: false,
   },
   {
     name: 'dashboard.sidebar.places',
@@ -26,6 +27,7 @@ export const sidebarItems = [
     component: <div>places</div>,
     icon: <EnvironmentOutlined style={iconStyle} />,
     disabled: false,
+    adminOnly: false,
   },
   {
     name: 'dashboard.sidebar.organizations',
@@ -33,6 +35,7 @@ export const sidebarItems = [
     component: <div>organizations</div>,
     icon: <Icon component={Organizations} style={iconStyle} />,
     disabled: featureFlags.orgPersonPlacesView === 'true' ? false : true,
+    adminOnly: false,
   },
   {
     name: 'dashboard.sidebar.people',
@@ -40,6 +43,7 @@ export const sidebarItems = [
     component: <div>people</div>,
     icon: <TeamOutlined style={iconStyle} />,
     disabled: featureFlags.orgPersonPlacesView === 'true' ? false : true,
+    adminOnly: false,
   },
   {
     name: 'dashboard.sidebar.taxonomies',
@@ -47,6 +51,7 @@ export const sidebarItems = [
     component: <div>taxonomies</div>,
     icon: <TagOutlined style={iconStyle} />,
     disabled: featureFlags.taxonomy === 'true' ? false : true,
+    adminOnly: true,
   },
   {
     name: 'dashboard.sidebar.settings',
@@ -54,5 +59,6 @@ export const sidebarItems = [
     component: <div>settings</div>,
     icon: <SettingOutlined style={iconStyle} />,
     disabled: featureFlags.settingsScreenUsers === 'true' ? false : true,
+    adminOnly: false,
   },
 ];
