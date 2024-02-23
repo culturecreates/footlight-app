@@ -187,6 +187,11 @@
     font-size: 24px;
   }
 
+  .add-edit-wrapper .outlined-button {
+    padding: 8px 16px;
+    height: 40px;
+  }
+
   .add-edit-wrapper .add-entity-label,
   .add-edit-wrapper .event-description-footer,
   .add-edit-wrapper .add-event-date-heading,

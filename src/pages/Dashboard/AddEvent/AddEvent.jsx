@@ -1480,7 +1480,7 @@ function AddEvent() {
         }}>
         <Row gutter={[32, 24]} className="add-edit-wrapper event-form-wrapper">
           <Col span={24}>
-            <Row justify="space-between">
+            <Row justify="space-between" gutter={16}>
               <Col>
                 <div className="add-edit-event-heading">
                   <h4 data-cy="heading-new-edit-event">
@@ -1490,7 +1490,7 @@ function AddEvent() {
                   </h4>
                 </div>
               </Col>
-              <Col>
+              <Col style={{ marginLeft: 'auto' }}>
                 <div className="add-event-button-wrap">
                   <ButtonDisplayHandler />
                 </div>
