@@ -104,3 +104,33 @@
 .user-read-only-card .details-wrapper {
   padding: 24px 0;
 }
+
+@media screen and (max-width: 480px) {
+  .user-read-only-heading-wrapper .read-only-user-heading > h1 {
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  .user-read-only-heading-wrapper .user-status-tag .tags-wrapper {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0em;
+  }
+
+  .user-read-only-card .user-read-only-info-label,
+  .user-read-only-card .user-read-only-info-data,
+  .user-read-only-calendar-card .calendar-search {
+    font-size: 12px;
+  }
+
+  .user-read-only-card .user-info-details-card-heading,
+  .user-read-only-calendar-card .user-info-details-card-heading {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .user-read-only-card .ant-card-body {
+    gap: 16px;
+  }
+}

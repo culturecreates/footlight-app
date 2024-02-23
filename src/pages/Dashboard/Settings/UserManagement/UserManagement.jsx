@@ -414,7 +414,7 @@ const UserManagement = () => {
         <Row justify="space-between" gutter={[24, 16]} style={{ marginBottom: 16 }}>
           <Col flex={'auto'}>
             <Row gutter={[8, 8]} align="middle">
-              <Col flex={'auto'} style={{ marginRight: '24px', maxWidth: 400 }}>
+              <Col flex={'auto'} style={{ marginRight: '24px', maxWidth: 400 }} className="user-search-wrapper">
                 <UserSearch
                   placeholder={t('dashboard.settings.userManagement.searchPlaceholder')}
                   onPressEnter={(e) => onSearchHandler(e)}
