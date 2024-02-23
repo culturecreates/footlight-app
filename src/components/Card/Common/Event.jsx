@@ -3,14 +3,19 @@ import { Row, Col } from 'antd';
 import './event.css';
 
 function Event(props) {
-  const { title, required, hidden, marginTop } = props;
+  const { title, required, hidden, marginTop, marginResponsive } = props;
   return (
     <Col span={24}>
       <Row>
         <Col
           className="add-event-section-col"
           flex={'780px'}
-          style={{ display: hidden && 'none', borderRadius: '4px', backgroundColor: '#ffffff', margin: '0 16px' }}>
+          style={{
+            display: hidden && 'none',
+            borderRadius: '4px',
+            backgroundColor: '#ffffff',
+            ...(marginResponsive ? { margin: marginResponsive } : { margin: '0 16px' }),
+          }}>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-content" justify="space-between">
             <Col flex={'423px'}>
               <div className="add-event-section-wrapper">
@@ -26,7 +31,7 @@ function Event(props) {
                 {props?.children[0] ?? props?.children}
               </div>
             </Col>
-            <Col flex={'253px'}>
+            <Col flex={'253px'} className="responsive-view-control-class">
               <div className="side-wrapper-container" style={{ width: '100%', marginTop: marginTop && marginTop }}>
                 {props?.children[1]}
               </div>

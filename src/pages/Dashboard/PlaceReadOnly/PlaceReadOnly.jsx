@@ -31,6 +31,7 @@ import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedCompone
 import { loadArtsDataPlaceEntity } from '../../../services/artsData';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { sourceOptions } from '../../../constants/sourceOptions';
+import './placeReadOnly.css';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -160,8 +161,8 @@ function PlaceReadOnly() {
     !artsDataLoading &&
     !taxonomyLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
-        <Row gutter={[32, 24]} className="read-only-wrapper">
-          <Col span={24} style={{ paddingRight: '0' }}>
+        <Row gutter={[32, 24]} className="read-only-wrapper place-read-only">
+          <Col className="top-level-column" span={24}>
             <Row>
               <Col flex="auto">
                 <Breadcrumbs
@@ -173,7 +174,7 @@ function PlaceReadOnly() {
                   })}
                 />
               </Col>
-              <Col flex="60px">
+              <Col flex="60px" style={{ marginLeft: 'auto' }}>
                 <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
                   <ReadOnlyProtectedComponent creator={placeData.createdByUserId} isReadOnly={isReadOnly}>
                     <div className="button-container">
@@ -195,7 +196,7 @@ function PlaceReadOnly() {
             </Row>
           </Col>
 
-          <Col span={24}>
+          <Col className="top-level-column" span={24}>
             <Row>
               <Col>
                 <div className="read-only-event-heading">
@@ -222,7 +223,7 @@ function PlaceReadOnly() {
             </Row>
           </Col>
           {artsDataLinkChecker(placeData?.sameAs) && (
-            <Col flex={'780px'} className="artsdata-link-wrapper">
+            <Col flex={'780px'} className="artsdata-link-wrapper top-level-column">
               <Row>
                 <Col flex={'780px'}>
                   <ArtsDataInfo
@@ -244,8 +245,8 @@ function PlaceReadOnly() {
               </Row>
             </Col>
           )}
-          <Card>
-            <Col>
+          <Card marginResponsive="0px">
+            <Col className="top-level-column">
               <Row>
                 {(placeData?.name?.fr || placeData?.name?.en) && (
                   <Col span={24}>
@@ -416,9 +417,9 @@ function PlaceReadOnly() {
                 )}
               </Row>
             </Col>
-            <Col>
+            <Col className="top-level-column">
               {placeData?.image?.original?.uri && (
-                <div style={{ marginTop: '-35%' }}>
+                <div>
                   <img
                     data-cy="image-place-original"
                     src={placeData?.image?.original?.uri}
@@ -433,8 +434,8 @@ function PlaceReadOnly() {
               )}
             </Col>
           </Card>
-          <Card>
-            <Col>
+          <Card marginResponsive="0px">
+            <Col className="top-level-column">
               <Row gutter={[0, 24]}>
                 <Col span={24}>
                   <span
@@ -599,10 +600,10 @@ function PlaceReadOnly() {
                 )}
               </Row>
             </Col>
-            <Col></Col>
+            <Col className="top-level-column"></Col>
           </Card>
           {placeData?.accessibility?.length > 0 && (
-            <Card>
+            <Card marginResponsive="0px">
               <Col>
                 <Row gutter={[0, 24]}>
                   <Col span={24}>
@@ -646,8 +647,8 @@ function PlaceReadOnly() {
             </Card>
           )}
           {placeData?.containsPlace?.length > 0 && (
-            <Card>
-              <Col>
+            <Card marginResponsive="0px">
+              <Col className="top-level-column">
                 <Row gutter={[0, 24]}>
                   <Col span={24}>
                     <p
@@ -676,11 +677,11 @@ function PlaceReadOnly() {
                   </Col>
                 </Row>
               </Col>
-              <Col></Col>
+              <Col className="top-level-column"></Col>
             </Card>
           )}
-          <Card>
-            <Col>
+          <Card marginResponsive="0px">
+            <Col className="top-level-column">
               <Row gutter={[0, 24]}>
                 <Col span={24}>
                   <p
@@ -712,7 +713,7 @@ function PlaceReadOnly() {
                 </Col>
               </Row>
             </Col>
-            <Col></Col>
+            <Col className="top-level-column"></Col>
           </Card>
         </Row>
       </FeatureFlag>

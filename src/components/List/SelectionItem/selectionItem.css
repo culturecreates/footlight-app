@@ -69,3 +69,26 @@
   align-items: center;
   gap: 4px;
 }
+
+@media screen and (max-width: 480px) {
+  .selection-item-list-wrapper .selection-item-subheading,
+  .selection-item-wrapper .selection-item-sub-content,
+  .selection-item-wrapper .arts-data-link {
+    font-size: 10px;
+  }
+
+  .selection-item-list-wrapper .selection-item-title {
+    font-size: 12px;
+  }
+
+  .selection-item-wrapper .ant-avatar-lg.ant-avatar-icon {
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-content: center;
+  }
+
+  .selection-item-wrapper .ant-avatar-lg.ant-avatar-icon > span {
+    font-size: 16px;
+  }
+}

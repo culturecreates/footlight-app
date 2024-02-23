@@ -159,7 +159,7 @@ export const formFieldValue = [
                     border: `${
                       calendarContentLanguage === contentLanguage.BILINGUAL ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
                     }`,
-                    width: '423px',
+                    width: '100%',
                   }}
                   size="large"
                   data-cy={`input-text-area-${mappedField}-english`}
@@ -173,7 +173,7 @@ export const formFieldValue = [
           <StyledInput
             addonBefore="URL"
             autoComplete="off"
-            style={{ width: '423px' }}
+            style={{ width: '100%' }}
             placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderWebsite')}
             data-cy={`input-${mappedField}`}
           />

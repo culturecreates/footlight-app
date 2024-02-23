@@ -2,8 +2,8 @@ import { CaretDownOutlined } from '@ant-design/icons';
 import { Dropdown, Avatar } from 'antd';
 import React from 'react';
 import './UserProfileDropDown.css';
-import { useSelector } from 'react-redux';
-import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearUser, getUserDetails } from '../../../redux/reducer/userSlice';
 import { userNameItems } from '../../../constants/userNameItems';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
@@ -13,6 +13,7 @@ import { featureFlags } from '../../../utils/featureFlags';
 const UserProfileDropDown = () => {
   const navigate = useNavigate();
   let { calendarId } = useParams();
+  const dispatch = useDispatch();
   const { user } = useSelector(getUserDetails);
 
   const items = userNameItems.map((item) => {
@@ -40,6 +41,7 @@ const UserProfileDropDown = () => {
         break;
       case 'logOut':
         sessionStorage.clear();
+        dispatch(clearUser());
         navigate(PathName.Login, { state: { previousPath: 'logout' } });
         break;
       default:

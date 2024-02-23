@@ -33,7 +33,7 @@ function ListItem(props) {
       data-cy="list-item-entity"
       className="event-list-item-wrapper"
       key={id}
-      actions={actions}
+      extra={actions}
       style={{ padding: '20px 0px', ...props?.styles?.style }}>
       <List.Item.Meta
         className="event-list-item-meta"

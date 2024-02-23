@@ -17,7 +17,7 @@ export const inviteApi = createApi({
     }),
 
     inviteUser: builder.mutation({
-      query: ({ firstName, lastName, email, role, calendarId, language = 'FR' }) => {
+      query: ({ firstName, lastName, email, role, calendarId, language = 'FR', organizationIds = [] }) => {
         return {
           url: `invite`,
           method: 'POST',
@@ -25,7 +25,7 @@ export const inviteApi = createApi({
             'calendar-id': calendarId,
             language: language,
           },
-          body: { firstName, lastName, email, role },
+          body: { firstName, lastName, email, role, organizationIds },
         };
       },
       invalidatesTags: (result, error, arg) => [{ type: 'Users', id: arg._id }],
