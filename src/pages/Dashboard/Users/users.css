@@ -93,7 +93,10 @@
   .user-profile-wrapper .ant-input-lg,
   .user-profile-wrapper .ant-select,
   .user-profile-wrapper .ant-select-open,
-  .user-profile-wrapper .ant-form-item-label > label {
+  .user-profile-wrapper .ant-form-item-label > label,
+  .change-password-modal .change-password-modal-body label,
+  .change-password-modal .change-password-modal-body .ant-input-affix-wrapper > .ant-input,
+  .change-password-modal .ant-form-item-label > label {
     font-size: 12px;
   }
 
@@ -103,12 +106,6 @@
 
   .change-password-modal .ant-modal-body {
     padding: 16px !important;
-  }
-
-  .change-password-modal .change-password-modal-body label,
-  .change-password-modal .change-password-modal-body .ant-input-affix-wrapper > .ant-input,
-  .change-password-modal .ant-form-item-label > label {
-    font-size: 12px;
   }
 
   .change-password-modal .ant-input-affix-wrapper-lg {
