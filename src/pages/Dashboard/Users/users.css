@@ -83,6 +83,10 @@
   .user-profile-wrapper .add-event-section-wrapper {
     padding: 0px;
   }
+
+  .user-profile-wrapper .add-event-section-col {
+    padding: 0px;
+  }
 }
 
 @media screen and (max-width: 480px) {
