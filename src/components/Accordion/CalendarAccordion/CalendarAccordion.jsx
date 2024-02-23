@@ -249,7 +249,7 @@ function CalendarAccordion(props) {
                   onClick={() => {
                     setIsPopoverOpen(true);
                   }}
-                  data-cy="input-quick-create-organizer-keyword"
+                  data-cy="input-organizer-keyword"
                 />
               </CustomPopover>
             </KeyboardAccessibleLayout>

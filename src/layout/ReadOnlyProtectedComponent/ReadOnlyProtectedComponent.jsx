@@ -25,20 +25,20 @@ function ReadOnlyProtectedComponent({ children, creator, entityId, isReadOnly })
       });
     });
   }
-
   if (isReadOnly) return;
   else
     switch (calendar[0]?.role) {
       case userRoles.GUEST:
-        if (user?.id === creator) return children;
+        if (user?.id === creator || entityAccess) return children;
         else return;
       case userRoles.CONTRIBUTOR:
-        if (user?.id === creator) return children;
+        if (user?.id === creator || entityAccess) return children;
         else return;
       case userRoles.EDITOR:
         return children;
       case userRoles.ADMIN:
         return children;
+
       default:
         return;
     }
