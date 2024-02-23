@@ -33,7 +33,7 @@ function ListItem(props) {
       data-cy="list-item-entity"
       className="event-list-item-wrapper"
       key={id}
-      actions={actions}
+      extra={actions}
       style={{ padding: '20px 0px', ...props?.styles?.style }}>
       <List.Item.Meta
         className="event-list-item-meta"
@@ -42,7 +42,12 @@ function ListItem(props) {
         avatar={
           logo ? (
             <div className="event-list-image-wrapper" style={{ height: '40px', width: '40px' }}>
-              <img src={logo} className="event-list-image" data-cy="image-entity-logo" />
+              <img
+                src={logo}
+                className="event-list-image"
+                style={{ height: '40px', width: '40px' }}
+                data-cy="image-entity-logo"
+              />
             </div>
           ) : (
             <div

@@ -32,7 +32,7 @@ function Lists(props) {
   let { calendarId } = useParams();
   const lang = i18n.language;
   const { user } = useSelector(getUserDetails);
-  const [currentCalendarData] = useOutletContext();
+  const [currentCalendarData, , , , , isReadOnly] = useOutletContext();
   const totalCount = data?.totalCount;
 
   const [selectedItemId, setSelectedItemId] = useState(null);
@@ -46,15 +46,9 @@ function Lists(props) {
     return data?.sameAs?.filter((item) => item?.type === 'ArtsdataIdentifier');
   };
   const aspectRatioString = currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio;
-  let width = 104;
-
-  if (aspectRatioString) {
-    const [aspectRatioNumerator, aspectRatioDenominator] = aspectRatioString.replace(/:/g, '/').split('/').map(Number);
-    width = (104 * aspectRatioNumerator) / aspectRatioDenominator;
-  }
 
   const listItemHandler = (id, creatorId, publishState) => {
-    if (routinghandler(user, calendarId, creatorId, publishState))
+    if (routinghandler(user, calendarId, creatorId, publishState, false, isReadOnly))
       navigate(`${location.pathname}${PathName.AddEvent}/${id}`);
     else navigate(`${location.pathname}/${id}`);
   };
@@ -79,39 +73,41 @@ function Lists(props) {
           className="event-list-item-wrapper"
           key={index}
           actions={[
-            calendar?.length > 0 &&
-            (calendar[0]?.role === userRoles.GUEST ||
-              (calendar[0]?.role === userRoles.CONTRIBUTOR && eventItem?.creator?.userId != user?.id)) ? (
-              <Dropdown
-                className="calendar-dropdown-wrapper"
-                onOpenChange={(open) => {
-                  if (open) setSelectedItemId(eventItem?.id);
-                  else setSelectedItemId(null);
-                }}
-                overlayStyle={{
-                  minWidth: '150px',
-                }}
-                getPopupContainer={(trigger) => trigger.parentNode}
-                menu={{
-                  items: [
-                    {
-                      key: '0',
-                      label: t('dashboard.events.publishOptions.duplicateEvent'),
+            calendar[0]?.role === userRoles.GUEST ||
+            (calendar[0]?.role === userRoles.CONTRIBUTOR && eventItem?.creator?.userId != user?.id) ? (
+              !isReadOnly && (
+                <Dropdown
+                  className="calendar-dropdown-wrapper"
+                  onOpenChange={(open) => {
+                    if (open) setSelectedItemId(eventItem?.id);
+                    else setSelectedItemId(null);
+                  }}
+                  overlayStyle={{
+                    minWidth: '150px',
+                  }}
+                  getPopupContainer={(trigger) => trigger.parentNode}
+                  menu={{
+                    items: [
+                      {
+                        key: '0',
+                        label: t('dashboard.events.publishOptions.duplicateEvent'),
+                      },
+                    ],
+                    onClick: ({ key }) => {
+                      if (key === '0')
+                        navigate(`${location.pathname}${PathName.AddEvent}?duplicateId=${eventItem?.id}`);
                     },
-                  ],
-                  onClick: ({ key }) => {
-                    if (key === '0') navigate(`${location.pathname}${PathName.AddEvent}?duplicateId=${eventItem?.id}`);
-                  },
-                }}
-                trigger={['click']}>
-                <span>
-                  <MoreOutlined
-                    className="event-list-more-icon"
-                    style={{ color: selectedItemId === eventItem?.id && '#1B3DE6' }}
-                    key={index}
-                  />
-                </span>
-              </Dropdown>
+                  }}
+                  trigger={['click']}>
+                  <span>
+                    <MoreOutlined
+                      className="event-list-more-icon"
+                      style={{ color: selectedItemId === eventItem?.id && '#1B3DE6' }}
+                      key={index}
+                    />
+                  </span>
+                </Dropdown>
+              )
             ) : (
               <EventStatusOptions
                 onOpenChange={(open) => {
@@ -155,11 +151,7 @@ function Lists(props) {
             avatar={
               <>
                 {screens.md && (
-                  <div
-                    className="event-list-image-wrapper"
-                    style={{
-                      width: width,
-                    }}>
+                  <div className="event-list-image-wrapper">
                     {(calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) && eventItem?.isFeatured && (
                       <div className="image-featured-badge">
                         <StarOutlined
@@ -175,6 +167,7 @@ function Lists(props) {
                           (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) &&
                           eventItem?.isFeatured &&
                           '3px solid #1B3DE6',
+                        ...(aspectRatioString && { maxWidth: '150px' }),
                       }}
                       data-cy="image-event-thumbnail"
                     />

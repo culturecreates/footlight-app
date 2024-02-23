@@ -42,3 +42,29 @@
   border-radius: 2px;
   padding: 2px 4px;
 }
+
+.upload-wrapper .ant-upload-drag-container .upload-helper-text {
+  color: #646d7b;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+@media (max-width: 480px) {
+  .image-footer .image-name {
+    text-wrap: wrap;
+    font-size: 12px;
+  }
+
+  .image-footer .image-actions .span-remove-image > span,
+  .image-footer .image-actions .span-edit-image > span {
+    font-size: 12px;
+  }
+
+  .upload-wrapper .ant-upload-drag-container .upload-helper-text {
+    font-size: 12px;
+  }
+
+  .upload-wrapper .ant-upload {
+    padding: 8px 0 !important;
+  }
+}

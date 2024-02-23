@@ -6,6 +6,10 @@ export const eventPublishOptions = [
     key: '0',
   },
   {
+    label: <Translation>{(t) => t('dashboard.events.publishOptions.revertToDraft')}</Translation>,
+    key: '6',
+  },
+  {
     label: <Translation>{(t) => t('dashboard.events.publishOptions.unpublishEvent')}</Translation>,
     key: '1',
   },

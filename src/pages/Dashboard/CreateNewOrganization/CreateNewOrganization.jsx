@@ -44,13 +44,14 @@ import { routinghandler } from '../../../utils/roleRoutingHandler';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { useLazyGetPlaceQuery } from '../../../services/places';
-import { usePrompt } from '../../../hooks/usePrompt';
+import { Prompt, usePrompt } from '../../../hooks/usePrompt';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
+import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -64,6 +65,7 @@ function CreateNewOrganization() {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
   const { user } = useSelector(getUserDetails);
@@ -126,6 +128,7 @@ function CreateNewOrganization() {
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
+
   let externalEntityData = externalCalendarEntityData?.length > 0 && externalCalendarEntityData[0];
 
   const adminCheckHandler = () => {
@@ -781,6 +784,14 @@ function CreateNewOrganization() {
   }, [organizationLoading, currentCalendarData, externalEntityLoading]);
 
   useEffect(() => {
+    if (isReadOnly) {
+      if (organizationId)
+        navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${organizationId}`, { replace: true });
+      else navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}`, { replace: true });
+    }
+  }, [isReadOnly]);
+
+  useEffect(() => {
     if (artsDataId) {
       getArtsData(artsDataId);
     } else if (location?.state?.name)
@@ -796,6 +807,7 @@ function CreateNewOrganization() {
 
   return fields && !organizationLoading && !taxonomyLoading && !artsDataLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+      <Prompt when={showDialog} message={t('common.unsavedChanges')} beforeUnload={true} />
       <div className="add-edit-wrapper add-organization-wrapper">
         <Form form={form} layout="vertical" name="organization" onValuesChange={onValuesChangeHandler}>
           <Row gutter={[32, 24]}>
@@ -851,7 +863,10 @@ function CreateNewOrganization() {
             {fields?.map((section, index) => {
               if (section?.length > 0)
                 return (
-                  <Card title={section[0]?.category !== formCategory.PRIMARY && section[0]?.category} key={index}>
+                  <Card
+                    marginResponsive="0px"
+                    title={section[0]?.category !== formCategory.PRIMARY && section[0]?.category}
+                    key={index}>
                     <>
                       {(artsDataLinkChecker(organizationData?.sameAs) || artsDataLinkChecker(artsData?.sameAs)) &&
                         section[0]?.category === formCategory.PRIMARY && (
@@ -1006,43 +1021,45 @@ function CreateNewOrganization() {
                         })}
                     </>
                     <>
-                      {section?.filter((field) => !field?.isPreset)?.length > 0 && (
-                        <Form.Item
-                          label={t('dashboard.organization.createNew.addOrganization.addMoreDetails')}
-                          style={{ lineHeight: '2.5' }}>
-                          {section
-                            ?.filter((field) => !field?.isPreset)
-                            ?.map((field) => addedFields?.includes(field?.mappedField))
-                            ?.includes(false) ? (
-                            section?.map((field) => {
-                              if (!addedFields?.includes(field?.mappedField) && !field?.isPreset)
-                                return (
-                                  <ChangeType
-                                    key={field?.mappedField}
-                                    primaryIcon={<PlusOutlined />}
-                                    disabled={false}
-                                    label={contentLanguageBilingual({
-                                      en: field?.label?.en,
-                                      fr: field?.label?.fr,
-                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                      calendarContentLanguage: calendarContentLanguage,
-                                    })}
-                                    promptText={contentLanguageBilingual({
-                                      en: field?.helperText?.en,
-                                      fr: field?.helperText?.fr,
-                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                      calendarContentLanguage: calendarContentLanguage,
-                                    })}
-                                    secondaryIcon={<InfoCircleOutlined />}
-                                    onClick={() => addFieldsHandler(field?.mappedField)}
-                                  />
-                                );
-                            })
-                          ) : (
-                            <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
-                          )}
-                        </Form.Item>
-                      )}
+                      <ChangeTypeLayout>
+                        {section?.filter((field) => !field?.isPreset)?.length > 0 && (
+                          <Form.Item
+                            label={t('dashboard.organization.createNew.addOrganization.addMoreDetails')}
+                            style={{ lineHeight: '2.5' }}>
+                            {section
+                              ?.filter((field) => !field?.isPreset)
+                              ?.map((field) => addedFields?.includes(field?.mappedField))
+                              ?.includes(false) ? (
+                              section?.map((field) => {
+                                if (!addedFields?.includes(field?.mappedField) && !field?.isPreset)
+                                  return (
+                                    <ChangeType
+                                      key={field?.mappedField}
+                                      primaryIcon={<PlusOutlined />}
+                                      disabled={false}
+                                      label={contentLanguageBilingual({
+                                        en: field?.label?.en,
+                                        fr: field?.label?.fr,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        calendarContentLanguage: calendarContentLanguage,
+                                      })}
+                                      promptText={contentLanguageBilingual({
+                                        en: field?.helperText?.en,
+                                        fr: field?.helperText?.fr,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        calendarContentLanguage: calendarContentLanguage,
+                                      })}
+                                      secondaryIcon={<InfoCircleOutlined />}
+                                      onClick={() => addFieldsHandler(field?.mappedField)}
+                                    />
+                                  );
+                              })
+                            ) : (
+                              <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                            )}
+                          </Form.Item>
+                        )}
+                      </ChangeTypeLayout>
                     </>
                   </Card>
                 );

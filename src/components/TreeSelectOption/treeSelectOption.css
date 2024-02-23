@@ -15,3 +15,13 @@
   background-color: #eff2ff;
   color: #0f0e98;
 }
+
+@media screen and (max-width: 480px) {
+  .tree-select-dropdown-wrapper {
+    padding: 4px;
+  }
+
+  .tree-select-dropdown-wrapper .ant-select-tree {
+    font-size: 12px;
+  }
+}

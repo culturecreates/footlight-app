@@ -30,6 +30,7 @@ import { userRoles } from '../../../constants/userRoles';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox/SearchableCheckbox';
+import { useLazyGetEntityDependencyQuery } from '../../../services/entities';
 
 const Taxonomy = () => {
   const { useBreakpoint } = Grid;
@@ -46,6 +47,7 @@ const Taxonomy = () => {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#fff');
   const navigate = useNavigate();
@@ -54,6 +56,7 @@ const Taxonomy = () => {
     sessionId: timestampRef,
   });
   const [deleteTaxonomy] = useDeleteTaxonomyMutation();
+  const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyQuery();
 
   const sortByParam = searchParams.get('sortBy');
 
@@ -186,24 +189,37 @@ const Taxonomy = () => {
   };
   const listItemHandler = (id) => {
     adminCheckHandler() &&
+      !isReadOnly &&
       navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomy}?id=${id}`);
   };
   const deleteOrganizationHandler = (id) => {
-    Confirm({
-      title: t('dashboard.taxonomy.listing.modal.titleDelete'),
-      onAction: () => {
-        deleteTaxonomy({ id: id, calendarId: calendarId })
-          .unwrap()
-          .then((res) => {
-            if (res.statusCode == 202) {
-              getCalendar({ id: calendarId, sessionId: timestampRef });
-            }
-          });
-      },
-      okText: t('dashboard.settings.addUser.delete'),
-      cancelText: t('dashboard.settings.addUser.cancel'),
-      content: t('dashboard.taxonomy.listing.modal.contentDelete'),
-    });
+    getDependencyDetails({ ids: id, calendarId })
+      .unwrap()
+      .then((res) => {
+        Confirm({
+          title: t('dashboard.taxonomy.listing.modal.titleDelete'),
+          onAction: () => {
+            deleteTaxonomy({ id: id, calendarId: calendarId })
+              .unwrap()
+              .then((res) => {
+                if (res.statusCode == 202) {
+                  getCalendar({ id: calendarId, sessionId: timestampRef });
+                }
+              });
+          },
+          okText: t('dashboard.settings.addUser.delete'),
+          cancelText: t('dashboard.settings.addUser.cancel'),
+          content: `${t('dashboard.taxonomy.listing.modal.contentDelete.description')} ${t(
+            'dashboard.taxonomy.listing.modal.contentDelete.impact',
+          )}  ${t('dashboard.taxonomy.listing.modal.contentDelete.published', {
+            number: `${res?.events?.publishedEventsCount}`,
+          })}, ${t('dashboard.taxonomy.listing.modal.contentDelete.draft', {
+            number: `${res?.events?.draftEventsCount}`,
+          })}, ${t('dashboard.taxonomy.listing.modal.contentDelete.inReview', {
+            number: `${res?.events?.pendingReviewEventsCount}`,
+          })}.`,
+        });
+      });
   };
 
   const adminCheckHandler = () => {
@@ -213,6 +229,21 @@ const Taxonomy = () => {
 
   return (
     <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
+      {dependencyDetailsFetching && (
+        <div
+          style={{
+            height: 'calc(100% - 36px)',
+            width: 'calc(100% - 32px)',
+            position: 'absolute',
+            display: 'flex',
+            background: 'rgb(252 252 255 / 46%)',
+            zIndex: 100,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <LoadingIndicator data-cy="loading-indicator-taxonomy-confirm" />
+        </div>
+      )}
       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="taxonomy-listing-wrapper">
         <Col span={24}>
           <Row justify="space-between" align="top">
@@ -228,6 +259,7 @@ const Taxonomy = () => {
               <Col flex={'140px'} className="add-btn-container">
                 <ReadOnlyProtectedComponent creator={user?.id}>
                   <AddEvent
+                    disabled={isReadOnly ? true : false}
                     label={t('dashboard.taxonomy.listing.addNew')}
                     onClick={addTaxonomyHandler}
                     data-cy="button-add-taxonomy"
@@ -413,7 +445,7 @@ const Taxonomy = () => {
                         updatedByUserName={item?.modifier?.userName}
                         listItemHandler={() => listItemHandler(item?.id)}
                         actions={[
-                          adminCheckHandler() && (
+                          adminCheckHandler() && !isReadOnly && (
                             <DeleteOutlined
                               data-cy="icon-taxonomy-delete"
                               key={'delete-icon'}

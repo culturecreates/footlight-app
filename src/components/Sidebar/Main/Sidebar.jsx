@@ -11,6 +11,7 @@ import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { clearSessionStoredSearchQueries } from '../../../utils/clearSessionStoredSearchQueries';
+import { calendarModes } from '../../../constants/calendarModes';
 
 const { Sider } = Layout;
 
@@ -56,17 +57,29 @@ function Sidebar(props) {
           </div>
         ),
         label: (
-          <>
-            {label}{' '}
-            <DownOutlined
-              style={{
-                position: 'relative',
-                top: '50%',
-                left: '100%',
-                fontSize: '8px',
-              }}
-            />
-          </>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+            }}>
+            <span style={{ height: currentCalendarData?.mode === calendarModes.READ_ONLY && '16px' }}>
+              {label}
+              <DownOutlined
+                style={{
+                  position: 'relative',
+                  top: '50%',
+                  left: '100%',
+                  fontSize: '8px',
+                }}
+              />
+            </span>
+
+            {currentCalendarData?.mode === calendarModes.READ_ONLY && (
+              <span style={{ fontSize: '12px', fontWeight: 400 }}>
+                {t('dashboard.calendar.readOnlyMode.readOnlyMode')}
+              </span>
+            )}
+          </div>
         ),
         className: 'sidebar-calendar',
       },

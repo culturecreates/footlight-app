@@ -163,3 +163,32 @@
   font-weight: 700;
   color: #646d7b;
 }
+
+.add-edit-wrapper .add-event-section-col .url .ant-input-group-wrapper {
+  width: 100% !important;
+}
+
+@media screen and (max-width: 480px) {
+  .add-edit-wrapper .add-edit-event-heading h4 {
+    font-size: 24px;
+  }
+
+  .add-edit-wrapper .add-entity-label,
+  .add-edit-wrapper .event-description-footer,
+  .add-edit-wrapper .add-event-date-heading,
+  .add-edit-wrapper .ant-form-item-label > label {
+    font-size: 12px;
+  }
+
+  .add-edit-wrapper .tags-wrapper {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+}
+
+@media screen and (max-width: 575px) {
+  .add-edit-wrapper .add-event-section-col {
+    padding: 0px;
+    margin: 0px !important;
+  }
+}

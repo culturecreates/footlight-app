@@ -24,6 +24,7 @@ const SelectTaxonomyType = () => {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
   const { user } = useSelector(getUserDetails);
@@ -43,15 +44,14 @@ const SelectTaxonomyType = () => {
   });
 
   const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
+    return calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin;
   };
 
   useEffect(() => {
-    if (!adminCheckHandler()) {
-      dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Not Authorized' }));
+    if (user && calendar.length > 0) {
+      !adminCheckHandler() && dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Not Authorized' }));
     }
-  }, []);
+  }, [user, calendar]);
 
   const onSaveHandler = () => {
     console.log('clicked field option');
@@ -71,6 +71,12 @@ const SelectTaxonomyType = () => {
     setStandardFields(standardFieldsForTaxonomy(selectedLabel[0].key, currentCalendarData?.fieldTaxonomyMaps));
     formInstance.setFieldsValue({ [fieldType]: value });
   };
+
+  useEffect(() => {
+    if (isReadOnly) {
+      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}`, { replace: true });
+    }
+  }, [isReadOnly]);
 
   return (
     <div className="select-taxonomy-type-wrapper">

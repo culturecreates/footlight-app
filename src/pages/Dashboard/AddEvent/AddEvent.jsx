@@ -66,7 +66,7 @@ import NoContent from '../../../components/NoContent/NoContent';
 import { locationType, locationTypeOptions, virtualLocationFieldNames } from '../../../constants/locationTypeOptions';
 import { otherInformationFieldNames, otherInformationOptions } from '../../../constants/otherInformationOptions';
 import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../../constants/eventAccessibilityOptions';
-import { usePrompt } from '../../../hooks/usePrompt';
+import { Prompt } from '../../../hooks/usePrompt';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import RecurringEvents from '../../../components/RecurringEvents';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
@@ -90,6 +90,7 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import KeyboardAccessibleLayout from '../../../layout/KeyboardAccessibleLayout/KeyboardAccessibleLayout';
 import CustomPopover from '../../../components/Popover/Popover';
 import { removeEmptyParagraphsAtEnd } from '../../../utils/removeEmptyParagraphsAtEnd';
+import Alert from '../../../components/Alert';
 
 const { TextArea } = Input;
 
@@ -111,6 +112,7 @@ function AddEvent() {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   const {
     currentData: eventData,
@@ -190,8 +192,6 @@ function AddEvent() {
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
   const [selectedOrganizerPerformerSupporterType, setSelectedOrganizerPerformerSupporterType] = useState();
   const [imageCropOpen, setImageCropOpen] = useState(false);
-
-  usePrompt(t('common.unsavedChanges'), showDialog);
 
   setContentBackgroundColor('#F9FAFF');
 
@@ -303,7 +303,7 @@ function AddEvent() {
             'eventLink',
             'videoLink',
             'facebookLink',
-            ...(eventData?.publishState === eventPublishState.PUBLISHED && type !== eventPublishState.DRAFT
+            ...(eventId && eventData?.publishState === eventPublishState.PUBLISHED && type !== eventPublishState.DRAFT
               ? validateFields
               : []),
           ]),
@@ -468,6 +468,7 @@ function AddEvent() {
           if (values?.keywords?.length > 0) {
             keywords = values?.keywords;
           }
+
           if (ticketType) {
             offerConfiguration = {
               category: ticketType,
@@ -699,7 +700,7 @@ function AddEvent() {
     return promise;
   };
 
-  const reviewPublishHandler = (event, type = 'PUBLISH') => {
+  const reviewPublishHandler = ({ event, publishState = undefined, type = 'PUBLISH' }) => {
     event?.preventDefault();
     const isValuesChanged = showDialog;
     setShowDialog(false);
@@ -729,10 +730,10 @@ function AddEvent() {
                 .catch((error) => console.log(error));
             })
             .catch((error) => console.log(error));
-        } else if (isValuesChanged && type === 'PUBLISH') {
+        } else if ((isValuesChanged || duplicateId) && type === 'PUBLISH') {
           saveAsDraftHandler(event, type === 'PUBLISH', eventPublishState.DRAFT)
             .then((id) => {
-              updateEventState({ id: eventId ?? id, calendarId })
+              updateEventState({ id: eventId ?? id, calendarId, publishState })
                 .unwrap()
                 .then(() => {
                   notification.success({
@@ -753,7 +754,7 @@ function AddEvent() {
             })
             .catch((error) => console.log(error));
         } else {
-          updateEventState({ id: eventId, calendarId })
+          updateEventState({ id: eventId, calendarId, publishState })
             .unwrap()
             .then(() => {
               notification.success({
@@ -812,8 +813,16 @@ function AddEvent() {
           <Form.Item>
             <Outlined
               size="large"
-              label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
-              onClick={(e) => saveAsDraftHandler(e)}
+              label={
+                eventData?.publishState === eventPublishState.PENDING_REVIEW
+                  ? t('dashboard.events.addEditEvent.saveOptions.revertToDraft')
+                  : t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')
+              }
+              onClick={(e) => {
+                if (eventData?.publishState === eventPublishState.PENDING_REVIEW)
+                  ({ event: e, publishState: eventPublishState.DRAFT });
+                else saveAsDraftHandler(e);
+              }}
               data-cy="button-save-event"
               disabled={updateEventLoading || addEventLoading || addImageLoading ? true : false}
             />
@@ -822,7 +831,7 @@ function AddEvent() {
             <PrimaryButton
               label={t('dashboard.events.addEditEvent.saveOptions.publish')}
               data-cy="button-publish-event"
-              onClick={(e) => reviewPublishHandler(e)}
+              onClick={(e) => reviewPublishHandler({ event: e, publishState: eventPublishState.PUBLISHED })}
               disabled={
                 updateEventLoading || addEventLoading || updateEventStateLoading || addImageLoading ? true : false
               }
@@ -862,7 +871,9 @@ function AddEvent() {
       return (
         <>
           <Form.Item>
-            <PublishState eventId={eventId} reviewPublishHandler={(e) => reviewPublishHandler(e, 'DRAFT')}>
+            <PublishState
+              eventId={eventId}
+              reviewPublishHandler={(e) => reviewPublishHandler({ event: e, type: 'DRAFT' })}>
               <span data-cy="span-published-text">{t('dashboard.events.publishState.published')}</span>
             </PublishState>
           </Form.Item>
@@ -1103,7 +1114,8 @@ function AddEvent() {
     if (calendarId && eventData && currentCalendarData) {
       let initialAddedFields = [],
         isRecurring = false;
-      if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState) || duplicateId) {
+
+      if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState, false) || duplicateId) {
         if (eventData?.recurringEvent && Object.keys(eventData?.recurringEvent)?.length > 0) isRecurring = true;
         setDateType(
           dateTimeTypeHandler(
@@ -1327,8 +1339,11 @@ function AddEvent() {
             },
           });
         }
-      } else
-        window.location.replace(`${location?.origin}${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`);
+      } else {
+        navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`, {
+          replace: true,
+        });
+      }
     }
   }, [isLoading, currentCalendarData]);
 
@@ -1437,6 +1452,13 @@ function AddEvent() {
     }
   }, [initialEntityLoading, currentCalendarData, initialExternalSourceLoading]);
 
+  useEffect(() => {
+    if (isReadOnly) {
+      if (eventId) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`, { replace: true });
+      else navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`, { replace: true });
+    }
+  }, [isReadOnly]);
+
   return !isLoading &&
     !taxonomyLoading &&
     !initialEntityLoading &&
@@ -1446,6 +1468,7 @@ function AddEvent() {
     !updateEventStateLoading &&
     !initialExternalSourceLoading ? (
     <div>
+      <Prompt when={showDialog} message={t('common.unsavedChanges')} beforeUnload={true} />
       <Form
         form={form}
         layout="vertical"
@@ -1473,6 +1496,28 @@ function AddEvent() {
               </Col>
             </Row>
           </Col>
+          {eventData?.publishState === eventPublishState.DRAFT &&
+            eventData?.reviewFailed &&
+            calendar[0]?.role === userRoles.GUEST &&
+            eventData?.creator?.userId == user?.id && (
+              <Col span={24}>
+                <Row>
+                  <Col flex={'780px'}>
+                    <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                      <Col span={24} style={{ margin: ' 0 16px' }}>
+                        <Alert
+                          message={t('dashboard.events.addEditEvent.notification.editFailedReviewForGuest')}
+                          type="info"
+                          showIcon
+                          icon={<InfoCircleOutlined style={{ color: '#EDAB01', fontSize: '21px' }} />}
+                          additionalClassName="alert-warning"
+                        />
+                      </Col>
+                    </Row>
+                  </Col>
+                </Row>
+              </Col>
+            )}
 
           <CardEvent marginTop="5%">
             <>
@@ -1912,7 +1957,7 @@ function AddEvent() {
                             },
                           ]}
                           data-cy="form-item-date-range-label">
-                          <DateRangePicker style={{ width: '423px' }} data-cy="date-range" />
+                          <DateRangePicker style={{ width: '100%' }} data-cy="date-range" />
                         </Form.Item>
                       )}
                       {dateType === dateTypes.MULTIPLE && (

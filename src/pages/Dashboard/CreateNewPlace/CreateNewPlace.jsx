@@ -65,7 +65,7 @@ import {
 } from '../../../constants/placeAccessibilityTypeOptions';
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { useAddImageMutation } from '../../../services/image';
-import { usePrompt } from '../../../hooks/usePrompt';
+import { Prompt, usePrompt } from '../../../hooks/usePrompt';
 import { useAddPostalAddressMutation, useUpdatePostalAddressMutation } from '../../../services/postalAddress';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequiredFieldNames';
@@ -76,6 +76,7 @@ import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
+import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 
 const { TextArea } = Input;
 
@@ -91,6 +92,7 @@ function CreateNewPlace() {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
   const { user } = useSelector(getUserDetails);
@@ -940,6 +942,13 @@ function CreateNewPlace() {
   }, [isPlaceLoading, currentCalendarData, externalEntityLoading]);
 
   useEffect(() => {
+    if (isReadOnly) {
+      if (placeId) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}/${placeId}`, { replace: true });
+      else navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`, { replace: true });
+    }
+  }, [isReadOnly]);
+
+  useEffect(() => {
     if (artsDataId) {
       getArtsDataPlace(artsDataId);
     } else if (location?.state?.name) {
@@ -954,7 +963,8 @@ function CreateNewPlace() {
 
   return !isPlaceLoading && !artsDataLoading && !taxonomyLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-      <div className="add-edit-wrapper add-organization-wrapper create-new-place-wrapper">
+      <Prompt when={showDialog} message={t('common.unsavedChanges')} beforeUnload={true} />
+      <div className="add-edit-wrapper create-new-place-wrapper">
         <Form form={form} layout="vertical" name="place" onValuesChange={onValuesChangeHandler}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
@@ -2032,28 +2042,30 @@ function CreateNewPlace() {
                   />
                 </Form.Item>
               </>
-              <Form.Item
-                label={t('dashboard.places.createNew.addPlace.addMoreDetails')}
-                style={{ lineHeight: '2.5' }}
-                data-cy="form-item-add-more-details-title">
-                {addedFields?.includes(addressTypeOptionsFieldNames.OPENING_HOURS) ? (
-                  <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
-                ) : (
-                  addressTypeOptions.map((type) => {
-                    return (
-                      <ChangeType
-                        key={type.type}
-                        primaryIcon={<PlusOutlined />}
-                        disabled={type.disabled}
-                        label={type.label}
-                        promptText={type.tooltip}
-                        secondaryIcon={<InfoCircleOutlined />}
-                        onClick={() => addFieldsHandler(type?.fieldNames)}
-                      />
-                    );
-                  })
-                )}
-              </Form.Item>
+              <ChangeTypeLayout>
+                <Form.Item
+                  label={t('dashboard.places.createNew.addPlace.addMoreDetails')}
+                  style={{ lineHeight: '2.5' }}
+                  data-cy="form-item-add-more-details-title">
+                  {addedFields?.includes(addressTypeOptionsFieldNames.OPENING_HOURS) ? (
+                    <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                  ) : (
+                    addressTypeOptions.map((type) => {
+                      return (
+                        <ChangeType
+                          key={type.type}
+                          primaryIcon={<PlusOutlined />}
+                          disabled={type.disabled}
+                          label={type.label}
+                          promptText={type.tooltip}
+                          secondaryIcon={<InfoCircleOutlined />}
+                          onClick={() => addFieldsHandler(type?.fieldNames)}
+                        />
+                      );
+                    })
+                  )}
+                </Form.Item>
+              </ChangeTypeLayout>
             </Card>
             <Card title={t('dashboard.places.createNew.addPlace.containsPlace.containsPlace')}>
               <>
@@ -2463,7 +2475,7 @@ function CreateNewPlace() {
                       return type?.entityId;
                     })}
                     style={{
-                      width: '423px',
+                      width: '100%',
                       display:
                         !taxonomyDetails(
                           allTaxonomyData?.data,
@@ -2563,28 +2575,30 @@ function CreateNewPlace() {
                     </ContentLanguageInput>
                   </Form.Item>
                 </>
-                <Form.Item
-                  data-cy="form-item-add-more-details-label"
-                  label={t('dashboard.places.createNew.addPlace.addMoreDetails')}
-                  style={{ lineHeight: '2.5' }}>
-                  {addedFields?.includes(placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP) ? (
-                    <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
-                  ) : (
-                    placeAccessibilityTypeOptions.map((type) => {
-                      return (
-                        <ChangeType
-                          key={type.type}
-                          primaryIcon={<PlusOutlined />}
-                          disabled={type.disabled}
-                          label={type.label}
-                          promptText={type.tooltip}
-                          secondaryIcon={<InfoCircleOutlined />}
-                          onClick={() => addFieldsHandler(type?.fieldNames)}
-                        />
-                      );
-                    })
-                  )}
-                </Form.Item>
+                <ChangeTypeLayout>
+                  <Form.Item
+                    data-cy="form-item-add-more-details-label"
+                    label={t('dashboard.places.createNew.addPlace.addMoreDetails')}
+                    style={{ lineHeight: '2.5' }}>
+                    {addedFields?.includes(placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP) ? (
+                      <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
+                    ) : (
+                      placeAccessibilityTypeOptions.map((type) => {
+                        return (
+                          <ChangeType
+                            key={type.type}
+                            primaryIcon={<PlusOutlined />}
+                            disabled={type.disabled}
+                            label={type.label}
+                            promptText={type.tooltip}
+                            secondaryIcon={<InfoCircleOutlined />}
+                            onClick={() => addFieldsHandler(type?.fieldNames)}
+                          />
+                        );
+                      })
+                    )}
+                  </Form.Item>
+                </ChangeTypeLayout>
               </Card>
             )}
           </Row>

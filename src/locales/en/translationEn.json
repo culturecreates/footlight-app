@@ -68,6 +68,13 @@
     "acceptInvitationSuccess": "Success! Invitation accepted."
   },
   "dashboard": {
+    "calendar": {
+      "readOnlyMode": {
+        "readOnlyMode": "Read-only mode",
+        "heading": "Calendar in read only mode",
+        "content": "The calendar is currently read only. Editing is unavailable for users. Try again later or contact your admin for details."
+      }
+    },
     "topNavigation": {
       "userProfile": "User Profile",
       "logOut": "Log out",
@@ -340,13 +347,15 @@
           "publish": "Publish",
           "saveAsDraft": "Save as draft",
           "save": "Save",
-          "sendToReview": "Send to review"
+          "sendToReview": "Send to review",
+          "revertToDraft": "Revert to draft"
         },
         "notification": {
           "saveAsDraft": "Success! Your event has been saved as draft.",
           "sendToReview": "Success! Your event has been sent for review.",
           "publish": "Success! Your event has been published",
-          "updateEvent": "Success! Your event has been updated."
+          "updateEvent": "Success! Your event has been updated.",
+          "editFailedReviewForGuest": "This event needs attention. Review and update as needed, and then send to review."
         },
         "validations": {
           "title": "Event title is required.",
@@ -423,7 +432,8 @@
         "featureEvent": "Feature this event",
         "unFeatureEvent": "Unfeature this event",
         "deleteEvent": "Delete event",
-        "duplicateEvent": "Duplicate Event"
+        "duplicateEvent": "Duplicate Event",
+        "revertToDraft": "Revert to draft"
       },
       "publishState": {
         "published": "Published",
@@ -452,7 +462,11 @@
       },
       "deleteOrganization": {
         "title": "Confirm Delete",
-        "description": "Are you sure you want to permanently delete this organization? This action will also delete all its associated data and everywhere it was used, including in events. ",
+        "description": "Are you sure you want to permanently delete this organization? The organization will be deleted everywhere it is used.",
+        "impact": "Impacted events: ",
+        "published": "{{number}} published",
+        "inReview": "{{number}} pending review",
+        "draft": "{{number}} draft",
         "ok": "OK",
         "cancel": "Cancel"
       },
@@ -521,7 +535,11 @@
       },
       "deletePlace": {
         "title": "Confirm Delete",
-        "description": "Are you sure you want to permanently delete this place? This action will also delete all its associated data and everywhere it was used, including in events. ",
+        "description": "Are you sure you want to permanently delete this place? The organization will be deleted everywhere it is used.",
+        "impact": "Impacted events: ",
+        "published": "{{number}} published",
+        "inReview": "{{number}} pending review",
+        "draft": "{{number}} draft",
         "ok": "OK",
         "cancel": "Cancel"
       },
@@ -685,7 +703,11 @@
       },
       "deletePerson": {
         "title": "Confirm Delete",
-        "description": "Are you sure you want to permanently delete this person? This action will also delete all its associated data and everywhere it was used, including in events. ",
+        "description": "Are you sure you want to permanently delete this person? The person will be deleted everywhere it is used.",
+        "impact": "Impacted events: ",
+        "published": "{{number}} published",
+        "inReview": "{{number}} pending review",
+        "draft": "{{number}} draft",
         "ok": "OK",
         "cancel": "Cancel"
       },
@@ -760,7 +782,8 @@
     "settings": {
       "heading": "Settings",
       "tab1": "User management",
-      "tab2": "Calendar metadata",
+      "tab2": "Calendar Widget",
+      "tab3": "Calendar Widget",
       "userManagement": {
         "searchPlaceholder": "Search users",
         "sort": "Sort by",
@@ -888,6 +911,43 @@
         "deactivate": "Deactivate",
         "leaveCalender": "Are you sure you want to leave this calendar?",
         "confirmLeave": "confirm leave"
+      },
+      "widgetSettings": {
+        "title": "Appearance",
+        "pageDescription": "Customize the display for the destination website.",
+        "previewDesktop": "Preview desktop",
+        "previewMobileBtn": "Preview mobile",
+        "previewMobile": "Preview of mobile version",
+        "limit": "Number of events to display",
+        "color": "Dominant color",
+        "colorDescreption": "Enter the hex code of the main colour. Choose a colour that provides enough contrast for reading.",
+        "colorPlaceHolder": "Paste your colour code or select a colour",
+        "height": "Height",
+        "width": "Max width",
+        "language": "Language selection",
+        "eventType": "Event type",
+        "region": "Region",
+        "location": "Location",
+        "organizer": "Event Organiser",
+        "person": "Performing group/artist/event animator",
+        "filterHeading": "Content filters",
+        "filterSectionDescription": "Apply filters to select language and which events to include.",
+        "codeSectionTitle": "Share the widget",
+        "codeSectionInfo": "Place this code where you want the widget to appear on your webpage.",
+        "copy": "Copy",
+        "copyNotification": "Code copied to clipboard",
+        "validation": {
+          "width": "Enter width in pixels",
+          "height": "Enter height in pixels",
+          "color": "Paste your color code or select a colour",
+          "limit": "Enter maximum number to display"
+        },
+        "placeholder": {
+          "eventType": "Select event type",
+          "region": "Select region",
+          "place": "Select place",
+          "OrganizationsAndPeople": "Search Organizations and People"
+        }
       }
     },
     "taxonomy": {
@@ -920,7 +980,13 @@
         },
         "modal": {
           "titleDelete": "Confirm delete",
-          "contentDelete": "Are you sure you want to permanently delete this taxonomy? This action will also delete all its associated data and everywhere it was used, including in events."
+          "contentDelete": {
+            "description": "Are you sure you want to permanently delete this taxonomy? The taxonomy will be deleted everywhere it is used.",
+            "impact": "Impacted events: ",
+            "published": "{{number}} published",
+            "inReview": "{{number}} pending review",
+            "draft": "{{number}} draft"
+          }
         }
       },
       "selectType": {

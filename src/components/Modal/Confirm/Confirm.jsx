@@ -21,6 +21,7 @@ export const Confirm = ({ title, content, onAction, okText, cancelText }) => {
     okType: 'danger',
     okText: okText,
     cancelText: cancelText,
+    centered: true,
     className: 'global-delete-modal-container',
     closable: true,
     header: null,

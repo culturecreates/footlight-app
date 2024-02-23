@@ -31,7 +31,7 @@ import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import { userRoles } from '../../../constants/userRoles';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
-import { usePrompt } from '../../../hooks/usePrompt';
+import { Prompt, usePrompt } from '../../../hooks/usePrompt';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { useGetEntitiesByIdQuery } from '../../../services/entities';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
@@ -48,6 +48,7 @@ function CreateNewPerson() {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
   const { user } = useSelector(getUserDetails);
@@ -399,6 +400,13 @@ function CreateNewPerson() {
   }, [personLoading, currentCalendarData, externalEntityLoading]);
 
   useEffect(() => {
+    if (isReadOnly) {
+      if (personId) navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}/${personId}`, { replace: true });
+      else navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}`, { replace: true });
+    }
+  }, [isReadOnly]);
+
+  useEffect(() => {
     if (artsDataId) {
       getArtsData(artsDataId);
     } else if (location?.state?.name) {
@@ -413,6 +421,7 @@ function CreateNewPerson() {
 
   return fields && !personLoading && !taxonomyLoading && !artsDataLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
+      <Prompt when={showDialog} message={t('common.unsavedChanges')} beforeUnload={true} />
       <div className="add-edit-wrapper add-organization-wrapper">
         <Form form={form} layout="vertical" name="person" onValuesChange={onValuesChangeHandler}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
