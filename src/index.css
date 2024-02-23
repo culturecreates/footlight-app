@@ -1,5 +1,14 @@
 @import '~antd/dist/antd.css';
 
+/* 
+  BreakPoints:
+    480px
+    575px
+    768px
+    900px
+    1024px
+*/
+
 * {
   margin: 0;
   font-family: 'Roboto', sans-serif;

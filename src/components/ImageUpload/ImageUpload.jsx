@@ -111,7 +111,8 @@ function ImageUpload(props) {
           gap: '8px',
         }}>
         <Outlined size="large" label={t('dashboard.events.addEditEvent.otherInformation.image.browse')} />
-        <span style={{ color: '#646D7B', fontWeight: '400', fontSize: '16px' }}>
+
+        <span className="upload-helper-text">
           {t('dashboard.events.addEditEvent.otherInformation.image.dragAndDrop')}
         </span>
       </span>
@@ -197,8 +198,8 @@ function ImageUpload(props) {
               src={imageUrl}
               alt="avatar"
               style={{
-                width: '423px',
-                aspectRatio: currentCalendarData?.imageConfig[0]?.large?.aspectRatio.replace(/:/g, '/'),
+                maxWidth: '423px',
+                width: '100%',
               }}
             />
           ) : (

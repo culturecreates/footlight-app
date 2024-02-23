@@ -62,9 +62,8 @@
   border-top: 1px solid var(--content-neutral-stroke, #b6c1c9);
   background: var(--background-neutrals-ground, #fff);
   display: flex;
-  width: 500px;
   height: 72px;
-  padding: 16px 16px 16px 316px;
+  padding: 16px 16px 16px 16px;
   justify-content: flex-end;
   align-items: center;
 }

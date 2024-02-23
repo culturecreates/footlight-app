@@ -32,3 +32,13 @@
 .label-disabled {
   color: rgba(0, 0, 0, 0.25);
 }
+
+@media screen and (max-width: 480px) {
+  .outlined-button {
+    padding: 8px 12px;
+    height: 32px;
+  }
+  .outlined-label {
+    font-size: 12px;
+  }
+}

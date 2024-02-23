@@ -1,0 +1,61 @@
+.person-read-only-wrapper .read-only-detail-heading {
+  font-size: 24px;
+}
+
+.person-read-only-wrapper .ant-select-arrow {
+  display: none;
+}
+
+.person-read-only-wrapper .events-content {
+  flex-wrap: wrap-reverse;
+  gap: 24px;
+  padding: 16px 0px;
+}
+
+.person-read-only-wrapper .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  padding-left: 0px;
+}
+
+.person-read-only-wrapper .artsdata-link-wrapper {
+  margin-left: 0px;
+  padding: 0 16px !important;
+}
+
+@media only screen and (max-width: 480px) {
+  .person-read-only-wrapper .read-only-event-heading h4 {
+    font-size: 24px;
+  }
+
+  .person-read-only-wrapper .read-only-event-content {
+    font-size: 12px;
+  }
+
+  .read-only-event-content .person-read-only-wrapper .read-only-detail-heading {
+    font-size: 20px;
+  }
+
+  .person-read-only-wrapper .read-only-event-content-sub-title-primary {
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .person-read-only-wrapper .url-links {
+    font-size: 12px;
+  }
+
+  .person-read-only-wrapper .top-level-column {
+    padding: 0px !important;
+  }
+
+  .person-read-only-wrapper .tags-wrapper {
+    font-size: 10px;
+  }
+
+  .read-only-wrapper .read-only-event-content-sub-title-primary {
+    font-size: 12px;
+  }
+
+  .read-only-wrapper .read-only-event-content-sub-title-secondary {
+    font-size: 12px;
+  }
+}

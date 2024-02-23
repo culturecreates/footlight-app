@@ -1,3 +1,28 @@
-.create-new-place-wrapper .bilingual-input-tab textarea{
-    height: 46px !important;
+.create-new-place-wrapper .button-container .ant-btn {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: #0f0e98;
+  font-weight: 600;
+  padding: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .create-new-place-wrapper .responsive-view-control-class {
+    position: absolute;
+    right: 0;
+    margin-top: 16px;
+  }
+}
+
+@media screen and (max-width: 575px) {
+  .create-new-place-wrapper .add-event-section-wrapper .events-search {
+    width: 100% !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .create-new-place-wrapper .ant-input-lg {
+    font-size: 12px;
+  }
 }

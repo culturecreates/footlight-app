@@ -27,9 +27,9 @@ const NewEntityLayout = ({ children, heading, text, entityName }) => {
           </h1>
         </Col>
 
-        <Col span={16}>
-          <div className="content">
-            <Col span={15}>
+        <Col flex="780px">
+          <Row className="content">
+            <Col flex="423px">
               <h2 className="sub-heading" data-cy="heading-entity-subheading">
                 {t('dashboard.organization.createNew.search.searchHeading')}
               </h2>
@@ -37,11 +37,11 @@ const NewEntityLayout = ({ children, heading, text, entityName }) => {
                 {text}
               </p>
             </Col>
-            <Col span={15} className="search">
+            <Col flex="423px" className="search">
               <p data-cy="para-entity-name">{entityName}</p>
               {children}
             </Col>
-          </div>
+          </Row>
         </Col>
       </Row>
     </FeatureFlag>

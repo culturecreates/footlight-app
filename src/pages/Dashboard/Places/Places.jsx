@@ -196,73 +196,74 @@ function Places() {
             />
             <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
             <></>
-
-            {!allPlacesFetching ? (
-              allPlacesData?.data?.length > 0 ? (
-                <List
-                  data-cy="list-places"
-                  className="event-list-wrapper"
-                  itemLayout={screens.xs ? 'vertical' : 'horizontal'}
-                  dataSource={allPlacesData?.data}
-                  bordered={false}
-                  pagination={{
-                    onChange: (page) => {
-                      setPageNumber(page);
-                    },
-                    pageSize: 10,
-                    hideOnSinglePage: true,
-                    total: totalCount,
-                    current: Number(pageNumber),
-                    showSizeChanger: false,
-                  }}
-                  renderItem={(item, index) => (
-                    <ListItem
-                      data-cy="list-item-place"
-                      key={index}
-                      id={index}
-                      logo={item?.logo?.thumbnail?.uri}
-                      defaultLogo={
-                        <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} data-cy="logo-place" />
-                      }
-                      title={contentLanguageBilingual({
-                        en: item?.name?.en,
-                        fr: item?.name?.fr,
-                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                        calendarContentLanguage: calendarContentLanguage,
-                      })}
-                      description={contentLanguageBilingual({
-                        en: item?.disambiguatingDescription?.en,
-                        fr: item?.disambiguatingDescription?.fr,
-                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                        calendarContentLanguage: calendarContentLanguage,
-                      })}
-                      createdDate={item?.creator?.date}
-                      createdByUserName={item?.creator?.userName}
-                      updatedDate={item?.modifier?.date}
-                      updatedByUserName={item?.modifier?.userName}
-                      artsDataLink={artsDataLinkChecker(item?.sameAs)}
-                      listItemHandler={() => listItemHandler(item?.id)}
-                      actions={[
-                        adminCheckHandler() && !isReadOnly && (
-                          <DeleteOutlined
-                            data-cy="icon-delete-place"
-                            key={'delete-icon'}
-                            style={{ color: '#222732', fontSize: '24px' }}
-                            onClick={() => deletePlaceHandler(item?.id)}
-                          />
-                        ),
-                      ]}
-                    />
-                  )}
-                />
+            <div className="responsvie-list-wrapper-class">
+              {!allPlacesFetching ? (
+                allPlacesData?.data?.length > 0 ? (
+                  <List
+                    data-cy="list-places"
+                    // className="event-list-wrapper"
+                    itemLayout={screens.xs ? 'vertical' : 'horizontal'}
+                    dataSource={allPlacesData?.data}
+                    bordered={false}
+                    pagination={{
+                      onChange: (page) => {
+                        setPageNumber(page);
+                      },
+                      pageSize: 10,
+                      hideOnSinglePage: true,
+                      total: totalCount,
+                      current: Number(pageNumber),
+                      showSizeChanger: false,
+                    }}
+                    renderItem={(item, index) => (
+                      <ListItem
+                        data-cy="list-item-place"
+                        key={index}
+                        id={index}
+                        logo={item?.logo?.thumbnail?.uri}
+                        defaultLogo={
+                          <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} data-cy="logo-place" />
+                        }
+                        title={contentLanguageBilingual({
+                          en: item?.name?.en,
+                          fr: item?.name?.fr,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                          calendarContentLanguage: calendarContentLanguage,
+                        })}
+                        description={contentLanguageBilingual({
+                          en: item?.disambiguatingDescription?.en,
+                          fr: item?.disambiguatingDescription?.fr,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                          calendarContentLanguage: calendarContentLanguage,
+                        })}
+                        createdDate={item?.creator?.date}
+                        createdByUserName={item?.creator?.userName}
+                        updatedDate={item?.modifier?.date}
+                        updatedByUserName={item?.modifier?.userName}
+                        artsDataLink={artsDataLinkChecker(item?.sameAs)}
+                        listItemHandler={() => listItemHandler(item?.id)}
+                        actions={[
+                          adminCheckHandler() && !isReadOnly && (
+                            <DeleteOutlined
+                              data-cy="icon-delete-place"
+                              key={'delete-icon'}
+                              style={{ color: '#222732', fontSize: '24px' }}
+                              onClick={() => deletePlaceHandler(item?.id)}
+                            />
+                          ),
+                        ]}
+                      />
+                    )}
+                  />
+                ) : (
+                  <NoContent style={{ height: '200px' }} />
+                )
               ) : (
-                <NoContent style={{ height: '200px' }} />
-              )
-            ) : (
-              <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <LoadingIndicator data-cy="loading-indicator-place" />
-              </div>
-            )}
+                <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <LoadingIndicator data-cy="loading-indicator-place" />
+                </div>
+              )}
+            </div>
           </Main>
         </FeatureFlag>
       )}

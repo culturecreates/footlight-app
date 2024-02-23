@@ -5,6 +5,7 @@
   background: transparent;
   padding: 0;
   font-weight: 600;
+  font-size: 16px;
   width: fit-content;
   cursor: pointer;
 }
@@ -39,4 +40,20 @@
   letter-spacing: 0em;
   text-align: left;
   margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .create-new-entity-page .content .text {
+    font-weight: 700;
+  }
+}
+
+@media (max-width: 480px) {
+  .create-new-entity-page .sub-heading {
+    font-size: 20px;
+  }
+
+  .create-new-entity-page .heading {
+    font-size: 24px;
+  }
 }
