@@ -37,9 +37,10 @@ function Lists(props) {
 
   const [selectedItemId, setSelectedItemId] = useState(null);
 
-  const calendar = user?.roles?.filter((calendar) => {
+  let calendar = user?.roles?.filter((calendar) => {
     return calendar?.calendarId === calendarId;
   });
+  calendar = calendar?.length > 0 ? calendar : [];
 
   let artsDataLinkChecker = (data) => {
     return data?.sameAs?.filter((item) => item?.type === 'ArtsdataIdentifier');

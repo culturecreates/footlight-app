@@ -6,11 +6,11 @@ import { userRoles } from '../../constants/userRoles';
 function ProtectedComponents({ children, creator, isEntity, isReadOnly }) {
   let { calendarId } = useParams();
   const { user } = useSelector(getUserDetails);
-  if (user.isSuperAdmin) {
+  if (user?.isSuperAdmin) {
     return children;
   }
 
-  const calendar = user?.roles.filter((calendar) => {
+  const calendar = user?.roles?.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
   if (isReadOnly) return;

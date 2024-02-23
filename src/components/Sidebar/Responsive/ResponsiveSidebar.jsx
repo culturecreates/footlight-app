@@ -6,8 +6,8 @@ import { DownOutlined } from '@ant-design/icons';
 import './index';
 import { userNameItems } from '../../../constants/userNameItems';
 import { sidebarItems } from '../../../constants/sidebarItems';
-import { useSelector } from 'react-redux';
-import { getUserDetails } from '../../../redux/reducer/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearUser, getUserDetails } from '../../../redux/reducer/userSlice';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +21,7 @@ function ResponsiveSidebar(props) {
   const { t } = useTranslation();
   let { calendarId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user } = useSelector(getUserDetails);
 
   const [calendarItem, setCalendarItem] = useState([]);
@@ -103,6 +104,8 @@ function ResponsiveSidebar(props) {
         else if (i18n.language === 'fr') window.open('https://footlight.gitbook.io/guide-footlight-cms', '_blank');
         break;
       case 'logOut':
+        sessionStorage.clear();
+        dispatch(clearUser());
         navigate(PathName.Login, { state: { previousPath: 'logout' } });
         break;
       default:

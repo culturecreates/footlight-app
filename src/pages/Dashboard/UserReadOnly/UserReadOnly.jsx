@@ -3,13 +3,12 @@ import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedCompone
 import OutlinedButton from '../../..//components/Button/Outlined';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
-import { Button, Card, Col, Row } from 'antd';
+import { Button, Card, Col, Form, Row } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
 import './userReadOnly.css';
 import { useGetUserByIdQuery } from '../../../services/users';
 import StatusTag from '../../../components/Tags/UserStatus/StatusTag';
 import { roleHandler } from '../../../utils/roleHandler';
-import { EnvironmentOutlined } from '@ant-design/icons';
 import { copyText } from '../../../utils/copyText';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
@@ -17,8 +16,8 @@ import { getUserDetails } from '../../../redux/reducer/userSlice';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import { PathName } from '../../../constants/pathName';
-import CalendarSelect from '../../../components/List/User/CalenderSelect/CalendarSelect';
 import { userActivityStatus } from '../../../constants/userActivityStatus';
+import CalendarAccordion from '../../../components/Accordion/CalendarAccordion';
 
 const UserReadOnly = () => {
   const { t } = useTranslation();
@@ -104,7 +103,7 @@ const UserReadOnly = () => {
                             style={{ height: '40px' }}
                             onClick={() =>
                               navigate(
-                                `${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}`,
+                                `${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}${PathName.AddUser}?id=${userInfo?.id}`,
                                 { state: { data: userInfo } },
                               )
                             }
@@ -210,38 +209,38 @@ const UserReadOnly = () => {
                         </h2>
                       </Col>
                     </Row>
-                    <Row>
-                      {userSubscribedCalenders?.map((item, index) => {
-                        return (
-                          <CalendarSelect
-                            key={index}
-                            icon={
-                              item?.image?.uri ? (
-                                <div style={{ height: '40px', width: '40px' }}>
-                                  <img
-                                    style={{ objectFit: 'cover', height: '100%', width: '100%' }}
-                                    src={item.image.uri}
-                                  />
-                                </div>
-                              ) : (
-                                <EnvironmentOutlined style={{ color: '#607EFC' }} />
-                              )
-                            }
-                            name={contentLanguageBilingual({
-                              en: item?.name?.en,
-                              fr: item?.name?.fr,
-                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                              calendarContentLanguage: calendarContentLanguage,
-                            })}
-                            calenderItem={item}
-                            user={false} // to hide leave button
-                            itemWidth="423px"
-                            bordered
-                            calendarContentLanguage={calendarContentLanguage}
-                          />
-                        );
-                      })}
-                    </Row>
+                    <Col flex={'423px'} className="calendar-search">
+                      <Row>
+                        <Col flex={'423px'}>
+                          <Col>
+                            <Form layout="vertical">
+                              <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
+                                {userSubscribedCalenders?.map((calendar, index) => {
+                                  return (
+                                    <CalendarAccordion
+                                      readOnly={true}
+                                      // form={formInstance}
+                                      data-cy="accordion-selected-calendars"
+                                      key={index}
+                                      selectedCalendarId={calendar?.calendarId}
+                                      name={contentLanguageBilingual({
+                                        en: calendar?.name?.en,
+                                        fr: calendar?.name?.fr,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        calendarContentLanguage: calendarContentLanguage,
+                                      })}
+                                      role={calendar?.role}
+                                      disabled={calendar?.disabled}
+                                      organizationIds={calendar?.organizations}
+                                    />
+                                  );
+                                })}
+                              </div>
+                            </Form>
+                          </Col>
+                        </Col>
+                      </Row>
+                    </Col>
                   </Card>
                 </Col>
               </Row>

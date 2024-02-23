@@ -1,6 +1,11 @@
 import React, { useCallback, useRef } from 'react';
-import { LeftOutlined, CalendarOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Dropdown, Form, Input, message, notification, Popover, Row, Typography } from 'antd';
+import {
+  LeftOutlined,
+  //  CalendarOutlined,
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+} from '@ant-design/icons';
+import { Button, Card, Col, Form, Input, message, notification, Popover, Row } from 'antd';
 import PrimaryButton from '../../../components/Button/Primary';
 import { createSearchParams, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import OutlinedButton from '../../..//components/Button/Outlined';
@@ -9,12 +14,10 @@ import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import './addUser.css';
 import i18n from 'i18next';
-import { DownOutlined } from '@ant-design/icons';
 import {
   useCurrentUserLeaveCalendarMutation,
   useLazyGetAllUsersQuery,
   useLazyGetCurrentUserQuery,
-  // useDeleteUserMutation,
   useLazyGetUserByIdQuery,
   useUpdateCurrentUserMutation,
   useUpdateUserByIdMutation,
@@ -22,12 +25,11 @@ import {
 import AuthenticationInput from '../../../components/Input/Common/AuthenticationInput';
 import { userLanguages } from '../../../constants/userLanguagesÏ';
 import { useState, useEffect } from 'react';
-import { userRoles, userRolesWithTranslation } from '../../../constants/userRoles';
+import { userRoles } from '../../../constants/userRoles';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearUser, getUserDetails, setUser } from '../../../redux/reducer/userSlice';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useOutletContext } from 'react-router-dom';
-import CalendarSelect from '../../../components/List/User/CalenderSelect/CalendarSelect';
 import ChangePassword from '../../../components/Modal/ChangePassword/ChangePassword';
 import { useInviteUserMutation } from '../../../services/invite';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
@@ -38,6 +40,9 @@ import { PathName } from '../../../constants/pathName';
 import { userActivityStatus } from '../../../constants/userActivityStatus';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { setReloadCalendar } from '../../../redux/reducer/selectedCalendarSlice';
+import CalendarAccordion from '../../../components/Accordion/CalendarAccordion';
+import { removeObjectArrayDuplicates } from '../../../utils/removeObjectArrayDuplicates';
+import Select from '../../../components/Select';
 
 const AddUser = () => {
   const navigate = useNavigate();
@@ -75,14 +80,14 @@ const AddUser = () => {
     phoneNumber: '',
     email: '',
     userType: '',
-    languagePreference: { key: '', label: '' },
+    languagePreference: '',
   });
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [userSearchKeyword, setUserSearchKeyword] = useState('');
   const [userSearchData, setUserSearchData] = useState([]);
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
+  const calendar = user?.roles?.filter((calendar) => {
+    return calendar?.calendarId === calendarId;
   });
 
   const [getUser, { isFetching: isUserFetching }] = useLazyGetUserByIdQuery({ sessionId: timestampRef });
@@ -92,13 +97,12 @@ const AddUser = () => {
     currentUserLeaveCalendar,
     // { isSuccess: isCurrentUserLeaveCalendarSuccess, isError: isCurrentUserLeaveCalendarError },
   ] = useCurrentUserLeaveCalendarMutation();
-  // const [deleteUser] = useDeleteUserMutation();
   const [inviteUser] = useInviteUserMutation();
   const [updateUserById] = useUpdateUserByIdMutation();
-  const [updateCurrentUser] = useUpdateCurrentUserMutation();
   const [getCurrentUserDetails, { isFetching: isCurrentUserFetching }] = useLazyGetCurrentUserQuery({
     sessionId: timestampRef,
   });
+  const [updateCurrentUser] = useUpdateCurrentUserMutation();
 
   useEffect(() => {
     if (userId !== user?.id) {
@@ -112,14 +116,21 @@ const AddUser = () => {
       getUser({ userId, calendarId })
         .unwrap()
         .then((response) => {
-          const activeCalendars = response?.roles.filter((r) => {
+          const activeCalendars = response?.roles?.filter((r) => {
             return r.status == userActivityStatus[0].key;
           });
-          setSelectedCalendars(activeCalendars);
+          setSelectedCalendars(
+            activeCalendars
+              ?.map((calendar) => ({
+                ...calendar,
+                disabled: calendarId === calendar?.calendarId ? false : true,
+              }))
+              .sort((a, b) => a.disabled - b.disabled),
+          );
           const requiredRole = response?.roles.filter((r) => {
             return r.calendarId === calendarId;
           });
-          const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
+          // const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
 
           setUserData({
             firstName: response?.firstName,
@@ -127,10 +138,7 @@ const AddUser = () => {
             phoneNumber: response?.phoneNumber,
             email: response?.email,
             userType: requiredRole[0]?.role,
-            languagePreference: {
-              key: response.interfaceLanguage,
-              label: selectedLanguage?.label ? selectedLanguage?.label : '',
-            },
+            languagePreference: response.interfaceLanguage,
             calendars: response.roles,
             ...response,
           });
@@ -142,24 +150,41 @@ const AddUser = () => {
           const activeCalendars = response?.roles.filter((r) => {
             return r.status == userActivityStatus[0].key;
           });
-          setSelectedCalendars(activeCalendars);
+          setSelectedCalendars(
+            activeCalendars
+              ?.map((calendar) => ({
+                ...calendar,
+                disabled: false,
+              }))
+              .sort((a, b) => a.disabled - b.disabled),
+          );
           const requiredRole = response?.roles.filter((r) => {
             return r.calendarId === calendarId;
           });
-          const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
+          // const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
           setUserData({
             firstName: response?.firstName,
             lastName: response?.lastName,
             phoneNumber: response?.phoneNumber,
             email: response?.email,
             userType: requiredRole[0]?.role,
-            languagePreference: {
-              key: response.interfaceLanguage,
-              label: selectedLanguage?.label ? selectedLanguage?.label : '',
-            },
+            languagePreference: response.interfaceLanguage,
             calendars: response.roles,
             ...response,
           });
+        });
+    } else if (!userId) {
+      getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
+        .unwrap()
+        .then((response) => {
+          setSelectedCalendars(
+            response?.roles
+              .map((calendar) => ({
+                ...calendar,
+                disabled: calendarId === calendar?.calendarId ? false : true,
+              }))
+              .sort((a, b) => a.disabled - b.disabled),
+          );
         });
     } else if (location.state?.data) {
       setSearchParams(createSearchParams({ id: location.state.data.id }));
@@ -173,7 +198,7 @@ const AddUser = () => {
         lastName: userData.lastName,
         phoneNumber: userData.phoneNumber,
         email: userData.email,
-        userType: userData.userType,
+        // userType: userData.userType,
         languagePreference: userData.languagePreference,
       });
     }
@@ -191,13 +216,44 @@ const AddUser = () => {
 
   const onSearchCardClick = (item) => {
     setUserSearchKeyword(item?.firstName);
-    setUserData({
-      ...userData,
-      firstName: item?.firstName,
-      lastName: item?.lastName,
-      phoneNumber: item?.phoneNumber,
-      email: item?.email,
-    });
+    getUser({ userId: item?._id, calendarId })
+      .unwrap()
+      .then((response) => {
+        let activeCalendars = response?.roles.filter((r) => {
+          return r.status == userActivityStatus[0].key;
+        });
+        const currentCalendarRole = {
+          calendarId: currentCalendarData?.id,
+          image: currentCalendarData?.image,
+          name: currentCalendarData?.name,
+          role: userRoles.GUEST,
+        };
+        activeCalendars = [...activeCalendars, currentCalendarRole];
+        activeCalendars = removeObjectArrayDuplicates(activeCalendars, 'calendarId');
+
+        setSelectedCalendars(
+          activeCalendars
+            ?.map((calendar) => ({
+              ...calendar,
+              disabled: calendarId === calendar?.calendarId ? false : true,
+            }))
+            .sort((a, b) => a.disabled - b.disabled),
+        );
+
+        setUserData({
+          firstName: response?.firstName,
+          lastName: response?.lastName,
+          phoneNumber: response?.phoneNumber,
+          email: response?.email,
+          // userType: requiredRole[0]?.role,
+          // languagePreference: {
+          languagePreference: response.interfaceLanguage,
+          // label: selectedLanguage?.label ? selectedLanguage?.label : '',
+          // },
+          calendars: response.roles,
+          ...response,
+        });
+      });
   };
 
   const adminCheckHandler = () => {
@@ -210,13 +266,19 @@ const AddUser = () => {
       formInstance
         .validateFields()
         .then((values) => {
+          let organizations = values?.organizers[calendarId];
+          organizations = organizations?.map((organizer) => {
+            return { entityId: organizer?.value };
+          });
+          let userType = values?.userType[calendarId];
           inviteUser({
             firstName: values.firstName?.trim(),
             lastName: values.lastName?.trim(),
             email: values.email,
-            role: values.userType,
-            language: values?.languagePreference?.key,
+            role: userType,
+            language: values?.languagePreference,
             calendarId,
+            organizationIds: organizations,
           }).then((res) => {
             if (res?.data?.statusCode == 202) {
               notification.success({
@@ -241,145 +303,193 @@ const AddUser = () => {
             duration: 3,
           });
         });
-    }
-    if (isCurrentUser) {
-      formInstance
-        .validateFields()
-        .then((values) => {
-          updateCurrentUser({
-            calendarId,
-            body: {
-              firstName: values?.firstName?.trim(),
-              lastName: values?.lastName?.trim(),
-              email: values?.email,
-              interfaceLanguage: values?.languagePreference?.key,
-            },
-          })
-            .unwrap()
-            .then((response) => {
-              if (response?.statusCode == 202) {
-                i18n.changeLanguage(values?.languagePreference?.key?.toLowerCase());
-                getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
-                  .unwrap()
-                  .then((response) => {
-                    const requiredRole = response?.roles.filter((r) => {
-                      return r.calendarId === calendarId;
-                    });
-                    const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
-
-                    setUserData({
-                      firstName: response?.firstName,
-                      lastName: response?.lastName,
-                      phoneNumber: response?.phoneNumber,
-                      email: response?.email,
-                      userType: requiredRole[0]?.role,
-                      userName: response?.userName,
-                      languagePreference: { key: response.interfaceLanguage, label: selectedLanguage },
-                      calendars: response.roles,
-                    });
-                  });
-                notification.success({
-                  description: t('dashboard.userProfile.notification.profileUpdate'),
-                  placement: 'top',
-                  closeIcon: <></>,
-                  maxCount: 1,
-                  duration: 3,
-                });
-                let userDetails = {
-                  accessToken,
-                  expiredTime,
-                  refreshToken,
-                  user: {
-                    id: user?.id,
-                    firstName: values?.firstName?.trim(),
-                    lastName: values?.lastName?.trim(),
-                    email: values?.email,
-                    profileImage: user?.profileImage,
-                    roles: user?.roles,
-                    isSuperAdmin: user?.isSuperAdmin,
-                    userName: user?.userName,
-                    interfaceLanguage: values?.languagePreference?.key,
-                  },
-                };
-                dispatch(setUser(userDetails));
-
-                navigate(-1);
-              }
-            })
-            .catch((error) => {
-              message.warning({
-                duration: 10,
-                maxCount: 1,
-                key: 'udpate-user-warning',
-                content: (
-                  <>
-                    {error?.data?.message} &nbsp;
-                    <Button
-                      type="text"
-                      icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                      onClick={() => message.destroy('udpate-user-warning')}
-                    />
-                  </>
-                ),
-                icon: <ExclamationCircleOutlined />,
-              });
-            });
-        })
-        .catch((error) => {
-          console.log(error);
-        });
     } else if (userId) {
       formInstance
         .validateFields()
         .then((values) => {
-          updateUserById({
-            id: userId,
-            calendarId,
-            body: {
-              firstName: values.firstName?.trim(),
-              lastName: values.lastName?.trim(),
-              email: values.email,
-              interfaceLanguage: values?.languagePreference?.key,
-              modifyRole: {
-                userId: userId,
-                role: values.userType,
-                calendarId,
+          let organizations = values?.organizers[calendarId];
+          organizations = organizations?.map((organizer) => {
+            return { entityId: organizer?.value };
+          });
+          let userType = values?.userType[calendarId];
+          if (isCurrentUser && adminCheckHandler() == false) {
+            updateCurrentUser({
+              calendarId,
+              body: {
+                firstName: values?.firstName?.trim(),
+                lastName: values?.lastName?.trim(),
+                email: values?.email,
+                interfaceLanguage: values?.languagePreference,
               },
-            },
-          })
-            .unwrap()
-            .then((res) => {
-              notification.success({
-                description: t(`dashboard.settings.addUser.notification.updateUser`),
-                key: res.message,
-                placement: 'top',
-                closeIcon: <></>,
-                maxCount: 1,
-                duration: 3,
-              });
-              navigate(-2);
             })
-            .catch((error) => {
-              console.log(error);
-              message.warning({
-                duration: 10,
-                maxCount: 1,
-                key: 'udpate-user-warning',
-                content: (
-                  <>
-                    {error?.data?.message} &nbsp;
-                    <Button
-                      type="text"
-                      icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                      onClick={() => message.destroy('udpate-user-warning')}
-                    />
-                  </>
-                ),
-                icon: <ExclamationCircleOutlined />,
-              });
-            });
-        })
+              .unwrap()
+              .then((response) => {
+                if (response?.statusCode == 202) {
+                  i18n.changeLanguage(values?.languagePreference?.toLowerCase());
+                  getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
+                    .unwrap()
+                    .then((response) => {
+                      const requiredRole = response?.roles.filter((r) => {
+                        return r.calendarId === calendarId;
+                      });
 
+                      setUserData({
+                        firstName: response?.firstName,
+                        lastName: response?.lastName,
+                        phoneNumber: response?.phoneNumber,
+                        email: response?.email,
+                        userType: requiredRole[0]?.role,
+                        userName: response?.userName,
+                        languagePreference: response.interfaceLanguage,
+                        calendars: response.roles,
+                      });
+                      let userDetails = {
+                        accessToken,
+                        expiredTime,
+                        refreshToken,
+                        user: {
+                          id: response?.id,
+                          firstName: response?.firstName,
+                          lastName: response?.lastName,
+                          email: response?.email,
+                          profileImage: response?.profileImage,
+                          roles: response?.roles,
+                          isSuperAdmin: response?.isSuperAdmin ? true : false,
+                          userName: response?.userName,
+                          interfaceLanguage: response?.languagePreference,
+                        },
+                      };
+                      dispatch(setUser(userDetails));
+                    });
+                  notification.success({
+                    description: t('dashboard.userProfile.notification.profileUpdate'),
+                    placement: 'top',
+                    closeIcon: <></>,
+                    maxCount: 1,
+                    duration: 3,
+                  });
+
+                  navigate(-1);
+                }
+              })
+              .catch((error) => {
+                message.warning({
+                  duration: 10,
+                  maxCount: 1,
+                  key: 'udpate-user-warning',
+                  content: (
+                    <>
+                      {error?.data?.message} &nbsp;
+                      <Button
+                        type="text"
+                        icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                        onClick={() => message.destroy('udpate-user-warning')}
+                      />
+                    </>
+                  ),
+                  icon: <ExclamationCircleOutlined />,
+                });
+              });
+          } else if (adminCheckHandler()) {
+            updateUserById({
+              id: userId,
+              calendarId,
+              body: {
+                firstName: values.firstName?.trim(),
+                lastName: values.lastName?.trim(),
+                email: values.email,
+                interfaceLanguage: values?.languagePreference,
+                modifyRole: {
+                  userId: userId,
+                  role: userType,
+                  calendarId,
+                  organizations,
+                },
+              },
+            })
+              .unwrap()
+              .then((res) => {
+                if (isCurrentUser) {
+                  i18n.changeLanguage(values?.languagePreference?.toLowerCase());
+                  getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
+                    .unwrap()
+                    .then((response) => {
+                      const requiredRole = response?.roles.filter((r) => {
+                        return r.calendarId === calendarId;
+                      });
+                      // const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
+
+                      setUserData({
+                        firstName: response?.firstName,
+                        lastName: response?.lastName,
+                        phoneNumber: response?.phoneNumber,
+                        email: response?.email,
+                        userType: requiredRole?.length > 0 && requiredRole[0]?.role,
+                        userName: response?.userName,
+                        languagePreference: response.interfaceLanguage,
+                        calendars: response.roles,
+                      });
+                      notification.success({
+                        description: t(`dashboard.settings.addUser.notification.updateUser`),
+                        key: res.message,
+                        placement: 'top',
+                        closeIcon: <></>,
+                        maxCount: 1,
+                        duration: 3,
+                      });
+                      let userDetails = {
+                        accessToken,
+                        expiredTime,
+                        refreshToken,
+                        user: {
+                          id: response?.id,
+                          firstName: response?.firstName,
+                          lastName: response?.lastName,
+                          email: response?.email,
+                          profileImage: response?.profileImage,
+                          roles: response?.roles,
+                          isSuperAdmin: response?.isSuperAdmin ? true : false,
+                          userName: response?.userName,
+                          interfaceLanguage: response?.languagePreference,
+                        },
+                      };
+                      dispatch(setUser(userDetails));
+
+                      navigate(-2);
+                    });
+                } else {
+                  notification.success({
+                    description: t(`dashboard.settings.addUser.notification.updateUser`),
+                    key: res.message,
+                    placement: 'top',
+                    closeIcon: <></>,
+                    maxCount: 1,
+                    duration: 3,
+                  });
+                  navigate(-2);
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+                message.warning({
+                  duration: 10,
+                  maxCount: 1,
+                  key: 'udpate-user-warning',
+                  content: (
+                    <>
+                      {error?.data?.message} &nbsp;
+                      <Button
+                        type="text"
+                        icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                        onClick={() => message.destroy('udpate-user-warning')}
+                      />
+                    </>
+                  ),
+                  icon: <ExclamationCircleOutlined />,
+                });
+              });
+          }
+        })
         .catch((errors) => {
           console.error('Validation errors:', errors);
         });
@@ -390,24 +500,12 @@ const AddUser = () => {
     setUserData({ ...userData, [fieldType]: value });
   };
 
-  const getUserTypeLabelFromKey = (key) => {
-    if (userData?.isSuperAdmin) {
-      return t('dashboard.settings.userManagement.superAdmin');
-    }
-
-    const label = userRolesWithTranslation.filter((u) => u.key == key);
-    return label[0]?.label;
-  };
-
   const searchHandlerUserSearch = (value) => {
     value != ''
       ? getUserSearch({ includeCalenderFilter: false, calendarId, query: value, page: 1, limit: 10, filters: '' })
           .unwrap()
           .then((res) => {
             setUserSearchData(res);
-            // if (res?.data.length > 0) {
-            //   setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: true });
-            // }
           })
       : setUserSearchData([]);
   };
@@ -483,10 +581,6 @@ const AddUser = () => {
           {
             name: ['email'],
             value: userData.email,
-          },
-          {
-            name: ['userType'],
-            value: userData.userType,
           },
           { name: ['languagePreference'], value: userData.languagePreference },
         ]}>
@@ -717,46 +811,6 @@ const AddUser = () => {
                     </Form.Item>
 
                     <Form.Item
-                      data-cy="form-item-user-usertype-title"
-                      name="userType"
-                      required
-                      label={t('dashboard.settings.addUser.userType')}
-                      rules={[
-                        {
-                          validator: (_, value) =>
-                            validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.userType')),
-                        },
-                      ]}>
-                      <Row>
-                        <Col flex={'423px'}>
-                          <Dropdown
-                            data-cy="dropdown-user-usertype"
-                            overlayClassName="add-user-form-field-dropdown-wrapper"
-                            getPopupContainer={(trigger) => trigger.parentNode}
-                            overlayStyle={{ minWidth: '100%' }}
-                            disabled={!adminCheckHandler() || userData?.isSuperAdmin}
-                            menu={{
-                              items: userRolesWithTranslation,
-                              selectable: true,
-                              onSelect: ({ selectedKeys }) => {
-                                setFormItemValues({ value: selectedKeys[0], fieldType: 'userType' });
-                              },
-                            }}
-                            trigger={['click']}>
-                            <div>
-                              <Typography.Text data-cy="typography-user-usertype">
-                                {userData?.userType !== ''
-                                  ? getUserTypeLabelFromKey(userData?.userType)
-                                  : t('dashboard.settings.addUser.placeHolder.userType')}
-                              </Typography.Text>
-                              <DownOutlined style={{ fontSize: '16px' }} />
-                            </div>
-                          </Dropdown>
-                        </Col>
-                      </Row>
-                    </Form.Item>
-
-                    <Form.Item
                       data-cy="form-item-user-language-title"
                       name="languagePreference"
                       required
@@ -764,44 +818,10 @@ const AddUser = () => {
                       rules={[
                         {
                           validator: (_, value) =>
-                            validateNotEmpty(_, value?.key, t('dashboard.settings.addUser.validationTexts.language')),
+                            validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.language')),
                         },
                       ]}>
-                      <Row>
-                        <Col flex={'423px'}>
-                          <Dropdown
-                            data-cy="dropdown-user-language"
-                            overlayClassName="add-user-form-field-dropdown-wrapper"
-                            getPopupContainer={(trigger) => trigger.parentNode}
-                            overlayStyle={{
-                              minWidth: '100%',
-                            }}
-                            menu={{
-                              items: userLanguages,
-                              selectable: true,
-                              onSelect: ({ selectedKeys }) => {
-                                const selectedLanguage = userLanguages.find((item) => item.key === selectedKeys[0]);
-                                setFormItemValues({
-                                  value: {
-                                    key: selectedKeys[0],
-                                    label: selectedLanguage.label,
-                                  },
-                                  fieldType: 'languagePreference',
-                                });
-                              },
-                            }}
-                            trigger={['click']}>
-                            <div>
-                              <Typography.Text data-cy="typography-user-language">
-                                {userData?.languagePreference?.label !== ''
-                                  ? userData?.languagePreference?.label
-                                  : t('dashboard.settings.addUser.placeHolder.language')}
-                              </Typography.Text>
-                              <DownOutlined style={{ fontSize: '16px' }} />
-                            </div>
-                          </Dropdown>
-                        </Col>
-                      </Row>
+                      <Select options={userLanguages} data-cy="select-user-language" />
                     </Form.Item>
 
                     {isCurrentUser && (
@@ -822,7 +842,7 @@ const AddUser = () => {
                 </Row>
               </Card>
             </Col>
-            {userId && selectedCalendars?.length > 0 && (
+            {selectedCalendars?.length > 0 && (
               <Col span={24}>
                 <Row>
                   <Col flex={'780px'}>
@@ -837,47 +857,30 @@ const AddUser = () => {
                           <Row gutter={[0, 4]}>
                             <Col flex={'423px'}>
                               <Col>
-                                {selectedCalendars?.length > 0 &&
-                                  selectedCalendars.map(
-                                    (item, index) =>
-                                      item.status == userActivityStatus[0].key && (
-                                        <CalendarSelect
-                                          data-cy="selected-calendars"
-                                          key={index}
-                                          icon={
-                                            item?.image ? (
-                                              <div className="image-container">
-                                                <img src={item?.image.uri} />
-                                              </div>
-                                            ) : (
-                                              <div className="icon-container">
-                                                <CalendarOutlined style={{ color: '#607EFC', fontSize: '21px' }} />
-                                              </div>
-                                            )
-                                          }
-                                          name={contentLanguageBilingual({
-                                            en: item?.name?.en,
-                                            fr: item?.name?.fr,
-                                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                            calendarContentLanguage: calendarContentLanguage,
-                                          })}
-                                          currentUser={isCurrentUser}
-                                          itemWidth="100%"
-                                          calendarContentLanguage={calendarContentLanguage}
-                                          selectedCalendars={selectedCalendars}
-                                          calenderItem={item}
-                                          setSelectedCalendars={setSelectedCalendars}
-                                          bordered
-                                          closable
-                                          userId={userId}
-                                          isRoleOptionHidden={userId || isCurrentUser ? true : false}
-                                          isCurrentUser
-                                          onButtonClick={() => {
-                                            removeCalendarHandler({ item, index });
-                                          }}
-                                        />
-                                      ),
-                                  )}
+                                <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
+                                  {selectedCalendars?.map((calendar, index) => (
+                                    <CalendarAccordion
+                                      form={formInstance}
+                                      data-cy="accordion-selected-calendars"
+                                      key={index}
+                                      selectedCalendarId={calendar?.calendarId}
+                                      name={contentLanguageBilingual({
+                                        en: calendar?.name?.en,
+                                        fr: calendar?.name?.fr,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        calendarContentLanguage: calendarContentLanguage,
+                                      })}
+                                      role={calendar?.role}
+                                      readOnly={adminCheckHandler() ? false : true}
+                                      disabled={calendar?.disabled}
+                                      organizationIds={calendar?.organizations}
+                                      isCurrentUser={isCurrentUser}
+                                      removeCalendarHandler={() => {
+                                        removeCalendarHandler({ item: calendar, index });
+                                      }}
+                                    />
+                                  ))}
+                                </div>
                               </Col>
                             </Col>
                           </Row>
