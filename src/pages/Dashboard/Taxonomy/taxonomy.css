@@ -112,6 +112,10 @@
   margin-right: 8px;
 }
 
+.taxonomy-listing-wrapper .event-list-item-wrapper {
+  gap: 14px;
+}
+
 @media only screen and (max-width: 428px) {
   .taxonomy-listing-wrapper .events-heading-wrapper .events-heading {
     font-size: 24px;
