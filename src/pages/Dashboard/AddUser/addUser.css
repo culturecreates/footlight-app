@@ -124,4 +124,32 @@
 
 .add-user-wrapper .calendar-search .ant-list-item-meta {
   align-items: center !important;
+  width: 100%;
+}
+
+@media screen and (max-width: 480px) {
+  .add-user-wrapper .card-heading-container h5 {
+    font-size: 20px;
+  }
+
+  .add-user-wrapper .ant-input-lg,
+  .add-user-wrapper .ant-select-selection-item,
+  .add-user-wrapper .select-wrapper-dropdown {
+    font-size: 12px;
+  }
+
+  .add-user-wrapper .selection-item-list-wrapper .ant-list-item-meta-content {
+    width: fit-content;
+  }
+
+  .add-user-wrapper .selection-item-list-wrapper .ant-list-item-action {
+    margin: 8px 0px;
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .add-user-wrapper .selection-item-list-wrapper {
+    flex-direction: column;
+  }
 }

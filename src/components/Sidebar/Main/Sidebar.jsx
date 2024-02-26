@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { clearSessionStoredSearchQueries } from '../../../utils/clearSessionStoredSearchQueries';
 import { calendarModes } from '../../../constants/calendarModes';
+import { userRoles } from '../../../constants/userRoles';
 
 const { Sider } = Layout;
 
@@ -28,9 +29,18 @@ function Sidebar(props) {
   const [selectedKey, setSelectedKey] = useState([]);
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
+  const calendar = user?.roles.filter((calendar) => {
+    return calendar.calendarId === calendarId;
+  });
+
+  const adminCheckHandler = () => {
+    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
+    else return false;
+  };
+
   const items = sidebarItems.map((item, index) => {
     const key = String(index + 1);
-    return {
+    const itemJson = {
       key: key,
       icon: item.icon,
       label: t(item.name),
@@ -38,6 +48,9 @@ function Sidebar(props) {
       path: item.path,
       disabled: item.disabled,
     };
+    if (item.adminOnly) {
+      if (adminCheckHandler()) return itemJson;
+    } else return itemJson;
   });
 
   const selectedCalendar = (id, uri, label = '') => {
