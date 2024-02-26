@@ -213,6 +213,7 @@ function AddEvent() {
     let dateTime = moment.tz(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a', 'Canada/Eastern');
     return dateTime.toISOString();
   };
+
   let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === 'ArtsdataIdentifier');
 
   const calendar = user?.roles.filter((calendar) => {
@@ -820,7 +821,7 @@ function AddEvent() {
               }
               onClick={(e) => {
                 if (eventData?.publishState === eventPublishState.PENDING_REVIEW)
-                  ({ event: e, publishState: eventPublishState.DRAFT });
+                  reviewPublishHandler({ event: e, publishState: eventPublishState.DRAFT });
                 else saveAsDraftHandler(e);
               }}
               data-cy="button-save-event"
