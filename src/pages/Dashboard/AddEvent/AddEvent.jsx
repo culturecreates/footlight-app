@@ -213,6 +213,7 @@ function AddEvent() {
     let dateTime = moment.tz(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a', 'Canada/Eastern');
     return dateTime.toISOString();
   };
+
   let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === 'ArtsdataIdentifier');
 
   const calendar = user?.roles.filter((calendar) => {
