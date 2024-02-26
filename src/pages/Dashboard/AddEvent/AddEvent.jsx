@@ -473,6 +473,7 @@ function AddEvent() {
               ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote?.trim() }),
             };
           }
+
           if (values?.keywords?.length > 0) {
             keywords = values?.keywords;
           }
