@@ -820,7 +820,7 @@ function AddEvent() {
               }
               onClick={(e) => {
                 if (eventData?.publishState === eventPublishState.PENDING_REVIEW)
-                  ({ event: e, publishState: eventPublishState.DRAFT });
+                  reviewPublishHandler({ event: e, publishState: eventPublishState.DRAFT });
                 else saveAsDraftHandler(e);
               }}
               data-cy="button-save-event"
