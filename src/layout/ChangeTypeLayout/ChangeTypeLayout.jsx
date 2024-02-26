@@ -3,11 +3,11 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Popover } from 'antd';
 import './changeTypeLayout.css';
 
-const ChangeTypeLayout = ({ children }) => {
+const ChangeTypeLayout = ({ children, ...props }) => {
   return (
     <>
       {children && (
-        <div className="floating-modal-wrapper">
+        <div className="floating-modal-wrapper" {...props}>
           <Popover
             content={children}
             autoAdjustOverflow={false}
@@ -20,7 +20,11 @@ const ChangeTypeLayout = ({ children }) => {
           </Popover>
         </div>
       )}
-      {children && <div className="aside-content-wrapper">{children}</div>}
+      {children && (
+        <div className="aside-content-wrapper" {...props}>
+          {children}
+        </div>
+      )}
     </>
   );
 };
