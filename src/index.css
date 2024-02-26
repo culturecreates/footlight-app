@@ -48,3 +48,10 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #1b3de6;
 }
+
+@media screen and (max-width: 480px) {
+  .ant-pagination {
+    display: flex;
+    justify-content: center;
+  }
+}

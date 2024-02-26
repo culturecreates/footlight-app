@@ -211,7 +211,7 @@ function Users() {
               </Col>
             </Row>
           </Col>
-          <CardEvent required={true}>
+          <CardEvent required={true} marginResponsive="0px">
             <Form
               name="userEdit"
               className="user-edit-form"
@@ -302,6 +302,7 @@ function Users() {
               </Form.Item>
               <CustomModal
                 maskClosable
+                className="change-password-modal"
                 title={
                   <div className="custom-modal-title-wrapper">
                     <span className="custom-modal-title-heading" data-cy="span-change-password">
@@ -311,8 +312,9 @@ function Users() {
                 }
                 open={isModalVisible}
                 onCancel={handleModalCancel}
-                width={500}
+                style={{ maxWidth: '500px', padding: '16px' }}
                 centered
+                width="100%"
                 footer={[
                   <TextButton
                     data-cy="button-user-change-password-cancel"

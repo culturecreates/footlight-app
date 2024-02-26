@@ -164,3 +164,45 @@
   height: 32px;
   width: 68px;
 }
+
+@media screen and (max-width: 480px) {
+  .widget-settings-wrapper .heading {
+    font-size: 20px;
+  }
+
+  .widget-settings .widget-settings-form .ant-form-item-label label,
+  .widget-settings .widget-settings-form .ant-input-lg,
+  .widget-settings .page-description,
+  .widget-settings .ant-select-selector .ant-select-selection-placeholder,
+  .widget-settings .select-wrapper-dropdown .ant-select-item-option,
+  .widget-settings .widget-settings-code-container > span {
+    font-size: 12px;
+  }
+
+  .widget-settings .tags-wrapper {
+    font-size: 10px;
+  }
+
+  .widget-settings .ant-form-item {
+    margin-bottom: 16px;
+  }
+
+  .widget-settings .react-colorful {
+    width: 150px;
+    height: 150px;
+  }
+
+  .widget-settings .widget-settings-code-container .outlined-label {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0em;
+    text-align: center;
+    margin-left: 0px;
+  }
+
+  .widget-settings .widget-settings-code-container .outlined-button {
+    height: 32px;
+    width: 68px;
+  }
+}
