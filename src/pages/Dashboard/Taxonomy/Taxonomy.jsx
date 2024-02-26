@@ -2,7 +2,7 @@ import { Badge, Button, Checkbox, Col, Dropdown, Grid, List, Row, Space } from '
 import i18next from 'i18next';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { createSearchParams, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import NoContent from '../../../components/NoContent/NoContent';
@@ -31,6 +31,7 @@ import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox/SearchableCheckbox';
 import { useLazyGetEntityDependencyQuery } from '../../../services/entities';
+import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
 
 const Taxonomy = () => {
   const { useBreakpoint } = Grid;
@@ -51,6 +52,7 @@ const Taxonomy = () => {
   ] = useOutletContext();
   setContentBackgroundColor('#fff');
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [getAllTaxonomy, { currentData: allTaxonomy, isFetching: isTaxonomyFetching }] = useLazyGetAllTaxonomyQuery({
     sessionId: timestampRef,
@@ -226,6 +228,12 @@ const Taxonomy = () => {
     if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
     else return false;
   };
+
+  useEffect(() => {
+    if (user && calendar.length > 0) {
+      !adminCheckHandler() && dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Not Authorized' }));
+    }
+  }, [user, calendar]);
 
   return (
     <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
