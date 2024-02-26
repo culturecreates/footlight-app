@@ -289,7 +289,7 @@ const UserManagement = () => {
   const createTitleHandler = (firstName, lastName, userName) => {
     return (
       <div className="title-wrapper">
-        <span>{firstName + ' ' + lastName}</span>
+        <span className="name">{firstName + ' ' + lastName}</span>
         <img src={bulletIcon} />
         <Username userName={userName} />
       </div>

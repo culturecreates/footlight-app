@@ -16,6 +16,15 @@
   line-height: 24px;
 }
 
+.settings-wrapper .title-wrapper > .name {
+  overflow-wrap: anywhere;
+}
+
+.settings-wrapper .title-wrapper .event-list-status-userdetail {
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
 .settings-wrapper .users-list-item-wrapper .invitation-details {
   display: flex;
   gap: 6px;
