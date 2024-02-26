@@ -1,4 +1,4 @@
-import { Col, Divider, Row, Form, Checkbox, Empty } from 'antd';
+import { Col, Divider, Row, Form, Checkbox, Empty, Grid } from 'antd';
 import React, { useEffect, useState } from 'react';
 import Calendar from 'rc-year-calendar';
 import 'rc-year-calendar/locales/rc-year-calendar.fr';
@@ -23,6 +23,8 @@ import TimePickerStyled from '../../TimePicker/TimePicker';
 import i18n from 'i18next';
 import { subEventsCountHandler } from '../../../utils/subEventsCountHandler';
 import { pluralize } from '../../../utils/pluralise';
+
+const { useBreakpoint } = Grid;
 
 const RecurringModal = ({
   isModalVisible,
@@ -52,6 +54,8 @@ const RecurringModal = ({
   const [form] = Form.useForm();
   const startTimeCustomWatch = Form.useWatch('startTimeCustom', form);
   const endTimeCustomWatch = Form.useWatch('endTimeCustom', form);
+
+  const screens = useBreakpoint();
 
   const iconcolor = {
     color: '#1B3DE6',
@@ -280,7 +284,7 @@ const RecurringModal = ({
       ]}
       bodyStyle={{ padding: '0px' }}>
       <Row>
-        <Col style={{ padding: '24px' }}>
+        <Col style={!screens.sm ? { padding: '16px' } : { padding: '24px' }}>
           {/* <MultipleDatePicker /> */}
           {isModalVisible && (
             <Calendar
