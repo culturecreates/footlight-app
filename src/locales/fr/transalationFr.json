@@ -943,6 +943,38 @@
           "place": "Sélectionner un lieu",
           "OrganizationsAndPeople": "Recherchez des Organisations ou des Personnes"
         }
+      },
+      "calendarSettings": {
+        "generalSettings": "Paramètres généraux",
+        "setUpCalendarDescription": "Configurez l'affichage de votre calendrier.",
+        "calendarName": "Calendar name",
+        "calendarLanguage": "Langue du calendrier",
+        "timezone": "Fuseau horaire",
+        "contact": "Contact",
+        "dateFormat": "Format d'affichage des dates",
+        "imageAspectRatio": {
+          "imageAspectRatio": "Formats des image",
+          "thumbnail": "Vignette",
+          "large": "Grande image"
+        },
+        "imageMaxWidth": {
+          "imageMaxWidth": "Image maximum width",
+          "thumbnail": "Vignette",
+          "large": "Grande image"
+        },
+        "calendarLogo": "Calendar Logo",
+        "calendarWidgetSetup": "Configuration du widget calendrier",
+        "calendarWidgetDescription": "Ajoutez les modèles d'URL nécessaires au bon fonctionnement du widget calendrier. Ces modèles relient la liste des événements affichée sur d'autres sites web aux événements affichés sur votre site.",
+        "eventTemplate": "Modèle d'événement",
+        "eventTemplateDescription": "Ajoutez l'URL du modèle pour une page d'événement sur votre site web. Cette URL contient les espaces réservés nécessaires au widget calendrier.",
+        "searchResultTemplate": "Modèle de résultats de recherche",
+        "searchResultTemplateDescription": "Ajoutez l'URL du modèle pour une page de résultats de recherche sur votre site web. Cette URL contient les espaces réservés nécessaires au widget calendrier.",
+        "filterPersonalization": "Personnalisation des filtres",
+        "filterDescription": "Sélectionner les filtres pour les vues de listes dans le CMS Footlight.",
+        "events": "Événements",
+        "places": "Lieux",
+        "people": "Personnes",
+        "organizations": "Organisations"
       }
     },
     "taxonomy": {
