@@ -44,7 +44,7 @@ function ListItem(props) {
               <img
                 src={logo}
                 className="event-list-image"
-                style={{ height: '40px', width: '40px', objectFit: 'contain' }}
+                style={{ height: '40px', width: '40px', objectFit: 'cover' }}
                 data-cy="image-entity-logo"
               />
             </div>
