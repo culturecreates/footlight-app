@@ -417,8 +417,6 @@ const AddUser = () => {
                       const requiredRole = response?.roles.filter((r) => {
                         return r.calendarId === calendarId;
                       });
-                      // const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
-
                       setUserData({
                         firstName: response?.firstName,
                         lastName: response?.lastName,
