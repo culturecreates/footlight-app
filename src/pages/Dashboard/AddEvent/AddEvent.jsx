@@ -3972,9 +3972,9 @@ function AddEvent() {
                         style={{ width: '70%' }}
                         autoComplete="off"
                         placeholder={
-                          form.getFieldValue('ticketLinkType') == ticketLinkOptions[0].value
-                            ? t('dashboard.events.addEditEvent.tickets.placeHolderLinks')
-                            : t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderEmail')
+                          form.getFieldValue('ticketLinkType') == ticketLinkOptions[1].value
+                            ? t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderEmail')
+                            : t('dashboard.events.addEditEvent.tickets.placeHolderLinks')
                         }
                         data-cy="input-ticket-registration-link"
                       />
@@ -4038,9 +4038,9 @@ function AddEvent() {
                           style={{ width: '70%' }}
                           autoComplete="off"
                           placeholder={
-                            form.getFieldValue('ticketLinkType') == ticketLinkOptions[0].value
-                              ? t('dashboard.events.addEditEvent.tickets.placeHolderLinks')
-                              : t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderEmail')
+                            form.getFieldValue('ticketLinkType') == ticketLinkOptions[1].value
+                              ? t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderEmail')
+                              : t('dashboard.events.addEditEvent.tickets.placeHolderLinks')
                           }
                           data-cy="input-ticket-buy-link"
                         />
