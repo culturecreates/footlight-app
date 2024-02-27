@@ -779,6 +779,7 @@
       "heading": "Paramètres",
       "tab2": "Composante du module",
       "tab1": "Gestion des utilisateurs",
+      "tab3": "Paramètres du calendrier",
       "userManagement": {
         "searchPlaceholder": "Recherche d'utilisateurs",
         "sort": "Trier par",

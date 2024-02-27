@@ -10,6 +10,7 @@ import WidgetSettings from './WidgetSettings/WidgetSettings';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
 import { userRoles } from '../../../constants/userRoles';
+import CalendarSettings from './CalendarSettings';
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -63,6 +64,13 @@ const Settings = () => {
       label: t('dashboard.settings.tab2'),
       key: 'tab2',
       children: <WidgetSettings />,
+      disabled: false,
+      adminOnly: true,
+    },
+    {
+      label: t('dashboard.settings.tab3'),
+      key: 'tab3',
+      children: <CalendarSettings />,
       disabled: false,
       adminOnly: true,
     },
