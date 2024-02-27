@@ -692,7 +692,8 @@ const AddUser = () => {
                                               setIsPopoverOpen({ ...isPopoverOpen, searchUserFirstName: false });
                                               onSearchCardClick(item);
                                             }}>
-                                            <p>{item.firstName + ' ' + item.lastName}</p>
+                                            <p>{item?.firstName + ' ' + item?.lastName}</p>
+                                            <p>{item?.email}</p>
                                           </div>
                                         ))}
                                       </div>
