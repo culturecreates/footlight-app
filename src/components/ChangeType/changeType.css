@@ -3,6 +3,7 @@
   display: flex;
   gap: 8px;
   align-items: center;
+  padding: 4px 0px;
 }
 .change-type-wrapper .first-button {
   background: #eff2ff;
