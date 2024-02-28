@@ -21,35 +21,35 @@ const calendarLanguages = [
 
 const timeZones = [
   {
-    name: 'Canada/Newfoundland',
+    label: 'Canada/Newfoundland',
     value: 'Canada/Newfoundland',
   },
   {
-    name: 'Canada/Atlantic',
+    label: 'Canada/Atlantic',
     value: 'Canada/Atlantic',
   },
   {
-    name: 'Canada/Eastern',
+    label: 'Canada/Eastern',
     value: 'Canada/Eastern',
   },
   {
-    name: 'Canada/Central',
+    label: 'Canada/Central',
     value: 'Canada/Central',
   },
   {
-    name: 'Canada/Mountain',
+    label: 'Canada/Mountain',
     value: 'Canada/Mountain',
   },
   {
-    name: 'Canada/Saskatchewan',
+    label: 'Canada/Saskatchewan',
     value: 'Canada/Saskatchewan',
   },
   {
-    name: 'Canada/Yukon',
+    label: 'Canada/Yukon',
     value: 'Canada/Yukon',
   },
   {
-    name: 'Canada/Pacific',
+    label: 'Canada/Pacific',
     value: 'Canada/Pacific',
   },
 ];
