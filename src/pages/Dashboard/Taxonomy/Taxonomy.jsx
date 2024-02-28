@@ -254,7 +254,7 @@ const Taxonomy = () => {
       )}
       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="taxonomy-listing-wrapper ">
         <Col span={24}>
-          <Row justify="space-between" gutter={16} align="top">
+          <Row justify="space-between" gutter={16} align="top" style={{ marginBottom: 16 }}>
             <Col>
               <div className="events-heading-wrapper">
                 <h4 className="events-heading" data-cy="para-taxonomy-listing-heading">
