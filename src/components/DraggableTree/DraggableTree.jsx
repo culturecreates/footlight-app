@@ -338,7 +338,7 @@ const DraggableTree = ({
   return (
     <div className="draggable-tree">
       <LanguageFilter calendarContentLanguage={calendarContentLanguage}>
-        <Form.Item style={{ width: '50%' }} key={contentLanguage.ENGLISH}>
+        <Form.Item key={contentLanguage.ENGLISH}>
           <span className="tag-header" data-cy="span-taxonomy-concept-english-title">
             {t('dashboard.taxonomy.addNew.concepts.english')}
           </span>

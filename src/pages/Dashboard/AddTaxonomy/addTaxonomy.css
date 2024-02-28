@@ -107,7 +107,8 @@
   line-height: 24px;
   flex-direction: row-reverse;
   gap: 8px;
-  padding: 10px; /* Adjust the value according to your design */
+  padding: 8px 16px; /* Adjust the value according to your design */
+  height: 40px;
 }
 
 .add-taxonomy-wrapper .disabled-dropdown .ant-dropdown-trigger {
@@ -138,4 +139,67 @@
 
 .add-taxonomy-wrapper .ant-tree-switcher_close .ant-tree-switcher-icon svg {
   height: 16px !important;
+}
+
+.add-taxonomy-wrapper .add-event-section-col {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.add-taxonomy-wrapper .add-event-section-wrapper {
+  padding: 24px;
+}
+
+@media screen and (max-width: 480px) {
+  .add-taxonomy-wrapper .add-event-section-wrapper {
+    padding: 16px;
+  }
+
+  .add-taxonomy-wrapper .add-Taxonomy-heading > h4 {
+    font-size: 24px;
+  }
+
+  .add-taxonomy-wrapper .add-entity-label,
+  .ant-form-item-label > label,
+  .add-taxonomy-wrapper .field-description,
+  .add-taxonomy-wrapper .ant-select-lg,
+  .add-taxonomy-wrapper textarea.ant-input,
+  .add-taxonomy-wrapper .select-wrapper-dropdown .ant-select-item-option,
+  .add-taxonomy-wrapper .concept-card .text-concepts {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .add-taxonomy-wrapper .concept-card .heading-concepts {
+    font-size: 20px;
+  }
+
+  .add-taxonomy-wrapper .classType .ant-dropdown-trigger,
+  .add-taxonomy-wrapper .user-access .ant-dropdown-trigger {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .add-taxonomy-wrapper .searchable-checkbox-dropdown-wrapper .searchable-checkbox-dropdown-content {
+    margin-top: 0px;
+  }
+
+  .add-taxonomy-wrapper .searchable-checkbox-dropdown-wrapper .searchable-checkbox-dropdown-content .ant-form label {
+    font-size: 12px;
+  }
+
+  .add-taxonomy-wrapper .concept-card {
+    margin: 0px !important;
+  }
+
+  .add-taxonomy-wrapper .concept-card .ant-btn > span + .anticon {
+    margin-left: 0px;
+    font-size: 20px !important;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .add-taxonomy-wrapper .concept-card .outlined-button {
+    margin-bottom: 8px;
+  }
 }
