@@ -7,6 +7,10 @@
   font-weight: 600;
 }
 
+.add-organization-wrapper .events-search {
+  width: 100% !important;
+}
+
 @media screen and (max-width: 768px) {
   .add-organization-wrapper .responsive-view-control-class {
     position: absolute;
