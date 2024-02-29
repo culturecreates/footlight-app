@@ -94,7 +94,6 @@
 .draggable-tree .ant-tree.ant-tree-block-node .ant-tree-list-holder-inner .ant-tree-node-content-wrapper {
   flex: auto;
   color: var(--content-neutral-primary, #222732);
-  font-family: Roboto;
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
@@ -102,7 +101,6 @@
 }
 
 .draggable-tree .tag-header {
-  font-family: Roboto;
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
@@ -132,4 +130,24 @@
 
 .custom-common-modal-container .add-new-concept-wrapper .ant-form-item-label > label::after {
   display: none;
+}
+
+@media screen and (max-width: 480px) {
+  .draggable-tree .ant-tree.ant-tree-block-node .ant-tree-list-holder-inner .ant-tree-node-content-wrapper {
+    font-size: 10px;
+  }
+
+  .draggable-tree .ant-tree .anticon {
+    font-size: 18px;
+  }
+}
+
+@media screen and (max-width: 575px) {
+  .draggable-tree {
+    flex-direction: column;
+  }
+
+  .draggable-tree .tree-item {
+    border-right: solid 4px #eff2ff;
+  }
 }
