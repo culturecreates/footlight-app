@@ -421,7 +421,7 @@ function PersonReadOnly() {
                         style={{
                           width: '151px',
                           height: '151px',
-                          objectFit: 'cover',
+                          objectFit: 'contain',
                         }}
                         data-cy="image-person-original"
                       />

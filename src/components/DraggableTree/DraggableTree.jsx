@@ -338,7 +338,7 @@ const DraggableTree = ({
   return (
     <div className="draggable-tree">
       <LanguageFilter calendarContentLanguage={calendarContentLanguage}>
-        <Form.Item style={{ width: '50%' }} key={contentLanguage.ENGLISH}>
+        <Form.Item key={contentLanguage.ENGLISH}>
           <span className="tag-header" data-cy="span-taxonomy-concept-english-title">
             {t('dashboard.taxonomy.addNew.concepts.english')}
           </span>
@@ -407,6 +407,9 @@ const DraggableTree = ({
           data-cy="modal-taxonomy-concept"
           open={addNewPopup}
           destroyOnClose
+          afterClose={() => {
+            setForEditing(false);
+          }}
           centered
           title={
             <span className="quick-create-organization-modal-title" data-cy="span-taxonomy-concept-add-edit">

@@ -64,6 +64,7 @@ function Sidebar(props) {
                 width: '32px',
                 height: '32px',
                 borderRadius: '73px',
+                objectFit: 'contain',
               }}
               src={uri}
             />

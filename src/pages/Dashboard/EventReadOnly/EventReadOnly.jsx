@@ -1024,7 +1024,7 @@ function EventReadOnly() {
                         </p>
                       </>
                     )}
-                    {eventData?.offerConfiguration?.url?.uri && (
+                    {(eventData?.offerConfiguration?.url?.uri || eventData?.offerConfiguration?.email) && (
                       <>
                         <p className="read-only-event-content-sub-title-primary">
                           {eventData?.offerConfiguration?.category === offerTypes.PAYING
@@ -1034,11 +1034,11 @@ function EventReadOnly() {
                         </p>
                         <p>
                           <a
-                            href={eventData?.offerConfiguration?.url?.uri}
+                            href={eventData?.offerConfiguration?.url?.uri ?? eventData?.offerConfiguration?.email}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="url-links">
-                            {eventData?.offerConfiguration?.url?.uri}
+                            {eventData?.offerConfiguration?.url?.uri ?? eventData?.offerConfiguration?.email}
                           </a>
                         </p>
                       </>
