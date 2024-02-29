@@ -6,7 +6,6 @@ import { LinkOutlined } from '@ant-design/icons';
 import moment from 'moment-timezone';
 import i18n from 'i18next';
 import Username from '../../Username/Username';
-
 import ArtsDataLink from '../../Tags/ArtsDataLink/ArtsDataLink';
 
 function ListItem(props) {
@@ -45,7 +44,7 @@ function ListItem(props) {
               <img
                 src={logo}
                 className="event-list-image"
-                style={{ height: '40px', width: '40px' }}
+                style={{ height: '40px', width: '40px', objectFit: 'cover' }}
                 data-cy="image-entity-logo"
               />
             </div>

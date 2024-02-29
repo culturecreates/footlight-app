@@ -7,10 +7,14 @@
   padding: 0;
 }
 
-.add-user-wrapper .search-popover-options {
-  padding: 7px 1px;
-  height: 40px;
+.add-user-wrapper .ant-popover-inner-content .search-popover-options {
+  padding: 8px 16px;
   font-weight: 500;
+  border-bottom: 1px solid #b6c1c9;
+}
+
+.add-user-wrapper .ant-popover-inner-content .search-scrollable-content {
+  padding: 0px;
 }
 
 .add-user-wrapper .search-popover-options p {
@@ -18,7 +22,7 @@
 }
 
 .add-user-wrapper .search-popover-options:hover {
-  background-color: #ededed;
+  background-color: #f4f4f4;
 }
 
 .add-user-wrapper .details-card-description {

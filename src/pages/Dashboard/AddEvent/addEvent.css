@@ -168,6 +168,15 @@
   width: 100% !important;
 }
 
+.add-edit-wrapper .ticket-link-select .ant-select-selector {
+  background-color: #f7f7f7;
+  color: #9196a3;
+}
+
+.add-edit-wrapper .ant-input-group.ant-input-group-compact > .ant-select:first-child > .ant-select-selector {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
 .event-form-wrapper .eventAccessibility .ant-select {
   width: 100% !important;
   margin-bottom: 4px;
