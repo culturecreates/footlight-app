@@ -37,6 +37,7 @@ function Calendar({ children, allCalendarsData, setPageNumber }) {
             width: '32px',
             height: '32px',
             borderRadius: '73px',
+            objectFit: 'contain',
           }}
           src={item?.image?.uri}
         />
