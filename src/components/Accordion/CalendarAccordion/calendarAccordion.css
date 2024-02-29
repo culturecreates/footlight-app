@@ -141,3 +141,14 @@
 .user-popover-options-active-hover > .selection-item-wrapper {
   background: #eff2ff;
 }
+
+@media screen and (max-width: 480px) {
+  .collapse-wrapper .ant-collapse-header,
+  .collapse-wrapper .user-role-para {
+    font-size: 12px;
+  }
+
+  .collapse-wrapper .ant-collapse-content-box .ant-form-item {
+    margin-bottom: 8px;
+  }
+}

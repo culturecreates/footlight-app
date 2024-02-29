@@ -36,16 +36,8 @@
   border-bottom: none;
 }
 
-/* .taxonomy-listing-wrapper .non-admin-class .event-list-item-wrapper {
-  cursor: pointer;
-} */
-
 .taxonomy-listing-wrapper .ant-tabs-nav {
   margin-bottom: 0;
-}
-
-.taxonomy-listing-wrapper {
-  padding-top: 24px;
 }
 
 .taxonomy-listing-wrapper .invitation-details-text-prologue {
@@ -112,15 +104,26 @@
   margin-right: 8px;
 }
 
-@media only screen and (max-width: 428px) {
+.taxonomy-listing-wrapper .event-list-item-wrapper {
+  gap: 14px;
+}
+
+.taxonomy-listing-wrapper .ant-list-vertical .event-list-status {
+  align-items: flex-start;
+}
+
+@media only screen and (max-width: 480px) {
   .taxonomy-listing-wrapper .events-heading-wrapper .events-heading {
     font-size: 24px;
+    margin-bottom: 8px;
     white-space: normal;
   }
   .taxonomy-listing-wrapper .events-content {
     padding: 16px;
   }
-  .taxonomy-listing-wrapper .events-heading-wrapper {
-    width: 200px;
+
+  .taxonomy-listing-wrapper .add-btn-container {
+    margin-left: auto;
+    margin-bottom: 8px;
   }
 }

@@ -28,3 +28,21 @@
   border-bottom: 2px solid var(--content-action-darker, #0f0e98);
   background: var(--background-neutrals-transparent, rgba(255, 255, 255, 0));
 }
+
+.settings-wrapper .ant-tabs > .ant-tabs-nav .ant-tabs-nav-more {
+  display: none;
+}
+
+@media screen and (max-width: 480px) {
+  .settings-wrapper .settings-heading {
+    font-size: 24px;
+  }
+
+  .settings-wrapper .ant-tabs-tab {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0em;
+    text-align: left;
+  }
+}

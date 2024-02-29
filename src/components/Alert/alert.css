@@ -16,7 +16,13 @@
 }
 
 .alert-warning,
-.alert-warning   .ant-alert-content .ant-alert-message {
+.alert-warning .ant-alert-content .ant-alert-message {
   background: #fff7cc;
   color: #b59800;
+}
+
+@media screen and (max-width: 480px) {
+  .alert-wrapper .ant-alert-content .ant-alert-message {
+    font-size: 12px;
+  }
 }

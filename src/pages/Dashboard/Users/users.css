@@ -71,3 +71,48 @@
   height: 40px;
   align-items: center;
 }
+
+.change-password-modal .ant-form-item-label > label {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  color: #222732;
+}
+
+@media screen and (max-width: 575px) {
+  .user-profile-wrapper .add-event-section-wrapper {
+    padding: 0px;
+  }
+
+  .user-profile-wrapper .add-event-section-col {
+    padding: 0px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .user-profile-wrapper .ant-input-lg,
+  .user-profile-wrapper .ant-select,
+  .user-profile-wrapper .ant-select-open,
+  .user-profile-wrapper .ant-form-item-label > label,
+  .change-password-modal .change-password-modal-body label,
+  .change-password-modal .change-password-modal-body .ant-input-affix-wrapper > .ant-input,
+  .change-password-modal .ant-form-item-label > label {
+    font-size: 12px;
+  }
+
+  .user-profile-wrapper .user-profile-heading h4 {
+    font-size: 24px;
+  }
+
+  .change-password-modal .ant-modal-body {
+    padding: 16px !important;
+  }
+
+  .change-password-modal .ant-input-affix-wrapper-lg {
+    padding: 4px 8px;
+  }
+
+  .change-password-modal .ant-form-item {
+    margin-bottom: 16px;
+  }
+}

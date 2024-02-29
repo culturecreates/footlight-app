@@ -82,7 +82,7 @@ const UserReadOnly = () => {
         <Row className="user-read-only-wrapper" gutter={[0, 32]}>
           <Col span={24}>
             <Row gutter={[32, 24]} className="user-read-only-heading-wrapper">
-              <Col span={24} style={{ paddingRight: '0' }}>
+              <Col span={24}>
                 <Row>
                   <Col flex="auto">
                     <div className="breadcrumb-container">

@@ -126,7 +126,6 @@
 .custom-modal-title-wrapper .custom-modal-title-right-contents {
   display: flex;
   align-items: center;
-  gap: 16px;
 }
 
 .recurring-events-wrapper .frequency-selector .ant-select:not(.ant-select-customize-input) .ant-select-selector {
@@ -140,4 +139,32 @@
   font-size: 16px;
   line-height: 24px;
   color: #222732;
+}
+
+@media screen and (max-width: 480px) {
+  .custom-date-column {
+    height: 200px;
+  }
+
+  .custom-modal-title-wrapper .custom-modal-title-right-contents {
+    margin-top: 8px;
+  }
+
+  .custom-modal-title-wrapper .custom-modal-title-heading,
+  .calendar .calendar-header .year-title {
+    font-size: 16px;
+  }
+
+  .custom-modal-title-wrapper .custom-modal-title-heading {
+    margin-right: 16px;
+  }
+
+  .custom-no-of-date,
+  .custom-date-column .text-button-wrapper {
+    font-size: 12px;
+  }
+
+  .custom-modal-title-wrapper {
+    flex-wrap: wrap;
+  }
 }

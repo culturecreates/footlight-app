@@ -427,7 +427,7 @@ function PlaceReadOnly() {
                     style={{
                       width: '151px',
                       height: '151px',
-                      objectFit: 'cover',
+                      objectFit: 'contain',
                     }}
                   />
                 </div>

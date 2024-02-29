@@ -196,8 +196,8 @@ function EventReadOnly() {
     !isLoading &&
     !taxonomyLoading && (
       <div>
-        <Row gutter={[32, 24]} className="read-only-wrapper">
-          <Col span={24}>
+        <Row gutter={[32, 24]} className="read-only-wrapper events-read-only-wrapper ">
+          <Col span={24} className="top-level-column">
             <Breadcrumbs
               name={contentLanguageBilingual({
                 en: eventData?.name?.en,
@@ -208,7 +208,7 @@ function EventReadOnly() {
             />
           </Col>
 
-          <Col span={24}>
+          <Col span={24} className="top-level-column">
             <Row>
               <Col>
                 <div className="read-only-event-heading">
@@ -225,7 +225,7 @@ function EventReadOnly() {
           </Col>
 
           {artsDataLink?.length > 0 && (
-            <Col flex="723px" className="events-readonly-artsdata-link-wrapper">
+            <Col flex="723px" className="events-readonly-artsdata-link-wrapper top-level-column">
               <Row>
                 <Col flex={'723px'}>
                   <ArtsDataInfo
@@ -248,7 +248,7 @@ function EventReadOnly() {
             </Col>
           )}
 
-          <Col flex="723px">
+          <Col flex="723px" className="top-level-column">
             {eventPublishStateOptions?.map((state, index) => {
               if (
                 (state?.value === eventPublishState?.PENDING_REVIEW || state?.value === eventPublishState?.PUBLISHED) &&
@@ -266,7 +266,7 @@ function EventReadOnly() {
                 );
             })}
           </Col>
-          <Col flex={'723px'} className="read-only-event-section-col">
+          <Col flex={'723px'} className="read-only-event-section-col top-level-column">
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               <Col flex={'423px'}>
                 <div className="read-only-event-section-wrapper">
@@ -426,7 +426,7 @@ function EventReadOnly() {
               </Col>
             </Row>
           </Col>
-          <Col flex={'723px'} className="read-only-event-section-col">
+          <Col flex={'723px'} className="read-only-event-section-col top-level-column">
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               <Col flex={'423px'}>
                 <div className="read-only-event-section-wrapper">
@@ -578,7 +578,7 @@ function EventReadOnly() {
             </Row>
           </Col>
           {eventData?.locations?.length > 0 && (
-            <Col flex={'723px'} className="read-only-event-section-col">
+            <Col flex={'723px'} className="read-only-event-section-col top-level-column">
               <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
                 <Col flex={'423px'}>
                   <div className="read-only-event-section-wrapper">
@@ -601,7 +601,7 @@ function EventReadOnly() {
                             icon={locationPlace?.label?.props?.icon}
                             name={locationPlace?.name}
                             description={locationPlace?.description}
-                            itemWidth="423px"
+                            itemWidth="100%"
                             postalAddress={locationPlace?.postalAddress}
                             accessibility={locationPlace?.accessibility}
                             openingHours={locationPlace?.openingHours}
@@ -658,7 +658,7 @@ function EventReadOnly() {
               </Row>
             </Col>
           )}
-          <Col flex={'723px'} className="read-only-event-section-col">
+          <Col flex={'723px'} className="read-only-event-section-col top-level-column">
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               <Col flex={'423px'}>
                 <div className="read-only-event-section-wrapper">
@@ -935,7 +935,7 @@ function EventReadOnly() {
             </Row>
           </Col>
           {(eventData?.accessibility.length > 0 || eventData?.accessibilityNote) && (
-            <Col flex={'723px'} className="read-only-event-section-col">
+            <Col flex={'723px'} className="read-only-event-section-col top-level-column">
               <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
                 <Col flex={'423px'}>
                   <div className="read-only-event-section-wrapper">
@@ -1001,7 +1001,7 @@ function EventReadOnly() {
             </Col>
           )}
           {eventData?.offerConfiguration && (
-            <Col flex={'723px'} className="read-only-event-section-col">
+            <Col flex={'723px'} className="read-only-event-section-col top-level-column">
               <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
                 <Col flex={'423px'}>
                   <div

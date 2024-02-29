@@ -143,7 +143,7 @@ const SelectTaxonomyType = () => {
                 </Col>
               </Row>
               <Row style={{ marginTop: 24 }}>
-                <Col>
+                <Col flex="423px">
                   <Form.Item
                     data-cy="form-item-taxonomy-select-type"
                     name="inputType"
@@ -164,22 +164,21 @@ const SelectTaxonomyType = () => {
                       </Col>
                     </Row>
                     <Row gutter={16} style={{ marginTop: 8 }}>
-                      <Col>
+                      <Col style={{ flex: '1' }}>
                         <DateAction
                           iconrender={<PlusOutlined style={{ fontSize: '24px' }} />}
                           label={t('dashboard.taxonomy.selectType.newField')}
-                          style={{ width: '203.5px', height: '104px', padding: 16 }}
+                          style={{ height: '104px', padding: 16 }}
                           onClick={() => navigationHandler('not-dynamic')}
                         />
                       </Col>
-                      <Col>
+                      <Col style={{ flex: '1' }}>
                         <DateAction
                           data-cy="button-taxonomy-existing-field"
                           iconrender={<DatabaseOutlined style={{ fontSize: '24px' }} />}
                           label={t('dashboard.taxonomy.selectType.existingField')}
                           disabled={standardFields.length < 1 && selectedClass.label !== '' ? true : false}
                           style={{
-                            width: '203.5px',
                             height: '104px',
                             padding: 16,
                             ...(standardFields.length < 1 && selectedClass.label !== '' && buttonStyles),

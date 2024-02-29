@@ -16,6 +16,15 @@
   line-height: 24px;
 }
 
+.settings-wrapper .title-wrapper > .name {
+  overflow-wrap: anywhere;
+}
+
+.settings-wrapper .title-wrapper .event-list-status-userdetail {
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
 .settings-wrapper .users-list-item-wrapper .invitation-details {
   display: flex;
   gap: 6px;
@@ -145,7 +154,18 @@
   margin-right: 8px;
 }
 
-@media only screen and (max-width: 428px) {
+.user-management-wrapper .ant-list-vertical .user-item-content {
+  width: fit-content;
+  align-items: flex-start;
+}
+
+@media screen and (max-width: 768px) {
+  .user-management-wrapper .users-list-item-wrapper {
+    padding: 24px 0px !important;
+  }
+}
+
+@media only screen and (max-width: 480px) {
   .user-management-wrapper .events-heading-wrapper .events-heading {
     font-size: 24px;
     white-space: normal;
@@ -155,5 +175,17 @@
   }
   .user-management-wrapper .events-heading-wrapper {
     width: 200px;
+  }
+
+  .user-management-wrapper .users-list-item-wrapper {
+    padding: 16px 0px !important;
+  }
+
+  .user-management-wrapper .ant-list-vertical .user-item-content .tags-wrapper {
+    width: fit-content;
+  }
+
+  .user-management-wrapper .user-search-wrapper {
+    margin-right: 0px !important;
   }
 }

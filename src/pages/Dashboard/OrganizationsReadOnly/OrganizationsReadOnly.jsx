@@ -523,7 +523,7 @@ function OrganizationsReadOnly() {
                     src={organizationData?.logo?.original?.uri}
                     alt="avatar"
                     style={{
-                      objectFit: 'cover',
+                      objectFit: 'contain',
                       width: '151px',
                       height: '151px',
                     }}

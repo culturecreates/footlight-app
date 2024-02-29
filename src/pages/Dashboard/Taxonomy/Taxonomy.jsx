@@ -2,7 +2,7 @@ import { Badge, Button, Checkbox, Col, Dropdown, Grid, List, Row, Space } from '
 import i18next from 'i18next';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { createSearchParams, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import NoContent from '../../../components/NoContent/NoContent';
@@ -31,10 +31,11 @@ import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox/SearchableCheckbox';
 import { useLazyGetEntityDependencyQuery } from '../../../services/entities';
+import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
+
+const { useBreakpoint } = Grid;
 
 const Taxonomy = () => {
-  const { useBreakpoint } = Grid;
-
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
   let [searchParams, setSearchParams] = useSearchParams();
@@ -51,6 +52,7 @@ const Taxonomy = () => {
   ] = useOutletContext();
   setContentBackgroundColor('#fff');
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [getAllTaxonomy, { currentData: allTaxonomy, isFetching: isTaxonomyFetching }] = useLazyGetAllTaxonomyQuery({
     sessionId: timestampRef,
@@ -227,6 +229,12 @@ const Taxonomy = () => {
     else return false;
   };
 
+  useEffect(() => {
+    if (user && calendar.length > 0) {
+      !adminCheckHandler() && dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Not Authorized' }));
+    }
+  }, [user, calendar]);
+
   return (
     <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
       {dependencyDetailsFetching && (
@@ -244,9 +252,9 @@ const Taxonomy = () => {
           <LoadingIndicator data-cy="loading-indicator-taxonomy-confirm" />
         </div>
       )}
-      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="taxonomy-listing-wrapper">
+      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="taxonomy-listing-wrapper ">
         <Col span={24}>
-          <Row justify="space-between" align="top">
+          <Row justify="space-between" gutter={16} align="top" style={{ marginBottom: 16 }}>
             <Col>
               <div className="events-heading-wrapper">
                 <h4 className="events-heading" data-cy="para-taxonomy-listing-heading">
@@ -268,10 +276,10 @@ const Taxonomy = () => {
               </Col>
             )}
           </Row>
-          <Row justify="space-between" gutter={[24, 16]} style={{ marginBottom: 16 }}>
+          <Row justify="space-between" gutter={[24, 16]} style={{ marginBottom: screens.md ? 16 : 8 }}>
             <Col flex={'auto'}>
-              <Row gutter={[8, 8]} align="middle">
-                <Col flex={'auto'} style={{ marginRight: '24px', maxWidth: 400 }}>
+              <Row gutter={[16, 8]} align="middle">
+                <Col flex="423px">
                   <UserSearch
                     placeholder={t('dashboard.taxonomy.listing.search')}
                     onPressEnter={(e) => onSearchHandler(e)}
@@ -400,7 +408,9 @@ const Taxonomy = () => {
                 {allTaxonomy?.data.length && !isTaxonomyFetching > 0 ? (
                   <List
                     data-cy="list-taxonomy"
-                    className={`event-list-wrapper ${adminCheckHandler() ? '' : 'non-admin-class'}`}
+                    className={`event-list-wrapper responsvie-list-wrapper-class ${
+                      adminCheckHandler() ? '' : 'non-admin-class'
+                    }`}
                     itemLayout={screens.xs ? 'vertical' : 'horizontal'}
                     dataSource={allTaxonomy?.data}
                     bordered={false}
