@@ -475,7 +475,10 @@ function CreateNewPerson() {
             {fields?.map((section, index) => {
               if (section?.length > 0)
                 return (
-                  <Card title={section[0]?.category !== formCategory.PRIMARY && section[0]?.category} key={index}>
+                  <Card
+                    marginResponsive="0px"
+                    title={section[0]?.category !== formCategory.PRIMARY && section[0]?.category}
+                    key={index}>
                     <>
                       {(artsDataLinkChecker(personData?.sameAs) || artsDataLinkChecker(artsData?.sameAs)) &&
                         section[0]?.category === formCategory.PRIMARY && (

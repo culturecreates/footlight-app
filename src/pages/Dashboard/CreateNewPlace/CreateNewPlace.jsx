@@ -1024,7 +1024,7 @@ function CreateNewPlace() {
                 </Col>
               </Row>
             </Col>
-            <Card>
+            <Card marginResponsive="0px">
               <>
                 {(artsDataLinkChecker(placeData?.sameAs) || artsDataLinkChecker(artsData?.sameAs)) && (
                   <Row>
@@ -1511,7 +1511,7 @@ function CreateNewPlace() {
               </>
               <></>
             </Card>
-            <Card title={t('dashboard.places.createNew.addPlace.address.address')}>
+            <Card marginResponsive="0px" title={t('dashboard.places.createNew.addPlace.address.address')}>
               <>
                 <Row>
                   <Col>
@@ -2067,7 +2067,7 @@ function CreateNewPlace() {
                 </Form.Item>
               </ChangeTypeLayout>
             </Card>
-            <Card title={t('dashboard.places.createNew.addPlace.containsPlace.containsPlace')}>
+            <Card marginResponsive="0px" title={t('dashboard.places.createNew.addPlace.containsPlace.containsPlace')}>
               <>
                 <Row>
                   <Col>
@@ -2255,7 +2255,9 @@ function CreateNewPlace() {
               </>
               <></>
             </Card>
-            <Card title={t('dashboard.places.createNew.addPlace.containedInPlace.containedInPlace')}>
+            <Card
+              marginResponsive="0px"
+              title={t('dashboard.places.createNew.addPlace.containedInPlace.containedInPlace')}>
               <>
                 <Row>
                   <Col>
@@ -2452,7 +2454,9 @@ function CreateNewPlace() {
               'name',
               false,
             ) && (
-              <Card title={t('dashboard.places.createNew.addPlace.venueAccessibility.venueAccessibility')}>
+              <Card
+                marginResponsive="0px"
+                title={t('dashboard.places.createNew.addPlace.venueAccessibility.venueAccessibility')}>
                 <>
                   <Row>
                     <Col>
