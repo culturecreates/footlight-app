@@ -407,6 +407,9 @@ const DraggableTree = ({
           data-cy="modal-taxonomy-concept"
           open={addNewPopup}
           destroyOnClose
+          afterClose={() => {
+            setForEditing(false);
+          }}
           centered
           title={
             <span className="quick-create-organization-modal-title" data-cy="span-taxonomy-concept-add-edit">
