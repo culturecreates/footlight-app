@@ -17,6 +17,10 @@ const calendarLanguages = [
     value: 'FRENCH',
     label: <Translation>{(t) => t('dashboard.settings.addUser.dropDownOptions.langagePreference.fr')}</Translation>,
   },
+  {
+    value: 'BILINGUAL',
+    label: 'BILINGUAL',
+  },
 ];
 
 const timeZones = [
@@ -172,40 +176,46 @@ export const calendarSettingsFormFields = {
       label: (
         <Translation>{(t) => t('dashboard.settings.calendarSettings.imageAspectRatio.imageAspectRatio')}</Translation>
       ),
-      field: () => (
-        <Row gutter={[16, 0]}>
-          <Col span={12}>
-            <Form.Item
-              label={
-                <Translation>{(t) => t('dashboard.settings.calendarSettings.imageAspectRatio.large')}</Translation>
-              }
-              data-cy="form-item-image-ratio-large">
-              <StyledInput
-                placeholder={
+      field: () => {
+        return (
+          <Row gutter={[16, 0]}>
+            <Col span={12}>
+              <Form.Item
+                name={['imageAspectRatio', 'large']}
+                label={
                   <Translation>{(t) => t('dashboard.settings.calendarSettings.imageAspectRatio.large')}</Translation>
                 }
-                data-cy="input-calendar-image=ratio-large"
-              />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              label={
-                <Translation>{(t) => t('dashboard.settings.calendarSettings.imageAspectRatio.thumbnail')}</Translation>
-              }
-              data-cy="form-item-image-ratio-thumbnail">
-              <StyledInput
-                placeholder={
+                data-cy="form-item-image-ratio-large">
+                <StyledInput
+                  placeholder={
+                    <Translation>{(t) => t('dashboard.settings.calendarSettings.imageAspectRatio.large')}</Translation>
+                  }
+                  data-cy="input-calendar-image=ratio-large"
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name={['imageAspectRatio', 'thumbnail']}
+                label={
                   <Translation>
                     {(t) => t('dashboard.settings.calendarSettings.imageAspectRatio.thumbnail')}
                   </Translation>
                 }
-                data-cy="input-calendar-image-ratio-thumbnail"
-              />
-            </Form.Item>
-          </Col>
-        </Row>
-      ),
+                data-cy="form-item-image-ratio-thumbnail">
+                <StyledInput
+                  placeholder={
+                    <Translation>
+                      {(t) => t('dashboard.settings.calendarSettings.imageAspectRatio.thumbnail')}
+                    </Translation>
+                  }
+                  data-cy="input-calendar-image-ratio-thumbnail"
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        );
+      },
       rules: [],
       hidden: false,
       required: true,
@@ -213,36 +223,40 @@ export const calendarSettingsFormFields = {
     {
       name: 'imageMaxWidth',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.imageMaxWidth.imageMaxWidth')}</Translation>,
-      field: () => (
-        <Row gutter={[16, 0]}>
-          <Col span={12}>
-            <Form.Item
-              label={<Translation>{(t) => t('dashboard.settings.calendarSettings.imageMaxWidth.large')}</Translation>}
-              data-cy="form-item-image-max-width-large">
-              <StyledInput
-                placeholder={
-                  <Translation>{(t) => t('dashboard.settings.calendarSettings.imageMaxWidth.large')}</Translation>
-                }
-                data-cy="input-calendar-image-max-width-large"
-              />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              label={
-                <Translation>{(t) => t('dashboard.settings.calendarSettings.imageMaxWidth.thumbnail')}</Translation>
-              }
-              data-cy="form-item-image-max-width-thumbnail">
-              <StyledInput
-                placeholder={
+      field: () => {
+        return (
+          <Row gutter={[16, 0]}>
+            <Col span={12}>
+              <Form.Item
+                name={['imageMaxWidth', 'large']}
+                label={<Translation>{(t) => t('dashboard.settings.calendarSettings.imageMaxWidth.large')}</Translation>}
+                data-cy="form-item-image-max-width-large">
+                <StyledInput
+                  placeholder={
+                    <Translation>{(t) => t('dashboard.settings.calendarSettings.imageMaxWidth.large')}</Translation>
+                  }
+                  data-cy="input-calendar-image-max-width-large"
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name={['imageMaxWidth', 'thumbnail']}
+                label={
                   <Translation>{(t) => t('dashboard.settings.calendarSettings.imageMaxWidth.thumbnail')}</Translation>
                 }
-                data-cy="input-calendar-image-max-width-thumbnail"
-              />
-            </Form.Item>
-          </Col>
-        </Row>
-      ),
+                data-cy="form-item-image-max-width-thumbnail">
+                <StyledInput
+                  placeholder={
+                    <Translation>{(t) => t('dashboard.settings.calendarSettings.imageMaxWidth.thumbnail')}</Translation>
+                  }
+                  data-cy="input-calendar-image-max-width-thumbnail"
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        );
+      },
       rules: [],
       hidden: false,
       required: true,
@@ -250,7 +264,7 @@ export const calendarSettingsFormFields = {
     {
       name: 'calendarLogo',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.calendarLogo')}</Translation>,
-      field: ({ form, isCrop }) => (
+      field: ({ form, isCrop, logoUri }) => (
         <>
           <Row>
             <Col>
@@ -260,14 +274,13 @@ export const calendarSettingsFormFields = {
             </Col>
           </Row>
           <ImageUpload
-            //   imageUrl={imageUrl}
-            //   originalImageUrl={originalImageUrl}
+            imageUrl={logoUri}
+            originalImageUrl={logoUri}
             imageReadOnly={false}
             preview={true}
             setImageCropOpen={false}
             imageCropOpen={false}
             form={form}
-            //   eventImageData={eventImageData}
             largeAspectRatio={null}
             thumbnailAspectRatio={null}
             isCrop={isCrop}

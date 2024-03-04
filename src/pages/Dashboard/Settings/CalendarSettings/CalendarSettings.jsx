@@ -3,11 +3,17 @@ import { Row, Col, Form, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { calendarSettingsFormFields } from '../../../../constants/calendarSettingsForm';
 import { useOutletContext } from 'react-router-dom';
+import { entitiesClass } from '../../../../constants/entitiesClass';
 
 function CalendarSettings() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const [currentCalendarData] = useOutletContext();
+
+  const imageConfig =
+    currentCalendarData?.imageConfig?.length > 0
+      ? currentCalendarData?.imageConfig?.filter((config) => config?.entityName == entitiesClass.event)[0]
+      : null;
 
   const initialValues = {
     calendarName: currentCalendarData?.name?.en ?? currentCalendarData?.name?.fr,
@@ -15,6 +21,14 @@ function CalendarSettings() {
     eventTemplate: currentCalendarData?.widgetSettings?.eventDetailsUrlTemplate,
     searchResultTemplate: currentCalendarData?.widgetSettings?.listEventsUrlTemplate,
     calendarLanguage: [currentCalendarData?.contentLanguage],
+    imageAspectRatio: {
+      large: imageConfig?.large?.aspectRatio,
+      thumbnail: imageConfig?.thumbnail?.aspectRatio,
+    },
+    imageMaxWidth: {
+      large: imageConfig?.large?.maxWidth,
+      thumbnail: imageConfig?.thumbnail?.maxWidth,
+    },
   };
 
   return (
@@ -29,7 +43,15 @@ function CalendarSettings() {
             {calendarSettingsFormFields.GENERAL_SETTINGS.map((item, index) => {
               return (
                 <Form.Item label={item.label} key={index} rules={item.rules} required={item.required} name={item.name}>
-                  {item.field({ form, isCrop: false })}
+                  {item.field({
+                    form,
+                    isCrop: false,
+                    largeAspectRatio: imageConfig?.large?.aspectRatio,
+                    thumbnailAspectRatio: imageConfig?.thumbnail?.aspectRatio,
+                    largeMaxWidth: imageConfig?.large?.maxWidth,
+                    thumbnailMaxWidth: imageConfig?.thumbnail?.maxWidth,
+                    logoUri: imageConfig?.image?.uri,
+                  })}
                 </Form.Item>
               );
             })}
