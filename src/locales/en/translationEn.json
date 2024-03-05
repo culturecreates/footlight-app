@@ -1066,6 +1066,7 @@
           "class": "Class is required",
           "conceptName": "Concept name is required"
         },
+        "addAsFilter": "Make this taxonomy type available as a filter.",
         "messages": {
           "create": "Success! Your Taxonomy has been created.",
           "update": "Success! Your Taxonomy has been updated."

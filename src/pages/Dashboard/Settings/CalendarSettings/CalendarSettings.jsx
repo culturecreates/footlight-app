@@ -28,7 +28,7 @@ function CalendarSettings() {
     search: '',
     taxonomyClass: decodeURIComponent(query.toString()),
     includeConcepts: false,
-    addToFilter: false,
+    addToFilter: true,
     sessionId: timestampRef,
   });
 
@@ -58,8 +58,6 @@ function CalendarSettings() {
   const peopleFilters = filterOptions(allTaxonomyData?.data, entitiesClass.people);
 
   const placeFilters = filterOptions(allTaxonomyData?.data, entitiesClass.place);
-
-  if (!taxonomyLoading) console.log(eventFilters, organizationFilters, peopleFilters, placeFilters);
 
   const imageConfig =
     currentCalendarData?.imageConfig?.length > 0

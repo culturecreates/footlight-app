@@ -29,6 +29,7 @@ import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
 import { Prompt } from '../../../hooks/usePrompt';
 import { compareArraysOfObjects } from '../../../utils/genericObjectCompare';
 import { PathName } from '../../../constants/pathName';
+import StyledSwitch from '../../../components/Switch/StyledSwitch';
 
 const taxonomyClasses = taxonomyClassTranslations.map((item) => {
   return { ...item, value: item.key };
@@ -176,6 +177,7 @@ const AddTaxonomyTest = () => {
             fr: values?.englishdescription?.trim(),
           },
           concepts: { concepts: [...filteredConceptData] },
+          addToFilter: values?.addToFilter,
         };
 
         if (taxonomyId) {
@@ -540,6 +542,20 @@ const AddTaxonomyTest = () => {
                     </Col>
                   </Row>
                 )}
+                <Row justify={'start'} align={'top'} gutter={[8, 0]}>
+                  <Col>
+                    <Form.Item valuePropName="checked" name="addToFilter" initialValue={taxonomyData?.addToFilter}>
+                      <StyledSwitch />
+                    </Form.Item>
+                  </Col>
+                  <Col>
+                    <span
+                      style={{ color: '#222732', minHeight: '32px', display: 'flex', alignItems: 'center' }}
+                      data-cy="span-add-to-filter-taxonomy-text">
+                      {t('dashboard.taxonomy.addNew.addAsFilter')}
+                    </span>
+                  </Col>
+                </Row>
               </>
               <></>
             </CardEvent>
