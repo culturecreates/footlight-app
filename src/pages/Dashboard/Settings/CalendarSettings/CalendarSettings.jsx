@@ -1,14 +1,65 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Row, Col, Form, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { calendarSettingsFormFields } from '../../../../constants/calendarSettingsForm';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useParams } from 'react-router-dom';
 import { entitiesClass } from '../../../../constants/entitiesClass';
+import { useGetAllTaxonomyQuery } from '../../../../services/taxonomy';
+import { taxonomyClass } from '../../../../constants/taxonomyClass';
+import { contentLanguageBilingual } from '../../../../utils/bilingual';
+import { getUserDetails } from '../../../../redux/reducer/userSlice';
+import { useSelector } from 'react-redux';
 
 function CalendarSettings() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const [currentCalendarData] = useOutletContext();
+  const timestampRef = useRef(Date.now()).current;
+  const { calendarId } = useParams();
+  const { user } = useSelector(getUserDetails);
+
+  let query = new URLSearchParams();
+  query.append('taxonomy-class', taxonomyClass.ORGANIZATION);
+  query.append('taxonomy-class', taxonomyClass.EVENT);
+  query.append('taxonomy-class', taxonomyClass.PERSON);
+  query.append('taxonomy-class', taxonomyClass.PLACE);
+  const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
+    calendarId,
+    search: '',
+    taxonomyClass: decodeURIComponent(query.toString()),
+    includeConcepts: false,
+    addToFilter: false,
+    sessionId: timestampRef,
+  });
+
+  const calendarContentLanguage = currentCalendarData?.contentLanguage;
+
+  const filterOptions = (data, taxonomyClass) => {
+    return (
+      data
+        ?.filter((item) => item?.taxonomyClass === taxonomyClass)
+        .map((taxonomy) => {
+          return {
+            label: contentLanguageBilingual({
+              en: taxonomy?.name?.en,
+              fr: taxonomy?.name?.fr,
+              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+              calendarContentLanguage: calendarContentLanguage,
+            }),
+            value: taxonomy.id,
+          };
+        }) ?? []
+    );
+  };
+  const eventFilters = filterOptions(allTaxonomyData?.data, entitiesClass.event);
+
+  const organizationFilters = filterOptions(allTaxonomyData?.data, entitiesClass.organization);
+
+  const peopleFilters = filterOptions(allTaxonomyData?.data, entitiesClass.people);
+
+  const placeFilters = filterOptions(allTaxonomyData?.data, entitiesClass.place);
+
+  if (!taxonomyLoading) console.log(eventFilters, organizationFilters, peopleFilters, placeFilters);
 
   const imageConfig =
     currentCalendarData?.imageConfig?.length > 0
@@ -32,7 +83,8 @@ function CalendarSettings() {
   };
 
   return (
-    currentCalendarData && (
+    currentCalendarData &&
+    !taxonomyLoading && (
       <Row>
         <Col span={24}>
           <h5> {t('dashboard.settings.calendarSettings.generalSettings')}</h5>
@@ -82,8 +134,9 @@ function CalendarSettings() {
                   rules={item.rules}
                   required={item.required}
                   name={item.name}
-                  extra={item.extra}>
-                  {item.field({ form, isCrop: false })}
+                  extra={item.extra}
+                  initialValue={item.initialValue}>
+                  {item.field({ form, isCrop: false, eventFilters, organizationFilters, peopleFilters, placeFilters })}
                 </Form.Item>
               );
             })}

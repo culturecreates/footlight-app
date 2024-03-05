@@ -82,6 +82,34 @@ const dateFormats = [
   { label: 'MM-DD-YYYY', value: 'MM-DD-YYYY' },
 ];
 
+const STATIC_FILTERS = {
+  EVENT: [
+    {
+      label: <Translation>{(t) => t('dashboard.events.filter.publication.label')}</Translation>,
+      value: 'publication',
+      disabled: true,
+    },
+    {
+      label: <Translation>{(t) => t('dashboard.events.filter.users.label')}</Translation>,
+      value: 'users',
+      disabled: true,
+    },
+    {
+      label: <Translation>{(t) => t('dashboard.events.filter.dates.dates')}</Translation>,
+      value: 'dates',
+      disabled: true,
+    },
+    {
+      label: <Translation>{(t) => t('dashboard.events.filter.organizer.label')}</Translation>,
+      value: 'organizer',
+      disabled: true,
+    },
+  ],
+  ORGANIZATION: [],
+  PEOPLE: [],
+  PLACE: [],
+};
+
 export const calendarSettingsFormFields = {
   GENERAL_SETTINGS: [
     {
@@ -391,10 +419,11 @@ export const calendarSettingsFormFields = {
     {
       name: 'events',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.events')}</Translation>,
-      field: () => (
+      initialValue: STATIC_FILTERS.EVENT.map((item) => item.value),
+      field: ({ eventFilters }) => (
         <TreeSelectOption
+          treeData={eventFilters?.concat(STATIC_FILTERS.EVENT)}
           showSearch={false}
-          allowClear
           treeDefaultExpandAll
           placeholder={
             <Translation>
@@ -403,10 +432,10 @@ export const calendarSettingsFormFields = {
           }
           notFoundContent={<NoContent />}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-          treeData={calendarLanguages}
           data-cy="treeselect-calendar-filter-events"
           tagRender={(props) => {
             const { closable, onClose, label } = props;
+            console.log(props);
             return (
               <Tags
                 data-cy={`tag-calendar-filter-${label}`}
@@ -426,10 +455,9 @@ export const calendarSettingsFormFields = {
     {
       name: 'places',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.places')}</Translation>,
-      field: () => (
+      field: ({ placeFilters }) => (
         <TreeSelectOption
           showSearch={false}
-          allowClear
           treeDefaultExpandAll
           placeholder={
             <Translation>
@@ -438,7 +466,7 @@ export const calendarSettingsFormFields = {
           }
           notFoundContent={<NoContent />}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-          treeData={calendarLanguages}
+          treeData={placeFilters?.concat(STATIC_FILTERS.PLACE)}
           data-cy="treeselect-calendar-filter-places"
           tagRender={(props) => {
             const { closable, onClose, label } = props;
@@ -461,10 +489,9 @@ export const calendarSettingsFormFields = {
     {
       name: 'organizations',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.organizations')}</Translation>,
-      field: () => (
+      field: ({ organizationFilters }) => (
         <TreeSelectOption
           showSearch={false}
-          allowClear
           treeDefaultExpandAll
           placeholder={
             <Translation>
@@ -473,7 +500,7 @@ export const calendarSettingsFormFields = {
           }
           notFoundContent={<NoContent />}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-          treeData={calendarLanguages}
+          treeData={organizationFilters?.concat(STATIC_FILTERS.ORGANIZATION)}
           data-cy="treeselect-calendar-filter-organizations"
           tagRender={(props) => {
             const { closable, onClose, label } = props;
@@ -496,10 +523,9 @@ export const calendarSettingsFormFields = {
     {
       name: 'people',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.people')}</Translation>,
-      field: () => (
+      field: ({ peopleFilters }) => (
         <TreeSelectOption
           showSearch={false}
-          allowClear
           treeDefaultExpandAll
           placeholder={
             <Translation>
@@ -508,7 +534,7 @@ export const calendarSettingsFormFields = {
           }
           notFoundContent={<NoContent />}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-          treeData={calendarLanguages}
+          treeData={peopleFilters?.concat(STATIC_FILTERS.PEOPLE)}
           data-cy="treeselect-calendar-filter-people"
           tagRender={(props) => {
             const { closable, onClose, label } = props;
