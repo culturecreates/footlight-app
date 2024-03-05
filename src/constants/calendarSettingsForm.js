@@ -186,11 +186,32 @@ export const calendarSettingsFormFields = {
                   <Translation>{(t) => t('dashboard.settings.calendarSettings.imageAspectRatio.large')}</Translation>
                 }
                 data-cy="form-item-image-ratio-large">
-                <StyledInput
+                <TreeSelectOption
+                  multiple={false}
+                  showSearch={false}
+                  allowClear
+                  treeDefaultExpandAll
                   placeholder={
-                    <Translation>{(t) => t('dashboard.settings.calendarSettings.imageAspectRatio.large')}</Translation>
+                    <Translation>
+                      {(t) => t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
+                    </Translation>
                   }
-                  data-cy="input-calendar-image=ratio-large"
+                  notFoundContent={<NoContent />}
+                  clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                  treeData={calendarLanguages}
+                  data-cy="treeselect-calendar-filter-events"
+                  tagRender={(props) => {
+                    const { closable, onClose, label } = props;
+                    return (
+                      <Tags
+                        data-cy={`tag-calendar-filter-${label}`}
+                        closable={closable}
+                        onClose={onClose}
+                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                        {label}
+                      </Tags>
+                    );
+                  }}
                 />
               </Form.Item>
             </Col>
@@ -203,13 +224,32 @@ export const calendarSettingsFormFields = {
                   </Translation>
                 }
                 data-cy="form-item-image-ratio-thumbnail">
-                <StyledInput
+                <TreeSelectOption
+                  multiple={false}
+                  showSearch={false}
+                  allowClear
+                  treeDefaultExpandAll
                   placeholder={
                     <Translation>
-                      {(t) => t('dashboard.settings.calendarSettings.imageAspectRatio.thumbnail')}
+                      {(t) => t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
                     </Translation>
                   }
-                  data-cy="input-calendar-image-ratio-thumbnail"
+                  notFoundContent={<NoContent />}
+                  clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                  treeData={calendarLanguages}
+                  data-cy="treeselect-calendar-filter-events"
+                  tagRender={(props) => {
+                    const { closable, onClose, label } = props;
+                    return (
+                      <Tags
+                        data-cy={`tag-calendar-filter-${label}`}
+                        closable={closable}
+                        onClose={onClose}
+                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
+                        {label}
+                      </Tags>
+                    );
+                  }}
                 />
               </Form.Item>
             </Col>
