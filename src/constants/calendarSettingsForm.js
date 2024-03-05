@@ -110,6 +110,29 @@ const STATIC_FILTERS = {
   PLACE: [],
 };
 
+const aspectRatios = [
+  {
+    label: '1:1',
+    value: '1:1',
+  },
+  {
+    label: '2:3',
+    value: '2:3',
+  },
+  {
+    label: '4:3',
+    value: '4:3',
+  },
+  {
+    label: '5:4',
+    value: '5:4',
+  },
+  {
+    label: '16:9',
+    value: '16:9',
+  },
+];
+
 export const calendarSettingsFormFields = {
   GENERAL_SETTINGS: [
     {
@@ -226,7 +249,7 @@ export const calendarSettingsFormFields = {
                   }
                   notFoundContent={<NoContent />}
                   clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                  treeData={calendarLanguages}
+                  treeData={aspectRatios}
                   data-cy="treeselect-calendar-filter-events"
                   tagRender={(props) => {
                     const { closable, onClose, label } = props;
@@ -264,7 +287,7 @@ export const calendarSettingsFormFields = {
                   }
                   notFoundContent={<NoContent />}
                   clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                  treeData={calendarLanguages}
+                  treeData={aspectRatios}
                   data-cy="treeselect-calendar-filter-events"
                   tagRender={(props) => {
                     const { closable, onClose, label } = props;
