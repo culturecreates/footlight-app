@@ -17,7 +17,7 @@ function Event(props) {
             ...(marginResponsive ? { margin: marginResponsive } : { margin: '0 16px' }),
           }}>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} className="events-content" justify="space-between">
-            <Col flex={'423px'}>
+            <Col flex={'488px'}>
               <div className="add-event-section-wrapper">
                 {title && (
                   <Row>

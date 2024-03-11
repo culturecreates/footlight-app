@@ -59,3 +59,22 @@
   line-height: 24px;
   margin-top: 8px;
 }
+
+.select-taxonomy-type-wrapper .date-action-button {
+  width: 100%;
+}
+
+@media screen and (max-width: 480px) {
+  .select-taxonomy-type-wrapper .heading {
+    font-size: 24px;
+  }
+  .select-taxonomy-type-wrapper .ant-form-item-label > label,
+  .select-taxonomy-type-wrapper .ant-dropdown-menu-item,
+  .ant-dropdown-menu-submenu-title,
+  .select-taxonomy-type-wrapper .classType .ant-dropdown-trigger,
+  .select-taxonomy-type-wrapper .destination-discription,
+  .select-taxonomy-type-wrapper .info-message,
+  .select-taxonomy-type-wrapper .ant-form-item-explain-error {
+    font-size: 12px;
+  }
+}
