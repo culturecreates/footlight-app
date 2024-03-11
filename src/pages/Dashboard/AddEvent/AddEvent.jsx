@@ -92,7 +92,7 @@ import CustomPopover from '../../../components/Popover/Popover';
 import { removeEmptyParagraphsAtEnd } from '../../../utils/removeEmptyParagraphsAtEnd';
 import Alert from '../../../components/Alert';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
-import { getEmbedUrl } from '../../../utils/getEmbedVideoUrl';
+import { getEmbedUrl, validateVimeoURL, validateYouTubeURL } from '../../../utils/getEmbedVideoUrl';
 
 const { TextArea } = Input;
 
@@ -235,6 +235,18 @@ function AddEvent() {
     },
     { label: t('dashboard.events.addEditEvent.otherInformation.contact.email'), value: 'email' },
   ];
+
+  const validateVideoLink = (rule, value) => {
+    if (!value) {
+      return Promise.resolve();
+    }
+
+    if (!validateYouTubeURL(value) && !validateVimeoURL(value)) {
+      return Promise.reject(t('dashboard.events.addEditEvent.validations.url'));
+    }
+
+    return Promise.resolve();
+  };
 
   const addUpdateEventApiHandler = (eventObj, toggle) => {
     var promise = new Promise(function (resolve, reject) {
@@ -3541,12 +3553,7 @@ function AddEvent() {
                 }}
                 label={t('dashboard.events.addEditEvent.otherInformation.videoLink')}
                 initialValue={eventData?.videoUrl}
-                rules={[
-                  {
-                    type: 'url',
-                    message: t('dashboard.events.addEditEvent.validations.url'),
-                  },
-                ]}
+                rules={[{ validator: (rule, value) => validateVideoLink(rule, value) }]}
                 data-cy="form-item-video-link">
                 <StyledInput
                   addonBefore="URL"

@@ -1,3 +1,5 @@
+/* eslint-disable no-useless-escape */
+/* eslint-disable no-undef */
 export function getEmbedUrl(url) {
   const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?(.+)/;
   const vimeoRegex = /(?:https?:\/\/)?(?:www\.)?vimeo\.com\/(.+)/;
@@ -18,11 +20,11 @@ export function getEmbedUrl(url) {
 }
 
 export const validateYouTubeURL = (url) => {
-  const youtubeRegex = /^((https?:)?\/\/)?((www\.)?youtube\.com|youtu\.be)\/watch\?(v=[^&\s]+)/;
+  const youtubeRegex = /^((https?\:)?\/\/)?((www\.)?youtube\.com|youtu\.be)\/watch\?(v=[^&\s]+)/;
   return youtubeRegex.test(url);
 };
 
 export const validateVimeoURL = (url) => {
-  const vimeoRegex = /^((https?:)?\/\/)?(player\.)?vimeo\.com\/([0-9]+)/;
+  const vimeoRegex = /^((https?\:)?\/\/)?(player\.)?vimeo\.com\/([0-9]+)/;
   return vimeoRegex.test(url);
 };
