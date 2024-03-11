@@ -710,10 +710,9 @@ function AddEvent() {
       .validateFields(type === 'PUBLISH' ? validateFields : [])
       .then(() => {
         if (isValuesChanged && type !== 'PUBLISH') {
-          updateEventState({ id: eventId ?? eventData?.id, calendarId })
-            .unwrap()
+          saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
             .then(() => {
-              saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
+              updateEventState({ id: eventId ?? eventData?.id, calendarId })
                 .then(() => {
                   notification.success({
                     description:
