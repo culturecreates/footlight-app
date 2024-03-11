@@ -852,63 +852,66 @@ function Events() {
                 </Col>
 
                 {allTaxonomyData?.data?.length > 0 &&
-                  allTaxonomyData?.data?.map((taxonomy, index) => (
-                    <Col key={index}>
-                      <Popover
-                        placement="bottom"
-                        getPopupContainer={(trigger) => trigger.parentNode}
-                        content={
-                          <Row gutter={{ xs: 8, sm: 16, md: 24 }}>
-                            <Col span={24}>
-                              <div style={{ padding: '8px', maxHeight: '300px', overflowY: 'scroll' }}>
-                                <Tree
-                                  checkable
-                                  autoExpandParent={true}
-                                  onCheck={(checkedKeys, { checked, checkedNodes, node, event, halfCheckedKeys }) =>
-                                    onCheck({
-                                      checkedKeys,
-                                      checked,
-                                      checkedNodes,
-                                      node,
-                                      event,
-                                      halfCheckedKeys,
-                                      taxonomy: taxonomy?.id,
-                                    })
-                                  }
-                                  checkedKeys={taxonomyFilter[taxonomy?.id] ?? []}
-                                  treeData={treeTaxonomyOptions(
-                                    allTaxonomyData,
-                                    user,
-                                    taxonomy?.mappedToField,
-                                    false,
-                                    calendarContentLanguage,
-                                  )}
-                                />
-                              </div>
-                            </Col>
-                          </Row>
-                        }
-                        trigger="click"
-                        overlayClassName="date-filter-popover">
-                        <Button
-                          size="large"
-                          className="filter-buttons"
-                          style={{ borderColor: Object.keys(taxonomyFilter)?.length > 0 > 0 && '#607EFC' }}
-                          data-cy="button-filter-dates">
-                          {bilingual({
-                            en: taxonomy?.name?.en,
-                            fr: taxonomy?.name?.fr,
-                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                          })}
-                          {Object.keys(taxonomyFilter)?.length > 0 && (
-                            <>
-                              &nbsp; <Badge color="#1B3DE6" />
-                            </>
-                          )}
-                        </Button>
-                      </Popover>
-                    </Col>
-                  ))}
+                  allTaxonomyData?.data?.map((taxonomy, index) => {
+                    if (taxonomy?.isDynamicField === true)
+                      return (
+                        <Col key={index}>
+                          <Popover
+                            placement="bottom"
+                            getPopupContainer={(trigger) => trigger.parentNode}
+                            content={
+                              <Row gutter={{ xs: 8, sm: 16, md: 24 }}>
+                                <Col span={24}>
+                                  <div style={{ padding: '8px', maxHeight: '300px', overflowY: 'scroll' }}>
+                                    <Tree
+                                      checkable
+                                      autoExpandParent={true}
+                                      onCheck={(checkedKeys, { checked, checkedNodes, node, event, halfCheckedKeys }) =>
+                                        onCheck({
+                                          checkedKeys,
+                                          checked,
+                                          checkedNodes,
+                                          node,
+                                          event,
+                                          halfCheckedKeys,
+                                          taxonomy: taxonomy?.id,
+                                        })
+                                      }
+                                      checkedKeys={taxonomyFilter[taxonomy?.id] ?? []}
+                                      treeData={treeTaxonomyOptions(
+                                        allTaxonomyData,
+                                        user,
+                                        taxonomy?.mappedToField,
+                                        true,
+                                        calendarContentLanguage,
+                                      )}
+                                    />
+                                  </div>
+                                </Col>
+                              </Row>
+                            }
+                            trigger="click"
+                            overlayClassName="date-filter-popover">
+                            <Button
+                              size="large"
+                              className="filter-buttons"
+                              style={{ borderColor: Object.keys(taxonomyFilter)?.length > 0 > 0 && '#607EFC' }}
+                              data-cy="button-filter-dates">
+                              {bilingual({
+                                en: taxonomy?.name?.en,
+                                fr: taxonomy?.name?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              })}
+                              {Object.keys(taxonomyFilter)?.length > 0 && (
+                                <>
+                                  &nbsp; <Badge color="#1B3DE6" />
+                                </>
+                              )}
+                            </Button>
+                          </Popover>
+                        </Col>
+                      );
+                  })}
 
                 <Col>
                   {(userFilter.length > 0 ||
