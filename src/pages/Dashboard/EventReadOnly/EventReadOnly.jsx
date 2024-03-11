@@ -41,6 +41,7 @@ import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
+import { getEmbedUrl } from '../../../utils/getEmbedVideoUrl';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -196,7 +197,7 @@ function EventReadOnly() {
     !isLoading &&
     !taxonomyLoading && (
       <div>
-        <Row gutter={[32, 24]} className="read-only-wrapper events-read-only-wrapper ">
+        <Row gutter={[32, 24]} className="read-only-wrapper events-read-only-wrapper " style={{ margin: 0 }}>
           <Col span={24} className="top-level-column">
             <Breadcrumbs
               name={contentLanguageBilingual({
@@ -863,6 +864,21 @@ function EventReadOnly() {
                       </p>
                     </>
                   )}
+
+                  {getEmbedUrl(eventData?.videoUrl) !== '' && (
+                    <Row>
+                      <Col span={24}>
+                        <iframe
+                          className="iframe-video-embed"
+                          width="100%"
+                          height="315"
+                          src={getEmbedUrl(eventData?.videoUrl)}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowfullscreen></iframe>
+                      </Col>
+                    </Row>
+                  )}
+
                   {eventData?.facebookUrl && (
                     <>
                       <p className="read-only-event-content-sub-title-primary">

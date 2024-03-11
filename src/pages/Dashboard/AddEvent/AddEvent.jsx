@@ -92,6 +92,7 @@ import CustomPopover from '../../../components/Popover/Popover';
 import { removeEmptyParagraphsAtEnd } from '../../../utils/removeEmptyParagraphsAtEnd';
 import Alert from '../../../components/Alert';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
+import { getEmbedUrl } from '../../../utils/getEmbedVideoUrl';
 
 const { TextArea } = Input;
 
@@ -3554,6 +3555,20 @@ function AddEvent() {
                   data-cy="input-video-link"
                 />
               </Form.Item>
+              {getEmbedUrl(form.getFieldValue(otherInformationFieldNames.videoLink)) !== '' && (
+                <Row>
+                  <Col span={24}>
+                    <iframe
+                      className="iframe-video-embed"
+                      width="100%"
+                      height="315"
+                      src={getEmbedUrl(form.getFieldValue(otherInformationFieldNames.videoLink))}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowfullscreen></iframe>
+                  </Col>
+                </Row>
+              )}
+
               <Form.Item
                 name={otherInformationFieldNames.facebookLinkWrap}
                 className={otherInformationFieldNames.facebookLinkWrap}
