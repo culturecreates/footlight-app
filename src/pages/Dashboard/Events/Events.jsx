@@ -51,6 +51,7 @@ const standardTaxonomyMaps = [
     queryKey: 'audiences',
   },
 ];
+
 function Events() {
   const { t } = useTranslation();
   const { calendarId } = useParams();

@@ -26,8 +26,8 @@ function Main(props) {
           </Col>
           <Col>{children?.length > 3 && children[3]}</Col>
 
-          <Col>
-            <Row gutter={20}>
+          <Col span={24}>
+            <Row gutter={[16, 8]}>
               {children?.length > 4 && children[4]}
 
               {/* <Space>

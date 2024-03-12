@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import './places.css';
-import { List, Grid } from 'antd';
-import { DeleteOutlined, EnvironmentOutlined } from '@ant-design/icons';
+import { List, Grid, Popover, Col, Button, Row, Tree, Badge, Space } from 'antd';
+import { DeleteOutlined, EnvironmentOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
@@ -20,7 +20,7 @@ import {
   createSearchParams,
   useSearchParams,
 } from 'react-router-dom';
-import { contentLanguageBilingual } from '../../../utils/bilingual';
+import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
@@ -31,8 +31,25 @@ import i18n from 'i18next';
 import { PathName } from '../../../constants/pathName';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import { useLazyGetEntityDependencyQuery } from '../../../services/entities';
+import { taxonomyClass } from '../../../constants/taxonomyClass';
+import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
+import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 
 const { useBreakpoint } = Grid;
+const standardTaxonomyMaps = [
+  {
+    mappedToField: 'Type',
+    queryKey: 'type',
+  },
+  {
+    mappedToField: 'PlaceAccessibility',
+    queryKey: 'accessibility',
+  },
+  {
+    mappedToField: 'Region',
+    queryKey: 'region',
+  },
+];
 
 function Places() {
   const { t } = useTranslation();
@@ -53,6 +70,14 @@ function Places() {
   ] = useOutletContext();
   setContentBackgroundColor('#fff');
 
+  const { currentData: allTaxonomyData } = useGetAllTaxonomyQuery({
+    calendarId,
+    search: '',
+    taxonomyClass: taxonomyClass.PLACE,
+    includeConcepts: true,
+    sessionId: timestampRef,
+    addToFilter: false,
+  });
   const [getAllPlaces, { currentData: allPlacesData, isFetching: allPlacesFetching, isSuccess: allPlacesSuccess }] =
     useLazyGetAllPlacesQuery();
   const [deletePlaces] = useDeletePlacesMutation();
@@ -70,6 +95,22 @@ function Places() {
       ? searchParams.get('order')
       : sessionStorage.getItem('placeOrder') ?? sortOrder?.ASC,
   });
+
+  const [taxonomyFilter, setTaxonomyFilter] = useState(
+    searchParams.get('taxonomyFilter')
+      ? JSON.parse(searchParams.get('taxonomyFilter'))
+      : sessionStorage.getItem('placeTaxonomyFilter')
+      ? JSON.parse(sessionStorage.getItem('placeTaxonomyFilter'))
+      : {},
+  );
+
+  const [standardTaxonomyFilter, setStandardTaxonomyFilter] = useState(
+    searchParams.get('standardTaxonomyFilter')
+      ? JSON.parse(searchParams.get('standardTaxonomyFilter'))
+      : sessionStorage.getItem('standardPlaceTaxonomyFilter')
+      ? JSON.parse(sessionStorage.getItem('standardPlaceTaxonomyFilter'))
+      : {},
+  );
 
   const totalCount = allPlacesData?.count;
 
@@ -119,9 +160,40 @@ function Places() {
   const onChangeHandler = (event) => {
     if (event.target.value === '') setPlacesSearchQuery('');
   };
+  const onCheck = ({ checkedKeys, taxonomy }) => {
+    if (checkedKeys?.length === 0) {
+      // eslint-disable-next-line no-unused-vars
+      const { [taxonomy]: removedKey, ...updatedFilter } = taxonomyFilter;
+      setTaxonomyFilter(updatedFilter);
+    } else setTaxonomyFilter({ ...taxonomyFilter, [taxonomy]: checkedKeys });
+  };
+
+  const onStandardTaxonomyCheck = ({ checkedKeys, taxonomy }) => {
+    if (checkedKeys?.length === 0) {
+      // eslint-disable-next-line no-unused-vars
+      const { [taxonomy]: removedKey, ...updatedFilter } = standardTaxonomyFilter;
+      setStandardTaxonomyFilter(updatedFilter);
+    } else setStandardTaxonomyFilter({ ...standardTaxonomyFilter, [taxonomy]: checkedKeys });
+  };
+
+  const filterClearHandler = () => {
+    setFilter({
+      sort: sortByOptionsOrgsPlacesPerson[0]?.key,
+      order: sortOrder?.ASC,
+    });
+    setTaxonomyFilter({});
+    setStandardTaxonomyFilter({});
+    setPageNumber(1);
+    sessionStorage.removeItem('placesPage');
+    sessionStorage.removeItem('placesSearchQuery');
+    sessionStorage.removeItem('placeOrder');
+    sessionStorage.removeItem('taxonomyFilter');
+    sessionStorage.removeItem('standardTaxonomyFilter');
+  };
 
   useEffect(() => {
     let sortQuery = new URLSearchParams();
+    let query = new URLSearchParams();
     sortQuery.append(
       'sort',
       encodeURIComponent(
@@ -130,17 +202,37 @@ function Places() {
         })`,
       ),
     );
+    Object.keys(taxonomyFilter)?.forEach((taxonomy) => {
+      if (taxonomyFilter[taxonomy]?.length > 0) {
+        taxonomyFilter[taxonomy]?.forEach((concept) => query.append('concept', concept));
+      }
+    });
+
+    Object.keys(standardTaxonomyFilter)?.forEach((taxonomy) => {
+      if (standardTaxonomyFilter[taxonomy]?.length > 0) {
+        standardTaxonomyFilter[taxonomy]?.forEach((concept) => {
+          standardTaxonomyMaps?.forEach((map) => {
+            if (map.mappedToField === taxonomy) query.append(map.queryKey, concept);
+          });
+        });
+      }
+    });
     getAllPlaces({
       calendarId,
       sessionId: timestampRef,
       pageNumber,
       query: placesSearchQuery,
       sort: sortQuery,
+      filterKeys: query,
     });
     let params = {
       page: pageNumber,
       order: filter?.order,
       sortBy: filter?.sort,
+      ...(Object.keys(taxonomyFilter)?.length > 0 && { taxonomyFilter: JSON.stringify(taxonomyFilter) }),
+      ...(Object.keys(standardTaxonomyFilter)?.length > 0 && {
+        standardTaxonomyFilter: JSON.stringify(standardTaxonomyFilter),
+      }),
     };
     if (placesSearchQuery && placesSearchQuery !== '')
       params = {
@@ -151,7 +243,13 @@ function Places() {
     sessionStorage.setItem('placesPage', pageNumber);
     sessionStorage.setItem('placesSearchQuery', placesSearchQuery);
     sessionStorage.setItem('placeOrder', filter?.order);
-  }, [pageNumber, placesSearchQuery, filter]);
+    if (Object.keys(taxonomyFilter)?.length > 0)
+      sessionStorage.setItem('placeTaxonomyFilter', JSON.stringify(taxonomyFilter));
+    else sessionStorage.removeItem('placeTaxonomyFilter');
+    if (Object.keys(standardTaxonomyFilter)?.length > 0)
+      sessionStorage.setItem('standardPlaceTaxonomyFilter', JSON.stringify(standardTaxonomyFilter));
+    else sessionStorage.removeItem('standardPlaceTaxonomyFilter');
+  }, [pageNumber, placesSearchQuery, filter, taxonomyFilter, standardTaxonomyFilter]);
   return (
     <>
       {dependencyDetailsFetching && (
@@ -195,7 +293,148 @@ function Places() {
               data-cy="input-place-search"
             />
             <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
-            <></>
+            <Space>
+              {allTaxonomyData?.data?.length > 0 &&
+                allTaxonomyData?.data?.map((taxonomy, index) => {
+                  if (!taxonomy?.isDynamicField)
+                    return (
+                      <Col key={index}>
+                        <Popover
+                          placement="bottom"
+                          getPopupContainer={(trigger) => trigger.parentNode}
+                          content={
+                            <Row gutter={{ xs: 8, sm: 16, md: 24 }}>
+                              <Col span={24}>
+                                <div style={{ padding: '8px', maxHeight: '300px', overflowY: 'scroll' }}>
+                                  <Tree
+                                    checkable
+                                    autoExpandParent={true}
+                                    onCheck={(checkedKeys, { checked, checkedNodes, node, event, halfCheckedKeys }) =>
+                                      onStandardTaxonomyCheck({
+                                        checkedKeys,
+                                        checked,
+                                        checkedNodes,
+                                        node,
+                                        event,
+                                        halfCheckedKeys,
+                                        taxonomy: taxonomy?.mappedToField,
+                                      })
+                                    }
+                                    checkedKeys={standardTaxonomyFilter[taxonomy?.mappedToField] ?? []}
+                                    treeData={treeTaxonomyOptions(
+                                      allTaxonomyData,
+                                      user,
+                                      taxonomy?.mappedToField,
+                                      false,
+                                      calendarContentLanguage,
+                                    )}
+                                  />
+                                </div>
+                              </Col>
+                            </Row>
+                          }
+                          trigger="click"
+                          overlayClassName="date-filter-popover">
+                          <Button
+                            size="large"
+                            className="filter-buttons"
+                            style={{
+                              borderColor: standardTaxonomyFilter[taxonomy?.mappedToField]?.length > 0 > 0 && '#607EFC',
+                            }}
+                            data-cy="button-filter-dates">
+                            {bilingual({
+                              en: taxonomy?.name?.en,
+                              fr: taxonomy?.name?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                            })}
+                            {standardTaxonomyFilter[taxonomy?.mappedToField]?.length > 0 && (
+                              <>
+                                &nbsp; <Badge color="#1B3DE6" />
+                              </>
+                            )}
+                          </Button>
+                        </Popover>
+                      </Col>
+                    );
+                })}
+              {allTaxonomyData?.data?.length > 0 &&
+                allTaxonomyData?.data?.map((taxonomy, index) => {
+                  if (taxonomy?.isDynamicField === true)
+                    return (
+                      <Col key={index}>
+                        <Popover
+                          placement="bottom"
+                          getPopupContainer={(trigger) => trigger.parentNode}
+                          content={
+                            <Row gutter={{ xs: 8, sm: 16, md: 24 }}>
+                              <Col span={24}>
+                                <div style={{ padding: '8px', maxHeight: '300px', overflowY: 'scroll' }}>
+                                  <Tree
+                                    checkable
+                                    autoExpandParent={true}
+                                    onCheck={(checkedKeys, { checked, checkedNodes, node, event, halfCheckedKeys }) =>
+                                      onCheck({
+                                        checkedKeys,
+                                        checked,
+                                        checkedNodes,
+                                        node,
+                                        event,
+                                        halfCheckedKeys,
+                                        taxonomy: taxonomy?.id,
+                                      })
+                                    }
+                                    checkedKeys={taxonomyFilter[taxonomy?.id] ?? []}
+                                    treeData={treeTaxonomyOptions(
+                                      allTaxonomyData,
+                                      user,
+                                      taxonomy?.mappedToField,
+                                      true,
+                                      calendarContentLanguage,
+                                    )}
+                                  />
+                                </div>
+                              </Col>
+                            </Row>
+                          }
+                          trigger="click"
+                          overlayClassName="date-filter-popover">
+                          <Button
+                            size="large"
+                            className="filter-buttons"
+                            style={{ borderColor: taxonomyFilter[taxonomy?.id]?.length > 0 > 0 && '#607EFC' }}
+                            data-cy="button-filter-dates">
+                            {bilingual({
+                              en: taxonomy?.name?.en,
+                              fr: taxonomy?.name?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                            })}
+                            {taxonomyFilter[taxonomy?.id]?.length > 0 && (
+                              <>
+                                &nbsp; <Badge color="#1B3DE6" />
+                              </>
+                            )}
+                          </Button>
+                        </Popover>
+                      </Col>
+                    );
+                })}
+              <Col>
+                {(filter?.order === sortOrder?.DESC ||
+                  Object.keys(taxonomyFilter)?.length > 0 ||
+                  Object.keys(standardTaxonomyFilter)?.length > 0) && (
+                  <Button
+                    size="large"
+                    className="filter-buttons"
+                    style={{ color: '#1B3DE6' }}
+                    onClick={filterClearHandler}
+                    data-cy="button-filter-clear">
+                    {t('dashboard.events.filter.clear')}&nbsp;
+                    <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
+                  </Button>
+                )}
+              </Col>
+            </Space>
+
             <div className="responsvie-list-wrapper-class">
               {!allPlacesFetching ? (
                 allPlacesData?.data?.length > 0 ? (
