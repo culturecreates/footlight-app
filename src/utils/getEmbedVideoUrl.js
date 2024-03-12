@@ -34,6 +34,6 @@ export const validateYouTubeURL = (url) => {
 };
 
 export const validateVimeoURL = (url) => {
-  const vimeoRegex = /^((https?\:)?\/\/)?(player\.)?vimeo\.com\/(?:video\/)?([0-9]+)/;
+  const vimeoRegex = /^((https?:)?\/\/)?(player\.)?(vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)?([0-9]+)/;
   return vimeoRegex.test(url);
 };
