@@ -160,6 +160,7 @@ function Places() {
   const onChangeHandler = (event) => {
     if (event.target.value === '') setPlacesSearchQuery('');
   };
+
   const onCheck = ({ checkedKeys, taxonomy }) => {
     if (checkedKeys?.length === 0) {
       // eslint-disable-next-line no-unused-vars
