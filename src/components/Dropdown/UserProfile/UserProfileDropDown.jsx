@@ -9,6 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import i18n from 'i18next';
 import { featureFlags } from '../../../utils/featureFlags';
+import { handleLogout } from '../../../hooks/useAuth';
 
 const UserProfileDropDown = () => {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ const UserProfileDropDown = () => {
         break;
       case 'logOut':
         sessionStorage.clear();
-        dispatch(clearUser());
+        handleLogout({ user, clearData: () => dispatch(clearUser()) });
         navigate(PathName.Login, { state: { previousPath: 'logout' } });
         break;
       default:
