@@ -22,11 +22,14 @@ import ErrorLayout from '../../layout/ErrorLayout/ErrorLayout';
 import CustomModal from '../../components/Modal/Common/CustomModal';
 import { useTranslation } from 'react-i18next';
 import { calendarModes } from '../../constants/calendarModes';
+import { useAuth } from '../../hooks/useAuth';
 
 const { Header, Content } = Layout;
 const { useBreakpoint } = Grid;
 
 function Dashboard() {
+  useAuth();
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
