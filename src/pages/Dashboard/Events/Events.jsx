@@ -37,7 +37,20 @@ import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 
 const { useBreakpoint } = Grid;
-
+const standardTaxonomyMaps = [
+  {
+    mappedToField: 'EventType',
+    queryKey: 'type',
+  },
+  {
+    mappedToField: 'EventAccessibility',
+    queryKey: 'accessibility',
+  },
+  {
+    mappedToField: 'Audience',
+    queryKey: 'audiences',
+  },
+];
 function Events() {
   const { t } = useTranslation();
   const { calendarId } = useParams();
@@ -186,6 +199,14 @@ function Events() {
       : {},
   );
 
+  const [standardTaxonomyFilter, setStandardTaxonomyFilter] = useState(
+    searchParams.get('standardTaxonomyFilter')
+      ? JSON.parse(searchParams.get('standardTaxonomyFilter'))
+      : sessionStorage.getItem('standardTaxonomyFilter')
+      ? JSON.parse(sessionStorage.getItem('standardTaxonomyFilter'))
+      : {},
+  );
+
   const dateTypeSelector = (dates) => {
     if (dates?.length == 2) {
       if (dates?.every((date) => date === 'any')) return dateFilterTypes.ALL_EVENTS;
@@ -296,6 +317,14 @@ function Events() {
     } else setTaxonomyFilter({ ...taxonomyFilter, [taxonomy]: checkedKeys });
   };
 
+  const onStandardTaxonomyCheck = ({ checkedKeys, taxonomy }) => {
+    if (checkedKeys?.length === 0) {
+      // eslint-disable-next-line no-unused-vars
+      const { [taxonomy]: removedKey, ...updatedFilter } = standardTaxonomyFilter;
+      setStandardTaxonomyFilter(updatedFilter);
+    } else setStandardTaxonomyFilter({ ...standardTaxonomyFilter, [taxonomy]: checkedKeys });
+  };
+
   const onFilterChange = (values, filterType) => {
     if (filterType === filterTypes.PUBLICATION)
       setFilter({
@@ -339,6 +368,7 @@ function Events() {
     setSelectedDates([]);
     setSelectedDateType(dateFilterTypes.UPCOMING_EVENTS);
     setTaxonomyFilter({});
+    setStandardTaxonomyFilter({});
 
     setOrganizerFilter([]);
     let usersToClear = selectedUsers;
@@ -364,6 +394,7 @@ function Events() {
     sessionStorage.removeItem('startDateRange');
     sessionStorage.removeItem('endDateRange');
     sessionStorage.removeItem('taxonomyFilter');
+    sessionStorage.removeItem('standardTaxonomyFilter');
   };
 
   const dateFilterHandler = (e) => {
@@ -428,6 +459,17 @@ function Events() {
         taxonomyFilter[taxonomy]?.forEach((concept) => query.append('concept', concept));
       }
     });
+
+    Object.keys(standardTaxonomyFilter)?.forEach((taxonomy) => {
+      if (standardTaxonomyFilter[taxonomy]?.length > 0) {
+        standardTaxonomyFilter[taxonomy]?.forEach((concept) => {
+          standardTaxonomyMaps?.forEach((map) => {
+            if (map.mappedToField === taxonomy) query.append(map.queryKey, concept);
+          });
+        });
+      }
+    });
+
     sortQuery.append(
       'sort',
       encodeURIComponent(
@@ -475,6 +517,9 @@ function Events() {
       ...(organizerQuery && { organizers: organizerQuery }),
       ...(publicationQuery && { publication: publicationQuery }),
       ...(Object.keys(taxonomyFilter)?.length > 0 && { taxonomyFilter: JSON.stringify(taxonomyFilter) }),
+      ...(Object.keys(standardTaxonomyFilter)?.length > 0 && {
+        standardTaxonomyFilter: JSON.stringify(standardTaxonomyFilter),
+      }),
     };
 
     if (eventSearchQuery && eventSearchQuery !== '')
@@ -505,7 +550,19 @@ function Events() {
     if (Object.keys(taxonomyFilter)?.length > 0)
       sessionStorage.setItem('taxonomyFilter', JSON.stringify(taxonomyFilter));
     else sessionStorage.removeItem('taxonomyFilter');
-  }, [calendarId, pageNumber, eventSearchQuery, filter, userFilter, organizerFilter, taxonomyFilter]);
+    if (Object.keys(standardTaxonomyFilter)?.length > 0)
+      sessionStorage.setItem('standardTaxonomyFilter', JSON.stringify(standardTaxonomyFilter));
+    else sessionStorage.removeItem('standardTaxonomyFilter');
+  }, [
+    calendarId,
+    pageNumber,
+    eventSearchQuery,
+    filter,
+    userFilter,
+    organizerFilter,
+    taxonomyFilter,
+    standardTaxonomyFilter,
+  ]);
 
   useEffect(() => {
     let allOrganizersWithSelected = [],
@@ -669,7 +726,7 @@ function Events() {
             </Col>
 
             <Col span={24} className="filter-container">
-              <Row gutter={[16, { xs: 8 }]}>
+              <Row gutter={[16, 8]}>
                 <Space>
                   <Col>
                     <SearchableCheckbox
@@ -850,7 +907,70 @@ function Events() {
                     </Button>
                   </SearchableCheckbox>
                 </Col>
-
+                {allTaxonomyData?.data?.length > 0 &&
+                  allTaxonomyData?.data?.map((taxonomy, index) => {
+                    if (!taxonomy?.isDynamicField)
+                      return (
+                        <Col key={index}>
+                          <Popover
+                            placement="bottom"
+                            getPopupContainer={(trigger) => trigger.parentNode}
+                            content={
+                              <Row gutter={{ xs: 8, sm: 16, md: 24 }}>
+                                <Col span={24}>
+                                  <div style={{ padding: '8px', maxHeight: '300px', overflowY: 'scroll' }}>
+                                    <Tree
+                                      checkable
+                                      autoExpandParent={true}
+                                      onCheck={(checkedKeys, { checked, checkedNodes, node, event, halfCheckedKeys }) =>
+                                        onStandardTaxonomyCheck({
+                                          checkedKeys,
+                                          checked,
+                                          checkedNodes,
+                                          node,
+                                          event,
+                                          halfCheckedKeys,
+                                          taxonomy: taxonomy?.mappedToField,
+                                        })
+                                      }
+                                      checkedKeys={standardTaxonomyFilter[taxonomy?.mappedToField] ?? []}
+                                      treeData={treeTaxonomyOptions(
+                                        allTaxonomyData,
+                                        user,
+                                        taxonomy?.mappedToField,
+                                        false,
+                                        calendarContentLanguage,
+                                      )}
+                                    />
+                                  </div>
+                                </Col>
+                              </Row>
+                            }
+                            trigger="click"
+                            overlayClassName="date-filter-popover">
+                            <Button
+                              size="large"
+                              className="filter-buttons"
+                              style={{
+                                borderColor:
+                                  standardTaxonomyFilter[taxonomy?.mappedToField]?.length > 0 > 0 && '#607EFC',
+                              }}
+                              data-cy="button-filter-dates">
+                              {bilingual({
+                                en: taxonomy?.name?.en,
+                                fr: taxonomy?.name?.fr,
+                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                              })}
+                              {standardTaxonomyFilter[taxonomy?.mappedToField]?.length > 0 && (
+                                <>
+                                  &nbsp; <Badge color="#1B3DE6" />
+                                </>
+                              )}
+                            </Button>
+                          </Popover>
+                        </Col>
+                      );
+                  })}
                 {allTaxonomyData?.data?.length > 0 &&
                   allTaxonomyData?.data?.map((taxonomy, index) => {
                     if (taxonomy?.isDynamicField === true)
@@ -895,14 +1015,14 @@ function Events() {
                             <Button
                               size="large"
                               className="filter-buttons"
-                              style={{ borderColor: Object.keys(taxonomyFilter)?.length > 0 > 0 && '#607EFC' }}
+                              style={{ borderColor: taxonomyFilter[taxonomy?.id]?.length > 0 > 0 && '#607EFC' }}
                               data-cy="button-filter-dates">
                               {bilingual({
                                 en: taxonomy?.name?.en,
                                 fr: taxonomy?.name?.fr,
                                 interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                               })}
-                              {Object.keys(taxonomyFilter)?.length > 0 && (
+                              {taxonomyFilter[taxonomy?.id]?.length > 0 && (
                                 <>
                                   &nbsp; <Badge color="#1B3DE6" />
                                 </>
@@ -920,7 +1040,8 @@ function Events() {
                     filter?.order === sortOrder?.DESC ||
                     filter?.sort != sortByOptions[2]?.key ||
                     organizerFilter?.length > 0 ||
-                    Object.keys(taxonomyFilter)?.length > 0) && (
+                    Object.keys(taxonomyFilter)?.length > 0 ||
+                    Object.keys(standardTaxonomyFilter)?.length > 0) && (
                     <Button
                       size="large"
                       className="filter-buttons"
