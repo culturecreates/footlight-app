@@ -293,29 +293,39 @@ const AddTaxonomyTest = () => {
         <Form layout="vertical" form={form} onValuesChange={handleValueChange}>
           <Row className="add-taxonomy-wrapper" gutter={[16, 16]}>
             <Col span={24}>
-              <Row justify="space-between">
-                <Col>
-                  <BreadCrumbButton />
-                  <div className="add-Taxonomy-heading">
-                    <h4 data-cy="heading-add-edit-taxonomy">
-                      {taxonomyId ? t('dashboard.taxonomy.addNew.editHeading') : t('dashboard.taxonomy.addNew.heading')}
-                    </h4>
-                  </div>
+              <Row>
+                <Col span={24}>
+                  <Row justify="space-between">
+                    <Col>
+                      <BreadCrumbButton />
+                    </Col>
+                    <Col>
+                      <div className="add-event-button-wrap">
+                        <Form.Item>
+                          <PrimaryButton
+                            data-cy="button-taxonomy-save"
+                            label={t('dashboard.taxonomy.addNew.save')}
+                            onClick={(e) => saveTaxonomyHandler(e)}
+                          />
+                        </Form.Item>
+                      </div>
+                    </Col>
+                  </Row>
                 </Col>
                 <Col>
-                  <div className="add-event-button-wrap">
-                    <Form.Item>
-                      <PrimaryButton
-                        data-cy="button-taxonomy-save"
-                        label={t('dashboard.taxonomy.addNew.save')}
-                        onClick={(e) => saveTaxonomyHandler(e)}
-                      />
-                    </Form.Item>
-                  </div>
+                  <Row>
+                    <div className="add-Taxonomy-heading">
+                      <h4 data-cy="heading-add-edit-taxonomy">
+                        {taxonomyId
+                          ? t('dashboard.taxonomy.addNew.editHeading')
+                          : t('dashboard.taxonomy.addNew.heading')}
+                      </h4>
+                    </div>
+                  </Row>
                 </Col>
               </Row>
             </Col>
-            <CardEvent>
+            <CardEvent marginResponsive="0px">
               <>
                 <Row>
                   <Col flex={'423px'}>
@@ -549,21 +559,33 @@ const AddTaxonomyTest = () => {
                   <Card bordered={false}>
                     <Row justify="space-between" wrap={false}>
                       <Col>
-                        <Row gutter={[24, 24]}>
-                          <Col flex="423px" className="heading-concepts">
-                            {t('dashboard.taxonomy.addNew.concepts.heading')}
+                        <Row>
+                          <Col>
+                            <Row gutter={[8, 8]} justify="space-between">
+                              <Col className="heading-concepts">{t('dashboard.taxonomy.addNew.concepts.heading')}</Col>
+                              <Col>
+                                <Outlined
+                                  data-cy="button-taxonomy-add-item"
+                                  label={t('dashboard.taxonomy.addNew.concepts.item')}
+                                  onClick={openAddNewConceptModal}>
+                                  <PlusOutlined style={{ fontSize: '24px' }} />
+                                </Outlined>
+                              </Col>
+                            </Row>
+                            <Row>
+                              <Col flex="423px" className="text-concepts">
+                                {t('dashboard.taxonomy.addNew.concepts.description')}
+                              </Col>
+                            </Row>
                           </Col>
-                          <Col flex="423px" className="text-concepts">
-                            {t('dashboard.taxonomy.addNew.concepts.description')}
-                          </Col>
+                        </Row>
+                        <Row>
                           <Col
                             span={24}
                             style={{
                               display: 'flex',
-                              paddingTop: '0',
-                              paddingRight: '12px',
-                              paddingBottom: '0',
-                              paddingLeft: '12px',
+                              marginTop: '16px',
+                              width: 'calc(100% - 100px)',
                             }}>
                             <Row style={{ flex: 1 }}>
                               <DraggableTree
@@ -580,21 +602,6 @@ const AddTaxonomyTest = () => {
                             </Row>
                           </Col>
                         </Row>
-                      </Col>
-                      <Col>
-                        <Outlined
-                          data-cy="button-taxonomy-add-item"
-                          label={t('dashboard.taxonomy.addNew.concepts.item')}
-                          onClick={openAddNewConceptModal}
-                          style={{
-                            paddingTop: '8px',
-                            paddingRight: '16px',
-                            paddingBottom: '8px',
-                            paddingLeft: '8px',
-                            height: '40px',
-                          }}>
-                          <PlusOutlined style={{ fontSize: '24px' }} />
-                        </Outlined>
                       </Col>
                     </Row>
                   </Card>

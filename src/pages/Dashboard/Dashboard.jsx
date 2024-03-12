@@ -22,11 +22,14 @@ import ErrorLayout from '../../layout/ErrorLayout/ErrorLayout';
 import CustomModal from '../../components/Modal/Common/CustomModal';
 import { useTranslation } from 'react-i18next';
 import { calendarModes } from '../../constants/calendarModes';
+import { useAuth } from '../../hooks/useAuth';
 
 const { Header, Content } = Layout;
 const { useBreakpoint } = Grid;
 
 function Dashboard() {
+  useAuth();
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -158,7 +161,7 @@ function Dashboard() {
             <Content
               className="site-layout-background"
               style={{
-                padding: `${screens.md ? '34px 32px 32px 32px' : '16px'}`,
+                padding: `${screens.md ? '34px 32px 32px 32px' : '32px 16px'}`,
                 margin: 0,
                 minHeight: 280,
                 overflowY: 'scroll',

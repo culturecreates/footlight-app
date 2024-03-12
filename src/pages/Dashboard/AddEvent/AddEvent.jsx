@@ -227,6 +227,14 @@ function AddEvent() {
     supporter: 'supporter',
   };
 
+  const ticketLinkOptions = [
+    {
+      label: 'URL',
+      value: 'url',
+    },
+    { label: t('dashboard.events.addEditEvent.otherInformation.contact.email'), value: 'email' },
+  ];
+
   const addUpdateEventApiHandler = (eventObj, toggle) => {
     var promise = new Promise(function (resolve, reject) {
       if ((!eventId || eventId === '') && newEventId === null) {
@@ -467,6 +475,7 @@ function AddEvent() {
               ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote?.trim() }),
             };
           }
+
           if (values?.keywords?.length > 0) {
             keywords = values?.keywords;
           }
@@ -487,16 +496,28 @@ function AddEvent() {
                 }),
               priceCurrency: 'CAD',
               ...(ticketType === offerTypes.PAYING &&
-                values?.ticketLink && {
+                values?.ticketLink &&
+                values?.ticketLinkType == ticketLinkOptions[0].value && {
                   url: {
                     uri: urlProtocolCheck(values?.ticketLink),
                   },
                 }),
+              ...(ticketType === offerTypes.PAYING &&
+                values?.ticketLink &&
+                values?.ticketLinkType == ticketLinkOptions[1].value && {
+                  email: values?.ticketLink,
+                }),
               ...(ticketType === offerTypes.REGISTER &&
-                values?.registerLink && {
+                values?.registerLink &&
+                values?.ticketLinkType === ticketLinkOptions[0].value && {
                   url: {
                     uri: urlProtocolCheck(values?.registerLink),
                   },
+                }),
+              ...(ticketType === offerTypes.REGISTER &&
+                values?.registerLink &&
+                values?.ticketLinkType === ticketLinkOptions[1].value && {
+                  email: values?.registerLink,
                 }),
             };
           }
@@ -707,7 +728,7 @@ function AddEvent() {
     const isValuesChanged = showDialog;
     setShowDialog(false);
     form
-      .validateFields(type === 'PUBLISH' ? validateFields : [])
+      .validateFields(type === 'PUBLISH' || type === 'REVIEW' ? validateFields : [])
       .then(() => {
         if (isValuesChanged && type !== 'PUBLISH') {
           saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
@@ -755,24 +776,26 @@ function AddEvent() {
             })
             .catch((error) => console.log(error));
         } else {
-          updateEventState({ id: eventId, calendarId, publishState })
-            .unwrap()
-            .then(() => {
-              notification.success({
-                description:
-                  calendar[0]?.role === userRoles.GUEST
-                    ? t('dashboard.events.addEditEvent.notification.sendToReview')
-                    : eventData?.publishState === eventPublishState.DRAFT
-                    ? t('dashboard.events.addEditEvent.notification.publish')
-                    : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
-                placement: 'top',
-                closeIcon: <></>,
-                maxCount: 1,
-                duration: 3,
-              });
-              navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
-            })
-            .catch((error) => console.log(error));
+          if (eventId) {
+            updateEventState({ id: eventId, calendarId, publishState })
+              .unwrap()
+              .then(() => {
+                notification.success({
+                  description:
+                    calendar[0]?.role === userRoles.GUEST
+                      ? t('dashboard.events.addEditEvent.notification.sendToReview')
+                      : eventData?.publishState === eventPublishState.DRAFT
+                      ? t('dashboard.events.addEditEvent.notification.publish')
+                      : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+              })
+              .catch((error) => console.log(error));
+          }
         }
       })
       .catch((error) => {
@@ -856,7 +879,7 @@ function AddEvent() {
           <Form.Item>
             <PrimaryButton
               label={t('dashboard.events.addEditEvent.saveOptions.sendToReview')}
-              onClick={(e) => reviewPublishHandler(e)}
+              onClick={(e) => reviewPublishHandler({ event: e, type: 'REVIEW' })}
               data-cy="button-review-event"
               disabled={
                 updateEventLoading || addEventLoading || updateEventStateLoading || addImageLoading ? true : false
@@ -3863,75 +3886,181 @@ function AddEvent() {
                 </Row>
               )}
               {ticketType == offerTypes.REGISTER && (
-                <Form.Item
-                  name="registerLink"
-                  label={t('dashboard.events.addEditEvent.tickets.registerLink')}
-                  initialValue={eventData?.offerConfiguration?.url?.uri}
-                  rules={[
-                    {
-                      type: 'url',
-                      message: t('dashboard.events.addEditEvent.validations.url'),
-                    },
+                // <Input.Group compact>
+                //   <Form.Item name="ticketLinkType">
+                //     <Select
+                // options={[
+                //   {
+                //     value: 'url',
+                //     label: 'URL',
+                //   },
+                //   {
+                //     value: 'email',
+                //     label: 'Email',
+                //   },
+                // ]}
+                //       onChange={() => form.setFieldValue('ticketLink', null)}
+                //       data-cy="select-url-status"
+                //     />
+                //   </Form.Item>
+                // <Form.Item
+                //   name="registerLink"
+                //   // label={t('dashboard.events.addEditEvent.tickets.registerLink')}
+                //   initialValue={eventData?.offerConfiguration?.url?.uri}
+                //   rules={[
+                //     form.getFieldValue('ticketLinkType') == 'url' && {
+                //       type: 'url',
+                //       message: t('dashboard.events.addEditEvent.validations.url'),
+                //     },
 
-                    ({ getFieldValue }) => ({
-                      validator(_, value) {
-                        if (value || getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')) {
-                          return Promise.resolve();
-                        } else
-                          return Promise.reject(
-                            new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyRegister')),
-                          );
-                      },
-                    }),
-                  ]}
-                  data-cy="form-item-register-link-label">
-                  <StyledInput
-                    addonBefore="URL"
-                    autoComplete="off"
-                    placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderLinks')}
-                    data-cy="input-ticket-registration-link"
-                  />
+                //     ({ getFieldValue }) => ({
+                //       validator(_, value) {
+                //         if (value || getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')) {
+                //           return Promise.resolve();
+                //         } else
+                //           return Promise.reject(
+                //             new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyRegister')),
+                //           );
+                //       },
+                //     }),
+                //     form.getFieldValue('ticketLinkType') == 'email' && {
+                //       type: 'email',
+                //       message: t('login.validations.invalidEmail'),
+                //     },
+                //   ]}
+                //   data-cy="form-item-register-link-label">
+                //   <StyledInput
+                //     style={{ width: '75%' }}
+                //     // addonBefore="URL"
+                //     autoComplete="off"
+                //     placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderLinks')}
+                //     data-cy="input-ticket-registration-link"
+                //   />
+                // </Form.Item>
+                // </Input.Group>
+                <Form.Item label={t('dashboard.events.addEditEvent.tickets.registerLink')}>
+                  <Input.Group compact>
+                    <Form.Item
+                      name="ticketLinkType"
+                      noStyle
+                      initialValue={
+                        eventData?.offerConfiguration?.email ? ticketLinkOptions[1].value : ticketLinkOptions[0].value
+                      }
+                      rules={[{ required: true, message: 'Province is required' }]}>
+                      <Select
+                        className="ticket-link-select"
+                        style={{ width: '30%' }}
+                        placeholder="Select province"
+                        options={ticketLinkOptions}
+                        onChange={() => form.setFieldValue('registerLink', null)}
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      noStyle
+                      name="registerLink"
+                      initialValue={eventData?.offerConfiguration?.url?.uri ?? eventData?.offerConfiguration?.email}
+                      rules={[
+                        form.getFieldValue('ticketLinkType') == ticketLinkOptions[0].value && {
+                          type: 'url',
+                          message: t('dashboard.events.addEditEvent.validations.url'),
+                        },
+
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value || getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')) {
+                              return Promise.resolve();
+                            } else
+                              return Promise.reject(
+                                new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyRegister')),
+                              );
+                          },
+                        }),
+                        form.getFieldValue('ticketLinkType') == ticketLinkOptions[1].value && {
+                          type: 'email',
+                          message: t('login.validations.invalidEmail'),
+                        },
+                      ]}
+                      data-cy="form-item-register-link-label">
+                      <StyledInput
+                        style={{ width: '70%' }}
+                        autoComplete="off"
+                        placeholder={
+                          form.getFieldValue('ticketLinkType') == ticketLinkOptions[1].value
+                            ? t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderEmail')
+                            : t('dashboard.events.addEditEvent.tickets.placeHolderLinks')
+                        }
+                        data-cy="input-ticket-registration-link"
+                      />
+                    </Form.Item>
+                  </Input.Group>
                 </Form.Item>
               )}
               {ticketType == offerTypes.PAYING && (
                 <>
-                  <Form.Item
-                    name="ticketLink"
-                    label={t('dashboard.events.addEditEvent.tickets.buyTicketLink')}
-                    data-cy="form-item-ticket-link-label"
-                    initialValue={eventData?.offerConfiguration?.url?.uri}
-                    rules={[
-                      {
-                        type: 'url',
-                        message: t('dashboard.events.addEditEvent.validations.url'),
-                      },
+                  <Form.Item label={t('dashboard.events.addEditEvent.tickets.buyTicketLink')}>
+                    <Input.Group compact>
+                      <Form.Item
+                        name="ticketLinkType"
+                        noStyle
+                        initialValue={
+                          eventData?.offerConfiguration?.email ? ticketLinkOptions[1].value : ticketLinkOptions[0].value
+                        }>
+                        <Select
+                          className="ticket-link-select"
+                          style={{ width: '30%', backgroundColor: '#F7F7F7' }}
+                          options={ticketLinkOptions}
+                          onChange={() => form.setFieldValue('ticketLink', null)}
+                          data-cy="select-url-status"
+                        />
+                      </Form.Item>
 
-                      ({ getFieldValue }) => ({
-                        validator(_, value) {
-                          if (
-                            (getFieldValue('prices') != undefined &&
-                              getFieldValue('prices')?.length > 0 &&
-                              getFieldValue('prices')[0] != undefined &&
-                              getFieldValue('prices')[0].price != '') ||
-                            value ||
-                            getFieldValue('frenchTicketNote') ||
-                            getFieldValue('englishTicketNote')
-                          ) {
-                            return Promise.resolve();
-                          } else
-                            return Promise.reject(
-                              new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')),
-                            );
-                        },
-                      }),
-                    ]}>
-                    <StyledInput
-                      addonBefore="URL"
-                      autoComplete="off"
-                      placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderLinks')}
-                      data-cy="input-ticket-buy-link"
-                    />
+                      <Form.Item
+                        noStyle
+                        name="ticketLink"
+                        data-cy="form-item-ticket-link-label"
+                        initialValue={eventData?.offerConfiguration?.url?.uri ?? eventData?.offerConfiguration?.email}
+                        rules={[
+                          form.getFieldValue('ticketLinkType') == ticketLinkOptions[0].value && {
+                            type: 'url',
+                            message: t('dashboard.events.addEditEvent.validations.url'),
+                          },
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (
+                                (getFieldValue('prices') != undefined &&
+                                  getFieldValue('prices')?.length > 0 &&
+                                  getFieldValue('prices')[0] != undefined &&
+                                  getFieldValue('prices')[0].price != '') ||
+                                value ||
+                                getFieldValue('frenchTicketNote') ||
+                                getFieldValue('englishTicketNote')
+                              ) {
+                                return Promise.resolve();
+                              } else
+                                return Promise.reject(
+                                  new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')),
+                                );
+                            },
+                          }),
+                          form.getFieldValue('ticketLinkType') == ticketLinkOptions[1].value && {
+                            type: 'email',
+                            message: t('login.validations.invalidEmail'),
+                          },
+                        ]}>
+                        <StyledInput
+                          style={{ width: '70%' }}
+                          autoComplete="off"
+                          placeholder={
+                            form.getFieldValue('ticketLinkType') == ticketLinkOptions[1].value
+                              ? t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderEmail')
+                              : t('dashboard.events.addEditEvent.tickets.placeHolderLinks')
+                          }
+                          data-cy="input-ticket-buy-link"
+                        />
+                      </Form.Item>
+                    </Input.Group>
                   </Form.Item>
+
                   <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                     <BilingualInput>
                       <Form.List
