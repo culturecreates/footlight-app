@@ -92,6 +92,7 @@ import CustomPopover from '../../../components/Popover/Popover';
 import { removeEmptyParagraphsAtEnd } from '../../../utils/removeEmptyParagraphsAtEnd';
 import Alert from '../../../components/Alert';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
+import { getEmbedUrl, validateVimeoURL, validateYouTubeURL } from '../../../utils/getEmbedVideoUrl';
 
 const { TextArea } = Input;
 
@@ -234,6 +235,18 @@ function AddEvent() {
     },
     { label: t('dashboard.events.addEditEvent.otherInformation.contact.email'), value: 'email' },
   ];
+
+  const validateVideoLink = (rule, value) => {
+    if (!value) {
+      return Promise.resolve();
+    }
+
+    if (!validateYouTubeURL(value) && !validateVimeoURL(value)) {
+      return Promise.reject(t('dashboard.events.addEditEvent.validations.url'));
+    }
+
+    return Promise.resolve();
+  };
 
   const addUpdateEventApiHandler = (eventObj, toggle) => {
     var promise = new Promise(function (resolve, reject) {
@@ -3540,12 +3553,7 @@ function AddEvent() {
                 }}
                 label={t('dashboard.events.addEditEvent.otherInformation.videoLink')}
                 initialValue={eventData?.videoUrl}
-                rules={[
-                  {
-                    type: 'url',
-                    message: t('dashboard.events.addEditEvent.validations.url'),
-                  },
-                ]}
+                rules={[{ validator: (rule, value) => validateVideoLink(rule, value) }]}
                 data-cy="form-item-video-link">
                 <StyledInput
                   addonBefore="URL"
@@ -3554,6 +3562,20 @@ function AddEvent() {
                   data-cy="input-video-link"
                 />
               </Form.Item>
+              {getEmbedUrl(form.getFieldValue(otherInformationFieldNames.videoLink)) !== '' && (
+                <Row>
+                  <Col span={24}>
+                    <iframe
+                      className="iframe-video-embed"
+                      width="100%"
+                      height="315"
+                      src={getEmbedUrl(form.getFieldValue(otherInformationFieldNames.videoLink))}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowfullscreen></iframe>
+                  </Col>
+                </Row>
+              )}
+
               <Form.Item
                 name={otherInformationFieldNames.facebookLinkWrap}
                 className={otherInformationFieldNames.facebookLinkWrap}

@@ -11,6 +11,12 @@
   background-color: #ffffff;
 }
 
+.read-only-wrapper .iframe-video-embed {
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
+}
+
 .read-only-wrapper .read-only-event-section-col {
   background-color: #ffffff;
   border-radius: 4px;
