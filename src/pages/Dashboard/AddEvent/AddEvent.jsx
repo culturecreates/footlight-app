@@ -744,10 +744,9 @@ function AddEvent() {
       .validateFields(type === 'PUBLISH' || type === 'REVIEW' ? validateFields : [])
       .then(() => {
         if (isValuesChanged && type !== 'PUBLISH') {
-          updateEventState({ id: eventId ?? eventData?.id, calendarId })
-            .unwrap()
-            .then(() => {
-              saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
+          saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
+            .then((id) => {
+              updateEventState({ id, calendarId })
                 .then(() => {
                   notification.success({
                     description:
@@ -766,8 +765,8 @@ function AddEvent() {
                 .catch((error) => console.log(error));
             })
             .catch((error) => console.log(error));
-        } else if ((isValuesChanged || duplicateId) && type === 'PUBLISH') {
-          saveAsDraftHandler(event, type === 'PUBLISH', eventPublishState.DRAFT)
+        } else if ((isValuesChanged || duplicateId) && (type === 'PUBLISH' || type === 'REVIEW')) {
+          saveAsDraftHandler(event, type === 'PUBLISH' || 'REVIEW', eventPublishState.DRAFT)
             .then((id) => {
               updateEventState({ id: eventId ?? id, calendarId, publishState })
                 .unwrap()
@@ -869,7 +868,9 @@ function AddEvent() {
             <PrimaryButton
               label={t('dashboard.events.addEditEvent.saveOptions.publish')}
               data-cy="button-publish-event"
-              onClick={(e) => reviewPublishHandler({ event: e, publishState: eventPublishState.PUBLISHED })}
+              onClick={(e) =>
+                reviewPublishHandler({ event: e, publishState: eventPublishState.PUBLISHED, type: 'PUBLISH' })
+              }
               disabled={
                 updateEventLoading || addEventLoading || updateEventStateLoading || addImageLoading ? true : false
               }
