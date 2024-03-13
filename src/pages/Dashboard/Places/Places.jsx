@@ -342,7 +342,7 @@ function Places() {
                             style={{
                               borderColor: standardTaxonomyFilter[taxonomy?.mappedToField]?.length > 0 > 0 && '#607EFC',
                             }}
-                            data-cy="button-filter-dates">
+                            data-cy="button-filter-taxonomy-standard">
                             {bilingual({
                               en: taxonomy?.name?.en,
                               fr: taxonomy?.name?.fr,
@@ -403,7 +403,7 @@ function Places() {
                             size="large"
                             className="filter-buttons"
                             style={{ borderColor: taxonomyFilter[taxonomy?.id]?.length > 0 > 0 && '#607EFC' }}
-                            data-cy="button-filter-dates">
+                            data-cy="button-filter-taxonomy">
                             {bilingual({
                               en: taxonomy?.name?.en,
                               fr: taxonomy?.name?.fr,

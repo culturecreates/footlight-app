@@ -7,8 +7,8 @@ export const peopleApi = createApi({
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getAllPeople: builder.query({
-      query: ({ calendarId, pageNumber = 1, limit = 10, query = '', sort = 'sort=asc(name.en)' }) => ({
-        url: `people?page=${pageNumber}&limit=${limit}&search=${query}&${sort}`,
+      query: ({ calendarId, pageNumber = 1, limit = 10, query = '', sort = 'sort=asc(name.en)', filterKeys }) => ({
+        url: `people?page=${pageNumber}&limit=${limit}&search=${query}&${sort}&${filterKeys}`,
         method: 'GET',
         headers: {
           'calendar-id': calendarId,
