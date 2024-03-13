@@ -181,7 +181,7 @@ function PersonReadOnly() {
               </Row>
             </Col>
           )}
-          <Col className="read=only-content-wrapper top-level-column" span={24}>
+          <Col className="read-only-content-wrapper top-level-column" span={24}>
             <Row>
               <Card marginResponsive="0">
                 <Col>
