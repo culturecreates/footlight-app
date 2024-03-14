@@ -780,6 +780,7 @@
       "tab2": "Composante du module",
       "tab1": "Gestion des utilisateurs",
       "tab3": "Paramètres du calendrier",
+      "tab4": "Champs obligatoires",
       "userManagement": {
         "searchPlaceholder": "Recherche d'utilisateurs",
         "sort": "Trier par",

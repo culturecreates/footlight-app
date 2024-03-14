@@ -784,6 +784,7 @@
       "tab1": "User management",
       "tab2": "Calendar Widget",
       "tab3": "Calendar settings",
+      "tab4": "Mandatory fields",
       "userManagement": {
         "searchPlaceholder": "Search users",
         "sort": "Sort by",

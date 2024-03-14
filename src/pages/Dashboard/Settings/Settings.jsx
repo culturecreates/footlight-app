@@ -11,6 +11,7 @@ import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
 import { userRoles } from '../../../constants/userRoles';
 import CalendarSettings from './CalendarSettings';
+import MandatoryFields from './MandatoryFields';
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -71,6 +72,13 @@ const Settings = () => {
       label: t('dashboard.settings.tab3'),
       key: 'tab3',
       children: <CalendarSettings />,
+      disabled: false,
+      adminOnly: true,
+    },
+    {
+      label: t('dashboard.settings.tab4'),
+      key: 'tab4',
+      children: <MandatoryFields />,
       disabled: false,
       adminOnly: true,
     },
