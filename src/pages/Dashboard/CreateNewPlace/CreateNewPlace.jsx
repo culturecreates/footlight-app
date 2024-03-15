@@ -8,7 +8,9 @@ import {
   CloseCircleOutlined,
   InfoCircleOutlined,
   PlusOutlined,
+  EnvironmentOutlined,
   ExclamationCircleOutlined,
+  CalendarOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
 import PrimaryButton from '../../../components/Button/Primary';
@@ -49,6 +51,7 @@ import {
   useGetEntitiesByIdQuery,
   useLazyGetEntitiesByIdQuery,
   useLazyGetEntitiesQuery,
+  useLazyGetEntityDependencyDetailsQuery,
 } from '../../../services/entities';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
@@ -77,6 +80,7 @@ import { externalSourceOptions, sourceOptions } from '../../../constants/sourceO
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
+import moment from 'moment';
 
 const { TextArea } = Input;
 
@@ -151,6 +155,9 @@ function CreateNewPlace() {
     { ids: placeIdsQuery, calendarId, sessionId: timestampRef },
     { skip: externalCalendarEntityId ? false : true },
   );
+  const [getDerivedEntities, { isFetching: isEntityDetailsLoading }] = useLazyGetEntityDependencyDetailsQuery({
+    sessionId: timestampRef,
+  });
 
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
@@ -179,6 +186,9 @@ function CreateNewPlace() {
     containedInPlace: false,
     containsPlace: false,
   });
+
+  const [derivedEntitiesData, setDerivedEntitiesData] = useState();
+  const [derivedEntitiesDisplayStatus, setDerivedEntitiesDisplayStatus] = useState(false);
   const [containedInPlace, setContainedInPlace] = useState();
   const [selectedContainsPlaces, setSelectedContainsPlaces] = useState([]);
   const [allPlacesList, setAllPlacesList] = useState([]);
@@ -751,6 +761,22 @@ function CreateNewPlace() {
   }, [addedFields]);
 
   useEffect(() => {
+    if (placeId) {
+      getDerivedEntities({ id: placeId, calendarId }).then((response) => {
+        if (
+          response?.data?.events?.length > 0 ||
+          response?.data?.people?.length > 0 ||
+          response?.data?.organizations?.length > 0
+        ) {
+          setDerivedEntitiesData(response?.data);
+          setDerivedEntitiesDisplayStatus(true);
+        }
+        console.log(response?.data?.organizations);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
     if (selectedContainsPlaces) form.setFieldValue(formFieldNames.CONTAINS_PLACE, selectedContainsPlaces);
   }, [selectedContainsPlaces]);
 
@@ -961,7 +987,7 @@ function CreateNewPlace() {
     placesSearch('');
   }, []);
 
-  return !isPlaceLoading && !artsDataLoading && !taxonomyLoading ? (
+  return !isPlaceLoading && !artsDataLoading && !taxonomyLoading && !isEntityDetailsLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <Prompt when={showDialog} message={t('common.unsavedChanges')} beforeUnload={true} />
       <div className="add-edit-wrapper create-new-place-wrapper">
@@ -2603,6 +2629,131 @@ function CreateNewPlace() {
                     )}
                   </Form.Item>
                 </ChangeTypeLayout>
+              </Card>
+            )}
+
+            {derivedEntitiesDisplayStatus && (
+              <Card marginResponsive="0px">
+                <div className="associated-with-section">
+                  <h5 className="associated-with-section-title">
+                    {t('dashboard.organization.createNew.addOrganization.associatedEntities.title')}
+                  </h5>
+                  {derivedEntitiesData?.places?.length > 0 && (
+                    <div>
+                      <p className="associated-with-title">
+                        {t('dashboard.organization.createNew.addOrganization.associatedEntities.place')}
+                        <div className="associated-with-cards-wrapper">
+                          {derivedEntitiesData?.places?.map((place) => {
+                            <SelectionItem
+                              key={place._id}
+                              name={
+                                place?.name?.en || place?.name?.fr
+                                  ? contentLanguageBilingual({
+                                      en: place?.name?.en,
+                                      fr: place?.name?.fr,
+                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                      calendarContentLanguage: calendarContentLanguage,
+                                    })
+                                  : typeof place?.name === 'string' && place?.name
+                              }
+                              icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
+                              // description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                              bordered
+                              itemWidth="100%"
+                            />;
+                          })}
+                        </div>
+                      </p>
+                    </div>
+                  )}
+                  {derivedEntitiesData?.organizations?.length > 0 && (
+                    <div>
+                      <p className="associated-with-title">
+                        {t('dashboard.organization.createNew.addOrganization.associatedEntities.organizations')}
+                        <div className="associated-with-cards-wrapper">
+                          {derivedEntitiesData?.organizations?.map((org) => {
+                            return (
+                              <SelectionItem
+                                key={org._id}
+                                name={
+                                  org?.name?.en || org?.name?.fr
+                                    ? contentLanguageBilingual({
+                                        en: org?.name?.en,
+                                        fr: org?.name?.fr,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        calendarContentLanguage: calendarContentLanguage,
+                                      })
+                                    : typeof org?.name === 'string' && org?.name
+                                }
+                                icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
+                                bordered
+                                itemWidth="100%"
+                              />
+                            );
+                          })}
+                        </div>
+                      </p>
+                    </div>
+                  )}
+                  {derivedEntitiesData?.people?.length > 0 && (
+                    <div>
+                      <p className="associated-with-title">
+                        {t('dashboard.organization.createNew.addOrganization.associatedEntities.people')}
+                        <div className="associated-with-cards-wrapper">
+                          {derivedEntitiesData?.people?.map((person) => {
+                            <SelectionItem
+                              key={person._id}
+                              name={
+                                person?.name?.en || person?.name?.fr
+                                  ? contentLanguageBilingual({
+                                      en: person?.name?.en,
+                                      fr: person?.name?.fr,
+                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                      calendarContentLanguage: calendarContentLanguage,
+                                    })
+                                  : typeof person?.name === 'string' && person?.name
+                              }
+                              icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
+                              bordered
+                              itemWidth="100%"
+                            />;
+                          })}
+                        </div>
+                      </p>
+                    </div>
+                  )}
+                  {derivedEntitiesData?.events?.length > 0 && (
+                    <div>
+                      <p className="associated-with-title">
+                        {t('dashboard.organization.createNew.addOrganization.associatedEntities.events')}
+                        <div className="associated-with-cards-wrapper">
+                          {derivedEntitiesData?.events?.map((event) => {
+                            return (
+                              <SelectionItem
+                                key={event._id}
+                                name={
+                                  event?.name?.en || event?.name?.fr
+                                    ? contentLanguageBilingual({
+                                        en: event?.name?.en,
+                                        fr: event?.name?.fr,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        calendarContentLanguage: calendarContentLanguage,
+                                      })
+                                    : typeof event?.name === 'string' && event?.name
+                                }
+                                icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
+                                description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                                bordered
+                                itemWidth="100%"
+                              />
+                            );
+                          })}
+                        </div>
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <></>
               </Card>
             )}
           </Row>

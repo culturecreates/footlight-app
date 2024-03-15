@@ -510,6 +510,13 @@
             "secondPart": "créez une nouvelle organisation",
             "thirdPart": " et ne modifiez pas celle-ci."
           },
+          "associatedEntities": {
+            "title": "Associé à",
+            "place": "Lieu",
+            "events": "Événements",
+            "people": "Personnes",
+            "organizations": "Organisations"
+          },
           "addSocialMediaLinks": "Ajouter un lien"
         },
         "notification": {

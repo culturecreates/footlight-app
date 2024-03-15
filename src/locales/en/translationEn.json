@@ -510,6 +510,13 @@
             "secondPart": "create a new organization",
             "thirdPart": " and do not edit this one."
           },
+          "associatedEntities": {
+            "title": "Associated with",
+            "place": "Places",
+            "events": "Event",
+            "people": "People",
+            "organizations": "Organizations"
+          },
           "addSocialMediaLinks": "Add media link"
         },
         "notification": {
