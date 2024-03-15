@@ -17,9 +17,20 @@ export const entitiesApi = createApi({
       }),
       transformResponse: (response) => response,
     }),
-    getEntityDependency: builder.query({
+    getEntityDependencyDetails: builder.query({
+      query: ({ id, calendarId }) => ({
+        url: `entities/derived-entities?entityIds=${id}`,
+        method: 'GET',
+
+        headers: {
+          'calendar-id': calendarId,
+        },
+      }),
+      transformResponse: (response) => response,
+    }),
+    getEntityDependencyCount: builder.query({
       query: ({ ids, calendarId }) => ({
-        url: `get-entity-dependency?entityIds=${ids}`,
+        url: `entities/derived-entities/stats?entity-ids=${ids}`,
         method: 'GET',
 
         headers: {
@@ -47,5 +58,6 @@ export const {
   useGetEntitiesQuery,
   useLazyGetEntitiesByIdQuery,
   useGetEntitiesByIdQuery,
-  useLazyGetEntityDependencyQuery,
+  useLazyGetEntityDependencyCountQuery,
+  useGetEntityDependencyDetailsQuery,
 } = entitiesApi;

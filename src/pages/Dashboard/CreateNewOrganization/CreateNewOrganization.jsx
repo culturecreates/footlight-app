@@ -35,6 +35,7 @@ import {
   useGetEntitiesByIdQuery,
   useLazyGetEntitiesByIdQuery,
   useLazyGetEntitiesQuery,
+  useGetEntityDependencyDetailsQuery,
 } from '../../../services/entities';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
 import ChangeType from '../../../components/ChangeType';
@@ -97,6 +98,12 @@ function CreateNewOrganization() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
+
+  const { currentData: entityDetailsData, isLoading: isEntityDetailsLoading } = useGetEntityDependencyDetailsQuery({
+    id: organizationId,
+    calendarId,
+  });
+
   const [getPlace] = useLazyGetPlaceQuery();
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
@@ -805,7 +812,11 @@ function CreateNewOrganization() {
     placesSearch('');
   }, []);
 
-  return fields && !organizationLoading && !taxonomyLoading && !artsDataLoading ? (
+  useEffect(() => {
+    console.log(entityDetailsData);
+  }, [entityDetailsData]);
+
+  return fields && !organizationLoading && !taxonomyLoading && !artsDataLoading && !isEntityDetailsLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <Prompt when={showDialog} message={t('common.unsavedChanges')} beforeUnload={true} />
       <div className="add-edit-wrapper add-organization-wrapper">
@@ -1064,6 +1075,11 @@ function CreateNewOrganization() {
                   </Card>
                 );
             })}
+
+            <Card marginResponsive="0px">
+              <></>
+              <></>
+            </Card>
           </Row>
         </Form>
       </div>
