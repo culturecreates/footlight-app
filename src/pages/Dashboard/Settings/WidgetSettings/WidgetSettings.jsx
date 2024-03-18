@@ -185,7 +185,7 @@ const WidgetSettings = () => {
 
       setUrl(urlCopy);
       setIframeCode(
-        `<iframe src="${urlCopy.href}" width="100%" style={{ maxWidth: "${width}px", border: 'none' }} height="${height}px"></iframe>`,
+        `<iframe src="${urlCopy.href}" width="100%" style="max-width:${width}px; border:none" height="${height}px"></iframe>`,
       );
     }
   };
@@ -346,7 +346,7 @@ const WidgetSettings = () => {
     setUrlMObile(urlCopyMobile);
 
     setIframeCode(
-      `<iframe src="${urlCopy.href}" width="100%" style={{ maxWidth: "1000px", border: 'none' }} height="${height}px"></iframe>`,
+      `<iframe src="${urlCopy.href}" width="100%" style="max-width:1000px; border:none" height="${height}px"></iframe>`,
     );
   }, [calendarContentLanguage]);
 
