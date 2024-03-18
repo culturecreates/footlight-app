@@ -12,7 +12,19 @@ export const calendarApi = createApi({
     getCalendar: builder.query({
       query: ({ id }) => `calendars/${id}`,
     }),
+    updateCalendar: builder.mutation({
+      query: ({ data, calendarId }) => ({
+        url: `calendars/${calendarId}`,
+        method: 'PATCH',
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useGetAllCalendarsQuery, useLazyGetCalendarQuery, useLazyGetAllCalendarsQuery } = calendarApi;
+export const {
+  useGetAllCalendarsQuery,
+  useLazyGetCalendarQuery,
+  useLazyGetAllCalendarsQuery,
+  useUpdateCalendarMutation,
+} = calendarApi;

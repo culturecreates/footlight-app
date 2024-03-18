@@ -9,6 +9,7 @@ import AddField from '../../Button/AddField';
 
 function MandatoryField(props) {
   const { field, formName } = props;
+  let { updatedFormFields } = props;
   const { user } = useSelector(getUserDetails);
 
   const [addedFields, setAddedFields] = useState(field?.filter((f) => f?.isRequiredField || f?.preFilled));
@@ -21,14 +22,20 @@ function MandatoryField(props) {
       isRequiredField: false,
     };
     if (!removedField?.preFilled) {
-      const updatedFields = addedFields.filter((field, i) => i !== index);
+      let updatedFields = addedFields.filter((field, i) => i !== index);
+      updatedFormFields = updatedFormFields?.map((f) => {
+        if (f.formName === formName) {
+          f.formFields = updatedFields?.concat([...availableFields, removedField]);
+        }
+        return f;
+      });
+
       setAddedFields(updatedFields);
       setAvailableFields([...availableFields, removedField]);
     }
   };
 
   const addToFields = (field) => {
-    setAddedFields([...addedFields, { ...field, isRequiredField: true }]);
     let updatedFields = availableFields.filter((f) => f?.mappedField !== field?.mappedField);
     updatedFields = updatedFields?.map((f) => {
       return {
@@ -36,6 +43,13 @@ function MandatoryField(props) {
         isRequiredField: false,
       };
     });
+    updatedFormFields = updatedFormFields?.map((f) => {
+      if (f.formName === formName) {
+        f.formFields = updatedFields?.concat([...addedFields, { ...field, isRequiredField: true }]);
+      }
+      return f;
+    });
+    setAddedFields([...addedFields, { ...field, isRequiredField: true }]);
     setAvailableFields(updatedFields);
   };
 
