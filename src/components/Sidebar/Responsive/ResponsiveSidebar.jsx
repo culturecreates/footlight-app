@@ -16,6 +16,7 @@ import { contentLanguageBilingual } from '../../../utils/bilingual';
 import i18n from 'i18next';
 import { calendarModes } from '../../../constants/calendarModes';
 import { userRoles } from '../../../constants/userRoles';
+import { handleLogout } from '../../../hooks/useAuth';
 
 function ResponsiveSidebar(props) {
   const { allCalendarsData, currentCalendarData, onClose, open, pageNumber, setPageNumber } = props;
@@ -119,7 +120,7 @@ function ResponsiveSidebar(props) {
         break;
       case 'logOut':
         sessionStorage.clear();
-        dispatch(clearUser());
+        handleLogout({ user, clearData: () => dispatch(clearUser()) });
         navigate(PathName.Login, { state: { previousPath: 'logout' } });
         break;
       default:
