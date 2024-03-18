@@ -57,10 +57,10 @@ const WidgetSettings = () => {
   const [iframeCode, setIframeCode] = useState('');
   const [previewModal, setPreviewModal] = useState(false);
   const [url, setUrl] = useState(
-    new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html'),
+    new URL('http://staging.cms-widget.footlight.io.s3-website.ca-central-1.amazonaws.com'),
   );
   const [urlMobile, setUrlMObile] = useState(
-    new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html'),
+    new URL('http://staging.cms-widget.footlight.io.s3-website.ca-central-1.amazonaws.com'),
   );
 
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
@@ -155,8 +155,8 @@ const WidgetSettings = () => {
       const searchEventsFilters = encodeURIComponent(filtersParam);
 
       const locale = onLanguageSelect(allValues?.language);
-      const urlCopy = new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html');
-      const urlCopyMobile = new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html');
+      const urlCopy = new URL('http://staging.cms-widget.footlight.io.s3-website.ca-central-1.amazonaws.com/');
+      const urlCopyMobile = new URL('http://staging.cms-widget.footlight.io.s3-website.ca-central-1.amazonaws.com/');
 
       // Add query parameters to the URL
       urlCopy.searchParams.append('width', width);
@@ -320,8 +320,8 @@ const WidgetSettings = () => {
   }, [initialEntitiesOrganization]);
 
   useEffect(() => {
-    const urlCopy = new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html');
-    const urlCopyMobile = new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html');
+    const urlCopy = new URL('http://staging.cms-widget.footlight.io.s3-website.ca-central-1.amazonaws.com/');
+    const urlCopyMobile = new URL('http://staging.cms-widget.footlight.io.s3-website.ca-central-1.amazonaws.com/');
 
     const height = form.getFieldValue('height') ?? 600;
     const limit = form.getFieldValue('limit') ?? 9;
