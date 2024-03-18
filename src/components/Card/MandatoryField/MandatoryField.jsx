@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import './mandatoryField.css';
 import { Card, Col, Divider, Row } from 'antd';
+import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { bilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
+import AddField from '../../Button/AddField';
 
 function MandatoryField(props) {
   const { field } = props;
@@ -37,42 +40,51 @@ function MandatoryField(props) {
   };
 
   return (
-    <Card>
+    <Card className="mandatory-card-wrapper" bodyStyle={{ padding: '24px 16px 24px 16px' }}>
       <Row gutter={[0, 18]}>
         <Col span={24}>
-          <h5>General Settings</h5>
+          <h5 className="mandatory-field-class-heading">General Settings</h5>
         </Col>
         <Col span={11}>
-          <h5>General Settings</h5>
-          <ul>
-            {addedFields.map((field, index) => (
-              <li key={index}>
-                {bilingual({
-                  en: field?.label?.en,
-                  fr: field?.label?.fr,
-                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                })}
-                {!field?.preFilled && <button onClick={() => removeFromFields(index)}>Remove</button>}
-              </li>
-            ))}
-          </ul>
+          <h5 className="mandatory-field-required">General Settings</h5>
+          {addedFields.map((field, index) => (
+            <Row key={index}>
+              <Col span={24}>
+                <AddField
+                  key={index}
+                  label={bilingual({
+                    en: field?.label?.en,
+                    fr: field?.label?.fr,
+                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                  })}
+                  onClick={() => removeFromFields(index)}
+                  icon={<MinusCircleOutlined />}
+                />
+              </Col>
+            </Row>
+          ))}
         </Col>
         <Col>
-          <Divider type="vertical" style={{ height: '100%' }} />
+          <Divider type="vertical" style={{ height: '100%', border: '1.5px solid #B6C1C9' }} />
         </Col>
-        <Col span={11}>
-          <h5>General Settings</h5>
-          <ul>
-            {availableFields.map((field, index) => (
-              <li key={index} onClick={() => addToFields(field)}>
-                {bilingual({
-                  en: field?.label?.en,
-                  fr: field?.label?.fr,
-                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                })}
-              </li>
-            ))}
-          </ul>
+        <Col span={11} push={1}>
+          <h5 className="mandatory-field-available">General Settings</h5>
+          {availableFields.map((field, index) => (
+            <Row key={index}>
+              <Col span={24}>
+                <AddField
+                  key={index}
+                  label={bilingual({
+                    en: field?.label?.en,
+                    fr: field?.label?.fr,
+                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                  })}
+                  onClick={() => addToFields(field)}
+                  icon={<PlusCircleOutlined />}
+                />
+              </Col>
+            </Row>
+          ))}
         </Col>
       </Row>
     </Card>
