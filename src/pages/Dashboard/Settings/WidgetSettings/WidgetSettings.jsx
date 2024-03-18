@@ -29,6 +29,7 @@ import CustomModal from '../../../../components/Modal/Common/CustomModal';
 import { copyText } from '../../../../utils/copyText';
 
 const { useBreakpoint } = Grid;
+const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_URL;
 
 const WidgetSettings = () => {
   const { t } = useTranslation();
@@ -56,12 +57,8 @@ const WidgetSettings = () => {
   const [searchKey, setSearchKey] = useState([]);
   const [iframeCode, setIframeCode] = useState('');
   const [previewModal, setPreviewModal] = useState(false);
-  const [url, setUrl] = useState(
-    new URL('http://staging.cms-widget.footlight.io.s3-website.ca-central-1.amazonaws.com'),
-  );
-  const [urlMobile, setUrlMObile] = useState(
-    new URL('http://staging.cms-widget.footlight.io.s3-website.ca-central-1.amazonaws.com'),
-  );
+  const [url, setUrl] = useState(new URL(widgetUrl));
+  const [urlMobile, setUrlMObile] = useState(new URL(widgetUrl));
 
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
   const { currentData: taxonomyDataEventType } = useGetAllTaxonomyQuery({
