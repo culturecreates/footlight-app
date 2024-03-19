@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './mandatoryField.css';
 import { Card, Col, Divider, Row } from 'antd';
-import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import { bilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -71,8 +71,9 @@ function MandatoryField(props) {
                     fr: field?.label?.fr,
                     interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                   })}
+                  disabled={field?.preFilled}
                   onClick={() => removeFromFields(index)}
-                  icon={<MinusCircleOutlined />}
+                  icon={<MinusOutlined />}
                 />
               </Col>
             </Row>
@@ -94,7 +95,7 @@ function MandatoryField(props) {
                     interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                   })}
                   onClick={() => addToFields(field)}
-                  icon={<PlusCircleOutlined />}
+                  icon={<PlusOutlined />}
                 />
               </Col>
             </Row>

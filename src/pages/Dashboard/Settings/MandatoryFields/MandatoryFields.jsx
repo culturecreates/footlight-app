@@ -122,38 +122,40 @@ function MandatoryFields() {
 
   return (
     currentCalendarData && (
-      <Row gutter={[0, 18]} className="mandatory-fields-wrapper">
-        <Col span={22}>
-          <h5 className="mandatory-fields-heading" data-cy="heading5-mandatory-fields">
-            {t('dashboard.settings.calendarSettings.generalSettings')}
-          </h5>
-        </Col>
-        <Col span={2}>
-          <PrimaryButton
-            label={t('dashboard.events.addEditEvent.saveOptions.save')}
-            data-cy="button-save-mandatory-field"
-            onClick={onSaveHandler}
-          />
-        </Col>
-        <Col span={24}>
-          <p className="mandatory-fields-description" data-cy="para-mandatory-fields-description">
-            {t('dashboard.settings.calendarSettings.setUpCalendarDescription')}
-          </p>
-        </Col>
-        <Col flex={'576px'}>
-          <Row gutter={[8, 18]}>
-            {fields.map((field, index) => (
-              <Col span={24} key={index}>
-                <MandatoryFieldCard
-                  field={field?.formFields}
-                  formName={field?.formName}
-                  updatedFormFields={updatedFormFields}
-                />
-              </Col>
-            ))}
-          </Row>
-        </Col>
-      </Row>
+      <div style={{ paddingTop: '24px' }}>
+        <Row gutter={[0, 18]} className="mandatory-fields-wrapper">
+          <Col span={22}>
+            <h5 className="mandatory-fields-heading" data-cy="heading5-mandatory-fields">
+              {t('dashboard.settings.calendarSettings.generalSettings')}
+            </h5>
+          </Col>
+          <Col span={2}>
+            <PrimaryButton
+              label={t('dashboard.events.addEditEvent.saveOptions.save')}
+              data-cy="button-save-mandatory-field"
+              onClick={onSaveHandler}
+            />
+          </Col>
+          <Col span={24}>
+            <p className="mandatory-fields-description" data-cy="para-mandatory-fields-description">
+              {t('dashboard.settings.calendarSettings.setUpCalendarDescription')}
+            </p>
+          </Col>
+          <Col flex={'576px'}>
+            <Row gutter={[8, 18]}>
+              {fields.map((field, index) => (
+                <Col span={24} key={index}>
+                  <MandatoryFieldCard
+                    field={field?.formFields}
+                    formName={field?.formName}
+                    updatedFormFields={updatedFormFields}
+                  />
+                </Col>
+              ))}
+            </Row>
+          </Col>
+        </Row>
+      </div>
     )
   );
 }
