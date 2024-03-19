@@ -981,6 +981,18 @@
         "places": "Places",
         "people": "People",
         "organizations": "Organizations"
+      },
+      "mandatoryFields": {
+        "title": "Mandatory fields",
+        "availableFields": "Available fields",
+        "description": "Select which fields should be mandatory in your calendar.",
+        "event": "Event",
+        "place": "Place",
+        "person": "Person",
+        "organization": "Organization",
+        "notification": {
+          "update": "Success! Your mandatory fields have been updated."
+        }
       }
     },
     "taxonomy": {

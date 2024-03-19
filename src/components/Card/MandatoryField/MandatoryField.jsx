@@ -6,11 +6,13 @@ import { bilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import AddField from '../../Button/AddField';
+import { useTranslation } from 'react-i18next';
 
 function MandatoryField(props) {
   const { field, formName } = props;
   let { updatedFormFields } = props;
   const { user } = useSelector(getUserDetails);
+  const { t } = useTranslation();
 
   const [addedFields, setAddedFields] = useState(field?.filter((f) => f?.isRequiredField || f?.preFilled));
   const [availableFields, setAvailableFields] = useState(field?.filter((f) => !f?.isRequiredField || !f?.preFilled));
@@ -52,7 +54,7 @@ function MandatoryField(props) {
     setAddedFields([...addedFields, { ...field, isRequiredField: true }]);
     setAvailableFields(updatedFields);
   };
-
+  console.log({ updatedFormFields });
   return (
     <Card className="mandatory-card-wrapper" bodyStyle={{ padding: '24px 16px 24px 16px' }}>
       <Row gutter={[0, 18]}>
@@ -60,7 +62,7 @@ function MandatoryField(props) {
           <h5 className="mandatory-field-class-heading">{formName}</h5>
         </Col>
         <Col span={11}>
-          <h5 className="mandatory-field-required">General Settings</h5>
+          <h5 className="mandatory-field-required">{t('dashboard.settings.mandatoryFields.title')}</h5>
           {addedFields.map((field, index) => (
             <Row key={index}>
               <Col span={24}>
@@ -83,7 +85,7 @@ function MandatoryField(props) {
           <Divider type="vertical" style={{ height: '100%', border: '1.5px solid #B6C1C9' }} />
         </Col>
         <Col span={11} push={1}>
-          <h5 className="mandatory-field-available">General Settings</h5>
+          <h5 className="mandatory-field-available">{t('dashboard.settings.mandatoryFields.availableFields')}</h5>
           {availableFields.map((field, index) => (
             <Row key={index}>
               <Col span={24}>

@@ -34,23 +34,27 @@ function MandatoryFields() {
   const prefilledFields = [
     {
       formName: 'Event',
+      formLabel: t('dashboard.settings.mandatoryFields.event'),
       taxonomyClass: entitiesClass.event,
       prefilledFields: ['name', 'startDateTime', 'startDate', 'endDateTime', 'endDate', 'locationId'],
     },
     {
       formName: 'Places',
+      formLabel: t('dashboard.settings.mandatoryFields.place'),
       taxonomyClass: entitiesClass.place,
 
       prefilledFields: ['name', 'streetAddress', 'postalCode'],
     },
     {
       formName: 'Organization',
+      formLabel: t('dashboard.settings.mandatoryFields.organization'),
       taxonomyClass: entitiesClass.organization,
 
       prefilledFields: ['name'],
     },
     {
       formName: 'People',
+      formLabel: t('dashboard.settings.mandatoryFields.person'),
       taxonomyClass: entitiesClass.person,
 
       prefilledFields: ['name'],
@@ -82,6 +86,7 @@ function MandatoryFields() {
     return {
       formName: field?.formName,
       formFields: modifiedField,
+      formLabel: preFilled?.formLabel,
     };
   });
 
@@ -126,7 +131,7 @@ function MandatoryFields() {
         <Row gutter={[0, 18]} className="mandatory-fields-wrapper">
           <Col span={22}>
             <h5 className="mandatory-fields-heading" data-cy="heading5-mandatory-fields">
-              {t('dashboard.settings.calendarSettings.generalSettings')}
+              {t('dashboard.settings.mandatoryFields.title')}
             </h5>
           </Col>
           <Col span={2}>
@@ -138,7 +143,7 @@ function MandatoryFields() {
           </Col>
           <Col span={24}>
             <p className="mandatory-fields-description" data-cy="para-mandatory-fields-description">
-              {t('dashboard.settings.calendarSettings.setUpCalendarDescription')}
+              {t('dashboard.settings.mandatoryFields.description')}
             </p>
           </Col>
           <Col flex={'576px'}>
@@ -147,7 +152,7 @@ function MandatoryFields() {
                 <Col span={24} key={index}>
                   <MandatoryFieldCard
                     field={field?.formFields}
-                    formName={field?.formName}
+                    formName={field?.formLabel}
                     updatedFormFields={updatedFormFields}
                   />
                 </Col>

@@ -976,6 +976,18 @@
         "places": "Lieux",
         "people": "Personnes",
         "organizations": "Organisations"
+      },
+      "mandatoryFields": {
+        "title": "Champs obligatoires",
+        "availableFields": "Available fields",
+        "description": "Select which fields should be mandatory in your calendar.",
+        "events": "Événements",
+        "places": "Lieux",
+        "organizations": "Organisations",
+        "person": "Personne",
+        "notification": {
+          "update": "Success! Your mandatory fields have been updated."
+        }
       }
     },
     "taxonomy": {
