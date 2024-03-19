@@ -29,6 +29,7 @@ import CustomModal from '../../../../components/Modal/Common/CustomModal';
 import { copyText } from '../../../../utils/copyText';
 
 const { useBreakpoint } = Grid;
+const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_BASE_URL;
 
 const WidgetSettings = () => {
   const { t } = useTranslation();
@@ -56,9 +57,8 @@ const WidgetSettings = () => {
   const [searchKey, setSearchKey] = useState([]);
   const [iframeCode, setIframeCode] = useState('');
   const [previewModal, setPreviewModal] = useState(false);
-  const [url, setUrl] = useState(
-    new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html'),
-  );
+  const [url, setUrl] = useState(new URL(widgetUrl));
+  const [urlMobile, setUrlMObile] = useState(new URL(widgetUrl));
 
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
   const { currentData: taxonomyDataEventType } = useGetAllTaxonomyQuery({
@@ -152,26 +152,41 @@ const WidgetSettings = () => {
       const searchEventsFilters = encodeURIComponent(filtersParam);
 
       const locale = onLanguageSelect(allValues?.language);
-      const urlCopy = new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html');
+      const urlCopy = new URL(widgetUrl);
+      const urlCopyMobile = new URL(widgetUrl);
 
       // Add query parameters to the URL
       urlCopy.searchParams.append('width', width);
 
       urlCopy.searchParams.append('limit', limit);
       urlCopy.searchParams.append('calendar', calendarName);
-      urlCopy.searchParams.append('height', height);
       urlCopy.searchParams.append('logo', encodedCalendarLogoUri);
       urlCopy.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
       urlCopy.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
       urlCopy.searchParams.append('searchEventsFilters', searchEventsFilters);
       urlCopy.searchParams.append('locale', locale?.key.toLowerCase());
+
       if (changedValues.color) {
         urlCopy.searchParams.append('color', changedValues.color);
       } else urlCopy.searchParams.append('color', color);
+      urlCopy.searchParams.append('height', height);
+
+      urlCopyMobile.searchParams.append('limit', limit);
+      urlCopyMobile.searchParams.append('calendar', calendarName);
+      urlCopyMobile.searchParams.append('logo', encodedCalendarLogoUri);
+      urlCopyMobile.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
+      urlCopyMobile.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
+      urlCopyMobile.searchParams.append('searchEventsFilters', searchEventsFilters);
+      urlCopyMobile.searchParams.append('locale', locale?.key.toLowerCase());
+      urlCopyMobile.searchParams.append('height', '600');
+      if (changedValues.color) {
+        urlCopyMobile.searchParams.append('color', changedValues.color);
+      } else urlCopyMobile.searchParams.append('color', color);
+      setUrlMObile(urlCopyMobile);
 
       setUrl(urlCopy);
       setIframeCode(
-        `<iframe src="${urlCopy.href}" width="100%" style={{ maxWidth: "${width}px", border: 'none' }} height="${height}px"></iframe>`,
+        `<iframe src="${urlCopy.href}" width="100%" style="max-width:${width}px; border:none" height="${height}px"></iframe>`,
       );
     }
   };
@@ -303,7 +318,9 @@ const WidgetSettings = () => {
   }, [initialEntitiesOrganization]);
 
   useEffect(() => {
-    const urlCopy = new URL('https://s3.ca-central-1.amazonaws.com/staging.cms-widget.footlight.io/index.html');
+    const urlCopy = new URL(widgetUrl);
+    const urlCopyMobile = new URL(widgetUrl);
+
     const height = form.getFieldValue('height') ?? 600;
     const limit = form.getFieldValue('limit') ?? 9;
     const locale = form.getFieldValue('locale') ?? languageOptions[0].value;
@@ -313,13 +330,24 @@ const WidgetSettings = () => {
     urlCopy.searchParams.append('logo', encodedCalendarLogoUri);
     urlCopy.searchParams.append('locale', onLanguageSelect(locale)?.key.toLowerCase());
     urlCopy.searchParams.append('limit', limit);
-    urlCopy.searchParams.append('height', height);
     urlCopy.searchParams.append('color', color);
     urlCopy.searchParams.append('calendar', calendarName);
-
+    urlCopy.searchParams.append('height', height);
     setUrl(urlCopy);
+
+    urlCopyMobile.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
+    urlCopyMobile.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
+    urlCopyMobile.searchParams.append('logo', encodedCalendarLogoUri);
+    urlCopyMobile.searchParams.append('locale', onLanguageSelect(locale)?.key.toLowerCase());
+    urlCopyMobile.searchParams.append('limit', limit);
+    urlCopyMobile.searchParams.append('color', color);
+    urlCopyMobile.searchParams.append('calendar', calendarName);
+    urlCopyMobile.searchParams.append('height', '600');
+
+    setUrlMObile(urlCopyMobile);
+
     setIframeCode(
-      `<iframe src="${urlCopy.href}" width="100%" style={{ maxWidth: "1000px", border: 'none' }} height="${height}px"></iframe>`,
+      `<iframe src="${urlCopy.href}" width="100%" style="max-width:1000px; border:none" height="${height}px"></iframe>`,
     );
   }, [calendarContentLanguage]);
 
@@ -795,7 +823,7 @@ const WidgetSettings = () => {
                   }}
                   src={url.href}></iframe>
               </CustomModal>
-              <iframe src={url.href}></iframe>
+              <iframe src={urlMobile.href}></iframe>
             </div>
           </Col>
         </Row>
