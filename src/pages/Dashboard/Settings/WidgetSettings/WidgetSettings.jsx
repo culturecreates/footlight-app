@@ -29,7 +29,7 @@ import CustomModal from '../../../../components/Modal/Common/CustomModal';
 import { copyText } from '../../../../utils/copyText';
 
 const { useBreakpoint } = Grid;
-const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_URL;
+const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_BASE_URL;
 
 const WidgetSettings = () => {
   const { t } = useTranslation();
@@ -152,8 +152,8 @@ const WidgetSettings = () => {
       const searchEventsFilters = encodeURIComponent(filtersParam);
 
       const locale = onLanguageSelect(allValues?.language);
-      const urlCopy = new URL('http://staging.cms-widget.footlight.io.s3-website.ca-central-1.amazonaws.com/');
-      const urlCopyMobile = new URL('http://staging.cms-widget.footlight.io.s3-website.ca-central-1.amazonaws.com/');
+      const urlCopy = new URL(widgetUrl);
+      const urlCopyMobile = new URL(widgetUrl);
 
       // Add query parameters to the URL
       urlCopy.searchParams.append('width', width);
@@ -318,8 +318,8 @@ const WidgetSettings = () => {
   }, [initialEntitiesOrganization]);
 
   useEffect(() => {
-    const urlCopy = new URL('http://staging.cms-widget.footlight.io.s3-website.ca-central-1.amazonaws.com/');
-    const urlCopyMobile = new URL('http://staging.cms-widget.footlight.io.s3-website.ca-central-1.amazonaws.com/');
+    const urlCopy = new URL(widgetUrl);
+    const urlCopyMobile = new URL(widgetUrl);
 
     const height = form.getFieldValue('height') ?? 600;
     const limit = form.getFieldValue('limit') ?? 9;
