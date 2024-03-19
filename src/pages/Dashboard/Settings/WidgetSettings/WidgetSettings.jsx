@@ -29,7 +29,7 @@ import CustomModal from '../../../../components/Modal/Common/CustomModal';
 import { copyText } from '../../../../utils/copyText';
 
 const { useBreakpoint } = Grid;
-const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_URL;
+const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_BASE_URL;
 
 const WidgetSettings = () => {
   const { t } = useTranslation();
