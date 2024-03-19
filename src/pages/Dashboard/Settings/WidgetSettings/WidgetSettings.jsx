@@ -165,6 +165,7 @@ const WidgetSettings = () => {
       urlCopy.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
       urlCopy.searchParams.append('searchEventsFilters', searchEventsFilters);
       urlCopy.searchParams.append('locale', locale?.key.toLowerCase());
+
       if (changedValues.color) {
         urlCopy.searchParams.append('color', changedValues.color);
       } else urlCopy.searchParams.append('color', color);
