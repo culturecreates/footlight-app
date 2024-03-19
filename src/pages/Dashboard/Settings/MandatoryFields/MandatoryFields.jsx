@@ -80,6 +80,7 @@ function MandatoryFields() {
             isAdminOnlyField: field?.adminOnlyFields?.includes(f?.id) || false,
             isDynamicField: true,
             name: f?.name,
+            label: f?.name,
           };
         }),
     );
@@ -148,7 +149,7 @@ function MandatoryFields() {
           </Col>
           <Col flex={'576px'}>
             <Row gutter={[8, 18]}>
-              {fields.map((field, index) => (
+              {fields?.map((field, index) => (
                 <Col span={24} key={index}>
                   <MandatoryFieldCard
                     field={field?.formFields}
