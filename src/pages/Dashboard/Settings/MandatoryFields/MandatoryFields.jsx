@@ -98,6 +98,12 @@ function MandatoryFields() {
       return {
         formName: f.formName,
         formFields: f.formFields,
+        // ?.filter((field) => !field.isDynamicField)
+        // ?.map((field) => {
+        //   // eslint-disable-next-line no-unused-vars
+        //   const { isRequiredField, isAdminOnlyField, ...rest } = field;
+        //   return rest;
+        // }),
         requiredFields: f.formFields
           ?.map((field) => {
             if (field.isRequiredField) {
@@ -127,6 +133,7 @@ function MandatoryFields() {
   };
 
   return (
+    allTaxonomyData &&
     currentCalendarData && (
       <div style={{ paddingTop: '24px' }}>
         <Row gutter={[0, 18]} className="mandatory-fields-wrapper">
