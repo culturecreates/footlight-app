@@ -1,9 +1,10 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import './createNewPlace.css';
 import '../AddEvent/addEvent.css';
+import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import { Button, Col, Form, Input, Popover, Row, message, notification, Dropdown } from 'antd';
-import {
+import Icon, {
   LeftOutlined,
   CloseCircleOutlined,
   InfoCircleOutlined,
@@ -2685,7 +2686,13 @@ function CreateNewPlace() {
                                       })
                                     : typeof org?.name === 'string' && org?.name
                                 }
-                                icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
+                                icon={
+                                  <Icon
+                                    component={OrganizationLogo}
+                                    style={{ color: '#607EFC', fontSize: '18px' }}
+                                    data-cy="organization-logo"
+                                  />
+                                }
                                 bordered
                                 itemWidth="100%"
                               />

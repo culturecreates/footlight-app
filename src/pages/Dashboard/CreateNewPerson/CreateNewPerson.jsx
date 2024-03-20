@@ -1,17 +1,17 @@
 import React, { useRef, useEffect, useState } from 'react';
 import '../AddEvent/addEvent.css';
 import { Form, Row, Col, Button, notification, message } from 'antd';
-import {
+import Icon, {
   CloseCircleOutlined,
   ExclamationCircleOutlined,
   EnvironmentOutlined,
   CalendarOutlined,
-  UserOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { LeftOutlined } from '@ant-design/icons';
 import PrimaryButton from '../../../components/Button/Primary';
+import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
 import { featureFlags } from '../../../utils/featureFlags';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { entitiesClass } from '../../../constants/entitiesClass';
@@ -679,29 +679,36 @@ function CreateNewPerson() {
                       </p>
                     </div>
                   )}
-                  {derivedEntitiesData?.people?.length > 0 && (
+                  {derivedEntitiesData?.organizations?.length > 0 && (
                     <div>
                       <p className="associated-with-title">
-                        {t('dashboard.organization.createNew.addOrganization.associatedEntities.people')}
+                        {t('dashboard.organization.createNew.addOrganization.associatedEntities.organizations')}
                         <div className="associated-with-cards-wrapper">
-                          {derivedEntitiesData?.people?.map((person) => {
-                            <SelectionItem
-                              key={person._id}
-                              name={
-                                person?.name?.en || person?.name?.fr
-                                  ? contentLanguageBilingual({
-                                      en: person?.name?.en,
-                                      fr: person?.name?.fr,
-                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                      calendarContentLanguage: calendarContentLanguage,
-                                    })
-                                  : typeof person?.name === 'string' && event?.name
-                              }
-                              icon={<UserOutlined style={{ color: '#607EFC' }} />}
-                              // description={moment(event.startDateTime).format('YYYY-MM-DD')}
-                              bordered
-                              itemWidth="100%"
-                            />;
+                          {derivedEntitiesData?.organizations?.map((org) => {
+                            return (
+                              <SelectionItem
+                                key={org._id}
+                                name={
+                                  org?.name?.en || org?.name?.fr
+                                    ? contentLanguageBilingual({
+                                        en: org?.name?.en,
+                                        fr: org?.name?.fr,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        calendarContentLanguage: calendarContentLanguage,
+                                      })
+                                    : typeof org?.name === 'string' && org?.name
+                                }
+                                icon={
+                                  <Icon
+                                    component={OrganizationLogo}
+                                    style={{ color: '#607EFC', fontSize: '18px' }}
+                                    data-cy="organization-logo"
+                                  />
+                                }
+                                bordered
+                                itemWidth="100%"
+                              />
+                            );
                           })}
                         </div>
                       </p>
