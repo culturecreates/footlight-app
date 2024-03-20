@@ -145,6 +145,7 @@ function CreateNewPlace() {
   let requiredFields = currentCalendarData?.formSchema?.filter((form) => form?.formName === 'Place');
   requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
   let requiredFieldNames = requiredFields ? requiredFields?.requiredfields?.map((field) => field?.fieldName) : [];
+
   const { currentData: placeData, isLoading: isPlaceLoading } = useGetPlaceQuery(
     { placeId: placeId, calendarId, sessionId: timestampRef },
     { skip: placeId ? false : true },
