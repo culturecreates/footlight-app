@@ -30,7 +30,7 @@ import { userRoles } from '../../../constants/userRoles';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox/SearchableCheckbox';
-import { useLazyGetEntityDependencyQuery } from '../../../services/entities';
+import { useLazyGetEntityDependencyCountQuery } from '../../../services/entities';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
 
 const { useBreakpoint } = Grid;
@@ -58,7 +58,7 @@ const Taxonomy = () => {
     sessionId: timestampRef,
   });
   const [deleteTaxonomy] = useDeleteTaxonomyMutation();
-  const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyQuery();
+  const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyCountQuery();
 
   const sortByParam = searchParams.get('sortBy');
 
@@ -214,11 +214,11 @@ const Taxonomy = () => {
           content: `${t('dashboard.taxonomy.listing.modal.contentDelete.description')} ${t(
             'dashboard.taxonomy.listing.modal.contentDelete.impact',
           )}  ${t('dashboard.taxonomy.listing.modal.contentDelete.published', {
-            number: `${res?.events?.publishedEventsCount}`,
+            number: `${res?.events?.publishedEventCount}`,
           })}, ${t('dashboard.taxonomy.listing.modal.contentDelete.draft', {
-            number: `${res?.events?.draftEventsCount}`,
+            number: `${res?.events?.draftEventCount}`,
           })}, ${t('dashboard.taxonomy.listing.modal.contentDelete.inReview', {
-            number: `${res?.events?.pendingReviewEventsCount}`,
+            number: `${res?.events?.pendingEventCount}`,
           })}.`,
         });
       });
