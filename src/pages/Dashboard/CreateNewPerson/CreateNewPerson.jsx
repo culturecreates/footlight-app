@@ -373,8 +373,9 @@ function CreateNewPerson() {
               },
             });
           }
-          if (personData?.derivedFrom?.uri) {
-            let sourceId = getExternalSourceId(personData?.derivedFrom?.uri);
+          if (personData?.sameAs?.length > 0) {
+            let sourceId = artsDataLinkChecker(personData?.sameAs);
+            sourceId = getExternalSourceId(sourceId);
             getArtsData(sourceId);
           }
         } else
@@ -404,8 +405,9 @@ function CreateNewPerson() {
             },
           },
         });
-        if (externalCalendarEntityData[0]?.derivedFrom?.uri) {
-          let sourceId = getExternalSourceId(externalCalendarEntityData[0]?.derivedFrom?.uri);
+        if (externalCalendarEntityData[0]?.sameAs?.length > 0) {
+          let sourceId = artsDataLinkChecker(externalCalendarEntityData[0]?.sameAs);
+          sourceId = getExternalSourceId(sourceId);
           getArtsData(sourceId);
         }
       }
@@ -519,7 +521,7 @@ function CreateNewPerson() {
                             </Col>
                             <Col span={24}>
                               <ArtsDataInfo
-                                artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
+                                artsDataLink={artsDataLinkChecker(personData?.sameAs)}
                                 name={contentLanguageBilingual({
                                   en: artsData?.name?.en,
                                   fr: artsData?.name?.fr,

@@ -102,15 +102,15 @@ function PersonReadOnly() {
           setDerivedEntitiesData(response?.data);
           setDerivedEntitiesDisplayStatus(true);
         }
-        console.log(response?.data?.organizations);
       });
     }
   }, [personId]);
 
   useEffect(() => {
     if (personData) {
-      if (personData?.derivedFrom?.uri) {
-        let sourceId = getExternalSourceId(personData?.derivedFrom?.uri);
+      if (personData?.sameAs?.length > 0) {
+        let sourceId = artsDataLinkChecker(personData?.sameAs);
+        sourceId = getExternalSourceId(sourceId);
         getArtsData(sourceId);
       }
     }
@@ -189,7 +189,7 @@ function PersonReadOnly() {
               <Row>
                 <Col flex={'780px'}>
                   <ArtsDataInfo
-                    artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
+                    artsDataLink={artsDataLinkChecker(personData?.sameAs)}
                     name={contentLanguageBilingual({
                       en: artsData?.name?.en,
                       fr: artsData?.name?.fr,

@@ -117,8 +117,9 @@ function PlaceReadOnly() {
 
   useEffect(() => {
     if (placeSuccess) {
-      if (placeData?.derivedFrom?.uri) {
-        let sourceId = getExternalSourceId(placeData?.derivedFrom?.uri);
+      if (placeData?.sameAs?.length > 0) {
+        let sourceId = artsDataLinkChecker(placeData?.sameAs);
+        sourceId = getExternalSourceId(sourceId);
         getArtsDataPlace(sourceId);
       }
       if (placeData?.containedInPlace?.entityId) {
@@ -251,7 +252,7 @@ function PlaceReadOnly() {
               <Row>
                 <Col flex={'780px'}>
                   <ArtsDataInfo
-                    artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
+                    artsDataLink={artsDataLinkChecker(placeData?.sameAs)}
                     name={contentLanguageBilingual({
                       en: artsData?.name?.en,
                       fr: artsData?.name?.fr,

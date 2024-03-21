@@ -20,6 +20,7 @@ import { userRoles } from '../../../constants/userRoles';
 import { eventStatus } from '../../../constants/eventStatus';
 import moment from 'moment-timezone';
 import { LinkOutlined, StarFilled } from '@ant-design/icons';
+import { sameAsTypes } from '../../../constants/sameAsTypes';
 
 const { useBreakpoint } = Grid;
 
@@ -43,7 +44,7 @@ function Lists(props) {
   calendar = calendar?.length > 0 ? calendar : [];
 
   let artsDataLinkChecker = (data) => {
-    return data?.sameAs?.filter((item) => item?.type === 'ArtsdataIdentifier');
+    return data?.sameAs?.filter((item) => item?.type === sameAsTypes.ARTSDATA_IDENTIFIER);
   };
   const aspectRatioString = currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio;
 
