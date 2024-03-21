@@ -93,6 +93,7 @@ import { removeEmptyParagraphsAtEnd } from '../../../utils/removeEmptyParagraphs
 import Alert from '../../../components/Alert';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 import { getEmbedUrl, validateVimeoURL, validateYouTubeURL } from '../../../utils/getEmbedVideoUrl';
+import { sameAsTypes } from '../../../constants/sameAsTypes';
 
 const { TextArea } = Input;
 
@@ -216,7 +217,7 @@ function AddEvent() {
     return dateTime.toISOString();
   };
 
-  let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === 'ArtsdataIdentifier');
+  let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === sameAsTypes.ARTSDATA_IDENTIFIER);
 
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;

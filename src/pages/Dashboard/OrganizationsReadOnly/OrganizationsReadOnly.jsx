@@ -26,6 +26,9 @@ import Breadcrumbs from '../../../components/Breadcrumbs';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { loadArtsDataEntity } from '../../../services/artsData';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
+import { CalendarOutlined, UserOutlined, EnvironmentOutlined } from '@ant-design/icons';
+import moment from 'moment';
+import { useLazyGetEntityDependencyDetailsQuery } from '../../../services/entities';
 
 function OrganizationsReadOnly() {
   const { t } = useTranslation();
@@ -61,12 +64,16 @@ function OrganizationsReadOnly() {
 
   const [getPlace] = useLazyGetPlaceQuery();
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery();
-
+  const [getDerivedEntities, { isFetching: isEntityDetailsLoading }] = useLazyGetEntityDependencyDetailsQuery({
+    sessionId: timestampRef,
+  });
   const { user } = useSelector(getUserDetails);
 
   const [locationPlace, setLocationPlace] = useState();
   const [artsData, setArtsData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
+  const [derivedEntitiesDisplayStatus, setDerivedEntitiesDisplayStatus] = useState(false);
+  const [derivedEntitiesData, setDerivedEntitiesData] = useState();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -88,9 +95,26 @@ function OrganizationsReadOnly() {
   }, [organizationError]);
 
   useEffect(() => {
+    if (organizationId) {
+      getDerivedEntities({ id: organizationId, calendarId }).then((response) => {
+        if (
+          response?.data?.events?.length > 0 ||
+          response?.data?.people?.length > 0 ||
+          response?.data?.places?.length > 0
+        ) {
+          setDerivedEntitiesData(response?.data);
+          setDerivedEntitiesDisplayStatus(true);
+        }
+        console.log('entityDetailsData', response);
+      });
+    }
+  }, [organizationId]);
+
+  useEffect(() => {
     if (organizationSuccess) {
-      if (organizationData?.derivedFrom?.uri) {
-        let sourceId = getExternalSourceId(organizationData?.derivedFrom?.uri);
+      if (organizationData?.sameAs?.length > 0) {
+        let sourceId = artsDataLinkChecker(organizationData?.sameAs);
+        sourceId = getExternalSourceId(sourceId);
         getArtsData(sourceId);
       }
       if (organizationData?.place?.entityId) {
@@ -138,6 +162,7 @@ function OrganizationsReadOnly() {
   return (
     organizationSuccess &&
     !organizationLoading &&
+    !isEntityDetailsLoading &&
     !taxonomyLoading &&
     !artsDataLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
@@ -208,7 +233,7 @@ function OrganizationsReadOnly() {
               <Row>
                 <Col flex={'780px'}>
                   <ArtsDataInfo
-                    artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
+                    artsDataLink={artsDataLinkChecker(organizationData?.sameAs)}
                     name={contentLanguageBilingual({
                       en: artsData?.name?.en,
                       fr: artsData?.name?.fr,
@@ -533,6 +558,103 @@ function OrganizationsReadOnly() {
               )}
             </Col>
           </Card>
+
+          {derivedEntitiesDisplayStatus && (
+            <Card marginResponsive="0px">
+              <div className="associated-with-section">
+                <h5 className="associated-with-section-title">
+                  {t('dashboard.organization.createNew.addOrganization.associatedEntities.title')}
+                </h5>
+                {derivedEntitiesData?.places?.length > 0 && (
+                  <div>
+                    <p className="associated-with-title">
+                      {t('dashboard.organization.createNew.addOrganization.associatedEntities.place')}
+                      <div className="associated-with-cards-wrapper">
+                        {derivedEntitiesData?.places?.map((place) => {
+                          <SelectionItem
+                            key={place._id}
+                            name={
+                              place?.name?.en || place?.name?.fr
+                                ? contentLanguageBilingual({
+                                    en: place?.name?.en,
+                                    fr: place?.name?.fr,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    calendarContentLanguage: calendarContentLanguage,
+                                  })
+                                : typeof place?.name === 'string' && place?.name
+                            }
+                            icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
+                            // description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                            bordered
+                            itemWidth="100%"
+                          />;
+                        })}
+                      </div>
+                    </p>
+                  </div>
+                )}
+                {derivedEntitiesData?.people?.length > 0 && (
+                  <div>
+                    <p className="associated-with-title">
+                      {t('dashboard.organization.createNew.addOrganization.associatedEntities.people')}
+                      <div className="associated-with-cards-wrapper">
+                        {derivedEntitiesData?.people?.map((person) => {
+                          <SelectionItem
+                            key={person._id}
+                            name={
+                              person?.name?.en || person?.name?.fr
+                                ? contentLanguageBilingual({
+                                    en: person?.name?.en,
+                                    fr: person?.name?.fr,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    calendarContentLanguage: calendarContentLanguage,
+                                  })
+                                : typeof person?.name === 'string' && person?.name
+                            }
+                            icon={<UserOutlined style={{ color: '#607EFC' }} />}
+                            // description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                            bordered
+                            itemWidth="100%"
+                          />;
+                        })}
+                      </div>
+                    </p>
+                  </div>
+                )}
+                {derivedEntitiesData?.events?.length > 0 && (
+                  <div>
+                    <p className="associated-with-title">
+                      {t('dashboard.organization.createNew.addOrganization.associatedEntities.events')}
+                      <div className="associated-with-cards-wrapper">
+                        {derivedEntitiesData?.events?.map((event) => {
+                          return (
+                            <SelectionItem
+                              key={event._id}
+                              name={
+                                event?.name?.en || event?.name?.fr
+                                  ? contentLanguageBilingual({
+                                      en: event?.name?.en,
+                                      fr: event?.name?.fr,
+                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                      calendarContentLanguage: calendarContentLanguage,
+                                    })
+                                  : typeof event?.name === 'string' && event?.name
+                              }
+                              icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
+                              description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                              bordered
+                              itemWidth="100%"
+                            />
+                          );
+                        })}
+                      </div>
+                    </p>
+                  </div>
+                )}
+              </div>
+              <></>
+            </Card>
+          )}
         </Row>
       </FeatureFlag>
     )

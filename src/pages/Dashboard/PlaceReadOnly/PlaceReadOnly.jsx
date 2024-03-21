@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
 import { Col, Row } from 'antd';
-import { LinkOutlined } from '@ant-design/icons';
+import Icon, { LinkOutlined, EnvironmentOutlined, CalendarOutlined } from '@ant-design/icons';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
@@ -15,6 +15,7 @@ import {
   treeTaxonomyOptions,
 } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import Tags from '../../../components/Tags/Common/Tags';
+import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import OutlinedButton from '../../../components/Button/Outlined';
@@ -32,6 +33,8 @@ import { loadArtsDataPlaceEntity } from '../../../services/artsData';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import './placeReadOnly.css';
+import moment from 'moment';
+import { useLazyGetEntityDependencyDetailsQuery } from '../../../services/entities';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -63,6 +66,9 @@ function PlaceReadOnly() {
   });
   const [getPlace] = useLazyGetPlaceQuery();
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery();
+  const [getDerivedEntities, { isFetching: isEntityDetailsLoading }] = useLazyGetEntityDependencyDetailsQuery({
+    sessionId: timestampRef,
+  });
 
   const { user } = useSelector(getUserDetails);
 
@@ -70,7 +76,8 @@ function PlaceReadOnly() {
   const [artsDataLoading, setArtsDataLoading] = useState(false);
   const [artsData, setArtsData] = useState(null);
   const [selectedContainsPlaces, setSelectedContainsPlaces] = useState([]);
-
+  const [derivedEntitiesData, setDerivedEntitiesData] = useState();
+  const [derivedEntitiesDisplayStatus, setDerivedEntitiesDisplayStatus] = useState(false);
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const getArtsDataPlace = (id) => {
@@ -93,9 +100,26 @@ function PlaceReadOnly() {
   }, [placeError]);
 
   useEffect(() => {
+    if (placeId) {
+      getDerivedEntities({ id: placeId, calendarId }).then((response) => {
+        if (
+          response?.data?.events?.length > 0 ||
+          response?.data?.people?.length > 0 ||
+          response?.data?.organizations?.length > 0
+        ) {
+          setDerivedEntitiesData(response?.data);
+          setDerivedEntitiesDisplayStatus(true);
+        }
+        console.log(response?.data?.organizations);
+      });
+    }
+  }, [placeId]);
+
+  useEffect(() => {
     if (placeSuccess) {
-      if (placeData?.derivedFrom?.uri) {
-        let sourceId = getExternalSourceId(placeData?.derivedFrom?.uri);
+      if (placeData?.sameAs?.length > 0) {
+        let sourceId = artsDataLinkChecker(placeData?.sameAs);
+        sourceId = getExternalSourceId(sourceId);
         getArtsDataPlace(sourceId);
       }
       if (placeData?.containedInPlace?.entityId) {
@@ -158,6 +182,7 @@ function PlaceReadOnly() {
   return (
     placeSuccess &&
     !placeLoading &&
+    !isEntityDetailsLoading &&
     !artsDataLoading &&
     !taxonomyLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
@@ -227,7 +252,7 @@ function PlaceReadOnly() {
               <Row>
                 <Col flex={'780px'}>
                   <ArtsDataInfo
-                    artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
+                    artsDataLink={artsDataLinkChecker(placeData?.sameAs)}
                     name={contentLanguageBilingual({
                       en: artsData?.name?.en,
                       fr: artsData?.name?.fr,
@@ -723,6 +748,137 @@ function PlaceReadOnly() {
             </Col>
             <Col className="top-level-column"></Col>
           </Card>
+
+          {derivedEntitiesDisplayStatus && (
+            <Card marginResponsive="0px">
+              <div className="associated-with-section">
+                <h5 className="associated-with-section-title">
+                  {t('dashboard.organization.createNew.addOrganization.associatedEntities.title')}
+                </h5>
+                {derivedEntitiesData?.places?.length > 0 && (
+                  <div>
+                    <p className="associated-with-title">
+                      {t('dashboard.organization.createNew.addOrganization.associatedEntities.place')}
+                      <div className="associated-with-cards-wrapper">
+                        {derivedEntitiesData?.places?.map((place) => {
+                          <SelectionItem
+                            key={place._id}
+                            name={
+                              place?.name?.en || place?.name?.fr
+                                ? contentLanguageBilingual({
+                                    en: place?.name?.en,
+                                    fr: place?.name?.fr,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    calendarContentLanguage: calendarContentLanguage,
+                                  })
+                                : typeof place?.name === 'string' && place?.name
+                            }
+                            icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
+                            // description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                            bordered
+                            itemWidth="100%"
+                          />;
+                        })}
+                      </div>
+                    </p>
+                  </div>
+                )}
+                {derivedEntitiesData?.organizations?.length > 0 && (
+                  <div>
+                    <p className="associated-with-title">
+                      {t('dashboard.organization.createNew.addOrganization.associatedEntities.organizations')}
+                      <div className="associated-with-cards-wrapper">
+                        {derivedEntitiesData?.organizations?.map((org) => {
+                          return (
+                            <SelectionItem
+                              key={org._id}
+                              name={
+                                org?.name?.en || org?.name?.fr
+                                  ? contentLanguageBilingual({
+                                      en: org?.name?.en,
+                                      fr: org?.name?.fr,
+                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                      calendarContentLanguage: calendarContentLanguage,
+                                    })
+                                  : typeof org?.name === 'string' && org?.name
+                              }
+                              icon={
+                                <Icon
+                                  component={OrganizationLogo}
+                                  style={{ color: '#607EFC', fontSize: '18px' }}
+                                  data-cy="organization-logo"
+                                />
+                              }
+                              bordered
+                              itemWidth="100%"
+                            />
+                          );
+                        })}
+                      </div>
+                    </p>
+                  </div>
+                )}
+                {derivedEntitiesData?.people?.length > 0 && (
+                  <div>
+                    <p className="associated-with-title">
+                      {t('dashboard.organization.createNew.addOrganization.associatedEntities.people')}
+                      <div className="associated-with-cards-wrapper">
+                        {derivedEntitiesData?.people?.map((person) => {
+                          <SelectionItem
+                            key={person._id}
+                            name={
+                              person?.name?.en || person?.name?.fr
+                                ? contentLanguageBilingual({
+                                    en: person?.name?.en,
+                                    fr: person?.name?.fr,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    calendarContentLanguage: calendarContentLanguage,
+                                  })
+                                : typeof person?.name === 'string' && person?.name
+                            }
+                            icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
+                            bordered
+                            itemWidth="100%"
+                          />;
+                        })}
+                      </div>
+                    </p>
+                  </div>
+                )}
+                {derivedEntitiesData?.events?.length > 0 && (
+                  <div>
+                    <p className="associated-with-title">
+                      {t('dashboard.organization.createNew.addOrganization.associatedEntities.events')}
+                      <div className="associated-with-cards-wrapper">
+                        {derivedEntitiesData?.events?.map((event) => {
+                          return (
+                            <SelectionItem
+                              key={event._id}
+                              name={
+                                event?.name?.en || event?.name?.fr
+                                  ? contentLanguageBilingual({
+                                      en: event?.name?.en,
+                                      fr: event?.name?.fr,
+                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                      calendarContentLanguage: calendarContentLanguage,
+                                    })
+                                  : typeof event?.name === 'string' && event?.name
+                              }
+                              icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
+                              description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                              bordered
+                              itemWidth="100%"
+                            />
+                          );
+                        })}
+                      </div>
+                    </p>
+                  </div>
+                )}
+              </div>
+              <></>
+            </Card>
+          )}
         </Row>
       </FeatureFlag>
     )

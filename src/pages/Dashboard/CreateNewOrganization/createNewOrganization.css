@@ -7,6 +7,30 @@
   font-weight: 600;
 }
 
+.add-organization-wrapper .associated-with-section .associated-with-title {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0em;
+  text-align: left;
+}
+
+.add-organization-wrapper .associated-with-section-title {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: #222732;
+  margin-bottom: 24px;
+}
+
+.add-organization-wrapper .associated-with-section .associated-with-cards-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .add-organization-wrapper .events-search {
   width: 100% !important;
 }

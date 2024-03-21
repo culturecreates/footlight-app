@@ -42,6 +42,7 @@ import { sourceOptions } from '../../../constants/sourceOptions';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { getEmbedUrl } from '../../../utils/getEmbedVideoUrl';
+import { sameAsTypes } from '../../../constants/sameAsTypes';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -97,7 +98,7 @@ function EventReadOnly() {
   let standardAdminOnlyFields = requiredFields?.adminOnlyFields?.standardFields;
   let dynamicAdminOnlyFields = requiredFields?.adminOnlyFields?.dynamicFields;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-  let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === 'ArtsdataIdentifier');
+  let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === sameAsTypes.ARTSDATA_IDENTIFIER);
 
   const adminCheckHandler = () => {
     if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
