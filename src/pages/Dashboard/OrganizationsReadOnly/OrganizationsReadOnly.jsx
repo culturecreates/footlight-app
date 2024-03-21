@@ -112,8 +112,9 @@ function OrganizationsReadOnly() {
 
   useEffect(() => {
     if (organizationSuccess) {
-      if (organizationData?.derivedFrom?.uri) {
-        let sourceId = getExternalSourceId(organizationData?.derivedFrom?.uri);
+      if (organizationData?.sameAs?.length > 0) {
+        let sourceId = artsDataLinkChecker(organizationData?.sameAs);
+        sourceId = getExternalSourceId(sourceId);
         getArtsData(sourceId);
       }
       if (organizationData?.place?.entityId) {
@@ -232,7 +233,7 @@ function OrganizationsReadOnly() {
               <Row>
                 <Col flex={'780px'}>
                   <ArtsDataInfo
-                    artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
+                    artsDataLink={artsDataLinkChecker(organizationData?.sameAs)}
                     name={contentLanguageBilingual({
                       en: artsData?.name?.en,
                       fr: artsData?.name?.fr,

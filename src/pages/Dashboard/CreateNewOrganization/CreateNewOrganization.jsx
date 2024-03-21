@@ -686,8 +686,9 @@ function CreateNewOrganization() {
               },
             });
           }
-          if (organizationData?.derivedFrom?.uri) {
-            let sourceId = getExternalSourceId(organizationData?.derivedFrom?.uri);
+          if (organizationData?.sameAs?.length > 0) {
+            let sourceId = artsDataLinkChecker(organizationData?.sameAs);
+            sourceId = getExternalSourceId(sourceId);
             getArtsData(sourceId);
           }
           if (organizationData?.place?.entityId) {
@@ -911,7 +912,7 @@ function CreateNewOrganization() {
                             </Col>
                             <Col span={24}>
                               <ArtsDataInfo
-                                artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
+                                artsDataLink={artsDataLinkChecker(organizationData?.sameAs)}
                                 name={contentLanguageBilingual({
                                   en: artsData?.name?.en,
                                   fr: artsData?.name?.fr,
