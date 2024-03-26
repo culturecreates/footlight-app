@@ -1,5 +1,9 @@
 .change-type-wrapper {
   max-width: 240px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 0px;
 }
 .change-type-wrapper .first-button {
   background: #eff2ff;
@@ -23,6 +27,7 @@
   text-align: left;
   white-space: pre-line;
   word-break: break-word;
+  padding: 0px;
 }
 .change-type-wrapper .second-button[disabled] {
   color: #646d7b;
