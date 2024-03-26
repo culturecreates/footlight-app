@@ -198,6 +198,10 @@ function AddEvent() {
 
   setContentBackgroundColor('#F9FAFF');
 
+  useEffect(() => {
+    console.log(organizersList);
+  }, [organizersList]);
+
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
 
@@ -1632,7 +1636,9 @@ function AddEvent() {
                   requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME_EN) ||
                   requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME_FR)
                 }>
-                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                <ContentLanguageInput
+                  calendarContentLanguage={calendarContentLanguage}
+                  isFieldsDirty={{ en: form.isFieldTouched('english'), fr: form.isFieldTouched('french') }}>
                   <BilingualInput fieldData={eventData?.name}>
                     <Form.Item
                       name="french"
@@ -1662,7 +1668,7 @@ function AddEvent() {
                               ? '4px solid #E8E8E8'
                               : '1px solid #b6c1c9'
                           }`,
-                          width: '423px',
+                          maxWidth: '423px',
                         }}
                         size="large"
                         data-cy="text-area-event-french-name"
@@ -1696,7 +1702,7 @@ function AddEvent() {
                               ? '4px solid #E8E8E8'
                               : '1px solid #b6c1c9'
                           }`,
-                          width: '423px',
+                          maxWidth: '423px',
                         }}
                         size="large"
                         data-cy="text-area-event-english-name"
@@ -2368,7 +2374,12 @@ function AddEvent() {
                   display: !addedFields?.includes(virtualLocationFieldNames.virtualLocationName) && 'none',
                 }}
                 data-cy="form-item-virtual-location-title">
-                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                <ContentLanguageInput
+                  calendarContentLanguage={calendarContentLanguage}
+                  isFieldsDirty={{
+                    en: form.isFieldTouched('englishVirtualLocation'),
+                    fr: form.isFieldTouched('frenchVirtualLocation'),
+                  }}>
                   <BilingualInput fieldData={initialVirtualLocation && initialVirtualLocation[0]?.name}>
                     <Form.Item
                       name="frenchVirtualLocation"
@@ -2386,7 +2397,7 @@ function AddEvent() {
                               ? '4px solid #E8E8E8'
                               : '1px solid #b6c1c9'
                           }`,
-                          width: '423px',
+                          maxWidth: '423px',
                         }}
                         size="large"
                         data-cy="text-area-virtual-location-french"
@@ -2408,7 +2419,7 @@ function AddEvent() {
                               ? '4px solid #E8E8E8'
                               : '1px solid #b6c1c9'
                           }`,
-                          width: '423px',
+                          maxWidth: '423px',
                         }}
                         size="large"
                         data-cy="text-area-virtual-location-english"
@@ -2483,7 +2494,12 @@ function AddEvent() {
                     : false
                 }
                 data-cy="form-item-description-title">
-                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                <ContentLanguageInput
+                  calendarContentLanguage={calendarContentLanguage}
+                  isFieldsDirty={{
+                    en: form.isFieldTouched('englishEditor'),
+                    fr: form.isFieldTouched('frenchEditor'),
+                  }}>
                   <BilingualInput fieldData={eventData?.description}>
                     <TextEditor
                       formName="frenchEditor"
@@ -2931,7 +2947,12 @@ function AddEvent() {
                   label={t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}
                   className="subheading-wrap"
                   data-cy="form-item-event-contact-title">
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput
+                    calendarContentLanguage={calendarContentLanguage}
+                    isFieldsDirty={{
+                      en: form.isFieldTouched('englishContactTitle'),
+                      fr: form.isFieldTouched('frenchContactTitle'),
+                    }}>
                     <BilingualInput fieldData={eventData?.contactPoint?.name}>
                       <Form.Item
                         name="frenchContactTitle"
@@ -2950,7 +2971,7 @@ function AddEvent() {
                                 ? '4px solid #E8E8E8'
                                 : '1px solid #b6c1c9'
                             }`,
-                            width: '423px',
+                            maxWidth: '423px',
                           }}
                           size="large"
                           data-cy="input-contact-title-french"
@@ -2973,7 +2994,7 @@ function AddEvent() {
                                 ? '4px solid #E8E8E8'
                                 : '1px solid #b6c1c9'
                             }`,
-                            width: '423px',
+                            maxWidth: '423px',
                           }}
                           size="large"
                           data-cy="input-contact-title-english"
@@ -3766,7 +3787,12 @@ function AddEvent() {
                     display: !addedFields?.includes(eventAccessibilityFieldNames.noteWrap) && 'none',
                   }}
                   data-cy="form-item-accessiblity-note-label">
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput
+                    calendarContentLanguage={calendarContentLanguage}
+                    isFieldsDirty={{
+                      en: form.isFieldTouched('englishAccessibilityNote'),
+                      fr: form.isFieldTouched('frenchAccessibilityNote'),
+                    }}>
                     <BilingualInput fieldData={eventData?.accessibilityNote}>
                       <Form.Item
                         name="frenchAccessibilityNote"
@@ -3784,7 +3810,7 @@ function AddEvent() {
                                 ? '4px solid #E8E8E8'
                                 : '1px solid #b6c1c9'
                             }`,
-                            width: '423px',
+                            maxWidth: '423px',
                             resize: 'vertical',
                           }}
                           size="large"
@@ -3807,7 +3833,7 @@ function AddEvent() {
                                 ? '4px solid #E8E8E8'
                                 : '1px solid #b6c1c9'
                             }`,
-                            width: '423px',
+                            maxWidth: '423px',
                             resize: 'vertical',
                           }}
                           size="large"
@@ -4086,7 +4112,9 @@ function AddEvent() {
                     </Input.Group>
                   </Form.Item>
 
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput
+                    calendarContentLanguage={calendarContentLanguage}
+                    isFieldsDirty={{ en: form.isFieldTouched('prices'), fr: form.isFieldTouched('prices') }}>
                     <BilingualInput>
                       <Form.List
                         name="prices"
@@ -4167,7 +4195,12 @@ function AddEvent() {
                 ticketType == offerTypes.PAYING ||
                 ticketType == offerTypes.REGISTER) && (
                 <Form.Item label={t('dashboard.events.addEditEvent.tickets.note')}>
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput
+                    calendarContentLanguage={calendarContentLanguage}
+                    isFieldsDirty={{
+                      en: form.isFieldTouched('englishTicketNote'),
+                      fr: form.isFieldTouched('frenchTicketNote'),
+                    }}>
                     <BilingualInput fieldData={eventData?.offerConfiguration?.name}>
                       <Form.Item
                         name="frenchTicketNote"
@@ -4210,7 +4243,7 @@ function AddEvent() {
                                 ? '4px solid #E8E8E8'
                                 : '1px solid #b6c1c9'
                             }`,
-                            width: '423px',
+                            maxWidth: '423px',
                             resize: 'vertical',
                           }}
                           size="large"
@@ -4258,7 +4291,7 @@ function AddEvent() {
                                 ? '4px solid #E8E8E8'
                                 : '1px solid #b6c1c9'
                             }`,
-                            width: '423px',
+                            maxWidth: '423px',
                             resize: 'vertical',
                           }}
                           size="large"

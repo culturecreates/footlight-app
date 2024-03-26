@@ -1073,12 +1073,20 @@
   },
   "common": {
     "tabEnglish": "English",
-    "tabFrench": "French",
     "noneFound": "None Found",
+    "tabFrench": "French",
     "unsavedChanges": "You have unsaved changes. Are you sure you want to discard them?",
     "keepEditing": "Keep editing",
     "copied": "Copied to clipboard",
     "discard": "Discard",
+    "dismiss": "Dismiss",
+    "forms": {
+      "languageLiterals": {
+        "knownLanguagePromptText": "This text does not match the language on your website.",
+        "unKnownLanguagePromptText": "The language of this text is not defined.",
+        "bannerTitle": "Some text does not match the language on your website. Review and update as needed."
+      }
+    },
     "server": {
       "status": {
         "503": {

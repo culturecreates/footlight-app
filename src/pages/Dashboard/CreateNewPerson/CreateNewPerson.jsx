@@ -432,7 +432,6 @@ function CreateNewPerson() {
           setDerivedEntitiesData(response?.data);
           setDerivedEntitiesDisplayStatus(true);
         }
-        console.log(response?.data?.organizations);
       });
     }
   }, []);

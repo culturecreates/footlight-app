@@ -1075,6 +1075,14 @@
     "keepEditing": "Poursuivre l'édition",
     "discard": "Jeter",
     "copied": "Copié dans le presse-papiers",
+    "dismiss": "J'ai compris",
+    "forms": {
+      "languageLiterals": {
+        "knownLanguagePromptText": "Ce texte ne correspond pas à la langue de votre site web.",
+        "unKnownLanguagePromptText": "La langue de ce texte n'est pas définie.",
+        "bannerTitle": "Certains textes ne correspondent pas à la langue de votre site web. Révisez et mettez à jour si nécessaire."
+      }
+    },
     "server": {
       "status": {
         "503": {

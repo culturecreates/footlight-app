@@ -6,6 +6,7 @@
 
 .add-event-section-col .add-event-section-wrapper {
   background-color: #ffffff;
+  max-width: 471px;
 }
 
 .add-event-section-col .add-event-date-wrap {
