@@ -28,14 +28,6 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
     //HTTP 400 Bad Request
     //The server cannot or will not process the request due to something that is perceived to be a client error.
 
-    // api.dispatch(
-    //   setErrorStates({
-    //     errorCode: '400',
-    //     isError: true,
-    //     message: result.error?.data?.message,
-    //   }),
-    // );
-
     notification.info({
       key: '400',
       message: <Translation>{(t) => t('common.server.status.400.message')}</Translation>,
@@ -123,6 +115,18 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       placement: 'top',
     });
   }
+  if (result.error && result.error.status === 404) {
+    // HTTP 403 Forbidden response status code indicates that the server understands the request but refuses to authorize it.
+    // This status is similar to 401, but for the 403 Forbidden status code, re-authenticating makes no difference.
+    // The access is tied to the application logic, such as insufficient rights to a resource.
+    api.dispatch(setErrorStates({ errorCode: '404', isError: true, message: result.error?.data?.message }));
+
+    notification.info({
+      key: '404',
+      message: <Translation>{(t) => t('common.server.status.403.message')}</Translation>,
+      placement: 'top',
+    });
+  }
   if (result?.meta?.response?.status === 502) {
     // HTTP 503 Service Unavailable server error response code indicates that the server is not ready to handle the request.
     // Common causes are a server that is down for maintenance or that is overloaded.
@@ -142,6 +146,10 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       message: <Translation>{(t) => t('common.server.status.FETCH_ERROR.message')}</Translation>,
       placement: 'top',
     });
+  }
+
+  if (!result.error) {
+    api.dispatch(setErrorStates({ errorCode: '', isError: false, message: '' }));
   }
 
   return result;
