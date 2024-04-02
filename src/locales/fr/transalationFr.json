@@ -995,11 +995,11 @@
         "heading": "Nouvelle taxonomie",
         "class": "Classe",
         "classDropdownOptions": {
-          "event": "Event",
-          "place": "Place",
-          "person": "Person",
-          "organization": "Organization",
-          "virtualLocation": "Virtual location"
+          "event": "Événement",
+          "place": "Lieu",
+          "person": "Personne",
+          "organization": "Organisation",
+          "virtualLocation": "Emplacement virtuel"
         },
         "classValidation": "Sélectionnez une classe",
         "classPlaceHolder": "Sélectionner une classe",
