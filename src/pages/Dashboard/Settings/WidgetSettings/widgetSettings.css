@@ -137,6 +137,13 @@
   gap: 10px;
 }
 
+.loading-container {
+  width: '100%';
+  height: 500px;
+  display: grid;
+  place-content: center;
+}
+
 .widget-settings .widget-settings-code-container > span {
   white-space: nowrap;
   overflow: hidden;

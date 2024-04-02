@@ -43,6 +43,7 @@ import { setReloadCalendar } from '../../../redux/reducer/selectedCalendarSlice'
 import CalendarAccordion from '../../../components/Accordion/CalendarAccordion';
 import { removeObjectArrayDuplicates } from '../../../utils/removeObjectArrayDuplicates';
 import Select from '../../../components/Select';
+import Cookies from 'js-cookie';
 
 const AddUser = () => {
   const navigate = useNavigate();
@@ -356,10 +357,11 @@ const AddUser = () => {
                           roles: response?.roles,
                           isSuperAdmin: response?.isSuperAdmin ? true : false,
                           userName: response?.userName,
-                          interfaceLanguage: response?.languagePreference,
+                          interfaceLanguage: response?.interfaceLanguage,
                         },
                       };
                       dispatch(setUser(userDetails));
+                      Cookies.set('interfaceLanguage', response?.interfaceLanguage?.toLowerCase());
                     });
                   notification.success({
                     description: t('dashboard.userProfile.notification.profileUpdate'),
@@ -448,10 +450,11 @@ const AddUser = () => {
                           roles: response?.roles,
                           isSuperAdmin: response?.isSuperAdmin ? true : false,
                           userName: response?.userName,
-                          interfaceLanguage: response?.languagePreference,
+                          interfaceLanguage: response?.interfaceLanguage,
                         },
                       };
                       dispatch(setUser(userDetails));
+                      Cookies.set('interfaceLanguage', response?.interfaceLanguage?.toLowerCase());
 
                       navigate(-2);
                     });
