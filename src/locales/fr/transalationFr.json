@@ -510,6 +510,13 @@
             "secondPart": "créez une nouvelle organisation",
             "thirdPart": " et ne modifiez pas celle-ci."
           },
+          "associatedEntities": {
+            "title": "Associé à",
+            "place": "Lieu",
+            "events": "Événements",
+            "people": "Personnes",
+            "organizations": "Organisations"
+          },
           "addSocialMediaLinks": "Ajouter un lien"
         },
         "notification": {
@@ -918,7 +925,7 @@
         "color": "Couleur principale du thème",
         "colorDescreption": "Entrez le code hexadécimal de la couleur principale. Choisissez une couleur qui donne suffisamment de contraste pour que l'utilisateur puisse lire le contenu.",
         "colorPlaceHolder": "Collez votre code couleur ou sélectionnez une couleur",
-        "height": "Largeur",
+        "height": "Hauteur",
         "width": "Largeur maximale",
         "language": "Choix de langue",
         "eventType": "Type d'événement",
@@ -1034,11 +1041,11 @@
         "heading": "Nouvelle taxonomie",
         "class": "Classe",
         "classDropdownOptions": {
-          "event": "Event",
-          "place": "Place",
-          "person": "Person",
-          "organization": "Organization",
-          "virtualLocation": "Virtual location"
+          "event": "Événement",
+          "place": "Lieu",
+          "person": "Personne",
+          "organization": "Organisation",
+          "virtualLocation": "Emplacement virtuel"
         },
         "classValidation": "Sélectionnez une classe",
         "classPlaceHolder": "Sélectionner une classe",

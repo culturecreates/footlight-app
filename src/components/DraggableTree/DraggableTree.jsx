@@ -307,7 +307,7 @@ const DraggableTree = ({
         }
       },
       content: t('dashboard.taxonomy.addNew.concepts.deleteConceptMessage'),
-      okText: t('dashboard.settings.addUser.leave'),
+      okText: t('dashboard.settings.addUser.delete'),
       cancelText: t('dashboard.events.deleteEvent.cancel'),
     });
   };

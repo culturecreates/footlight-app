@@ -92,6 +92,8 @@ import CustomPopover from '../../../components/Popover/Popover';
 import { removeEmptyParagraphsAtEnd } from '../../../utils/removeEmptyParagraphsAtEnd';
 import Alert from '../../../components/Alert';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
+import { getEmbedUrl, validateVimeoURL, validateYouTubeURL } from '../../../utils/getEmbedVideoUrl';
+import { sameAsTypes } from '../../../constants/sameAsTypes';
 
 const { TextArea } = Input;
 
@@ -215,7 +217,7 @@ function AddEvent() {
     return dateTime.toISOString();
   };
 
-  let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === 'ArtsdataIdentifier');
+  let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === sameAsTypes.ARTSDATA_IDENTIFIER);
 
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
@@ -234,6 +236,18 @@ function AddEvent() {
     },
     { label: t('dashboard.events.addEditEvent.otherInformation.contact.email'), value: 'email' },
   ];
+
+  const validateVideoLink = (rule, value) => {
+    if (!value) {
+      return Promise.resolve();
+    }
+
+    if (!validateYouTubeURL(value) && !validateVimeoURL(value)) {
+      return Promise.reject(t('dashboard.events.addEditEvent.validations.url'));
+    }
+
+    return Promise.resolve();
+  };
 
   const addUpdateEventApiHandler = (eventObj, toggle) => {
     var promise = new Promise(function (resolve, reject) {
@@ -731,10 +745,9 @@ function AddEvent() {
       .validateFields(type === 'PUBLISH' || type === 'REVIEW' ? validateFields : [])
       .then(() => {
         if (isValuesChanged && type !== 'PUBLISH') {
-          updateEventState({ id: eventId ?? eventData?.id, calendarId })
-            .unwrap()
-            .then(() => {
-              saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
+          saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
+            .then((id) => {
+              updateEventState({ id, calendarId })
                 .then(() => {
                   notification.success({
                     description:
@@ -753,8 +766,8 @@ function AddEvent() {
                 .catch((error) => console.log(error));
             })
             .catch((error) => console.log(error));
-        } else if ((isValuesChanged || duplicateId) && type === 'PUBLISH') {
-          saveAsDraftHandler(event, type === 'PUBLISH', eventPublishState.DRAFT)
+        } else if ((isValuesChanged || duplicateId) && (type === 'PUBLISH' || type === 'REVIEW')) {
+          saveAsDraftHandler(event, type === 'PUBLISH' || 'REVIEW', eventPublishState.DRAFT)
             .then((id) => {
               updateEventState({ id: eventId ?? id, calendarId, publishState })
                 .unwrap()
@@ -856,7 +869,9 @@ function AddEvent() {
             <PrimaryButton
               label={t('dashboard.events.addEditEvent.saveOptions.publish')}
               data-cy="button-publish-event"
-              onClick={(e) => reviewPublishHandler({ event: e, publishState: eventPublishState.PUBLISHED })}
+              onClick={(e) =>
+                reviewPublishHandler({ event: e, publishState: eventPublishState.PUBLISHED, type: 'PUBLISH' })
+              }
               disabled={
                 updateEventLoading || addEventLoading || updateEventStateLoading || addImageLoading ? true : false
               }
@@ -3540,12 +3555,7 @@ function AddEvent() {
                 }}
                 label={t('dashboard.events.addEditEvent.otherInformation.videoLink')}
                 initialValue={eventData?.videoUrl}
-                rules={[
-                  {
-                    type: 'url',
-                    message: t('dashboard.events.addEditEvent.validations.url'),
-                  },
-                ]}
+                rules={[{ validator: (rule, value) => validateVideoLink(rule, value) }]}
                 data-cy="form-item-video-link">
                 <StyledInput
                   addonBefore="URL"
@@ -3554,6 +3564,20 @@ function AddEvent() {
                   data-cy="input-video-link"
                 />
               </Form.Item>
+              {getEmbedUrl(form.getFieldValue(otherInformationFieldNames.videoLink)) !== '' && (
+                <Row>
+                  <Col span={24}>
+                    <iframe
+                      className="iframe-video-embed"
+                      width="100%"
+                      height="315"
+                      src={getEmbedUrl(form.getFieldValue(otherInformationFieldNames.videoLink))}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowfullscreen></iframe>
+                  </Col>
+                </Row>
+              )}
+
               <Form.Item
                 name={otherInformationFieldNames.facebookLinkWrap}
                 className={otherInformationFieldNames.facebookLinkWrap}

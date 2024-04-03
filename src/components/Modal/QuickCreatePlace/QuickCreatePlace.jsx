@@ -101,15 +101,15 @@ function QuickCreatePlace(props) {
   const [address, setAddress] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const handleChange = (address) => {
-    if (address === '') setDropdownOpen(false);
+  const handleChange = (value) => {
+    if (value === '') setDropdownOpen(false);
     else setDropdownOpen(true);
-    setAddress(address);
   };
 
   const handleSelect = (address) => {
     geocodeByAddress(address)
       .then((results) => {
+        setAddress(results[0]?.formatted_address);
         form.setFieldsValue({
           address: results[0]?.formatted_address,
           addressCountry: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
@@ -437,9 +437,18 @@ function QuickCreatePlace(props) {
                   <Form.Item
                     name="address"
                     label={t('dashboard.events.addEditEvent.location.quickCreatePlace.address')}
+                    validateTrigger={['onBlur']}
                     rules={[
                       {
-                        required: true,
+                        validator: (rules, value) => {
+                          if (address === '' || value !== address) {
+                            return Promise.reject(
+                              t('dashboard.events.addEditEvent.location.quickCreatePlace.validations.address'),
+                            );
+                          } else {
+                            return Promise.resolve();
+                          }
+                        },
                         message: t('dashboard.events.addEditEvent.location.quickCreatePlace.validations.address'),
                       },
                     ]}
@@ -456,6 +465,7 @@ function QuickCreatePlace(props) {
                           open={dropdownOpen}
                           overlayClassName="filter-sort-dropdown-wrapper"
                           getPopupContainer={(trigger) => trigger.parentNode}
+                          onBlur={() => setDropdownOpen(false)}
                           menu={{
                             items: suggestions?.map((suggestion, index) => {
                               return {

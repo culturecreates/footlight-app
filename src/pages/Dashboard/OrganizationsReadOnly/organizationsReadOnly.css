@@ -6,6 +6,30 @@
   display: none;
 }
 
+.organization-read-only .associated-with-section .associated-with-title {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0em;
+  text-align: left;
+}
+
+.organization-read-only .associated-with-section-title {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: #222732;
+  margin-bottom: 24px;
+}
+
+.organization-read-only .associated-with-section .associated-with-cards-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .organization-read-only .events-content {
   flex-wrap: wrap-reverse;
   gap: 24px;
@@ -19,6 +43,16 @@
 .organization-read-only .artsdata-link-wrapper {
   margin-left: 0px;
   padding: 0 16px !important;
+}
+
+.organization-read-only .artsdata-link-wrapper .ant-btn {
+  margin-left: 0px;
+}
+
+@media only screen and (min-width: 900px) {
+  .organization-read-only .responsive-view-control-class {
+    flex: 0 !important;
+  }
 }
 
 @media only screen and (max-width: 480px) {

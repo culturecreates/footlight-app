@@ -14,7 +14,8 @@ function ErrorLayout({ children }) {
       } else if (
         errorDetails.errorCode === '403' ||
         errorDetails.errorCode === '500' ||
-        errorDetails.errorCode === '400'
+        errorDetails.errorCode === '400' ||
+        errorDetails.errorCode === '404'
       ) {
         setErrorComponent(<ErrorAlert errorType="failedAPI" />);
       }

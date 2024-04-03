@@ -10,6 +10,12 @@
   gap: 16px;
 }
 
+.add-edit-wrapper .iframe-video-embed {
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
+}
+
 .add-edit-wrapper .add-entity-label {
   font-weight: 700;
   font-size: 16px;

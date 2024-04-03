@@ -22,11 +22,14 @@ import ErrorLayout from '../../layout/ErrorLayout/ErrorLayout';
 import CustomModal from '../../components/Modal/Common/CustomModal';
 import { useTranslation } from 'react-i18next';
 import { calendarModes } from '../../constants/calendarModes';
+import { useAuth } from '../../hooks/useAuth';
 
 const { Header, Content } = Layout;
 const { useBreakpoint } = Grid;
 
 function Dashboard() {
+  useAuth();
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -125,13 +128,13 @@ function Dashboard() {
   }, [reloadStatus, dispatch]);
 
   const findActiveCalendar = () => {
-    const currentCalendar = allCalendarsData.data.filter((item) => {
+    const currentCalendar = allCalendarsData?.data?.filter((item) => {
       if (item.id === calendarId) {
         return item;
       }
     });
     if (currentCalendar.length < 1) {
-      return allCalendarsData.data[0].id;
+      return allCalendarsData?.data[0].id;
     }
     return null;
   };

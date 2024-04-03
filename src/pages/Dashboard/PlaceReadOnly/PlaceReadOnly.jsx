@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Card from '../../../components/Card/Common/Event';
 import { useTranslation } from 'react-i18next';
 import { Col, Row } from 'antd';
-import { LinkOutlined } from '@ant-design/icons';
+import Icon, { LinkOutlined, EnvironmentOutlined, CalendarOutlined } from '@ant-design/icons';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
@@ -15,6 +15,7 @@ import {
   treeTaxonomyOptions,
 } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import Tags from '../../../components/Tags/Common/Tags';
+import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import OutlinedButton from '../../../components/Button/Outlined';
@@ -32,6 +33,8 @@ import { loadArtsDataPlaceEntity } from '../../../services/artsData';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import './placeReadOnly.css';
+import moment from 'moment';
+import { useLazyGetEntityDependencyDetailsQuery } from '../../../services/entities';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -63,6 +66,9 @@ function PlaceReadOnly() {
   });
   const [getPlace] = useLazyGetPlaceQuery();
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery();
+  const [getDerivedEntities, { isFetching: isEntityDetailsLoading }] = useLazyGetEntityDependencyDetailsQuery({
+    sessionId: timestampRef,
+  });
 
   const { user } = useSelector(getUserDetails);
 
@@ -70,7 +76,8 @@ function PlaceReadOnly() {
   const [artsDataLoading, setArtsDataLoading] = useState(false);
   const [artsData, setArtsData] = useState(null);
   const [selectedContainsPlaces, setSelectedContainsPlaces] = useState([]);
-
+  const [derivedEntitiesData, setDerivedEntitiesData] = useState();
+  const [derivedEntitiesDisplayStatus, setDerivedEntitiesDisplayStatus] = useState(false);
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const getArtsDataPlace = (id) => {
@@ -93,9 +100,26 @@ function PlaceReadOnly() {
   }, [placeError]);
 
   useEffect(() => {
+    if (placeId) {
+      getDerivedEntities({ id: placeId, calendarId }).then((response) => {
+        if (
+          response?.data?.events?.length > 0 ||
+          response?.data?.people?.length > 0 ||
+          response?.data?.organizations?.length > 0
+        ) {
+          setDerivedEntitiesData(response?.data);
+          setDerivedEntitiesDisplayStatus(true);
+        }
+        console.log(response?.data?.organizations);
+      });
+    }
+  }, [placeId]);
+
+  useEffect(() => {
     if (placeSuccess) {
-      if (placeData?.derivedFrom?.uri) {
-        let sourceId = getExternalSourceId(placeData?.derivedFrom?.uri);
+      if (placeData?.sameAs?.length > 0) {
+        let sourceId = artsDataLinkChecker(placeData?.sameAs);
+        sourceId = getExternalSourceId(sourceId);
         getArtsDataPlace(sourceId);
       }
       if (placeData?.containedInPlace?.entityId) {
@@ -158,6 +182,7 @@ function PlaceReadOnly() {
   return (
     placeSuccess &&
     !placeLoading &&
+    !isEntityDetailsLoading &&
     !artsDataLoading &&
     !taxonomyLoading && (
       <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
@@ -227,7 +252,7 @@ function PlaceReadOnly() {
               <Row>
                 <Col flex={'780px'}>
                   <ArtsDataInfo
-                    artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
+                    artsDataLink={artsDataLinkChecker(placeData?.sameAs)}
                     name={contentLanguageBilingual({
                       en: artsData?.name?.en,
                       fr: artsData?.name?.fr,
@@ -245,195 +270,203 @@ function PlaceReadOnly() {
               </Row>
             </Col>
           )}
-          <Card marginResponsive="0px">
-            <Col className="top-level-column">
-              <Row>
-                {(placeData?.name?.fr || placeData?.name?.en) && (
-                  <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary" data-cy="para-place-name-title">
-                      {t('dashboard.places.readOnly.placeName')}
-                    </p>
-                    {placeData?.name?.fr && (
-                      <>
-                        <p
-                          className="read-only-event-content-sub-title-secondary"
-                          data-cy="para-place-name-french-title">
-                          {t('common.tabFrench')}
-                        </p>
-                        <p className="read-only-event-content" data-cy="para-place-name-french">
-                          {placeData?.name?.fr}
-                        </p>
-                      </>
-                    )}
-                    {placeData?.name?.en && (
-                      <>
-                        <p
-                          className="read-only-event-content-sub-title-secondary"
-                          data-cy="para-place-name-english-title">
-                          {t('common.tabEnglish')}
-                        </p>
-                        <p className="read-only-event-content" data-cy="para-place-name-english">
-                          {placeData?.name?.en}
-                        </p>
-                      </>
-                    )}
-                  </Col>
-                )}
-                {placeData?.additionalType.length > 0 && (
-                  <div>
-                    <p className="read-only-event-content-sub-title-primary" data-cy="para-">
-                      {taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false)}
-                    </p>
-                    <TreeSelectOption
-                      data-cy="treeselect-place-additional-type"
-                      style={{ marginBottom: '1rem' }}
-                      bordered={false}
-                      open={false}
-                      disabled
-                      treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Type', false, calendarContentLanguage)}
-                      defaultValue={placeData?.additionalType?.map((type) => {
-                        return type?.entityId;
+          <div className="place-read-only-image-section">
+            <Card marginResponsive="0px">
+              <Col className="top-level-column">
+                <Row>
+                  {(placeData?.name?.fr || placeData?.name?.en) && (
+                    <Col span={24}>
+                      <p className="read-only-event-content-sub-title-primary" data-cy="para-place-name-title">
+                        {t('dashboard.places.readOnly.placeName')}
+                      </p>
+                      {placeData?.name?.fr && (
+                        <>
+                          <p
+                            className="read-only-event-content-sub-title-secondary"
+                            data-cy="para-place-name-french-title">
+                            {t('common.tabFrench')}
+                          </p>
+                          <p className="read-only-event-content" data-cy="para-place-name-french">
+                            {placeData?.name?.fr}
+                          </p>
+                        </>
+                      )}
+                      {placeData?.name?.en && (
+                        <>
+                          <p
+                            className="read-only-event-content-sub-title-secondary"
+                            data-cy="para-place-name-english-title">
+                            {t('common.tabEnglish')}
+                          </p>
+                          <p className="read-only-event-content" data-cy="para-place-name-english">
+                            {placeData?.name?.en}
+                          </p>
+                        </>
+                      )}
+                    </Col>
+                  )}
+                  {placeData?.additionalType.length > 0 && (
+                    <div>
+                      <p className="read-only-event-content-sub-title-primary" data-cy="para-">
+                        {taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false)}
+                      </p>
+                      <TreeSelectOption
+                        data-cy="treeselect-place-additional-type"
+                        style={{ marginBottom: '1rem' }}
+                        bordered={false}
+                        open={false}
+                        disabled
+                        treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Type', false, calendarContentLanguage)}
+                        defaultValue={placeData?.additionalType?.map((type) => {
+                          return type?.entityId;
+                        })}
+                        tagRender={(props) => {
+                          const { label } = props;
+                          return <Tags data-cy={`tag-place-${label}`}>{label}</Tags>;
+                        }}
+                      />
+                    </div>
+                  )}
+                  {placeData?.dynamicFields?.length > 0 && (
+                    <Col span={24}>
+                      {allTaxonomyData?.data?.map((taxonomy, index) => {
+                        if (taxonomy?.isDynamicField) {
+                          let initialValues,
+                            initialTaxonomy = [];
+                          placeData?.dynamicFields?.forEach((dynamicField) => {
+                            if (taxonomy?.id === dynamicField?.taxonomyId) {
+                              initialValues = dynamicField?.conceptIds;
+                              initialTaxonomy.push(taxonomy?.id);
+                            }
+                          });
+                          if (initialTaxonomy?.includes(taxonomy?.id) && initialValues?.length > 0)
+                            return (
+                              <div>
+                                <p
+                                  className="read-only-event-content-sub-title-primary"
+                                  data-cy="para-place-dynamic-taxonomy-name">
+                                  {bilingual({
+                                    en: taxonomy?.name?.en,
+                                    fr: taxonomy?.name?.fr,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                  })}
+                                </p>
+                                <TreeSelectOption
+                                  data-cy={`treeselect-place-dynamic-taxonomy-${index}`}
+                                  key={index}
+                                  style={{ marginBottom: '1rem' }}
+                                  bordered={false}
+                                  open={false}
+                                  disabled
+                                  defaultValue={initialValues}
+                                  treeData={treeDynamicTaxonomyOptions(
+                                    taxonomy?.concept,
+                                    user,
+                                    calendarContentLanguage,
+                                  )}
+                                  tagRender={(props) => {
+                                    const { label } = props;
+                                    return <Tags data-cy={`tag-place-dynamic-taxonomy-${label}`}>{label}</Tags>;
+                                  }}
+                                />
+                              </div>
+                            );
+                        }
                       })}
-                      tagRender={(props) => {
-                        const { label } = props;
-                        return <Tags data-cy={`tag-place-${label}`}>{label}</Tags>;
+                    </Col>
+                  )}
+                  {(placeData?.disambiguatingDescription?.en || placeData?.disambiguatingDescription?.fr) && (
+                    <Col span={24}>
+                      <p
+                        className="read-only-event-content-sub-title-primary"
+                        data-cy="para-place-disambiguating-description-title">
+                        {t('dashboard.places.readOnly.disambiguatingDescription')}
+                      </p>
+                      {placeData?.disambiguatingDescription?.fr && (
+                        <>
+                          <p
+                            className="read-only-event-content-sub-title-secondary"
+                            data-cy="para-place-disambiguating-description-french-title">
+                            {t('common.tabFrench')}
+                          </p>
+                          <p className="read-only-event-content" data-cy="para-place-disambiguating-description-french">
+                            {placeData?.disambiguatingDescription?.fr}
+                          </p>
+                        </>
+                      )}
+                      {placeData?.disambiguatingDescription?.en && (
+                        <>
+                          <p
+                            className="read-only-event-content-sub-title-secondary"
+                            data-cy="para-place-disambiguating-description-english-title">
+                            {t('common.tabEnglish')}
+                          </p>
+                          <p
+                            className="read-only-event-content"
+                            data-cy="para-place-disambiguating-description-english">
+                            {placeData?.disambiguatingDescription?.en}
+                          </p>
+                        </>
+                      )}
+                    </Col>
+                  )}
+                  {(placeData?.description?.fr || placeData?.description?.en) && (
+                    <Col span={24}>
+                      <p className="read-only-event-content-sub-title-primary" data-cy="para-place-description-title">
+                        {t('dashboard.places.readOnly.description')}
+                      </p>
+                      {placeData?.description?.fr && (
+                        <>
+                          <p
+                            className="read-only-event-content-sub-title-secondary"
+                            data-cy="para-place-description-french-title">
+                            {t('common.tabFrench')}
+                          </p>
+                          <p className="read-only-event-content">
+                            <div
+                              dangerouslySetInnerHTML={{ __html: placeData?.description?.fr }}
+                              data-cy="div-place-description-french"
+                            />
+                          </p>
+                        </>
+                      )}
+                      {placeData?.description?.en && (
+                        <>
+                          <p
+                            className="read-only-event-content-sub-title-secondary"
+                            data-cy="para-place-description-english-title">
+                            {t('common.tabEnglish')}
+                          </p>
+                          <p className="read-only-event-content">
+                            <div
+                              dangerouslySetInnerHTML={{ __html: placeData?.description?.en }}
+                              data-cy="div-place-description-english"
+                            />
+                          </p>
+                        </>
+                      )}
+                    </Col>
+                  )}
+                </Row>
+              </Col>
+              <Col className="top-level-column">
+                {placeData?.image?.original?.uri && (
+                  <div>
+                    <img
+                      data-cy="image-place-original"
+                      src={placeData?.image?.original?.uri}
+                      alt="avatar"
+                      style={{
+                        width: '151px',
+                        height: '151px',
+                        objectFit: 'contain',
                       }}
                     />
                   </div>
                 )}
-                {placeData?.dynamicFields?.length > 0 && (
-                  <Col span={24}>
-                    {allTaxonomyData?.data?.map((taxonomy, index) => {
-                      if (taxonomy?.isDynamicField) {
-                        let initialValues,
-                          initialTaxonomy = [];
-                        placeData?.dynamicFields?.forEach((dynamicField) => {
-                          if (taxonomy?.id === dynamicField?.taxonomyId) {
-                            initialValues = dynamicField?.conceptIds;
-                            initialTaxonomy.push(taxonomy?.id);
-                          }
-                        });
-                        if (initialTaxonomy?.includes(taxonomy?.id) && initialValues?.length > 0)
-                          return (
-                            <div>
-                              <p
-                                className="read-only-event-content-sub-title-primary"
-                                data-cy="para-place-dynamic-taxonomy-name">
-                                {bilingual({
-                                  en: taxonomy?.name?.en,
-                                  fr: taxonomy?.name?.fr,
-                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                })}
-                              </p>
-                              <TreeSelectOption
-                                data-cy={`treeselect-place-dynamic-taxonomy-${index}`}
-                                key={index}
-                                style={{ marginBottom: '1rem' }}
-                                bordered={false}
-                                open={false}
-                                disabled
-                                defaultValue={initialValues}
-                                treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
-                                tagRender={(props) => {
-                                  const { label } = props;
-                                  return <Tags data-cy={`tag-place-dynamic-taxonomy-${label}`}>{label}</Tags>;
-                                }}
-                              />
-                            </div>
-                          );
-                      }
-                    })}
-                  </Col>
-                )}
-                {(placeData?.disambiguatingDescription?.en || placeData?.disambiguatingDescription?.fr) && (
-                  <Col span={24}>
-                    <p
-                      className="read-only-event-content-sub-title-primary"
-                      data-cy="para-place-disambiguating-description-title">
-                      {t('dashboard.places.readOnly.disambiguatingDescription')}
-                    </p>
-                    {placeData?.disambiguatingDescription?.fr && (
-                      <>
-                        <p
-                          className="read-only-event-content-sub-title-secondary"
-                          data-cy="para-place-disambiguating-description-french-title">
-                          {t('common.tabFrench')}
-                        </p>
-                        <p className="read-only-event-content" data-cy="para-place-disambiguating-description-french">
-                          {placeData?.disambiguatingDescription?.fr}
-                        </p>
-                      </>
-                    )}
-                    {placeData?.disambiguatingDescription?.en && (
-                      <>
-                        <p
-                          className="read-only-event-content-sub-title-secondary"
-                          data-cy="para-place-disambiguating-description-english-title">
-                          {t('common.tabEnglish')}
-                        </p>
-                        <p className="read-only-event-content" data-cy="para-place-disambiguating-description-english">
-                          {placeData?.disambiguatingDescription?.en}
-                        </p>
-                      </>
-                    )}
-                  </Col>
-                )}
-                {(placeData?.description?.fr || placeData?.description?.en) && (
-                  <Col span={24}>
-                    <p className="read-only-event-content-sub-title-primary" data-cy="para-place-description-title">
-                      {t('dashboard.places.readOnly.description')}
-                    </p>
-                    {placeData?.description?.fr && (
-                      <>
-                        <p
-                          className="read-only-event-content-sub-title-secondary"
-                          data-cy="para-place-description-french-title">
-                          {t('common.tabFrench')}
-                        </p>
-                        <p className="read-only-event-content">
-                          <div
-                            dangerouslySetInnerHTML={{ __html: placeData?.description?.fr }}
-                            data-cy="div-place-description-french"
-                          />
-                        </p>
-                      </>
-                    )}
-                    {placeData?.description?.en && (
-                      <>
-                        <p
-                          className="read-only-event-content-sub-title-secondary"
-                          data-cy="para-place-description-english-title">
-                          {t('common.tabEnglish')}
-                        </p>
-                        <p className="read-only-event-content">
-                          <div
-                            dangerouslySetInnerHTML={{ __html: placeData?.description?.en }}
-                            data-cy="div-place-description-english"
-                          />
-                        </p>
-                      </>
-                    )}
-                  </Col>
-                )}
-              </Row>
-            </Col>
-            <Col className="top-level-column">
-              {placeData?.image?.original?.uri && (
-                <div>
-                  <img
-                    data-cy="image-place-original"
-                    src={placeData?.image?.original?.uri}
-                    alt="avatar"
-                    style={{
-                      width: '151px',
-                      height: '151px',
-                      objectFit: 'contain',
-                    }}
-                  />
-                </div>
-              )}
-            </Col>
-          </Card>
+              </Col>
+            </Card>
+          </div>
           <Card marginResponsive="0px">
             <Col className="top-level-column">
               <Row gutter={[0, 24]}>
@@ -715,6 +748,137 @@ function PlaceReadOnly() {
             </Col>
             <Col className="top-level-column"></Col>
           </Card>
+
+          {derivedEntitiesDisplayStatus && (
+            <Card marginResponsive="0px">
+              <div className="associated-with-section">
+                <h5 className="associated-with-section-title">
+                  {t('dashboard.organization.createNew.addOrganization.associatedEntities.title')}
+                </h5>
+                {derivedEntitiesData?.places?.length > 0 && (
+                  <div>
+                    <p className="associated-with-title">
+                      {t('dashboard.organization.createNew.addOrganization.associatedEntities.place')}
+                      <div className="associated-with-cards-wrapper">
+                        {derivedEntitiesData?.places?.map((place) => {
+                          <SelectionItem
+                            key={place._id}
+                            name={
+                              place?.name?.en || place?.name?.fr
+                                ? contentLanguageBilingual({
+                                    en: place?.name?.en,
+                                    fr: place?.name?.fr,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    calendarContentLanguage: calendarContentLanguage,
+                                  })
+                                : typeof place?.name === 'string' && place?.name
+                            }
+                            icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
+                            // description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                            bordered
+                            itemWidth="100%"
+                          />;
+                        })}
+                      </div>
+                    </p>
+                  </div>
+                )}
+                {derivedEntitiesData?.organizations?.length > 0 && (
+                  <div>
+                    <p className="associated-with-title">
+                      {t('dashboard.organization.createNew.addOrganization.associatedEntities.organizations')}
+                      <div className="associated-with-cards-wrapper">
+                        {derivedEntitiesData?.organizations?.map((org) => {
+                          return (
+                            <SelectionItem
+                              key={org._id}
+                              name={
+                                org?.name?.en || org?.name?.fr
+                                  ? contentLanguageBilingual({
+                                      en: org?.name?.en,
+                                      fr: org?.name?.fr,
+                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                      calendarContentLanguage: calendarContentLanguage,
+                                    })
+                                  : typeof org?.name === 'string' && org?.name
+                              }
+                              icon={
+                                <Icon
+                                  component={OrganizationLogo}
+                                  style={{ color: '#607EFC', fontSize: '18px' }}
+                                  data-cy="organization-logo"
+                                />
+                              }
+                              bordered
+                              itemWidth="100%"
+                            />
+                          );
+                        })}
+                      </div>
+                    </p>
+                  </div>
+                )}
+                {derivedEntitiesData?.people?.length > 0 && (
+                  <div>
+                    <p className="associated-with-title">
+                      {t('dashboard.organization.createNew.addOrganization.associatedEntities.people')}
+                      <div className="associated-with-cards-wrapper">
+                        {derivedEntitiesData?.people?.map((person) => {
+                          <SelectionItem
+                            key={person._id}
+                            name={
+                              person?.name?.en || person?.name?.fr
+                                ? contentLanguageBilingual({
+                                    en: person?.name?.en,
+                                    fr: person?.name?.fr,
+                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                    calendarContentLanguage: calendarContentLanguage,
+                                  })
+                                : typeof person?.name === 'string' && person?.name
+                            }
+                            icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
+                            bordered
+                            itemWidth="100%"
+                          />;
+                        })}
+                      </div>
+                    </p>
+                  </div>
+                )}
+                {derivedEntitiesData?.events?.length > 0 && (
+                  <div>
+                    <p className="associated-with-title">
+                      {t('dashboard.organization.createNew.addOrganization.associatedEntities.events')}
+                      <div className="associated-with-cards-wrapper">
+                        {derivedEntitiesData?.events?.map((event) => {
+                          return (
+                            <SelectionItem
+                              key={event._id}
+                              name={
+                                event?.name?.en || event?.name?.fr
+                                  ? contentLanguageBilingual({
+                                      en: event?.name?.en,
+                                      fr: event?.name?.fr,
+                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                      calendarContentLanguage: calendarContentLanguage,
+                                    })
+                                  : typeof event?.name === 'string' && event?.name
+                              }
+                              icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
+                              description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                              bordered
+                              itemWidth="100%"
+                            />
+                          );
+                        })}
+                      </div>
+                    </p>
+                  </div>
+                )}
+              </div>
+              <></>
+            </Card>
+          )}
         </Row>
       </FeatureFlag>
     )

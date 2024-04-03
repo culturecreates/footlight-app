@@ -2,6 +2,30 @@
   font-size: 24px;
 }
 
+.person-read-only-wrapper .associated-with-section .associated-with-title {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0em;
+  text-align: left;
+}
+
+.person-read-only-wrapper .associated-with-section-title {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: #222732;
+  margin-bottom: 24px;
+}
+
+.person-read-only-wrapper .associated-with-section .associated-with-cards-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .person-read-only-wrapper .ant-select-arrow {
   display: none;
 }
@@ -19,6 +43,12 @@
 .person-read-only-wrapper .artsdata-link-wrapper {
   margin-left: 0px;
   padding: 0 16px !important;
+}
+
+@media only screen and (min-width: 900px) {
+  .person-read-only-wrapper .read-only-content-wrapper .responsive-view-control-class {
+    flex: 0 !important;
+  }
 }
 
 @media only screen and (max-width: 480px) {

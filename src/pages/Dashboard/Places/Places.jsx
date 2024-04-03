@@ -30,10 +30,10 @@ import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../../constants/sor
 import i18n from 'i18next';
 import { PathName } from '../../../constants/pathName';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
-import { useLazyGetEntityDependencyQuery } from '../../../services/entities';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
+import { useLazyGetEntityDependencyCountQuery } from '../../../services/entities';
 
 const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
@@ -81,7 +81,7 @@ function Places() {
   const [getAllPlaces, { currentData: allPlacesData, isFetching: allPlacesFetching, isSuccess: allPlacesSuccess }] =
     useLazyGetAllPlacesQuery();
   const [deletePlaces] = useDeletePlacesMutation();
-  const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyQuery();
+  const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyCountQuery();
 
   const [pageNumber, setPageNumber] = useState(
     searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('placesPage') ?? 1,
@@ -128,10 +128,10 @@ function Places() {
           title: t('dashboard.places.deletePlace.title'),
           content: `${t('dashboard.places.deletePlace.description')} ${t('dashboard.places.deletePlace.impact')}  ${t(
             'dashboard.places.deletePlace.published',
-            { number: `${res?.events?.publishedEventsCount}` },
-          )},  ${t('dashboard.places.deletePlace.draft', { number: `${res?.events?.draftEventsCount}` })}, ${t(
+            { number: `${res?.events?.publishedEventCount}` },
+          )},  ${t('dashboard.places.deletePlace.draft', { number: `${res?.events?.draftEventCount}` })}, ${t(
             'dashboard.places.deletePlace.inReview',
-            { number: `${res?.events?.pendingReviewEventsCount}` },
+            { number: `${res?.events?.pendingEventCount}` },
           )}.`,
           okText: t('dashboard.places.deletePlace.ok'),
           cancelText: t('dashboard.places.deletePlace.cancel'),
