@@ -1125,6 +1125,9 @@
     "keepEditing": "Keep editing",
     "copied": "Copied to clipboard",
     "discard": "Discard",
+    "validations": {
+      "informationRequired": "Information is required"
+    },
     "server": {
       "status": {
         "503": {

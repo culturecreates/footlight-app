@@ -141,6 +141,7 @@ function CreateNewOrganization() {
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
+  let formFieldProperties = formFields?.length > 0 && formFields[0]?.formFieldProperties;
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
@@ -259,6 +260,13 @@ function CreateNewOrganization() {
           ?.map((link, index) => ['socialMediaLinks', index]),
       );
     }
+    let mandatoryFields = formFieldProperties?.mandatoryFields?.standardFields?.map((field) => field?.fieldName);
+    mandatoryFields = mandatoryFields?.concat(
+      formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => field?.fieldName),
+    );
+    validateFieldList = validateFieldList?.concat(
+      formFields?.filter((field) => mandatoryFields?.includes(field?.name))?.map((field) => field?.mappedField),
+    );
     var promise = new Promise(function (resolve, reject) {
       form
         .validateFields(validateFieldList)
@@ -834,7 +842,6 @@ function CreateNewOrganization() {
           setDerivedEntitiesData(response?.data);
           setDerivedEntitiesDisplayStatus(true);
         }
-        console.log('entityDetailsData', response);
       });
     }
   }, [organizationId]);
@@ -1003,6 +1010,8 @@ function CreateNewOrganization() {
                               placeNavigationHandler,
                               isEntitiesFetching,
                               isExternalSourceFetching,
+                              mandatoryFields: formFieldProperties?.mandatoryFields?.standardFields ?? [],
+                              adminOnlyFields: formFieldProperties?.adminOnlyFields?.standardFields ?? [],
                             });
                           }
                         });

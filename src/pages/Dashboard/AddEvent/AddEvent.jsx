@@ -203,11 +203,31 @@ function AddEvent() {
 
   let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
   let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
-  let requiredFields = currentCalendarData?.formSchema?.filter((form) => form?.formName === 'Event');
-  requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
-  let requiredFieldNames = requiredFields ? requiredFields?.requiredFields?.map((field) => field?.fieldName) : [];
-  let standardAdminOnlyFields = requiredFields?.adminOnlyFields?.standardFields ?? [];
-  let dynamicAdminOnlyFields = requiredFields?.adminOnlyFields?.dynamicFields ?? [];
+  let requiredFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.event);
+  let requiredFieldNames = requiredFields
+    ? requiredFields[0]?.formFieldProperties?.mandatoryFields?.standardFields
+        ?.map((field) => field?.fieldName)
+        ?.concat(
+          requiredFields[0]?.formFieldProperties?.mandatoryFields?.standardFields?.map((field) => field?.fieldName),
+        )
+    : [];
+  let standardAdminOnlyFields =
+    requiredFields && requiredFields?.length > 0
+      ? requiredFields[0]?.formFieldProperties?.mandatoryFields?.standardFields?.map((field) => field?.fieldName)
+      : [];
+  let dynamicAdminOnlyFields =
+    requiredFields && requiredFields?.length > 0
+      ? requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => field?.fieldName)
+      : [];
+  requiredFields =
+    requiredFields &&
+    requiredFields?.length > 0 &&
+    requiredFields[0]?.formFieldProperties?.mandatoryFields?.standardFields?.concat(
+      requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields,
+    );
+
+  console.log({ requiredFields, requiredFieldNames, standardAdminOnlyFields, dynamicAdminOnlyFields });
+
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const dateTimeConverter = (date, time) => {
     let dateSelected = date.format('DD-MM-YYYY');
@@ -1390,7 +1410,7 @@ function AddEvent() {
   useEffect(() => {
     if (currentCalendarData) {
       let publishValidateFields = [];
-      requiredFields?.requiredFields?.map((requiredField) => {
+      requiredFields?.map((requiredField) => {
         switch (requiredField?.fieldName) {
           case eventFormRequiredFieldNames.NAME:
             publishValidateFields.push('french', 'english');

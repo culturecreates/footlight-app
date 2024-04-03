@@ -1122,6 +1122,9 @@
     "keepEditing": "Poursuivre l'édition",
     "discard": "Jeter",
     "copied": "Copié dans le presse-papiers",
+    "validations": {
+      "informationRequired": "Des informations sont requises"
+    },
     "server": {
       "status": {
         "503": {
