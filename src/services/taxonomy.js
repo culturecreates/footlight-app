@@ -15,13 +15,16 @@ export const taxonomyApi = createApi({
         limit = 200,
         taxonomyClass,
         includeConcepts,
-        addToFilter = false,
+        addToFilter,
       }) => ({
         url: `taxonomy?query=${query}${
           filters ? `&${filters}` : ''
-        }&page=${page}&limit=${limit}&taxonomy-class=${taxonomyClass}&include-concepts=${includeConcepts}&addToFilter=${addToFilter}`,
+        }&page=${page}&limit=${limit}&taxonomy-class=${taxonomyClass}&include-concepts=${includeConcepts}`,
         headers: {
           'calendar-id': calendarId,
+        },
+        params: {
+          ...((addToFilter == true || addToFilter == false) && { addToFilter }),
         },
       }),
       providesTags: (result) =>
