@@ -142,7 +142,7 @@ export const calendarSettingsFormFields = {
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.calendarName')}</Translation>,
       field: () => (
         <BilingualInput>
-          <Form.Item>
+          <Form.Item name="calendarNameFr">
             <TextArea
               autoSize
               style={{
@@ -157,7 +157,7 @@ export const calendarSettingsFormFields = {
             />
           </Form.Item>
 
-          <Form.Item>
+          <Form.Item name="calendarNameEn">
             <TextArea
               autoSize
               style={{
@@ -266,6 +266,7 @@ export const calendarSettingsFormFields = {
                 }
                 data-cy="form-item-image-ratio-large">
                 <TreeSelectOption
+                  size="large"
                   multiple={false}
                   showSearch={false}
                   allowClear
@@ -304,6 +305,7 @@ export const calendarSettingsFormFields = {
                 }
                 data-cy="form-item-image-ratio-thumbnail">
                 <TreeSelectOption
+                  size="large"
                   multiple={false}
                   showSearch={false}
                   allowClear

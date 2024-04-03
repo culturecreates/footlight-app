@@ -57,7 +57,7 @@ function CalendarSettings() {
 
   const organizationFilters = filterOptions(allTaxonomyData?.data, entitiesClass.organization);
 
-  const peopleFilters = filterOptions(allTaxonomyData?.data, entitiesClass.people);
+  const peopleFilters = filterOptions(allTaxonomyData?.data, entitiesClass.person);
 
   const placeFilters = filterOptions(allTaxonomyData?.data, entitiesClass.place);
 
@@ -67,7 +67,8 @@ function CalendarSettings() {
       : null;
 
   const initialValues = {
-    calendarName: currentCalendarData?.name?.en ?? currentCalendarData?.name?.fr,
+    calendarNameEn: currentCalendarData?.name?.en,
+    calendarNameFr: currentCalendarData?.name?.fr,
     calendarContactEmail: currentCalendarData?.contact,
     eventTemplate: currentCalendarData?.widgetSettings?.eventDetailsUrlTemplate,
     searchResultTemplate: currentCalendarData?.widgetSettings?.listEventsUrlTemplate,
