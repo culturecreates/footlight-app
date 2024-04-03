@@ -28,14 +28,6 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
     //HTTP 400 Bad Request
     //The server cannot or will not process the request due to something that is perceived to be a client error.
 
-    // api.dispatch(
-    //   setErrorStates({
-    //     errorCode: '400',
-    //     isError: true,
-    //     message: result.error?.data?.message,
-    //   }),
-    // );
-
     notification.info({
       key: '400',
       message: <Translation>{(t) => t('common.server.status.400.message')}</Translation>,
@@ -154,6 +146,10 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       message: <Translation>{(t) => t('common.server.status.FETCH_ERROR.message')}</Translation>,
       placement: 'top',
     });
+  }
+
+  if (!result.error) {
+    api.dispatch(setErrorStates({ errorCode: '', isError: false, message: '' }));
   }
 
   return result;
