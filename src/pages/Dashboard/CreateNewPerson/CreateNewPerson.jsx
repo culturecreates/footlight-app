@@ -105,8 +105,9 @@ function CreateNewPerson() {
   usePrompt(t('common.unsavedChanges'), showDialog);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-  let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.people);
-  let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.people);
+  let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.person);
+  let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.person);
+  let formFieldProperties = formFields?.length > 0 && formFields[0]?.formFieldProperties;
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
   let externalEntityData = externalCalendarEntityData?.length > 0 && externalCalendarEntityData[0];
   externalEntityData = {
@@ -230,6 +231,14 @@ function CreateNewPerson() {
           ?.map((link, index) => ['socialMediaLinks', index]),
       );
     }
+    let mandatoryFields = formFieldProperties?.mandatoryFields?.standardFields?.map((field) => field?.fieldName);
+    mandatoryFields = mandatoryFields?.concat(
+      formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => field?.fieldName),
+    );
+    validateFieldList = validateFieldList?.concat(
+      formFields?.filter((field) => mandatoryFields?.includes(field?.name))?.map((field) => field?.mappedField),
+    );
+
     form
       .validateFields(validateFieldList)
       .then(() => {
@@ -588,6 +597,8 @@ function CreateNewPerson() {
                               imageCropOpen,
                               setImageCropOpen,
                               form,
+                              mandatoryFields: formFieldProperties?.mandatoryFields?.standardFields ?? [],
+                              adminOnlyFields: formFieldProperties?.adminOnlyFields?.standardFields ?? [],
                             });
                           }
                         });

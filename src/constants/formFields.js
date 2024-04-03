@@ -79,6 +79,12 @@ const rules = [
   },
 ];
 
+const checkMandatoryAdminOnlyFields = (fieldName, fieldList = []) => {
+  if (fieldList?.length > 0) {
+    return fieldList.some((field) => field.fieldName === fieldName);
+  }
+};
+
 export const formFieldValue = [
   {
     type: formTypes.INPUT,
@@ -639,13 +645,15 @@ export const returnFormDataWithFields = ({
   placeNavigationHandler,
   isExternalSourceFetching,
   isEntitiesFetching,
+  adminOnlyFields,
+  mandatoryFields,
 }) => {
   return renderFormFields({
     name: [field?.mappedField],
     mappedField: field?.mappedField,
     type: field?.type,
     datatype: field?.datatype,
-    required: field?.isRequiredField,
+    required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
     element: formField?.element({
       mappedField: field?.mappedField,
       data: entityData && entityData[field?.mappedField],
@@ -675,7 +683,7 @@ export const returnFormDataWithFields = ({
         field?.mappedField === mappedFieldTypes.IMAGE
           ? entityData?.image?.original?.uri
           : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo?.original?.uri,
-      required: field?.isRequiredField,
+      required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
       t: t,
       userTips: bilingual({
         en: field?.userTips?.text?.en,
@@ -710,6 +718,7 @@ export const returnFormDataWithFields = ({
       placeNavigationHandler,
       isExternalSourceFetching,
       isEntitiesFetching,
+      // required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
     }),
     key: index,
     initialValue: formInitialValueHandler(field?.type, field?.mappedField, field?.datatype, entityData),
@@ -725,7 +734,7 @@ export const returnFormDataWithFields = ({
       calendarContentLanguage: calendarContentLanguage,
     }),
     position: field?.userTips?.position,
-    hidden: field?.isAdminOnlyField ? (adminCheckHandler() ? false : true) : false,
+    hidden: checkMandatoryAdminOnlyFields(field?.name, adminOnlyFields) ? (adminCheckHandler() ? false : true) : false,
     form,
     style,
     taxonomyAlias: field?.taxonomyAlias,
