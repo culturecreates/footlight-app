@@ -7,6 +7,8 @@ import TreeSelectOption from '../components/TreeSelectOption';
 import Select from '../components/Select';
 import { Col, Form, Row } from 'antd';
 import ImageUpload from '../components/ImageUpload';
+import TextArea from 'antd/lib/input/TextArea';
+import BilingualInput from '../components/BilingualInput';
 
 const calendarLanguages = [
   {
@@ -139,11 +141,37 @@ export const calendarSettingsFormFields = {
       name: 'calendarName',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.calendarName')}</Translation>,
       field: () => (
-        <StyledInput
-          autoComplete="off"
-          placeholder={<Translation>{(t) => t('dashboard.settings.calendarSettings.calendarName')}</Translation>}
-          data-cy="input-calendar-name"
-        />
+        <BilingualInput>
+          <Form.Item>
+            <TextArea
+              autoSize
+              style={{
+                borderRadius: '4px',
+                border: '4px solid #E8E8E8',
+                width: '100%',
+              }}
+              size="large"
+              autoComplete="off"
+              placeholder={<Translation>{(t) => t('dashboard.settings.calendarSettings.calendarName')}</Translation>}
+              data-cy="input-calendar-name"
+            />
+          </Form.Item>
+
+          <Form.Item>
+            <TextArea
+              autoSize
+              style={{
+                borderRadius: '4px',
+                border: '4px solid #E8E8E8',
+                width: '100%',
+              }}
+              size="large"
+              autoComplete="off"
+              placeholder={<Translation>{(t) => t('dashboard.settings.calendarSettings.calendarName')}</Translation>}
+              data-cy="input-calendar-name"
+            />
+          </Form.Item>
+        </BilingualInput>
       ),
       rules: [],
       hidden: false,
@@ -359,7 +387,7 @@ export const calendarSettingsFormFields = {
         <>
           <Row>
             <Col>
-              <p data-cy="para-calendar-image-upload-sub-text">
+              <p className="calendar-settings-description" data-cy="para-calendar-image-upload-sub-text">
                 <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.image.subHeading')}</Translation>
               </p>
             </Col>
@@ -408,7 +436,11 @@ export const calendarSettingsFormFields = {
         </Form.Item>
       ),
       required: true,
-      extra: <Translation>{(t) => t('dashboard.settings.calendarSettings.eventTemplateDescription')}</Translation>,
+      extra: (
+        <p className="calendar-settings-description">
+          <Translation>{(t) => t('dashboard.settings.calendarSettings.eventTemplateDescription')}</Translation>
+        </p>
+      ),
     },
     {
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.searchResultTemplate')}</Translation>,
@@ -434,7 +466,9 @@ export const calendarSettingsFormFields = {
         </Form.Item>
       ),
       extra: (
-        <Translation>{(t) => t('dashboard.settings.calendarSettings.searchResultTemplateDescription')}</Translation>
+        <p className="calendar-settings-description">
+          <Translation>{(t) => t('dashboard.settings.calendarSettings.searchResultTemplateDescription')}</Translation>
+        </p>
       ),
     },
   ],
