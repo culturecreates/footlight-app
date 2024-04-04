@@ -68,7 +68,7 @@ function People() {
     taxonomyClass: taxonomyClass.PERSON,
     includeConcepts: true,
     sessionId: timestampRef,
-    addToFilter: false,
+    addToFilter: true,
   });
   const [getAllPeople, { currentData: allPeopleData, isFetching: allPeopleFetching, isSuccess: allPeopleSuccess }] =
     useLazyGetAllPeopleQuery();
@@ -110,6 +110,8 @@ function People() {
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
+
+  let customFilters = currentCalendarData?.filterPersonalization?.customFields;
 
   const deletePersonHandler = (personId) => {
     getDependencyDetails({ ids: personId, calendarId })
@@ -286,7 +288,7 @@ function People() {
             <Space>
               {allTaxonomyData?.data?.length > 0 &&
                 allTaxonomyData?.data?.map((taxonomy, index) => {
-                  if (!taxonomy?.isDynamicField)
+                  if (!taxonomy?.isDynamicField && customFilters?.includes(taxonomy?.id))
                     return (
                       <Col key={index}>
                         <Popover
@@ -349,7 +351,7 @@ function People() {
                 })}
               {allTaxonomyData?.data?.length > 0 &&
                 allTaxonomyData?.data?.map((taxonomy, index) => {
-                  if (taxonomy?.isDynamicField === true)
+                  if (taxonomy?.isDynamicField === true && customFilters?.includes(taxonomy?.id))
                     return (
                       <Col key={index}>
                         <Popover

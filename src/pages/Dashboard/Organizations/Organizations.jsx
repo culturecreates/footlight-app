@@ -63,7 +63,7 @@ function Organizations() {
     taxonomyClass: taxonomyClass.ORGANIZATION,
     includeConcepts: true,
     sessionId: timestampRef,
-    addToFilter: false,
+    addToFilter: true,
   });
   const [
     getAllOrganization,
@@ -92,6 +92,13 @@ function Organizations() {
       ? JSON.parse(sessionStorage.getItem('organizationTaxonomyFilter'))
       : {},
   );
+  const [standardTaxonomyFilter, setStandardTaxonomyFilter] = useState(
+    searchParams.get('standardTaxonomyFilter')
+      ? JSON.parse(searchParams.get('standardTaxonomyFilter'))
+      : sessionStorage.getItem('standardOrganizationTaxonomyFilter')
+      ? JSON.parse(sessionStorage.getItem('standardOrganizationTaxonomyFilter'))
+      : {},
+  );
 
   const totalCount = allOrganizationData?.count;
 
@@ -100,6 +107,8 @@ function Organizations() {
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
+
+  let customFilters = currentCalendarData?.filterPersonalization?.customFields;
 
   const deleteOrganizationHandler = (organizationId) => {
     getDependencyDetails({ ids: organizationId, calendarId })
@@ -152,6 +161,14 @@ function Organizations() {
     } else setTaxonomyFilter({ ...taxonomyFilter, [taxonomy]: checkedKeys });
   };
 
+  const onStandardTaxonomyCheck = ({ checkedKeys, taxonomy }) => {
+    if (checkedKeys?.length === 0) {
+      // eslint-disable-next-line no-unused-vars
+      const { [taxonomy]: removedKey, ...updatedFilter } = standardTaxonomyFilter;
+      setStandardTaxonomyFilter(updatedFilter);
+    } else setStandardTaxonomyFilter({ ...standardTaxonomyFilter, [taxonomy]: checkedKeys });
+  };
+
   const filterClearHandler = () => {
     setFilter({
       sort: sortByOptionsOrgsPlacesPerson[0]?.key,
@@ -163,6 +180,7 @@ function Organizations() {
     sessionStorage.removeItem('organizationSearchQuery');
     sessionStorage.removeItem('organizationOrder');
     sessionStorage.removeItem('organizationTaxonomyFilter');
+    sessionStorage.removeItem('standardOrganizationTaxonomyFilter');
   };
 
   useEffect(() => {
@@ -209,7 +227,10 @@ function Organizations() {
     if (Object.keys(taxonomyFilter)?.length > 0)
       sessionStorage.setItem('organizationTaxonomyFilter', JSON.stringify(taxonomyFilter));
     else sessionStorage.removeItem('organizationTaxonomyFilter');
-  }, [pageNumber, organizationSearchQuery, filter, taxonomyFilter]);
+    if (Object.keys(standardTaxonomyFilter)?.length > 0)
+      sessionStorage.setItem('standardOrganizationTaxonomyFilter', JSON.stringify(standardTaxonomyFilter));
+    else sessionStorage.removeItem('standardOrganizationTaxonomyFilter');
+  }, [pageNumber, organizationSearchQuery, filter, taxonomyFilter, standardTaxonomyFilter]);
   return (
     <>
       {dependencyDetailsFetching && (
@@ -256,7 +277,70 @@ function Organizations() {
             <Space>
               {allTaxonomyData?.data?.length > 0 &&
                 allTaxonomyData?.data?.map((taxonomy, index) => {
-                  if (taxonomy?.isDynamicField === true)
+                  if (!taxonomy?.isDynamicField && customFilters?.includes(taxonomy?.id))
+                    return (
+                      <Col key={index}>
+                        <Popover
+                          placement="bottom"
+                          getPopupContainer={(trigger) => trigger.parentNode}
+                          content={
+                            <Row gutter={{ xs: 8, sm: 16, md: 24 }}>
+                              <Col span={24}>
+                                <div style={{ padding: '8px', maxHeight: '300px', overflowY: 'scroll' }}>
+                                  <Tree
+                                    checkable
+                                    autoExpandParent={true}
+                                    onCheck={(checkedKeys, { checked, checkedNodes, node, event, halfCheckedKeys }) =>
+                                      onStandardTaxonomyCheck({
+                                        checkedKeys,
+                                        checked,
+                                        checkedNodes,
+                                        node,
+                                        event,
+                                        halfCheckedKeys,
+                                        taxonomy: taxonomy?.mappedToField,
+                                      })
+                                    }
+                                    checkedKeys={standardTaxonomyFilter[taxonomy?.mappedToField] ?? []}
+                                    treeData={treeTaxonomyOptions(
+                                      allTaxonomyData,
+                                      user,
+                                      taxonomy?.mappedToField,
+                                      false,
+                                      calendarContentLanguage,
+                                    )}
+                                  />
+                                </div>
+                              </Col>
+                            </Row>
+                          }
+                          trigger="click"
+                          overlayClassName="date-filter-popover">
+                          <Button
+                            size="large"
+                            className="filter-buttons"
+                            style={{
+                              borderColor: standardTaxonomyFilter[taxonomy?.mappedToField]?.length > 0 > 0 && '#607EFC',
+                            }}
+                            data-cy="button-filter-taxonomy-standard-people">
+                            {bilingual({
+                              en: taxonomy?.name?.en,
+                              fr: taxonomy?.name?.fr,
+                              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                            })}
+                            {standardTaxonomyFilter[taxonomy?.mappedToField]?.length > 0 && (
+                              <>
+                                &nbsp; <Badge color="#1B3DE6" />
+                              </>
+                            )}
+                          </Button>
+                        </Popover>
+                      </Col>
+                    );
+                })}
+              {allTaxonomyData?.data?.length > 0 &&
+                allTaxonomyData?.data?.map((taxonomy, index) => {
+                  if (taxonomy?.isDynamicField === true && customFilters?.includes(taxonomy?.id))
                     return (
                       <Col key={index}>
                         <Popover
@@ -299,7 +383,7 @@ function Organizations() {
                             size="large"
                             className="filter-buttons"
                             style={{ borderColor: taxonomyFilter[taxonomy?.id]?.length > 0 > 0 && '#607EFC' }}
-                            data-cy="button-filter-taxonomy">
+                            data-cy="button-filter-taxonomy-people">
                             {bilingual({
                               en: taxonomy?.name?.en,
                               fr: taxonomy?.name?.fr,

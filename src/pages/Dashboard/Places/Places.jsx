@@ -76,7 +76,7 @@ function Places() {
     taxonomyClass: taxonomyClass.PLACE,
     includeConcepts: true,
     sessionId: timestampRef,
-    addToFilter: false,
+    addToFilter: true,
   });
   const [getAllPlaces, { currentData: allPlacesData, isFetching: allPlacesFetching, isSuccess: allPlacesSuccess }] =
     useLazyGetAllPlacesQuery();
@@ -119,6 +119,8 @@ function Places() {
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
+
+  let customFilters = currentCalendarData?.filterPersonalization?.customFields;
 
   const deletePlaceHandler = (placeId) => {
     getDependencyDetails({ ids: placeId, calendarId })
@@ -297,7 +299,7 @@ function Places() {
             <Space>
               {allTaxonomyData?.data?.length > 0 &&
                 allTaxonomyData?.data?.map((taxonomy, index) => {
-                  if (!taxonomy?.isDynamicField)
+                  if (!taxonomy?.isDynamicField && customFilters?.includes(taxonomy?.id))
                     return (
                       <Col key={index}>
                         <Popover
@@ -360,7 +362,7 @@ function Places() {
                 })}
               {allTaxonomyData?.data?.length > 0 &&
                 allTaxonomyData?.data?.map((taxonomy, index) => {
-                  if (taxonomy?.isDynamicField === true)
+                  if (taxonomy?.isDynamicField === true && customFilters?.includes(taxonomy?.id))
                     return (
                       <Col key={index}>
                         <Popover
