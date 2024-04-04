@@ -11,6 +11,7 @@ import { contentLanguageBilingual } from '../../../../utils/bilingual';
 import { getUserDetails } from '../../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
 import PrimaryButton from '../../../../components/Button/Primary';
+import { useUpdateCalendarMutation } from '../../../../services/calendar';
 
 function CalendarSettings() {
   const { t } = useTranslation();
@@ -33,6 +34,8 @@ function CalendarSettings() {
     addToFilter: true,
     sessionId: timestampRef,
   });
+
+  const [updateCalendar] = useUpdateCalendarMutation();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -152,17 +155,17 @@ function CalendarSettings() {
             timezone: values.calendarTimeZone,
             contact: values.calendarContactEmail,
             dateFormatDisplay: values.calendarDateFormat,
-            imageConfig: {
-              entityName: currentCalendarData?.imageConfig?.entityName,
-              large: {
-                aspectRatio: values.imageAspectRatio.large,
-                maxWidth: values.imageMaxWidth.large,
-              },
-              thumbnail: {
-                aspectRatio: values.imageAspectRatio.thumbnail,
-                maxWidth: values.imageMaxWidth.thumbnail,
-              },
-            },
+            // imageConfig: {
+            //   entityName: currentCalendarData?.imageConfig?.entityName,
+            //   large: {
+            //     aspectRatio: values.imageAspectRatio.large,
+            //     maxWidth: values.imageMaxWidth.large,
+            //   },
+            //   thumbnail: {
+            //     aspectRatio: values.imageAspectRatio.thumbnail,
+            //     maxWidth: values.imageMaxWidth.thumbnail,
+            //   },
+            // },
             widgetSettings: {
               listEventsUrlTemplate: values.searchResultTemplate,
               eventDetailsUrlTemplate: values.eventTemplate,
@@ -172,6 +175,14 @@ function CalendarSettings() {
               customFields: values.People.concat(values.Organization).concat(values.Event).concat(values.Place),
             },
           };
+        updateCalendar({ calendarId, data: values })
+          .unwrap()
+          .then(() => {
+            console.log('Calendar updated successfully');
+          })
+          .catch((errorInfo) => {
+            console.log(errorInfo);
+          });
       })
       .catch((errorInfo) => {
         console.log(errorInfo);

@@ -208,6 +208,7 @@ function Events() {
       : {},
   );
 
+  let customFilters = currentCalendarData?.filterPersonalization?.customFields;
   const dateTypeSelector = (dates) => {
     if (dates?.length == 2) {
       if (dates?.every((date) => date === 'any')) return dateFilterTypes.ALL_EVENTS;
@@ -910,7 +911,7 @@ function Events() {
                 </Col>
                 {allTaxonomyData?.data?.length > 0 &&
                   allTaxonomyData?.data?.map((taxonomy, index) => {
-                    if (!taxonomy?.isDynamicField)
+                    if (!taxonomy?.isDynamicField && customFilters?.includes(taxonomy?.id))
                       return (
                         <Col key={index}>
                           <Popover
@@ -974,7 +975,7 @@ function Events() {
                   })}
                 {allTaxonomyData?.data?.length > 0 &&
                   allTaxonomyData?.data?.map((taxonomy, index) => {
-                    if (taxonomy?.isDynamicField === true)
+                    if (taxonomy?.isDynamicField === true && customFilters?.includes(taxonomy?.id))
                       return (
                         <Col key={index}>
                           <Popover
