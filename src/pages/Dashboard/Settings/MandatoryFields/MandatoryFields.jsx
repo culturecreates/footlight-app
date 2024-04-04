@@ -63,10 +63,24 @@ function MandatoryFields() {
 
   fields = fields?.map((field) => {
     const preFilled = prefilledFields?.find((f) => f.formName === field?.formName);
+    let minimumRequiedFields = [];
+    if (preFilled?.taxonomyClass === entitiesClass.event) {
+      minimumRequiedFields =
+        field?.formFieldProperties?.minimumRequiedFields?.standardFields?.map((f) => f?.fieldName) ?? [];
+      minimumRequiedFields = minimumRequiedFields?.concat(
+        field?.formFieldProperties?.minimumRequiedFields?.dynamicFields?.map((f) => f?.fieldName),
+      );
+    } else {
+      minimumRequiedFields =
+        field?.formFieldProperties?.mandatoryFields?.standardFields?.map((f) => f?.fieldName) ?? [];
+      minimumRequiedFields = minimumRequiedFields?.concat(
+        field?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((f) => f?.fieldName),
+      );
+    }
     let modifiedField = field?.formFields?.map((f) => {
       return {
         ...f,
-        preFilled: preFilled?.prefilledFields.includes(f?.mappedField),
+        preFilled: minimumRequiedFields.includes(f?.name),
       };
     });
     modifiedField = modifiedField?.concat(
@@ -76,8 +90,8 @@ function MandatoryFields() {
           return {
             mappedField: f?.id,
             preFilled: false,
-            isRequiredField: field?.requireFields?.includes(f?.id) || false,
-            isAdminOnlyField: field?.adminOnlyFields?.includes(f?.id) || false,
+            isRequiredField: field?.formFieldProperties?.mandatoryFields?.dynamicFields?.includes(f?.id) || false,
+            isAdminOnlyField: field?.formFieldProperties?.adminOnlyFields?.dynamicFields?.includes(f?.id) || false,
             isDynamicField: true,
             name: f?.name,
             label: f?.name,
