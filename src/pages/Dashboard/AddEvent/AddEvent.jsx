@@ -13,6 +13,7 @@ import {
   PlusCircleOutlined,
 } from '@ant-design/icons';
 import moment from 'moment-timezone';
+import OutlinedButton from '../../../components/Button/Outlined';
 import i18n from 'i18next';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams, useSearchParams, useOutletContext, useLocation } from 'react-router-dom';
@@ -21,7 +22,7 @@ import { PathName } from '../../../constants/pathName';
 import Outlined from '../../../components/Button/Outlined';
 import PrimaryButton from '../../../components/Button/Primary';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { userRoles } from '../../../constants/userRoles';
 import PublishState from '../../../components/Dropdown/PublishState/PublishState';
@@ -94,11 +95,16 @@ import Alert from '../../../components/Alert';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 import { getEmbedUrl, validateVimeoURL, validateYouTubeURL } from '../../../utils/getEmbedVideoUrl';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
+import {
+  getLanguageLiteralBannerDisplayStatus,
+  setLanguageLiteralBannerDisplayStatus,
+} from '../../../redux/reducer/languageLiteralSlice';
 
 const { TextArea } = Input;
 
 function AddEvent() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const location = useLocation();
   const [form] = Form.useForm();
   Form.useWatch('startTime', form);
@@ -108,6 +114,8 @@ function AddEvent() {
   let [searchParams] = useSearchParams();
   let duplicateId = searchParams.get('duplicateId');
   const { user } = useSelector(getUserDetails);
+
+  const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { t } = useTranslation();
   const [
     currentCalendarData, // eslint-disable-next-line no-unused-vars
@@ -197,10 +205,6 @@ function AddEvent() {
   const [imageCropOpen, setImageCropOpen] = useState(false);
 
   setContentBackgroundColor('#F9FAFF');
-
-  useEffect(() => {
-    console.log(organizersList);
-  }, [organizersList]);
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
@@ -1129,6 +1133,7 @@ function AddEvent() {
       }
     }
   };
+
   useEffect(() => {
     if (isError) navigate(`${PathName.NotFound}`);
   }, [isError]);
@@ -1562,7 +1567,31 @@ function AddEvent() {
                 </Row>
               </Col>
             )}
-
+          {languageLiteralBannerDisplayStatus && (
+            <Col span={24} className="language-literal-banner">
+              <Row>
+                <Col flex={'780px'}>
+                  <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                    <Col span={24}>
+                      <Alert
+                        message={t('common.forms.languageLiterals.bannerTitle')}
+                        type="info"
+                        showIcon={false}
+                        action={
+                          <OutlinedButton
+                            data-cy="button-change-interface-language"
+                            size="large"
+                            label={t('common.dismiss')}
+                            onClick={() => dispatch(setLanguageLiteralBannerDisplayStatus(false))}
+                          />
+                        }
+                      />
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </Col>
+          )}
           <CardEvent marginTop="5%" marginResponsive="0px">
             <>
               {artsDataLink?.length > 0 && (

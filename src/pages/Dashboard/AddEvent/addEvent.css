@@ -197,6 +197,10 @@
   padding: 0px;
 }
 
+.event-form-wrapper .language-literal-banner .ant-alert-message {
+  color: #1572bb;
+}
+
 @media screen and (max-width: 480px) {
   .add-edit-wrapper .add-edit-event-heading h4 {
     font-size: 24px;

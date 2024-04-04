@@ -1,17 +1,27 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, cloneElement, useState, useMemo } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { contentLanguage } from '../../constants/contentLanguage';
 import { languageFallbackSetup } from '../../utils/languageFallbackSetup';
 import LiteralBadge from '../Badge/LiteralBadge';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { setLanguageLiteralBannerDisplayStatus } from '../../redux/reducer/languageLiteralSlice';
 
 function ContentLanguageInput(props) {
   const { children, calendarContentLanguage } = props;
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+
+  // eslint-disable-next-line no-unused-vars
   const [currentCalendarData, _pageNumber, _setPageNumber, _getCalendar] = useOutletContext();
 
   const [fallbackStatus, setFallbackStatus] = useState(null);
+
+  useEffect(() => {
+    if (fallbackStatus?.fr?.tagDisplayStatus || fallbackStatus?.en?.tagDisplayStatus) {
+      dispatch(setLanguageLiteralBannerDisplayStatus(true));
+    }
+  }, [fallbackStatus]);
 
   useEffect(() => {
     if (!currentCalendarData) return;
