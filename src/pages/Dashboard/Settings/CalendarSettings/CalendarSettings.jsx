@@ -61,6 +61,35 @@ function CalendarSettings() {
 
   const placeFilters = filterOptions(allTaxonomyData?.data, entitiesClass.place);
 
+  let initialSelectedFilters = [];
+  if (currentCalendarData?.filterPersonalization?.fields?.length > 0)
+    initialSelectedFilters = currentCalendarData?.filterPersonalization?.fields;
+  if (currentCalendarData?.filterPersonalization?.customFields?.length > 0)
+    initialSelectedFilters = initialSelectedFilters.concat(currentCalendarData?.filterPersonalization?.customFields);
+
+  const handleInitialFilters = (data, selectedFilters) => {
+    return data?.filter((filter) => selectedFilters?.includes(filter.value))?.map((filter) => filter.value) ?? [];
+  };
+
+  initialSelectedFilters = [
+    {
+      name: entitiesClass.event,
+      filters: handleInitialFilters(eventFilters, initialSelectedFilters),
+    },
+    {
+      name: entitiesClass.organization,
+      filters: handleInitialFilters(organizationFilters, initialSelectedFilters),
+    },
+    {
+      name: entitiesClass.people,
+      filters: handleInitialFilters(peopleFilters, initialSelectedFilters),
+    },
+    {
+      name: entitiesClass.place,
+      filters: handleInitialFilters(placeFilters, initialSelectedFilters),
+    },
+  ];
+
   const imageConfig =
     currentCalendarData?.imageConfig?.length > 0
       ? currentCalendarData?.imageConfig?.filter((config) => config?.entityName == entitiesClass.event)[0]
@@ -83,6 +112,25 @@ function CalendarSettings() {
     },
   };
 
+  const onSaveHandler = () => {
+    let requiredFields =
+      calendarSettingsFormFields?.GENERAL_SETTINGS?.filter((field) => field.required)?.map((field) => field.name) ?? [];
+    requiredFields = requiredFields.concat(
+      calendarSettingsFormFields?.WIDGET_SETTINGS?.filter((field) => field.required)?.map((field) => field.name) ?? [],
+    );
+    requiredFields = requiredFields
+      .concat(calendarSettingsFormFields?.FILTER_PERSONALIZATION?.map((field) => field.name))
+      ?.filter((field) => field);
+    form
+      .validateFields(requiredFields)
+      .then((values) => {
+        console.log(values);
+      })
+      .catch((errorInfo) => {
+        console.log(errorInfo);
+      });
+  };
+
   return (
     currentCalendarData &&
     !taxonomyLoading && (
@@ -97,7 +145,7 @@ function CalendarSettings() {
             <PrimaryButton
               label={t('dashboard.events.addEditEvent.saveOptions.save')}
               data-cy="button-save-calendar-settings"
-              // onClick={onSaveHandler}
+              onClick={onSaveHandler}
             />
           </Col>
           <Col span={24}>
@@ -123,6 +171,7 @@ function CalendarSettings() {
                       largeMaxWidth: imageConfig?.large?.maxWidth,
                       thumbnailMaxWidth: imageConfig?.thumbnail?.maxWidth,
                       logoUri: imageConfig?.image?.uri,
+                      t,
                     })}
                   </Form.Item>
                 );
@@ -143,7 +192,7 @@ function CalendarSettings() {
                     required={item.required}
                     name={item.name}
                     extra={item.extra}>
-                    {item.field({ form, isCrop: false })}
+                    {item.field({ form, isCrop: false, t })}
                   </Form.Item>
                 );
               })}
@@ -163,7 +212,13 @@ function CalendarSettings() {
                     required={item.required}
                     name={item.name}
                     extra={item.extra}
-                    initialValue={item.initialValue}>
+                    initialValue={
+                      initialSelectedFilters?.length > 0
+                        ? item.initialValue.concat(
+                            initialSelectedFilters?.filter((filter) => filter.name === item.name)[0]?.filters,
+                          )
+                        : item.initialValue
+                    }>
                     {item.field({
                       form,
                       isCrop: false,
@@ -171,6 +226,7 @@ function CalendarSettings() {
                       organizationFilters,
                       peopleFilters,
                       placeFilters,
+                      t,
                     })}
                   </Form.Item>
                 );

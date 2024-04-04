@@ -1,4 +1,4 @@
-import { Translation } from 'react-i18next';
+import { Trans, Translation } from 'react-i18next';
 import StyledInput from '../components/Input/Common';
 import NoContent from '../components/NoContent/NoContent';
 import Tags from '../components/Tags/Common/Tags';
@@ -9,6 +9,7 @@ import { Col, Form, Row } from 'antd';
 import ImageUpload from '../components/ImageUpload';
 import TextArea from 'antd/lib/input/TextArea';
 import BilingualInput from '../components/BilingualInput';
+import { entitiesClass } from './entitiesClass';
 
 const calendarLanguages = [
   {
@@ -84,7 +85,7 @@ const dateFormats = [
   { label: 'MM-DD-YYYY', value: 'MM-DD-YYYY' },
 ];
 
-const STATIC_FILTERS = {
+export const STATIC_FILTERS = {
   EVENT: [
     {
       label: <Translation>{(t) => t('dashboard.events.filter.publication.label')}</Translation>,
@@ -110,6 +111,11 @@ const STATIC_FILTERS = {
   ORGANIZATION: [],
   PEOPLE: [],
   PLACE: [],
+};
+
+const REQUIRED_MESSAGE = {
+  required: true,
+  message: <Trans i18nKey="common.validations.informationRequired" />,
 };
 
 const aspectRatios = [
@@ -140,7 +146,7 @@ export const calendarSettingsFormFields = {
     {
       name: 'calendarName',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.calendarName')}</Translation>,
-      field: () => (
+      field: ({ t }) => (
         <BilingualInput>
           <Form.Item name="calendarNameFr">
             <TextArea
@@ -152,7 +158,7 @@ export const calendarSettingsFormFields = {
               }}
               size="large"
               autoComplete="off"
-              placeholder={<Translation>{(t) => t('dashboard.settings.calendarSettings.calendarName')}</Translation>}
+              placeholder={t('dashboard.settings.calendarSettings.calendarName')}
               data-cy="input-calendar-name"
             />
           </Form.Item>
@@ -167,29 +173,33 @@ export const calendarSettingsFormFields = {
               }}
               size="large"
               autoComplete="off"
-              placeholder={<Translation>{(t) => t('dashboard.settings.calendarSettings.calendarName')}</Translation>}
+              placeholder={t('dashboard.settings.calendarSettings.calendarName')}
               data-cy="input-calendar-name"
             />
           </Form.Item>
         </BilingualInput>
       ),
-      rules: [],
+      rules: [
+        ({ getFieldValue }) => ({
+          validator() {
+            if (getFieldValue('calendarNameFr') || getFieldValue('calendarNameEn')) {
+              return Promise.resolve();
+            } else return Promise.reject(new Error(REQUIRED_MESSAGE.message));
+          },
+        }),
+      ],
       hidden: false,
       required: true,
     },
     {
       name: 'calendarLanguage',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.calendarLanguage')}</Translation>,
-      field: () => (
+      field: ({ t }) => (
         <TreeSelectOption
           showSearch={false}
           allowClear
           treeDefaultExpandAll
-          placeholder={
-            <Translation>
-              {(t) => t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
-            </Translation>
-          }
+          placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
           notFoundContent={<NoContent />}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
           treeData={calendarLanguages}
@@ -208,7 +218,7 @@ export const calendarSettingsFormFields = {
           }}
         />
       ),
-      rules: [],
+      rules: [REQUIRED_MESSAGE],
       hidden: false,
       required: true,
     },
@@ -216,7 +226,7 @@ export const calendarSettingsFormFields = {
       name: 'calendarTimeZone',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.timezone')}</Translation>,
       field: () => <Select options={timeZones} data-cy="select-calendar-time-zone" />,
-      rules: [],
+      rules: [REQUIRED_MESSAGE],
       hidden: false,
       required: true,
     },
@@ -225,18 +235,14 @@ export const calendarSettingsFormFields = {
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.contact')}</Translation>,
       field: () => (
         <StyledInput
-          placeholder={
-            <Translation>
-              {(t) => t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderEmail')}
-            </Translation>
-          }
+          placeholder={(t) => t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderEmail')}
           data-cy="input-calendar-contact-email"
         />
       ),
       rules: [
         {
           type: 'email',
-          message: <Translation>{(t) => t('login.validations.invalidEmail')}</Translation>,
+          message: <Trans i18nKey="login.validations.invalidEmail" />,
         },
       ],
       hidden: false,
@@ -246,7 +252,7 @@ export const calendarSettingsFormFields = {
       name: 'calendarDateFormat',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.dateFormat')}</Translation>,
       field: () => <Select options={dateFormats} data-cy="select-calendar-date-formats" />,
-      rules: [],
+      rules: [REQUIRED_MESSAGE],
       hidden: false,
       required: true,
     },
@@ -255,15 +261,14 @@ export const calendarSettingsFormFields = {
       label: (
         <Translation>{(t) => t('dashboard.settings.calendarSettings.imageAspectRatio.imageAspectRatio')}</Translation>
       ),
-      field: () => {
+      field: ({ t }) => {
         return (
           <Row gutter={[16, 0]}>
             <Col span={12}>
               <Form.Item
                 name={['imageAspectRatio', 'large']}
-                label={
-                  <Translation>{(t) => t('dashboard.settings.calendarSettings.imageAspectRatio.large')}</Translation>
-                }
+                label={t('dashboard.settings.calendarSettings.imageAspectRatio.large')}
+                rules={[REQUIRED_MESSAGE]}
                 data-cy="form-item-image-ratio-large">
                 <TreeSelectOption
                   size="large"
@@ -271,11 +276,7 @@ export const calendarSettingsFormFields = {
                   showSearch={false}
                   allowClear
                   treeDefaultExpandAll
-                  placeholder={
-                    <Translation>
-                      {(t) => t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
-                    </Translation>
-                  }
+                  placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
                   notFoundContent={<NoContent />}
                   clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                   treeData={aspectRatios}
@@ -298,23 +299,16 @@ export const calendarSettingsFormFields = {
             <Col span={12}>
               <Form.Item
                 name={['imageAspectRatio', 'thumbnail']}
-                label={
-                  <Translation>
-                    {(t) => t('dashboard.settings.calendarSettings.imageAspectRatio.thumbnail')}
-                  </Translation>
-                }
-                data-cy="form-item-image-ratio-thumbnail">
+                label={t('dashboard.settings.calendarSettings.imageAspectRatio.thumbnail')}
+                data-cy="form-item-image-ratio-thumbnail"
+                rules={[REQUIRED_MESSAGE]}>
                 <TreeSelectOption
                   size="large"
                   multiple={false}
                   showSearch={false}
                   allowClear
                   treeDefaultExpandAll
-                  placeholder={
-                    <Translation>
-                      {(t) => t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
-                    </Translation>
-                  }
+                  placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
                   notFoundContent={<NoContent />}
                   clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                   treeData={aspectRatios}
@@ -344,18 +338,17 @@ export const calendarSettingsFormFields = {
     {
       name: 'imageMaxWidth',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.imageMaxWidth.imageMaxWidth')}</Translation>,
-      field: () => {
+      field: ({ t }) => {
         return (
           <Row gutter={[16, 0]}>
             <Col span={12}>
               <Form.Item
                 name={['imageMaxWidth', 'large']}
                 label={<Translation>{(t) => t('dashboard.settings.calendarSettings.imageMaxWidth.large')}</Translation>}
-                data-cy="form-item-image-max-width-large">
+                data-cy="form-item-image-max-width-large"
+                rules={[REQUIRED_MESSAGE]}>
                 <StyledInput
-                  placeholder={
-                    <Translation>{(t) => t('dashboard.settings.calendarSettings.imageMaxWidth.large')}</Translation>
-                  }
+                  placeholder={t('dashboard.settings.calendarSettings.imageMaxWidth.large')}
                   data-cy="input-calendar-image-max-width-large"
                 />
               </Form.Item>
@@ -363,14 +356,11 @@ export const calendarSettingsFormFields = {
             <Col span={12}>
               <Form.Item
                 name={['imageMaxWidth', 'thumbnail']}
-                label={
-                  <Translation>{(t) => t('dashboard.settings.calendarSettings.imageMaxWidth.thumbnail')}</Translation>
-                }
-                data-cy="form-item-image-max-width-thumbnail">
+                label={t('dashboard.settings.calendarSettings.imageMaxWidth.thumbnail')}
+                data-cy="form-item-image-max-width-thumbnail"
+                rules={[REQUIRED_MESSAGE]}>
                 <StyledInput
-                  placeholder={
-                    <Translation>{(t) => t('dashboard.settings.calendarSettings.imageMaxWidth.thumbnail')}</Translation>
-                  }
+                  placeholder={t('dashboard.settings.calendarSettings.imageMaxWidth.thumbnail')}
                   data-cy="input-calendar-image-max-width-thumbnail"
                 />
               </Form.Item>
@@ -385,12 +375,12 @@ export const calendarSettingsFormFields = {
     {
       name: 'calendarLogo',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.calendarLogo')}</Translation>,
-      field: ({ form, isCrop, logoUri }) => (
+      field: ({ form, isCrop, logoUri, t }) => (
         <>
           <Row>
             <Col>
               <p className="calendar-settings-description" data-cy="para-calendar-image-upload-sub-text">
-                <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.image.subHeading')}</Translation>
+                {t('dashboard.events.addEditEvent.otherInformation.image.subHeading')}
               </p>
             </Col>
           </Row>
@@ -416,23 +406,22 @@ export const calendarSettingsFormFields = {
   WIDGET_SETTINGS: [
     {
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.eventTemplate')}</Translation>,
-      field: ({ eventTemplate }) => (
+      field: ({ eventTemplate, t }) => (
         <Form.Item
           name={'eventTemplate'}
           initialValue={eventTemplate}
           rules={[
             {
               type: 'url',
-              message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
+              message: t('dashboard.events.addEditEvent.validations.url'),
             },
+            REQUIRED_MESSAGE,
           ]}
           data-cy="form-item-event-template">
           <StyledInput
             addonBefore="URL"
             autoComplete="off"
-            placeholder={
-              <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}</Translation>
-            }
+            placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
             data-cy="input-event-template"
           />
         </Form.Item>
@@ -446,23 +435,21 @@ export const calendarSettingsFormFields = {
     },
     {
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.searchResultTemplate')}</Translation>,
-      field: ({ searchResultTemplate }) => (
+      field: ({ searchResultTemplate, t }) => (
         <Form.Item
           name={'searchResultTemplate'}
           initialValue={searchResultTemplate}
           rules={[
             {
               type: 'url',
-              message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
+              message: t('dashboard.events.addEditEvent.validations.url'),
             },
           ]}
           data-cy="form-item-search-result-template">
           <StyledInput
             addonBefore="URL"
             autoComplete="off"
-            placeholder={
-              <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}</Translation>
-            }
+            placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
             data-cy="input-search-result-template"
           />
         </Form.Item>
@@ -476,25 +463,20 @@ export const calendarSettingsFormFields = {
   ],
   FILTER_PERSONALIZATION: [
     {
-      name: 'events',
+      name: entitiesClass.event,
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.events')}</Translation>,
       initialValue: STATIC_FILTERS.EVENT.map((item) => item.value),
-      field: ({ eventFilters }) => (
+      field: ({ eventFilters, t }) => (
         <TreeSelectOption
           treeData={eventFilters?.concat(STATIC_FILTERS.EVENT)}
           showSearch={false}
           treeDefaultExpandAll
-          placeholder={
-            <Translation>
-              {(t) => t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
-            </Translation>
-          }
+          placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
           notFoundContent={<NoContent />}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
           data-cy="treeselect-calendar-filter-events"
           tagRender={(props) => {
             const { closable, onClose, label } = props;
-            console.log(props);
             return (
               <Tags
                 data-cy={`tag-calendar-filter-${label}`}
@@ -512,17 +494,14 @@ export const calendarSettingsFormFields = {
       required: false,
     },
     {
-      name: 'places',
+      name: entitiesClass.place,
+      initialValue: [],
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.places')}</Translation>,
-      field: ({ placeFilters }) => (
+      field: ({ placeFilters, t }) => (
         <TreeSelectOption
           showSearch={false}
           treeDefaultExpandAll
-          placeholder={
-            <Translation>
-              {(t) => t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
-            </Translation>
-          }
+          placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
           notFoundContent={<NoContent />}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
           treeData={placeFilters?.concat(STATIC_FILTERS.PLACE)}
@@ -546,17 +525,14 @@ export const calendarSettingsFormFields = {
       required: false,
     },
     {
-      name: 'organizations',
+      name: entitiesClass.organization,
+      initialValue: [],
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.organizations')}</Translation>,
-      field: ({ organizationFilters }) => (
+      field: ({ organizationFilters, t }) => (
         <TreeSelectOption
           showSearch={false}
           treeDefaultExpandAll
-          placeholder={
-            <Translation>
-              {(t) => t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
-            </Translation>
-          }
+          placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
           notFoundContent={<NoContent />}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
           treeData={organizationFilters?.concat(STATIC_FILTERS.ORGANIZATION)}
@@ -580,17 +556,14 @@ export const calendarSettingsFormFields = {
       required: false,
     },
     {
-      name: 'people',
+      name: entitiesClass.people,
+      initialValue: [],
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.people')}</Translation>,
-      field: ({ peopleFilters }) => (
+      field: ({ peopleFilters, t }) => (
         <TreeSelectOption
           showSearch={false}
           treeDefaultExpandAll
-          placeholder={
-            <Translation>
-              {(t) => t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
-            </Translation>
-          }
+          placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
           notFoundContent={<NoContent />}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
           treeData={peopleFilters?.concat(STATIC_FILTERS.PEOPLE)}
