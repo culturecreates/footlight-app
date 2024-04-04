@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import './calendarSettings.css';
 import { Row, Col, Form, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { calendarSettingsFormFields } from '../../../../constants/calendarSettingsForm';
+import { STATIC_FILTERS, calendarSettingsFormFields } from '../../../../constants/calendarSettingsForm';
 import { useOutletContext, useParams } from 'react-router-dom';
 import { entitiesClass } from '../../../../constants/entitiesClass';
 import { useGetAllTaxonomyQuery } from '../../../../services/taxonomy';
@@ -70,6 +70,7 @@ function CalendarSettings() {
   const handleInitialFilters = (data, selectedFilters) => {
     return data?.filter((filter) => selectedFilters?.includes(filter.value))?.map((filter) => filter.value) ?? [];
   };
+  // initialSelectedFilters = ['63a0a47c1c6b6c005aad30da', '6467a0a5137a2200640d6abd'];
 
   initialSelectedFilters = [
     {
@@ -99,6 +100,8 @@ function CalendarSettings() {
     calendarNameEn: currentCalendarData?.name?.en,
     calendarNameFr: currentCalendarData?.name?.fr,
     calendarContactEmail: currentCalendarData?.contact,
+    calendarTimeZone: currentCalendarData?.timezone,
+    calendarDateFormat: currentCalendarData?.dateFormatDisplay,
     eventTemplate: currentCalendarData?.widgetSettings?.eventDetailsUrlTemplate,
     searchResultTemplate: currentCalendarData?.widgetSettings?.listEventsUrlTemplate,
     calendarLanguage: [currentCalendarData?.contentLanguage],
@@ -123,8 +126,52 @@ function CalendarSettings() {
       ?.filter((field) => field);
     form
       .validateFields(requiredFields)
-      .then((values) => {
-        console.log(values);
+      .then(() => {
+        let values = form.getFieldsValue(true);
+        STATIC_FILTERS.EVENT.forEach((filter) => {
+          values[entitiesClass.event] = values[entitiesClass.event]?.filter((item) => item !== filter.value);
+        });
+        STATIC_FILTERS.ORGANIZATION.forEach((filter) => {
+          values[entitiesClass.organization] = values[entitiesClass.organization]?.filter(
+            (item) => item !== filter.value,
+          );
+        });
+        STATIC_FILTERS.PEOPLE.forEach((filter) => {
+          values[entitiesClass.person] = values[entitiesClass.person]?.filter((item) => item !== filter.value);
+        });
+        STATIC_FILTERS.PLACE.forEach((filter) => {
+          values[entitiesClass.place] = values[entitiesClass.place]?.filter((item) => item !== filter.value);
+        });
+        if (values)
+          values = {
+            name: {
+              en: values.calendarNameEn,
+              fr: values.calendarNameFr,
+            },
+            contentLanguage: values.calendarLanguage,
+            timezone: values.calendarTimeZone,
+            contact: values.calendarContactEmail,
+            dateFormatDisplay: values.calendarDateFormat,
+            imageConfig: {
+              entityName: currentCalendarData?.imageConfig?.entityName,
+              large: {
+                aspectRatio: values.imageAspectRatio.large,
+                maxWidth: values.imageMaxWidth.large,
+              },
+              thumbnail: {
+                aspectRatio: values.imageAspectRatio.thumbnail,
+                maxWidth: values.imageMaxWidth.thumbnail,
+              },
+            },
+            widgetSettings: {
+              listEventsUrlTemplate: values.searchResultTemplate,
+              eventDetailsUrlTemplate: values.eventTemplate,
+            },
+            filterPersonalization: {
+              fields: currentCalendarData?.filterPersonalization?.fields,
+              customFields: values.People.concat(values.Organization).concat(values.Event).concat(values.Place),
+            },
+          };
       })
       .catch((errorInfo) => {
         console.log(errorInfo);
