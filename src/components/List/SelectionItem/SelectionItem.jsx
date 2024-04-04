@@ -9,6 +9,8 @@ import { getUserDetails } from '../../../redux/reducer/userSlice';
 import ArtsDataLink from '../../Tags/ArtsDataLink/ArtsDataLink';
 import SmallButton from '../../Button/SmallButton';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
+import { useOutletContext } from 'react-router-dom';
+import { languageFallbackSetup } from '../../../utils/languageFallbackSetup';
 
 function SelectionItem(props) {
   const {
@@ -33,6 +35,19 @@ function SelectionItem(props) {
   } = props;
   const { t } = useTranslation();
   const { user } = useSelector(getUserDetails);
+  // eslint-disable-next-line no-unused-vars
+  const [currentCalendarData, _pageNumber, _setPageNumber, _getCalendar] = useOutletContext();
+
+  // eslint-disable-next-line no-unused-vars
+  const status = languageFallbackSetup({
+    currentCalendarData,
+    fieldData: name,
+    languageFallbacks: currentCalendarData.languageFallbacks,
+    isFieldsDirty: false,
+  });
+
+  // console.log('status', status);
+
   return (
     <div
       className="selection-item-wrapper"
