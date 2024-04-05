@@ -983,6 +983,11 @@
         "places": "Lieux",
         "people": "Personnes",
         "organizations": "Organisations",
+        "readOnly": {
+          "title": "Mettre le calendrier en lecture seule",
+          "description": "Activez cette option pour désactiver l'édition de ce calendrier.",
+          "readOnlyMode": "Lecture seule"
+        },
         "placeholders": {
           "calendarNameEn": "Entrez le nom du calendrier en anglais",
           "calendarNameFr": "Entrez le nom du calendrier en français",

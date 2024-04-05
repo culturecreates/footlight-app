@@ -120,6 +120,7 @@ function CalendarSettings() {
       large: imageConfig?.large?.maxWidth,
       thumbnail: imageConfig?.thumbnail?.maxWidth,
     },
+    readOnly: currentCalendarData?.readOnly,
   };
 
   const onSaveHandler = () => {
@@ -174,6 +175,7 @@ function CalendarSettings() {
             //     maxWidth: values.imageMaxWidth.thumbnail,
             //   },
             // },
+            readOnly: values.readOnly,
             widgetSettings: {
               listEventsUrlTemplate: values.searchResultTemplate,
               eventDetailsUrlTemplate: values.eventTemplate,

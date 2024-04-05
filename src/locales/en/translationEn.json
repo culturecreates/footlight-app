@@ -988,6 +988,11 @@
         "places": "Places",
         "people": "People",
         "organizations": "Organizations",
+        "readOnly": {
+          "title": "Make calendar read-only",
+          "description": "Disable editing temporarily in this calendar by turning this toggle on.",
+          "readOnlyMode": "Read-only"
+        },
         "placeholders": {
           "calendarNameEn": "Enter calendar name in English",
           "calendarNameFr": "Enter calendar name in French",

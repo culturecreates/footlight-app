@@ -11,6 +11,7 @@ import TextArea from 'antd/lib/input/TextArea';
 import BilingualInput from '../components/BilingualInput';
 import { entitiesClass } from './entitiesClass';
 import { contentLanguage } from './contentLanguage';
+import StyledSwitch from '../components/Switch/StyledSwitch';
 
 const calendarLanguages = [
   {
@@ -415,29 +416,43 @@ export const calendarSettingsFormFields = {
       hidden: false,
       required: false,
     },
+    {
+      label: <Translation>{(t) => t('dashboard.settings.calendarSettings.readOnly.title')}</Translation>,
+      field: ({ t }) => (
+        <Row justify={'start'} align={'top'} gutter={[8, 0]}>
+          <Col>
+            <p className="calendar-settings-description">
+              <Translation>{(t) => t('dashboard.settings.calendarSettings.readOnly.description')}</Translation>
+            </p>
+          </Col>
+          <Col span={3}>
+            <Form.Item valuePropName="checked" name="readOnly">
+              <StyledSwitch />
+            </Form.Item>
+          </Col>
+          <Col>
+            <span
+              style={{ color: '#222732', minHeight: '32px', display: 'flex', alignItems: 'center' }}
+              data-cy="span-featured-event-text">
+              {t('dashboard.settings.calendarSettings.readOnly.readOnlyMode')}
+            </span>
+          </Col>
+        </Row>
+      ),
+      rules: [],
+    },
   ],
   WIDGET_SETTINGS: [
     {
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.eventTemplate')}</Translation>,
-      field: ({ eventTemplate, t }) => (
-        <Form.Item
-          name={'eventTemplate'}
-          initialValue={eventTemplate}
-          rules={[
-            {
-              type: 'url',
-              message: t('dashboard.events.addEditEvent.validations.url'),
-            },
-            REQUIRED_MESSAGE,
-          ]}
-          data-cy="form-item-event-template">
-          <StyledInput
-            addonBefore="URL"
-            autoComplete="off"
-            placeholder={t('dashboard.settings.calendarSettings.placeholders.eventTemplate')}
-            data-cy="input-event-template"
-          />
-        </Form.Item>
+      name: 'eventTemplate',
+      field: ({ t }) => (
+        <StyledInput
+          addonBefore="URL"
+          autoComplete="off"
+          placeholder={t('dashboard.settings.calendarSettings.placeholders.eventTemplate')}
+          data-cy="input-event-template"
+        />
       ),
       required: true,
       extra: (
@@ -445,33 +460,36 @@ export const calendarSettingsFormFields = {
           <Translation>{(t) => t('dashboard.settings.calendarSettings.eventTemplateDescription')}</Translation>
         </p>
       ),
+      rules: [
+        {
+          type: 'url',
+          message: <Trans i18nKey="dashboard.events.addEditEvent.validations.url" />,
+        },
+        REQUIRED_MESSAGE,
+      ],
     },
     {
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.searchResultTemplate')}</Translation>,
-      field: ({ searchResultTemplate, t }) => (
-        <Form.Item
-          name={'searchResultTemplate'}
-          initialValue={searchResultTemplate}
-          rules={[
-            {
-              type: 'url',
-              message: t('dashboard.events.addEditEvent.validations.url'),
-            },
-          ]}
-          data-cy="form-item-search-result-template">
-          <StyledInput
-            addonBefore="URL"
-            autoComplete="off"
-            placeholder={t('dashboard.settings.calendarSettings.placeholders.searchResultTemplate')}
-            data-cy="input-search-result-template"
-          />
-        </Form.Item>
+      name: 'searchResultTemplate',
+      field: ({ t }) => (
+        <StyledInput
+          addonBefore="URL"
+          autoComplete="off"
+          placeholder={t('dashboard.settings.calendarSettings.placeholders.searchResultTemplate')}
+          data-cy="input-search-result-template"
+        />
       ),
       extra: (
         <p className="calendar-settings-description">
           <Translation>{(t) => t('dashboard.settings.calendarSettings.searchResultTemplateDescription')}</Translation>
         </p>
       ),
+      rules: [
+        {
+          type: 'url',
+          message: <Trans i18nKey="dashboard.events.addEditEvent.validations.url" />,
+        },
+      ],
     },
   ],
   FILTER_PERSONALIZATION: [
