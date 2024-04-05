@@ -276,6 +276,7 @@ export const calendarSettingsFormFields = {
             <Col span={12}>
               <Form.Item
                 name={['imageAspectRatio', 'large']}
+                className="calendar-settings-small-label"
                 label={t('dashboard.settings.calendarSettings.imageAspectRatio.large')}
                 rules={[REQUIRED_MESSAGE]}
                 data-cy="form-item-image-ratio-large">
@@ -308,6 +309,7 @@ export const calendarSettingsFormFields = {
             <Col span={12}>
               <Form.Item
                 name={['imageAspectRatio', 'thumbnail']}
+                className="calendar-settings-small-label"
                 label={t('dashboard.settings.calendarSettings.imageAspectRatio.thumbnail')}
                 data-cy="form-item-image-ratio-thumbnail"
                 rules={[REQUIRED_MESSAGE]}>
@@ -353,6 +355,7 @@ export const calendarSettingsFormFields = {
             <Col span={12}>
               <Form.Item
                 name={['imageMaxWidth', 'large']}
+                className="calendar-settings-small-label"
                 label={<Translation>{(t) => t('dashboard.settings.calendarSettings.imageMaxWidth.large')}</Translation>}
                 data-cy="form-item-image-max-width-large"
                 rules={[REQUIRED_MESSAGE]}>
@@ -365,6 +368,7 @@ export const calendarSettingsFormFields = {
             <Col span={12}>
               <Form.Item
                 name={['imageMaxWidth', 'thumbnail']}
+                className="calendar-settings-small-label"
                 label={t('dashboard.settings.calendarSettings.imageMaxWidth.thumbnail')}
                 data-cy="form-item-image-max-width-thumbnail"
                 rules={[REQUIRED_MESSAGE]}>

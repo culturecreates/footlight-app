@@ -29,3 +29,7 @@
   > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
   display: none;
 }
+
+.calendar-settings-wrapper .calendar-settings-small-label .ant-form-item-label > label {
+  font-size: 12px;
+}
