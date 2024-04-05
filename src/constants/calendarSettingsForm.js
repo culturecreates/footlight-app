@@ -10,19 +10,16 @@ import ImageUpload from '../components/ImageUpload';
 import TextArea from 'antd/lib/input/TextArea';
 import BilingualInput from '../components/BilingualInput';
 import { entitiesClass } from './entitiesClass';
+import { contentLanguage } from './contentLanguage';
 
 const calendarLanguages = [
   {
-    value: 'ENGLISH',
+    value: contentLanguage.ENGLISH,
     label: <Translation>{(t) => t('dashboard.settings.addUser.dropDownOptions.langagePreference.en')}</Translation>,
   },
   {
-    value: 'FRENCH',
+    value: contentLanguage.FRENCH,
     label: <Translation>{(t) => t('dashboard.settings.addUser.dropDownOptions.langagePreference.fr')}</Translation>,
-  },
-  {
-    value: 'BILINGUAL',
-    label: 'BILINGUAL',
   },
 ];
 

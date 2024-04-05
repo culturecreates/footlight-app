@@ -12,6 +12,7 @@ import { getUserDetails } from '../../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
 import PrimaryButton from '../../../../components/Button/Primary';
 import { useUpdateCalendarMutation } from '../../../../services/calendar';
+import { contentLanguage } from '../../../../constants/contentLanguage';
 
 function CalendarSettings() {
   const { t } = useTranslation();
@@ -107,7 +108,10 @@ function CalendarSettings() {
     calendarDateFormat: currentCalendarData?.dateFormatDisplay,
     eventTemplate: currentCalendarData?.widgetSettings?.eventDetailsUrlTemplate,
     searchResultTemplate: currentCalendarData?.widgetSettings?.listEventsUrlTemplate,
-    calendarLanguage: [currentCalendarData?.contentLanguage],
+    calendarLanguage:
+      currentCalendarData?.contentLanguage === contentLanguage.BILINGUAL
+        ? [contentLanguage.ENGLISH, contentLanguage.FRENCH]
+        : [currentCalendarData?.contentLanguage],
     imageAspectRatio: {
       large: imageConfig?.large?.aspectRatio,
       thumbnail: imageConfig?.thumbnail?.aspectRatio,
@@ -151,7 +155,11 @@ function CalendarSettings() {
               en: values.calendarNameEn,
               fr: values.calendarNameFr,
             },
-            contentLanguage: values.calendarLanguage,
+            contentLanguage:
+              values.calendarLanguage?.includes(contentLanguage.ENGLISH) &&
+              values.calendarLanguage?.includes(contentLanguage.FRENCH)
+                ? contentLanguage.BILINGUAL
+                : values.calendarLanguage[0],
             timezone: values.calendarTimeZone,
             contact: values.calendarContactEmail,
             dateFormatDisplay: values.calendarDateFormat,
