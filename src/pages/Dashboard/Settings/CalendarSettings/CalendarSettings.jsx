@@ -164,18 +164,21 @@ function CalendarSettings() {
             timezone: values.calendarTimeZone,
             contact: values.calendarContactEmail,
             dateFormatDisplay: values.calendarDateFormat,
-            // imageConfig: {
-            //   entityName: currentCalendarData?.imageConfig?.entityName,
-            //   large: {
-            //     aspectRatio: values.imageAspectRatio.large,
-            //     maxWidth: values.imageMaxWidth.large,
-            //   },
-            //   thumbnail: {
-            //     aspectRatio: values.imageAspectRatio.thumbnail,
-            //     maxWidth: values.imageMaxWidth.thumbnail,
-            //   },
-            // },
+            imageConfig: {
+              entityName: currentCalendarData?.imageConfig?.entityName,
+              large: {
+                aspectRatio: values.imageAspectRatio.large,
+                maxWidth: values.imageMaxWidth.large,
+              },
+              thumbnail: {
+                aspectRatio: values.imageAspectRatio.thumbnail,
+                maxWidth: values.imageMaxWidth.thumbnail,
+              },
+            },
             readOnly: values.readOnly,
+            languageFallbacks: currentCalendarData?.languageFallbacks,
+            forms: currentCalendarData?.forms,
+            namespace: currentCalendarData?.namespace,
             widgetSettings: {
               listEventsUrlTemplate: values.searchResultTemplate,
               eventDetailsUrlTemplate: values.eventTemplate,
