@@ -987,7 +987,20 @@
         "events": "Events",
         "places": "Places",
         "people": "People",
-        "organizations": "Organizations"
+        "organizations": "Organizations",
+        "placeholders": {
+          "calendarNameEn": "Enter calendar name in English",
+          "calendarNameFr": "Enter calendar name in French",
+          "calendarLanguage": "Select languages to display on website",
+          "timezone": "Select timezone",
+          "contact": "Enter contact information",
+          "dateFormatDisplay": "Select date format",
+          "imageAspectRatio": "Select image aspect ratio",
+          "imageMaxWidth": "Enter image maximum width",
+          "eventTemplate": "Enter event template URL",
+          "searchResultTemplate": "Enter search results template URL",
+          "filterPersonalization": "Select filter personalization"
+        }
       },
       "mandatoryFields": {
         "title": "Mandatory fields",

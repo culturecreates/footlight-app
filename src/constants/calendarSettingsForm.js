@@ -158,7 +158,7 @@ export const calendarSettingsFormFields = {
               }}
               size="large"
               autoComplete="off"
-              placeholder={t('dashboard.settings.calendarSettings.calendarName')}
+              placeholder={t('dashboard.settings.calendarSettings.placeholders.calendarNameFr')}
               data-cy="input-calendar-name"
             />
           </Form.Item>
@@ -173,7 +173,7 @@ export const calendarSettingsFormFields = {
               }}
               size="large"
               autoComplete="off"
-              placeholder={t('dashboard.settings.calendarSettings.calendarName')}
+              placeholder={t('dashboard.settings.calendarSettings.placeholders.calendarNameEn')}
               data-cy="input-calendar-name"
             />
           </Form.Item>
@@ -199,7 +199,7 @@ export const calendarSettingsFormFields = {
           showSearch={false}
           allowClear
           treeDefaultExpandAll
-          placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
+          placeholder={t('dashboard.settings.calendarSettings.placeholders.calendarLanguage')}
           notFoundContent={<NoContent />}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
           treeData={calendarLanguages}
@@ -225,7 +225,13 @@ export const calendarSettingsFormFields = {
     {
       name: 'calendarTimeZone',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.timezone')}</Translation>,
-      field: () => <Select options={timeZones} data-cy="select-calendar-time-zone" />,
+      field: ({ t }) => (
+        <Select
+          options={timeZones}
+          data-cy="select-calendar-time-zone"
+          placeholder={t('dashboard.settings.calendarSettings.placeholders.timezone')}
+        />
+      ),
       rules: [REQUIRED_MESSAGE],
       hidden: false,
       required: true,
@@ -235,7 +241,7 @@ export const calendarSettingsFormFields = {
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.contact')}</Translation>,
       field: () => (
         <StyledInput
-          placeholder={(t) => t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderEmail')}
+          placeholder={(t) => t('dashboard.settings.calendarSettings.placeholders.contact')}
           data-cy="input-calendar-contact-email"
         />
       ),
@@ -251,7 +257,13 @@ export const calendarSettingsFormFields = {
     {
       name: 'calendarDateFormat',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.dateFormat')}</Translation>,
-      field: () => <Select options={dateFormats} data-cy="select-calendar-date-formats" />,
+      field: ({ t }) => (
+        <Select
+          options={dateFormats}
+          data-cy="select-calendar-date-formats"
+          placeholder={t('dashboard.settings.calendarSettings.placeholders.dateFormatDisplay')}
+        />
+      ),
       rules: [REQUIRED_MESSAGE],
       hidden: false,
       required: true,
@@ -276,16 +288,16 @@ export const calendarSettingsFormFields = {
                   showSearch={false}
                   allowClear
                   treeDefaultExpandAll
-                  placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
+                  placeholder={t('dashboard.settings.calendarSettings.placeholders.imageAspectRatio')}
                   notFoundContent={<NoContent />}
                   clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                   treeData={aspectRatios}
-                  data-cy="treeselect-calendar-filter-events"
+                  data-cy="treeselect-calendar-image-aspect-ratio"
                   tagRender={(props) => {
                     const { closable, onClose, label } = props;
                     return (
                       <Tags
-                        data-cy={`tag-calendar-filter-${label}`}
+                        data-cy={`tag-calendar-image-aspect-ratio-${label}`}
                         closable={closable}
                         onClose={onClose}
                         closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
@@ -308,7 +320,7 @@ export const calendarSettingsFormFields = {
                   showSearch={false}
                   allowClear
                   treeDefaultExpandAll
-                  placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
+                  placeholder={t('dashboard.settings.calendarSettings.placeholders.imageAspectRatio')}
                   notFoundContent={<NoContent />}
                   clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                   treeData={aspectRatios}
@@ -348,7 +360,7 @@ export const calendarSettingsFormFields = {
                 data-cy="form-item-image-max-width-large"
                 rules={[REQUIRED_MESSAGE]}>
                 <StyledInput
-                  placeholder={t('dashboard.settings.calendarSettings.imageMaxWidth.large')}
+                  placeholder={t('dashboard.settings.calendarSettings.placeholders.imageMaxWidth')}
                   data-cy="input-calendar-image-max-width-large"
                 />
               </Form.Item>
@@ -360,7 +372,7 @@ export const calendarSettingsFormFields = {
                 data-cy="form-item-image-max-width-thumbnail"
                 rules={[REQUIRED_MESSAGE]}>
                 <StyledInput
-                  placeholder={t('dashboard.settings.calendarSettings.imageMaxWidth.thumbnail')}
+                  placeholder={t('dashboard.settings.calendarSettings.placeholders.imageMaxWidth')}
                   data-cy="input-calendar-image-max-width-thumbnail"
                 />
               </Form.Item>
@@ -421,7 +433,7 @@ export const calendarSettingsFormFields = {
           <StyledInput
             addonBefore="URL"
             autoComplete="off"
-            placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
+            placeholder={t('dashboard.settings.calendarSettings.placeholders.eventTemplate')}
             data-cy="input-event-template"
           />
         </Form.Item>
@@ -449,7 +461,7 @@ export const calendarSettingsFormFields = {
           <StyledInput
             addonBefore="URL"
             autoComplete="off"
-            placeholder={t('dashboard.events.addEditEvent.otherInformation.placeHolderLinks')}
+            placeholder={t('dashboard.settings.calendarSettings.placeholders.searchResultTemplate')}
             data-cy="input-search-result-template"
           />
         </Form.Item>
@@ -471,7 +483,7 @@ export const calendarSettingsFormFields = {
           treeData={eventFilters?.concat(STATIC_FILTERS.EVENT)}
           showSearch={false}
           treeDefaultExpandAll
-          placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
+          placeholder={t('dashboard.settings.calendarSettings.placeholders.filterPersonalization')}
           notFoundContent={<NoContent />}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
           data-cy="treeselect-calendar-filter-events"
@@ -501,7 +513,7 @@ export const calendarSettingsFormFields = {
         <TreeSelectOption
           showSearch={false}
           treeDefaultExpandAll
-          placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
+          placeholder={t('dashboard.settings.calendarSettings.placeholders.filterPersonalization')}
           notFoundContent={<NoContent />}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
           treeData={placeFilters?.concat(STATIC_FILTERS.PLACE)}
@@ -532,7 +544,7 @@ export const calendarSettingsFormFields = {
         <TreeSelectOption
           showSearch={false}
           treeDefaultExpandAll
-          placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
+          placeholder={t('dashboard.settings.calendarSettings.placeholders.filterPersonalization')}
           notFoundContent={<NoContent />}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
           treeData={organizationFilters?.concat(STATIC_FILTERS.ORGANIZATION)}
@@ -563,7 +575,7 @@ export const calendarSettingsFormFields = {
         <TreeSelectOption
           showSearch={false}
           treeDefaultExpandAll
-          placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
+          placeholder={t('dashboard.settings.calendarSettings.placeholders.filterPersonalization')}
           notFoundContent={<NoContent />}
           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
           treeData={peopleFilters?.concat(STATIC_FILTERS.PEOPLE)}

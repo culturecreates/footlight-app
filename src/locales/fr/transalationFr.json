@@ -982,7 +982,20 @@
         "events": "Événements",
         "places": "Lieux",
         "people": "Personnes",
-        "organizations": "Organisations"
+        "organizations": "Organisations",
+        "placeholders": {
+          "calendarNameEn": "Entrez le nom du calendrier en anglais",
+          "calendarNameFr": "Entrez le nom du calendrier en français",
+          "calendarLanguage": "Sélectionnez les langues à afficher sur le site web",
+          "timezone": "Sélectionnez un fuseau horaire",
+          "contact": "Entrez les informations de contact",
+          "dateFormatDisplay": "Sélectionnez le format de la date",
+          "imageAspectRatio": "Sélectionnez le rapport d'aspect de l'image",
+          "imageMaxWidth": "Entrez la largeur maximale de l'image",
+          "eventTemplate": "Entrez l'URL du modèle d'événement",
+          "searchResultTemplate": "Entrez l'URL du modèle de résultats de recherche",
+          "filterPersonalization": "Sélectionnez la personnalisation du filtre"
+        }
       },
       "mandatoryFields": {
         "title": "Champs obligatoires",
