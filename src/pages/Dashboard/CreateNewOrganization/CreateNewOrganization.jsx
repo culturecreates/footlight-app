@@ -18,9 +18,10 @@ import PrimaryButton from '../../../components/Button/Primary';
 import { featureFlags } from '../../../utils/featureFlags';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { entitiesClass } from '../../../constants/entitiesClass';
+import OutlinedButton from '../../..//components/Button/Outlined';
 import Card from '../../../components/Card/Common/Event';
 import { formCategory, formFieldValue, returnFormDataWithFields } from '../../../constants/formFields';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import {
@@ -63,11 +64,18 @@ import { sameAsTypes } from '../../../constants/sameAsTypes';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 import SelectionItem from '../../../components/List/SelectionItem';
 import moment from 'moment';
+import {
+  getActiveFallbackFieldsInfo,
+  getLanguageLiteralBannerDisplayStatus,
+  setLanguageLiteralBannerDisplayStatus,
+} from '../../../redux/reducer/languageLiteralSlice';
+import Alert from '../../../components/Alert';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
   const [form] = Form.useForm();
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const [
@@ -79,7 +87,9 @@ function CreateNewOrganization() {
     isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
+  const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
   const { user } = useSelector(getUserDetails);
+  const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { calendarId } = useParams();
   let [searchParams] = useSearchParams();
 
@@ -658,6 +668,27 @@ function CreateNewOrganization() {
   }, [addedFields]);
 
   useEffect(() => {
+    let shouldDisplay = true;
+
+    for (let key in activeFallbackFieldsInfo) {
+      if (Object.prototype.hasOwnProperty.call(activeFallbackFieldsInfo, key)) {
+        const tagDisplayStatus =
+          activeFallbackFieldsInfo[key]?.en?.tagDisplayStatus || activeFallbackFieldsInfo[key]?.fr?.tagDisplayStatus;
+        if (tagDisplayStatus) {
+          shouldDisplay = false;
+          break;
+        }
+      }
+    }
+
+    if (!shouldDisplay) {
+      dispatch(setLanguageLiteralBannerDisplayStatus(true));
+    } else {
+      dispatch(setLanguageLiteralBannerDisplayStatus(false));
+    }
+  }, [activeFallbackFieldsInfo]);
+
+  useEffect(() => {
     if (calendarId && currentCalendarData) {
       let initialPlaceAccessibiltiy = [],
         initialPlace;
@@ -891,6 +922,32 @@ function CreateNewOrganization() {
                     </h4>
                   </div>
                 </Col>
+
+                {!languageLiteralBannerDisplayStatus && (
+                  <Col span={24} className="language-literal-banner">
+                    <Row>
+                      <Col flex={'780px'}>
+                        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                          <Col span={24}>
+                            <Alert
+                              message={t('common.forms.languageLiterals.bannerTitle')}
+                              type="info"
+                              showIcon={false}
+                              action={
+                                <OutlinedButton
+                                  data-cy="button-change-interface-language"
+                                  size="large"
+                                  label={t('common.dismiss')}
+                                  onClick={() => dispatch(setLanguageLiteralBannerDisplayStatus(false))}
+                                />
+                              }
+                            />
+                          </Col>
+                        </Row>
+                      </Col>
+                    </Row>
+                  </Col>
+                )}
               </Row>
             </Col>
             {fields?.map((section, index) => {
@@ -954,6 +1011,7 @@ function CreateNewOrganization() {
                                 </span>
                               </div>
                             </Col>
+
                             <Col span={24}>
                               <div>
                                 <br />

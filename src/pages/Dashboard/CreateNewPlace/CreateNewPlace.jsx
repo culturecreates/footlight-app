@@ -14,6 +14,7 @@ import Icon, {
   CalendarOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
+import OutlinedButton from '../../..//components/Button/Outlined';
 import PrimaryButton from '../../../components/Button/Primary';
 import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -28,7 +29,7 @@ import {
   useLazyGetPlaceQuery,
   useUpdatePlaceMutation,
 } from '../../../services/places';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import ContentLanguageInput from '../../../components/ContentLanguageInput';
 import Card from '../../../components/Card/Common/Event';
@@ -82,6 +83,12 @@ import { useLazyGetExternalSourceQuery } from '../../../services/externalSource'
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 import moment from 'moment';
+import {
+  getActiveFallbackFieldsInfo,
+  getLanguageLiteralBannerDisplayStatus,
+  setLanguageLiteralBannerDisplayStatus,
+} from '../../../redux/reducer/languageLiteralSlice';
+import Alert from '../../../components/Alert';
 
 const { TextArea } = Input;
 
@@ -89,6 +96,7 @@ function CreateNewPlace() {
   const timestampRef = useRef(Date.now()).current;
   const [form] = Form.useForm();
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const [
@@ -100,6 +108,8 @@ function CreateNewPlace() {
     isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
+  const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
+  const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { user } = useSelector(getUserDetails);
   const { calendarId } = useParams();
   let [searchParams] = useSearchParams();
@@ -778,6 +788,27 @@ function CreateNewPlace() {
   }, []);
 
   useEffect(() => {
+    let shouldDisplay = true;
+    console.log(activeFallbackFieldsInfo);
+    for (let key in activeFallbackFieldsInfo) {
+      if (Object.prototype.hasOwnProperty.call(activeFallbackFieldsInfo, key)) {
+        const tagDisplayStatus =
+          activeFallbackFieldsInfo[key]?.en?.tagDisplayStatus || activeFallbackFieldsInfo[key]?.fr?.tagDisplayStatus;
+        if (tagDisplayStatus) {
+          shouldDisplay = false;
+          break;
+        }
+      }
+    }
+
+    if (!shouldDisplay) {
+      dispatch(setLanguageLiteralBannerDisplayStatus(true));
+    } else {
+      dispatch(setLanguageLiteralBannerDisplayStatus(false));
+    }
+  }, [activeFallbackFieldsInfo]);
+
+  useEffect(() => {
     if (selectedContainsPlaces) form.setFieldValue(formFieldNames.CONTAINS_PLACE, selectedContainsPlaces);
   }, [selectedContainsPlaces]);
 
@@ -1051,6 +1082,31 @@ function CreateNewPlace() {
                     </h4>
                   </div>
                 </Col>
+                {!languageLiteralBannerDisplayStatus && (
+                  <Col span={24} className="language-literal-banner">
+                    <Row>
+                      <Col flex={'780px'}>
+                        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                          <Col span={24}>
+                            <Alert
+                              message={t('common.forms.languageLiterals.bannerTitle')}
+                              type="info"
+                              showIcon={false}
+                              action={
+                                <OutlinedButton
+                                  data-cy="button-change-interface-language"
+                                  size="large"
+                                  label={t('common.dismiss')}
+                                  onClick={() => dispatch(setLanguageLiteralBannerDisplayStatus(false))}
+                                />
+                              }
+                            />
+                          </Col>
+                        </Row>
+                      </Col>
+                    </Row>
+                  </Col>
+                )}
               </Row>
             </Col>
             <Card marginResponsive="0px">
@@ -1111,7 +1167,12 @@ function CreateNewPlace() {
                   </Row>
                 )}
                 <Form.Item label={t('dashboard.places.createNew.addPlace.name.name')} required={true}>
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput
+                    calendarContentLanguage={calendarContentLanguage}
+                    isFieldDirty={{
+                      fr: form.isFieldTouched(formFieldNames.FRENCH),
+                      en: form.isFieldTouched(formFieldNames.ENGLISH),
+                    }}>
                     <BilingualInput
                       fieldData={
                         placeData?.name
@@ -1272,7 +1333,12 @@ function CreateNewPlace() {
                 <Form.Item
                   data-cy="form-item-place-disambiguating-description-title"
                   label={t('dashboard.places.createNew.addPlace.disambiguatingDescription.disambiguatingDescription')}>
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput
+                    calendarContentLanguage={calendarContentLanguage}
+                    isFieldDirty={{
+                      fr: form.isFieldTouched(formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH),
+                      en: form.isFieldTouched(formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH),
+                    }}>
                     <BilingualInput
                       fieldData={
                         placeData?.disambiguatingDescription
@@ -1353,7 +1419,12 @@ function CreateNewPlace() {
                 <Form.Item
                   label={t('dashboard.places.createNew.addPlace.description.description')}
                   data-cy="form-item-place-description-title">
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput
+                    calendarContentLanguage={calendarContentLanguage}
+                    isFieldDirty={{
+                      en: form.isFieldTouched(formFieldNames.EDITOR_ENGLISH),
+                      fr: form.isFieldTouched(formFieldNames.EDITOR_FRENCH),
+                    }}>
                     <BilingualInput
                       fieldData={
                         placeData?.description
@@ -1601,7 +1672,12 @@ function CreateNewPlace() {
                   label={t('dashboard.places.createNew.addPlace.address.streetAddress')}
                   required={true}
                   data-cy="form-item-street-address-title">
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput
+                    calendarContentLanguage={calendarContentLanguage}
+                    isFieldDirty={{
+                      en: form.isFieldTouched(formFieldNames.STREET_ADDRESS_ENGLISH),
+                      fr: form.isFieldTouched(formFieldNames.STREET_ADDRESS_FRENCH),
+                    }}>
                     <BilingualInput
                       fieldData={
                         placeData?.address?.streetAddress
@@ -1704,7 +1780,12 @@ function CreateNewPlace() {
                 <Form.Item
                   label={t('dashboard.places.createNew.addPlace.address.city.city')}
                   data-cy="form-item-place-city-title">
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput
+                    calendarContentLanguage={calendarContentLanguage}
+                    isFieldDirty={{
+                      en: form.isFieldTouched(formFieldNames.CITY_ENGLISH),
+                      fr: form.isFieldTouched(formFieldNames.CITY_FRENCH),
+                    }}>
                     <BilingualInput
                       fieldData={
                         placeData?.address?.addressLocality
@@ -1807,7 +1888,12 @@ function CreateNewPlace() {
                     <Form.Item
                       label={t('dashboard.places.createNew.addPlace.address.province.province')}
                       data-cy="form-item-province-title">
-                      <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                      <ContentLanguageInput
+                        calendarContentLanguage={calendarContentLanguage}
+                        isFieldDirty={{
+                          en: form.isFieldTouched(formFieldNames.PROVINCE_ENGLISH),
+                          fr: form.isFieldTouched(formFieldNames.PROVINCE_FRENCH),
+                        }}>
                         <BilingualInput
                           fieldData={
                             placeData?.address?.addressRegion
@@ -1888,7 +1974,12 @@ function CreateNewPlace() {
                     <Form.Item
                       label={t('dashboard.places.createNew.addPlace.address.country.country')}
                       data-cy="form-item-country-title">
-                      <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                      <ContentLanguageInput
+                        calendarContentLanguage={calendarContentLanguage}
+                        isFieldDirty={{
+                          en: form.isFieldTouched(formFieldNames.COUNTRY_ENGLISH),
+                          fr: form.isFieldTouched(formFieldNames.COUNTRY_FRENCH),
+                        }}>
                         <BilingualInput
                           fieldData={
                             placeData?.address?.addressCountry
@@ -2556,7 +2647,12 @@ function CreateNewPlace() {
                         !addedFields?.includes(placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP) &&
                         'none',
                     }}>
-                    <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                    <ContentLanguageInput
+                      calendarContentLanguage={calendarContentLanguage}
+                      isFieldDirty={{
+                        en: form.isFieldTouched(formFieldNames.ACCESSIBILITY_NOTE_ENGLISH),
+                        fr: form.isFieldTouched(formFieldNames.ACCESSIBILITY_NOTE_FRENCH),
+                      }}>
                       <BilingualInput fieldData={placeData?.accessibilityNote}>
                         <Form.Item
                           name={formFieldNames.ACCESSIBILITY_NOTE_FRENCH}
