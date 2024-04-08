@@ -923,7 +923,7 @@ function CreateNewOrganization() {
                   </div>
                 </Col>
 
-                {!languageLiteralBannerDisplayStatus && (
+                {languageLiteralBannerDisplayStatus && (
                   <Col span={24} className="language-literal-banner">
                     <Row>
                       <Col flex={'780px'}>
