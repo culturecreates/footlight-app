@@ -13,7 +13,6 @@ import {
   PlusCircleOutlined,
 } from '@ant-design/icons';
 import moment from 'moment-timezone';
-import OutlinedButton from '../../../components/Button/Outlined';
 import i18n from 'i18next';
 import { useAddEventMutation, useUpdateEventMutation } from '../../../services/events';
 import { useNavigate, useParams, useSearchParams, useOutletContext, useLocation } from 'react-router-dom';
@@ -21,6 +20,7 @@ import { useGetEventQuery, useUpdateEventStateMutation } from '../../../services
 import { PathName } from '../../../constants/pathName';
 import Outlined from '../../../components/Button/Outlined';
 import PrimaryButton from '../../../components/Button/Primary';
+import OutlinedButton from '../../..//components/Button/Outlined';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -96,6 +96,7 @@ import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout'
 import { getEmbedUrl, validateVimeoURL, validateYouTubeURL } from '../../../utils/getEmbedVideoUrl';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import {
+  getActiveFallbackFieldsInfo,
   getLanguageLiteralBannerDisplayStatus,
   setLanguageLiteralBannerDisplayStatus,
 } from '../../../redux/reducer/languageLiteralSlice';
@@ -104,8 +105,8 @@ const { TextArea } = Input;
 
 function AddEvent() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const location = useLocation();
+  const dispatch = useDispatch();
   const [form] = Form.useForm();
   Form.useWatch('startTime', form);
   Form.useWatch('endTime', form);
@@ -114,7 +115,7 @@ function AddEvent() {
   let [searchParams] = useSearchParams();
   let duplicateId = searchParams.get('duplicateId');
   const { user } = useSelector(getUserDetails);
-
+  const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
   const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { t } = useTranslation();
   const [
@@ -1135,6 +1136,27 @@ function AddEvent() {
   };
 
   useEffect(() => {
+    let shouldDisplay = true;
+
+    for (let key in activeFallbackFieldsInfo) {
+      if (Object.prototype.hasOwnProperty.call(activeFallbackFieldsInfo, key)) {
+        const tagDisplayStatus =
+          activeFallbackFieldsInfo[key]?.en?.tagDisplayStatus || activeFallbackFieldsInfo[key]?.fr?.tagDisplayStatus;
+        if (tagDisplayStatus) {
+          shouldDisplay = false;
+          break;
+        }
+      }
+    }
+
+    if (!shouldDisplay) {
+      dispatch(setLanguageLiteralBannerDisplayStatus(true));
+    } else {
+      dispatch(setLanguageLiteralBannerDisplayStatus(false));
+    }
+  }, [activeFallbackFieldsInfo]);
+
+  useEffect(() => {
     if (isError) navigate(`${PathName.NotFound}`);
   }, [isError]);
 
@@ -1567,6 +1589,7 @@ function AddEvent() {
                 </Row>
               </Col>
             )}
+
           {languageLiteralBannerDisplayStatus && (
             <Col span={24} className="language-literal-banner">
               <Row>
@@ -1592,6 +1615,7 @@ function AddEvent() {
               </Row>
             </Col>
           )}
+
           <CardEvent marginTop="5%" marginResponsive="0px">
             <>
               {artsDataLink?.length > 0 && (
@@ -1697,7 +1721,7 @@ function AddEvent() {
                               ? '4px solid #E8E8E8'
                               : '1px solid #b6c1c9'
                           }`,
-                          maxWidth: '423px',
+                          width: '423px',
                         }}
                         size="large"
                         data-cy="text-area-event-french-name"
@@ -1731,7 +1755,7 @@ function AddEvent() {
                               ? '4px solid #E8E8E8'
                               : '1px solid #b6c1c9'
                           }`,
-                          maxWidth: '423px',
+                          width: '423px',
                         }}
                         size="large"
                         data-cy="text-area-event-english-name"
@@ -2426,7 +2450,7 @@ function AddEvent() {
                               ? '4px solid #E8E8E8'
                               : '1px solid #b6c1c9'
                           }`,
-                          maxWidth: '423px',
+                          width: '423px',
                         }}
                         size="large"
                         data-cy="text-area-virtual-location-french"
@@ -2448,7 +2472,7 @@ function AddEvent() {
                               ? '4px solid #E8E8E8'
                               : '1px solid #b6c1c9'
                           }`,
-                          maxWidth: '423px',
+                          width: '423px',
                         }}
                         size="large"
                         data-cy="text-area-virtual-location-english"
@@ -3000,7 +3024,7 @@ function AddEvent() {
                                 ? '4px solid #E8E8E8'
                                 : '1px solid #b6c1c9'
                             }`,
-                            maxWidth: '423px',
+                            width: '423px',
                           }}
                           size="large"
                           data-cy="input-contact-title-french"
@@ -3023,7 +3047,7 @@ function AddEvent() {
                                 ? '4px solid #E8E8E8'
                                 : '1px solid #b6c1c9'
                             }`,
-                            maxWidth: '423px',
+                            width: '423px',
                           }}
                           size="large"
                           data-cy="input-contact-title-english"
@@ -3839,7 +3863,7 @@ function AddEvent() {
                                 ? '4px solid #E8E8E8'
                                 : '1px solid #b6c1c9'
                             }`,
-                            maxWidth: '423px',
+                            width: '423px',
                             resize: 'vertical',
                           }}
                           size="large"
@@ -3862,7 +3886,7 @@ function AddEvent() {
                                 ? '4px solid #E8E8E8'
                                 : '1px solid #b6c1c9'
                             }`,
-                            maxWidth: '423px',
+                            width: '423px',
                             resize: 'vertical',
                           }}
                           size="large"
@@ -4272,7 +4296,7 @@ function AddEvent() {
                                 ? '4px solid #E8E8E8'
                                 : '1px solid #b6c1c9'
                             }`,
-                            maxWidth: '423px',
+                            width: '423px',
                             resize: 'vertical',
                           }}
                           size="large"
@@ -4320,7 +4344,7 @@ function AddEvent() {
                                 ? '4px solid #E8E8E8'
                                 : '1px solid #b6c1c9'
                             }`,
-                            maxWidth: '423px',
+                            width: '423px',
                             resize: 'vertical',
                           }}
                           size="large"

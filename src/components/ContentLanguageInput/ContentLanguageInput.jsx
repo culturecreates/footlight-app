@@ -4,13 +4,14 @@ import { contentLanguage } from '../../constants/contentLanguage';
 import { languageFallbackSetup } from '../../utils/languageFallbackSetup';
 import LiteralBadge from '../Badge/LiteralBadge';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
-import { setLanguageLiteralBannerDisplayStatus } from '../../redux/reducer/languageLiteralSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { getActiveFallbackFieldsInfo, setActiveFallbackFieldsInfo } from '../../redux/reducer/languageLiteralSlice';
 
 function ContentLanguageInput(props) {
   const { children, calendarContentLanguage } = props;
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
 
   // eslint-disable-next-line no-unused-vars
   const [currentCalendarData, _pageNumber, _setPageNumber, _getCalendar] = useOutletContext();
@@ -18,8 +19,18 @@ function ContentLanguageInput(props) {
   const [fallbackStatus, setFallbackStatus] = useState(null);
 
   useEffect(() => {
+    const combinedName = children?.props?.children?.map((child) => child?.props?.name).join('');
+    const modifiedActiveFallbackFieldsInfo = {
+      ...activeFallbackFieldsInfo,
+      [combinedName]: fallbackStatus,
+    };
     if (fallbackStatus?.fr?.tagDisplayStatus || fallbackStatus?.en?.tagDisplayStatus) {
-      dispatch(setLanguageLiteralBannerDisplayStatus(true));
+      dispatch(setActiveFallbackFieldsInfo(modifiedActiveFallbackFieldsInfo));
+    } else {
+      // eslint-disable-next-line no-unused-vars
+      const { [combinedName]: _, ...rest } = activeFallbackFieldsInfo;
+
+      dispatch(setActiveFallbackFieldsInfo(rest));
     }
   }, [fallbackStatus]);
 
