@@ -17,6 +17,9 @@ export const calendarApi = createApi({
         url: `calendars/${calendarId}`,
         method: 'PATCH',
         body: data,
+        headers: {
+          'calendar-id': calendarId,
+        },
       }),
     }),
   }),

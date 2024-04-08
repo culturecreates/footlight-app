@@ -13,11 +13,13 @@ import { useSelector } from 'react-redux';
 import PrimaryButton from '../../../../components/Button/Primary';
 import { useUpdateCalendarMutation } from '../../../../services/calendar';
 import { contentLanguage } from '../../../../constants/contentLanguage';
+import { useAddImageMutation } from '../../../../services/image';
+import { calendarModes } from '../../../../constants/calendarModes';
 
 function CalendarSettings() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const [currentCalendarData] = useOutletContext();
+  const [currentCalendarData, , , getCalendar] = useOutletContext();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId } = useParams();
   const { user } = useSelector(getUserDetails);
@@ -37,6 +39,7 @@ function CalendarSettings() {
   });
 
   const [updateCalendar] = useUpdateCalendarMutation();
+  const [addImage] = useAddImageMutation();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -120,6 +123,7 @@ function CalendarSettings() {
       large: imageConfig?.large?.maxWidth,
       thumbnail: imageConfig?.thumbnail?.maxWidth,
     },
+    calendarLogo: currentCalendarData?.logo?.uri,
     readOnly: currentCalendarData?.readOnly,
   };
 
@@ -136,22 +140,23 @@ function CalendarSettings() {
       .validateFields(requiredFields)
       .then(() => {
         let values = form.getFieldsValue(true);
+        let calendarData = {};
         STATIC_FILTERS.EVENT.forEach((filter) => {
-          values[entitiesClass.event] = values[entitiesClass.event]?.filter((item) => item !== filter.value);
+          calendarData[entitiesClass.event] = values[entitiesClass.event]?.filter((item) => item !== filter.value);
         });
         STATIC_FILTERS.ORGANIZATION.forEach((filter) => {
-          values[entitiesClass.organization] = values[entitiesClass.organization]?.filter(
+          calendarData[entitiesClass.organization] = values[entitiesClass.organization]?.filter(
             (item) => item !== filter.value,
           );
         });
         STATIC_FILTERS.PEOPLE.forEach((filter) => {
-          values[entitiesClass.person] = values[entitiesClass.person]?.filter((item) => item !== filter.value);
+          calendarData[entitiesClass.person] = values[entitiesClass.person]?.filter((item) => item !== filter.value);
         });
         STATIC_FILTERS.PLACE.forEach((filter) => {
-          values[entitiesClass.place] = values[entitiesClass.place]?.filter((item) => item !== filter.value);
+          calendarData[entitiesClass.place] = values[entitiesClass.place]?.filter((item) => item !== filter.value);
         });
         if (values)
-          values = {
+          calendarData = {
             name: {
               en: values.calendarNameEn,
               fr: values.calendarNameFr,
@@ -168,14 +173,14 @@ function CalendarSettings() {
               entityName: currentCalendarData?.imageConfig?.entityName,
               large: {
                 aspectRatio: values.imageAspectRatio.large,
-                maxWidth: values.imageMaxWidth.large,
+                maxWidth: Number(values.imageMaxWidth.large),
               },
               thumbnail: {
                 aspectRatio: values.imageAspectRatio.thumbnail,
-                maxWidth: values.imageMaxWidth.thumbnail,
+                maxWidth: Number(values.imageMaxWidth.thumbnail),
               },
             },
-            readOnly: values.readOnly,
+            mode: values.readOnly ? calendarModes.READ_ONLY : calendarModes.READ_WRITE,
             languageFallbacks: currentCalendarData?.languageFallbacks,
             forms: currentCalendarData?.forms,
             namespace: currentCalendarData?.namespace,
@@ -188,14 +193,50 @@ function CalendarSettings() {
               customFields: values.People.concat(values.Organization).concat(values.Event).concat(values.Place),
             },
           };
-        updateCalendar({ calendarId, data: values })
-          .unwrap()
-          .then(() => {
-            console.log('Calendar updated successfully');
-          })
-          .catch((errorInfo) => {
-            console.log(errorInfo);
-          });
+        if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
+          const formdata = new FormData();
+          formdata.append('file', values?.dragger[0].originFileObj);
+          formdata &&
+            addImage({ data: formdata, calendarId })
+              .unwrap()
+              .then((response) => {
+                calendarData['logo'] = {
+                  original: {
+                    entityId: response?.data?.original?.entityId,
+                    height: response?.data?.height,
+                    width: response?.data?.width,
+                  },
+                };
+                updateCalendar({ calendarId, data: calendarData })
+                  .unwrap()
+                  .then(() => {
+                    getCalendar({ id: calendarId, sessionId: timestampRef });
+                    console.log('Calendar updated successfully');
+                  })
+                  .catch((errorInfo) => {
+                    console.log(errorInfo);
+                  });
+              })
+              .catch((error) => {
+                console.log(error);
+                const element = document.getElementsByClassName('calendarLogo');
+                element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+              });
+        } else {
+          if (values?.calendarLogo) {
+            if (values?.dragger && values?.dragger?.length == 0) calendarData['logo'] = null;
+            else calendarData['logo'] = currentCalendarData?.logo;
+          }
+          updateCalendar({ calendarId, data: calendarData })
+            .unwrap()
+            .then(() => {
+              getCalendar({ id: calendarId, sessionId: timestampRef });
+              console.log('Calendar updated successfully');
+            })
+            .catch((errorInfo) => {
+              console.log(errorInfo);
+            });
+        }
       })
       .catch((errorInfo) => {
         console.log(errorInfo);
@@ -241,7 +282,7 @@ function CalendarSettings() {
                       thumbnailAspectRatio: imageConfig?.thumbnail?.aspectRatio,
                       largeMaxWidth: imageConfig?.large?.maxWidth,
                       thumbnailMaxWidth: imageConfig?.thumbnail?.maxWidth,
-                      logoUri: imageConfig?.image?.uri,
+                      logoUri: currentCalendarData?.logo?.uri,
                       t,
                     })}
                   </Form.Item>
