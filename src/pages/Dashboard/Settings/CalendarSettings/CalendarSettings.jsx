@@ -89,7 +89,7 @@ function CalendarSettings() {
       filters: handleInitialFilters(organizationFilters, initialSelectedFilters),
     },
     {
-      name: entitiesClass.people,
+      name: entitiesClass.person,
       filters: handleInitialFilters(peopleFilters, initialSelectedFilters),
     },
     {
@@ -141,20 +141,19 @@ function CalendarSettings() {
       .then(() => {
         let values = form.getFieldsValue(true);
         let calendarData = {};
-        STATIC_FILTERS.EVENT.forEach((filter) => {
-          calendarData[entitiesClass.event] = values[entitiesClass.event]?.filter((item) => item !== filter.value);
-        });
-        STATIC_FILTERS.ORGANIZATION.forEach((filter) => {
-          calendarData[entitiesClass.organization] = values[entitiesClass.organization]?.filter(
-            (item) => item !== filter.value,
-          );
-        });
-        STATIC_FILTERS.PEOPLE.forEach((filter) => {
-          calendarData[entitiesClass.person] = values[entitiesClass.person]?.filter((item) => item !== filter.value);
-        });
-        STATIC_FILTERS.PLACE.forEach((filter) => {
-          calendarData[entitiesClass.place] = values[entitiesClass.place]?.filter((item) => item !== filter.value);
-        });
+
+        calendarData[entitiesClass.event] = values[entitiesClass.event]?.filter(
+          (item) => !STATIC_FILTERS.FILTER_LIST.EVENT.includes(item),
+        );
+        calendarData[entitiesClass.organization] = values[entitiesClass.organization]?.filter(
+          (item) => !STATIC_FILTERS.FILTER_LIST.ORGANIZATION.includes(item),
+        );
+        calendarData[entitiesClass.person] = values[entitiesClass.person]?.filter(
+          (item) => !STATIC_FILTERS.FILTER_LIST.PEOPLE.includes(item),
+        );
+        calendarData[entitiesClass.place] = values[entitiesClass.place]?.filter(
+          (item) => !STATIC_FILTERS.FILTER_LIST.PLACE.includes(item),
+        );
         if (values)
           calendarData = {
             name: {
@@ -193,7 +192,7 @@ function CalendarSettings() {
             filterPersonalization: {
               fields: currentCalendarData?.filterPersonalization?.fields ?? [],
               customFields: [
-                ...(calendarData.People ?? []),
+                ...(calendarData.Person ?? []),
                 ...(calendarData.Organization ?? []),
                 ...(calendarData.Event ?? []),
                 ...(calendarData.Place ?? []),

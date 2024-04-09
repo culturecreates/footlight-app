@@ -109,6 +109,12 @@ export const STATIC_FILTERS = {
   ORGANIZATION: [],
   PEOPLE: [],
   PLACE: [],
+  FILTER_LIST: {
+    EVENT: ['publication', 'users', 'dates', 'organizer'],
+    ORGANIZATION: [],
+    PEOPLE: [],
+    PLACE: [],
+  },
 };
 
 const REQUIRED_MESSAGE = {
@@ -587,7 +593,7 @@ export const calendarSettingsFormFields = {
       required: false,
     },
     {
-      name: entitiesClass.people,
+      name: entitiesClass.person,
       initialValue: [],
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.people')}</Translation>,
       field: ({ peopleFilters, t }) => (
