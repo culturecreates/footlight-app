@@ -63,19 +63,23 @@ const WidgetSettings = () => {
   const [urlMobile, setUrlMObile] = useState(new URL(widgetUrl));
 
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+
+  let taxonomyClassQuery = new URLSearchParams();
+  taxonomyClassQuery.append('taxonomy-class', taxonomyClass.EVENT);
   const { currentData: taxonomyDataEventType } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
     filters: '',
-    taxonomyClass: taxonomyClass.EVENT,
+    taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
     includeConcepts: true,
     sessionId: timestampRef,
   });
-
+  taxonomyClassQuery.delete('taxonomy-class');
+  taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
   const { currentData: taxonomyDataRegion } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
-    taxonomyClass: taxonomyClass.PLACE,
+    taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
     includeConcepts: true,
     sessionId: timestampRef,
   });
