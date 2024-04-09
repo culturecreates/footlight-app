@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import './calendarSettings.css';
-import { Row, Col, Form, Divider } from 'antd';
+import { Row, Col, Form, Divider, notification, Button, message } from 'antd';
+import { CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { STATIC_FILTERS, calendarSettingsFormFields } from '../../../../constants/calendarSettingsForm';
 import { useOutletContext, useParams } from 'react-router-dom';
@@ -127,6 +128,32 @@ function CalendarSettings() {
     readOnly: currentCalendarData?.mode === calendarModes.READ_ONLY ? true : false,
   };
 
+  const udpateCalendarHandler = (data) => {
+    updateCalendar({ calendarId, data })
+      .unwrap()
+      .then(() => {
+        getCalendar({ id: calendarId, sessionId: timestampRef })
+          .unwrap()
+          .then((response) => {
+            if (response?.mode === calendarModes.READ_ONLY) setIsReadOnly(true);
+            else setIsReadOnly(false);
+            notification.success({
+              description: t('dashboard.settings.calendarSettings.notifications.update'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      })
+      .catch((errorInfo) => {
+        console.log(errorInfo);
+      });
+  };
+
   const onSaveHandler = () => {
     let requiredFields =
       calendarSettingsFormFields?.GENERAL_SETTINGS?.filter((field) => field.required)?.map((field) => field.name) ?? [];
@@ -213,15 +240,7 @@ function CalendarSettings() {
                     width: response?.data?.width,
                   },
                 };
-                updateCalendar({ calendarId, data: calendarData })
-                  .unwrap()
-                  .then(() => {
-                    getCalendar({ id: calendarId, sessionId: timestampRef });
-                    console.log('Calendar updated successfully');
-                  })
-                  .catch((errorInfo) => {
-                    console.log(errorInfo);
-                  });
+                udpateCalendarHandler(calendarData);
               })
               .catch((error) => {
                 console.log(error);
@@ -233,26 +252,27 @@ function CalendarSettings() {
             if (values?.dragger && values?.dragger?.length == 0) calendarData['logo'] = null;
             else calendarData['logo'] = currentCalendarData?.logo;
           }
-          updateCalendar({ calendarId, data: calendarData })
-            .unwrap()
-            .then(() => {
-              getCalendar({ id: calendarId, sessionId: timestampRef })
-                .unwrap()
-                .then((response) => {
-                  if (response?.mode === calendarModes.READ_ONLY) setIsReadOnly(true);
-                  else setIsReadOnly(false);
-                })
-                .catch((error) => {
-                  console.log(error);
-                });
-              console.log('Calendar updated successfully');
-            })
-            .catch((errorInfo) => {
-              console.log(errorInfo);
-            });
+          udpateCalendarHandler(calendarData);
         }
       })
       .catch((errorInfo) => {
+        message.warning({
+          duration: 10,
+          maxCount: 1,
+          key: 'calendar-save-as-warning',
+          content: (
+            <>
+              {t('common.validations.informationRequired')} &nbsp;
+              <Button
+                data-cy="button-place-save-as-warning"
+                type="text"
+                icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                onClick={() => message.destroy('calendar-save-as-warning')}
+              />
+            </>
+          ),
+          icon: <ExclamationCircleOutlined />,
+        });
         console.log(errorInfo);
       });
   };

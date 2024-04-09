@@ -1005,6 +1005,9 @@
           "eventTemplate": "Enter event template URL",
           "searchResultTemplate": "Enter search results template URL",
           "filterPersonalization": "Select filter personalization"
+        },
+        "notifications": {
+          "update": "Success! Your calendar settings have been updated."
         }
       },
       "mandatoryFields": {

@@ -1000,6 +1000,9 @@
           "eventTemplate": "Entrez l'URL du modèle d'événement",
           "searchResultTemplate": "Entrez l'URL du modèle de résultats de recherche",
           "filterPersonalization": "Sélectionnez la personnalisation du filtre"
+        },
+        "notification": {
+          "update": "Succès! Vos paramètres de calendrier ont été mis à jour."
         }
       },
       "mandatoryFields": {
