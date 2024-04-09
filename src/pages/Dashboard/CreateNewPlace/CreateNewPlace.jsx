@@ -789,6 +789,10 @@ function CreateNewPlace() {
   }, []);
 
   useEffect(() => {
+    dispatch(setActiveFallbackFieldsInfo({}));
+  }, []);
+
+  useEffect(() => {
     let shouldDisplay = true;
     for (let key in activeFallbackFieldsInfo) {
       if (Object.prototype.hasOwnProperty.call(activeFallbackFieldsInfo, key)) {

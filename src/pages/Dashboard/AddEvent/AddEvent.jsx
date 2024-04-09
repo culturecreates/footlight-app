@@ -1137,6 +1137,10 @@ function AddEvent() {
   };
 
   useEffect(() => {
+    dispatch(setActiveFallbackFieldsInfo({}));
+  }, []);
+
+  useEffect(() => {
     let shouldDisplay = true;
 
     for (let key in activeFallbackFieldsInfo) {
