@@ -1169,7 +1169,7 @@ function CreateNewPlace() {
                 <Form.Item label={t('dashboard.places.createNew.addPlace.name.name')} required={true}>
                   <ContentLanguageInput
                     calendarContentLanguage={calendarContentLanguage}
-                    isFieldDirty={{
+                    isFieldsDirty={{
                       fr: form.isFieldTouched(formFieldNames.FRENCH),
                       en: form.isFieldTouched(formFieldNames.ENGLISH),
                     }}>
@@ -1335,7 +1335,7 @@ function CreateNewPlace() {
                   label={t('dashboard.places.createNew.addPlace.disambiguatingDescription.disambiguatingDescription')}>
                   <ContentLanguageInput
                     calendarContentLanguage={calendarContentLanguage}
-                    isFieldDirty={{
+                    isFieldsDirty={{
                       fr: form.isFieldTouched(formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH),
                       en: form.isFieldTouched(formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH),
                     }}>
@@ -1421,7 +1421,7 @@ function CreateNewPlace() {
                   data-cy="form-item-place-description-title">
                   <ContentLanguageInput
                     calendarContentLanguage={calendarContentLanguage}
-                    isFieldDirty={{
+                    isFieldsDirty={{
                       en: form.isFieldTouched(formFieldNames.EDITOR_ENGLISH),
                       fr: form.isFieldTouched(formFieldNames.EDITOR_FRENCH),
                     }}>
@@ -1674,7 +1674,7 @@ function CreateNewPlace() {
                   data-cy="form-item-street-address-title">
                   <ContentLanguageInput
                     calendarContentLanguage={calendarContentLanguage}
-                    isFieldDirty={{
+                    isFieldsDirty={{
                       en: form.isFieldTouched(formFieldNames.STREET_ADDRESS_ENGLISH),
                       fr: form.isFieldTouched(formFieldNames.STREET_ADDRESS_FRENCH),
                     }}>
@@ -1782,7 +1782,7 @@ function CreateNewPlace() {
                   data-cy="form-item-place-city-title">
                   <ContentLanguageInput
                     calendarContentLanguage={calendarContentLanguage}
-                    isFieldDirty={{
+                    isFieldsDirty={{
                       en: form.isFieldTouched(formFieldNames.CITY_ENGLISH),
                       fr: form.isFieldTouched(formFieldNames.CITY_FRENCH),
                     }}>
@@ -1890,7 +1890,7 @@ function CreateNewPlace() {
                       data-cy="form-item-province-title">
                       <ContentLanguageInput
                         calendarContentLanguage={calendarContentLanguage}
-                        isFieldDirty={{
+                        isFieldsDirty={{
                           en: form.isFieldTouched(formFieldNames.PROVINCE_ENGLISH),
                           fr: form.isFieldTouched(formFieldNames.PROVINCE_FRENCH),
                         }}>
@@ -1976,7 +1976,7 @@ function CreateNewPlace() {
                       data-cy="form-item-country-title">
                       <ContentLanguageInput
                         calendarContentLanguage={calendarContentLanguage}
-                        isFieldDirty={{
+                        isFieldsDirty={{
                           en: form.isFieldTouched(formFieldNames.COUNTRY_ENGLISH),
                           fr: form.isFieldTouched(formFieldNames.COUNTRY_FRENCH),
                         }}>
@@ -2649,7 +2649,7 @@ function CreateNewPlace() {
                     }}>
                     <ContentLanguageInput
                       calendarContentLanguage={calendarContentLanguage}
-                      isFieldDirty={{
+                      isFieldsDirty={{
                         en: form.isFieldTouched(formFieldNames.ACCESSIBILITY_NOTE_ENGLISH),
                         fr: form.isFieldTouched(formFieldNames.ACCESSIBILITY_NOTE_FRENCH),
                       }}>

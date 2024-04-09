@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getActiveFallbackFieldsInfo, setActiveFallbackFieldsInfo } from '../../redux/reducer/languageLiteralSlice';
 
 function ContentLanguageInput(props) {
-  const { children, calendarContentLanguage } = props;
+  const { children, calendarContentLanguage, isFieldsDirty } = props;
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
@@ -26,10 +26,9 @@ function ContentLanguageInput(props) {
     };
     if (fallbackStatus?.fr?.tagDisplayStatus || fallbackStatus?.en?.tagDisplayStatus) {
       dispatch(setActiveFallbackFieldsInfo(modifiedActiveFallbackFieldsInfo));
-    } else {
+    } else if (isFieldsDirty?.en || isFieldsDirty?.fr) {
       // eslint-disable-next-line no-unused-vars
       const { [combinedName]: _, ...rest } = activeFallbackFieldsInfo;
-
       dispatch(setActiveFallbackFieldsInfo(rest));
     }
   }, [fallbackStatus]);
@@ -41,7 +40,7 @@ function ContentLanguageInput(props) {
       currentCalendarData,
       fieldData: children?.props?.fieldData,
       languageFallbacks: currentCalendarData.languageFallbacks,
-      isFieldsDirty: props?.isFieldsDirty,
+      isFieldsDirty: isFieldsDirty,
     });
 
     // Only update fallbackStatus if it has actually changed
