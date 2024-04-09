@@ -194,6 +194,7 @@ function Dashboard() {
                   getCalendar,
                   setContentBackgroundColor,
                   isReadOnly,
+                  setIsReadOnly,
                 ]}
               />
             </Content>

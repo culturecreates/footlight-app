@@ -19,7 +19,7 @@ import { calendarModes } from '../../../../constants/calendarModes';
 function CalendarSettings() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const [currentCalendarData, , , getCalendar] = useOutletContext();
+  const [currentCalendarData, , , getCalendar, , , setIsReadOnly] = useOutletContext();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId } = useParams();
   const { user } = useSelector(getUserDetails);
@@ -124,7 +124,7 @@ function CalendarSettings() {
       thumbnail: imageConfig?.thumbnail?.maxWidth,
     },
     calendarLogo: currentCalendarData?.logo?.uri,
-    readOnly: currentCalendarData?.readOnly,
+    readOnly: currentCalendarData?.mode === calendarModes.READ_ONLY ? true : false,
   };
 
   const onSaveHandler = () => {
@@ -169,17 +169,19 @@ function CalendarSettings() {
             timezone: values.calendarTimeZone,
             contact: values.calendarContactEmail,
             dateFormatDisplay: values.calendarDateFormat,
-            imageConfig: {
-              entityName: currentCalendarData?.imageConfig?.entityName,
-              large: {
-                aspectRatio: values.imageAspectRatio.large,
-                maxWidth: Number(values.imageMaxWidth.large),
+            imageConfig: [
+              {
+                entityName: entitiesClass.event,
+                large: {
+                  aspectRatio: values.imageAspectRatio.large,
+                  maxWidth: Number(values.imageMaxWidth.large),
+                },
+                thumbnail: {
+                  aspectRatio: values.imageAspectRatio.thumbnail,
+                  maxWidth: Number(values.imageMaxWidth.thumbnail),
+                },
               },
-              thumbnail: {
-                aspectRatio: values.imageAspectRatio.thumbnail,
-                maxWidth: Number(values.imageMaxWidth.thumbnail),
-              },
-            },
+            ],
             mode: values.readOnly ? calendarModes.READ_ONLY : calendarModes.READ_WRITE,
             languageFallbacks: currentCalendarData?.languageFallbacks,
             forms: currentCalendarData?.forms,
@@ -189,8 +191,13 @@ function CalendarSettings() {
               eventDetailsUrlTemplate: values.eventTemplate,
             },
             filterPersonalization: {
-              fields: currentCalendarData?.filterPersonalization?.fields,
-              customFields: values.People.concat(values.Organization).concat(values.Event).concat(values.Place),
+              fields: currentCalendarData?.filterPersonalization?.fields ?? [],
+              customFields: [
+                ...(calendarData.People ?? []),
+                ...(calendarData.Organization ?? []),
+                ...(calendarData.Event ?? []),
+                ...(calendarData.Place ?? []),
+              ],
             },
           };
         if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
@@ -230,7 +237,15 @@ function CalendarSettings() {
           updateCalendar({ calendarId, data: calendarData })
             .unwrap()
             .then(() => {
-              getCalendar({ id: calendarId, sessionId: timestampRef });
+              getCalendar({ id: calendarId, sessionId: timestampRef })
+                .unwrap()
+                .then((response) => {
+                  if (response?.mode === calendarModes.READ_ONLY) setIsReadOnly(true);
+                  else setIsReadOnly(false);
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
               console.log('Calendar updated successfully');
             })
             .catch((errorInfo) => {
