@@ -100,11 +100,12 @@ function CreateNewOrganization() {
     { ids: organizationIdsQuery, calendarId, sessionId: timestampRef },
     { skip: externalCalendarEntityId ? false : true },
   );
-
+  let taxonomyClassQuery = new URLSearchParams();
+  taxonomyClassQuery.append('taxonomy-class', taxonomyClass.ORGANIZATION);
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
-    taxonomyClass: taxonomyClass.ORGANIZATION,
+    taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
     includeConcepts: true,
     sessionId: timestampRef,
   });
@@ -704,10 +705,12 @@ function CreateNewOrganization() {
               .unwrap()
               .then((response) => {
                 if (response?.accessibility?.length > 0) {
+                  let taxonomyClassQuery = new URLSearchParams();
+                  taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
                   getAllTaxonomy({
                     calendarId,
                     search: '',
-                    taxonomyClass: taxonomyClass.PLACE,
+                    taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
                     includeConcepts: true,
                     sessionId: timestampRef,
                   })

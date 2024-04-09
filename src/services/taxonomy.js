@@ -19,7 +19,7 @@ export const taxonomyApi = createApi({
       }) => ({
         url: `taxonomy?query=${query}${
           filters ? `&${filters}` : ''
-        }&page=${page}&limit=${limit}&taxonomy-class=${taxonomyClass}&include-concepts=${includeConcepts}`,
+        }&page=${page}&limit=${limit}&${taxonomyClass}&include-concepts=${includeConcepts}`,
         headers: {
           'calendar-id': calendarId,
         },

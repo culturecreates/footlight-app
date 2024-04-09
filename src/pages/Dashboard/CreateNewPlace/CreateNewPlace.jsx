@@ -173,10 +173,12 @@ function CreateNewPlace() {
     sessionId: timestampRef,
   });
 
+  let taxonomyClassQuery = new URLSearchParams();
+  taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
-    taxonomyClass: taxonomyClass.PLACE,
+    taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
     includeConcepts: true,
     sessionId: timestampRef,
   });
@@ -802,10 +804,12 @@ function CreateNewPlace() {
               .unwrap()
               .then((response) => {
                 if (response?.accessibility?.length > 0) {
+                  let taxonomyClassQuery = new URLSearchParams();
+                  taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
                   getAllTaxonomy({
                     calendarId,
                     search: '',
-                    taxonomyClass: taxonomyClass.PLACE,
+                    taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
                     includeConcepts: true,
                     sessionId: timestampRef,
                   })

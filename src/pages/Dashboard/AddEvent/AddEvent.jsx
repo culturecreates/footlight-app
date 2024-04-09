@@ -125,10 +125,12 @@ function AddEvent() {
     { eventId: eventId ?? duplicateId, calendarId, sessionId: timestampRef },
     { skip: eventId || duplicateId ? false : true },
   );
+  let taxonomyClassQuery = new URLSearchParams();
+  taxonomyClassQuery.append('taxonomy-class', taxonomyClass.EVENT);
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
-    taxonomyClass: taxonomyClass.EVENT,
+    taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
     includeConcepts: true,
     sessionId: timestampRef,
   });
@@ -1193,10 +1195,12 @@ function AddEvent() {
             ['openingHours']: initialPlace[0]?.openingHours?.uri,
             ['type']: entitiesClass?.place,
           };
+          let taxonomyClassQuery = new URLSearchParams();
+          taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
           getAllTaxonomy({
             calendarId,
             search: '',
-            taxonomyClass: taxonomyClass.PLACE,
+            taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
             includeConcepts: true,
             sessionId: timestampRef,
           })

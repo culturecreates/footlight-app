@@ -57,10 +57,12 @@ function Organizations() {
   ] = useOutletContext();
   setContentBackgroundColor('#fff');
 
+  let taxonomyClassQuery = new URLSearchParams();
+  taxonomyClassQuery.append('taxonomy-class', taxonomyClass.ORGANIZATION);
   const { currentData: allTaxonomyData } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
-    taxonomyClass: taxonomyClass.ORGANIZATION,
+    taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
     includeConcepts: true,
     sessionId: timestampRef,
     addToFilter: true,
