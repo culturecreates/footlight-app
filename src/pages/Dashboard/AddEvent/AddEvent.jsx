@@ -98,6 +98,7 @@ import { sameAsTypes } from '../../../constants/sameAsTypes';
 import {
   getActiveFallbackFieldsInfo,
   getLanguageLiteralBannerDisplayStatus,
+  setActiveFallbackFieldsInfo,
   setLanguageLiteralBannerDisplayStatus,
 } from '../../../redux/reducer/languageLiteralSlice';
 
@@ -1605,7 +1606,10 @@ function AddEvent() {
                             data-cy="button-change-interface-language"
                             size="large"
                             label={t('common.dismiss')}
-                            onClick={() => dispatch(setLanguageLiteralBannerDisplayStatus(false))}
+                            onClick={() => {
+                              dispatch(setLanguageLiteralBannerDisplayStatus(false));
+                              dispatch(setActiveFallbackFieldsInfo({}));
+                            }}
                           />
                         }
                       />

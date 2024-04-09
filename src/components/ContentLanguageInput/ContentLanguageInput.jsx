@@ -19,11 +19,19 @@ function ContentLanguageInput(props) {
   const [fallbackStatus, setFallbackStatus] = useState(null);
 
   useEffect(() => {
-    const combinedName = children?.props?.children?.map((child) => child?.props?.name).join('');
+    const combinedName = children?.props?.children
+      ?.map((child) => {
+        if (child?.props?.name) return child?.props?.name;
+        if (child?.props?.formName) return child?.props?.formName;
+        else return '';
+      })
+      .join('');
+
     const modifiedActiveFallbackFieldsInfo = {
       ...activeFallbackFieldsInfo,
       [combinedName]: fallbackStatus,
     };
+
     if (fallbackStatus?.fr?.tagDisplayStatus || fallbackStatus?.en?.tagDisplayStatus) {
       dispatch(setActiveFallbackFieldsInfo(modifiedActiveFallbackFieldsInfo));
     } else if (isFieldsDirty?.en || isFieldsDirty?.fr) {

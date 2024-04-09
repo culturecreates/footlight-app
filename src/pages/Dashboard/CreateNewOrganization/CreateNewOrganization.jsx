@@ -67,6 +67,7 @@ import moment from 'moment';
 import {
   getActiveFallbackFieldsInfo,
   getLanguageLiteralBannerDisplayStatus,
+  setActiveFallbackFieldsInfo,
   setLanguageLiteralBannerDisplayStatus,
 } from '../../../redux/reducer/languageLiteralSlice';
 import Alert from '../../../components/Alert';
@@ -938,7 +939,10 @@ function CreateNewOrganization() {
                                   data-cy="button-change-interface-language"
                                   size="large"
                                   label={t('common.dismiss')}
-                                  onClick={() => dispatch(setLanguageLiteralBannerDisplayStatus(false))}
+                                  onClick={() => {
+                                    dispatch(setLanguageLiteralBannerDisplayStatus(false));
+                                    dispatch(setActiveFallbackFieldsInfo({}));
+                                  }}
                                 />
                               }
                             />
