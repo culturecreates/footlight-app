@@ -72,11 +72,13 @@ function ContentLanguageInput(props) {
             if (innerChild?.key === contentLanguage.FRENCH && !innerChild?.props?.initialValue) {
               modifiedInnerChild = cloneElement(innerChild, {
                 ...innerChild.props,
+                className: 'bilingual-child-with-badge',
                 initialValue: fallbackStatus['fr']?.fallbackLiteralValue,
               });
             } else if (innerChild?.key === contentLanguage.ENGLISH && !innerChild?.props?.initialValue) {
               modifiedInnerChild = cloneElement(innerChild, {
                 ...innerChild.props,
+                className: 'bilingual-child-with-badge',
                 initialValue: fallbackStatus['en']?.fallbackLiteralValue,
               });
             }

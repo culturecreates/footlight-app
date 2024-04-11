@@ -35,6 +35,10 @@
   width: 100%;
 }
 
+.bilingual-child-with-badge .ant-input-lg {
+  padding-right: 35px;
+}
+
 @media screen and (max-width: 480px) {
   .bilingual-input-tab .ant-input-lg {
     font-size: 12px;

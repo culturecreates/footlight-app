@@ -954,7 +954,9 @@ function AddEvent() {
     })
       .unwrap()
       .then((response) => {
-        setAllPlacesList(placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS));
+        setAllPlacesList(
+          placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+        );
       })
       .catch((error) => console.log(error));
     getExternalSource({
@@ -967,10 +969,16 @@ function AddEvent() {
       .unwrap()
       .then((response) => {
         setAllPlacesArtsdataList(
-          placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+          placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA, currentCalendarData),
         );
         setAllPlacesImportsFootlightList(
-          placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+          placesOptions(
+            response?.footlight,
+            user,
+            calendarContentLanguage,
+            externalSourceOptions.FOOTLIGHT,
+            currentCalendarData,
+          ),
         );
       })
       .catch((error) => console.log(error));
@@ -988,11 +996,17 @@ function AddEvent() {
       .unwrap()
       .then((response) => {
         if (type == 'organizers') {
-          setOrganizersList(treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS));
+          setOrganizersList(
+            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+          );
         } else if (type == 'performers') {
-          setPerformerList(treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS));
+          setPerformerList(
+            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+          );
         } else if (type == 'supporters') {
-          setSupporterList(treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS));
+          setSupporterList(
+            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+          );
         }
       })
       .catch((error) => console.log(error));
@@ -1007,24 +1021,60 @@ function AddEvent() {
       .then((response) => {
         if (type == 'organizers') {
           setOrganizersArtsdataList(
-            treeEntitiesOption(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+            treeEntitiesOption(
+              response?.artsdata,
+              user,
+              calendarContentLanguage,
+              sourceOptions.ARTSDATA,
+              currentCalendarData,
+            ),
           );
           setOrganizersImportsFootlightList(
-            treeEntitiesOption(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+            treeEntitiesOption(
+              response?.footlight,
+              user,
+              calendarContentLanguage,
+              externalSourceOptions.FOOTLIGHT,
+              currentCalendarData,
+            ),
           );
         } else if (type == 'performers') {
           setPerformerArtsdataList(
-            treeEntitiesOption(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+            treeEntitiesOption(
+              response?.artsdata,
+              user,
+              calendarContentLanguage,
+              sourceOptions.ARTSDATA,
+              currentCalendarData,
+            ),
           );
           setPerformerImportsFootlightList(
-            treeEntitiesOption(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+            treeEntitiesOption(
+              response?.footlight,
+              user,
+              calendarContentLanguage,
+              externalSourceOptions.FOOTLIGHT,
+              currentCalendarData,
+            ),
           );
         } else if (type == 'supporters') {
           setSupporterArtsdataList(
-            treeEntitiesOption(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+            treeEntitiesOption(
+              response?.artsdata,
+              user,
+              calendarContentLanguage,
+              sourceOptions.ARTSDATA,
+              currentCalendarData,
+            ),
           );
           setSupporterImportsFootlightList(
-            treeEntitiesOption(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+            treeEntitiesOption(
+              response?.footlight,
+              user,
+              calendarContentLanguage,
+              externalSourceOptions.FOOTLIGHT,
+              currentCalendarData,
+            ),
           );
         }
       })
@@ -1233,7 +1283,15 @@ function AddEvent() {
                       ...initialPlace[0],
                       ['accessibility']: initialPlaceAccessibiltiy,
                     };
-                    setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0], sourceOptions.CMS);
+                    setLocationPlace(
+                      placesOptions(
+                        initialPlace,
+                        user,
+                        calendarContentLanguage,
+                        sourceOptions.CMS,
+                        currentCalendarData,
+                      )[0],
+                    );
                   }
                 });
               } else {
@@ -1241,7 +1299,9 @@ function AddEvent() {
                   ...initialPlace[0],
                   ['accessibility']: [],
                 };
-                setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0], sourceOptions.CMS);
+                setLocationPlace(
+                  placesOptions(initialPlace, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData)[0],
+                );
               }
               res?.data?.map((taxonomy) => {
                 if (taxonomy?.mappedToField == 'Region') {
@@ -1249,8 +1309,13 @@ function AddEvent() {
                     if (initialPlace[0]?.regions[0]?.entityId == t?.id) {
                       initialPlace[0] = { ...initialPlace[0], regions: [t] };
                       setLocationPlace(
-                        placesOptions(initialPlace, user, calendarContentLanguage)[0],
-                        sourceOptions.CMS,
+                        placesOptions(
+                          initialPlace,
+                          user,
+                          calendarContentLanguage,
+                          sourceOptions.CMS,
+                          currentCalendarData,
+                        )[0],
                       );
                     }
                   });
@@ -1283,7 +1348,13 @@ function AddEvent() {
             };
           });
           setSelectedOrganizers(
-            treeEntitiesOption(initialOrganizers, user, calendarContentLanguage, sourceOptions.CMS),
+            treeEntitiesOption(
+              initialOrganizers,
+              user,
+              calendarContentLanguage,
+              sourceOptions.CMS,
+              currentCalendarData,
+            ),
           );
         }
         if (eventData?.performer) {
@@ -1299,7 +1370,13 @@ function AddEvent() {
             };
           });
           setSelectedPerformers(
-            treeEntitiesOption(initialPerformers, user, calendarContentLanguage, sourceOptions.CMS),
+            treeEntitiesOption(
+              initialPerformers,
+              user,
+              calendarContentLanguage,
+              sourceOptions.CMS,
+              currentCalendarData,
+            ),
           );
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.performerWrap);
         }
@@ -1316,7 +1393,13 @@ function AddEvent() {
             };
           });
           setSelectedSupporters(
-            treeEntitiesOption(initialSupporters, user, calendarContentLanguage, sourceOptions.CMS),
+            treeEntitiesOption(
+              initialSupporters,
+              user,
+              calendarContentLanguage,
+              sourceOptions.CMS,
+              currentCalendarData,
+            ),
           );
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.supporterWrap);
         }
@@ -1488,17 +1571,41 @@ function AddEvent() {
 
   useEffect(() => {
     if (initialEntities && currentCalendarData && !initialExternalSourceLoading) {
-      setOrganizersList(treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS));
-      setPerformerList(treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS));
-      setSupporterList(treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS));
+      setOrganizersList(
+        treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+      );
+      setPerformerList(
+        treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+      );
+      setSupporterList(
+        treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+      );
       setPerformerArtsdataList(
-        treeEntitiesOption(initialExternalSource?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+        treeEntitiesOption(
+          initialExternalSource?.artsdata,
+          user,
+          calendarContentLanguage,
+          sourceOptions.ARTSDATA,
+          currentCalendarData,
+        ),
       );
       setSupporterArtsdataList(
-        treeEntitiesOption(initialExternalSource?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+        treeEntitiesOption(
+          initialExternalSource?.artsdata,
+          user,
+          calendarContentLanguage,
+          sourceOptions.ARTSDATA,
+          currentCalendarData,
+        ),
       );
       setOrganizersArtsdataList(
-        treeEntitiesOption(initialExternalSource?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+        treeEntitiesOption(
+          initialExternalSource?.artsdata,
+          user,
+          calendarContentLanguage,
+          sourceOptions.ARTSDATA,
+          currentCalendarData,
+        ),
       );
       setOrganizersImportsFootlightList(
         treeEntitiesOption(
@@ -1506,6 +1613,7 @@ function AddEvent() {
           user,
           calendarContentLanguage,
           externalSourceOptions.FOOTLIGHT,
+          currentCalendarData,
         ),
       );
       setPerformerImportsFootlightList(
@@ -1514,6 +1622,7 @@ function AddEvent() {
           user,
           calendarContentLanguage,
           externalSourceOptions.FOOTLIGHT,
+          currentCalendarData,
         ),
       );
       setSupporterImportsFootlightList(
@@ -1522,6 +1631,7 @@ function AddEvent() {
           user,
           calendarContentLanguage,
           externalSourceOptions.FOOTLIGHT,
+          currentCalendarData,
         ),
       );
       placesSearch('');
@@ -2388,6 +2498,7 @@ function AddEvent() {
                 {locationPlace && (
                   <SelectionItem
                     icon={locationPlace?.label?.props?.icon}
+                    fallbackConfig={locationPlace?.fallBackStatus}
                     name={locationPlace?.name}
                     description={locationPlace?.description}
                     itemWidth="100%"
@@ -2933,6 +3044,7 @@ function AddEvent() {
                           organizerPerformerSupporterPlaceNavigationHandler(organizer?.value, organizer?.type, e)
                         }
                         creatorId={organizer?.creatorId}
+                        fallbackConfig={organizer?.fallBackStatus}
                       />
                     );
                   })}
@@ -3386,6 +3498,7 @@ function AddEvent() {
                           organizerPerformerSupporterPlaceNavigationHandler(performer?.value, performer?.type, e)
                         }
                         creatorId={performer?.creatorId}
+                        fallbackConfig={performer?.fallBackStatus}
                       />
                     );
                   })}
@@ -3602,6 +3715,7 @@ function AddEvent() {
                           organizerPerformerSupporterPlaceNavigationHandler(supporter?.value, supporter?.type, e)
                         }
                         creatorId={supporter?.creatorId}
+                        fallbackConfig={supporter?.fallBackStatus}
                       />
                     );
                   })}
@@ -4206,6 +4320,7 @@ function AddEvent() {
                             add={add}
                             remove={remove}
                             fields={fields}
+                            form={form}
                             firstFieldName={'price'}
                             secondFieldName={'name'}
                             thirdFieldName={'fr'}
@@ -4241,6 +4356,7 @@ function AddEvent() {
                             add={add}
                             remove={remove}
                             fields={fields}
+                            form={form}
                             firstFieldName={'price'}
                             secondFieldName={'name'}
                             thirdFieldName={'en'}
