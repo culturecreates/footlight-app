@@ -360,6 +360,7 @@ function AddEvent() {
             dynamicFields = [],
             recurringEvent,
             description = {},
+            name = {},
             inLanguage = [];
 
           let eventObj;
@@ -473,11 +474,12 @@ function AddEvent() {
             values?.contactEmail ||
             values?.contactPhoneNumber
           ) {
+            const name = {};
+            if (values?.englishContactTitle?.trim() !== '') name['en'] = values?.englishContactTitle?.trim();
+            if (values?.frenchContactTitle?.trim() !== '') name['fr'] = values?.frenchContactTitle?.trim();
+
             contactPoint = {
-              name: {
-                en: values?.englishContactTitle?.trim(),
-                fr: values?.frenchContactTitle?.trim(),
-              },
+              name,
               url: {
                 uri: urlProtocolCheck(values?.contactWebsiteUrl),
               },
@@ -505,13 +507,13 @@ function AddEvent() {
           }
 
           if (ticketType) {
+            const name = {};
+            if (values?.englishTicketNote?.trim() !== '') name['en'] = values?.englishTicketNote?.trim();
+            if (values?.frenchTicketNote?.trim() !== '') name['fr'] = values?.frenchTicketNote?.trim();
             offerConfiguration = {
               category: ticketType,
               ...((values?.englishTicketNote || values?.frenchTicketNote) && {
-                name: {
-                  en: values?.englishTicketNote?.trim(),
-                  fr: values?.frenchTicketNote?.trim(),
-                },
+                name,
               }),
               ...(ticketType === offerTypes.PAYING &&
                 values?.prices?.length > 0 &&
@@ -609,11 +611,10 @@ function AddEvent() {
               en: values?.englishEditor,
             };
 
+          if (values?.english?.trim() !== '') name['en'] = values?.english?.trim();
+          if (values?.french?.trim() !== '') name['fr'] = values?.french?.trim();
           eventObj = {
-            name: {
-              en: values?.english?.trim(),
-              fr: values?.french?.trim(),
-            },
+            name,
             ...(values?.startTime && { startDateTime }),
             ...(!values?.startTime && { startDate: startDateTime }),
             ...(values?.endTime && { endDateTime }),
