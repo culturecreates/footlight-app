@@ -72,7 +72,7 @@ function MandatoryFields() {
         field?.formFieldProperties?.minimumRequiredFields?.dynamicFields?.map((f) => f),
       );
       requiredFields = field?.formFieldProperties?.mandatoryFields?.standardFields?.map((f) => f?.fieldName) ?? [];
-      requiredFields = minimumRequiredFields?.concat(
+      requiredFields = requiredFields?.concat(
         field?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((f) => f),
       );
     } else {
