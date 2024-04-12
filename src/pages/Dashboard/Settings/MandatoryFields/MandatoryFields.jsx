@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import './mandatoryFields.css';
-import { Row, Col, notification } from 'antd';
+import { Row, Col, notification, Button, message } from 'antd';
+import { CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import MandatoryFieldCard from '../../../../components/Card/MandatoryField/MandatoryField';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext, useParams } from 'react-router-dom';
@@ -142,7 +143,7 @@ function MandatoryFields() {
       contentLanguage: currentCalendarData.contentLanguage,
       timezone: currentCalendarData.timezone,
       contact: currentCalendarData.contact,
-      dateFormatDisplay: currentCalendarData.calendarDateFormat,
+      dateFormatDisplay: currentCalendarData.dateFormatDisplay,
       imageConfig: currentCalendarData.imageConfig,
       mode: currentCalendarData.mode,
       languageFallbacks: currentCalendarData?.languageFallbacks,
@@ -172,6 +173,23 @@ function MandatoryFields() {
           });
       })
       .catch((err) => {
+        message.warning({
+          duration: 10,
+          maxCount: 1,
+          key: 'mandatory-save-as-warning',
+          content: (
+            <>
+              {t('common.validations.informationRequired')} &nbsp;
+              <Button
+                data-cy="button-place-save-as-warning"
+                type="text"
+                icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                onClick={() => message.destroy('mandatory-save-as-warning')}
+              />
+            </>
+          ),
+          icon: <ExclamationCircleOutlined />,
+        });
         console.log(err);
       });
   };
