@@ -87,7 +87,7 @@ function MandatoryFields() {
       return {
         ...f,
         preFilled: minimumRequiredFields.includes(f?.name),
-        isRequiredField: requiredFields.includes(f?.name),
+        isRequiredField: requiredFields.includes(f?.name) || minimumRequiredFields.includes(f?.name),
       };
     });
     modifiedField = modifiedField?.concat(
