@@ -127,6 +127,14 @@ function Dashboard() {
     }
   }, [reloadStatus, dispatch]);
 
+  useEffect(() => {
+    if (!user?.interfaceLanguage || user?.interfaceLanguage !== Cookies.get('interfaceLanguage')) {
+      dispatch(setUser({ ...user, interfaceLanguage: Cookies.get('interfaceLanguage') ?? 'en' }));
+    }
+    dispatch(setInterfaceLanguage(user?.interfaceLanguage?.toLowerCase()));
+    i18n.changeLanguage(user?.interfaceLanguage?.toLowerCase());
+  }, [user?.interfaceLanguage]);
+
   const findActiveCalendar = () => {
     const currentCalendar = allCalendarsData?.data?.filter((item) => {
       if (item.id === calendarId) {

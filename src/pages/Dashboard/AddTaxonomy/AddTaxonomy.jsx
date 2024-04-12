@@ -170,7 +170,7 @@ const AddTaxonomyTest = () => {
             ? location.state?.dynamic === 'not-dynamic'
             : taxonomyData?.isDynamicField,
           includeInFullTextSearch: true,
-          mappedToField: values?.mappedToField?.key,
+          mappedToField: values?.mappedToField,
           isAdminOnly: userAccess?.length > 0,
           disambiguatingDescription: {
             en: values?.frenchdescription?.trim(),

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import UserSearch from '../../../../components/Search/Events/EventsSearch';
-import { useNavigate, useParams, useSearchParams, createSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams, createSearchParams, useOutletContext } from 'react-router-dom';
 import {
   useActivateUserMutation,
   useDeactivateUserMutation,
@@ -32,6 +32,17 @@ import { Confirm } from '../../../../components/Modal/Confirm/Confirm';
 
 const UserManagement = () => {
   const { useBreakpoint } = Grid;
+  const [
+    // eslint-disable-next-line no-unused-vars
+    currentCalendarData,
+    pageNumber,
+    setPageNumber, // eslint-disable-next-line no-unused-vars
+    _getCalendar,
+    // eslint-disable-next-line no-unused-vars
+    setContentBackgroundColor,
+    // eslint-disable-next-line no-unused-vars
+    isReadOnly,
+  ] = useOutletContext();
 
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
@@ -41,8 +52,6 @@ const UserManagement = () => {
 
   const navigate = useNavigate();
   const screens = useBreakpoint();
-
-  const [pageNumber, setPageNumber] = useState(1);
 
   const sortByParam = searchParams.get('sortBy');
   const orderParam = searchParams.get('order');
