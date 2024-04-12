@@ -273,7 +273,7 @@ export const calendarSettingsFormFields = {
       required: true,
     },
     {
-      name: 'imageAspectRatio',
+      name: '',
       label: (
         <Translation>{(t) => t('dashboard.settings.calendarSettings.imageAspectRatio.imageAspectRatio')}</Translation>
       ),
@@ -354,7 +354,7 @@ export const calendarSettingsFormFields = {
       required: true,
     },
     {
-      name: 'imageMaxWidth',
+      name: '',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.imageMaxWidth.imageMaxWidth')}</Translation>,
       field: ({ t }) => {
         return (
