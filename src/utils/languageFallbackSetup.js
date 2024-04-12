@@ -2,11 +2,12 @@ export function languageFallbackSetup({ currentCalendarData, fieldData, language
   let results = {};
   if (!fieldData || Object.keys(languageFallbacks).length == 0) return results;
 
-  const fallbackLiteralKeys = Object.keys(languageFallbacks);
+  const fallbackLiteralKeysEn = languageFallbacks?.en;
+  const fallbackLiteralKeysFr = languageFallbacks?.fr;
 
   if (currentCalendarData.contentLanguage === 'BILINGUAL') {
     if (!Object.hasOwnProperty.call(fieldData, 'en')) {
-      const fallbackInfo = fallbackLiteralKeys.find((key) => Object.hasOwnProperty.call(fieldData, key));
+      const fallbackInfo = fallbackLiteralKeysEn?.find((key) => Object.hasOwnProperty.call(fieldData, key));
       const fallbackErrorHandled = fallbackInfo
         ? { key: fallbackInfo, value: fieldData[fallbackInfo] }
         : Object.keys(fieldData).length > 0
@@ -21,7 +22,7 @@ export function languageFallbackSetup({ currentCalendarData, fieldData, language
     }
 
     if (!Object.hasOwnProperty.call(fieldData, 'fr')) {
-      const fallbackInfo = fallbackLiteralKeys.find((key) => Object.hasOwnProperty.call(fieldData, key));
+      const fallbackInfo = fallbackLiteralKeysFr?.find((key) => Object.hasOwnProperty.call(fieldData, key));
       const fallbackErrorHandled = fallbackInfo
         ? { key: fallbackInfo, value: fieldData[fallbackInfo] }
         : Object.keys(fieldData).length > 0
@@ -36,7 +37,7 @@ export function languageFallbackSetup({ currentCalendarData, fieldData, language
     }
   } else if (currentCalendarData.contentLanguage === 'FRENCH') {
     if (!Object.hasOwnProperty.call(fieldData, 'fr')) {
-      const fallbackInfo = fallbackLiteralKeys.find((key) => Object.hasOwnProperty.call(fieldData, key));
+      const fallbackInfo = fallbackLiteralKeysFr?.find((key) => Object.hasOwnProperty.call(fieldData, key));
       const fallbackErrorHandled = fallbackInfo
         ? { key: fallbackInfo, value: fieldData[fallbackInfo] }
         : Object.keys(fieldData).length > 0
@@ -49,7 +50,8 @@ export function languageFallbackSetup({ currentCalendarData, fieldData, language
         fallbackLiteralValue: fallbackErrorHandled?.value,
       };
     } else {
-      const fallbackInfo = fallbackLiteralKeys.find((key) => Object.hasOwnProperty.call(fieldData, key));
+      const fallbackInfo = fallbackLiteralKeysEn?.find((key) => Object.hasOwnProperty.call(fieldData, key));
+
       const fallbackErrorHandled = fallbackInfo
         ? { key: fallbackInfo, value: fieldData[fallbackInfo] }
         : Object.keys(fieldData).length > 0
@@ -64,7 +66,7 @@ export function languageFallbackSetup({ currentCalendarData, fieldData, language
     }
   } else {
     if (!Object.hasOwnProperty.call(fieldData, 'en')) {
-      const fallbackInfo = fallbackLiteralKeys.find((key) => Object.hasOwnProperty.call(fieldData, key));
+      const fallbackInfo = fallbackLiteralKeysEn?.find((key) => Object.hasOwnProperty.call(fieldData, key));
       const fallbackErrorHandled = fallbackInfo
         ? { key: fallbackInfo, value: fieldData[fallbackInfo] }
         : Object.keys(fieldData).length > 0
