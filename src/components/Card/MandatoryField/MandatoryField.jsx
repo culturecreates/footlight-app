@@ -54,6 +54,7 @@ function MandatoryField(props) {
     setAddedFields([...addedFields, { ...field, isRequiredField: true }]);
     setAvailableFields(updatedFields);
   };
+
   return (
     <Card className="mandatory-card-wrapper" bodyStyle={{ padding: '24px 16px 24px 16px' }}>
       <Row gutter={[0, 18]}>

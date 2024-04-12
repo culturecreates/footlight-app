@@ -228,8 +228,6 @@ function AddEvent() {
       requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields,
     );
 
-  console.log({ requiredFields, requiredFieldNames, standardAdminOnlyFields, dynamicAdminOnlyFields });
-
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const dateTimeConverter = (date, time) => {
     let dateSelected = date.format('DD-MM-YYYY');

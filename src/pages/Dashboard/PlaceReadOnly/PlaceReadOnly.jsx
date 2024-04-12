@@ -113,7 +113,6 @@ function PlaceReadOnly() {
           setDerivedEntitiesData(response?.data);
           setDerivedEntitiesDisplayStatus(true);
         }
-        console.log(response?.data?.organizations);
       });
     }
   }, [placeId]);

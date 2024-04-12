@@ -1,7 +1,6 @@
 .add-field-wrapper {
   display: flex;
   gap: 8px;
-  align-items: center;
 }
 
 .add-field-wrapper .disabled {

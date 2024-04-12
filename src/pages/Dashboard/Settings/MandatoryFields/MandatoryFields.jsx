@@ -36,51 +36,57 @@ function MandatoryFields() {
       formName: 'Event',
       formLabel: t('dashboard.settings.mandatoryFields.event'),
       taxonomyClass: entitiesClass.event,
-      prefilledFields: ['name', 'startDateTime', 'startDate', 'endDateTime', 'endDate', 'locationId'],
+      // prefilledFields: ['name', 'startDateTime', 'startDate', 'endDateTime', 'endDate', 'locationId'],
     },
     {
       formName: 'Places',
       formLabel: t('dashboard.settings.mandatoryFields.place'),
       taxonomyClass: entitiesClass.place,
 
-      prefilledFields: ['name', 'streetAddress', 'postalCode'],
+      // prefilledFields: ['name', 'streetAddress', 'postalCode'],
     },
     {
       formName: 'Organization',
       formLabel: t('dashboard.settings.mandatoryFields.organization'),
       taxonomyClass: entitiesClass.organization,
 
-      prefilledFields: ['name'],
+      // prefilledFields: ['name'],
     },
     {
       formName: 'People',
       formLabel: t('dashboard.settings.mandatoryFields.person'),
       taxonomyClass: entitiesClass.person,
 
-      prefilledFields: ['name'],
+      // prefilledFields: ['name'],
     },
   ];
 
   fields = fields?.map((field) => {
     const preFilled = prefilledFields?.find((f) => f.formName === field?.formName);
-    let minimumRequiedFields = [];
+    let minimumRequiredFields = [],
+      requiredFields = [];
     if (preFilled?.taxonomyClass === entitiesClass.event) {
-      minimumRequiedFields =
-        field?.formFieldProperties?.minimumRequiedFields?.standardFields?.map((f) => f?.fieldName) ?? [];
-      minimumRequiedFields = minimumRequiedFields?.concat(
-        field?.formFieldProperties?.minimumRequiedFields?.dynamicFields?.map((f) => f?.fieldName),
+      minimumRequiredFields =
+        field?.formFieldProperties?.minimumRequiredFields?.standardFields?.map((f) => f?.fieldName) ?? [];
+      minimumRequiredFields = minimumRequiredFields?.concat(
+        field?.formFieldProperties?.minimumRequiredFields?.dynamicFields?.map((f) => f),
+      );
+      requiredFields = field?.formFieldProperties?.mandatoryFields?.standardFields?.map((f) => f?.fieldName) ?? [];
+      requiredFields = minimumRequiredFields?.concat(
+        field?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((f) => f),
       );
     } else {
-      minimumRequiedFields =
+      minimumRequiredFields =
         field?.formFieldProperties?.mandatoryFields?.standardFields?.map((f) => f?.fieldName) ?? [];
-      minimumRequiedFields = minimumRequiedFields?.concat(
-        field?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((f) => f?.fieldName),
+      minimumRequiredFields = minimumRequiredFields?.concat(
+        field?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((f) => f),
       );
     }
     let modifiedField = field?.formFields?.map((f) => {
       return {
         ...f,
-        preFilled: minimumRequiedFields.includes(f?.name),
+        preFilled: minimumRequiredFields.includes(f?.name),
+        isRequiredField: requiredFields.includes(f?.name),
       };
     });
     modifiedField = modifiedField?.concat(
@@ -93,7 +99,7 @@ function MandatoryFields() {
             isRequiredField: field?.formFieldProperties?.mandatoryFields?.dynamicFields?.includes(f?.id) || false,
             isAdminOnlyField: field?.formFieldProperties?.adminOnlyFields?.dynamicFields?.includes(f?.id) || false,
             isDynamicField: true,
-            name: f?.name,
+            name: f?.id,
             label: f?.name,
           };
         }),
@@ -108,30 +114,24 @@ function MandatoryFields() {
   let updatedFormFields = fields;
 
   const onSaveHandler = () => {
-    updatedFormFields = updatedFormFields?.map((f) => {
+    updatedFormFields = updatedFormFields?.map((f, index) => {
+      let formFieldProperties = {
+        mandatoryFields: { standardFields: [], dynamicFields: [] },
+      };
+      f.formFields?.forEach((field) => {
+        if (field.isRequiredField) {
+          if (field.isDynamicField) formFieldProperties.dynamicFields.push(field?.name);
+          else formFieldProperties.mandatoryFields.standardFields.push({ fieldName: field?.name });
+        }
+      });
       return {
         formName: f.formName,
-        formFields: f.formFields,
-        // ?.filter((field) => !field.isDynamicField)
-        // ?.map((field) => {
-        //   // eslint-disable-next-line no-unused-vars
-        //   const { isRequiredField, isAdminOnlyField, ...rest } = field;
-        //   return rest;
-        // }),
-        requiredFields: f.formFields
-          ?.map((field) => {
-            if (field.isRequiredField) {
-              return field.mappedField;
-            }
-          })
-          ?.filter((element) => element !== undefined),
-        adminOnlyFields: f.formFields
-          ?.map((field) => {
-            if (field.isAdminOnlyField) {
-              return field.mappedField;
-            }
-          })
-          ?.filter((element) => element !== undefined),
+        formFields: currentCalendarData?.forms[index]?.formFields,
+        minimumRequiredFields: currentCalendarData?.forms[index]?.formFieldProperties?.minimumRequiredFields,
+        formFieldProperties: {
+          mandatoryFields: formFieldProperties.mandatoryFields,
+          adminOnlyFields: currentCalendarData?.forms[index]?.formFieldProperties.adminOnlyFields,
+        },
       };
     });
     console.log({ updatedFormFields });
