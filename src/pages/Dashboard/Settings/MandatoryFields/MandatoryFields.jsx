@@ -160,7 +160,7 @@ function MandatoryFields() {
           .unwrap()
           .then(() => {
             notification.success({
-              description: t('dashboard.settings.mandatoryFields.notifications.update'),
+              description: t('dashboard.settings.mandatoryFields.notification.update'),
               placement: 'top',
               closeIcon: <></>,
               maxCount: 1,
