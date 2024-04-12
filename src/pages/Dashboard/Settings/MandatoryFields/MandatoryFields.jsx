@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import './mandatoryFields.css';
-import { Row, Col, notification, Button, message } from 'antd';
-import { CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Row, Col, notification } from 'antd';
 import MandatoryFieldCard from '../../../../components/Card/MandatoryField/MandatoryField';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext, useParams } from 'react-router-dom';
@@ -40,7 +39,7 @@ function MandatoryFields() {
       // prefilledFields: ['name', 'startDateTime', 'startDate', 'endDateTime', 'endDate', 'locationId'],
     },
     {
-      formName: 'Places',
+      formName: 'Place',
       formLabel: t('dashboard.settings.mandatoryFields.place'),
       taxonomyClass: entitiesClass.place,
 
@@ -54,7 +53,7 @@ function MandatoryFields() {
       // prefilledFields: ['name'],
     },
     {
-      formName: 'People',
+      formName: 'Person',
       formLabel: t('dashboard.settings.mandatoryFields.person'),
       taxonomyClass: entitiesClass.person,
 
@@ -173,23 +172,6 @@ function MandatoryFields() {
           });
       })
       .catch((err) => {
-        message.warning({
-          duration: 10,
-          maxCount: 1,
-          key: 'mandatory-save-as-warning',
-          content: (
-            <>
-              {t('common.validations.informationRequired')} &nbsp;
-              <Button
-                data-cy="button-place-save-as-warning"
-                type="text"
-                icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                onClick={() => message.destroy('mandatory-save-as-warning')}
-              />
-            </>
-          ),
-          icon: <ExclamationCircleOutlined />,
-        });
         console.log(err);
       });
   };
