@@ -1629,7 +1629,10 @@ function CreateNewPlace() {
                         rules={[
                           ({ getFieldValue }) => ({
                             validator(_, value) {
-                              if (value || getFieldValue(formFieldNames.STREET_ADDRESS_ENGLISH)) {
+                              if (
+                                value.trim() != '' ||
+                                getFieldValue(formFieldNames.STREET_ADDRESS_ENGLISH).trim() != ''
+                              ) {
                                 return Promise.resolve();
                               } else
                                 return Promise.reject(
@@ -1671,7 +1674,10 @@ function CreateNewPlace() {
                         rules={[
                           ({ getFieldValue }) => ({
                             validator(_, value) {
-                              if (value || getFieldValue(formFieldNames.STREET_ADDRESS_FRENCH)) {
+                              if (
+                                value.trim() != '' ||
+                                getFieldValue(formFieldNames.STREET_ADDRESS_FRENCH).trim() != ''
+                              ) {
                                 return Promise.resolve();
                               } else
                                 return Promise.reject(
@@ -1795,6 +1801,10 @@ function CreateNewPlace() {
                   rules={[
                     {
                       required: true,
+                      message: t('dashboard.places.createNew.addPlace.validations.postalCodeRequired'),
+                    },
+                    {
+                      whitespace: true,
                       message: t('dashboard.places.createNew.addPlace.validations.postalCodeRequired'),
                     },
                   ]}>
