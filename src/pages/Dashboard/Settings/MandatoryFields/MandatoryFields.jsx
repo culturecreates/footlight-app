@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import './mandatoryFields.css';
-import { Row, Col } from 'antd';
+import { Row, Col, notification } from 'antd';
 import MandatoryFieldCard from '../../../../components/Card/MandatoryField/MandatoryField';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext, useParams } from 'react-router-dom';
@@ -8,11 +8,11 @@ import PrimaryButton from '../../../../components/Button/Primary';
 import { useGetAllTaxonomyQuery } from '../../../../services/taxonomy';
 import { taxonomyClass } from '../../../../constants/taxonomyClass';
 import { entitiesClass } from '../../../../constants/entitiesClass';
-// import { useUpdateCalendarMutation } from '../../../../services/calendar';
+import { useUpdateCalendarMutation } from '../../../../services/calendar';
 
 function MandatoryFields() {
   const { t } = useTranslation();
-  const [currentCalendarData] = useOutletContext();
+  const [currentCalendarData, , , getCalendar] = useOutletContext();
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
 
@@ -28,7 +28,7 @@ function MandatoryFields() {
     includeConcepts: false,
     sessionId: timestampRef,
   });
-  // const { updateCalendar } = useUpdateCalendarMutation();
+  const [updateCalendar] = useUpdateCalendarMutation();
 
   let fields = currentCalendarData?.forms;
   const prefilledFields = [
@@ -127,23 +127,53 @@ function MandatoryFields() {
       return {
         formName: f.formName,
         formFields: currentCalendarData?.forms[index]?.formFields,
-        minimumRequiredFields: currentCalendarData?.forms[index]?.formFieldProperties?.minimumRequiredFields,
+        enableLabelFallback: currentCalendarData?.forms[index]?.enableLabelFallback,
+        skipFallbackLabels: currentCalendarData?.forms[index]?.skipFallbackLabels,
         formFieldProperties: {
           mandatoryFields: formFieldProperties.mandatoryFields,
           adminOnlyFields: currentCalendarData?.forms[index]?.formFieldProperties.adminOnlyFields,
+          minimumRequiredFields: currentCalendarData?.forms[index]?.formFieldProperties?.minimumRequiredFields,
         },
       };
     });
-    console.log({ updatedFormFields });
 
-    // updateCalendar({ data: { forms: updatedFormFields }, calendarId: currentCalendarData?.id })
-    //   .unwrap()
-    //   .then((res) => {
-    //     console.log(res);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
+    let calendarData = {
+      name: currentCalendarData.name,
+      contentLanguage: currentCalendarData.contentLanguage,
+      timezone: currentCalendarData.timezone,
+      contact: currentCalendarData.contact,
+      dateFormatDisplay: currentCalendarData.calendarDateFormat,
+      imageConfig: currentCalendarData.imageConfig,
+      mode: currentCalendarData.mode,
+      languageFallbacks: currentCalendarData?.languageFallbacks,
+      forms: updatedFormFields,
+      namespace: currentCalendarData?.namespace,
+      widgetSettings: currentCalendarData.widgetSettings,
+      filterPersonalization: currentCalendarData.filterPersonalization,
+      logo: currentCalendarData.logo,
+    };
+
+    updateCalendar({ data: calendarData, calendarId: currentCalendarData.id })
+      .unwrap()
+      .then(() => {
+        getCalendar({ id: calendarId, sessionId: timestampRef })
+          .unwrap()
+          .then(() => {
+            notification.success({
+              description: t('dashboard.settings.mandatoryFields.notifications.update'),
+              placement: 'top',
+              closeIcon: <></>,
+              maxCount: 1,
+              duration: 3,
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
