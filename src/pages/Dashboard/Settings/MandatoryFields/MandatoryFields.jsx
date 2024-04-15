@@ -105,11 +105,11 @@ function MandatoryFields() {
     );
     modifiedField = modifiedField?.sort((a, b) => {
       if (a.preFilled && !b.preFilled) {
-        return -1; // a comes before b
+        return -1;
       } else if (!a.preFilled && b.preFilled) {
-        return 1; // b comes before a
+        return 1;
       } else {
-        return 0; // no change in order
+        return 0;
       }
     });
     return {
