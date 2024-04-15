@@ -65,23 +65,22 @@ function MandatoryFields() {
     const preFilled = prefilledFields?.find((f) => f.formName === field?.formName);
     let minimumRequiredFields = [],
       requiredFields = [];
-    if (preFilled?.taxonomyClass === entitiesClass.event) {
-      minimumRequiredFields =
-        field?.formFieldProperties?.minimumRequiredFields?.standardFields?.map((f) => f?.fieldName) ?? [];
-      minimumRequiredFields = minimumRequiredFields?.concat(
-        field?.formFieldProperties?.minimumRequiredFields?.dynamicFields?.map((f) => f),
-      );
-      requiredFields = field?.formFieldProperties?.mandatoryFields?.standardFields?.map((f) => f?.fieldName) ?? [];
-      requiredFields = requiredFields?.concat(
-        field?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((f) => f),
-      );
-    } else {
-      minimumRequiredFields =
-        field?.formFieldProperties?.mandatoryFields?.standardFields?.map((f) => f?.fieldName) ?? [];
-      minimumRequiredFields = minimumRequiredFields?.concat(
-        field?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((f) => f),
-      );
-    }
+    // if (preFilled?.taxonomyClass === entitiesClass.event) {
+    minimumRequiredFields =
+      field?.formFieldProperties?.minimumRequiredFields?.standardFields?.map((f) => f?.fieldName) ?? [];
+    minimumRequiredFields = minimumRequiredFields?.concat(
+      field?.formFieldProperties?.minimumRequiredFields?.dynamicFields?.map((f) => f),
+    );
+    requiredFields = field?.formFieldProperties?.mandatoryFields?.standardFields?.map((f) => f?.fieldName) ?? [];
+    requiredFields = requiredFields?.concat(field?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((f) => f));
+    // } else {
+    //   minimumRequiredFields =
+
+    //     field?.formFieldProperties?.mandatoryFields?.standardFields?.map((f) => f?.fieldName) ?? [];
+    //   minimumRequiredFields = minimumRequiredFields?.concat(
+    //     field?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((f) => f),
+    //   );
+    // }
     let modifiedField = field?.formFields?.map((f) => {
       return {
         ...f,
@@ -104,6 +103,15 @@ function MandatoryFields() {
           };
         }),
     );
+    modifiedField = modifiedField?.sort((a, b) => {
+      if (a.preFilled && !b.preFilled) {
+        return -1; // a comes before b
+      } else if (!a.preFilled && b.preFilled) {
+        return 1; // b comes before a
+      } else {
+        return 0; // no change in order
+      }
+    });
     return {
       formName: field?.formName,
       formFields: modifiedField,

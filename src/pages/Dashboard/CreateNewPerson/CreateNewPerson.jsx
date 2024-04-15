@@ -219,20 +219,20 @@ function CreateNewPerson() {
       ['name', 'fr'],
       ['name', 'en'],
     ];
-    if (
-      form.getFieldValue('socialMediaLinks')?.filter((link) => {
-        if (link) return true;
-      })?.length > 0
-    ) {
-      validateFieldList = validateFieldList?.concat(
-        form
-          .getFieldValue('socialMediaLinks')
-          ?.filter((link) => {
-            if (link) return true;
-          })
-          ?.map((link, index) => ['socialMediaLinks', index]),
-      );
-    }
+    // if (
+    //   form.getFieldValue('socialMediaLinks')?.filter((link) => {
+    //     if (link) return true;
+    //   })?.length > 0
+    // ) {
+    //   validateFieldList = validateFieldList?.concat(
+    //     form
+    //       .getFieldValue('socialMediaLinks')
+    //       ?.filter((link) => {
+    //         if (link) return true;
+    //       })
+    //       ?.map((link, index) => ['socialMediaLinks', index]),
+    //   );
+    // }
     let mandatoryFields = formFieldProperties?.mandatoryFields?.standardFields?.map((field) => field?.fieldName);
     mandatoryFields = mandatoryFields?.concat(
       formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => field?.fieldName),

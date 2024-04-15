@@ -156,7 +156,6 @@ function CreateNewPlace() {
     requiredFields[0]?.formFieldProperties?.mandatoryFields?.standardFields?.concat(
       requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields,
     );
-  let publishValidateFields = [];
 
   const { currentData: placeData, isLoading: isPlaceLoading } = useGetPlaceQuery(
     { placeId: placeId, calendarId, sessionId: timestampRef },
@@ -218,6 +217,7 @@ function CreateNewPlace() {
   const [address, setAddress] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
+  const [publishValidateFields, setPublishValidateFields] = useState([]);
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -985,6 +985,7 @@ function CreateNewPlace() {
   }, [isReadOnly]);
 
   useEffect(() => {
+    let publishValidateFields = [];
     if (currentCalendarData) {
       requiredFields?.forEach((requiredField) => {
         switch (requiredField?.fieldName) {
@@ -1043,6 +1044,7 @@ function CreateNewPlace() {
         }
       });
       publishValidateFields = [...new Set(publishValidateFields)];
+      setPublishValidateFields(publishValidateFields);
     }
   }, [currentCalendarData]);
 
