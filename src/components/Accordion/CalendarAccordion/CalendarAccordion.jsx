@@ -21,6 +21,7 @@ import EventsSearch from '../../Search/Events/EventsSearch';
 import SelectionItem from '../../List/SelectionItem';
 import { sortByOptionsOrgsPlacesPerson } from '../../../constants/sortByOptions';
 import { useLazyGetAllOrganizationQuery } from '../../../services/organization';
+import { UserOutlined } from '@ant-design/icons';
 import { useLazyGetAllPeopleQuery } from '../../../services/people';
 
 const { Panel } = Collapse;
@@ -153,7 +154,8 @@ function CalendarAccordion(props) {
   useEffect(() => {
     if (peopleIds?.length > 0) {
       let peopleIdAsParams = new URLSearchParams();
-      peopleIds?.forEach((organizer) => peopleIdAsParams.append('ids', organizer?.entityId));
+      peopleIds?.forEach((people) => peopleIdAsParams.append('ids', people?.entityId));
+      console.log(peopleIdAsParams.toString());
       getAllPeople({
         calendarId,
         limit: 30,
@@ -429,7 +431,13 @@ function CalendarAccordion(props) {
             return (
               <SelectionItem
                 key={index}
-                icon={people?.label?.props?.icon}
+                icon={
+                  people?.label?.props?.icon ? (
+                    people?.label?.props?.icon
+                  ) : (
+                    <UserOutlined style={{ color: '#607EFC' }} />
+                  )
+                }
                 name={people?.name}
                 description={people?.description}
                 bordered
