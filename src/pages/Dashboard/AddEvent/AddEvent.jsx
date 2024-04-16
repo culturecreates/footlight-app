@@ -1470,6 +1470,9 @@ function AddEvent() {
           case eventFormRequiredFieldNames.EVENT_STATUS:
             publishValidateFields.push('eventStatus');
             break;
+          case eventFormRequiredFieldNames.CONTACT_TITLE:
+            publishValidateFields.push('englishContactTitle', 'frenchContactTitle');
+            break;
           default:
             publishValidateFields.push(['dynamicFields', requiredField?.fieldName]);
             break;
@@ -2974,13 +2977,23 @@ function AddEvent() {
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}
                   className="subheading-wrap"
-                  data-cy="form-item-event-contact-title">
+                  data-cy="form-item-event-contact-title"
+                  required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.CONTACT_TITLE)}>
                   <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                     <BilingualInput fieldData={eventData?.contactPoint?.name}>
                       <Form.Item
                         name="frenchContactTitle"
                         initialValue={eventData?.contactPoint?.name?.fr}
-                        key={contentLanguage.FRENCH}>
+                        key={contentLanguage.FRENCH}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (value || getFieldValue('englishContactTitle')) {
+                                return Promise.resolve();
+                              } else return Promise.reject(new Error(t('common.validations.informationRequired')));
+                            },
+                          }),
+                        ]}>
                         <TextArea
                           autoSize
                           autoComplete="off"
@@ -3003,7 +3016,16 @@ function AddEvent() {
                       <Form.Item
                         name="englishContactTitle"
                         initialValue={eventData?.contactPoint?.name?.en}
-                        key={contentLanguage.ENGLISH}>
+                        key={contentLanguage.ENGLISH}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (value || getFieldValue('frenchContactTitle')) {
+                                return Promise.resolve();
+                              } else return Promise.reject(new Error(t('common.validations.informationRequired')));
+                            },
+                          }),
+                        ]}>
                         <TextArea
                           autoSize
                           autoComplete="off"
