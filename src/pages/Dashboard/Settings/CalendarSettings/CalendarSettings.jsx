@@ -124,7 +124,7 @@ function CalendarSettings() {
       large: imageConfig?.large?.maxWidth,
       thumbnail: imageConfig?.thumbnail?.maxWidth,
     },
-    calendarLogo: currentCalendarData?.logo?.uri,
+    calendarLogo: currentCalendarData?.logo?.original?.uri,
     readOnly: currentCalendarData?.mode === calendarModes.READ_ONLY ? true : false,
   };
 
@@ -316,7 +316,7 @@ function CalendarSettings() {
                       thumbnailAspectRatio: imageConfig?.thumbnail?.aspectRatio,
                       largeMaxWidth: imageConfig?.large?.maxWidth,
                       thumbnailMaxWidth: imageConfig?.thumbnail?.maxWidth,
-                      logoUri: currentCalendarData?.logo?.uri,
+                      logoUri: currentCalendarData?.logo?.original?.uri,
                       t,
                     })}
                   </Form.Item>

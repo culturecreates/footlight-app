@@ -48,7 +48,7 @@ const WidgetSettings = () => {
   const { eventDetailsUrlTemplate = '', listEventsUrlTemplate = '' } = currentCalendarData?.widgetSettings || {};
   const calendarSlug = currentCalendarData?.slug;
   const calendarName = currentCalendarData?.name[user?.interfaceLanguage?.toLowerCase()];
-  const encodedCalendarLogoUri = encodeURIComponent(currentCalendarData?.logo?.uri || '');
+  const encodedCalendarLogoUri = encodeURIComponent(currentCalendarData?.logo?.original?.uri || '');
   const encodedEventDetailsUrlTemplate = encodeURIComponent(eventDetailsUrlTemplate);
   const encodedListEventsUrlTemplate = encodeURIComponent(listEventsUrlTemplate);
 
