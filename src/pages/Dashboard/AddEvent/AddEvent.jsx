@@ -1458,6 +1458,9 @@ function AddEvent() {
           case eventFormRequiredFieldNames.LOCATION:
             publishValidateFields.push('location-form-wrapper');
             break;
+          case eventFormRequiredFieldNames.VIRTUAL_LOCATION:
+            publishValidateFields.push('location-form-wrapper');
+            break;
           case eventFormRequiredFieldNames.IMAGE:
             publishValidateFields.push('draggerWrap');
             break;
@@ -2147,7 +2150,10 @@ function AddEvent() {
           <CardEvent
             marginResponsive="0px"
             title={t('dashboard.events.addEditEvent.location.title')}
-            required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.LOCATION)}>
+            required={
+              requiredFieldNames?.includes(eventFormRequiredFieldNames?.LOCATION) ||
+              requiredFieldNames?.includes(eventFormRequiredFieldNames?.VIRTUAL_LOCATION)
+            }>
             <Form.Item
               name="location-form-wrapper"
               rules={[
