@@ -13,4 +13,5 @@ export const eventFormRequiredFieldNames = {
   IMAGE: 'IMAGE',
   FEATURED: 'FEATURED',
   ORGANIZERS: 'ORGANIZERS',
+  EVENT_STATUS: 'EVENT_STATUS',
 };

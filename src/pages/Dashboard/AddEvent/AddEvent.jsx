@@ -209,9 +209,7 @@ function AddEvent() {
   let requiredFieldNames = requiredFields
     ? requiredFields[0]?.formFieldProperties?.mandatoryFields?.standardFields
         ?.map((field) => field?.fieldName)
-        ?.concat(
-          requiredFields[0]?.formFieldProperties?.mandatoryFields?.standardFields?.map((field) => field?.fieldName),
-        )
+        ?.concat(requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => field))
     : [];
   let standardAdminOnlyFields =
     requiredFields && requiredFields?.length > 0
@@ -219,13 +217,15 @@ function AddEvent() {
       : [];
   let dynamicAdminOnlyFields =
     requiredFields && requiredFields?.length > 0
-      ? requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => field?.fieldName)
+      ? requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => field)
       : [];
   requiredFields =
     requiredFields &&
     requiredFields?.length > 0 &&
     requiredFields[0]?.formFieldProperties?.mandatoryFields?.standardFields?.concat(
-      requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields,
+      requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => {
+        return { fieldName: field };
+      }),
     );
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
@@ -1412,6 +1412,7 @@ function AddEvent() {
   useEffect(() => {
     if (currentCalendarData) {
       let publishValidateFields = [];
+      console.log(requiredFields);
       requiredFields?.map((requiredField) => {
         switch (requiredField?.fieldName) {
           case eventFormRequiredFieldNames.NAME:
@@ -1463,7 +1464,11 @@ function AddEvent() {
           case eventFormRequiredFieldNames.ORGANIZERS:
             publishValidateFields.push('organizers');
             break;
+          case eventFormRequiredFieldNames.EVENT_STATUS:
+            publishValidateFields.push('eventStatus');
+            break;
           default:
+            publishValidateFields.push(['dynamicFields', requiredField?.fieldName]);
             break;
         }
       });
@@ -1842,7 +1847,13 @@ function AddEvent() {
                         hidden={
                           dynamicAdminOnlyFields?.includes(taxonomy?.id) ? (adminCheckHandler() ? false : true) : false
                         }
-                        data-cy={`form-item-${taxonomy?.id}`}>
+                        data-cy={`form-item-${taxonomy?.id}`}
+                        rules={[
+                          {
+                            required: requiredFieldNames?.includes(taxonomy?.id),
+                            message: t('common.validations.informationRequired'),
+                          },
+                        ]}>
                         <TreeSelectOption
                           allowClear
                           treeDefaultExpandAll
@@ -2082,14 +2093,19 @@ function AddEvent() {
                   </Col>
                 </Row>
               )}
-
               <Row>
                 <Col flex={'423px'}>
                   <Form.Item
                     name="eventStatus"
                     label={t('dashboard.events.addEditEvent.dates.status')}
                     initialValue={eventData?.eventStatus ?? eventStatus.EventScheduled}
-                    data-cy="form-item-event-status-label">
+                    data-cy="form-item-event-status-label"
+                    rules={[
+                      {
+                        required: requiredFieldNames?.includes(eventFormRequiredFieldNames.EVENT_STATUS),
+                        message: t('common.validations.informationRequired'),
+                      },
+                    ]}>
                     <Select options={eventStatusOptions} data-cy="select-event-status" />
                   </Form.Item>
                 </Col>
