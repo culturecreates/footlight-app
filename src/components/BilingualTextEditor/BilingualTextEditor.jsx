@@ -16,11 +16,11 @@ function BilingualTextEditor(props) {
     <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
       <BilingualInput fieldData={data}>
         <TextEditor
-          formName={name?.concat(['fr'])}
+          formName={[`${name}`, 'fr']}
           key={contentLanguage.FRENCH}
           calendarContentLanguage={calendarContentLanguage}
           initialValue={data?.fr}
-          dependencies={name?.concat(['en'])}
+          dependencies={[`${name}`, 'en']}
           editorLanguage={'fr'}
           placeholder={placeholder?.fr}
           currentReactQuillRef={reactQuillRefFr}
@@ -83,11 +83,11 @@ function BilingualTextEditor(props) {
         />
 
         <TextEditor
-          formName={name?.concat(['en'])}
+          formName={[`${name}`, 'en']}
           key={contentLanguage.ENGLISH}
           initialValue={data?.en}
           calendarContentLanguage={calendarContentLanguage}
-          dependencies={name?.concat(['fr'])}
+          dependencies={[`${name}`, 'fr']}
           editorLanguage={'en'}
           placeholder={placeholder?.en}
           descriptionMinimumWordCount={descriptionMinimumWordCount}

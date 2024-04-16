@@ -62,6 +62,12 @@ export const mappedFieldTypes = {
   SOCIAL_MEDIA_LINKS: 'socialMediaLinks',
 };
 
+export const formNames = {
+  ORGANIZATION: {
+    LOCATION: 'LOCATION',
+  },
+};
+
 const rules = [
   {
     dataType: dataTypes.URI_STRING,
@@ -105,18 +111,21 @@ export const formFieldValue = [
           <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
             <BilingualInput fieldData={data}>
               <Form.Item
-                name={name?.concat(['fr'])}
+                name={[`${name}`, 'fr']}
                 key={contentLanguage.FRENCH}
-                dependencies={name?.concat(['en'])}
+                dependencies={[`${name}`, 'en']}
                 initialValue={data?.fr}
                 rules={
                   required
                     ? [
                         ({ getFieldValue }) => ({
                           validator(_, value) {
-                            if (value || getFieldValue(name?.concat(['en']))) {
+                            if (value || getFieldValue([`${name}`, 'en'])) {
                               return Promise.resolve();
-                            } else return Promise.reject(new Error(validations?.fr));
+                            } else
+                              return Promise.reject(
+                                new Error(validations ?? t('common.validations.informationRequired')),
+                              );
                           },
                         }),
                       ]
@@ -139,18 +148,21 @@ export const formFieldValue = [
               </Form.Item>
 
               <Form.Item
-                name={name?.concat(['en'])}
+                name={[`${name}`, 'en']}
                 key={contentLanguage.ENGLISH}
-                dependencies={name?.concat(['fr'])}
+                dependencies={[`${name}`, 'fr']}
                 initialValue={data?.en}
                 rules={
                   required
                     ? [
                         ({ getFieldValue }) => ({
                           validator(_, value) {
-                            if (value || getFieldValue(name?.concat(['fr']))) {
+                            if (value || getFieldValue([`${name}`, 'fr'])) {
                               return Promise.resolve();
-                            } else return Promise.reject(new Error(validations?.en));
+                            } else
+                              return Promise.reject(
+                                new Error(validations ?? t('common.validations.informationRequired')),
+                              );
                           },
                         }),
                       ]
@@ -577,6 +589,8 @@ export const renderFormFields = ({
   label,
   style,
   mappedField,
+  t,
+  validations,
 }) => {
   return (
     <>
@@ -599,9 +613,17 @@ export const renderFormFields = ({
         hidden={hidden}
         style={style}
         className={mappedField}
-        rules={rules?.map((rule) => {
-          if (datatype === rule?.dataType) return rule.rule;
-        })}
+        rules={rules
+          ?.map((rule) => {
+            if (datatype === rule?.dataType) return rule.rule;
+          })
+          .concat([
+            {
+              required: required,
+              message: validations ?? t('common.validations.informationRequired'),
+            },
+          ])
+          ?.filter((rule) => rule !== undefined)}
         help={
           position === 'bottom' && userTips ? (
             <p
@@ -649,6 +671,7 @@ export const returnFormDataWithFields = ({
   mandatoryFields,
 }) => {
   return renderFormFields({
+    fieldName: field?.name,
     name: [field?.mappedField],
     mappedField: field?.mappedField,
     type: field?.type,
@@ -738,5 +761,12 @@ export const returnFormDataWithFields = ({
     form,
     style,
     taxonomyAlias: field?.taxonomyAlias,
+    t,
+    validations: bilingual({
+      en: field?.validations?.en,
+      fr: field?.validations?.fr,
+      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+      locationPlace,
+    }),
   });
 };

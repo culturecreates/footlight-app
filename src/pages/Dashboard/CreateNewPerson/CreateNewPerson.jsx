@@ -16,7 +16,7 @@ import { featureFlags } from '../../../utils/featureFlags';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import Card from '../../../components/Card/Common/Event';
-import { formCategory, formFieldValue, returnFormDataWithFields } from '../../../constants/formFields';
+import { dataTypes, formCategory, formFieldValue, returnFormDataWithFields } from '../../../constants/formFields';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
@@ -215,30 +215,24 @@ function CreateNewPerson() {
   const onSaveHandler = (event) => {
     event?.preventDefault();
     setShowDialog(false);
-    let validateFieldList = [
-      ['name', 'fr'],
-      ['name', 'en'],
-    ];
-    // if (
-    //   form.getFieldValue('socialMediaLinks')?.filter((link) => {
-    //     if (link) return true;
-    //   })?.length > 0
-    // ) {
-    //   validateFieldList = validateFieldList?.concat(
-    //     form
-    //       .getFieldValue('socialMediaLinks')
-    //       ?.filter((link) => {
-    //         if (link) return true;
-    //       })
-    //       ?.map((link, index) => ['socialMediaLinks', index]),
-    //   );
-    // }
+    let validateFieldList = [];
     let mandatoryFields = formFieldProperties?.mandatoryFields?.standardFields?.map((field) => field?.fieldName);
-    mandatoryFields = mandatoryFields?.concat(
-      formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => field?.fieldName),
-    );
     validateFieldList = validateFieldList?.concat(
-      formFields?.filter((field) => mandatoryFields?.includes(field?.name))?.map((field) => field?.mappedField),
+      formFields
+        ?.filter((field) => mandatoryFields?.includes(field?.name))
+        ?.map((field) => {
+          if (field?.datatype === dataTypes.MULTI_LINGUAL) {
+            return [
+              [field?.mappedField, 'en'],
+              [field?.mappedField, 'fr'],
+            ];
+          } else return field?.mappedField;
+        })
+        ?.flat(),
+    );
+
+    validateFieldList = validateFieldList?.concat(
+      formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => ['dynamicFields', field]),
     );
 
     form
@@ -624,6 +618,14 @@ function CreateNewPerson() {
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                 })}
                                 initialValue={initialValues}
+                                rules={[
+                                  {
+                                    required: formFieldProperties?.mandatoryFields?.dynamicFields?.includes(
+                                      taxonomy?.id,
+                                    ),
+                                    message: t('common.validations.informationRequired'),
+                                  },
+                                ]}
                                 hidden={taxonomy?.isAdminOnly ? (adminCheckHandler() ? false : true) : false}>
                                 <TreeSelectOption
                                   data-cy={`treeselect-person-dynamic-fields-${index}`}

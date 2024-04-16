@@ -19,7 +19,7 @@ import { featureFlags } from '../../../utils/featureFlags';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import Card from '../../../components/Card/Common/Event';
-import { formCategory, formFieldValue, returnFormDataWithFields } from '../../../constants/formFields';
+import { dataTypes, formCategory, formFieldValue, returnFormDataWithFields } from '../../../constants/formFields';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
@@ -243,30 +243,37 @@ function CreateNewOrganization() {
   const onSaveHandler = (event, toggle = false) => {
     event?.preventDefault();
     setShowDialog(false);
-    let validateFieldList = [
-      ['name', 'fr'],
-      ['name', 'en'],
-    ];
-    if (
-      form.getFieldValue('socialMediaLinks')?.filter((link) => {
-        if (link) return true;
-      })?.length > 0
-    ) {
-      validateFieldList = validateFieldList?.concat(
-        form
-          .getFieldValue('socialMediaLinks')
-          ?.filter((link) => {
-            if (link) return true;
-          })
-          ?.map((link, index) => ['socialMediaLinks', index]),
-      );
-    }
+    let validateFieldList = [];
+    // if (
+    //   form.getFieldValue('socialMediaLinks')?.filter((link) => {
+    //     if (link) return true;
+    //   })?.length > 0
+    // ) {
+    //   validateFieldList = validateFieldList?.concat(
+    //     form
+    //       .getFieldValue('socialMediaLinks')
+    //       ?.filter((link) => {
+    //         if (link) return true;
+    //       })
+    //       ?.map((link, index) => ['socialMediaLinks', index]),
+    //   );
+    // }
     let mandatoryFields = formFieldProperties?.mandatoryFields?.standardFields?.map((field) => field?.fieldName);
-    mandatoryFields = mandatoryFields?.concat(
-      formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => field?.fieldName),
+    validateFieldList = validateFieldList?.concat(
+      formFields
+        ?.filter((field) => mandatoryFields?.includes(field?.name))
+        ?.map((field) => {
+          if (field?.datatype === dataTypes.MULTI_LINGUAL) {
+            return [
+              [field?.mappedField, 'en'],
+              [field?.mappedField, 'fr'],
+            ];
+          } else return field?.mappedField;
+        })
+        ?.flat(),
     );
     validateFieldList = validateFieldList?.concat(
-      formFields?.filter((field) => mandatoryFields?.includes(field?.name))?.map((field) => field?.mappedField),
+      formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => ['dynamicFields', field]),
     );
     var promise = new Promise(function (resolve, reject) {
       form
@@ -1036,6 +1043,14 @@ function CreateNewOrganization() {
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                 })}
                                 initialValue={initialValues}
+                                rules={[
+                                  {
+                                    required: formFieldProperties?.mandatoryFields?.dynamicFields?.includes(
+                                      taxonomy?.id,
+                                    ),
+                                    message: t('common.validations.informationRequired'),
+                                  },
+                                ]}
                                 hidden={taxonomy?.isAdminOnly ? (adminCheckHandler() ? false : true) : false}>
                                 <TreeSelectOption
                                   allowClear
