@@ -23,6 +23,11 @@ function ReadOnlyProtectedComponent({ children, creator, entityId, isReadOnly })
           entityAccess = true;
         }
       });
+      calendar?.people?.forEach((person) => {
+        if (person.entityId === entityId) {
+          entityAccess = true;
+        }
+      });
     });
   }
   if (isReadOnly) return;

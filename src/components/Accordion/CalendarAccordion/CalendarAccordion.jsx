@@ -155,7 +155,7 @@ function CalendarAccordion(props) {
     if (peopleIds?.length > 0) {
       let peopleIdAsParams = new URLSearchParams();
       peopleIds?.forEach((people) => peopleIdAsParams.append('ids', people?.entityId));
-      console.log(peopleIdAsParams.toString());
+
       getAllPeople({
         calendarId,
         limit: 30,
