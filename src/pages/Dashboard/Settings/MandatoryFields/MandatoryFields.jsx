@@ -128,7 +128,7 @@ function MandatoryFields() {
       };
       f.formFields?.forEach((field) => {
         if (field.isRequiredField) {
-          if (field.isDynamicField) formFieldProperties.dynamicFields.push(field?.name);
+          if (field.isDynamicField) formFieldProperties.mandatoryFields.dynamicFields.push(field?.name);
           else formFieldProperties.mandatoryFields.standardFields.push({ fieldName: field?.name });
         }
       });
