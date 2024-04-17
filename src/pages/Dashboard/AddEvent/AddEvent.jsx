@@ -343,7 +343,7 @@ function AddEvent() {
             'dateRangePicker',
             'datePickerWrapper',
             'startDateRecur',
-            'contactWebsiteUrl',
+            // 'contactWebsiteUrl',
             'eventLink',
             'videoLink',
             'facebookLink',
@@ -1472,6 +1472,9 @@ function AddEvent() {
             break;
           case eventFormRequiredFieldNames.CONTACT_TITLE:
             publishValidateFields.push('englishContactTitle', 'frenchContactTitle');
+            break;
+          case eventFormRequiredFieldNames.CONTACT_WEBSITE:
+            publishValidateFields.push('contactWebsiteUrl');
             break;
           default:
             publishValidateFields.push(['dynamicFields', requiredField?.fieldName]);
@@ -3058,6 +3061,10 @@ function AddEvent() {
                     {
                       type: 'url',
                       message: t('dashboard.events.addEditEvent.validations.url'),
+                    },
+                    {
+                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.CONTACT_WEBSITE),
+                      message: t('common.validations.informationRequired'),
                     },
                   ]}
                   data-cy="form-item-event-contact-website-label">
