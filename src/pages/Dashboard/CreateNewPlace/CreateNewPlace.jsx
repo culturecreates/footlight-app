@@ -146,15 +146,15 @@ function CreateNewPlace() {
   let requiredFieldNames = requiredFields
     ? requiredFields[0]?.formFieldProperties?.mandatoryFields?.standardFields
         ?.map((field) => field?.fieldName)
-        ?.concat(
-          requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => field?.fieldName),
-        )
+        ?.concat(requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => field))
     : [];
   requiredFields =
     requiredFields &&
     requiredFields?.length > 0 &&
     requiredFields[0]?.formFieldProperties?.mandatoryFields?.standardFields?.concat(
-      requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields,
+      requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => {
+        return { fieldName: field };
+      }),
     );
 
   const { currentData: placeData, isLoading: isPlaceLoading } = useGetPlaceQuery(
@@ -1038,8 +1038,11 @@ function CreateNewPlace() {
           case placeFormRequiredFieldNames.PLACE_ACCESSIBILITY:
             publishValidateFields.push(formFieldNames.PLACE_ACCESSIBILITY);
             break;
+          case placeFormRequiredFieldNames.REGION:
+            publishValidateFields.push(formFieldNames.REGION);
+            break;
           default:
-            publishValidateFields.push(requiredField?.fieldName);
+            publishValidateFields.push([formFieldNames.DYNAMIC_FIELS, requiredField?.fieldName]);
             break;
         }
       });
@@ -2238,11 +2241,12 @@ function CreateNewPlace() {
                       ? placeData?.regions?.map((type) => {
                           return type?.entityId;
                         })
-                      : artsDataId &&
-                        artsData?.regions &&
+                      : artsDataId
+                      ? artsData?.regions &&
                         artsData?.regions?.map((region) => {
                           return region?.entityId;
                         })
+                      : []
                   }
                   style={{
                     display:
