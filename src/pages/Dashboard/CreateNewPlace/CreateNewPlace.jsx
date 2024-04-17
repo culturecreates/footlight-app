@@ -985,7 +985,8 @@ function CreateNewPlace() {
   }, [isReadOnly]);
 
   useEffect(() => {
-    let publishValidateFields = [];
+    let publishValidateFields = [],
+      initialAddedFields = [];
     if (currentCalendarData) {
       requiredFields?.forEach((requiredField) => {
         switch (requiredField?.fieldName) {
@@ -1028,6 +1029,7 @@ function CreateNewPlace() {
             break;
           case placeFormRequiredFieldNames.OPENING_HOURS:
             publishValidateFields.push(formFieldNames.OPENING_HOURS);
+            initialAddedFields = initialAddedFields?.concat(formFieldNames?.OPENING_HOURS);
             break;
           case placeFormRequiredFieldNames.CONTAINS_PLACE:
             publishValidateFields.push(formFieldNames.CONTAINS_PLACE);
@@ -1037,6 +1039,7 @@ function CreateNewPlace() {
             break;
           case placeFormRequiredFieldNames.PLACE_ACCESSIBILITY:
             publishValidateFields.push(formFieldNames.PLACE_ACCESSIBILITY);
+            initialAddedFields = initialAddedFields?.concat(formFieldNames?.ACCESSIBILITY_NOTE_WRAP);
             break;
           case placeFormRequiredFieldNames.REGION:
             publishValidateFields.push(formFieldNames.REGION);
@@ -1048,6 +1051,7 @@ function CreateNewPlace() {
       });
       publishValidateFields = [...new Set(publishValidateFields)];
       setPublishValidateFields(publishValidateFields);
+      setAddedFields(initialAddedFields);
     }
   }, [currentCalendarData]);
 

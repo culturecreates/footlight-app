@@ -1407,7 +1407,8 @@ function AddEvent() {
 
   useEffect(() => {
     if (currentCalendarData) {
-      let publishValidateFields = [];
+      let publishValidateFields = [],
+        initialAddedFields = [];
       requiredFields?.map((requiredField) => {
         switch (requiredField?.fieldName) {
           case eventFormRequiredFieldNames.NAME:
@@ -1452,6 +1453,7 @@ function AddEvent() {
             break;
           case eventFormRequiredFieldNames.LOCATION:
             publishValidateFields.push('location-form-wrapper');
+            initialAddedFields = initialAddedFields?.concat(locationType?.fieldNames);
             break;
           case eventFormRequiredFieldNames.VIRTUAL_LOCATION:
             publishValidateFields.push('location-form-wrapper');
@@ -1467,36 +1469,51 @@ function AddEvent() {
             break;
           case eventFormRequiredFieldNames.CONTACT_TITLE:
             publishValidateFields.push('englishContactTitle', 'frenchContactTitle');
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.contact);
             break;
           case eventFormRequiredFieldNames.CONTACT_WEBSITE:
             publishValidateFields.push('contactWebsiteUrl');
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.contact);
             break;
           case eventFormRequiredFieldNames.PHONE_NUMBER:
             publishValidateFields.push('contactPhoneNumber');
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.contact);
             break;
           case eventFormRequiredFieldNames.EMAIL:
             publishValidateFields.push('contactEmail');
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.contact);
             break;
           case eventFormRequiredFieldNames.PERFORMER:
             publishValidateFields.push('performers');
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.performerWrap);
             break;
           case eventFormRequiredFieldNames.COLLABORATOR:
             publishValidateFields.push('supporters');
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.supporterWrap);
+
             break;
           case eventFormRequiredFieldNames.EVENT_LINK:
             publishValidateFields.push(otherInformationFieldNames.eventLink);
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.eventLink);
             break;
           case eventFormRequiredFieldNames.VIDEO_URL:
             publishValidateFields.push(otherInformationFieldNames.videoLink);
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.videoLink);
             break;
           case eventFormRequiredFieldNames.FACEBOOK_URL:
             publishValidateFields.push(otherInformationFieldNames.facebookLink);
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.facebookLinkWrap);
+
             break;
           case eventFormRequiredFieldNames.KEYWORDS:
             publishValidateFields.push(otherInformationFieldNames.keywords);
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
+
             break;
           case eventFormRequiredFieldNames.EVENT_ACCESSIBILITY:
             publishValidateFields.push('eventAccessibility');
+            initialAddedFields = initialAddedFields?.concat(eventAccessibilityFieldNames?.noteWrap);
+
             break;
           default:
             publishValidateFields.push(['dynamicFields', requiredField?.fieldName]);
@@ -1505,6 +1522,7 @@ function AddEvent() {
       });
       publishValidateFields = [...new Set(publishValidateFields)];
       setValidateFields(publishValidateFields);
+      setAddedFields(initialAddedFields);
     }
   }, [currentCalendarData]);
 
