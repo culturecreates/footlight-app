@@ -1482,6 +1482,12 @@ function AddEvent() {
           case eventFormRequiredFieldNames.EMAIL:
             publishValidateFields.push('contactEmail');
             break;
+          case eventFormRequiredFieldNames.PERFORMER:
+            publishValidateFields.push('performers');
+            break;
+          case eventFormRequiredFieldNames.COLLABORATOR:
+            publishValidateFields.push('supporters');
+            break;
           default:
             publishValidateFields.push(['dynamicFields', requiredField?.fieldName]);
             break;
@@ -3199,7 +3205,20 @@ function AddEvent() {
                     </p>
                   </Col>
                 </Row>
-                <Form.Item name="performers" initialValue={selectedPerformers}>
+                <Form.Item
+                  name="performers"
+                  initialValue={selectedPerformers}
+                  rules={[
+                    () => ({
+                      validator() {
+                        if (requiredFieldNames?.includes(eventFormRequiredFieldNames?.PERFORMER)) {
+                          if (selectedPerformers?.length > 0) {
+                            return Promise.resolve();
+                          } else return Promise.reject(new Error(t('common.validations.informationRequired')));
+                        }
+                      },
+                    }),
+                  ]}>
                   <KeyboardAccessibleLayout
                     setItem={(performer) => setSelectedPerformers([...selectedPerformers, performer])}
                     data={[performerList, performerImportsFootlightList, performerArtsdataList]}
@@ -3413,7 +3432,20 @@ function AddEvent() {
                     </p>
                   </Col>
                 </Row>
-                <Form.Item name="supporters" initialValue={selectedSupporters}>
+                <Form.Item
+                  name="supporters"
+                  initialValue={selectedSupporters}
+                  rules={[
+                    () => ({
+                      validator() {
+                        if (requiredFieldNames?.includes(eventFormRequiredFieldNames?.COLLABORATOR)) {
+                          if (selectedSupporters?.length > 0) {
+                            return Promise.resolve();
+                          } else return Promise.reject(new Error(t('common.validations.informationRequired')));
+                        }
+                      },
+                    }),
+                  ]}>
                   <KeyboardAccessibleLayout
                     setItem={(supporter) => setSelectedSupporters([...selectedSupporters, supporter])}
                     data={[supporterList, supporterImportsFootlightList, supporterArtsdataList]}

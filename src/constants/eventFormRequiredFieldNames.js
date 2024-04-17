@@ -19,4 +19,6 @@ export const eventFormRequiredFieldNames = {
   CONTACT_WEBSITE: 'WEBSITE',
   PHONE_NUMBER: 'PHONE_NUMBER',
   EMAIL: 'EMAIL',
+  PERFORMER: 'PERFORMER',
+  COLLABORATOR: 'COLLABORATOR',
 };
