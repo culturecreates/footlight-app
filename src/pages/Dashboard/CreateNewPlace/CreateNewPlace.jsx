@@ -773,7 +773,6 @@ function CreateNewPlace() {
           setDerivedEntitiesData(response?.data);
           setDerivedEntitiesDisplayStatus(true);
         }
-        console.log(response?.data?.organizations);
       });
     }
   }, []);
@@ -1628,16 +1627,16 @@ function CreateNewPlace() {
                         dependencies={[formFieldNames.STREET_ADDRESS_ENGLISH]}
                         rules={[
                           ({ getFieldValue }) => ({
-                            validator(_, value) {
+                            validator() {
                               if (
-                                value.trim() != '' ||
-                                getFieldValue(formFieldNames.STREET_ADDRESS_ENGLISH).trim() != ''
-                              ) {
-                                return Promise.resolve();
-                              } else
+                                !getFieldValue(formFieldNames.STREET_ADDRESS_FRENCH)?.trim() &&
+                                !getFieldValue(formFieldNames.STREET_ADDRESS_ENGLISH)?.trim()
+                              )
                                 return Promise.reject(
                                   new Error(t('dashboard.places.createNew.addPlace.validations.streetAddressRequired')),
                                 );
+
+                              return Promise.resolve();
                             },
                           }),
                         ]}>
@@ -1673,16 +1672,16 @@ function CreateNewPlace() {
                         dependencies={[formFieldNames.STREET_ADDRESS_FRENCH]}
                         rules={[
                           ({ getFieldValue }) => ({
-                            validator(_, value) {
+                            validator() {
                               if (
-                                value.trim() != '' ||
-                                getFieldValue(formFieldNames.STREET_ADDRESS_FRENCH).trim() != ''
-                              ) {
-                                return Promise.resolve();
-                              } else
+                                !getFieldValue(formFieldNames.STREET_ADDRESS_FRENCH)?.trim() &&
+                                !getFieldValue(formFieldNames.STREET_ADDRESS_ENGLISH)?.trim()
+                              )
                                 return Promise.reject(
                                   new Error(t('dashboard.places.createNew.addPlace.validations.streetAddressRequired')),
                                 );
+
+                              return Promise.resolve();
                             },
                           }),
                         ]}>
