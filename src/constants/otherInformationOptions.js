@@ -8,6 +8,7 @@ export const otherInformationFieldNames = {
   facebookLinkWrap: 'facebookLinkWrap',
   keywords: 'keywords',
   inLanguage: 'inLanguage',
+  facebookLink: 'facebookLink',
 };
 export const otherInformationOptions = [
   {

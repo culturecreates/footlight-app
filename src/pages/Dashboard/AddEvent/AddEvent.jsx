@@ -343,10 +343,6 @@ function AddEvent() {
             'dateRangePicker',
             'datePickerWrapper',
             'startDateRecur',
-            // 'contactWebsiteUrl',
-            'eventLink',
-            'videoLink',
-            'facebookLink',
             ...(eventId && eventData?.publishState === eventPublishState.PUBLISHED && type !== eventPublishState.DRAFT
               ? validateFields
               : []),
@@ -1487,6 +1483,21 @@ function AddEvent() {
             break;
           case eventFormRequiredFieldNames.COLLABORATOR:
             publishValidateFields.push('supporters');
+            break;
+          case eventFormRequiredFieldNames.EVENT_LINK:
+            publishValidateFields.push(otherInformationFieldNames.eventLink);
+            break;
+          case eventFormRequiredFieldNames.VIDEO_URL:
+            publishValidateFields.push(otherInformationFieldNames.videoLink);
+            break;
+          case eventFormRequiredFieldNames.FACEBOOK_URL:
+            publishValidateFields.push(otherInformationFieldNames.facebookLink);
+            break;
+          case eventFormRequiredFieldNames.KEYWORDS:
+            publishValidateFields.push(otherInformationFieldNames.keywords);
+            break;
+          case eventFormRequiredFieldNames.EVENT_ACCESSIBILITY:
+            publishValidateFields.push('eventAccessibility');
             break;
           default:
             publishValidateFields.push(['dynamicFields', requiredField?.fieldName]);
@@ -3659,6 +3670,10 @@ function AddEvent() {
                     type: 'url',
                     message: t('dashboard.events.addEditEvent.validations.url'),
                   },
+                  {
+                    required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EVENT_LINK),
+                    message: t('common.validations.informationRequired'),
+                  },
                 ]}
                 data-cy="form-item-event-link">
                 <StyledInput
@@ -3676,7 +3691,14 @@ function AddEvent() {
                 }}
                 label={t('dashboard.events.addEditEvent.otherInformation.videoLink')}
                 initialValue={eventData?.videoUrl}
-                rules={[{ validator: (rule, value) => validateVideoLink(rule, value) }]}
+                rules={[
+                  { validator: (rule, value) => validateVideoLink(rule, value) },
+
+                  {
+                    required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.VIDEO_URL),
+                    message: t('common.validations.informationRequired'),
+                  },
+                ]}
                 data-cy="form-item-video-link">
                 <StyledInput
                   addonBefore="URL"
@@ -3714,6 +3736,10 @@ function AddEvent() {
                       type: 'url',
                       message: t('dashboard.events.addEditEvent.validations.url'),
                     },
+                    {
+                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.FACEBOOK_URL),
+                      message: t('common.validations.informationRequired'),
+                    },
                   ]}
                   data-cy="form-item-facebook-link">
                   <StyledInput
@@ -3735,6 +3761,12 @@ function AddEvent() {
                 }}
                 label={t('dashboard.events.addEditEvent.otherInformation.keywords')}
                 initialValue={eventData?.keywords}
+                rules={[
+                  {
+                    required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.KEYWORDS),
+                    message: t('common.validations.informationRequired'),
+                  },
+                ]}
                 data-cy="form-item-select-keywords-label">
                 <SelectOption
                   mode="tags"
@@ -3841,7 +3873,13 @@ function AddEvent() {
                     display:
                       !taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false) && 'none',
                   }}
-                  help={
+                  rules={[
+                    {
+                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EVENT_ACCESSIBILITY),
+                      message: t('common.validations.informationRequired'),
+                    },
+                  ]}
+                  extra={
                     <p
                       className="add-event-date-heading"
                       style={{ fontSize: '12px' }}
