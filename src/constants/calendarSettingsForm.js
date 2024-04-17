@@ -128,8 +128,24 @@ const aspectRatios = [
     value: '1:1',
   },
   {
+    label: '2:1',
+    value: '2:1',
+  },
+  {
     label: '2:3',
     value: '2:3',
+  },
+  {
+    label: '3:1',
+    value: '3:1',
+  },
+  {
+    label: '3:2',
+    value: '3:2',
+  },
+  {
+    label: '4:1',
+    value: '4:1',
   },
   {
     label: '4:3',
@@ -142,6 +158,18 @@ const aspectRatios = [
   {
     label: '16:9',
     value: '16:9',
+  },
+  {
+    label: '9:16',
+    value: '9:16',
+  },
+  {
+    label: '21:9',
+    value: '21:9',
+  },
+  {
+    label: '9:21',
+    value: '9:21',
   },
 ];
 
