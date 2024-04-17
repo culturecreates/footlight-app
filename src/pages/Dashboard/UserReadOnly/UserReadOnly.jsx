@@ -232,6 +232,7 @@ const UserReadOnly = () => {
                                       role={calendar?.role}
                                       disabled={calendar?.disabled}
                                       organizationIds={calendar?.organizations}
+                                      peopleIds={calendar?.people}
                                     />
                                   );
                                 })}

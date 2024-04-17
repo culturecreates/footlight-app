@@ -881,6 +881,7 @@
         "leave": "Quitter",
         "role": "Role",
         "organizationHelp": "Give this user edit access to one or more organizations.",
+        "peopleHelp": "Donnez à cet utilisateur un accès de modification à une ou plusieurs personnes.",
         "passwordModal": {
           "btnText": "Changer le mot de passe",
           "Password": "Mot de passe",
