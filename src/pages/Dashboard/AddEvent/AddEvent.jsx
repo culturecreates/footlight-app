@@ -1408,7 +1408,6 @@ function AddEvent() {
   useEffect(() => {
     if (currentCalendarData) {
       let publishValidateFields = [];
-      console.log(requiredFields);
       requiredFields?.map((requiredField) => {
         switch (requiredField?.fieldName) {
           case eventFormRequiredFieldNames.NAME:
