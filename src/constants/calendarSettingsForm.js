@@ -269,8 +269,8 @@ export const calendarSettingsFormFields = {
         />
       ),
       rules: [REQUIRED_MESSAGE],
-      hidden: false,
-      required: true,
+      hidden: true,
+      required: false,
     },
     {
       name: '',

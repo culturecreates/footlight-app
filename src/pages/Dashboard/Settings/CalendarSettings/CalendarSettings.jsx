@@ -308,7 +308,8 @@ function CalendarSettings() {
                     key={index}
                     rules={item.rules}
                     required={item.required}
-                    name={item.name}>
+                    name={item.name}
+                    hidden={item.hidden}>
                     {item.field({
                       form,
                       isCrop: false,
