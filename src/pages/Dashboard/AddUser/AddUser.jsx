@@ -271,6 +271,11 @@ const AddUser = () => {
           organizations = organizations?.map((organizer) => {
             return { entityId: organizer?.value };
           });
+
+          let people = values?.people[calendarId];
+          people = people?.map((organizer) => {
+            return { entityId: organizer?.value };
+          });
           let userType = values?.userType[calendarId];
           inviteUser({
             firstName: values.firstName?.trim(),
@@ -280,6 +285,7 @@ const AddUser = () => {
             language: values?.languagePreference,
             calendarId,
             organizationIds: organizations,
+            peopleIds: people,
           }).then((res) => {
             if (res?.data?.statusCode == 202) {
               notification.success({
@@ -310,6 +316,11 @@ const AddUser = () => {
         .then((values) => {
           let organizations = values?.organizers[calendarId];
           organizations = organizations?.map((organizer) => {
+            return { entityId: organizer?.value };
+          });
+
+          let people = values?.people[calendarId];
+          people = people?.map((organizer) => {
             return { entityId: organizer?.value };
           });
           let userType = values?.userType[calendarId];
@@ -406,6 +417,7 @@ const AddUser = () => {
                   role: userType,
                   calendarId,
                   organizations,
+                  people,
                 },
               },
             })
@@ -876,6 +888,7 @@ const AddUser = () => {
                                       readOnly={adminCheckHandler() ? false : true}
                                       disabled={calendar?.disabled}
                                       organizationIds={calendar?.organizations}
+                                      peopleIds={calendar?.people}
                                       isCurrentUser={isCurrentUser}
                                       removeCalendarHandler={() => {
                                         removeCalendarHandler({ item: calendar, index });
