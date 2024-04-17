@@ -1476,6 +1476,12 @@ function AddEvent() {
           case eventFormRequiredFieldNames.CONTACT_WEBSITE:
             publishValidateFields.push('contactWebsiteUrl');
             break;
+          case eventFormRequiredFieldNames.PHONE_NUMBER:
+            publishValidateFields.push('contactPhoneNumber');
+            break;
+          case eventFormRequiredFieldNames.EMAIL:
+            publishValidateFields.push('contactEmail');
+            break;
           default:
             publishValidateFields.push(['dynamicFields', requiredField?.fieldName]);
             break;
@@ -3080,6 +3086,12 @@ function AddEvent() {
                   className="subheading-wrap"
                   label={t('dashboard.events.addEditEvent.otherInformation.contact.phoneNumber')}
                   initialValue={eventData?.contactPoint?.telephone}
+                  rules={[
+                    {
+                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.PHONE_NUMBER),
+                      message: t('common.validations.informationRequired'),
+                    },
+                  ]}
                   data-cy="form-item-event-contact-phone-number-label">
                   <StyledInput
                     placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderPhoneNumber')}
@@ -3095,6 +3107,10 @@ function AddEvent() {
                     {
                       type: 'email',
                       message: t('login.validations.invalidEmail'),
+                    },
+                    {
+                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EMAIL),
+                      message: t('common.validations.informationRequired'),
                     },
                   ]}
                   data-cy="form-item-event-contact-email-label">
