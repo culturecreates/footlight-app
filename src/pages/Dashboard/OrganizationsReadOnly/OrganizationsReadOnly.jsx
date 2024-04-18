@@ -105,7 +105,6 @@ function OrganizationsReadOnly() {
           setDerivedEntitiesData(response?.data);
           setDerivedEntitiesDisplayStatus(true);
         }
-        console.log('entityDetailsData', response);
       });
     }
   }, [organizationId]);
