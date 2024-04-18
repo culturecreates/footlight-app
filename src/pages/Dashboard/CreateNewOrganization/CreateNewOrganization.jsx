@@ -148,6 +148,10 @@ function CreateNewOrganization() {
     return calendar.calendarId === calendarId;
   });
 
+  let standardMandatoryFieldNames = formFieldProperties?.mandatoryFields?.standardFields?.map(
+    (field) => field?.fieldName,
+  );
+
   let externalEntityData = externalCalendarEntityData?.length > 0 && externalCalendarEntityData[0];
 
   const adminCheckHandler = () => {
@@ -258,7 +262,7 @@ function CreateNewOrganization() {
     //       ?.map((link, index) => ['socialMediaLinks', index]),
     //   );
     // }
-    let mandatoryFields = formFieldProperties?.mandatoryFields?.standardFields?.map((field) => field?.fieldName);
+    let mandatoryFields = standardMandatoryFieldNames;
     validateFieldList = validateFieldList?.concat(
       formFields
         ?.filter((field) => mandatoryFields?.includes(field?.name))
@@ -816,6 +820,16 @@ function CreateNewOrganization() {
         let organizationKeys = Object.keys(externalCalendarEntityData[0]);
         if (organizationKeys?.length > 0) setAddedFields(organizationKeys);
       }
+      standardMandatoryFieldNames?.forEach((field) => {
+        switch (field) {
+          case 'IMAGE':
+            setAddedFields((addedFields) => [...addedFields, 'image']);
+            break;
+
+          default:
+            break;
+        }
+      });
     }
   }, [organizationLoading, currentCalendarData, externalEntityLoading]);
 
