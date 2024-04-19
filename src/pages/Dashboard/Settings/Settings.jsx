@@ -19,8 +19,7 @@ const Settings = () => {
   const { user } = useSelector(getUserDetails);
   const { calendarId } = useParams();
   const [
-    // eslint-disable-next-line no-unused-vars
-    _currentCalendarData, // eslint-disable-next-line no-unused-vars
+    currentCalendarData, // eslint-disable-next-line no-unused-vars
     _pageNumber, // eslint-disable-next-line no-unused-vars
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
@@ -71,7 +70,7 @@ const Settings = () => {
     {
       label: t('dashboard.settings.tab3'),
       key: 'tab3',
-      children: <CalendarSettings />,
+      children: currentCalendarData && <CalendarSettings />,
       disabled: false,
       adminOnly: true,
     },
