@@ -302,7 +302,7 @@ export const calendarSettingsFormFields = {
                           }
                         />
                         <Button type="text" icon={<PlusOutlined />} onClick={(e) => addItem(e, 'large')}>
-                          Custom
+                          {t('dashboard.settings.calendarSettings.imageAspectRatio.custom')}
                         </Button>
                       </Space>
                     </>
@@ -355,7 +355,7 @@ export const calendarSettingsFormFields = {
                           }
                         />
                         <Button type="text" icon={<PlusOutlined />} onClick={(e) => addItem(e, 'thumbnail')}>
-                          Custom
+                          {t('dashboard.settings.calendarSettings.imageAspectRatio.custom')}
                         </Button>
                       </Space>
                     </>

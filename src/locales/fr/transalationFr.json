@@ -964,7 +964,8 @@
         "imageAspectRatio": {
           "imageAspectRatio": "Formats des image",
           "thumbnail": "Vignette",
-          "large": "Grande image"
+          "large": "Grande image",
+          "custom": "Personnalisé"
         },
         "imageMaxWidth": {
           "imageMaxWidth": "Image maximum width",

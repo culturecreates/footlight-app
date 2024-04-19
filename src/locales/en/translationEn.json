@@ -969,7 +969,8 @@
         "imageAspectRatio": {
           "imageAspectRatio": "Image aspect ratio",
           "thumbnail": "Thumbnail image",
-          "large": "Large image"
+          "large": "Large image",
+          "custom": "Custom"
         },
         "imageMaxWidth": {
           "imageMaxWidth": "Image maximum width",
