@@ -2,10 +2,10 @@ import { Trans, Translation } from 'react-i18next';
 import StyledInput from '../components/Input/Common';
 import NoContent from '../components/NoContent/NoContent';
 import Tags from '../components/Tags/Common/Tags';
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import TreeSelectOption from '../components/TreeSelectOption';
 import Select from '../components/Select';
-import { Col, Form, Row } from 'antd';
+import { Col, Form, Row, Button, Space, Divider } from 'antd';
 import ImageUpload from '../components/ImageUpload';
 import TextArea from 'antd/lib/input/TextArea';
 import BilingualInput from '../components/BilingualInput';
@@ -121,69 +121,6 @@ const REQUIRED_MESSAGE = {
   required: true,
   message: <Trans i18nKey="common.validations.informationRequired" />,
 };
-
-const aspectRatios = [
-  {
-    label: '1:1',
-    value: '1:1',
-    title: '1:1',
-  },
-  {
-    label: '2:1',
-    value: '2:1',
-    title: '2:1',
-  },
-  {
-    label: '2:3',
-    value: '2:3',
-    title: '2:3',
-  },
-  {
-    label: '3:1',
-    value: '3:1',
-    title: '3:1',
-  },
-  {
-    label: '3:2',
-    value: '3:2',
-    title: '3:2',
-  },
-  {
-    label: '4:1',
-    value: '4:1',
-    title: '4:1',
-  },
-  {
-    label: '4:3',
-    value: '4:3',
-    title: '4:3',
-  },
-  {
-    label: '5:4',
-    value: '5:4',
-    title: '5:4',
-  },
-  {
-    label: '16:9',
-    value: '16:9',
-    title: '16:9',
-  },
-  {
-    label: '9:16',
-    value: '9:16',
-    title: '9:16',
-  },
-  {
-    label: '21:9',
-    value: '21:9',
-    title: '21:9',
-  },
-  {
-    label: '9:21',
-    value: '9:21',
-    title: '9:21',
-  },
-];
 
 export const calendarSettingsFormFields = {
   GENERAL_SETTINGS: [
@@ -317,7 +254,20 @@ export const calendarSettingsFormFields = {
       label: (
         <Translation>{(t) => t('dashboard.settings.calendarSettings.imageAspectRatio.imageAspectRatio')}</Translation>
       ),
-      field: ({ t }) => {
+      field: ({ t, aspectRatios, customRatio, setCustomRatio, setAspectRatioOptions }) => {
+        const addItem = (e, type) => {
+          e.preventDefault();
+          if (aspectRatios.find((item) => item.value === customRatio[type])) return;
+          else
+            setAspectRatioOptions([
+              ...aspectRatios,
+              { label: customRatio[type], value: customRatio[type], title: customRatio[type] },
+            ]);
+          setCustomRatio({
+            large: '',
+            thumbnail: '',
+          });
+        };
         return (
           <Row gutter={[16, 0]}>
             <Col span={12}>
@@ -337,6 +287,26 @@ export const calendarSettingsFormFields = {
                   notFoundContent={<NoContent />}
                   clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                   treeData={aspectRatios}
+                  dropdownRender={(menu) => (
+                    <>
+                      {menu}
+                      <Divider style={{ margin: '8px 0' }} />
+                      <Space style={{ padding: '0 8px 4px' }}>
+                        <StyledInput
+                          value={customRatio.large}
+                          onChange={(e) =>
+                            setCustomRatio({
+                              ...customRatio,
+                              large: e.target.value,
+                            })
+                          }
+                        />
+                        <Button type="text" icon={<PlusOutlined />} onClick={(e) => addItem(e, 'large')}>
+                          Custom
+                        </Button>
+                      </Space>
+                    </>
+                  )}
                   data-cy="treeselect-calendar-image-aspect-ratio"
                   tagRender={(props) => {
                     const { closable, onClose, label } = props;
@@ -370,6 +340,26 @@ export const calendarSettingsFormFields = {
                   notFoundContent={<NoContent />}
                   clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                   treeData={aspectRatios}
+                  dropdownRender={(menu) => (
+                    <>
+                      {menu}
+                      <Divider style={{ margin: '8px 0' }} />
+                      <Space style={{ padding: '0 8px 4px' }}>
+                        <StyledInput
+                          value={customRatio.thumbnail}
+                          onChange={(e) =>
+                            setCustomRatio({
+                              ...customRatio,
+                              thumbnail: e.target.value,
+                            })
+                          }
+                        />
+                        <Button type="text" icon={<PlusOutlined />} onClick={(e) => addItem(e, 'thumbnail')}>
+                          Custom
+                        </Button>
+                      </Space>
+                    </>
+                  )}
                   data-cy="treeselect-calendar-filter-events"
                   tagRender={(props) => {
                     const { closable, onClose, label } = props;

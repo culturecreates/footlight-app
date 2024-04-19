@@ -42,6 +42,11 @@ function CalendarSettings() {
   const [updateCalendar] = useUpdateCalendarMutation();
   const [addImage] = useAddImageMutation();
 
+  const [customRatio, setCustomRatio] = React.useState({
+    large: '',
+    thumbnail: '',
+  });
+
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const filterOptions = (data, taxonomyClass) => {
@@ -103,6 +108,34 @@ function CalendarSettings() {
     currentCalendarData?.imageConfig?.length > 0
       ? currentCalendarData?.imageConfig?.filter((config) => config?.entityName == entitiesClass.event)[0]
       : null;
+  let aspectRatioSet = new Set([
+    '1:1',
+    '2:1',
+    '2:3',
+    '3:1',
+    '3:2',
+    '4:1',
+    '4:3',
+    '5:4',
+    '16:9',
+    '9:16',
+    '21:9',
+    '9:21',
+    imageConfig?.thumbnail?.aspectRatio,
+    imageConfig?.large?.aspectRatio,
+  ]);
+
+  let aspectRatios = Array.from(aspectRatioSet)
+    .map((ratio) => {
+      return {
+        label: ratio,
+        value: ratio,
+        title: ratio,
+      };
+    })
+    ?.filter((ratio) => ratio.value);
+
+  const [aspectRatioOptions, setAspectRatioOptions] = React.useState(aspectRatios);
 
   const initialValues = {
     calendarNameEn: currentCalendarData?.name?.en,
@@ -318,6 +351,10 @@ function CalendarSettings() {
                       largeMaxWidth: imageConfig?.large?.maxWidth,
                       thumbnailMaxWidth: imageConfig?.thumbnail?.maxWidth,
                       logoUri: currentCalendarData?.logo?.original?.uri,
+                      aspectRatios: aspectRatioOptions,
+                      setAspectRatioOptions,
+                      customRatio,
+                      setCustomRatio,
                       t,
                     })}
                   </Form.Item>
