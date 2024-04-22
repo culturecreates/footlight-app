@@ -1,94 +1,18 @@
-import React, { useEffect, cloneElement, useState, useMemo } from 'react';
+import React from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { contentLanguage } from '../../constants/contentLanguage';
-import { languageFallbackSetup } from '../../utils/languageFallbackSetup';
 import LiteralBadge from '../Badge/LiteralBadge';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { getActiveFallbackFieldsInfo, setActiveFallbackFieldsInfo } from '../../redux/reducer/languageLiteralSlice';
+import useModifyChildernWithFallbackLanguage from '../../hooks/useModifyChildernWithFallbackLanguage';
 
 function ContentLanguageInput(props) {
-  const { children, calendarContentLanguage, isFieldsDirty } = props;
+  const { children, calendarContentLanguage } = props;
   const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
 
   // eslint-disable-next-line no-unused-vars
   const [currentCalendarData, _pageNumber, _setPageNumber, _getCalendar] = useOutletContext();
 
-  const [fallbackStatus, setFallbackStatus] = useState(null);
-
-  useEffect(() => {
-    const combinedName = children?.props?.children
-      ?.map((child) => {
-        if (child?.props?.name) return child?.props?.name;
-        if (child?.props?.formName) return child?.props?.formName;
-        else return '';
-      })
-      .join('');
-
-    const modifiedActiveFallbackFieldsInfo = {
-      ...activeFallbackFieldsInfo,
-      [combinedName]: fallbackStatus,
-    };
-
-    if (fallbackStatus?.fr?.tagDisplayStatus || fallbackStatus?.en?.tagDisplayStatus) {
-      dispatch(setActiveFallbackFieldsInfo(modifiedActiveFallbackFieldsInfo));
-    } else if (isFieldsDirty?.en || isFieldsDirty?.fr) {
-      // eslint-disable-next-line no-unused-vars
-      const { [combinedName]: _, ...rest } = activeFallbackFieldsInfo;
-      dispatch(setActiveFallbackFieldsInfo(rest));
-    }
-  }, [fallbackStatus]);
-
-  useEffect(() => {
-    if (!currentCalendarData) return;
-
-    const status = languageFallbackSetup({
-      currentCalendarData,
-      fieldData: children?.props?.fieldData,
-      languageFallbacks: currentCalendarData.languageFallbacks,
-      isFieldsDirty: isFieldsDirty,
-    });
-
-    // Only update fallbackStatus if it has actually changed
-    if (JSON.stringify(status) !== JSON.stringify(fallbackStatus)) {
-      setFallbackStatus(status);
-    }
-  }, [currentCalendarData, children, props.isFieldsDirty]);
-
-  const modifiedChildren = useMemo(() => {
-    if (!children || !fallbackStatus) return children;
-
-    return React.Children.map(children, (child) => {
-      let modifiedChild = child;
-
-      if (child && child.props && child.props.children) {
-        modifiedChild = cloneElement(child, {
-          ...child.props,
-          fallbackStatus: fallbackStatus,
-          children: React.Children.map(child.props.children, (innerChild) => {
-            let modifiedInnerChild = innerChild;
-            if (innerChild?.key === contentLanguage.FRENCH && !innerChild?.props?.initialValue) {
-              modifiedInnerChild = cloneElement(innerChild, {
-                ...innerChild.props,
-                className: 'bilingual-child-with-badge',
-                initialValue: fallbackStatus['fr']?.fallbackLiteralValue,
-              });
-            } else if (innerChild?.key === contentLanguage.ENGLISH && !innerChild?.props?.initialValue) {
-              modifiedInnerChild = cloneElement(innerChild, {
-                ...innerChild.props,
-                className: 'bilingual-child-with-badge',
-                initialValue: fallbackStatus['en']?.fallbackLiteralValue,
-              });
-            }
-            return modifiedInnerChild;
-          }),
-        });
-      }
-      return modifiedChild;
-    });
-  }, [children, fallbackStatus]);
+  const { fallbackStatus, modifiedChildren } = useModifyChildernWithFallbackLanguage(props, currentCalendarData);
 
   if (!modifiedChildren) return children;
 
@@ -110,7 +34,7 @@ function ContentLanguageInput(props) {
     );
   } else if (calendarContentLanguage === contentLanguage.ENGLISH) {
     const promptText =
-      fallbackStatus?.fr?.fallbackLiteralKey === '?'
+      fallbackStatus?.en?.fallbackLiteralKey === '?'
         ? t('common.forms.languageLiterals.unKnownLanguagePromptText')
         : t('common.forms.languageLiterals.knownLanguagePromptText');
     return (

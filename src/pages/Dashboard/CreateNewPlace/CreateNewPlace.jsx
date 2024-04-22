@@ -84,6 +84,7 @@ import { sameAsTypes } from '../../../constants/sameAsTypes';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 import moment from 'moment';
 import {
+  clearActiveFallbackFieldsInfo,
   getActiveFallbackFieldsInfo,
   getLanguageLiteralBannerDisplayStatus,
   setActiveFallbackFieldsInfo,
@@ -1103,7 +1104,7 @@ function CreateNewPlace() {
                                   label={t('common.dismiss')}
                                   onClick={() => {
                                     dispatch(setLanguageLiteralBannerDisplayStatus(false));
-                                    dispatch(setActiveFallbackFieldsInfo({}));
+                                    dispatch(clearActiveFallbackFieldsInfo({}));
                                   }}
                                 />
                               }

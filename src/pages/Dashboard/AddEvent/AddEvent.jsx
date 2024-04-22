@@ -96,11 +96,13 @@ import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout'
 import { getEmbedUrl, validateVimeoURL, validateYouTubeURL } from '../../../utils/getEmbedVideoUrl';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import {
+  clearActiveFallbackFieldsInfo,
   getActiveFallbackFieldsInfo,
   getLanguageLiteralBannerDisplayStatus,
   setActiveFallbackFieldsInfo,
   setLanguageLiteralBannerDisplayStatus,
 } from '../../../redux/reducer/languageLiteralSlice';
+import { removeUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 
 const { TextArea } = Input;
 
@@ -452,13 +454,28 @@ function AddEvent() {
             };
           }
           if (values?.frenchVirtualLocation || values?.englishVirtualLocation || values?.virtualLocationOnlineLink) {
+            const englishVirtualLocation = removeUneditedFallbackValues({
+              values: values?.englishVirtualLocation?.trim(),
+              activeFallbackFieldsInfo,
+              fieldName: 'frenchVirtualLocation-englishVirtualLocation',
+              property: 'en',
+            });
+            const frenchVirtualLocation = removeUneditedFallbackValues({
+              values: values?.frenchVirtualLocation?.trim(),
+              activeFallbackFieldsInfo,
+              fieldName: 'frenchVirtualLocation-englishVirtualLocation',
+              property: 'fr',
+            });
+
+            const name = {};
+
+            if (frenchVirtualLocation) name['fr'] = frenchVirtualLocation;
+            if (englishVirtualLocation) name['en'] = englishVirtualLocation;
+
             locationId = {
               ...locationId,
               virtualLocation: {
-                name: {
-                  en: values?.englishVirtualLocation?.trim(),
-                  fr: values?.frenchVirtualLocation?.trim(),
-                },
+                name,
                 description: {},
                 dynamicFields: [],
                 url: {
@@ -475,8 +492,20 @@ function AddEvent() {
             values?.contactPhoneNumber
           ) {
             const name = {};
-            if (values?.englishContactTitle?.trim() !== '') name['en'] = values?.englishContactTitle?.trim();
-            if (values?.frenchContactTitle?.trim() !== '') name['fr'] = values?.frenchContactTitle?.trim();
+            const englishContactTitle = removeUneditedFallbackValues({
+              values: values?.englishContactTitle?.trim(),
+              activeFallbackFieldsInfo,
+              fieldName: 'frenchContactTitle-englishContactTitle',
+              property: 'en',
+            });
+            const frenchContactTitle = removeUneditedFallbackValues({
+              values: values?.frenchContactTitle?.trim(),
+              activeFallbackFieldsInfo,
+              fieldName: 'frenchContactTitle-englishContactTitle',
+              property: 'fr',
+            });
+            if (frenchContactTitle) name['en'] = frenchContactTitle;
+            if (englishContactTitle) name['fr'] = englishContactTitle;
 
             contactPoint = {
               name,
@@ -508,8 +537,22 @@ function AddEvent() {
 
           if (ticketType) {
             const name = {};
-            if (values?.englishTicketNote?.trim() !== '') name['en'] = values?.englishTicketNote?.trim();
-            if (values?.frenchTicketNote?.trim() !== '') name['fr'] = values?.frenchTicketNote?.trim();
+            const englishTicketNote = removeUneditedFallbackValues({
+              values: values?.englishTicketNote?.trim() !== '',
+              activeFallbackFieldsInfo,
+              fieldName: 'frenchTicketNote-englishTicketNote',
+              property: 'en',
+            });
+            const frenchTicketNote = removeUneditedFallbackValues({
+              values: values?.frenchTicketNote?.trim(),
+              activeFallbackFieldsInfo,
+              fieldName: 'frenchTicketNote-englishTicketNote',
+              property: 'fr',
+            });
+
+            if (englishTicketNote) name['en'] = englishTicketNote;
+            if (frenchTicketNote) name['fr'] = frenchTicketNote;
+
             offerConfiguration = {
               category: ticketType,
               ...((values?.englishTicketNote || values?.frenchTicketNote) && {
@@ -601,20 +644,47 @@ function AddEvent() {
             });
           }
 
-          if (values?.frenchEditor)
+          const descriptionFr = removeUneditedFallbackValues({
+            values: values?.frenchEditor?.trim(),
+            activeFallbackFieldsInfo,
+            fieldName: 'frenchEditor-englishEditor',
+            property: 'fr',
+          });
+          const descriptionEn = removeUneditedFallbackValues({
+            values: values?.englishEditor?.trim(),
+            activeFallbackFieldsInfo,
+            fieldName: 'frenchEditor-englishEditor',
+            property: 'en',
+          });
+
+          if (descriptionFr)
             description = {
-              fr: values?.frenchEditor,
+              fr: descriptionFr,
             };
-          if (values?.englishEditor)
+          if (descriptionEn)
             description = {
               ...description,
-              en: values?.englishEditor,
+              en: descriptionEn,
             };
 
-          if (values?.english?.trim() !== '') name['en'] = values?.english?.trim();
-          if (values?.french?.trim() !== '') name['fr'] = values?.french?.trim();
+          const nameFr = removeUneditedFallbackValues({
+            values: values?.french?.trim(),
+            activeFallbackFieldsInfo,
+            fieldName: 'french-english',
+            property: 'fr',
+          });
+          const nameEn = removeUneditedFallbackValues({
+            values: values?.english?.trim(),
+            activeFallbackFieldsInfo,
+            fieldName: 'french-english',
+            property: 'en',
+          });
+
+          if (nameEn) name['en'] = nameEn;
+          if (nameFr) name['fr'] = nameFr;
+
           eventObj = {
-            name,
+            name: { ...name, ...eventData?.name },
             ...(values?.startTime && { startDateTime }),
             ...(!values?.startTime && { startDate: startDateTime }),
             ...(values?.endTime && { endDateTime }),
@@ -1718,12 +1788,12 @@ function AddEvent() {
                         showIcon={false}
                         action={
                           <OutlinedButton
-                            data-cy="button-change-interface-language"
+                            data-cy="button-change-fallback-banner"
                             size="large"
                             label={t('common.dismiss')}
                             onClick={() => {
                               dispatch(setLanguageLiteralBannerDisplayStatus(false));
-                              dispatch(setActiveFallbackFieldsInfo({}));
+                              dispatch(clearActiveFallbackFieldsInfo({}));
                             }}
                           />
                         }

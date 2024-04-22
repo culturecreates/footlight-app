@@ -13,12 +13,16 @@ export const languageLiteralSlice = createSlice({
       state.status = action.payload;
     },
     setActiveFallbackFieldsInfo: (state, action) => {
-      state.activeFallbackFieldsInfo = action.payload;
+      state.activeFallbackFieldsInfo = { ...state.activeFallbackFieldsInfo, ...action.payload };
+    },
+    clearActiveFallbackFieldsInfo: (state) => {
+      state.activeFallbackFieldsInfo = {};
     },
   },
 });
 
-export const { setLanguageLiteralBannerDisplayStatus, setActiveFallbackFieldsInfo } = languageLiteralSlice.actions;
+export const { setLanguageLiteralBannerDisplayStatus, setActiveFallbackFieldsInfo, clearActiveFallbackFieldsInfo } =
+  languageLiteralSlice.actions;
 
 export const getLanguageLiteralBannerDisplayStatus = (state) => state?.languageLiteral?.status;
 export const getActiveFallbackFieldsInfo = (state) => state?.languageLiteral?.activeFallbackFieldsInfo;

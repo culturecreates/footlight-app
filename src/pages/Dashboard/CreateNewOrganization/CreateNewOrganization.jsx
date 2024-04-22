@@ -65,6 +65,7 @@ import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout'
 import SelectionItem from '../../../components/List/SelectionItem';
 import moment from 'moment';
 import {
+  clearActiveFallbackFieldsInfo,
   getActiveFallbackFieldsInfo,
   getLanguageLiteralBannerDisplayStatus,
   setActiveFallbackFieldsInfo,
@@ -945,7 +946,7 @@ function CreateNewOrganization() {
                                   label={t('common.dismiss')}
                                   onClick={() => {
                                     dispatch(setLanguageLiteralBannerDisplayStatus(false));
-                                    dispatch(setActiveFallbackFieldsInfo({}));
+                                    dispatch(clearActiveFallbackFieldsInfo({}));
                                   }}
                                 />
                               }

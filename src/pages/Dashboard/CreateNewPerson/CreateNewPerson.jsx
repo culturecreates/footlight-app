@@ -45,6 +45,7 @@ import { sameAsTypes } from '../../../constants/sameAsTypes';
 import SelectionItem from '../../../components/List/SelectionItem';
 import moment from 'moment';
 import {
+  clearActiveFallbackFieldsInfo,
   getActiveFallbackFieldsInfo,
   getLanguageLiteralBannerDisplayStatus,
   setActiveFallbackFieldsInfo,
@@ -554,7 +555,7 @@ function CreateNewPerson() {
                                   label={t('common.dismiss')}
                                   onClick={() => {
                                     dispatch(setLanguageLiteralBannerDisplayStatus(false));
-                                    dispatch(setActiveFallbackFieldsInfo({}));
+                                    dispatch(clearActiveFallbackFieldsInfo({}));
                                   }}
                                 />
                               }
