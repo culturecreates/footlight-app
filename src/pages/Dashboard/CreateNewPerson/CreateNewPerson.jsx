@@ -385,7 +385,7 @@ function CreateNewPerson() {
   useEffect(() => {
     if (calendarId && currentCalendarData) {
       if (personData) {
-        if (routinghandler(user, calendarId, personData?.createdByUserId, null, true)) {
+        if (routinghandler(user, calendarId, personData?.createdByUserId, null, true, personData?.id)) {
           if (personData?.image) {
             form.setFieldsValue({
               imageCrop: {

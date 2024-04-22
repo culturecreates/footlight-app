@@ -893,6 +893,7 @@
         "leave": "Leave",
         "role": "Role",
         "organizationHelp": "Give this user edit access to one or more organizations.",
+        "peopleHelp": "Give this user edit access to one or more people.",
         "passwordModal": {
           "btnText": "Change password",
           "Password": "Password",

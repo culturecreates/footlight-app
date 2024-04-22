@@ -14,6 +14,11 @@ export const routinghandler = (user, calendarId, creatorId, publishState = '', i
           entityAccess = true;
         }
       });
+      calendar?.people?.forEach((person) => {
+        if (person?.entityId === entityId) {
+          entityAccess = true;
+        }
+      });
     });
   }
 

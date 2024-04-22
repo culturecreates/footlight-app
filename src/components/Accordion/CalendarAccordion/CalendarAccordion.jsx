@@ -21,6 +21,8 @@ import EventsSearch from '../../Search/Events/EventsSearch';
 import SelectionItem from '../../List/SelectionItem';
 import { sortByOptionsOrgsPlacesPerson } from '../../../constants/sortByOptions';
 import { useLazyGetAllOrganizationQuery } from '../../../services/organization';
+import { UserOutlined } from '@ant-design/icons';
+import { useLazyGetAllPeopleQuery } from '../../../services/people';
 
 const { Panel } = Collapse;
 
@@ -32,6 +34,7 @@ function CalendarAccordion(props) {
     form,
     disabled,
     organizationIds,
+    peopleIds,
     readOnly,
     removeCalendarHandler,
     isCurrentUser,
@@ -57,12 +60,25 @@ function CalendarAccordion(props) {
     sessionId: timestampRef,
   });
 
+  let queryPerson = new URLSearchParams();
+  queryPerson.append('classes', entitiesClass.person);
+  const { currentData: initialPersonEntities, isLoading: initialPersonEntityLoading } = useGetEntitiesQuery({
+    calendarId,
+    searchKey: '',
+    classes: decodeURIComponent(queryPerson.toString()),
+    sessionId: timestampRef,
+  });
+
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
   const [getAllOrganization] = useLazyGetAllOrganizationQuery();
+  const [getAllPeople] = useLazyGetAllPeopleQuery();
 
   const [organizersList, setOrganizersList] = useState([]);
+  const [peopleList, setPeopleList] = useState([]);
   const [selectedOrganizers, setSelectedOrganizers] = useState([]);
+  const [selectedPeople, setSelectedPeople] = useState([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isPeoplePopoverOpen, setIsPeoplePopoverOpen] = useState(false);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -76,6 +92,9 @@ function CalendarAccordion(props) {
         if (type == 'organizers') {
           setOrganizersList(treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS));
         }
+        if (type == 'people') {
+          setPeopleList(treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS));
+        }
       })
       .catch((error) => console.log(error));
   };
@@ -87,10 +106,20 @@ function CalendarAccordion(props) {
   }, [selectedOrganizers]);
 
   useEffect(() => {
+    if (selectedPeople && !readOnly) form.setFieldValue(['people', selectedCalendarId], selectedPeople);
+  }, [selectedPeople]);
+
+  useEffect(() => {
     if (initialEntities && currentCalendarData) {
       setOrganizersList(treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS));
     }
   }, [initialEntityLoading, currentCalendarData]);
+
+  useEffect(() => {
+    if (initialPersonEntities && currentCalendarData) {
+      setPeopleList(treeEntitiesOption(initialPersonEntities, user, calendarContentLanguage, sourceOptions.CMS));
+    }
+  }, [initialPersonEntityLoading, currentCalendarData]);
 
   useEffect(() => {
     if (organizationIds?.length > 0) {
@@ -121,6 +150,38 @@ function CalendarAccordion(props) {
         .catch((error) => console.log(error));
     } else setSelectedOrganizers([]);
   }, [organizationIds]);
+
+  useEffect(() => {
+    if (peopleIds?.length > 0) {
+      let peopleIdAsParams = new URLSearchParams();
+      peopleIds?.forEach((people) => peopleIdAsParams.append('ids', people?.entityId));
+
+      getAllPeople({
+        calendarId,
+        limit: 30,
+        sessionId: timestampRef,
+        pageNumber: 1,
+        query: '',
+        sort: `sort=asc(${sortByOptionsOrgsPlacesPerson[0]?.key})`,
+        ids: peopleIdAsParams,
+      })
+        .unwrap()
+        .then((response) => {
+          if (response?.data?.length > 0)
+            setSelectedPeople(
+              treeEntitiesOption(
+                response?.data?.map((v) => ({ ...v, type: entitiesClass.people })),
+                user,
+                calendarContentLanguage,
+                sourceOptions.CMS,
+              ),
+            );
+          else setSelectedPeople([]);
+        })
+        .catch((error) => console.log(error));
+    } else setSelectedPeople([]);
+  }, [peopleIds]);
+
   return (
     <Collapse
       className={`collapse-wrapper collapse-wrapper-${readOnly ? 'read-only' : 'editable'}`}
@@ -184,8 +245,8 @@ function CalendarAccordion(props) {
               setFieldValue={() => {
                 return;
               }}
-              popOverHandler={() => setIsPopoverOpen({ ...isPopoverOpen, organizer: false })}
-              isPopoverOpen={isPopoverOpen.organizer}>
+              popOverHandler={() => setIsPopoverOpen(false)}
+              isPopoverOpen={isPopoverOpen}>
               <CustomPopover
                 open={isPopoverOpen}
                 onOpenChange={(open) => {
@@ -271,6 +332,121 @@ function CalendarAccordion(props) {
                   );
                 }}
                 creatorId={organizer?.creatorId}
+              />
+            );
+          })}
+        </Form.Item>
+        <Form.Item
+          name={['people', selectedCalendarId]}
+          label={t('dashboard.people.people')}
+          hidden={
+            (readOnly && selectedPeople?.length === 0) ||
+            (calendarId !== selectedCalendarId && selectedPeople?.length === 0)
+              ? true
+              : false
+          }
+          initialValue={selectedPeople}>
+          {(disabled || !readOnly) && (
+            <span className="span-organization-help-text">{t('dashboard.settings.addUser.peopleHelp')}</span>
+          )}
+          {!readOnly && (
+            <KeyboardAccessibleLayout
+              setItem={(people) => setSelectedOrganizers([...selectedPeople, people])}
+              data={[peopleList]}
+              setFieldValue={() => {
+                return;
+              }}
+              popOverHandler={() => setIsPeoplePopoverOpen(false)}
+              isPopoverOpen={isPeoplePopoverOpen}>
+              <CustomPopover
+                open={isPeoplePopoverOpen}
+                onOpenChange={(open) => {
+                  setIsPeoplePopoverOpen(open);
+                }}
+                destroyTooltipOnHide={true}
+                overlayClassName="user-popover"
+                placement="bottom"
+                autoAdjustOverflow={false}
+                getPopupContainer={(trigger) => trigger.parentNode}
+                trigger={['click']}
+                data-cy="user-people"
+                content={
+                  <div>
+                    <div>
+                      <>
+                        <div className="popover-section-header" data-cy="div-people-footlight-entity-heading">
+                          {t('dashboard.organization.createNew.search.footlightSectionHeading')}
+                        </div>
+                        <div className="search-scrollable-content">
+                          {isEntitiesFetching && (
+                            <div
+                              style={{
+                                height: '200px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}>
+                              <LoadingIndicator />
+                            </div>
+                          )}
+                          {!isEntitiesFetching &&
+                            (peopleList?.length > 0 ? (
+                              peopleList?.map((people, index) => (
+                                <div
+                                  key={index}
+                                  className="event-popover-options"
+                                  onClick={() => {
+                                    setSelectedPeople([...selectedPeople, people]);
+                                    setIsPeoplePopoverOpen(false);
+                                  }}
+                                  data-cy={`div-select-people-${index}`}>
+                                  {people?.label}
+                                </div>
+                              ))
+                            ) : (
+                              <NoContent />
+                            ))}
+                        </div>
+                      </>
+                    </div>
+                  </div>
+                }>
+                <EventsSearch
+                  style={{ borderRadius: '4px', display: selectedCalendarId === calendarId ? 'flex' : 'none' }}
+                  placeholder={t('dashboard.events.addEditEvent.otherInformation.organizer.searchPlaceholder')}
+                  onChange={(e) => {
+                    debounceSearchOrganizationPersonSearch(e.target.value, 'people');
+                    setIsPeoplePopoverOpen(true);
+                  }}
+                  onClick={() => {
+                    setIsPeoplePopoverOpen(true);
+                  }}
+                  data-cy="input-people-keyword"
+                />
+              </CustomPopover>
+            </KeyboardAccessibleLayout>
+          )}
+
+          {selectedPeople?.map((people, index) => {
+            return (
+              <SelectionItem
+                key={index}
+                icon={
+                  people?.label?.props?.icon ? (
+                    people?.label?.props?.icon
+                  ) : (
+                    <UserOutlined style={{ color: '#607EFC' }} />
+                  )
+                }
+                name={people?.name}
+                description={people?.description}
+                bordered
+                closable={readOnly ? false : true}
+                itemWidth="100%"
+                onClose={() => {
+                  setSelectedPeople(selectedPeople?.filter((selectedOrganizer, indexValue) => indexValue != index));
+                }}
+                creatorId={people?.creatorId}
               />
             );
           })}
