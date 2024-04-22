@@ -87,7 +87,6 @@ import {
   clearActiveFallbackFieldsInfo,
   getActiveFallbackFieldsInfo,
   getLanguageLiteralBannerDisplayStatus,
-  setActiveFallbackFieldsInfo,
   setLanguageLiteralBannerDisplayStatus,
 } from '../../../redux/reducer/languageLiteralSlice';
 import Alert from '../../../components/Alert';
@@ -790,7 +789,7 @@ function CreateNewPlace() {
   }, []);
 
   useEffect(() => {
-    dispatch(setActiveFallbackFieldsInfo({}));
+    dispatch(clearActiveFallbackFieldsInfo());
   }, []);
 
   useEffect(() => {

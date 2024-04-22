@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import './addEvent.css';
 import { Form, Row, Col, Input, message, Button, notification } from 'antd';
+import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import {
   SyncOutlined,
   InfoCircleOutlined,
@@ -21,7 +22,7 @@ import { PathName } from '../../../constants/pathName';
 import Outlined from '../../../components/Button/Outlined';
 import PrimaryButton from '../../../components/Button/Primary';
 import OutlinedButton from '../../..//components/Button/Outlined';
-import { useTranslation } from 'react-i18next';
+import { Translation, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { userRoles } from '../../../constants/userRoles';
@@ -99,7 +100,6 @@ import {
   clearActiveFallbackFieldsInfo,
   getActiveFallbackFieldsInfo,
   getLanguageLiteralBannerDisplayStatus,
-  setActiveFallbackFieldsInfo,
   setLanguageLiteralBannerDisplayStatus,
 } from '../../../redux/reducer/languageLiteralSlice';
 import { removeUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
@@ -367,6 +367,66 @@ function AddEvent() {
 
           let eventObj;
 
+          const englishVirtualLocation = removeUneditedFallbackValues({
+            values: values?.englishVirtualLocation?.trim(),
+            activeFallbackFieldsInfo,
+            fieldName: 'frenchVirtualLocation-englishVirtualLocation',
+            property: 'en',
+          });
+          const frenchVirtualLocation = removeUneditedFallbackValues({
+            values: values?.frenchVirtualLocation?.trim(),
+            activeFallbackFieldsInfo,
+            fieldName: 'frenchVirtualLocation-englishVirtualLocation',
+            property: 'fr',
+          });
+          const englishContactTitle = removeUneditedFallbackValues({
+            values: values?.englishContactTitle?.trim(),
+            activeFallbackFieldsInfo,
+            fieldName: 'frenchContactTitle-englishContactTitle',
+            property: 'en',
+          });
+          const frenchContactTitle = removeUneditedFallbackValues({
+            values: values?.frenchContactTitle?.trim(),
+            activeFallbackFieldsInfo,
+            fieldName: 'frenchContactTitle-englishContactTitle',
+            property: 'fr',
+          });
+          const englishTicketNote = removeUneditedFallbackValues({
+            values: values?.englishTicketNote?.trim() !== '',
+            activeFallbackFieldsInfo,
+            fieldName: 'frenchTicketNote-englishTicketNote',
+            property: 'en',
+          });
+          const frenchTicketNote = removeUneditedFallbackValues({
+            values: values?.frenchTicketNote?.trim(),
+            activeFallbackFieldsInfo,
+            fieldName: 'frenchTicketNote-englishTicketNote',
+            property: 'fr',
+          });
+          const descriptionFr = removeUneditedFallbackValues({
+            values: values?.frenchEditor?.trim(),
+            activeFallbackFieldsInfo,
+            fieldName: 'frenchEditor-englishEditor',
+            property: 'fr',
+          });
+          const descriptionEn = removeUneditedFallbackValues({
+            values: values?.englishEditor?.trim(),
+            activeFallbackFieldsInfo,
+            fieldName: 'frenchEditor-englishEditor',
+            property: 'en',
+          });
+          const nameFr = removeUneditedFallbackValues({
+            values: values?.french?.trim(),
+            activeFallbackFieldsInfo,
+            fieldName: 'french-english',
+            property: 'fr',
+          });
+          const nameEn = removeUneditedFallbackValues({
+            values: values?.english?.trim(),
+            activeFallbackFieldsInfo,
+            fieldName: 'french-english',
+            property: 'en',
+          });
           // Use a regular expression to remove <p><br></p> tags at the end
 
           if (dateType === dateTypes.SINGLE) {
@@ -454,19 +514,6 @@ function AddEvent() {
             };
           }
           if (values?.frenchVirtualLocation || values?.englishVirtualLocation || values?.virtualLocationOnlineLink) {
-            const englishVirtualLocation = removeUneditedFallbackValues({
-              values: values?.englishVirtualLocation?.trim(),
-              activeFallbackFieldsInfo,
-              fieldName: 'frenchVirtualLocation-englishVirtualLocation',
-              property: 'en',
-            });
-            const frenchVirtualLocation = removeUneditedFallbackValues({
-              values: values?.frenchVirtualLocation?.trim(),
-              activeFallbackFieldsInfo,
-              fieldName: 'frenchVirtualLocation-englishVirtualLocation',
-              property: 'fr',
-            });
-
             const name = {};
 
             if (frenchVirtualLocation) name['fr'] = frenchVirtualLocation;
@@ -492,18 +539,7 @@ function AddEvent() {
             values?.contactPhoneNumber
           ) {
             const name = {};
-            const englishContactTitle = removeUneditedFallbackValues({
-              values: values?.englishContactTitle?.trim(),
-              activeFallbackFieldsInfo,
-              fieldName: 'frenchContactTitle-englishContactTitle',
-              property: 'en',
-            });
-            const frenchContactTitle = removeUneditedFallbackValues({
-              values: values?.frenchContactTitle?.trim(),
-              activeFallbackFieldsInfo,
-              fieldName: 'frenchContactTitle-englishContactTitle',
-              property: 'fr',
-            });
+
             if (frenchContactTitle) name['en'] = frenchContactTitle;
             if (englishContactTitle) name['fr'] = englishContactTitle;
 
@@ -537,18 +573,6 @@ function AddEvent() {
 
           if (ticketType) {
             const name = {};
-            const englishTicketNote = removeUneditedFallbackValues({
-              values: values?.englishTicketNote?.trim() !== '',
-              activeFallbackFieldsInfo,
-              fieldName: 'frenchTicketNote-englishTicketNote',
-              property: 'en',
-            });
-            const frenchTicketNote = removeUneditedFallbackValues({
-              values: values?.frenchTicketNote?.trim(),
-              activeFallbackFieldsInfo,
-              fieldName: 'frenchTicketNote-englishTicketNote',
-              property: 'fr',
-            });
 
             if (englishTicketNote) name['en'] = englishTicketNote;
             if (frenchTicketNote) name['fr'] = frenchTicketNote;
@@ -644,19 +668,6 @@ function AddEvent() {
             });
           }
 
-          const descriptionFr = removeUneditedFallbackValues({
-            values: values?.frenchEditor?.trim(),
-            activeFallbackFieldsInfo,
-            fieldName: 'frenchEditor-englishEditor',
-            property: 'fr',
-          });
-          const descriptionEn = removeUneditedFallbackValues({
-            values: values?.englishEditor?.trim(),
-            activeFallbackFieldsInfo,
-            fieldName: 'frenchEditor-englishEditor',
-            property: 'en',
-          });
-
           if (descriptionFr)
             description = {
               fr: descriptionFr,
@@ -666,19 +677,6 @@ function AddEvent() {
               ...description,
               en: descriptionEn,
             };
-
-          const nameFr = removeUneditedFallbackValues({
-            values: values?.french?.trim(),
-            activeFallbackFieldsInfo,
-            fieldName: 'french-english',
-            property: 'fr',
-          });
-          const nameEn = removeUneditedFallbackValues({
-            values: values?.english?.trim(),
-            activeFallbackFieldsInfo,
-            fieldName: 'french-english',
-            property: 'en',
-          });
 
           if (nameEn) name['en'] = nameEn;
           if (nameFr) name['fr'] = nameFr;
@@ -825,32 +823,55 @@ function AddEvent() {
     form
       .validateFields(type === 'PUBLISH' || type === 'REVIEW' ? validateFields : [])
       .then(() => {
-        if (isValuesChanged && type !== 'PUBLISH') {
-          saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
-            .then((id) => {
-              updateEventState({ id, calendarId })
-                .then(() => {
-                  notification.success({
-                    description:
-                      calendar[0]?.role === userRoles.GUEST
-                        ? t('dashboard.events.addEditEvent.notification.sendToReview')
-                        : eventData?.publishState === eventPublishState.DRAFT
-                        ? t('dashboard.events.addEditEvent.notification.publish')
-                        : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
-                    placement: 'top',
-                    closeIcon: <></>,
-                    maxCount: 1,
-                    duration: 3,
-                  });
-                  navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
-                })
-                .catch((error) => console.log(error));
-            })
-            .catch((error) => console.log(error));
-        } else if ((isValuesChanged || duplicateId) && (type === 'PUBLISH' || type === 'REVIEW')) {
-          saveAsDraftHandler(event, type === 'PUBLISH' || 'REVIEW', eventPublishState.DRAFT)
-            .then((id) => {
-              updateEventState({ id: eventId ?? id, calendarId, publishState })
+        const reviewPublishAction = () => {
+          if (isValuesChanged && type !== 'PUBLISH') {
+            saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
+              .then((id) => {
+                updateEventState({ id, calendarId })
+                  .then(() => {
+                    notification.success({
+                      description:
+                        calendar[0]?.role === userRoles.GUEST
+                          ? t('dashboard.events.addEditEvent.notification.sendToReview')
+                          : eventData?.publishState === eventPublishState.DRAFT
+                          ? t('dashboard.events.addEditEvent.notification.publish')
+                          : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+                      placement: 'top',
+                      closeIcon: <></>,
+                      maxCount: 1,
+                      duration: 3,
+                    });
+                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+                  })
+                  .catch((error) => console.log(error));
+              })
+              .catch((error) => console.log(error));
+          } else if ((isValuesChanged || duplicateId) && (type === 'PUBLISH' || type === 'REVIEW')) {
+            saveAsDraftHandler(event, type === 'PUBLISH' || 'REVIEW', eventPublishState.DRAFT)
+              .then((id) => {
+                updateEventState({ id: eventId ?? id, calendarId, publishState })
+                  .unwrap()
+                  .then(() => {
+                    notification.success({
+                      description:
+                        calendar[0]?.role === userRoles.GUEST
+                          ? t('dashboard.events.addEditEvent.notification.sendToReview')
+                          : eventData?.publishState === eventPublishState.DRAFT
+                          ? t('dashboard.events.addEditEvent.notification.publish')
+                          : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+                      placement: 'top',
+                      closeIcon: <></>,
+                      maxCount: 1,
+                      duration: 3,
+                    });
+                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+                  })
+                  .catch((error) => console.log(error));
+              })
+              .catch((error) => console.log(error));
+          } else {
+            if (eventId) {
+              updateEventState({ id: eventId, calendarId, publishState })
                 .unwrap()
                 .then(() => {
                   notification.success({
@@ -868,30 +889,34 @@ function AddEvent() {
                   navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
                 })
                 .catch((error) => console.log(error));
-            })
-            .catch((error) => console.log(error));
-        } else {
-          if (eventId) {
-            updateEventState({ id: eventId, calendarId, publishState })
-              .unwrap()
-              .then(() => {
-                notification.success({
-                  description:
-                    calendar[0]?.role === userRoles.GUEST
-                      ? t('dashboard.events.addEditEvent.notification.sendToReview')
-                      : eventData?.publishState === eventPublishState.DRAFT
-                      ? t('dashboard.events.addEditEvent.notification.publish')
-                      : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
-                  placement: 'top',
-                  closeIcon: <></>,
-                  maxCount: 1,
-                  duration: 3,
-                });
-                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
-              })
-              .catch((error) => console.log(error));
+            }
           }
-        }
+        };
+        if (Object.keys(activeFallbackFieldsInfo).length > 0) {
+          Confirm({
+            title: t('dashboard.events.addEditEvent.fallbackConfirm.title'),
+            content: (
+              <Translation>
+                {(t) => (
+                  <p>
+                    {t('dashboard.events.addEditEvent.fallbackConfirm.contentPart1')}
+                    <br></br>
+                    <br></br>
+                    {t('dashboard.events.addEditEvent.fallbackConfirm.contentPart2')}`
+                  </p>
+                )}
+              </Translation>
+            ),
+            okText: t('dashboard.events.addEditEvent.fallbackConfirm.publish'),
+            cancelText: t('dashboard.places.deletePlace.cancel'),
+            className: 'fallback-modal-container',
+            onAction: () => {
+              dispatch(setLanguageLiteralBannerDisplayStatus(false));
+              dispatch(clearActiveFallbackFieldsInfo());
+              reviewPublishAction();
+            },
+          });
+        } else reviewPublishAction();
       })
       .catch((error) => {
         console.log(error);
@@ -1258,7 +1283,7 @@ function AddEvent() {
   };
 
   useEffect(() => {
-    dispatch(setActiveFallbackFieldsInfo({}));
+    dispatch(clearActiveFallbackFieldsInfo());
   }, []);
 
   useEffect(() => {

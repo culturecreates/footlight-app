@@ -130,6 +130,12 @@
         "addMoreDetails": "Add more details to your event",
         "allDone": "All done",
         "featuredEvent": "Featured event",
+        "fallbackConfirm": {
+          "contentPart1": "You haven’t updated all the text that doesn’t match the language(s) on your website.",
+          "contentPart2": "Do you want to publish as is?",
+          "title": "Publish event",
+          "publish": "Publish"
+        },
         "language": {
           "title": "Event title",
           "titleLabel": "English",

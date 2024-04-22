@@ -48,7 +48,6 @@ import {
   clearActiveFallbackFieldsInfo,
   getActiveFallbackFieldsInfo,
   getLanguageLiteralBannerDisplayStatus,
-  setActiveFallbackFieldsInfo,
   setLanguageLiteralBannerDisplayStatus,
 } from '../../../redux/reducer/languageLiteralSlice';
 import Alert from '../../../components/Alert';
@@ -359,7 +358,7 @@ function CreateNewPerson() {
   };
 
   useEffect(() => {
-    dispatch(setActiveFallbackFieldsInfo({}));
+    dispatch(clearActiveFallbackFieldsInfo());
   }, []);
 
   useEffect(() => {
