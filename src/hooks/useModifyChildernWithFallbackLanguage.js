@@ -37,16 +37,16 @@ function useModifyChildernWithFallbackLanguage(props, currentCalendarData) {
       .join('-');
 
     const modifiedActiveFallbackFieldsInfo = {
-      ...activeFallbackFieldsInfo,
       [combinedName]: fallbackStatus,
+      ...activeFallbackFieldsInfo,
     };
 
     if (fallbackStatus?.fr?.tagDisplayStatus || fallbackStatus?.en?.tagDisplayStatus) {
-      dispatch(setActiveFallbackFieldsInfo(modifiedActiveFallbackFieldsInfo));
+      dispatch(setActiveFallbackFieldsInfo({ data: modifiedActiveFallbackFieldsInfo, method: 'add' }));
     } else if (isFieldsDirty?.en || isFieldsDirty?.fr) {
       // eslint-disable-next-line no-unused-vars
       const { [combinedName]: _, ...rest } = activeFallbackFieldsInfo;
-      dispatch(setActiveFallbackFieldsInfo(rest));
+      dispatch(setActiveFallbackFieldsInfo({ data: rest, method: 'remove' }));
     }
   }, [fallbackStatus]);
 

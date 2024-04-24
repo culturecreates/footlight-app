@@ -325,7 +325,8 @@ function AddEvent() {
     event?.preventDefault();
     const previousShowDialog = showDialog;
     setShowDialog(false);
-    const action = () => {
+
+    const action = (clear = false) => {
       var promise = new Promise(function (resolve, reject) {
         form
           .validateFields([
@@ -346,6 +347,12 @@ function AddEvent() {
             ]),
           ])
           .then(() => {
+            let fallbackStatus = activeFallbackFieldsInfo;
+            if (clear) {
+              dispatch(setLanguageLiteralBannerDisplayStatus(false));
+              dispatch(clearActiveFallbackFieldsInfo());
+              fallbackStatus = {};
+            }
             var values = form.getFieldsValue(true);
             var startDateTime,
               endDateTime,
@@ -370,63 +377,64 @@ function AddEvent() {
 
             const englishVirtualLocation = removeUneditedFallbackValues({
               values: values?.englishVirtualLocation?.trim(),
-              activeFallbackFieldsInfo,
+              activeFallbackFieldsInfo: fallbackStatus,
               fieldName: 'frenchVirtualLocation-englishVirtualLocation',
               property: 'en',
             });
+
             const frenchVirtualLocation = removeUneditedFallbackValues({
               values: values?.frenchVirtualLocation?.trim(),
-              activeFallbackFieldsInfo,
+              activeFallbackFieldsInfo: fallbackStatus,
               fieldName: 'frenchVirtualLocation-englishVirtualLocation',
               property: 'fr',
             });
             const englishContactTitle = removeUneditedFallbackValues({
               values: values?.englishContactTitle?.trim(),
-              activeFallbackFieldsInfo,
+              activeFallbackFieldsInfo: fallbackStatus,
               fieldName: 'frenchContactTitle-englishContactTitle',
               property: 'en',
             });
             const frenchContactTitle = removeUneditedFallbackValues({
               values: values?.frenchContactTitle?.trim(),
-              activeFallbackFieldsInfo,
+              activeFallbackFieldsInfo: fallbackStatus,
               fieldName: 'frenchContactTitle-englishContactTitle',
               property: 'fr',
             });
 
-            console.log(values?.englishTicketNote);
             const englishTicketNote = removeUneditedFallbackValues({
-              values: values?.englishTicketNote?.trim() !== '',
-              activeFallbackFieldsInfo,
+              values: values?.englishTicketNote?.trim(),
+              activeFallbackFieldsInfo: fallbackStatus,
               fieldName: 'frenchTicketNote-englishTicketNote',
               property: 'en',
             });
+
             const frenchTicketNote = removeUneditedFallbackValues({
               values: values?.frenchTicketNote?.trim(),
-              activeFallbackFieldsInfo,
+              activeFallbackFieldsInfo: fallbackStatus,
               fieldName: 'frenchTicketNote-englishTicketNote',
               property: 'fr',
             });
             const descriptionFr = removeUneditedFallbackValues({
               values: values?.frenchEditor?.trim(),
-              activeFallbackFieldsInfo,
+              activeFallbackFieldsInfo: fallbackStatus,
               fieldName: 'frenchEditor-englishEditor',
               property: 'fr',
             });
             const descriptionEn = removeUneditedFallbackValues({
               values: values?.englishEditor?.trim(),
-              activeFallbackFieldsInfo,
+              activeFallbackFieldsInfo: fallbackStatus,
               fieldName: 'frenchEditor-englishEditor',
               property: 'en',
             });
             const nameFr = removeUneditedFallbackValues({
               values: values?.french?.trim(),
-              activeFallbackFieldsInfo,
+              activeFallbackFieldsInfo: fallbackStatus,
               fieldName: 'french-english',
               property: 'fr',
             });
             const nameEn = removeUneditedFallbackValues({
               values: values?.english?.trim(),
-              activeFallbackFieldsInfo,
+              activeFallbackFieldsInfo: fallbackStatus,
               fieldName: 'french-english',
               property: 'en',
             });
@@ -544,8 +552,8 @@ function AddEvent() {
             ) {
               const name = {};
 
-              if (frenchContactTitle) name['en'] = frenchContactTitle;
-              if (englishContactTitle) name['fr'] = englishContactTitle;
+              if (frenchContactTitle) name['fr'] = frenchContactTitle;
+              if (englishContactTitle) name['en'] = englishContactTitle;
 
               contactPoint = {
                 name,
@@ -684,9 +692,10 @@ function AddEvent() {
 
             if (nameEn) name['en'] = nameEn;
             if (nameFr) name['fr'] = nameFr;
-
+            const tes = !(Object.keys(name).length > 0) ? { ...name, ...eventData?.name } : name;
+            console.log(tes);
             eventObj = {
-              name: { ...name, ...eventData?.name },
+              name: !(Object.keys(name).length > 0) ? { ...name, ...eventData?.name } : name,
               ...(values?.startTime && { startDateTime }),
               ...(!values?.startTime && { startDate: startDateTime }),
               ...(values?.endTime && { endDateTime }),
@@ -819,7 +828,7 @@ function AddEvent() {
       });
       return promise;
     };
-    if (Object.keys(activeFallbackFieldsInfo).length > 0) {
+    if (Object.keys(activeFallbackFieldsInfo).length > 0 && type !== eventPublishState.DRAFT) {
       Confirm({
         title: t('dashboard.events.addEditEvent.fallbackConfirm.title'),
         content: (
@@ -838,9 +847,7 @@ function AddEvent() {
         cancelText: t('dashboard.places.deletePlace.cancel'),
         className: 'fallback-modal-container',
         onAction: () => {
-          dispatch(setLanguageLiteralBannerDisplayStatus(false));
-          dispatch(clearActiveFallbackFieldsInfo());
-          action();
+          action(true);
         },
       });
     } else action();
@@ -848,37 +855,66 @@ function AddEvent() {
 
   const reviewPublishHandler = ({ event, publishState = undefined, type = 'PUBLISH' }) => {
     event?.preventDefault();
-    const isValuesChanged = showDialog;
-    setShowDialog(false);
-    form
-      .validateFields(type === 'PUBLISH' || type === 'REVIEW' ? validateFields : [])
-      .then(() => {
-        if (isValuesChanged && type !== 'PUBLISH') {
-          saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
-            .then((id) => {
-              updateEventState({ id, calendarId })
-                .then(() => {
-                  notification.success({
-                    description:
-                      calendar[0]?.role === userRoles.GUEST
-                        ? t('dashboard.events.addEditEvent.notification.sendToReview')
-                        : eventData?.publishState === eventPublishState.DRAFT
-                        ? t('dashboard.events.addEditEvent.notification.publish')
-                        : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
-                    placement: 'top',
-                    closeIcon: <></>,
-                    maxCount: 1,
-                    duration: 3,
-                  });
-                  navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
-                })
-                .catch((error) => console.log(error));
-            })
-            .catch((error) => console.log(error));
-        } else if ((isValuesChanged || duplicateId) && (type === 'PUBLISH' || type === 'REVIEW')) {
-          saveAsDraftHandler(event, type === 'PUBLISH' || 'REVIEW', eventPublishState.DRAFT)
-            .then((id) => {
-              updateEventState({ id: eventId ?? id, calendarId, publishState })
+    const reviewPublishAction = (clear = false) => {
+      const isValuesChanged = showDialog;
+      setShowDialog(false);
+      form
+        .validateFields(type === 'PUBLISH' || type === 'REVIEW' ? validateFields : [])
+        .then(() => {
+          if (clear) {
+            dispatch(setLanguageLiteralBannerDisplayStatus(false));
+            dispatch(clearActiveFallbackFieldsInfo());
+          }
+          if (isValuesChanged && type !== 'PUBLISH') {
+            saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
+              .then((id) => {
+                updateEventState({ id, calendarId })
+                  .then(() => {
+                    notification.success({
+                      description:
+                        calendar[0]?.role === userRoles.GUEST
+                          ? t('dashboard.events.addEditEvent.notification.sendToReview')
+                          : eventData?.publishState === eventPublishState.DRAFT
+                          ? t('dashboard.events.addEditEvent.notification.publish')
+                          : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+                      placement: 'top',
+                      closeIcon: <></>,
+                      maxCount: 1,
+                      duration: 3,
+                    });
+                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+                  })
+                  .catch((error) => console.log(error));
+              })
+              .catch((error) => console.log(error));
+          } else if ((isValuesChanged || duplicateId) && (type === 'PUBLISH' || type === 'REVIEW')) {
+            saveAsDraftHandler(event, type === false)
+              .then((id) => {
+                updateEventState({ id: eventId ?? id, calendarId, publishState })
+                  .unwrap()
+                  .then(() => {
+                    notification.success({
+                      description:
+                        calendar[0]?.role === userRoles.GUEST
+                          ? t('dashboard.events.addEditEvent.notification.sendToReview')
+                          : eventData?.publishState === eventPublishState.DRAFT
+                          ? t('dashboard.events.addEditEvent.notification.publish')
+                          : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+                      placement: 'top',
+                      closeIcon: <></>,
+                      maxCount: 1,
+                      duration: 3,
+                    });
+                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+                  })
+                  .catch((error) => console.log(error));
+              })
+              .catch((error) => console.log(error));
+          } else {
+            if (eventId) {
+              console.log('kahsgs  3');
+
+              updateEventState({ id: eventId, calendarId, publishState })
                 .unwrap()
                 .then(() => {
                   notification.success({
@@ -896,57 +932,60 @@ function AddEvent() {
                   navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
                 })
                 .catch((error) => console.log(error));
-            })
-            .catch((error) => console.log(error));
-        } else {
-          if (eventId) {
-            updateEventState({ id: eventId, calendarId, publishState })
-              .unwrap()
-              .then(() => {
-                notification.success({
-                  description:
-                    calendar[0]?.role === userRoles.GUEST
-                      ? t('dashboard.events.addEditEvent.notification.sendToReview')
-                      : eventData?.publishState === eventPublishState.DRAFT
-                      ? t('dashboard.events.addEditEvent.notification.publish')
-                      : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
-                  placement: 'top',
-                  closeIcon: <></>,
-                  maxCount: 1,
-                  duration: 3,
-                });
-                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
-              })
-              .catch((error) => console.log(error));
+            }
           }
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        setShowDialog(isValuesChanged);
-        message.warning({
-          duration: 10,
-          maxCount: 1,
-          key: 'event-review-publish-warning',
-          content: (
-            <>
-              {calendar[0]?.role === <userRoles className="GUEST"></userRoles>
-                ? t('dashboard.events.addEditEvent.validations.errorReview')
-                : eventId && eventData?.publishState === eventPublishState.PUBLISHED
-                ? t('dashboard.events.addEditEvent.validations.errorDraft')
-                : t('dashboard.events.addEditEvent.validations.errorPublishing')}
-              &nbsp;
-              <Button
-                type="text"
-                data-cy="button-close-review-publish-warning"
-                icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                onClick={() => message.destroy('event-review-publish-warning')}
-              />
-            </>
-          ),
-          icon: <ExclamationCircleOutlined />,
+        })
+        .catch((error) => {
+          console.log(error);
+          setShowDialog(isValuesChanged);
+          message.warning({
+            duration: 10,
+            maxCount: 1,
+            key: 'event-review-publish-warning',
+            content: (
+              <>
+                {calendar[0]?.role === <userRoles className="GUEST"></userRoles>
+                  ? t('dashboard.events.addEditEvent.validations.errorReview')
+                  : eventId && eventData?.publishState === eventPublishState.PUBLISHED
+                  ? t('dashboard.events.addEditEvent.validations.errorDraft')
+                  : t('dashboard.events.addEditEvent.validations.errorPublishing')}
+                &nbsp;
+                <Button
+                  type="text"
+                  data-cy="button-close-review-publish-warning"
+                  icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                  onClick={() => message.destroy('event-review-publish-warning')}
+                />
+              </>
+            ),
+            icon: <ExclamationCircleOutlined />,
+          });
         });
+    };
+
+    if (Object.keys(activeFallbackFieldsInfo).length > 0 && type !== eventPublishState.DRAFT) {
+      Confirm({
+        title: t('dashboard.events.addEditEvent.fallbackConfirm.title'),
+        content: (
+          <Translation>
+            {(t) => (
+              <p>
+                {t('dashboard.events.addEditEvent.fallbackConfirm.contentPart1')}
+                <br></br>
+                <br></br>
+                {t('dashboard.events.addEditEvent.fallbackConfirm.contentPart2')}`
+              </p>
+            )}
+          </Translation>
+        ),
+        okText: t('dashboard.events.addEditEvent.fallbackConfirm.publish'),
+        cancelText: t('dashboard.places.deletePlace.cancel'),
+        className: 'fallback-modal-container',
+        onAction: () => {
+          reviewPublishAction(true);
+        },
       });
+    } else reviewPublishAction();
   };
 
   const roleCheckHandler = () => {
@@ -968,7 +1007,7 @@ function AddEvent() {
               onClick={(e) => {
                 if (eventData?.publishState === eventPublishState.PENDING_REVIEW)
                   reviewPublishHandler({ event: e, publishState: eventPublishState.DRAFT });
-                else saveAsDraftHandler(e);
+                else saveAsDraftHandler(e, false, eventPublishState.DRAFT);
               }}
               data-cy="button-save-event"
               disabled={updateEventLoading || addEventLoading || addImageLoading ? true : false}
@@ -995,7 +1034,7 @@ function AddEvent() {
             <Outlined
               size="large"
               label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
-              onClick={(e) => saveAsDraftHandler(e)}
+              onClick={(e) => saveAsDraftHandler(e, false, eventPublishState.DRAFT)}
               disabled={updateEventLoading || addEventLoading || addImageLoading ? true : false}
               data-cy="button-save-event"
             />
@@ -1022,14 +1061,14 @@ function AddEvent() {
           <Form.Item>
             <PublishState
               eventId={eventId}
-              reviewPublishHandler={(e) => reviewPublishHandler({ event: e, type: 'DRAFT' })}>
+              reviewPublishHandler={(e) => reviewPublishHandler({ event: e, type: eventPublishState.DRAFT })}>
               <span data-cy="span-published-text">{t('dashboard.events.publishState.published')}</span>
             </PublishState>
           </Form.Item>
           <Form.Item>
             <PrimaryButton
               label={t('dashboard.events.addEditEvent.saveOptions.save')}
-              onClick={(e) => saveAsDraftHandler(e)}
+              onClick={(e) => saveAsDraftHandler(e, false, eventPublishState.PUBLISHED)}
               disabled={updateEventLoading || addEventLoading || addImageLoading ? true : false}
               data-cy="button-save-event"
             />
@@ -1212,7 +1251,7 @@ function AddEvent() {
   };
 
   const organizerPerformerSupporterPlaceNavigationHandler = (id, type, event) => {
-    saveAsDraftHandler(event, true)
+    saveAsDraftHandler(event, true, eventPublishState.DRAFT)
       .then((savedEventId) => {
         if ((!eventId || eventId === '') && newEventId === null)
           notification.success({
@@ -2631,7 +2670,7 @@ function AddEvent() {
                   setLocationPlace={setLocationPlace}
                   locationPlace={locationPlace}
                   eventForm={form}
-                  saveAsDraftHandler={saveAsDraftHandler}
+                  saveAsDraftHandler={(e) => saveAsDraftHandler(e, false, eventPublishState.DRAFT)}
                   setLoaderModalOpen={setLoaderModalOpen}
                   loaderModalOpen={loaderModalOpen}
                   setShowDialog={setShowDialog}
@@ -3170,7 +3209,7 @@ function AddEvent() {
                   setSelectedSupporters={setSelectedSupporters}
                   selectedOrganizerPerformerSupporterType={selectedOrganizerPerformerSupporterType}
                   organizerPerformerSupporterTypes={organizerPerformerSupporterTypes}
-                  saveAsDraftHandler={saveAsDraftHandler}
+                  saveAsDraftHandler={(e) => saveAsDraftHandler(e, false, eventPublishState.DRAFT)}
                   setLoaderModalOpen={setLoaderModalOpen}
                   loaderModalOpen={loaderModalOpen}
                   setShowDialog={setShowDialog}
@@ -3191,7 +3230,7 @@ function AddEvent() {
                   setSelectedSupporters={setSelectedSupporters}
                   selectedOrganizerPerformerSupporterType={selectedOrganizerPerformerSupporterType}
                   organizerPerformerSupporterTypes={organizerPerformerSupporterTypes}
-                  saveAsDraftHandler={saveAsDraftHandler}
+                  saveAsDraftHandler={(e) => saveAsDraftHandler(e, false, eventPublishState.DRAFT)}
                   setLoaderModalOpen={setLoaderModalOpen}
                   loaderModalOpen={loaderModalOpen}
                   setShowDialog={setShowDialog}

@@ -13,7 +13,8 @@ export const languageLiteralSlice = createSlice({
       state.status = action.payload;
     },
     setActiveFallbackFieldsInfo: (state, action) => {
-      state.activeFallbackFieldsInfo = { ...state.activeFallbackFieldsInfo, ...action.payload };
+      if (action.payload?.method == 'remove') state.activeFallbackFieldsInfo = action.payload.data;
+      else state.activeFallbackFieldsInfo = { ...state.activeFallbackFieldsInfo, ...action.payload.data };
     },
     clearActiveFallbackFieldsInfo: (state) => {
       state.activeFallbackFieldsInfo = {};
