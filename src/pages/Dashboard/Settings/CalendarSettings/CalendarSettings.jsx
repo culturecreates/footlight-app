@@ -42,10 +42,10 @@ function CalendarSettings() {
   const [updateCalendar] = useUpdateCalendarMutation();
   const [addImage] = useAddImageMutation();
 
-  const [customRatio, setCustomRatio] = React.useState({
-    large: '',
-    thumbnail: '',
-  });
+  // const [customRatio, setCustomRatio] = React.useState({
+  //   large: '',
+  //   thumbnail: '',
+  // });
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -353,8 +353,8 @@ function CalendarSettings() {
                       logoUri: currentCalendarData?.logo?.original?.uri,
                       aspectRatios: aspectRatioOptions,
                       setAspectRatioOptions,
-                      customRatio,
-                      setCustomRatio,
+                      // customRatio,
+                      // setCustomRatio,
                       t,
                     })}
                   </Form.Item>
