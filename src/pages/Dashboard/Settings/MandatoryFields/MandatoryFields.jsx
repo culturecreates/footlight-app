@@ -64,7 +64,8 @@ function MandatoryFields() {
   fields = fields?.map((field) => {
     const preFilled = prefilledFields?.find((f) => f.formName === field?.formName);
     let minimumRequiredFields = [],
-      requiredFields = [];
+      requiredFields = [],
+      standardAdminOnlyFields = [];
     minimumRequiredFields =
       field?.formFieldProperties?.minimumRequiredFields?.standardFields?.map((f) => f?.fieldName) ?? [];
     minimumRequiredFields = minimumRequiredFields?.concat(
@@ -72,12 +73,17 @@ function MandatoryFields() {
     );
     requiredFields = field?.formFieldProperties?.mandatoryFields?.standardFields?.map((f) => f?.fieldName) ?? [];
     requiredFields = requiredFields?.concat(field?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((f) => f));
+    standardAdminOnlyFields =
+      field?.formFieldProperties?.adminOnlyFields?.standardFields?.map((f) => f?.fieldName) ?? [];
 
     let modifiedField = field?.formFields?.map((f) => {
       return {
         ...f,
         preFilled: minimumRequiredFields.includes(f?.name),
-        isRequiredField: requiredFields.includes(f?.name) || minimumRequiredFields.includes(f?.name),
+        isRequiredField: standardAdminOnlyFields?.includes(f?.name)
+          ? false
+          : requiredFields.includes(f?.name) || minimumRequiredFields.includes(f?.name),
+        isAdminOnlyField: standardAdminOnlyFields?.includes(f?.name) || false,
       };
     });
     modifiedField = modifiedField?.concat(

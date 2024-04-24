@@ -15,7 +15,9 @@ function MandatoryField(props) {
   const { t } = useTranslation();
 
   const [addedFields, setAddedFields] = useState(field?.filter((f) => f?.isRequiredField || f?.preFilled));
-  const [availableFields, setAvailableFields] = useState(field?.filter((f) => !f?.isRequiredField && !f?.preFilled));
+  const [availableFields, setAvailableFields] = useState(
+    field?.filter((f) => !f?.isRequiredField && !f?.preFilled && !f?.isAdminOnlyField),
+  );
 
   const removeFromFields = (index) => {
     let removedField = addedFields[index];
