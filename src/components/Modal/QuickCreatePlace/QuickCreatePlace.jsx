@@ -30,6 +30,7 @@ import { PathName } from '../../../constants/pathName';
 import QuickCreateSaving from '../QuickCreateSaving/QuickCreateSaving';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import { entitiesClass } from '../../../constants/entitiesClass';
+import { eventPublishState } from '../../../constants/eventPublishState';
 
 const { TextArea } = Input;
 
@@ -61,7 +62,7 @@ function QuickCreatePlace(props) {
   const [event, setEvent] = useState([]);
   useEffect(() => {
     if (event.length > 0) {
-      saveAsDraftHandler(event[0], true)
+      saveAsDraftHandler(event[0], true, eventPublishState.DRAFT)
         .then((res) => {
           setLoaderModalOpen(false);
           if (res) {

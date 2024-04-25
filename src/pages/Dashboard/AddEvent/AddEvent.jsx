@@ -321,12 +321,12 @@ function AddEvent() {
     });
     return promise;
   };
+
   const saveAsDraftHandler = (event, toggle = false, type = eventPublishState.PUBLISHED) => {
     event?.preventDefault();
     const previousShowDialog = showDialog;
     setShowDialog(false);
-
-    const action = (clear = false) => {
+    const action = ({ clear = false, previousShowDialog, toggle, type }) => {
       var promise = new Promise(function (resolve, reject) {
         form
           .validateFields([
@@ -692,8 +692,7 @@ function AddEvent() {
 
             if (nameEn) name['en'] = nameEn;
             if (nameFr) name['fr'] = nameFr;
-            const tes = !(Object.keys(name).length > 0) ? { ...name, ...eventData?.name } : name;
-            console.log(tes);
+
             eventObj = {
               name: !(Object.keys(name).length > 0) ? { ...name, ...eventData?.name } : name,
               ...(values?.startTime && { startDateTime }),
@@ -828,93 +827,80 @@ function AddEvent() {
       });
       return promise;
     };
-    if (Object.keys(activeFallbackFieldsInfo).length > 0 && type !== eventPublishState.DRAFT) {
-      Confirm({
-        title: t('dashboard.events.addEditEvent.fallbackConfirm.title'),
-        content: (
-          <Translation>
-            {(t) => (
-              <p>
-                {t('dashboard.events.addEditEvent.fallbackConfirm.contentPart1')}
-                <br></br>
-                <br></br>
-                {t('dashboard.events.addEditEvent.fallbackConfirm.contentPart2')}`
-              </p>
-            )}
-          </Translation>
-        ),
-        okText: t('dashboard.events.addEditEvent.fallbackConfirm.publish'),
-        cancelText: t('dashboard.places.deletePlace.cancel'),
-        className: 'fallback-modal-container',
-        onAction: () => {
-          action(true);
-        },
-      });
-    } else action();
+    var promise = new Promise(function (resolve, reject) {
+      if (Object.keys(activeFallbackFieldsInfo).length > 0 && type !== eventPublishState.DRAFT) {
+        Confirm({
+          title: t('dashboard.events.addEditEvent.fallbackConfirm.title'),
+          content: (
+            <Translation>
+              {(t) => (
+                <p>
+                  {t('dashboard.events.addEditEvent.fallbackConfirm.contentPart1')}
+                  <br></br>
+                  <br></br>
+                  {t('dashboard.events.addEditEvent.fallbackConfirm.contentPart2')}`
+                </p>
+              )}
+            </Translation>
+          ),
+          okText: t('dashboard.events.addEditEvent.fallbackConfirm.publish'),
+          cancelText: t('dashboard.places.deletePlace.cancel'),
+          className: 'fallback-modal-container',
+          onAction: () => {
+            action({ clear: true, previousShowDialog, toggle, type })
+              .then((id) => {
+                resolve(id);
+              })
+              .catch((error) => {
+                reject(error);
+              });
+          },
+        });
+      } else
+        action({ clear: false, previousShowDialog, toggle, type }).then((id) => {
+          resolve(id);
+        });
+    });
+    return promise;
   };
 
   const reviewPublishHandler = ({ event, publishState = undefined, type = 'PUBLISH' }) => {
     event?.preventDefault();
-    const reviewPublishAction = (clear = false) => {
-      const isValuesChanged = showDialog;
-      setShowDialog(false);
-      form
-        .validateFields(type === 'PUBLISH' || type === 'REVIEW' ? validateFields : [])
-        .then(() => {
-          if (clear) {
-            dispatch(setLanguageLiteralBannerDisplayStatus(false));
-            dispatch(clearActiveFallbackFieldsInfo());
-          }
-          if (isValuesChanged && type !== 'PUBLISH') {
-            saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
-              .then((id) => {
-                updateEventState({ id, calendarId })
-                  .then(() => {
-                    notification.success({
-                      description:
-                        calendar[0]?.role === userRoles.GUEST
-                          ? t('dashboard.events.addEditEvent.notification.sendToReview')
-                          : eventData?.publishState === eventPublishState.DRAFT
-                          ? t('dashboard.events.addEditEvent.notification.publish')
-                          : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
-                      placement: 'top',
-                      closeIcon: <></>,
-                      maxCount: 1,
-                      duration: 3,
-                    });
-                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
-                  })
-                  .catch((error) => console.log(error));
-              })
-              .catch((error) => console.log(error));
-          } else if ((isValuesChanged || duplicateId) && (type === 'PUBLISH' || type === 'REVIEW')) {
-            saveAsDraftHandler(event, type === false)
-              .then((id) => {
-                updateEventState({ id: eventId ?? id, calendarId, publishState })
-                  .unwrap()
-                  .then(() => {
-                    notification.success({
-                      description:
-                        calendar[0]?.role === userRoles.GUEST
-                          ? t('dashboard.events.addEditEvent.notification.sendToReview')
-                          : eventData?.publishState === eventPublishState.DRAFT
-                          ? t('dashboard.events.addEditEvent.notification.publish')
-                          : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
-                      placement: 'top',
-                      closeIcon: <></>,
-                      maxCount: 1,
-                      duration: 3,
-                    });
-                    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
-                  })
-                  .catch((error) => console.log(error));
-              })
-              .catch((error) => console.log(error));
-          } else {
-            if (eventId) {
-              console.log('kahsgs  3');
 
-              updateEventState({ id: eventId, calendarId, publishState })
+    const isValuesChanged = showDialog;
+    setShowDialog(false);
+    form
+      .validateFields(type === 'PUBLISH' || type === 'REVIEW' ? validateFields : [])
+      .then(() => {
+        if (isValuesChanged && type !== 'PUBLISH') {
+          saveAsDraftHandler(event, type !== 'PUBLISH', eventPublishState.DRAFT)
+            .then((id) => {
+              updateEventState({ id, calendarId })
+                .then(() => {
+                  notification.success({
+                    description:
+                      calendar[0]?.role === userRoles.GUEST
+                        ? t('dashboard.events.addEditEvent.notification.sendToReview')
+                        : eventData?.publishState === eventPublishState.DRAFT
+                        ? t('dashboard.events.addEditEvent.notification.publish')
+                        : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+                    placement: 'top',
+                    closeIcon: <></>,
+                    maxCount: 1,
+                    duration: 3,
+                  });
+                  navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+                })
+                .catch((error) => console.log(error));
+            })
+            .catch((error) => console.log(error));
+        } else if (
+          (isValuesChanged || Object.keys(activeFallbackFieldsInfo).length > 0 || duplicateId) &&
+          (type === 'PUBLISH' || type === 'REVIEW')
+        ) {
+          saveAsDraftHandler(event, type === false)
+            .then((id) => {
+              updateEventState({ id: eventId ?? id, calendarId, publishState })
                 .unwrap()
                 .then(() => {
                   notification.success({
@@ -932,60 +918,57 @@ function AddEvent() {
                   navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
                 })
                 .catch((error) => console.log(error));
-            }
+            })
+            .catch((error) => console.log(error));
+        } else {
+          if (eventId) {
+            updateEventState({ id: eventId, calendarId, publishState })
+              .unwrap()
+              .then(() => {
+                notification.success({
+                  description:
+                    calendar[0]?.role === userRoles.GUEST
+                      ? t('dashboard.events.addEditEvent.notification.sendToReview')
+                      : eventData?.publishState === eventPublishState.DRAFT
+                      ? t('dashboard.events.addEditEvent.notification.publish')
+                      : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}`);
+              })
+              .catch((error) => console.log(error));
           }
-        })
-        .catch((error) => {
-          console.log(error);
-          setShowDialog(isValuesChanged);
-          message.warning({
-            duration: 10,
-            maxCount: 1,
-            key: 'event-review-publish-warning',
-            content: (
-              <>
-                {calendar[0]?.role === <userRoles className="GUEST"></userRoles>
-                  ? t('dashboard.events.addEditEvent.validations.errorReview')
-                  : eventId && eventData?.publishState === eventPublishState.PUBLISHED
-                  ? t('dashboard.events.addEditEvent.validations.errorDraft')
-                  : t('dashboard.events.addEditEvent.validations.errorPublishing')}
-                &nbsp;
-                <Button
-                  type="text"
-                  data-cy="button-close-review-publish-warning"
-                  icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                  onClick={() => message.destroy('event-review-publish-warning')}
-                />
-              </>
-            ),
-            icon: <ExclamationCircleOutlined />,
-          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setShowDialog(isValuesChanged);
+        message.warning({
+          duration: 10,
+          maxCount: 1,
+          key: 'event-review-publish-warning',
+          content: (
+            <>
+              {calendar[0]?.role === <userRoles className="GUEST"></userRoles>
+                ? t('dashboard.events.addEditEvent.validations.errorReview')
+                : eventId && eventData?.publishState === eventPublishState.PUBLISHED
+                ? t('dashboard.events.addEditEvent.validations.errorDraft')
+                : t('dashboard.events.addEditEvent.validations.errorPublishing')}
+              &nbsp;
+              <Button
+                type="text"
+                data-cy="button-close-review-publish-warning"
+                icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                onClick={() => message.destroy('event-review-publish-warning')}
+              />
+            </>
+          ),
+          icon: <ExclamationCircleOutlined />,
         });
-    };
-
-    if (Object.keys(activeFallbackFieldsInfo).length > 0 && type !== eventPublishState.DRAFT) {
-      Confirm({
-        title: t('dashboard.events.addEditEvent.fallbackConfirm.title'),
-        content: (
-          <Translation>
-            {(t) => (
-              <p>
-                {t('dashboard.events.addEditEvent.fallbackConfirm.contentPart1')}
-                <br></br>
-                <br></br>
-                {t('dashboard.events.addEditEvent.fallbackConfirm.contentPart2')}`
-              </p>
-            )}
-          </Translation>
-        ),
-        okText: t('dashboard.events.addEditEvent.fallbackConfirm.publish'),
-        cancelText: t('dashboard.places.deletePlace.cancel'),
-        className: 'fallback-modal-container',
-        onAction: () => {
-          reviewPublishAction(true);
-        },
       });
-    } else reviewPublishAction();
   };
 
   const roleCheckHandler = () => {
@@ -2670,7 +2653,7 @@ function AddEvent() {
                   setLocationPlace={setLocationPlace}
                   locationPlace={locationPlace}
                   eventForm={form}
-                  saveAsDraftHandler={(e) => saveAsDraftHandler(e, false, eventPublishState.DRAFT)}
+                  saveAsDraftHandler={saveAsDraftHandler}
                   setLoaderModalOpen={setLoaderModalOpen}
                   loaderModalOpen={loaderModalOpen}
                   setShowDialog={setShowDialog}
@@ -3209,7 +3192,7 @@ function AddEvent() {
                   setSelectedSupporters={setSelectedSupporters}
                   selectedOrganizerPerformerSupporterType={selectedOrganizerPerformerSupporterType}
                   organizerPerformerSupporterTypes={organizerPerformerSupporterTypes}
-                  saveAsDraftHandler={(e) => saveAsDraftHandler(e, false, eventPublishState.DRAFT)}
+                  saveAsDraftHandler={saveAsDraftHandler}
                   setLoaderModalOpen={setLoaderModalOpen}
                   loaderModalOpen={loaderModalOpen}
                   setShowDialog={setShowDialog}
@@ -3230,7 +3213,7 @@ function AddEvent() {
                   setSelectedSupporters={setSelectedSupporters}
                   selectedOrganizerPerformerSupporterType={selectedOrganizerPerformerSupporterType}
                   organizerPerformerSupporterTypes={organizerPerformerSupporterTypes}
-                  saveAsDraftHandler={(e) => saveAsDraftHandler(e, false, eventPublishState.DRAFT)}
+                  saveAsDraftHandler={saveAsDraftHandler}
                   setLoaderModalOpen={setLoaderModalOpen}
                   loaderModalOpen={loaderModalOpen}
                   setShowDialog={setShowDialog}

@@ -21,6 +21,7 @@ import Outlined from '../../Button/Outlined';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import QuickCreateSaving from '../QuickCreateSaving/QuickCreateSaving';
+import { eventPublishState } from '../../../constants/eventPublishState';
 
 const { TextArea } = Input;
 
@@ -60,7 +61,7 @@ function QuickCreateOrganization(props) {
 
   useEffect(() => {
     if (event.length > 0) {
-      saveAsDraftHandler(event[0], true)
+      saveAsDraftHandler(event[0], true, eventPublishState.DRAFT)
         .then((res) => {
           setLoaderModalOpen(false);
           if (res) {
