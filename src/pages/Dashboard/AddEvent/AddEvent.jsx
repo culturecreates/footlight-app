@@ -680,11 +680,11 @@ function AddEvent() {
               });
             }
 
-            if (descriptionFr)
+            if (descriptionFr && descriptionFr !== '<p><br></p>')
               description = {
                 fr: descriptionFr,
               };
-            if (descriptionEn)
+            if (descriptionEn && descriptionEn !== '<p><br></p>')
               description = {
                 ...description,
                 en: descriptionEn,
