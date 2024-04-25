@@ -111,16 +111,9 @@ function CalendarSettings() {
   let aspectRatioSet = new Set([
     '1:1',
     '2:1',
-    '2:3',
-    '3:1',
-    '3:2',
-    '4:1',
     '4:3',
     '5:4',
     '16:9',
-    '9:16',
-    '21:9',
-    '9:21',
     imageConfig?.thumbnail?.aspectRatio,
     imageConfig?.large?.aspectRatio,
   ]);
