@@ -1,6 +1,7 @@
 export function languageFallbackSetup({ currentCalendarData, fieldData, languageFallbacks = {}, isFieldsDirty }) {
   let results = {};
-  if (!fieldData || Object.keys(languageFallbacks).length == 0) return results;
+
+  if (!fieldData || Object.keys(languageFallbacks).length == 0 || Object.keys(fieldData).length == 0) return results;
 
   const fallbackLiteralKeysEn = languageFallbacks?.en;
   const fallbackLiteralKeysFr = languageFallbacks?.fr;
