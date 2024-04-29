@@ -1795,13 +1795,16 @@ function CreateNewPlace() {
                         dependencies={[formFieldNames.STREET_ADDRESS_ENGLISH]}
                         rules={[
                           ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (value || getFieldValue(formFieldNames.STREET_ADDRESS_ENGLISH)) {
-                                return Promise.resolve();
-                              } else
+                            validator() {
+                              if (
+                                !getFieldValue(formFieldNames.STREET_ADDRESS_FRENCH)?.trim() &&
+                                !getFieldValue(formFieldNames.STREET_ADDRESS_ENGLISH)?.trim()
+                              )
                                 return Promise.reject(
                                   new Error(t('dashboard.places.createNew.addPlace.validations.streetAddressRequired')),
                                 );
+
+                              return Promise.resolve();
                             },
                           }),
                         ]}>
@@ -1837,13 +1840,16 @@ function CreateNewPlace() {
                         dependencies={[formFieldNames.STREET_ADDRESS_FRENCH]}
                         rules={[
                           ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (value || getFieldValue(formFieldNames.STREET_ADDRESS_FRENCH)) {
-                                return Promise.resolve();
-                              } else
+                            validator() {
+                              if (
+                                !getFieldValue(formFieldNames.STREET_ADDRESS_FRENCH)?.trim() &&
+                                !getFieldValue(formFieldNames.STREET_ADDRESS_ENGLISH)?.trim()
+                              )
                                 return Promise.reject(
                                   new Error(t('dashboard.places.createNew.addPlace.validations.streetAddressRequired')),
                                 );
+
+                              return Promise.resolve();
                             },
                           }),
                         ]}>
@@ -1985,6 +1991,10 @@ function CreateNewPlace() {
                   rules={[
                     {
                       required: requiredFieldNames?.includes(placeFormRequiredFieldNames?.POSTAL_CODE),
+                      message: t('dashboard.places.createNew.addPlace.validations.postalCodeRequired'),
+                    },
+                    {
+                      whitespace: true,
                       message: t('dashboard.places.createNew.addPlace.validations.postalCodeRequired'),
                     },
                   ]}>
