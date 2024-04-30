@@ -520,7 +520,11 @@ function CreateNewPerson() {
                             </Col>
                             <Col span={24}>
                               <ArtsDataInfo
-                                artsDataLink={artsDataLinkChecker(personData?.sameAs)}
+                                artsDataLink={
+                                  artsDataLinkChecker(personData?.sameAs)
+                                    ? artsDataLinkChecker(personData?.sameAs)
+                                    : artsDataLinkChecker(artsData?.sameAs)
+                                }
                                 name={contentLanguageBilingual({
                                   en: artsData?.name?.en,
                                   fr: artsData?.name?.fr,
