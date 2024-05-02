@@ -9,6 +9,7 @@ import { getUserDetails } from '../../../redux/reducer/userSlice';
 import ArtsDataLink from '../../Tags/ArtsDataLink/ArtsDataLink';
 import SmallButton from '../../Button/SmallButton';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
+import LiteralBadge from '../../Badge/LiteralBadge';
 
 function SelectionItem(props) {
   const {
@@ -30,9 +31,16 @@ function SelectionItem(props) {
     onEdit,
     edit,
     creatorId,
+    fallbackConfig,
   } = props;
   const { t } = useTranslation();
   const { user } = useSelector(getUserDetails);
+
+  const promptText =
+    fallbackConfig?.en?.fallbackLiteralKey === '?' || fallbackConfig?.fr?.fallbackLiteralKey === '?'
+      ? t('common.forms.languageLiterals.unKnownLanguagePromptText')
+      : t('common.forms.languageLiterals.knownLanguagePromptText');
+
   return (
     <div
       className="selection-item-wrapper"
@@ -91,6 +99,12 @@ function SelectionItem(props) {
           title={
             <span className="selection-item-title" data-cy="span-entity-name">
               {name}
+              {(fallbackConfig?.fr?.tagDisplayStatus || fallbackConfig?.en?.tagDisplayStatus) && (
+                <LiteralBadge
+                  tagTitle={fallbackConfig?.en?.fallbackLiteralKey ?? fallbackConfig?.fr?.fallbackLiteralKey}
+                  promptText={promptText}
+                />
+              )}
             </span>
           }
           description={

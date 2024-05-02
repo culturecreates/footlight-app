@@ -4,6 +4,7 @@ import Icon, { UserOutlined } from '@ant-design/icons';
 import { ReactComponent as Organizations } from '../../assets/icons/organisations.svg';
 import { taxonomyClass } from '../../constants/taxonomyClass';
 import { sourceOptions } from '../../constants/sourceOptions';
+import { languageFallbackSetup } from '../../utils/languageFallbackSetup';
 
 const handleMultilevelTreeSelect = (children, user, calendarContentLanguage, parentLabel) => {
   return children?.map((child) => {
@@ -75,7 +76,13 @@ export const treeTaxonomyOptions = (data, user, mappedToField, isDynamicField, c
   return options;
 };
 
-export const treeEntitiesOption = (data, user, calendarContentLanguage, source = sourceOptions.CMS) => {
+export const treeEntitiesOption = (
+  data,
+  user,
+  calendarContentLanguage,
+  source = sourceOptions.CMS,
+  currentCalendarData,
+) => {
   let options = data?.map((entity) => {
     return {
       label: (
@@ -145,6 +152,14 @@ export const treeEntitiesOption = (data, user, calendarContentLanguage, source =
       uri: entity?.uri,
       source: source,
       creatorId: entity?.creator?.userId,
+      fallBackStatus: currentCalendarData
+        ? languageFallbackSetup({
+            currentCalendarData,
+            fieldData: entity?.name,
+            languageFallbacks: currentCalendarData?.languageFallbacks,
+            isFieldsDirty: true,
+          })
+        : null,
     };
   });
   return options;

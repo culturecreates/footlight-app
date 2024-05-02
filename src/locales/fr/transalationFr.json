@@ -130,6 +130,12 @@
         "addMoreDetails": "Ajouter plus de détails à votre événement",
         "allDone": "Terminé",
         "featuredEvent": "Événement vedette",
+        "fallbackConfirm": {
+          "contentPart1": "Vous n'avez pas mis à jour tous les textes qui ne correspondent pas à la langue de votre site web. ",
+          "contentPart2": "Voulez-vous publier tel quel ? ",
+          "title": "Publier l'événement",
+          "publish": "Publier"
+        },
         "dataSource": "Data source",
         "question": {
           "firstPart": "Est-ce le bon événement ? Si non, ",
@@ -1076,6 +1082,14 @@
     "keepEditing": "Poursuivre l'édition",
     "discard": "Jeter",
     "copied": "Copié dans le presse-papiers",
+    "dismiss": "J'ai compris",
+    "forms": {
+      "languageLiterals": {
+        "knownLanguagePromptText": "Ce texte ne correspond pas à la langue de votre site web.",
+        "unKnownLanguagePromptText": "La langue de ce texte n'est pas définie.",
+        "bannerTitle": "Certains textes ne correspondent pas à la langue de votre site web. Révisez et mettez à jour si nécessaire."
+      }
+    },
     "server": {
       "status": {
         "503": {
