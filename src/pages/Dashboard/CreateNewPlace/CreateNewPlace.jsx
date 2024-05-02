@@ -1064,7 +1064,11 @@ function CreateNewPlace() {
                     </Col>
                     <Col span={24}>
                       <ArtsDataInfo
-                        artsDataLink={artsDataLinkChecker(placeData?.sameAs)}
+                        artsDataLink={
+                          artsDataLinkChecker(placeData?.sameAs)
+                            ? artsDataLinkChecker(placeData?.sameAs)
+                            : artsDataLinkChecker(artsData?.sameAs)
+                        }
                         name={contentLanguageBilingual({
                           en: artsData?.name?.en,
                           fr: artsData?.name?.fr,

@@ -41,8 +41,8 @@ import { Prompt, usePrompt } from '../../../hooks/usePrompt';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { useGetEntitiesByIdQuery, useLazyGetEntityDependencyDetailsQuery } from '../../../services/entities';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
-import SelectionItem from '../../../components/List/SelectionItem';
 import moment from 'moment';
+import SelectionItem from '../../../components/List/SelectionItem';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -520,7 +520,11 @@ function CreateNewPerson() {
                             </Col>
                             <Col span={24}>
                               <ArtsDataInfo
-                                artsDataLink={artsDataLinkChecker(personData?.sameAs)}
+                                artsDataLink={
+                                  artsDataLinkChecker(personData?.sameAs)
+                                    ? artsDataLinkChecker(personData?.sameAs)
+                                    : artsDataLinkChecker(artsData?.sameAs)
+                                }
                                 name={contentLanguageBilingual({
                                   en: artsData?.name?.en,
                                   fr: artsData?.name?.fr,
