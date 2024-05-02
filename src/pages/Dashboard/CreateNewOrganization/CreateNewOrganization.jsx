@@ -976,7 +976,11 @@ function CreateNewOrganization() {
                             </Col>
                             <Col span={24}>
                               <ArtsDataInfo
-                                artsDataLink={artsDataLinkChecker(organizationData?.sameAs)}
+                                artsDataLink={
+                                  artsDataLinkChecker(organizationData?.sameAs)
+                                    ? artsDataLinkChecker(organizationData?.sameAs)
+                                    : artsDataLinkChecker(artsData?.sameAs)
+                                }
                                 name={contentLanguageBilingual({
                                   en: artsData?.name?.en,
                                   fr: artsData?.name?.fr,

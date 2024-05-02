@@ -28,3 +28,7 @@
   color: #222732;
   font-size: 12px;
 }
+
+.app-container {
+  height: 100%;
+}
