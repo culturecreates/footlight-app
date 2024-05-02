@@ -19,6 +19,7 @@ import { peopleApi } from '../services/people';
 import { postalAddressApi } from '../services/postalAddress';
 import ErrorSliceReducer from './reducer/ErrorSlice';
 import { externalSourceApi } from '../services/externalSource';
+import languageLiteralReducer from './reducer/languageLiteralSlice';
 // import localforage from 'localforage';
 
 const persistConfig = {
@@ -46,6 +47,7 @@ const appReducer = combineReducers({
   interfaceLanguage: interfaceLanguageReducer,
   selectedCalendar: selectedCalendarReducer,
   errors: ErrorSliceReducer,
+  languageLiteral: languageLiteralReducer,
   [loginApi.reducerPath]: loginApi.reducer,
   [usersApi.reducerPath]: usersApi.reducer,
   [eventsApi.reducerPath]: eventsApi.reducer,

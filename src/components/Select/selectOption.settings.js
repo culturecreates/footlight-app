@@ -1,5 +1,6 @@
 import { sourceOptions } from '../../constants/sourceOptions';
 import { contentLanguageBilingual } from '../../utils/bilingual';
+import { languageFallbackSetup } from '../../utils/languageFallbackSetup';
 import SelectionItem from '../List/SelectionItem';
 import { EnvironmentOutlined } from '@ant-design/icons';
 
@@ -23,7 +24,7 @@ export const taxonomyOptions = (data, user, mappedToField, calendarContentLangua
   return options;
 };
 
-export const placesOptions = (data, user, calendarContentLanguage, source = sourceOptions.CMS) => {
+export const placesOptions = (data, user, calendarContentLanguage, source = sourceOptions.CMS, currentCalendarData) => {
   let options = data?.map((place) => {
     return {
       label: (
@@ -84,6 +85,14 @@ export const placesOptions = (data, user, calendarContentLanguage, source = sour
       uri: place?.uri,
       type: place?.type,
       creatorId: place?.creator?.userId ?? place?.createdByUserId,
+      fallBackStatus: currentCalendarData
+        ? languageFallbackSetup({
+            currentCalendarData,
+            fieldData: place?.name,
+            languageFallbacks: currentCalendarData?.languageFallbacks,
+            isFieldsDirty: true,
+          })
+        : null,
     };
   });
   return options;

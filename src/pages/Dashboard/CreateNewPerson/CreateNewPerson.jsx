@@ -10,6 +10,7 @@ import Icon, {
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { LeftOutlined } from '@ant-design/icons';
+import OutlinedButton from '../../..//components/Button/Outlined';
 import PrimaryButton from '../../../components/Button/Primary';
 import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
 import { featureFlags } from '../../../utils/featureFlags';
@@ -17,7 +18,7 @@ import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import Card from '../../../components/Card/Common/Event';
 import { formCategory, formFieldValue, returnFormDataWithFields } from '../../../constants/formFields';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
@@ -41,13 +42,21 @@ import { Prompt, usePrompt } from '../../../hooks/usePrompt';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { useGetEntitiesByIdQuery, useLazyGetEntityDependencyDetailsQuery } from '../../../services/entities';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
-import SelectionItem from '../../../components/List/SelectionItem';
 import moment from 'moment';
+import SelectionItem from '../../../components/List/SelectionItem';
+import {
+  clearActiveFallbackFieldsInfo,
+  getActiveFallbackFieldsInfo,
+  getLanguageLiteralBannerDisplayStatus,
+  setLanguageLiteralBannerDisplayStatus,
+} from '../../../redux/reducer/languageLiteralSlice';
+import Alert from '../../../components/Alert';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
   const [form] = Form.useForm();
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const [
@@ -59,6 +68,8 @@ function CreateNewPerson() {
     isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
+  const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
+  const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
   const { user } = useSelector(getUserDetails);
   const { calendarId } = useParams();
   let [searchParams] = useSearchParams();
@@ -347,6 +358,31 @@ function CreateNewPerson() {
   };
 
   useEffect(() => {
+    dispatch(clearActiveFallbackFieldsInfo());
+  }, []);
+
+  useEffect(() => {
+    let shouldDisplay = true;
+
+    for (let key in activeFallbackFieldsInfo) {
+      if (Object.prototype.hasOwnProperty.call(activeFallbackFieldsInfo, key)) {
+        const tagDisplayStatus =
+          activeFallbackFieldsInfo[key]?.en?.tagDisplayStatus || activeFallbackFieldsInfo[key]?.fr?.tagDisplayStatus;
+        if (tagDisplayStatus) {
+          shouldDisplay = false;
+          break;
+        }
+      }
+    }
+
+    if (!shouldDisplay) {
+      dispatch(setLanguageLiteralBannerDisplayStatus(true));
+    } else {
+      dispatch(setLanguageLiteralBannerDisplayStatus(false));
+    }
+  }, [activeFallbackFieldsInfo]);
+
+  useEffect(() => {
     if (calendarId && currentCalendarData) {
       if (personData) {
         if (routinghandler(user, calendarId, personData?.createdByUserId, null, true, personData?.id)) {
@@ -500,6 +536,35 @@ function CreateNewPerson() {
                     </h4>
                   </div>
                 </Col>
+
+                {languageLiteralBannerDisplayStatus && (
+                  <Col span={24} className="language-literal-banner">
+                    <Row>
+                      <Col flex={'780px'}>
+                        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                          <Col span={24}>
+                            <Alert
+                              message={t('common.forms.languageLiterals.bannerTitle')}
+                              type="info"
+                              showIcon={false}
+                              action={
+                                <OutlinedButton
+                                  data-cy="button-change-interface-language"
+                                  size="large"
+                                  label={t('common.dismiss')}
+                                  onClick={() => {
+                                    dispatch(setLanguageLiteralBannerDisplayStatus(false));
+                                    dispatch(clearActiveFallbackFieldsInfo({}));
+                                  }}
+                                />
+                              }
+                            />
+                          </Col>
+                        </Row>
+                      </Col>
+                    </Row>
+                  </Col>
+                )}
               </Row>
             </Col>
             {fields?.map((section, index) => {
@@ -520,7 +585,11 @@ function CreateNewPerson() {
                             </Col>
                             <Col span={24}>
                               <ArtsDataInfo
-                                artsDataLink={artsDataLinkChecker(personData?.sameAs)}
+                                artsDataLink={
+                                  artsDataLinkChecker(personData?.sameAs)
+                                    ? artsDataLinkChecker(personData?.sameAs)
+                                    : artsDataLinkChecker(artsData?.sameAs)
+                                }
                                 name={contentLanguageBilingual({
                                   en: artsData?.name?.en,
                                   fr: artsData?.name?.fr,
