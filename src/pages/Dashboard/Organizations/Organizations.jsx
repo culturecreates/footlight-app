@@ -69,7 +69,9 @@ function Organizations() {
     searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('organizationSearchQuery') ?? '',
   );
   const [filter, setFilter] = useState({
-    sort: sortByOptionsOrgsPlacesPerson[0]?.key,
+    sort: searchParams.get('sortBy')
+      ? searchParams.get('sortBy')
+      : sessionStorage.getItem('organizationSortBy') ?? sortByOptionsOrgsPlacesPerson[0]?.key,
     order: searchParams.get('order')
       ? searchParams.get('order')
       : sessionStorage.getItem('organizationOrder') ?? sortOrder?.ASC,
@@ -126,6 +128,18 @@ function Organizations() {
     if (event.target.value === '') setOrganizationSearchQuery('');
   };
 
+  const filterClearHandler = () => {
+    setFilter({
+      sort: sortByOptionsOrgsPlacesPerson[0]?.key,
+      order: sortOrder?.ASC,
+    });
+    setPageNumber(1);
+    sessionStorage.removeItem('organizationPage');
+    sessionStorage.removeItem('organizationSearchQuery');
+    sessionStorage.removeItem('organizationOrder');
+    sessionStorage.removeItem('organizationSortBy');
+  };
+
   useEffect(() => {
     let sortQuery = new URLSearchParams();
     sortQuery.append(
@@ -157,6 +171,7 @@ function Organizations() {
     sessionStorage.setItem('organizationPage', pageNumber);
     sessionStorage.setItem('organizationSearchQuery', organizationSearchQuery);
     sessionStorage.setItem('organizationOrder', filter?.order);
+    sessionStorage.setItem('organizationSortBy', filter?.sort);
   }, [pageNumber, organizationSearchQuery, filter]);
   return (
     <>
@@ -200,7 +215,12 @@ function Organizations() {
               onChange={onChangeHandler}
               data-cy="input-search-organizations"
             />
-            <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
+            <Sort
+              filter={filter}
+              setFilter={setFilter}
+              setPageNumber={setPageNumber}
+              filterClearHandler={filterClearHandler}
+            />
             <></>
             <div className="responsvie-list-wrapper-class">
               {!allOrganizationFetching ? (

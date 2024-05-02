@@ -65,7 +65,9 @@ function People() {
     searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('peopleSearchQuery') ?? '',
   );
   const [filter, setFilter] = useState({
-    sort: sortByOptionsOrgsPlacesPerson[0]?.key,
+    sort: searchParams.get('sortBy')
+      ? searchParams.get('sortBy')
+      : sessionStorage.getItem('peopleSortBy') ?? sortByOptionsOrgsPlacesPerson[0]?.key,
     order: searchParams.get('order')
       ? searchParams.get('order')
       : sessionStorage.getItem('peopleOrder') ?? sortOrder?.ASC,
@@ -118,6 +120,18 @@ function People() {
     if (event.target.value === '') setPeopleSearchQuery('');
   };
 
+  const filterClearHandler = () => {
+    setFilter({
+      sort: sortByOptionsOrgsPlacesPerson[0]?.key,
+      order: sortOrder?.ASC,
+    });
+    setPageNumber(1);
+    sessionStorage.removeItem('peoplePage');
+    sessionStorage.removeItem('peopleSearchQuery');
+    sessionStorage.removeItem('peopleOrder');
+    sessionStorage.removeItem('peopleSortBy');
+  };
+
   useEffect(() => {
     let sortQuery = new URLSearchParams();
     sortQuery.append(
@@ -149,6 +163,7 @@ function People() {
     sessionStorage.setItem('peoplePage', pageNumber);
     sessionStorage.setItem('peopleSearchQuery', peopleSearchQuery);
     sessionStorage.setItem('peopleOrder', filter?.order);
+    sessionStorage.setItem('peopleSortBy', filter?.sort);
   }, [pageNumber, peopleSearchQuery, filter]);
   return (
     <>
@@ -191,7 +206,12 @@ function People() {
               onChange={onChangeHandler}
               data-cy="input-person-search"
             />
-            <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
+            <Sort
+              filter={filter}
+              setFilter={setFilter}
+              setPageNumber={setPageNumber}
+              filterClearHandler={filterClearHandler}
+            />
             <></>
             <div className="responsvie-list-wrapper-class">
               {!allPeopleFetching ? (

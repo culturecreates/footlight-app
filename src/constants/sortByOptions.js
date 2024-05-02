@@ -25,6 +25,10 @@ export const sortByOptionsOrgsPlacesPerson = [
     label: <Translation>{(t) => t('dashboard.events.filter.sort.name')}</Translation>,
     key: `name`,
   },
+  {
+    label: <Translation>{(t) => t('dashboard.taxonomy.listing.sort.createdDate')}</Translation>,
+    key: 'metadata.createdAt',
+  },
 ];
 
 export const sortByOptionsUsers = [
@@ -39,6 +43,10 @@ export const sortByOptionsUsers = [
   {
     label: <Translation>{(t) => t('dashboard.settings.userManagement.lastName')}</Translation>,
     key: 'lastName',
+  },
+  {
+    label: <Translation>{(t) => t('dashboard.taxonomy.listing.sort.createdDate')}</Translation>,
+    key: 'invitedOn',
   },
 ];
 
