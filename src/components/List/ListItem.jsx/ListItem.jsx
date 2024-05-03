@@ -77,10 +77,14 @@ function ListItem(props) {
       />
       <List.Item.Meta
         className="event-status-list-item"
+        onClick={listItemHandler}
         title={
           artsDataLink && (
             <ArtsDataLink
-              onClick={() => window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer')}
+              onClick={(e) => {
+                e.stopPropagation();
+                window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer');
+              }}
               data-cy="tag-entity-artsdata">
               <span style={{ textDecoration: 'underline' }} data-cy="span-entity-artsdata">
                 Artsdata
