@@ -39,7 +39,7 @@ function Calendar({ children, allCalendarsData, setPageNumber }) {
             borderRadius: '73px',
             objectFit: 'contain',
           }}
-          src={item?.image?.uri}
+          src={item?.logo?.original?.uri}
         />
       ),
     };
