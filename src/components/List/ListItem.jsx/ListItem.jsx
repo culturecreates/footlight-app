@@ -31,12 +31,12 @@ function ListItem(props) {
     <List.Item
       data-cy="list-item-entity"
       className="event-list-item-wrapper"
+      onClick={listItemHandler}
       key={id}
       extra={actions}
       style={{ padding: '20px 0px', ...props?.styles?.style }}>
       <List.Item.Meta
         className="event-list-item-meta"
-        onClick={listItemHandler}
         data-cy="list-item-meta-entity"
         avatar={
           logo ? (
@@ -77,7 +77,6 @@ function ListItem(props) {
       />
       <List.Item.Meta
         className="event-status-list-item"
-        onClick={listItemHandler}
         title={
           artsDataLink && (
             <ArtsDataLink
