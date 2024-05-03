@@ -197,6 +197,23 @@
   padding: 0px;
 }
 
+.event-form-wrapper .language-literal-banner .ant-alert-message {
+  color: #1572bb;
+}
+
+.fallback-modal-container .ant-modal-confirm-content > div {
+  background: #fffbe5 !important;
+}
+
+.fallback-modal-container .ant-modal-confirm-content > div :last-child {
+  color: #8c7911 !important;
+}
+
+.fallback-modal-container .ant-modal-confirm-btns button:last-child {
+  background: #1b3de6 !important;
+  border-color: #1b3de6;
+}
+
 @media screen and (max-width: 480px) {
   .add-edit-wrapper .add-edit-event-heading h4 {
     font-size: 24px;

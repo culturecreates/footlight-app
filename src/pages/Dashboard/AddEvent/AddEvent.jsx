@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import './addEvent.css';
 import { Form, Row, Col, Input, message, Button, notification } from 'antd';
+import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import {
   SyncOutlined,
   InfoCircleOutlined,
@@ -20,8 +21,9 @@ import { useGetEventQuery, useUpdateEventStateMutation } from '../../../services
 import { PathName } from '../../../constants/pathName';
 import Outlined from '../../../components/Button/Outlined';
 import PrimaryButton from '../../../components/Button/Primary';
-import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import OutlinedButton from '../../..//components/Button/Outlined';
+import { Translation, useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { userRoles } from '../../../constants/userRoles';
 import PublishState from '../../../components/Dropdown/PublishState/PublishState';
@@ -94,12 +96,20 @@ import Alert from '../../../components/Alert';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 import { getEmbedUrl, validateVimeoURL, validateYouTubeURL } from '../../../utils/getEmbedVideoUrl';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
+import {
+  clearActiveFallbackFieldsInfo,
+  getActiveFallbackFieldsInfo,
+  getLanguageLiteralBannerDisplayStatus,
+  setLanguageLiteralBannerDisplayStatus,
+} from '../../../redux/reducer/languageLiteralSlice';
+import { removeUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 
 const { TextArea } = Input;
 
 function AddEvent() {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const [form] = Form.useForm();
   Form.useWatch('startTime', form);
   Form.useWatch('endTime', form);
@@ -108,6 +118,8 @@ function AddEvent() {
   let [searchParams] = useSearchParams();
   let duplicateId = searchParams.get('duplicateId');
   const { user } = useSelector(getUserDetails);
+  const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
+  const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { t } = useTranslation();
   const [
     currentCalendarData, // eslint-disable-next-line no-unused-vars
@@ -329,425 +341,540 @@ function AddEvent() {
     });
     return promise;
   };
+
   const saveAsDraftHandler = (event, toggle = false, type = eventPublishState.PUBLISHED) => {
     event?.preventDefault();
     const previousShowDialog = showDialog;
     setShowDialog(false);
-    var promise = new Promise(function (resolve, reject) {
-      form
-        .validateFields([
-          ...new Set([
-            'french',
-            'english',
-            'datePicker',
-            'dateRangePicker',
-            'datePickerWrapper',
-            'startDateRecur',
-            ...(eventId && eventData?.publishState === eventPublishState.PUBLISHED && type !== eventPublishState.DRAFT
-              ? validateFields
-              : []),
-          ]),
-        ])
-        .then(() => {
-          var values = form.getFieldsValue(true);
-          var startDateTime,
-            endDateTime,
-            additionalType = [],
-            audience = [],
-            contactPoint,
-            accessibility = [],
-            accessibilityNote,
-            keywords = [],
-            locationId,
-            offerConfiguration,
-            organizers = [],
-            performers = [],
-            collaborators = [],
-            dynamicFields = [],
-            recurringEvent,
-            description = {},
-            inLanguage = [];
+    const action = ({ clear = false, previousShowDialog, toggle, type }) => {
+      var promise = new Promise(function (resolve, reject) {
+        form
+          .validateFields([
+            ...new Set([
+              'french',
+              'english',
+              'datePicker',
+              'dateRangePicker',
+              'datePickerWrapper',
+              'startDateRecur',
+              ...(eventId && eventData?.publishState === eventPublishState.PUBLISHED && type !== eventPublishState.DRAFT
+                ? validateFields
+                : []),
+            ]),
+          ])
+          .then(() => {
+            let fallbackStatus = activeFallbackFieldsInfo;
+            if (clear) {
+              dispatch(setLanguageLiteralBannerDisplayStatus(false));
+              dispatch(clearActiveFallbackFieldsInfo());
+              fallbackStatus = {};
+            }
+            var values = form.getFieldsValue(true);
+            var startDateTime,
+              endDateTime,
+              additionalType = [],
+              audience = [],
+              contactPoint,
+              accessibility = [],
+              accessibilityNote,
+              keywords = [],
+              locationId,
+              offerConfiguration,
+              organizers = [],
+              performers = [],
+              collaborators = [],
+              dynamicFields = [],
+              recurringEvent,
+              description = {},
+              name = {},
+              inLanguage = [];
 
-          let eventObj;
+            let eventObj;
 
-          // Use a regular expression to remove <p><br></p> tags at the end
+            const englishVirtualLocation = removeUneditedFallbackValues({
+              values: values?.englishVirtualLocation?.trim(),
+              activeFallbackFieldsInfo: fallbackStatus,
+              fieldName: 'frenchVirtualLocation-englishVirtualLocation',
+              property: 'en',
+            });
 
-          if (dateType === dateTypes.SINGLE) {
-            if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
-            else
-              startDateTime = moment
-                .tz(values?.datePicker, eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                .format('YYYY-MM-DD');
-            if (values?.endTime) endDateTime = dateTimeConverter(values?.datePicker, values?.endTime);
-          }
-          if (dateType === dateTypes.RANGE) {
-            if (values?.startTime) startDateTime = dateTimeConverter(values?.dateRangePicker[0], values?.startTime);
-            else
-              startDateTime = moment
-                .tz(values?.dateRangePicker[0], eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                .format('YYYY-MM-DD');
-            if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
-            else
-              endDateTime = moment
-                .tz(values?.dateRangePicker[1], eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                .format('YYYY-MM-DD');
-          }
-          if (dateType === dateTypes.MULTIPLE) {
-            const recurEvent = {
-              frequency: values.frequency,
-              startDate:
-                form.getFieldsValue().frequency !== 'CUSTOM'
-                  ? moment(values.startDateRecur[0]).format('YYYY-MM-DD')
-                  : undefined,
-              endDate:
-                form.getFieldsValue().frequency !== 'CUSTOM'
-                  ? moment(values.startDateRecur[1]).format('YYYY-MM-DD')
-                  : undefined,
-              startTime:
-                form.getFieldsValue().frequency !== 'CUSTOM'
-                  ? values.startTimeRecur
-                    ? moment(values.startTimeRecur).format('HH:mm')
-                    : undefined
-                  : undefined,
-              endTime:
-                form.getFieldsValue().frequency !== 'CUSTOM' && values.endTimeRecur
-                  ? moment(values.endTimeRecur).format('HH:mm')
-                  : undefined,
-              weekDays: values.frequency === 'WEEKLY' ? values.daysOfWeek : undefined,
-              customDates: form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
-            };
-            recurringEvent = recurEvent;
-          }
-          if (values?.eventType) {
-            additionalType = values?.eventType?.map((eventTypeId) => {
-              return {
-                entityId: eventTypeId,
-              };
+            const frenchVirtualLocation = removeUneditedFallbackValues({
+              values: values?.frenchVirtualLocation?.trim(),
+              activeFallbackFieldsInfo: fallbackStatus,
+              fieldName: 'frenchVirtualLocation-englishVirtualLocation',
+              property: 'fr',
             });
-          }
-          if (values?.targetAudience) {
-            audience = values?.targetAudience?.map((audienceId) => {
-              return {
-                entityId: audienceId,
-              };
+            const englishContactTitle = removeUneditedFallbackValues({
+              values: values?.englishContactTitle?.trim(),
+              activeFallbackFieldsInfo: fallbackStatus,
+              fieldName: 'frenchContactTitle-englishContactTitle',
+              property: 'en',
             });
-          }
-          if (values?.inLanguage) {
-            inLanguage = values?.inLanguage?.map((inLanguageId) => {
-              return {
-                entityId: inLanguageId,
-              };
+            const frenchContactTitle = removeUneditedFallbackValues({
+              values: values?.frenchContactTitle?.trim(),
+              activeFallbackFieldsInfo: fallbackStatus,
+              fieldName: 'frenchContactTitle-englishContactTitle',
+              property: 'fr',
             });
-          }
-          if (values?.locationPlace || values?.locationPlace?.length > 0) {
-            let place;
+
+            const englishTicketNote = removeUneditedFallbackValues({
+              values: values?.englishTicketNote?.trim(),
+              activeFallbackFieldsInfo: fallbackStatus,
+              fieldName: 'frenchTicketNote-englishTicketNote',
+              property: 'en',
+            });
+
+            const frenchTicketNote = removeUneditedFallbackValues({
+              values: values?.frenchTicketNote?.trim(),
+              activeFallbackFieldsInfo: fallbackStatus,
+              fieldName: 'frenchTicketNote-englishTicketNote',
+              property: 'fr',
+            });
+            const descriptionFr = removeUneditedFallbackValues({
+              values: values?.frenchEditor?.trim(),
+              activeFallbackFieldsInfo: fallbackStatus,
+              fieldName: 'frenchEditor-englishEditor',
+              property: 'fr',
+            });
+            const descriptionEn = removeUneditedFallbackValues({
+              values: values?.englishEditor?.trim(),
+              activeFallbackFieldsInfo: fallbackStatus,
+              fieldName: 'frenchEditor-englishEditor',
+              property: 'en',
+            });
+            const nameFr = removeUneditedFallbackValues({
+              values: values?.french?.trim(),
+              activeFallbackFieldsInfo: fallbackStatus,
+              fieldName: 'french-english',
+              property: 'fr',
+            });
+            const nameEn = removeUneditedFallbackValues({
+              values: values?.english?.trim(),
+              activeFallbackFieldsInfo: fallbackStatus,
+              fieldName: 'french-english',
+              property: 'en',
+            });
+            // Use a regular expression to remove <p><br></p> tags at the end
+
+            if (dateType === dateTypes.SINGLE) {
+              if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
+              else
+                startDateTime = moment
+                  .tz(values?.datePicker, eventData?.scheduleTimezone ?? 'Canada/Eastern')
+                  .format('YYYY-MM-DD');
+              if (values?.endTime) endDateTime = dateTimeConverter(values?.datePicker, values?.endTime);
+            }
+            if (dateType === dateTypes.RANGE) {
+              if (values?.startTime) startDateTime = dateTimeConverter(values?.dateRangePicker[0], values?.startTime);
+              else
+                startDateTime = moment
+                  .tz(values?.dateRangePicker[0], eventData?.scheduleTimezone ?? 'Canada/Eastern')
+                  .format('YYYY-MM-DD');
+              if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
+              else
+                endDateTime = moment
+                  .tz(values?.dateRangePicker[1], eventData?.scheduleTimezone ?? 'Canada/Eastern')
+                  .format('YYYY-MM-DD');
+            }
+            if (dateType === dateTypes.MULTIPLE) {
+              const recurEvent = {
+                frequency: values.frequency,
+                startDate:
+                  form.getFieldsValue().frequency !== 'CUSTOM'
+                    ? moment(values.startDateRecur[0]).format('YYYY-MM-DD')
+                    : undefined,
+                endDate:
+                  form.getFieldsValue().frequency !== 'CUSTOM'
+                    ? moment(values.startDateRecur[1]).format('YYYY-MM-DD')
+                    : undefined,
+                startTime:
+                  form.getFieldsValue().frequency !== 'CUSTOM'
+                    ? values.startTimeRecur
+                      ? moment(values.startTimeRecur).format('HH:mm')
+                      : undefined
+                    : undefined,
+                endTime:
+                  form.getFieldsValue().frequency !== 'CUSTOM' && values.endTimeRecur
+                    ? moment(values.endTimeRecur).format('HH:mm')
+                    : undefined,
+                weekDays: values.frequency === 'WEEKLY' ? values.daysOfWeek : undefined,
+                customDates:
+                  form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
+              };
+              recurringEvent = recurEvent;
+            }
+            if (values?.eventType) {
+              additionalType = values?.eventType?.map((eventTypeId) => {
+                return {
+                  entityId: eventTypeId,
+                };
+              });
+            }
+            if (values?.targetAudience) {
+              audience = values?.targetAudience?.map((audienceId) => {
+                return {
+                  entityId: audienceId,
+                };
+              });
+            }
+            if (values?.inLanguage) {
+              inLanguage = values?.inLanguage?.map((inLanguageId) => {
+                return {
+                  entityId: inLanguageId,
+                };
+              });
+            }
+            if (values?.locationPlace || values?.locationPlace?.length > 0) {
+              let place;
+              if (
+                locationPlace?.source === sourceOptions.CMS ||
+                locationPlace?.source === externalSourceOptions.FOOTLIGHT
+              )
+                place = {
+                  entityId: values?.locationPlace,
+                };
+              else if (locationPlace?.source === sourceOptions.ARTSDATA)
+                place = {
+                  uri: values?.locationPlace,
+                };
+              locationId = {
+                place,
+              };
+            }
+            if (values?.frenchVirtualLocation || values?.englishVirtualLocation || values?.virtualLocationOnlineLink) {
+              const name = {};
+
+              if (frenchVirtualLocation) name['fr'] = frenchVirtualLocation;
+              if (englishVirtualLocation) name['en'] = englishVirtualLocation;
+
+              locationId = {
+                ...locationId,
+                virtualLocation: {
+                  name,
+                  description: {},
+                  dynamicFields: [],
+                  url: {
+                    uri: urlProtocolCheck(values?.virtualLocationOnlineLink),
+                  },
+                },
+              };
+            }
             if (
-              locationPlace?.source === sourceOptions.CMS ||
-              locationPlace?.source === externalSourceOptions.FOOTLIGHT
-            )
-              place = {
-                entityId: values?.locationPlace,
-              };
-            else if (locationPlace?.source === sourceOptions.ARTSDATA)
-              place = {
-                uri: values?.locationPlace,
-              };
-            locationId = {
-              place,
-            };
-          }
-          if (values?.frenchVirtualLocation || values?.englishVirtualLocation || values?.virtualLocationOnlineLink) {
-            locationId = {
-              ...locationId,
-              virtualLocation: {
-                name: {
-                  en: values?.englishVirtualLocation?.trim(),
-                  fr: values?.frenchVirtualLocation?.trim(),
-                },
-                description: {},
-                dynamicFields: [],
+              values?.frenchContactTitle ||
+              values?.englishContactTitle ||
+              values?.contactWebsiteUrl ||
+              values?.contactEmail ||
+              values?.contactPhoneNumber
+            ) {
+              const name = {};
+
+              if (frenchContactTitle) name['fr'] = frenchContactTitle;
+              if (englishContactTitle) name['en'] = englishContactTitle;
+
+              contactPoint = {
+                name,
                 url: {
-                  uri: urlProtocolCheck(values?.virtualLocationOnlineLink),
+                  uri: urlProtocolCheck(values?.contactWebsiteUrl),
                 },
-              },
-            };
-          }
-          if (
-            values?.frenchContactTitle ||
-            values?.englishContactTitle ||
-            values?.contactWebsiteUrl ||
-            values?.contactEmail ||
-            values?.contactPhoneNumber
-          ) {
-            contactPoint = {
-              name: {
-                en: values?.englishContactTitle?.trim(),
-                fr: values?.frenchContactTitle?.trim(),
-              },
-              url: {
-                uri: urlProtocolCheck(values?.contactWebsiteUrl),
-              },
-              email: values?.contactEmail,
-              telephone: values?.contactPhoneNumber,
-            };
-          }
-          if (values?.eventAccessibility) {
-            accessibility = values?.eventAccessibility?.map((accessibilityId) => {
-              return {
-                entityId: accessibilityId,
+                email: values?.contactEmail,
+                telephone: values?.contactPhoneNumber,
               };
-            });
-          }
-
-          if (values?.englishAccessibilityNote || values?.frenchAccessibilityNote) {
-            accessibilityNote = {
-              ...(values?.englishAccessibilityNote && { en: values?.englishAccessibilityNote?.trim() }),
-              ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote?.trim() }),
-            };
-          }
-
-          if (values?.keywords?.length > 0) {
-            keywords = values?.keywords;
-          }
-
-          if (ticketType) {
-            offerConfiguration = {
-              category: ticketType,
-              ...((values?.englishTicketNote || values?.frenchTicketNote) && {
-                name: {
-                  en: values?.englishTicketNote?.trim(),
-                  fr: values?.frenchTicketNote?.trim(),
-                },
-              }),
-              ...(ticketType === offerTypes.PAYING &&
-                values?.prices?.length > 0 &&
-                values?.prices[0] && {
-                  prices: values?.prices?.filter((element) => element != null || element != undefined),
-                }),
-              priceCurrency: 'CAD',
-              ...(ticketType === offerTypes.PAYING &&
-                values?.ticketLink &&
-                values?.ticketLinkType == ticketLinkOptions[0].value && {
-                  url: {
-                    uri: urlProtocolCheck(values?.ticketLink),
-                  },
-                }),
-              ...(ticketType === offerTypes.PAYING &&
-                values?.ticketLink &&
-                values?.ticketLinkType == ticketLinkOptions[1].value && {
-                  email: values?.ticketLink,
-                }),
-              ...(ticketType === offerTypes.REGISTER &&
-                values?.registerLink &&
-                values?.ticketLinkType === ticketLinkOptions[0].value && {
-                  url: {
-                    uri: urlProtocolCheck(values?.registerLink),
-                  },
-                }),
-              ...(ticketType === offerTypes.REGISTER &&
-                values?.registerLink &&
-                values?.ticketLinkType === ticketLinkOptions[1].value && {
-                  email: values?.registerLink,
-                }),
-            };
-          }
-
-          if (values?.organizers) {
-            organizers = values?.organizers?.map((organizer) => {
-              if (organizer?.source === sourceOptions.CMS || organizer?.source === externalSourceOptions.FOOTLIGHT)
+            }
+            if (values?.eventAccessibility) {
+              accessibility = values?.eventAccessibility?.map((accessibilityId) => {
                 return {
-                  entityId: organizer?.value,
-                  type: organizer?.type,
+                  entityId: accessibilityId,
                 };
-              else if (organizer?.source === sourceOptions.ARTSDATA)
-                return {
-                  uri: organizer?.uri,
-                  type: organizer?.type,
-                };
-            });
-          }
-
-          if (values?.performers) {
-            performers = values?.performers?.map((performer) => {
-              if (performer?.source === sourceOptions.CMS || performer?.source === externalSourceOptions.FOOTLIGHT)
-                return {
-                  entityId: performer?.value,
-                  type: performer?.type,
-                };
-              else if (performer?.source === sourceOptions.ARTSDATA)
-                return {
-                  uri: performer?.uri,
-                  type: performer?.type,
-                };
-            });
-          }
-
-          if (values?.supporters) {
-            collaborators = values?.supporters?.map((supporter) => {
-              if (supporter?.source === sourceOptions.CMS || supporter?.source === externalSourceOptions.FOOTLIGHT)
-                return {
-                  entityId: supporter?.value,
-                  type: supporter?.type,
-                };
-              else if (supporter?.source === sourceOptions.ARTSDATA)
-                return {
-                  uri: supporter?.uri,
-                  type: supporter?.type,
-                };
-            });
-          }
-          if (values?.dynamicFields) {
-            dynamicFields = Object.keys(values?.dynamicFields)?.map((dynamicField) => {
-              return {
-                taxonomyId: dynamicField,
-                conceptIds: values?.dynamicFields[dynamicField],
-              };
-            });
-          }
-
-          if (values?.frenchEditor)
-            description = {
-              fr: values?.frenchEditor,
-            };
-          if (values?.englishEditor)
-            description = {
-              ...description,
-              en: values?.englishEditor,
-            };
-
-          eventObj = {
-            name: {
-              en: values?.english?.trim(),
-              fr: values?.french?.trim(),
-            },
-            ...(values?.startTime && { startDateTime }),
-            ...(!values?.startTime && { startDate: startDateTime }),
-            ...(values?.endTime && { endDateTime }),
-            ...(!values?.endTime && { endDate: endDateTime }),
-            eventStatus: values?.eventStatus,
-            ...((values?.englishEditor || values?.frenchEditor) && { description }),
-            ...(values?.eventAccessibility && {
-              accessibility,
-            }),
-            ...(accessibilityNote && { accessibilityNote }),
-            additionalType,
-            audience,
-
-            url: {
-              uri: urlProtocolCheck(values?.eventLink),
-            },
-
-            ...(values?.facebookLink && { facebookUrl: urlProtocolCheck(values?.facebookLink) }),
-            ...(values?.videoLink && { videoUrl: urlProtocolCheck(values?.videoLink) }),
-            ...(contactPoint && { contactPoint }),
-            ...(locationId && { locationId }),
-            ...(keywords && { keywords }),
-            ...(ticketType && { offerConfiguration }),
-            ...(values?.organizers && { organizers }),
-            ...(values?.performers && { performers }),
-            ...(values?.supporters && { collaborators }),
-            ...(values?.dynamicFields && { dynamicFields }),
-            ...(dateTypes.MULTIPLE && { recurringEvent }),
-            inLanguage,
-            isFeatured: values?.isFeatured,
-          };
-
-          let imageCrop = form.getFieldValue('imageCrop');
-          imageCrop = {
-            large: {
-              xCoordinate: imageCrop?.large?.x,
-              yCoordinate: imageCrop?.large?.y,
-              height: imageCrop?.large?.height,
-              width: imageCrop?.large?.width,
-            },
-            thumbnail: {
-              xCoordinate: imageCrop?.thumbnail?.x,
-              yCoordinate: imageCrop?.thumbnail?.y,
-              height: imageCrop?.thumbnail?.height,
-              width: imageCrop?.thumbnail?.width,
-            },
-            original: {
-              entityId: imageCrop?.original?.entityId,
-              height: imageCrop?.original?.height,
-              width: imageCrop?.original?.width,
-            },
-          };
-
-          if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
-            const formdata = new FormData();
-            formdata.append('file', values?.dragger[0].originFileObj);
-            formdata &&
-              addImage({ data: formdata, calendarId })
-                .unwrap()
-                .then((response) => {
-                  // let entityId = response?.data?.original?.entityId;
-                  if (featureFlags.imageCropFeature) {
-                    let entityId = response?.data?.original?.entityId;
-                    imageCrop = {
-                      ...imageCrop,
-                      original: {
-                        entityId,
-                        height: response?.data?.height,
-                        width: response?.data?.width,
-                      },
-                    };
-                  } else
-                    imageCrop = {
-                      ...imageCrop,
-                      original: {
-                        ...imageCrop?.original,
-                        entityId: response?.data?.original?.entityId,
-                        height: response?.data?.height,
-                        width: response?.data?.width,
-                      },
-                    };
-                  eventObj['image'] = imageCrop;
-                  addUpdateEventApiHandler(eventObj, toggle)
-                    .then((id) => resolve(id))
-                    .catch((error) => {
-                      reject(error);
-                      console.log(error);
-                    });
-                })
-                .catch((error) => {
-                  console.log(error);
-                  const element = document.getElementsByClassName('draggerWrap');
-                  element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                });
-          } else {
-            if (values?.draggerWrap) {
-              if (values?.dragger && values?.dragger?.length == 0) eventObj['image'] = null;
-              else eventObj['image'] = imageCrop;
+              });
             }
 
-            addUpdateEventApiHandler(eventObj, toggle)
-              .then((id) => resolve(id))
+            if (values?.englishAccessibilityNote || values?.frenchAccessibilityNote) {
+              accessibilityNote = {
+                ...(values?.englishAccessibilityNote && { en: values?.englishAccessibilityNote?.trim() }),
+                ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote?.trim() }),
+              };
+            }
+
+            if (values?.keywords?.length > 0) {
+              keywords = values?.keywords;
+            }
+
+            if (ticketType) {
+              const name = {};
+
+              if (englishTicketNote) name['en'] = englishTicketNote;
+              if (frenchTicketNote) name['fr'] = frenchTicketNote;
+
+              offerConfiguration = {
+                category: ticketType,
+                ...((values?.englishTicketNote || values?.frenchTicketNote) && {
+                  name,
+                }),
+                ...(ticketType === offerTypes.PAYING &&
+                  values?.prices?.length > 0 &&
+                  values?.prices[0] && {
+                    prices: values?.prices?.filter((element) => element != null || element != undefined),
+                  }),
+                priceCurrency: 'CAD',
+                ...(ticketType === offerTypes.PAYING &&
+                  values?.ticketLink &&
+                  values?.ticketLinkType == ticketLinkOptions[0].value && {
+                    url: {
+                      uri: urlProtocolCheck(values?.ticketLink),
+                    },
+                  }),
+                ...(ticketType === offerTypes.PAYING &&
+                  values?.ticketLink &&
+                  values?.ticketLinkType == ticketLinkOptions[1].value && {
+                    email: values?.ticketLink,
+                  }),
+                ...(ticketType === offerTypes.REGISTER &&
+                  values?.registerLink &&
+                  values?.ticketLinkType === ticketLinkOptions[0].value && {
+                    url: {
+                      uri: urlProtocolCheck(values?.registerLink),
+                    },
+                  }),
+                ...(ticketType === offerTypes.REGISTER &&
+                  values?.registerLink &&
+                  values?.ticketLinkType === ticketLinkOptions[1].value && {
+                    email: values?.registerLink,
+                  }),
+              };
+            }
+
+            if (values?.organizers) {
+              organizers = values?.organizers?.map((organizer) => {
+                if (organizer?.source === sourceOptions.CMS || organizer?.source === externalSourceOptions.FOOTLIGHT)
+                  return {
+                    entityId: organizer?.value,
+                    type: organizer?.type,
+                  };
+                else if (organizer?.source === sourceOptions.ARTSDATA)
+                  return {
+                    uri: organizer?.uri,
+                    type: organizer?.type,
+                  };
+              });
+            }
+
+            if (values?.performers) {
+              performers = values?.performers?.map((performer) => {
+                if (performer?.source === sourceOptions.CMS || performer?.source === externalSourceOptions.FOOTLIGHT)
+                  return {
+                    entityId: performer?.value,
+                    type: performer?.type,
+                  };
+                else if (performer?.source === sourceOptions.ARTSDATA)
+                  return {
+                    uri: performer?.uri,
+                    type: performer?.type,
+                  };
+              });
+            }
+
+            if (values?.supporters) {
+              collaborators = values?.supporters?.map((supporter) => {
+                if (supporter?.source === sourceOptions.CMS || supporter?.source === externalSourceOptions.FOOTLIGHT)
+                  return {
+                    entityId: supporter?.value,
+                    type: supporter?.type,
+                  };
+                else if (supporter?.source === sourceOptions.ARTSDATA)
+                  return {
+                    uri: supporter?.uri,
+                    type: supporter?.type,
+                  };
+              });
+            }
+            if (values?.dynamicFields) {
+              dynamicFields = Object.keys(values?.dynamicFields)?.map((dynamicField) => {
+                return {
+                  taxonomyId: dynamicField,
+                  conceptIds: values?.dynamicFields[dynamicField],
+                };
+              });
+            }
+
+            if (descriptionFr && descriptionFr !== '<p><br></p>')
+              description = {
+                fr: descriptionFr,
+              };
+            if (descriptionEn && descriptionEn !== '<p><br></p>')
+              description = {
+                ...description,
+                en: descriptionEn,
+              };
+
+            if (nameEn) name['en'] = nameEn;
+            if (nameFr) name['fr'] = nameFr;
+
+            eventObj = {
+              name: !(Object.keys(name).length > 0) ? { ...name, ...eventData?.name } : name,
+              ...(values?.startTime && { startDateTime }),
+              ...(!values?.startTime && { startDate: startDateTime }),
+              ...(values?.endTime && { endDateTime }),
+              ...(!values?.endTime && { endDate: endDateTime }),
+              eventStatus: values?.eventStatus,
+              ...((values?.englishEditor || values?.frenchEditor) && { description }),
+              ...(values?.eventAccessibility && {
+                accessibility,
+              }),
+              ...(accessibilityNote && { accessibilityNote }),
+              additionalType,
+              audience,
+
+              url: {
+                uri: urlProtocolCheck(values?.eventLink),
+              },
+
+              ...(values?.facebookLink && { facebookUrl: urlProtocolCheck(values?.facebookLink) }),
+              ...(values?.videoLink && { videoUrl: urlProtocolCheck(values?.videoLink) }),
+              ...(contactPoint && { contactPoint }),
+              ...(locationId && { locationId }),
+              ...(keywords && { keywords }),
+              ...(ticketType && { offerConfiguration }),
+              ...(values?.organizers && { organizers }),
+              ...(values?.performers && { performers }),
+              ...(values?.supporters && { collaborators }),
+              ...(values?.dynamicFields && { dynamicFields }),
+              ...(dateTypes.MULTIPLE && { recurringEvent }),
+              inLanguage,
+              isFeatured: values?.isFeatured,
+            };
+
+            let imageCrop = form.getFieldValue('imageCrop');
+            imageCrop = {
+              large: {
+                xCoordinate: imageCrop?.large?.x,
+                yCoordinate: imageCrop?.large?.y,
+                height: imageCrop?.large?.height,
+                width: imageCrop?.large?.width,
+              },
+              thumbnail: {
+                xCoordinate: imageCrop?.thumbnail?.x,
+                yCoordinate: imageCrop?.thumbnail?.y,
+                height: imageCrop?.thumbnail?.height,
+                width: imageCrop?.thumbnail?.width,
+              },
+              original: {
+                entityId: imageCrop?.original?.entityId,
+                height: imageCrop?.original?.height,
+                width: imageCrop?.original?.width,
+              },
+            };
+
+            if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
+              const formdata = new FormData();
+              formdata.append('file', values?.dragger[0].originFileObj);
+              formdata &&
+                addImage({ data: formdata, calendarId })
+                  .unwrap()
+                  .then((response) => {
+                    // let entityId = response?.data?.original?.entityId;
+                    if (featureFlags.imageCropFeature) {
+                      let entityId = response?.data?.original?.entityId;
+                      imageCrop = {
+                        ...imageCrop,
+                        original: {
+                          entityId,
+                          height: response?.data?.height,
+                          width: response?.data?.width,
+                        },
+                      };
+                    } else
+                      imageCrop = {
+                        ...imageCrop,
+                        original: {
+                          ...imageCrop?.original,
+                          entityId: response?.data?.original?.entityId,
+                          height: response?.data?.height,
+                          width: response?.data?.width,
+                        },
+                      };
+                    eventObj['image'] = imageCrop;
+                    addUpdateEventApiHandler(eventObj, toggle)
+                      .then((id) => resolve(id))
+                      .catch((error) => {
+                        reject(error);
+                        console.log(error);
+                      });
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    const element = document.getElementsByClassName('draggerWrap');
+                    element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                  });
+            } else {
+              if (values?.draggerWrap) {
+                if (values?.dragger && values?.dragger?.length == 0) eventObj['image'] = null;
+                else eventObj['image'] = imageCrop;
+              }
+
+              addUpdateEventApiHandler(eventObj, toggle)
+                .then((id) => resolve(id))
+                .catch((error) => {
+                  reject(error);
+                  console.log(error);
+                });
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+            setShowDialog(previousShowDialog);
+            message.warning({
+              duration: 10,
+              maxCount: 1,
+              key: 'event-save-as-warning',
+              content: (
+                <>
+                  {t('dashboard.events.addEditEvent.validations.errorDraft')} &nbsp;
+                  <Button
+                    type="text"
+                    icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                    onClick={() => message.destroy('event-save-as-warning')}
+                  />
+                </>
+              ),
+              icon: <ExclamationCircleOutlined />,
+            });
+          });
+      });
+      return promise;
+    };
+    var promise = new Promise(function (resolve, reject) {
+      if (Object.keys(activeFallbackFieldsInfo).length > 0 && type !== eventPublishState.DRAFT) {
+        Confirm({
+          title: t('dashboard.events.addEditEvent.fallbackConfirm.title'),
+          content: (
+            <Translation>
+              {(t) => (
+                <p>
+                  {t('dashboard.events.addEditEvent.fallbackConfirm.contentPart1')}
+                  <br></br>
+                  <br></br>
+                  {t('dashboard.events.addEditEvent.fallbackConfirm.contentPart2')}`
+                </p>
+              )}
+            </Translation>
+          ),
+          okText: t('dashboard.events.addEditEvent.fallbackConfirm.publish'),
+          cancelText: t('dashboard.places.deletePlace.cancel'),
+          className: 'fallback-modal-container',
+          onAction: () => {
+            action({ clear: true, previousShowDialog, toggle, type })
+              .then((id) => {
+                resolve(id);
+              })
               .catch((error) => {
                 reject(error);
-                console.log(error);
               });
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-          reject(error);
-          setShowDialog(previousShowDialog);
-          message.warning({
-            duration: 10,
-            maxCount: 1,
-            key: 'event-save-as-warning',
-            content: (
-              <>
-                {t('dashboard.events.addEditEvent.validations.errorDraft')} &nbsp;
-                <Button
-                  type="text"
-                  icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                  onClick={() => message.destroy('event-save-as-warning')}
-                />
-              </>
-            ),
-            icon: <ExclamationCircleOutlined />,
-          });
+          },
+        });
+      } else
+        action({ clear: false, previousShowDialog, toggle, type }).then((id) => {
+          resolve(id);
         });
     });
     return promise;
@@ -755,6 +882,7 @@ function AddEvent() {
 
   const reviewPublishHandler = ({ event, publishState = undefined, type = 'PUBLISH' }) => {
     event?.preventDefault();
+
     const isValuesChanged = showDialog;
     setShowDialog(false);
     form
@@ -782,8 +910,11 @@ function AddEvent() {
                 .catch((error) => console.log(error));
             })
             .catch((error) => console.log(error));
-        } else if ((isValuesChanged || duplicateId) && (type === 'PUBLISH' || type === 'REVIEW')) {
-          saveAsDraftHandler(event, type === 'PUBLISH' || 'REVIEW', eventPublishState.DRAFT)
+        } else if (
+          (isValuesChanged || Object.keys(activeFallbackFieldsInfo).length > 0 || duplicateId) &&
+          (type === 'PUBLISH' || type === 'REVIEW')
+        ) {
+          saveAsDraftHandler(event, type === false)
             .then((id) => {
               updateEventState({ id: eventId ?? id, calendarId, publishState })
                 .unwrap()
@@ -875,7 +1006,7 @@ function AddEvent() {
               onClick={(e) => {
                 if (eventData?.publishState === eventPublishState.PENDING_REVIEW)
                   reviewPublishHandler({ event: e, publishState: eventPublishState.DRAFT });
-                else saveAsDraftHandler(e);
+                else saveAsDraftHandler(e, false, eventPublishState.DRAFT);
               }}
               data-cy="button-save-event"
               disabled={updateEventLoading || addEventLoading || addImageLoading ? true : false}
@@ -902,7 +1033,7 @@ function AddEvent() {
             <Outlined
               size="large"
               label={t('dashboard.events.addEditEvent.saveOptions.saveAsDraft')}
-              onClick={(e) => saveAsDraftHandler(e)}
+              onClick={(e) => saveAsDraftHandler(e, false, eventPublishState.DRAFT)}
               disabled={updateEventLoading || addEventLoading || addImageLoading ? true : false}
               data-cy="button-save-event"
             />
@@ -929,14 +1060,14 @@ function AddEvent() {
           <Form.Item>
             <PublishState
               eventId={eventId}
-              reviewPublishHandler={(e) => reviewPublishHandler({ event: e, type: 'DRAFT' })}>
+              reviewPublishHandler={(e) => reviewPublishHandler({ event: e, type: eventPublishState.DRAFT })}>
               <span data-cy="span-published-text">{t('dashboard.events.publishState.published')}</span>
             </PublishState>
           </Form.Item>
           <Form.Item>
             <PrimaryButton
               label={t('dashboard.events.addEditEvent.saveOptions.save')}
-              onClick={(e) => saveAsDraftHandler(e)}
+              onClick={(e) => saveAsDraftHandler(e, false, eventPublishState.PUBLISHED)}
               disabled={updateEventLoading || addEventLoading || addImageLoading ? true : false}
               data-cy="button-save-event"
             />
@@ -960,7 +1091,9 @@ function AddEvent() {
     })
       .unwrap()
       .then((response) => {
-        setAllPlacesList(placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS));
+        setAllPlacesList(
+          placesOptions(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+        );
       })
       .catch((error) => console.log(error));
     getExternalSource({
@@ -973,10 +1106,16 @@ function AddEvent() {
       .unwrap()
       .then((response) => {
         setAllPlacesArtsdataList(
-          placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+          placesOptions(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA, currentCalendarData),
         );
         setAllPlacesImportsFootlightList(
-          placesOptions(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+          placesOptions(
+            response?.footlight,
+            user,
+            calendarContentLanguage,
+            externalSourceOptions.FOOTLIGHT,
+            currentCalendarData,
+          ),
         );
       })
       .catch((error) => console.log(error));
@@ -994,11 +1133,17 @@ function AddEvent() {
       .unwrap()
       .then((response) => {
         if (type == 'organizers') {
-          setOrganizersList(treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS));
+          setOrganizersList(
+            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+          );
         } else if (type == 'performers') {
-          setPerformerList(treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS));
+          setPerformerList(
+            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+          );
         } else if (type == 'supporters') {
-          setSupporterList(treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS));
+          setSupporterList(
+            treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+          );
         }
       })
       .catch((error) => console.log(error));
@@ -1013,24 +1158,60 @@ function AddEvent() {
       .then((response) => {
         if (type == 'organizers') {
           setOrganizersArtsdataList(
-            treeEntitiesOption(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+            treeEntitiesOption(
+              response?.artsdata,
+              user,
+              calendarContentLanguage,
+              sourceOptions.ARTSDATA,
+              currentCalendarData,
+            ),
           );
           setOrganizersImportsFootlightList(
-            treeEntitiesOption(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+            treeEntitiesOption(
+              response?.footlight,
+              user,
+              calendarContentLanguage,
+              externalSourceOptions.FOOTLIGHT,
+              currentCalendarData,
+            ),
           );
         } else if (type == 'performers') {
           setPerformerArtsdataList(
-            treeEntitiesOption(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+            treeEntitiesOption(
+              response?.artsdata,
+              user,
+              calendarContentLanguage,
+              sourceOptions.ARTSDATA,
+              currentCalendarData,
+            ),
           );
           setPerformerImportsFootlightList(
-            treeEntitiesOption(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+            treeEntitiesOption(
+              response?.footlight,
+              user,
+              calendarContentLanguage,
+              externalSourceOptions.FOOTLIGHT,
+              currentCalendarData,
+            ),
           );
         } else if (type == 'supporters') {
           setSupporterArtsdataList(
-            treeEntitiesOption(response?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+            treeEntitiesOption(
+              response?.artsdata,
+              user,
+              calendarContentLanguage,
+              sourceOptions.ARTSDATA,
+              currentCalendarData,
+            ),
           );
           setSupporterImportsFootlightList(
-            treeEntitiesOption(response?.footlight, user, calendarContentLanguage, externalSourceOptions.FOOTLIGHT),
+            treeEntitiesOption(
+              response?.footlight,
+              user,
+              calendarContentLanguage,
+              externalSourceOptions.FOOTLIGHT,
+              currentCalendarData,
+            ),
           );
         }
       })
@@ -1069,7 +1250,7 @@ function AddEvent() {
   };
 
   const organizerPerformerSupporterPlaceNavigationHandler = (id, type, event) => {
-    saveAsDraftHandler(event, true)
+    saveAsDraftHandler(event, true, eventPublishState.DRAFT)
       .then((savedEventId) => {
         if ((!eventId || eventId === '') && newEventId === null)
           notification.success({
@@ -1141,6 +1322,32 @@ function AddEvent() {
       }
     }
   };
+
+  useEffect(() => {
+    dispatch(clearActiveFallbackFieldsInfo());
+  }, []);
+
+  useEffect(() => {
+    let shouldDisplay = true;
+
+    for (let key in activeFallbackFieldsInfo) {
+      if (Object.prototype.hasOwnProperty.call(activeFallbackFieldsInfo, key)) {
+        const tagDisplayStatus =
+          activeFallbackFieldsInfo[key]?.en?.tagDisplayStatus || activeFallbackFieldsInfo[key]?.fr?.tagDisplayStatus;
+        if (tagDisplayStatus) {
+          shouldDisplay = false;
+          break;
+        }
+      }
+    }
+
+    if (!shouldDisplay) {
+      dispatch(setLanguageLiteralBannerDisplayStatus(true));
+    } else {
+      dispatch(setLanguageLiteralBannerDisplayStatus(false));
+    }
+  }, [activeFallbackFieldsInfo]);
+
   useEffect(() => {
     if (isError) navigate(`${PathName.NotFound}`);
   }, [isError]);
@@ -1215,7 +1422,15 @@ function AddEvent() {
                       ...initialPlace[0],
                       ['accessibility']: initialPlaceAccessibiltiy,
                     };
-                    setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0], sourceOptions.CMS);
+                    setLocationPlace(
+                      placesOptions(
+                        initialPlace,
+                        user,
+                        calendarContentLanguage,
+                        sourceOptions.CMS,
+                        currentCalendarData,
+                      )[0],
+                    );
                   }
                 });
               } else {
@@ -1223,7 +1438,9 @@ function AddEvent() {
                   ...initialPlace[0],
                   ['accessibility']: [],
                 };
-                setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0], sourceOptions.CMS);
+                setLocationPlace(
+                  placesOptions(initialPlace, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData)[0],
+                );
               }
               res?.data?.map((taxonomy) => {
                 if (taxonomy?.mappedToField == 'Region') {
@@ -1231,8 +1448,13 @@ function AddEvent() {
                     if (initialPlace[0]?.regions[0]?.entityId == t?.id) {
                       initialPlace[0] = { ...initialPlace[0], regions: [t] };
                       setLocationPlace(
-                        placesOptions(initialPlace, user, calendarContentLanguage)[0],
-                        sourceOptions.CMS,
+                        placesOptions(
+                          initialPlace,
+                          user,
+                          calendarContentLanguage,
+                          sourceOptions.CMS,
+                          currentCalendarData,
+                        )[0],
                       );
                     }
                   });
@@ -1265,7 +1487,13 @@ function AddEvent() {
             };
           });
           setSelectedOrganizers(
-            treeEntitiesOption(initialOrganizers, user, calendarContentLanguage, sourceOptions.CMS),
+            treeEntitiesOption(
+              initialOrganizers,
+              user,
+              calendarContentLanguage,
+              sourceOptions.CMS,
+              currentCalendarData,
+            ),
           );
         }
         if (eventData?.performer) {
@@ -1281,7 +1509,13 @@ function AddEvent() {
             };
           });
           setSelectedPerformers(
-            treeEntitiesOption(initialPerformers, user, calendarContentLanguage, sourceOptions.CMS),
+            treeEntitiesOption(
+              initialPerformers,
+              user,
+              calendarContentLanguage,
+              sourceOptions.CMS,
+              currentCalendarData,
+            ),
           );
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.performerWrap);
         }
@@ -1298,7 +1532,13 @@ function AddEvent() {
             };
           });
           setSelectedSupporters(
-            treeEntitiesOption(initialSupporters, user, calendarContentLanguage, sourceOptions.CMS),
+            treeEntitiesOption(
+              initialSupporters,
+              user,
+              calendarContentLanguage,
+              sourceOptions.CMS,
+              currentCalendarData,
+            ),
           );
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.supporterWrap);
         }
@@ -1528,17 +1768,41 @@ function AddEvent() {
 
   useEffect(() => {
     if (initialEntities && currentCalendarData && !initialExternalSourceLoading) {
-      setOrganizersList(treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS));
-      setPerformerList(treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS));
-      setSupporterList(treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS));
+      setOrganizersList(
+        treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+      );
+      setPerformerList(
+        treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+      );
+      setSupporterList(
+        treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+      );
       setPerformerArtsdataList(
-        treeEntitiesOption(initialExternalSource?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+        treeEntitiesOption(
+          initialExternalSource?.artsdata,
+          user,
+          calendarContentLanguage,
+          sourceOptions.ARTSDATA,
+          currentCalendarData,
+        ),
       );
       setSupporterArtsdataList(
-        treeEntitiesOption(initialExternalSource?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+        treeEntitiesOption(
+          initialExternalSource?.artsdata,
+          user,
+          calendarContentLanguage,
+          sourceOptions.ARTSDATA,
+          currentCalendarData,
+        ),
       );
       setOrganizersArtsdataList(
-        treeEntitiesOption(initialExternalSource?.artsdata, user, calendarContentLanguage, sourceOptions.ARTSDATA),
+        treeEntitiesOption(
+          initialExternalSource?.artsdata,
+          user,
+          calendarContentLanguage,
+          sourceOptions.ARTSDATA,
+          currentCalendarData,
+        ),
       );
       setOrganizersImportsFootlightList(
         treeEntitiesOption(
@@ -1546,6 +1810,7 @@ function AddEvent() {
           user,
           calendarContentLanguage,
           externalSourceOptions.FOOTLIGHT,
+          currentCalendarData,
         ),
       );
       setPerformerImportsFootlightList(
@@ -1554,6 +1819,7 @@ function AddEvent() {
           user,
           calendarContentLanguage,
           externalSourceOptions.FOOTLIGHT,
+          currentCalendarData,
         ),
       );
       setSupporterImportsFootlightList(
@@ -1562,6 +1828,7 @@ function AddEvent() {
           user,
           calendarContentLanguage,
           externalSourceOptions.FOOTLIGHT,
+          currentCalendarData,
         ),
       );
       placesSearch('');
@@ -1634,6 +1901,35 @@ function AddEvent() {
                 </Row>
               </Col>
             )}
+
+          {languageLiteralBannerDisplayStatus && (
+            <Col span={24} className="language-literal-banner">
+              <Row>
+                <Col flex={'780px'}>
+                  <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                    <Col span={24}>
+                      <Alert
+                        message={t('common.forms.languageLiterals.bannerTitle')}
+                        type="info"
+                        showIcon={false}
+                        action={
+                          <OutlinedButton
+                            data-cy="button-change-fallback-banner"
+                            size="large"
+                            label={t('common.dismiss')}
+                            onClick={() => {
+                              dispatch(setLanguageLiteralBannerDisplayStatus(false));
+                              dispatch(clearActiveFallbackFieldsInfo({}));
+                            }}
+                          />
+                        }
+                      />
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </Col>
+          )}
 
           <CardEvent marginTop="5%" marginResponsive="0px">
             <>
@@ -1708,7 +2004,9 @@ function AddEvent() {
                   requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME_EN) ||
                   requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME_FR)
                 }>
-                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                <ContentLanguageInput
+                  calendarContentLanguage={calendarContentLanguage}
+                  isFieldsDirty={{ en: form.isFieldTouched('english'), fr: form.isFieldTouched('french') }}>
                   <BilingualInput fieldData={eventData?.name}>
                     <Form.Item
                       name="french"
@@ -2411,6 +2709,7 @@ function AddEvent() {
                 {locationPlace && (
                   <SelectionItem
                     icon={locationPlace?.label?.props?.icon}
+                    fallbackConfig={locationPlace?.fallBackStatus}
                     name={locationPlace?.name}
                     description={locationPlace?.description}
                     itemWidth="100%"
@@ -2458,7 +2757,12 @@ function AddEvent() {
                   display: !addedFields?.includes(virtualLocationFieldNames.virtualLocationName) && 'none',
                 }}
                 data-cy="form-item-virtual-location-title">
-                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                <ContentLanguageInput
+                  calendarContentLanguage={calendarContentLanguage}
+                  isFieldsDirty={{
+                    en: form.isFieldTouched('englishVirtualLocation'),
+                    fr: form.isFieldTouched('frenchVirtualLocation'),
+                  }}>
                   <BilingualInput fieldData={initialVirtualLocation && initialVirtualLocation[0]?.name}>
                     <Form.Item
                       name="frenchVirtualLocation"
@@ -2573,7 +2877,12 @@ function AddEvent() {
                     : false
                 }
                 data-cy="form-item-description-title">
-                <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                <ContentLanguageInput
+                  calendarContentLanguage={calendarContentLanguage}
+                  isFieldsDirty={{
+                    en: form.isFieldTouched('englishEditor'),
+                    fr: form.isFieldTouched('frenchEditor'),
+                  }}>
                   <BilingualInput fieldData={eventData?.description}>
                     <TextEditor
                       formName="frenchEditor"
@@ -2946,6 +3255,7 @@ function AddEvent() {
                           organizerPerformerSupporterPlaceNavigationHandler(organizer?.value, organizer?.type, e)
                         }
                         creatorId={organizer?.creatorId}
+                        fallbackConfig={organizer?.fallBackStatus}
                       />
                     );
                   })}
@@ -3022,7 +3332,12 @@ function AddEvent() {
                   className="subheading-wrap"
                   data-cy="form-item-event-contact-title"
                   required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.CONTACT_TITLE)}>
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput
+                    calendarContentLanguage={calendarContentLanguage}
+                    isFieldsDirty={{
+                      en: form.isFieldTouched('englishContactTitle'),
+                      fr: form.isFieldTouched('frenchContactTitle'),
+                    }}>
                     <BilingualInput fieldData={eventData?.contactPoint?.name}>
                       <Form.Item
                         name="frenchContactTitle"
@@ -3440,6 +3755,7 @@ function AddEvent() {
                           organizerPerformerSupporterPlaceNavigationHandler(performer?.value, performer?.type, e)
                         }
                         creatorId={performer?.creatorId}
+                        fallbackConfig={performer?.fallBackStatus}
                       />
                     );
                   })}
@@ -3669,6 +3985,7 @@ function AddEvent() {
                           organizerPerformerSupporterPlaceNavigationHandler(supporter?.value, supporter?.type, e)
                         }
                         creatorId={supporter?.creatorId}
+                        fallbackConfig={supporter?.fallBackStatus}
                       />
                     );
                   })}
@@ -3942,7 +4259,12 @@ function AddEvent() {
                     display: !addedFields?.includes(eventAccessibilityFieldNames.noteWrap) && 'none',
                   }}
                   data-cy="form-item-accessiblity-note-label">
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput
+                    calendarContentLanguage={calendarContentLanguage}
+                    isFieldsDirty={{
+                      en: form.isFieldTouched('englishAccessibilityNote'),
+                      fr: form.isFieldTouched('frenchAccessibilityNote'),
+                    }}>
                     <BilingualInput fieldData={eventData?.accessibilityNote}>
                       <Form.Item
                         name="frenchAccessibilityNote"
@@ -4210,7 +4532,9 @@ function AddEvent() {
                     </Input.Group>
                   </Form.Item>
 
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput
+                    calendarContentLanguage={calendarContentLanguage}
+                    isFieldsDirty={{ en: form.isFieldTouched('prices'), fr: form.isFieldTouched('prices') }}>
                     <BilingualInput>
                       <Form.List
                         name="prices"
@@ -4241,6 +4565,7 @@ function AddEvent() {
                             add={add}
                             remove={remove}
                             fields={fields}
+                            form={form}
                             firstFieldName={'price'}
                             secondFieldName={'name'}
                             thirdFieldName={'fr'}
@@ -4276,6 +4601,7 @@ function AddEvent() {
                             add={add}
                             remove={remove}
                             fields={fields}
+                            form={form}
                             firstFieldName={'price'}
                             secondFieldName={'name'}
                             thirdFieldName={'en'}
@@ -4291,7 +4617,12 @@ function AddEvent() {
                 ticketType == offerTypes.PAYING ||
                 ticketType == offerTypes.REGISTER) && (
                 <Form.Item label={t('dashboard.events.addEditEvent.tickets.note')}>
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput
+                    calendarContentLanguage={calendarContentLanguage}
+                    isFieldsDirty={{
+                      en: form.isFieldTouched('englishTicketNote'),
+                      fr: form.isFieldTouched('frenchTicketNote'),
+                    }}>
                     <BilingualInput fieldData={eventData?.offerConfiguration?.name}>
                       <Form.Item
                         name="frenchTicketNote"

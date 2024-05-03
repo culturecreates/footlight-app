@@ -105,10 +105,16 @@ export const formFieldValue = [
       validations,
       required,
       mappedField,
+      form,
     }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
         return (
-          <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+          <ContentLanguageInput
+            calendarContentLanguage={calendarContentLanguage}
+            isFieldsDirty={{
+              en: form.isFieldTouched(name?.concat(['en'])),
+              fr: form.isFieldTouched(name?.concat(['fr'])),
+            }}>
             <BilingualInput fieldData={data}>
               <Form.Item
                 name={[`${name}`, 'fr']}

@@ -130,6 +130,12 @@
         "addMoreDetails": "Add more details to your event",
         "allDone": "All done",
         "featuredEvent": "Featured event",
+        "fallbackConfirm": {
+          "contentPart1": "You haven’t updated all the text that doesn’t match the language(s) on your website.",
+          "contentPart2": "Do you want to publish as is?",
+          "title": "Publish event",
+          "publish": "Publish"
+        },
         "language": {
           "title": "Event title",
           "titleLabel": "English",
@@ -1142,14 +1148,22 @@
   },
   "common": {
     "tabEnglish": "English",
-    "tabFrench": "French",
     "noneFound": "None Found",
+    "tabFrench": "French",
     "unsavedChanges": "You have unsaved changes. Are you sure you want to discard them?",
     "keepEditing": "Keep editing",
     "copied": "Copied to clipboard",
     "discard": "Discard",
     "validations": {
       "informationRequired": "Information is required"
+    },
+    "dismiss": "Dismiss",
+    "forms": {
+      "languageLiterals": {
+        "knownLanguagePromptText": "This text does not match the language on your website.",
+        "unKnownLanguagePromptText": "The language of this text is not defined.",
+        "bannerTitle": "Some text does not match the language on your website. Review and update as needed."
+      }
     },
     "server": {
       "status": {
