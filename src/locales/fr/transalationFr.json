@@ -808,7 +808,9 @@
         "contributor": "Collaborateur",
         "guest": "Invité",
         "superAdmin": "Super Administrateur",
-        "invitedBy": "Invité par",
+        "invitedBy": "Invité le",
+        "by": "par",
+        "dateInvited": "Date d'invitation",
         "tooltip": {
           "editUser": "Modifier l'utilisateur",
           "sendInvitation": "Envoyer l'invitation",
