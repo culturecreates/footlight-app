@@ -45,7 +45,7 @@ export const sortByOptionsUsers = [
     key: 'lastName',
   },
   {
-    label: <Translation>{(t) => t('dashboard.taxonomy.listing.sort.createdDate')}</Translation>,
+    label: <Translation>{(t) => t('dashboard.settings.userManagement.dateInvited')}</Translation>,
     key: 'invitedOn',
   },
 ];
