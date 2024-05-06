@@ -31,12 +31,12 @@ function ListItem(props) {
     <List.Item
       data-cy="list-item-entity"
       className="event-list-item-wrapper"
+      onClick={listItemHandler}
       key={id}
       extra={actions}
       style={{ padding: '20px 0px', ...props?.styles?.style }}>
       <List.Item.Meta
         className="event-list-item-meta"
-        onClick={listItemHandler}
         data-cy="list-item-meta-entity"
         avatar={
           logo ? (
@@ -80,7 +80,10 @@ function ListItem(props) {
         title={
           artsDataLink && (
             <ArtsDataLink
-              onClick={() => window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer')}
+              onClick={(e) => {
+                e.stopPropagation();
+                window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer');
+              }}
               data-cy="tag-entity-artsdata">
               <span style={{ textDecoration: 'underline' }} data-cy="span-entity-artsdata">
                 Artsdata
