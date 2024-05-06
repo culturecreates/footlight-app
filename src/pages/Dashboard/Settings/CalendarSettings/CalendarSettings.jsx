@@ -276,7 +276,18 @@ function CalendarSettings() {
         } else {
           if (values?.calendarLogo) {
             if (values?.dragger && values?.dragger?.length == 0) calendarData['logo'] = null;
-            else calendarData['logo'] = currentCalendarData?.logo;
+            else {
+              if (currentCalendarData?.logo?.type == 'ImageObject') calendarData['logo'] = currentCalendarData?.logo;
+              else
+                calendarData = {
+                  ...calendarData,
+                  logo: {
+                    url: {
+                      uri: currentCalendarData?.logo?.original?.uri,
+                    },
+                  },
+                };
+            }
           }
           udpateCalendarHandler(calendarData);
         }
