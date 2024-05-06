@@ -132,7 +132,7 @@
         "featuredEvent": "Événement vedette",
         "fallbackConfirm": {
           "contentPart1": "Vous n'avez pas mis à jour tous les textes qui ne correspondent pas à la langue de votre site web. ",
-          "contentPart2": "Voulez-vous publier tel quel? ",
+          "contentPart2": "Voulez-vous publier tel quel ? ",
           "title": "Publier l'événement",
           "publish": "Publier"
         },
