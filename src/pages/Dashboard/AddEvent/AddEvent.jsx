@@ -838,7 +838,7 @@ function AddEvent() {
                   {t('dashboard.events.addEditEvent.fallbackConfirm.contentPart1')}
                   <br></br>
                   <br></br>
-                  {t('dashboard.events.addEditEvent.fallbackConfirm.contentPart2')}`
+                  {t('dashboard.events.addEditEvent.fallbackConfirm.contentPart2')}
                 </p>
               )}
             </Translation>

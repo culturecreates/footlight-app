@@ -131,7 +131,7 @@
         "allDone": "All done",
         "featuredEvent": "Featured event",
         "fallbackConfirm": {
-          "contentPart1": "You haven’t updated all the text that doesn’t match the language(s) on your website.",
+          "contentPart1": "You have not updated all text to match the language(s) on your website.",
           "contentPart2": "Do you want to publish as is?",
           "title": "Publish event",
           "publish": "Publish"
