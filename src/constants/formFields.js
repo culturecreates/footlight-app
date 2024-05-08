@@ -33,6 +33,7 @@ export const formTypes = {
   EDITOR: 'Editor',
   IMAGE: 'Image',
   SEARCH: 'Search',
+  LOCATION_SEARCH: 'LocationSearch',
 };
 
 export const dataTypes = {
@@ -369,7 +370,7 @@ export const formFieldValue = [
     ),
   },
   {
-    type: formTypes.SEARCH,
+    type: formTypes.LOCATION_SEARCH,
     element: ({
       form,
       setIsPopoverOpen,
@@ -422,9 +423,10 @@ export const formFieldValue = [
                                 locationPlace?.value == place?.value ? 'event-popover-options-active' : null
                               }`}
                               onClick={() => {
-                                setLocationPlace(place);
-                                form.setFieldValue(name, place?.value);
-                                setIsPopoverOpen(false);
+                                console.log('place', place);
+                                // setLocationPlace(place);
+                                // form.setFieldValue(name, place?.value);
+                                // setIsPopoverOpen(false);
                               }}
                               data-cy={`div-${mappedField}-footlight-place-${index}`}>
                               {place?.label}

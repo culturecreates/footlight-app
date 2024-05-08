@@ -25,7 +25,7 @@ import SearchPlaces from '../pages/Dashboard/SearchPlaces';
 import Settings from '../pages/Dashboard/Settings';
 import CreateNewPerson from '../pages/Dashboard/CreateNewPerson';
 import UserReadOnly from '../pages/Dashboard/UserReadOnly';
-import CreateNewPlace from '../pages/Dashboard/CreateNewPlace';
+import { CreateNewPlaceV2 } from '../pages/Dashboard/CreateNewPlace';
 import AddUser from '../pages/Dashboard/AddUser/AddUser';
 import Taxonomy from '../pages/Dashboard/Taxonomy/Taxonomy';
 import SelectTaxonomyType from '../pages/Dashboard/SelectTaxonomyType/SelectTaxonomyType';
@@ -105,7 +105,7 @@ export const router = createBrowserRouter([
       },
       {
         path: `:calendarId${PathName.Places}${PathName.AddPlace}`,
-        element: <CreateNewPlace />,
+        element: <CreateNewPlaceV2 />,
       },
       {
         path: `:calendarId${PathName.Organizations}`,
