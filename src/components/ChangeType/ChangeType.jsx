@@ -15,7 +15,6 @@ function ChangeType(props) {
         onClick={onClick}
         data-cy="button-select-change-type"
       />
-
       <Button
         type="text"
         disabled={disabled}
