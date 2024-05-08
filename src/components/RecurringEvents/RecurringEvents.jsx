@@ -14,6 +14,7 @@ import TextButton from '../Button/Text';
 import Tags from '../Tags/Common/Tags';
 import { pluralize } from '../../utils/pluralise';
 import { subEventsCountHandler } from '../../utils/subEventsCountHandler';
+import { groupEventsByDate } from '../../utils/groupSubEventsConfigByDate';
 
 const RecurringEvents = function ({
   currentLang,
@@ -44,9 +45,11 @@ const RecurringEvents = function ({
         setDateModified(true);
         setIsCustom(true);
       } else setIsCustom(false);
-      if (eventDetails.recurringEvent?.customDates) {
+      if (eventDetails.recurringEvent?.customDates || eventDetails.subEventConfiguration) {
         setIsCustom(true);
-        const custom = eventDetails.recurringEvent?.customDates.map((item) => {
+        let recurringDates =
+          eventDetails.recurringEvent?.customDates || groupEventsByDate(eventDetails.subEventConfiguration);
+        const custom = recurringDates?.map((item) => {
           const obj = {
             id: uniqid(),
             name: 'test name',
