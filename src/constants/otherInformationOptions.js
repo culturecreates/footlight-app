@@ -71,7 +71,13 @@ export const otherInformationOptions = [
     type: 'inLanguage',
     fieldNames: otherInformationFieldNames.inLanguage,
     disabled: false,
-    label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.eventLanguage')}</Translation>,
+    label: (
+      <>
+        <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.eventLanguage1')}</Translation>
+        <br></br>
+        <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.eventLanguage2')}</Translation>
+      </>
+    ),
     tooltip: (
       <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.eventLanguageTooltip')}</Translation>
     ),

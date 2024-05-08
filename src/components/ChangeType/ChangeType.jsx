@@ -4,7 +4,6 @@ import TooltipStyled from '../Tooltip/TooltipStyled';
 import './changeType.css';
 function ChangeType(props) {
   const { primaryIcon, disabled, label, secondaryIcon, promptText, onClick } = props;
-  console.log(disabled, 'disabled');
   return (
     <div className="change-type-wrapper">
       <Button
