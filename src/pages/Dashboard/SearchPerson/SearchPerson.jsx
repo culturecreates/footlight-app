@@ -47,7 +47,7 @@ function SearchPerson() {
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
   const [selectedPeople, setSelectedPeople] = useState([]);
 
-  const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+  const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
   const [getExternalSource, { isFetching: isExternalSourceFetching, isSuccess: isExternalSourceSuccess }] =
     useLazyGetExternalSourceQuery();
 
