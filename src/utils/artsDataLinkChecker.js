@@ -1,12 +1,15 @@
-export const artsDataLinkChecker = (link) => {
-  let artsData = 'artsdata';
+import { sameAsTypes } from '../constants/sameAsTypes';
 
+export const artsDataLinkChecker = (link) => {
+  const artsData = 'artsdata';
   if (Array.isArray(link)) {
-    let url = link?.filter((url) => url?.uri?.includes(artsData));
-    if (url?.length > 0) return url[0]?.uri;
-    else return false;
+    const artsDataLink = link?.find((item) => item?.type === sameAsTypes.ARTSDATA_IDENTIFIER)?.uri;
+    if (artsDataLink) {
+      return artsDataLink;
+    }
+    const url = link?.find((item) => item?.uri?.includes(artsData))?.uri;
+    return url || false;
   } else {
-    if (link?.includes(artsData)) return link;
-    else return false;
+    return link?.includes(artsData) ? link : false;
   }
 };

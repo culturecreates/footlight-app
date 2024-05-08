@@ -130,6 +130,12 @@
         "addMoreDetails": "Ajouter plus de détails à votre événement",
         "allDone": "Terminé",
         "featuredEvent": "Événement vedette",
+        "fallbackConfirm": {
+          "contentPart1": "Vous n'avez pas mis à jour tous les textes qui ne correspondent pas à la langue de votre site web. ",
+          "contentPart2": "Voulez-vous publier tel quel ? ",
+          "title": "Publier l'événement",
+          "publish": "Publier"
+        },
         "dataSource": "Data source",
         "question": {
           "firstPart": "Est-ce le bon événement ? Si non, ",
@@ -510,6 +516,13 @@
             "secondPart": "créez une nouvelle organisation",
             "thirdPart": " et ne modifiez pas celle-ci."
           },
+          "associatedEntities": {
+            "title": "Associé à",
+            "place": "Lieu",
+            "events": "Événements",
+            "people": "Personnes",
+            "organizations": "Organisations"
+          },
           "addSocialMediaLinks": "Ajouter un lien"
         },
         "notification": {
@@ -874,6 +887,7 @@
         "leave": "Quitter",
         "role": "Role",
         "organizationHelp": "Give this user edit access to one or more organizations.",
+        "peopleHelp": "Donnez à cet utilisateur un accès de modification à une ou plusieurs personnes.",
         "passwordModal": {
           "btnText": "Changer le mot de passe",
           "Password": "Mot de passe",
@@ -916,7 +930,7 @@
         "color": "Couleur principale du thème",
         "colorDescreption": "Entrez le code hexadécimal de la couleur principale. Choisissez une couleur qui donne suffisamment de contraste pour que l'utilisateur puisse lire le contenu.",
         "colorPlaceHolder": "Collez votre code couleur ou sélectionnez une couleur",
-        "height": "Largeur",
+        "height": "Hauteur",
         "width": "Largeur maximale",
         "language": "Choix de langue",
         "eventType": "Type d'événement",
@@ -988,11 +1002,11 @@
         "heading": "Nouvelle taxonomie",
         "class": "Classe",
         "classDropdownOptions": {
-          "event": "Event",
-          "place": "Place",
-          "person": "Person",
-          "organization": "Organization",
-          "virtualLocation": "Virtual location"
+          "event": "Événement",
+          "place": "Lieu",
+          "person": "Personne",
+          "organization": "Organisation",
+          "virtualLocation": "Emplacement virtuel"
         },
         "classValidation": "Sélectionnez une classe",
         "classPlaceHolder": "Sélectionner une classe",
@@ -1068,6 +1082,14 @@
     "keepEditing": "Poursuivre l'édition",
     "discard": "Jeter",
     "copied": "Copié dans le presse-papiers",
+    "dismiss": "J'ai compris",
+    "forms": {
+      "languageLiterals": {
+        "knownLanguagePromptText": "Ce texte ne correspond pas à la langue de votre site web.",
+        "unKnownLanguagePromptText": "La langue de ce texte n'est pas définie.",
+        "bannerTitle": "Certains textes ne correspondent pas à la langue de votre site web. Révisez et mettez à jour si nécessaire."
+      }
+    },
     "server": {
       "status": {
         "503": {

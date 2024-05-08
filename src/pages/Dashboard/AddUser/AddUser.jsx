@@ -43,6 +43,7 @@ import { setReloadCalendar } from '../../../redux/reducer/selectedCalendarSlice'
 import CalendarAccordion from '../../../components/Accordion/CalendarAccordion';
 import { removeObjectArrayDuplicates } from '../../../utils/removeObjectArrayDuplicates';
 import Select from '../../../components/Select';
+import Cookies from 'js-cookie';
 
 const AddUser = () => {
   const navigate = useNavigate();
@@ -270,6 +271,11 @@ const AddUser = () => {
           organizations = organizations?.map((organizer) => {
             return { entityId: organizer?.value };
           });
+
+          let people = values?.people[calendarId];
+          people = people?.map((organizer) => {
+            return { entityId: organizer?.value };
+          });
           let userType = values?.userType[calendarId];
           inviteUser({
             firstName: values.firstName?.trim(),
@@ -279,6 +285,7 @@ const AddUser = () => {
             language: values?.languagePreference,
             calendarId,
             organizationIds: organizations,
+            peopleIds: people,
           }).then((res) => {
             if (res?.data?.statusCode == 202) {
               notification.success({
@@ -309,6 +316,11 @@ const AddUser = () => {
         .then((values) => {
           let organizations = values?.organizers[calendarId];
           organizations = organizations?.map((organizer) => {
+            return { entityId: organizer?.value };
+          });
+
+          let people = values?.people[calendarId];
+          people = people?.map((organizer) => {
             return { entityId: organizer?.value };
           });
           let userType = values?.userType[calendarId];
@@ -356,10 +368,11 @@ const AddUser = () => {
                           roles: response?.roles,
                           isSuperAdmin: response?.isSuperAdmin ? true : false,
                           userName: response?.userName,
-                          interfaceLanguage: response?.languagePreference,
+                          interfaceLanguage: response?.interfaceLanguage,
                         },
                       };
                       dispatch(setUser(userDetails));
+                      Cookies.set('interfaceLanguage', response?.interfaceLanguage?.toLowerCase());
                     });
                   notification.success({
                     description: t('dashboard.userProfile.notification.profileUpdate'),
@@ -404,6 +417,7 @@ const AddUser = () => {
                   role: userType,
                   calendarId,
                   organizations,
+                  people,
                 },
               },
             })
@@ -448,10 +462,11 @@ const AddUser = () => {
                           roles: response?.roles,
                           isSuperAdmin: response?.isSuperAdmin ? true : false,
                           userName: response?.userName,
-                          interfaceLanguage: response?.languagePreference,
+                          interfaceLanguage: response?.interfaceLanguage,
                         },
                       };
                       dispatch(setUser(userDetails));
+                      Cookies.set('interfaceLanguage', response?.interfaceLanguage?.toLowerCase());
 
                       navigate(-2);
                     });
@@ -873,6 +888,7 @@ const AddUser = () => {
                                       readOnly={adminCheckHandler() ? false : true}
                                       disabled={calendar?.disabled}
                                       organizationIds={calendar?.organizations}
+                                      peopleIds={calendar?.people}
                                       isCurrentUser={isCurrentUser}
                                       removeCalendarHandler={() => {
                                         removeCalendarHandler({ item: calendar, index });

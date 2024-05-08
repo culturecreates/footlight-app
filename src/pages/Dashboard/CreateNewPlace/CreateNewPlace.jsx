@@ -1,16 +1,20 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import './createNewPlace.css';
 import '../AddEvent/addEvent.css';
+import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import { Button, Col, Form, Input, Popover, Row, message, notification, Dropdown } from 'antd';
-import {
+import Icon, {
   LeftOutlined,
   CloseCircleOutlined,
   InfoCircleOutlined,
   PlusOutlined,
+  EnvironmentOutlined,
   ExclamationCircleOutlined,
+  CalendarOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
+import OutlinedButton from '../../..//components/Button/Outlined';
 import PrimaryButton from '../../../components/Button/Primary';
 import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -25,7 +29,7 @@ import {
   useLazyGetPlaceQuery,
   useUpdatePlaceMutation,
 } from '../../../services/places';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import ContentLanguageInput from '../../../components/ContentLanguageInput';
 import Card from '../../../components/Card/Common/Event';
@@ -49,6 +53,7 @@ import {
   useGetEntitiesByIdQuery,
   useLazyGetEntitiesByIdQuery,
   useLazyGetEntitiesQuery,
+  useLazyGetEntityDependencyDetailsQuery,
 } from '../../../services/entities';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
@@ -77,6 +82,14 @@ import { externalSourceOptions, sourceOptions } from '../../../constants/sourceO
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
+import moment from 'moment';
+import {
+  clearActiveFallbackFieldsInfo,
+  getActiveFallbackFieldsInfo,
+  getLanguageLiteralBannerDisplayStatus,
+  setLanguageLiteralBannerDisplayStatus,
+} from '../../../redux/reducer/languageLiteralSlice';
+import Alert from '../../../components/Alert';
 
 const { TextArea } = Input;
 
@@ -84,6 +97,7 @@ function CreateNewPlace() {
   const timestampRef = useRef(Date.now()).current;
   const [form] = Form.useForm();
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const [
@@ -95,6 +109,8 @@ function CreateNewPlace() {
     isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
+  const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
+  const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { user } = useSelector(getUserDetails);
   const { calendarId } = useParams();
   let [searchParams] = useSearchParams();
@@ -140,6 +156,7 @@ function CreateNewPlace() {
   let requiredFields = currentCalendarData?.formSchema?.filter((form) => form?.formName === 'Place');
   requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
   let requiredFieldNames = requiredFields ? requiredFields?.requiredfields?.map((field) => field?.fieldName) : [];
+
   const { currentData: placeData, isLoading: isPlaceLoading } = useGetPlaceQuery(
     { placeId: placeId, calendarId, sessionId: timestampRef },
     { skip: placeId ? false : true },
@@ -151,6 +168,9 @@ function CreateNewPlace() {
     { ids: placeIdsQuery, calendarId, sessionId: timestampRef },
     { skip: externalCalendarEntityId ? false : true },
   );
+  const [getDerivedEntities, { isFetching: isEntityDetailsLoading }] = useLazyGetEntityDependencyDetailsQuery({
+    sessionId: timestampRef,
+  });
 
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
@@ -179,6 +199,9 @@ function CreateNewPlace() {
     containedInPlace: false,
     containsPlace: false,
   });
+
+  const [derivedEntitiesData, setDerivedEntitiesData] = useState();
+  const [derivedEntitiesDisplayStatus, setDerivedEntitiesDisplayStatus] = useState(false);
   const [containedInPlace, setContainedInPlace] = useState();
   const [selectedContainsPlaces, setSelectedContainsPlaces] = useState([]);
   const [allPlacesList, setAllPlacesList] = useState([]);
@@ -751,6 +774,45 @@ function CreateNewPlace() {
   }, [addedFields]);
 
   useEffect(() => {
+    if (placeId) {
+      getDerivedEntities({ id: placeId, calendarId }).then((response) => {
+        if (
+          response?.data?.events?.length > 0 ||
+          response?.data?.people?.length > 0 ||
+          response?.data?.organizations?.length > 0
+        ) {
+          setDerivedEntitiesData(response?.data);
+          setDerivedEntitiesDisplayStatus(true);
+        }
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    dispatch(clearActiveFallbackFieldsInfo());
+  }, []);
+
+  useEffect(() => {
+    let shouldDisplay = true;
+    for (let key in activeFallbackFieldsInfo) {
+      if (Object.prototype.hasOwnProperty.call(activeFallbackFieldsInfo, key)) {
+        const tagDisplayStatus =
+          activeFallbackFieldsInfo[key]?.en?.tagDisplayStatus || activeFallbackFieldsInfo[key]?.fr?.tagDisplayStatus;
+        if (tagDisplayStatus) {
+          shouldDisplay = false;
+          break;
+        }
+      }
+    }
+
+    if (!shouldDisplay) {
+      dispatch(setLanguageLiteralBannerDisplayStatus(true));
+    } else {
+      dispatch(setLanguageLiteralBannerDisplayStatus(false));
+    }
+  }, [activeFallbackFieldsInfo]);
+
+  useEffect(() => {
     if (selectedContainsPlaces) form.setFieldValue(formFieldNames.CONTAINS_PLACE, selectedContainsPlaces);
   }, [selectedContainsPlaces]);
 
@@ -761,8 +823,9 @@ function CreateNewPlace() {
         initialPlace;
       if (placeData) {
         if (routinghandler(user, calendarId, placeData?.createdByUserId, null, true)) {
-          if (placeData?.derivedFrom?.uri) {
-            let sourceId = getExternalSourceId(placeData?.derivedFrom?.uri);
+          if (placeData?.sameAs?.length > 0) {
+            let sourceId = artsDataLinkChecker(placeData?.sameAs);
+            sourceId = getExternalSourceId(sourceId);
             getArtsDataPlace(sourceId);
           }
           if (placeData?.containedInPlace?.entityId) {
@@ -860,8 +923,9 @@ function CreateNewPlace() {
       }
 
       if (externalCalendarEntityData?.length > 0 && externalCalendarEntityId) {
-        if (externalCalendarEntityData[0]?.derivedFrom?.uri) {
-          let sourceId = getExternalSourceId(externalCalendarEntityData[0]?.derivedFrom?.uri);
+        if (externalCalendarEntityData[0]?.sameAs?.length > 0) {
+          let sourceId = artsDataLinkChecker(externalCalendarEntityData[0]?.sameAs);
+          sourceId = getExternalSourceId(sourceId);
           getArtsDataPlace(sourceId);
         }
 
@@ -961,7 +1025,7 @@ function CreateNewPlace() {
     placesSearch('');
   }, []);
 
-  return !isPlaceLoading && !artsDataLoading && !taxonomyLoading ? (
+  return !isPlaceLoading && !artsDataLoading && !taxonomyLoading && !isEntityDetailsLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <Prompt when={showDialog} message={t('common.unsavedChanges')} beforeUnload={true} />
       <div className="add-edit-wrapper create-new-place-wrapper">
@@ -1022,6 +1086,34 @@ function CreateNewPlace() {
                     </h4>
                   </div>
                 </Col>
+                {languageLiteralBannerDisplayStatus && (
+                  <Col span={24} className="language-literal-banner">
+                    <Row>
+                      <Col flex={'780px'}>
+                        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                          <Col span={24}>
+                            <Alert
+                              message={t('common.forms.languageLiterals.bannerTitle')}
+                              type="info"
+                              showIcon={false}
+                              action={
+                                <OutlinedButton
+                                  data-cy="button-change-interface-language"
+                                  size="large"
+                                  label={t('common.dismiss')}
+                                  onClick={() => {
+                                    dispatch(setLanguageLiteralBannerDisplayStatus(false));
+                                    dispatch(clearActiveFallbackFieldsInfo({}));
+                                  }}
+                                />
+                              }
+                            />
+                          </Col>
+                        </Row>
+                      </Col>
+                    </Row>
+                  </Col>
+                )}
               </Row>
             </Col>
             <Card marginResponsive="0px">
@@ -1035,7 +1127,11 @@ function CreateNewPlace() {
                     </Col>
                     <Col span={24}>
                       <ArtsDataInfo
-                        artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
+                        artsDataLink={
+                          artsDataLinkChecker(placeData?.sameAs)
+                            ? artsDataLinkChecker(placeData?.sameAs)
+                            : artsDataLinkChecker(artsData?.sameAs)
+                        }
                         name={contentLanguageBilingual({
                           en: artsData?.name?.en,
                           fr: artsData?.name?.fr,
@@ -1082,7 +1178,12 @@ function CreateNewPlace() {
                   </Row>
                 )}
                 <Form.Item label={t('dashboard.places.createNew.addPlace.name.name')} required={true}>
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput
+                    calendarContentLanguage={calendarContentLanguage}
+                    isFieldsDirty={{
+                      fr: form.isFieldTouched(formFieldNames.FRENCH),
+                      en: form.isFieldTouched(formFieldNames.ENGLISH),
+                    }}>
                     <BilingualInput
                       fieldData={
                         placeData?.name
@@ -1243,7 +1344,12 @@ function CreateNewPlace() {
                 <Form.Item
                   data-cy="form-item-place-disambiguating-description-title"
                   label={t('dashboard.places.createNew.addPlace.disambiguatingDescription.disambiguatingDescription')}>
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput
+                    calendarContentLanguage={calendarContentLanguage}
+                    isFieldsDirty={{
+                      fr: form.isFieldTouched(formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH),
+                      en: form.isFieldTouched(formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH),
+                    }}>
                     <BilingualInput
                       fieldData={
                         placeData?.disambiguatingDescription
@@ -1324,7 +1430,12 @@ function CreateNewPlace() {
                 <Form.Item
                   label={t('dashboard.places.createNew.addPlace.description.description')}
                   data-cy="form-item-place-description-title">
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput
+                    calendarContentLanguage={calendarContentLanguage}
+                    isFieldsDirty={{
+                      en: form.isFieldTouched(formFieldNames.EDITOR_ENGLISH),
+                      fr: form.isFieldTouched(formFieldNames.EDITOR_FRENCH),
+                    }}>
                     <BilingualInput
                       fieldData={
                         placeData?.description
@@ -1572,7 +1683,12 @@ function CreateNewPlace() {
                   label={t('dashboard.places.createNew.addPlace.address.streetAddress')}
                   required={true}
                   data-cy="form-item-street-address-title">
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput
+                    calendarContentLanguage={calendarContentLanguage}
+                    isFieldsDirty={{
+                      en: form.isFieldTouched(formFieldNames.STREET_ADDRESS_ENGLISH),
+                      fr: form.isFieldTouched(formFieldNames.STREET_ADDRESS_FRENCH),
+                    }}>
                     <BilingualInput
                       fieldData={
                         placeData?.address?.streetAddress
@@ -1598,13 +1714,16 @@ function CreateNewPlace() {
                         dependencies={[formFieldNames.STREET_ADDRESS_ENGLISH]}
                         rules={[
                           ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (value || getFieldValue(formFieldNames.STREET_ADDRESS_ENGLISH)) {
-                                return Promise.resolve();
-                              } else
+                            validator() {
+                              if (
+                                !getFieldValue(formFieldNames.STREET_ADDRESS_FRENCH)?.trim() &&
+                                !getFieldValue(formFieldNames.STREET_ADDRESS_ENGLISH)?.trim()
+                              )
                                 return Promise.reject(
                                   new Error(t('dashboard.places.createNew.addPlace.validations.streetAddressRequired')),
                                 );
+
+                              return Promise.resolve();
                             },
                           }),
                         ]}>
@@ -1640,13 +1759,16 @@ function CreateNewPlace() {
                         dependencies={[formFieldNames.STREET_ADDRESS_FRENCH]}
                         rules={[
                           ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (value || getFieldValue(formFieldNames.STREET_ADDRESS_FRENCH)) {
-                                return Promise.resolve();
-                              } else
+                            validator() {
+                              if (
+                                !getFieldValue(formFieldNames.STREET_ADDRESS_FRENCH)?.trim() &&
+                                !getFieldValue(formFieldNames.STREET_ADDRESS_ENGLISH)?.trim()
+                              )
                                 return Promise.reject(
                                   new Error(t('dashboard.places.createNew.addPlace.validations.streetAddressRequired')),
                                 );
+
+                              return Promise.resolve();
                             },
                           }),
                         ]}>
@@ -1675,7 +1797,12 @@ function CreateNewPlace() {
                 <Form.Item
                   label={t('dashboard.places.createNew.addPlace.address.city.city')}
                   data-cy="form-item-place-city-title">
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput
+                    calendarContentLanguage={calendarContentLanguage}
+                    isFieldsDirty={{
+                      en: form.isFieldTouched(formFieldNames.CITY_ENGLISH),
+                      fr: form.isFieldTouched(formFieldNames.CITY_FRENCH),
+                    }}>
                     <BilingualInput
                       fieldData={
                         placeData?.address?.addressLocality
@@ -1767,6 +1894,10 @@ function CreateNewPlace() {
                       required: true,
                       message: t('dashboard.places.createNew.addPlace.validations.postalCodeRequired'),
                     },
+                    {
+                      whitespace: true,
+                      message: t('dashboard.places.createNew.addPlace.validations.postalCodeRequired'),
+                    },
                   ]}>
                   <StyledInput
                     placeholder={t('dashboard.places.createNew.addPlace.address.postalCode.placeholder')}
@@ -1778,7 +1909,12 @@ function CreateNewPlace() {
                     <Form.Item
                       label={t('dashboard.places.createNew.addPlace.address.province.province')}
                       data-cy="form-item-province-title">
-                      <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                      <ContentLanguageInput
+                        calendarContentLanguage={calendarContentLanguage}
+                        isFieldsDirty={{
+                          en: form.isFieldTouched(formFieldNames.PROVINCE_ENGLISH),
+                          fr: form.isFieldTouched(formFieldNames.PROVINCE_FRENCH),
+                        }}>
                         <BilingualInput
                           fieldData={
                             placeData?.address?.addressRegion
@@ -1859,7 +1995,12 @@ function CreateNewPlace() {
                     <Form.Item
                       label={t('dashboard.places.createNew.addPlace.address.country.country')}
                       data-cy="form-item-country-title">
-                      <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                      <ContentLanguageInput
+                        calendarContentLanguage={calendarContentLanguage}
+                        isFieldsDirty={{
+                          en: form.isFieldTouched(formFieldNames.COUNTRY_ENGLISH),
+                          fr: form.isFieldTouched(formFieldNames.COUNTRY_FRENCH),
+                        }}>
                         <BilingualInput
                           fieldData={
                             placeData?.address?.addressCountry
@@ -2527,7 +2668,12 @@ function CreateNewPlace() {
                         !addedFields?.includes(placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP) &&
                         'none',
                     }}>
-                    <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                    <ContentLanguageInput
+                      calendarContentLanguage={calendarContentLanguage}
+                      isFieldsDirty={{
+                        en: form.isFieldTouched(formFieldNames.ACCESSIBILITY_NOTE_ENGLISH),
+                        fr: form.isFieldTouched(formFieldNames.ACCESSIBILITY_NOTE_FRENCH),
+                      }}>
                       <BilingualInput fieldData={placeData?.accessibilityNote}>
                         <Form.Item
                           name={formFieldNames.ACCESSIBILITY_NOTE_FRENCH}
@@ -2603,6 +2749,137 @@ function CreateNewPlace() {
                     )}
                   </Form.Item>
                 </ChangeTypeLayout>
+              </Card>
+            )}
+
+            {derivedEntitiesDisplayStatus && (
+              <Card marginResponsive="0px">
+                <div className="associated-with-section">
+                  <h5 className="associated-with-section-title">
+                    {t('dashboard.organization.createNew.addOrganization.associatedEntities.title')}
+                  </h5>
+                  {derivedEntitiesData?.places?.length > 0 && (
+                    <div>
+                      <p className="associated-with-title">
+                        {t('dashboard.organization.createNew.addOrganization.associatedEntities.place')}
+                        <div className="associated-with-cards-wrapper">
+                          {derivedEntitiesData?.places?.map((place) => {
+                            <SelectionItem
+                              key={place._id}
+                              name={
+                                place?.name?.en || place?.name?.fr
+                                  ? contentLanguageBilingual({
+                                      en: place?.name?.en,
+                                      fr: place?.name?.fr,
+                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                      calendarContentLanguage: calendarContentLanguage,
+                                    })
+                                  : typeof place?.name === 'string' && place?.name
+                              }
+                              icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
+                              // description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                              bordered
+                              itemWidth="100%"
+                            />;
+                          })}
+                        </div>
+                      </p>
+                    </div>
+                  )}
+                  {derivedEntitiesData?.organizations?.length > 0 && (
+                    <div>
+                      <p className="associated-with-title">
+                        {t('dashboard.organization.createNew.addOrganization.associatedEntities.organizations')}
+                        <div className="associated-with-cards-wrapper">
+                          {derivedEntitiesData?.organizations?.map((org) => {
+                            return (
+                              <SelectionItem
+                                key={org._id}
+                                name={
+                                  org?.name?.en || org?.name?.fr
+                                    ? contentLanguageBilingual({
+                                        en: org?.name?.en,
+                                        fr: org?.name?.fr,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        calendarContentLanguage: calendarContentLanguage,
+                                      })
+                                    : typeof org?.name === 'string' && org?.name
+                                }
+                                icon={
+                                  <Icon
+                                    component={OrganizationLogo}
+                                    style={{ color: '#607EFC', fontSize: '18px' }}
+                                    data-cy="organization-logo"
+                                  />
+                                }
+                                bordered
+                                itemWidth="100%"
+                              />
+                            );
+                          })}
+                        </div>
+                      </p>
+                    </div>
+                  )}
+                  {derivedEntitiesData?.people?.length > 0 && (
+                    <div>
+                      <p className="associated-with-title">
+                        {t('dashboard.organization.createNew.addOrganization.associatedEntities.people')}
+                        <div className="associated-with-cards-wrapper">
+                          {derivedEntitiesData?.people?.map((person) => {
+                            <SelectionItem
+                              key={person._id}
+                              name={
+                                person?.name?.en || person?.name?.fr
+                                  ? contentLanguageBilingual({
+                                      en: person?.name?.en,
+                                      fr: person?.name?.fr,
+                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                      calendarContentLanguage: calendarContentLanguage,
+                                    })
+                                  : typeof person?.name === 'string' && person?.name
+                              }
+                              icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
+                              bordered
+                              itemWidth="100%"
+                            />;
+                          })}
+                        </div>
+                      </p>
+                    </div>
+                  )}
+                  {derivedEntitiesData?.events?.length > 0 && (
+                    <div>
+                      <p className="associated-with-title">
+                        {t('dashboard.organization.createNew.addOrganization.associatedEntities.events')}
+                        <div className="associated-with-cards-wrapper">
+                          {derivedEntitiesData?.events?.map((event) => {
+                            return (
+                              <SelectionItem
+                                key={event._id}
+                                name={
+                                  event?.name?.en || event?.name?.fr
+                                    ? contentLanguageBilingual({
+                                        en: event?.name?.en,
+                                        fr: event?.name?.fr,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        calendarContentLanguage: calendarContentLanguage,
+                                      })
+                                    : typeof event?.name === 'string' && event?.name
+                                }
+                                icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
+                                description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                                bordered
+                                itemWidth="100%"
+                              />
+                            );
+                          })}
+                        </div>
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <></>
               </Card>
             )}
           </Row>

@@ -30,7 +30,7 @@ import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../../constants/sor
 import i18n from 'i18next';
 import { PathName } from '../../../constants/pathName';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
-import { useLazyGetEntityDependencyQuery } from '../../../services/entities';
+import { useLazyGetEntityDependencyCountQuery } from '../../../services/entities';
 
 const { useBreakpoint } = Grid;
 
@@ -56,7 +56,7 @@ function People() {
   const [getAllPeople, { currentData: allPeopleData, isFetching: allPeopleFetching, isSuccess: allPeopleSuccess }] =
     useLazyGetAllPeopleQuery();
   const [deletePerson] = useDeletePersonMutation();
-  const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyQuery();
+  const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyCountQuery();
 
   const [pageNumber, setPageNumber] = useState(
     searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('peoplePage') ?? 1,
@@ -87,10 +87,10 @@ function People() {
           title: t('dashboard.people.deletePerson.title'),
           content: `${t('dashboard.people.deletePerson.description')} ${t('dashboard.people.deletePerson.impact')}${t(
             'dashboard.people.deletePerson.published',
-            { number: `${res?.events?.publishedEventsCount}` },
+            { number: `${res?.events?.publishedEventCount}` },
           )}, ${t('dashboard.people.deletePerson.draft', {
-            number: `${res?.events?.draftEventsCount}`,
-          })}, ${t('dashboard.people.deletePerson.inReview', { number: `${res?.events?.pendingReviewEventsCount}` })}.`,
+            number: `${res?.events?.draftEventCount}`,
+          })}, ${t('dashboard.people.deletePerson.inReview', { number: `${res?.events?.pendingEventCount}` })}.`,
           okText: t('dashboard.people.deletePerson.ok'),
           cancelText: t('dashboard.people.deletePerson.cancel'),
           className: 'delete-modal-container',
@@ -244,7 +244,10 @@ function People() {
                               data-cy="icon-delete-person"
                               key={'delete-icon'}
                               style={{ color: '#222732', fontSize: '24px' }}
-                              onClick={() => deletePersonHandler(item?.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deletePersonHandler(item?.id);
+                              }}
                             />
                           ),
                         ]}

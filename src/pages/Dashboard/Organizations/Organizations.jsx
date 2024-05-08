@@ -31,7 +31,7 @@ import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organi
 import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../../constants/sortByOptions';
 import i18n from 'i18next';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
-import { useLazyGetEntityDependencyQuery } from '../../../services/entities';
+import { useLazyGetEntityDependencyCountQuery } from '../../../services/entities';
 
 const { useBreakpoint } = Grid;
 
@@ -59,7 +59,7 @@ function Organizations() {
     { currentData: allOrganizationData, isFetching: allOrganizationFetching, isSuccess: allOrganizationSuccess },
   ] = useLazyGetAllOrganizationQuery();
 
-  const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyQuery();
+  const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyCountQuery();
   const [deleteOrganization] = useDeleteOrganizationMutation();
 
   const [pageNumber, setPageNumber] = useState(
@@ -93,11 +93,11 @@ function Organizations() {
             'dashboard.organization.deleteOrganization.impact',
           )}  
           ${t('dashboard.organization.deleteOrganization.published', {
-            number: `${res?.events?.publishedEventsCount}`,
+            number: `${res?.events?.publishedEventCount}`,
           })}, 
-          ${t('dashboard.organization.deleteOrganization.draft', { number: `${res?.events?.draftEventsCount}` })}, 
+          ${t('dashboard.organization.deleteOrganization.draft', { number: `${res?.events?.draftEventCount}` })}, 
           ${t('dashboard.organization.deleteOrganization.inReview', {
-            number: `${res?.events?.pendingReviewEventsCount}`,
+            number: `${res?.events?.pendingEventCount}`,
           })}.`,
           okText: t('dashboard.organization.deleteOrganization.ok'),
           cancelText: t('dashboard.organization.deleteOrganization.cancel'),
@@ -257,7 +257,10 @@ function Organizations() {
                             <DeleteOutlined
                               key={'delete-icon'}
                               style={{ color: '#222732', fontSize: '24px' }}
-                              onClick={() => deleteOrganizationHandler(item?.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteOrganizationHandler(item?.id);
+                              }}
                               data-cy="delete-organization"
                             />
                           ),

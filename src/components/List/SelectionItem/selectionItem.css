@@ -23,7 +23,15 @@
   font-weight: 700;
   font-size: 16px;
   color: #222732;
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
+
+.selection-item-list-wrapper .selection-item-title .literal-badge {
+  position: inherit;
+}
+
 .selection-item-list-wrapper .ant-list-item-action-split {
   display: none;
 }

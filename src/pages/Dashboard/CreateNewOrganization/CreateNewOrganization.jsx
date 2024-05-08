@@ -2,7 +2,15 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 import './createNewOrganization.css';
 import '../AddEvent/addEvent.css';
 import { Form, Row, Col, Button, message, notification } from 'antd';
-import { CloseCircleOutlined, PlusOutlined, InfoCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import {
+  CloseCircleOutlined,
+  CalendarOutlined,
+  PlusOutlined,
+  InfoCircleOutlined,
+  UserOutlined,
+  EnvironmentOutlined,
+  ExclamationCircleOutlined,
+} from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { LeftOutlined } from '@ant-design/icons';
@@ -10,9 +18,10 @@ import PrimaryButton from '../../../components/Button/Primary';
 import { featureFlags } from '../../../utils/featureFlags';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { entitiesClass } from '../../../constants/entitiesClass';
+import OutlinedButton from '../../..//components/Button/Outlined';
 import Card from '../../../components/Card/Common/Event';
 import { formCategory, formFieldValue, returnFormDataWithFields } from '../../../constants/formFields';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import {
@@ -35,6 +44,7 @@ import {
   useGetEntitiesByIdQuery,
   useLazyGetEntitiesByIdQuery,
   useLazyGetEntitiesQuery,
+  useLazyGetEntityDependencyDetailsQuery,
 } from '../../../services/entities';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
 import ChangeType from '../../../components/ChangeType';
@@ -52,11 +62,21 @@ import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
+import SelectionItem from '../../../components/List/SelectionItem';
+import moment from 'moment';
+import {
+  clearActiveFallbackFieldsInfo,
+  getActiveFallbackFieldsInfo,
+  getLanguageLiteralBannerDisplayStatus,
+  setLanguageLiteralBannerDisplayStatus,
+} from '../../../redux/reducer/languageLiteralSlice';
+import Alert from '../../../components/Alert';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
   const [form] = Form.useForm();
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const [
@@ -68,7 +88,9 @@ function CreateNewOrganization() {
     isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
+  const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
   const { user } = useSelector(getUserDetails);
+  const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { calendarId } = useParams();
   let [searchParams] = useSearchParams();
 
@@ -97,6 +119,10 @@ function CreateNewOrganization() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
+
+  const [getDerivedEntities, { isFetching: isEntityDetailsLoading }] = useLazyGetEntityDependencyDetailsQuery({
+    sessionId: timestampRef,
+  });
   const [getPlace] = useLazyGetPlaceQuery();
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
@@ -106,6 +132,8 @@ function CreateNewOrganization() {
   const [addImage, { isLoading: imageUploadLoading }] = useAddImageMutation();
   const [getEntitiesById] = useLazyGetEntitiesByIdQuery();
 
+  const [derivedEntitiesData, setDerivedEntitiesData] = useState();
+  const [derivedEntitiesDisplayStatus, setDerivedEntitiesDisplayStatus] = useState(false);
   const [artsData, setArtsData] = useState(null);
   const [newEntityData, setNewEntityData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
@@ -641,6 +669,31 @@ function CreateNewOrganization() {
   }, [addedFields]);
 
   useEffect(() => {
+    dispatch(clearActiveFallbackFieldsInfo());
+  }, []);
+
+  useEffect(() => {
+    let shouldDisplay = true;
+
+    for (let key in activeFallbackFieldsInfo) {
+      if (Object.prototype.hasOwnProperty.call(activeFallbackFieldsInfo, key)) {
+        const tagDisplayStatus =
+          activeFallbackFieldsInfo[key]?.en?.tagDisplayStatus || activeFallbackFieldsInfo[key]?.fr?.tagDisplayStatus;
+        if (tagDisplayStatus) {
+          shouldDisplay = false;
+          break;
+        }
+      }
+    }
+
+    if (!shouldDisplay) {
+      dispatch(setLanguageLiteralBannerDisplayStatus(true));
+    } else {
+      dispatch(setLanguageLiteralBannerDisplayStatus(false));
+    }
+  }, [activeFallbackFieldsInfo]);
+
+  useEffect(() => {
     if (calendarId && currentCalendarData) {
       let initialPlaceAccessibiltiy = [],
         initialPlace;
@@ -669,8 +722,9 @@ function CreateNewOrganization() {
               },
             });
           }
-          if (organizationData?.derivedFrom?.uri) {
-            let sourceId = getExternalSourceId(organizationData?.derivedFrom?.uri);
+          if (organizationData?.sameAs?.length > 0) {
+            let sourceId = artsDataLinkChecker(organizationData?.sameAs);
+            sourceId = getExternalSourceId(sourceId);
             getArtsData(sourceId);
           }
           if (organizationData?.place?.entityId) {
@@ -805,7 +859,22 @@ function CreateNewOrganization() {
     placesSearch('');
   }, []);
 
-  return fields && !organizationLoading && !taxonomyLoading && !artsDataLoading ? (
+  useEffect(() => {
+    if (organizationId) {
+      getDerivedEntities({ id: organizationId, calendarId }).then((response) => {
+        if (
+          response?.data?.events?.length > 0 ||
+          response?.data?.people?.length > 0 ||
+          response?.data?.places?.length > 0
+        ) {
+          setDerivedEntitiesData(response?.data);
+          setDerivedEntitiesDisplayStatus(true);
+        }
+      });
+    }
+  }, [organizationId]);
+
+  return fields && !organizationLoading && !taxonomyLoading && !artsDataLoading && !isEntityDetailsLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
       <Prompt when={showDialog} message={t('common.unsavedChanges')} beforeUnload={true} />
       <div className="add-edit-wrapper add-organization-wrapper">
@@ -858,6 +927,35 @@ function CreateNewOrganization() {
                     </h4>
                   </div>
                 </Col>
+
+                {languageLiteralBannerDisplayStatus && (
+                  <Col span={24} className="language-literal-banner">
+                    <Row>
+                      <Col flex={'780px'}>
+                        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                          <Col span={24}>
+                            <Alert
+                              message={t('common.forms.languageLiterals.bannerTitle')}
+                              type="info"
+                              showIcon={false}
+                              action={
+                                <OutlinedButton
+                                  data-cy="button-change-interface-language"
+                                  size="large"
+                                  label={t('common.dismiss')}
+                                  onClick={() => {
+                                    dispatch(setLanguageLiteralBannerDisplayStatus(false));
+                                    dispatch(clearActiveFallbackFieldsInfo({}));
+                                  }}
+                                />
+                              }
+                            />
+                          </Col>
+                        </Row>
+                      </Col>
+                    </Row>
+                  </Col>
+                )}
               </Row>
             </Col>
             {fields?.map((section, index) => {
@@ -878,7 +976,11 @@ function CreateNewOrganization() {
                             </Col>
                             <Col span={24}>
                               <ArtsDataInfo
-                                artsDataLink={artsDataLinkChecker(artsData?.sameAs)}
+                                artsDataLink={
+                                  artsDataLinkChecker(organizationData?.sameAs)
+                                    ? artsDataLinkChecker(organizationData?.sameAs)
+                                    : artsDataLinkChecker(artsData?.sameAs)
+                                }
                                 name={contentLanguageBilingual({
                                   en: artsData?.name?.en,
                                   fr: artsData?.name?.fr,
@@ -921,6 +1023,7 @@ function CreateNewOrganization() {
                                 </span>
                               </div>
                             </Col>
+
                             <Col span={24}>
                               <div>
                                 <br />
@@ -1064,6 +1167,103 @@ function CreateNewOrganization() {
                   </Card>
                 );
             })}
+
+            {derivedEntitiesDisplayStatus && (
+              <Card marginResponsive="0px">
+                <div className="associated-with-section">
+                  <h5 className="associated-with-section-title">
+                    {t('dashboard.organization.createNew.addOrganization.associatedEntities.title')}
+                  </h5>
+                  {derivedEntitiesData?.places?.length > 0 && (
+                    <div>
+                      <p className="associated-with-title">
+                        {t('dashboard.organization.createNew.addOrganization.associatedEntities.place')}
+                        <div className="associated-with-cards-wrapper">
+                          {derivedEntitiesData?.places?.map((place) => {
+                            <SelectionItem
+                              key={place._id}
+                              name={
+                                place?.name?.en || place?.name?.fr
+                                  ? contentLanguageBilingual({
+                                      en: place?.name?.en,
+                                      fr: place?.name?.fr,
+                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                      calendarContentLanguage: calendarContentLanguage,
+                                    })
+                                  : typeof place?.name === 'string' && place?.name
+                              }
+                              icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
+                              // description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                              bordered
+                              itemWidth="100%"
+                            />;
+                          })}
+                        </div>
+                      </p>
+                    </div>
+                  )}
+                  {derivedEntitiesData?.people?.length > 0 && (
+                    <div>
+                      <p className="associated-with-title">
+                        {t('dashboard.organization.createNew.addOrganization.associatedEntities.people')}
+                        <div className="associated-with-cards-wrapper">
+                          {derivedEntitiesData?.people?.map((person) => {
+                            <SelectionItem
+                              key={person._id}
+                              name={
+                                person?.name?.en || person?.name?.fr
+                                  ? contentLanguageBilingual({
+                                      en: person?.name?.en,
+                                      fr: person?.name?.fr,
+                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                      calendarContentLanguage: calendarContentLanguage,
+                                    })
+                                  : typeof person?.name === 'string' && person?.name
+                              }
+                              icon={<UserOutlined style={{ color: '#607EFC' }} />}
+                              // description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                              bordered
+                              itemWidth="100%"
+                            />;
+                          })}
+                        </div>
+                      </p>
+                    </div>
+                  )}
+                  {derivedEntitiesData?.events?.length > 0 && (
+                    <div>
+                      <p className="associated-with-title">
+                        {t('dashboard.organization.createNew.addOrganization.associatedEntities.events')}
+                        <div className="associated-with-cards-wrapper">
+                          {derivedEntitiesData?.events?.map((event) => {
+                            return (
+                              <SelectionItem
+                                key={event._id}
+                                name={
+                                  event?.name?.en || event?.name?.fr
+                                    ? contentLanguageBilingual({
+                                        en: event?.name?.en,
+                                        fr: event?.name?.fr,
+                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        calendarContentLanguage: calendarContentLanguage,
+                                      })
+                                    : typeof event?.name === 'string' && event?.name
+                                }
+                                icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
+                                description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                                bordered
+                                itemWidth="100%"
+                              />
+                            );
+                          })}
+                        </div>
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <></>
+              </Card>
+            )}
           </Row>
         </Form>
       </div>
