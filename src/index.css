@@ -49,6 +49,13 @@ body {
   background: #1b3de6;
 }
 
+.loader-grid {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-content: center;
+}
+
 @media screen and (max-width: 480px) {
   .ant-pagination {
     display: flex;
