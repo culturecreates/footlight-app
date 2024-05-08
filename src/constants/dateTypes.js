@@ -11,11 +11,17 @@ export const dateTypeOptions = [
     type: dateTypes.SINGLE,
     disabled: false,
     label: (
-      <>
-        <Translation>{(t) => t('dashboard.events.addEditEvent.dates.changeToSingleDate1')}</Translation>
-        <br></br>
-        <Translation>{(t) => t('dashboard.events.addEditEvent.dates.changeToSingleDate2')}</Translation>
-      </>
+      <Translation>
+        {(t) => {
+          return (
+            <>
+              {t('dashboard.events.addEditEvent.dates.changeToSingleDate1')}
+              <br />
+              {t('dashboard.events.addEditEvent.dates.changeToSingleDate2')}
+            </>
+          );
+        }}
+      </Translation>
     ),
     tooltip: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.singleDateTooltip')}</Translation>,
   },
@@ -23,11 +29,17 @@ export const dateTypeOptions = [
     type: dateTypes.RANGE,
     disabled: false,
     label: (
-      <>
-        <Translation>{(t) => t('dashboard.events.addEditEvent.dates.changeToDateRange1')}</Translation>
-        <br></br>
-        <Translation>{(t) => t('dashboard.events.addEditEvent.dates.changeToDateRange2')}</Translation>
-      </>
+      <Translation>
+        {(t) => {
+          return (
+            <>
+              {t('dashboard.events.addEditEvent.dates.changeToDateRange1')}
+              <br />
+              {t('dashboard.events.addEditEvent.dates.changeToDateRange2')}
+            </>
+          );
+        }}
+      </Translation>
     ),
     tooltip: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.dateRangeTooltip')}</Translation>,
   },

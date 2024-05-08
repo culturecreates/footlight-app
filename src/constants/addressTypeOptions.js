@@ -10,9 +10,17 @@ export const addressTypeOptions = [
     disabled: false,
     label: (
       <>
-        <Translation>{(t) => t('dashboard.places.createNew.addPlace.address.openingHours.openingHours1')}</Translation>
-        <br></br>
-        <Translation>{(t) => t('dashboard.places.createNew.addPlace.address.openingHours.openingHours2')}</Translation>
+        <Translation>
+          {(t) => {
+            return (
+              <>
+                {t('dashboard.places.createNew.addPlace.address.openingHours.openingHours1')}
+                <br />
+                {t('dashboard.places.createNew.addPlace.address.openingHours.openingHours2')}
+              </>
+            );
+          }}
+        </Translation>
       </>
     ),
     tooltip: <Translation>{(t) => t('dashboard.places.createNew.addPlace.address.openingHours.tooltip')}</Translation>,
