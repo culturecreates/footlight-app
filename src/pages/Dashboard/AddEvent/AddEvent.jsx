@@ -103,6 +103,7 @@ import {
   setLanguageLiteralBannerDisplayStatus,
 } from '../../../redux/reducer/languageLiteralSlice';
 import { removeUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
+import { groupEventsByDate } from '../../../utils/groupSubEventsConfigByDate';
 
 const { TextArea } = Input;
 
@@ -741,6 +742,7 @@ function AddEvent() {
               ...(dateTypes.MULTIPLE && { recurringEvent }),
               inLanguage,
               isFeatured: values?.isFeatured,
+              subEventConfiguration: eventData?.subEventConfiguration,
             };
 
             let imageCrop = form.getFieldValue('imageCrop');
@@ -1379,7 +1381,11 @@ function AddEvent() {
         isRecurring = false;
 
       if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState, false) || duplicateId) {
-        if (eventData?.recurringEvent && Object.keys(eventData?.recurringEvent)?.length > 0) isRecurring = true;
+        if (
+          (eventData?.recurringEvent && Object.keys(eventData?.recurringEvent)?.length > 0) ||
+          eventData?.subEventConfiguration
+        )
+          isRecurring = true;
         setDateType(
           dateTimeTypeHandler(
             eventData?.startDate,
@@ -1611,6 +1617,39 @@ function AddEvent() {
               : undefined,
             frequency: eventData?.recurringEvent?.frequency,
             daysOfWeek: eventData?.recurringEvent?.weekDays,
+          };
+          setFormValue(obj);
+        }
+        if (eventData?.subEventConfiguration) {
+          form.setFieldsValue({
+            frequency: 'CUSTOM',
+            startDateRecur: [
+              moment(
+                moment(eventData?.startDate ?? eventData?.startDateTime, 'YYYY-MM-DD').format('DD-MM-YYYY'),
+                'DD-MM-YYYY',
+              ),
+              moment(
+                moment(eventData?.endDate ?? eventData?.endDateTime, 'YYYY-MM-DD').format('DD-MM-YYYY'),
+                'DD-MM-YYYY',
+              ),
+            ],
+            startTimeRecur: null,
+            endTimeRecur: null,
+            customDates: groupEventsByDate(eventData?.subEventConfiguration),
+          });
+          const obj = {
+            frequency: 'CUSTOM',
+            startDateRecur: [
+              moment(
+                moment(eventData?.startDate ?? eventData?.startDateTime, 'YYYY-MM-DD').format('DD-MM-YYYY'),
+                'DD-MM-YYYY',
+              ),
+              moment(
+                moment(eventData?.endDate ?? eventData?.endDateTime, 'YYYY-MM-DD').format('DD-MM-YYYY'),
+                'DD-MM-YYYY',
+              ),
+            ],
+            startTimeRecur: null,
           };
           setFormValue(obj);
         }

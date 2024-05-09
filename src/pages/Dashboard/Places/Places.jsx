@@ -492,7 +492,10 @@ function Places() {
                               data-cy="icon-delete-place"
                               key={'delete-icon'}
                               style={{ color: '#222732', fontSize: '24px' }}
-                              onClick={() => deletePlaceHandler(item?.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deletePlaceHandler(item?.id);
+                              }}
                             />
                           ),
                         ]}

@@ -470,7 +470,10 @@ function Organizations() {
                             <DeleteOutlined
                               key={'delete-icon'}
                               style={{ color: '#222732', fontSize: '24px' }}
-                              onClick={() => deleteOrganizationHandler(item?.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteOrganizationHandler(item?.id);
+                              }}
                               data-cy="delete-organization"
                             />
                           ),

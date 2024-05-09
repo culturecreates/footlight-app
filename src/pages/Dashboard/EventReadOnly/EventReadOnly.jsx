@@ -108,7 +108,7 @@ function EventReadOnly() {
   };
 
   useEffect(() => {
-    if (eventData?.recurringEvent) setDateType(dateTypes.MULTIPLE);
+    if (eventData?.recurringEvent || eventData?.subEventConfiguration) setDateType(dateTypes.MULTIPLE);
     else
       setDateType(
         dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
@@ -475,7 +475,9 @@ function EventReadOnly() {
                           <span
                             className="read-only-event-content-sub-title-primary"
                             style={{ textTransform: 'capitalize' }}>
-                            {eventData?.recurringEvent?.frequency?.toLowerCase()}
+                            {eventData?.recurringEvent?.frequency
+                              ? eventData?.recurringEvent?.frequency?.toLowerCase()
+                              : eventData?.subEventConfiguration && dateFrequencyOptions[2].value}
                           </span>
                         </span>
                         {dateType === dateTypes.MULTIPLE && eventData?.subEvents?.length > 0 && (
@@ -516,7 +518,8 @@ function EventReadOnly() {
                   <br />
                   <Row justify="space-between">
                     {eventData?.startDateTime &&
-                      eventData?.recurringEvent?.frequency !== dateFrequencyOptions[2].value && (
+                      eventData?.recurringEvent?.frequency !== dateFrequencyOptions[2].value &&
+                      !eventData?.subEventConfiguration && (
                         <Col>
                           <p className="read-only-event-content-sub-title-primary">
                             {t('dashboard.events.addEditEvent.dates.startTime')}
@@ -528,18 +531,20 @@ function EventReadOnly() {
                           </p>
                         </Col>
                       )}
-                    {eventData?.endDateTime && eventData?.recurringEvent?.frequency !== dateFrequencyOptions[2].value && (
-                      <Col>
-                        <p className="read-only-event-content-sub-title-primary">
-                          {t('dashboard.events.addEditEvent.dates.endTime')}
-                        </p>
-                        <p className="read-only-event-content">
-                          {moment
-                            .tz(eventData?.endDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                            .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
-                        </p>
-                      </Col>
-                    )}
+                    {eventData?.endDateTime &&
+                      eventData?.recurringEvent?.frequency !== dateFrequencyOptions[2].value &&
+                      !eventData?.subEventConfiguration && (
+                        <Col>
+                          <p className="read-only-event-content-sub-title-primary">
+                            {t('dashboard.events.addEditEvent.dates.endTime')}
+                          </p>
+                          <p className="read-only-event-content">
+                            {moment
+                              .tz(eventData?.endDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
+                              .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
+                          </p>
+                        </Col>
+                      )}
                   </Row>
                   <br />
                   {dateType === dateTypes.MULTIPLE &&

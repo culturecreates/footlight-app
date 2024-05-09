@@ -479,7 +479,10 @@ function People() {
                               data-cy="icon-delete-person"
                               key={'delete-icon'}
                               style={{ color: '#222732', fontSize: '24px' }}
-                              onClick={() => deletePersonHandler(item?.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deletePersonHandler(item?.id);
+                              }}
                             />
                           ),
                         ]}
