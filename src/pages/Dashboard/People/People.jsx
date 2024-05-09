@@ -167,7 +167,7 @@ function People() {
           <LoadingIndicator data-cy="loading-indicator-people-confirm" />
         </div>
       )}
-      {allPeopleSuccess && (
+      {allPeopleSuccess && currentCalendarData ? (
         <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
           <Main>
             <h4 className="events-heading" data-cy="heading-people-title">
@@ -265,6 +265,10 @@ function People() {
             </div>
           </Main>
         </FeatureFlag>
+      ) : (
+        <div className="loader-grid">
+          <LoadingIndicator />
+        </div>
       )}
     </>
   );
