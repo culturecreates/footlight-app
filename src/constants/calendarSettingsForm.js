@@ -287,7 +287,7 @@ export const calendarSettingsFormFields = {
                   size="large"
                   multiple={false}
                   showSearch={true}
-                  allowClear
+                  allowClear={false}
                   treeDefaultExpandAll
                   placeholder={t('dashboard.settings.calendarSettings.placeholders.imageAspectRatio')}
                   notFoundContent={<NoContent />}
@@ -340,7 +340,7 @@ export const calendarSettingsFormFields = {
                   size="large"
                   multiple={false}
                   showSearch={true}
-                  allowClear
+                  allowClear={false}
                   treeDefaultExpandAll
                   placeholder={t('dashboard.settings.calendarSettings.placeholders.imageAspectRatio')}
                   notFoundContent={<NoContent />}
