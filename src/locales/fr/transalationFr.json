@@ -164,8 +164,10 @@
           "timeFormatPlaceholder": "hh:mm",
           "status": "Statut",
           "changeDateType": "Modifier le type de date",
-          "changeToSingleDate": "Changer en une date",
-          "changeToDateRange": "Changer en plage de dates",
+          "changeToSingleDate1": "Changer en une",
+          "changeToSingleDate2": " date",
+          "changeToDateRange1": "Changer en plage de",
+          "changeToDateRange2": " dates",
           "changeToMultipleDate": "Changer en plusieurs dates",
           "singleDateTooltip": "À utiliser lorsque votre événement a lieu à une seule date.",
           "multipleDatesTooltip": "À utiliser lorsque votre événement se produit plus d'une fois à des dates différentes, comme un spectacle ou un atelier.",
@@ -308,7 +310,8 @@
             "contactTooltip": "Ajoutez un contact pour votre événement. Vous pouvez en créer un ou copier les données de l'Organisateur.",
             "copyOrganizerContact": "Copier le contact de l’organisateur"
           },
-          "eventLanguage": "Langue de l'événement",
+          "eventLanguage1": "Langue de",
+          "eventLanguage2": " l'événement",
           "eventLanguagePlaceholder": "Sélectionnez la langue de l'événement",
           "eventLanguageTooltip": "Sélectionnez le français, l'anglais ou le bilingue."
         },
@@ -646,7 +649,8 @@
               "placeholder": "Sélectionnez le région"
             },
             "openingHours": {
-              "openingHours": "Lien des heures d'ouverture",
+              "openingHours1": "Lien des heures",
+              "openingHours2": " d'ouverture",
               "tooltip": "Ajoutez un lien vers les heures d'ouverture",
               "placeholder": "Entrez l'url des heures d'ouverture"
             }

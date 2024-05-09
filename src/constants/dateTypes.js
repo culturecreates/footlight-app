@@ -10,13 +10,37 @@ export const dateTypeOptions = [
   {
     type: dateTypes.SINGLE,
     disabled: false,
-    label: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.changeToSingleDate')}</Translation>,
+    label: (
+      <Translation>
+        {(t) => {
+          return (
+            <>
+              {t('dashboard.events.addEditEvent.dates.changeToSingleDate1')}
+              <br />
+              {t('dashboard.events.addEditEvent.dates.changeToSingleDate2')}
+            </>
+          );
+        }}
+      </Translation>
+    ),
     tooltip: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.singleDateTooltip')}</Translation>,
   },
   {
     type: dateTypes.RANGE,
     disabled: false,
-    label: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.changeToDateRange')}</Translation>,
+    label: (
+      <Translation>
+        {(t) => {
+          return (
+            <>
+              {t('dashboard.events.addEditEvent.dates.changeToDateRange1')}
+              <br />
+              {t('dashboard.events.addEditEvent.dates.changeToDateRange2')}
+            </>
+          );
+        }}
+      </Translation>
+    ),
     tooltip: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.dateRangeTooltip')}</Translation>,
   },
   {

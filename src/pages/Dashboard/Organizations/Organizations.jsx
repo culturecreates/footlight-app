@@ -250,7 +250,7 @@ function Organizations() {
           <LoadingIndicator data-cy="organizations-listing-loader-confirm" />
         </div>
       )}
-      {allOrganizationSuccess && (
+      {allOrganizationSuccess && currentCalendarData ? (
         <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
           <Main>
             <h4 className="events-heading" data-cy="heading-organizations">
@@ -492,6 +492,10 @@ function Organizations() {
             </div>
           </Main>
         </FeatureFlag>
+      ) : (
+        <div className="loader-grid">
+          <LoadingIndicator />
+        </div>
       )}
     </>
   );
