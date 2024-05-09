@@ -166,10 +166,10 @@ function Places() {
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          <LoadingIndicator data-cy="loading-indicator-taxonomy-confirm" />
+          <LoadingIndicator data-cy="loading-indicator-place-confirm" />
         </div>
       )}
-      {allPlacesSuccess && (
+      {allPlacesSuccess && currentCalendarData ? (
         <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
           <Main>
             <h4 className="events-heading" data-cy="heading-place-title">
@@ -269,6 +269,10 @@ function Places() {
             </div>
           </Main>
         </FeatureFlag>
+      ) : (
+        <div className="loader-grid">
+          <LoadingIndicator />
+        </div>
       )}
     </>
   );

@@ -131,7 +131,7 @@
         "allDone": "All done",
         "featuredEvent": "Featured event",
         "fallbackConfirm": {
-          "contentPart1": "You haven’t updated all the text that doesn’t match the language(s) on your website.",
+          "contentPart1": "You have not updated all text to match the language(s) on your website.",
           "contentPart2": "Do you want to publish as is?",
           "title": "Publish event",
           "publish": "Publish"
@@ -164,8 +164,10 @@
           "timeFormatPlaceholder": "hh:mm",
           "status": "Status",
           "changeDateType": "Change date type",
-          "changeToSingleDate": "Change to single date",
-          "changeToDateRange": "Change to date range",
+          "changeToSingleDate1": "Change to single",
+          "changeToSingleDate2": " date",
+          "changeToDateRange1": "Change to date",
+          "changeToDateRange2": " range",
           "changeToMultipleDate": "Change to multiple dates",
           "singleDateTooltip": "Use when your event happens on one date.",
           "multipleDatesTooltip": "Use when your event happens more than once on different dates such as a performance or a workshop.",
@@ -309,7 +311,8 @@
             "contactTooltip": "Add a contact for your event. You can create one or copy the contact information of the Organizer.",
             "copyOrganizerContact": "Copy organizer contact"
           },
-          "eventLanguage": "Event language",
+          "eventLanguage1": "Event language",
+          "eventLanguage2": "",
           "eventLanguagePlaceholder": "Select language of event",
           "eventLanguageTooltip": "Select French, English or Bilingual."
         },
@@ -649,7 +652,8 @@
               "placeholder": "Select region"
             },
             "openingHours": {
-              "openingHours": "Opening hours link",
+              "openingHours1": "Opening hours",
+              "openingHours2": " link",
               "tooltip": "Add a link to the opening hours",
               "placeholder": "Enter opening hours URL"
             }

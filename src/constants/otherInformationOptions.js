@@ -1,4 +1,5 @@
 import { Translation } from 'react-i18next';
+
 export const otherInformationFieldNames = {
   contact: 'contact',
   performerWrap: 'performerWrap',
@@ -71,7 +72,19 @@ export const otherInformationOptions = [
     type: 'inLanguage',
     fieldNames: otherInformationFieldNames.inLanguage,
     disabled: false,
-    label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.eventLanguage')}</Translation>,
+    label: (
+      <>
+        <Translation>
+          {(t, i18next) => (
+            <>
+              {t('dashboard.events.addEditEvent.otherInformation.eventLanguage1')}
+              {i18next.lng == 'en' ? <></> : <br />}
+              {t('dashboard.events.addEditEvent.otherInformation.eventLanguage2')}
+            </>
+          )}
+        </Translation>
+      </>
+    ),
     tooltip: (
       <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.eventLanguageTooltip')}</Translation>
     ),
