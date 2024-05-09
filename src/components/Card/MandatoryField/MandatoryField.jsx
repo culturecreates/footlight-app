@@ -84,7 +84,7 @@ function MandatoryField(props) {
           ))}
         </Col>
         <Col>
-          <Divider type="vertical" style={{ height: '100%', border: '1.5px solid #B6C1C9' }} />
+          <Divider type="vertical" style={{ height: '100%', border: '1px solid #B6C1C9' }} />
         </Col>
         <Col span={11} push={1}>
           <h5 className="mandatory-field-available">{t('dashboard.settings.mandatoryFields.availableFields')}</h5>
