@@ -114,7 +114,7 @@ function Sidebar(props) {
       calendarContentLanguage: calendarContentLanguage,
     });
     setCalendarItem(selectedCalendar(currentCalendarData?.id, currentCalendarData?.logo?.original?.uri, calendarLabel));
-  }, [currentCalendarData]);
+  }, [currentCalendarData, user?.interfaceLanguage]);
 
   const onSidebarClickHandler = ({ item, key }) => {
     if (key !== selectedKey) {

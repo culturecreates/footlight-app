@@ -135,7 +135,7 @@ function ResponsiveSidebar(props) {
       calendarContentLanguage: calendarContentLanguage,
     });
     setCalendarItem(selectedCalendar(currentCalendarData?.id, currentCalendarData?.logo?.original?.uri, calendarLabel));
-  }, [currentCalendarData]);
+  }, [currentCalendarData, user?.interfaceLanguage]);
   return (
     <Drawer
       className="sidebar-navigation-menu-responsive-drawer"
