@@ -1021,10 +1021,10 @@
         "title": "Champs obligatoires",
         "availableFields": "Champs disponibles",
         "description": "Sélectionnez les champs qui doivent être obligatoires dans votre calendrier.",
-        "events": "Événement",
-        "places": "Lieu",
-        "organizations": "Organisation",
+        "event": "Événement",
+        "place": "Lieu",
         "person": "Personne",
+        "organization": "Organisation",
         "notification": {
           "update": "Succès ! Vos champs obligatoires ont été mis à jour."
         }
