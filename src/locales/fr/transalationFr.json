@@ -966,7 +966,7 @@
       "calendarSettings": {
         "generalSettings": "Paramètres généraux",
         "setUpCalendarDescription": "Configurez l'affichage de votre calendrier.",
-        "calendarName": "Calendar name",
+        "calendarName": "Nom du calendrier",
         "calendarLanguage": "Langue du calendrier",
         "timezone": "Fuseau horaire",
         "contact": "Contact",
@@ -978,11 +978,11 @@
           "custom": "Personnalisé"
         },
         "imageMaxWidth": {
-          "imageMaxWidth": "Image maximum width",
+          "imageMaxWidth": "Largeur maximale",
           "thumbnail": "Vignette",
           "large": "Grande image"
         },
-        "calendarLogo": "Calendar Logo",
+        "calendarLogo": "Logo du calendrier",
         "calendarWidgetSetup": "Configuration du widget calendrier",
         "calendarWidgetDescription": "Ajoutez les modèles d'URL nécessaires au bon fonctionnement du widget calendrier. Ces modèles relient la liste des événements affichée sur d'autres sites web aux événements affichés sur votre site.",
         "eventTemplate": "Modèle d'événement",
@@ -1021,9 +1021,9 @@
         "title": "Champs obligatoires",
         "availableFields": "Champs disponibles",
         "description": "Sélectionnez les champs qui doivent être obligatoires dans votre calendrier.",
-        "events": "Événements",
-        "places": "Lieux",
-        "organizations": "Organisations",
+        "events": "Événement",
+        "places": "Lieu",
+        "organizations": "Organisation",
         "person": "Personne",
         "notification": {
           "update": "Succès ! Vos champs obligatoires ont été mis à jour."
@@ -1119,7 +1119,7 @@
           "update": "Succès! Votre [organisation | personne | lieu] a été mis à jour."
         },
         "adminOnly": "Administrateur uniquement",
-        "addAsFilter": "Make this taxonomy type available as a filter.",
+        "addAsFilter": "Rendre ce type de taxonomie disponible en tant que filtre.",
         "concepts": {
           "heading": "Liste de concepts",
           "description": "Gérer une liste hiérarchique de concepts pour la taxonomie, dans toutes les langues du calendrier. Les concepts peuvent être sélectionnés à partir du champ de saisie correspondant. Faites glisser les concepts pour les réorganiser et/ou les imbriquer. Lorsque vous déplacez un concept dans une langue, il est déplacé dans toutes les langues.",
