@@ -203,6 +203,7 @@ function Dashboard() {
                   setContentBackgroundColor,
                   isReadOnly,
                   setIsReadOnly,
+                  refetch,
                 ]}
               />
             </Content>

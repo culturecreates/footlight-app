@@ -20,7 +20,7 @@ import { calendarModes } from '../../../../constants/calendarModes';
 function CalendarSettings() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const [currentCalendarData, , , getCalendar, , , setIsReadOnly] = useOutletContext();
+  const [currentCalendarData, , , getCalendar, , , setIsReadOnly, refetch] = useOutletContext();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId } = useParams();
   const { user } = useSelector(getUserDetails);
@@ -161,6 +161,7 @@ function CalendarSettings() {
         getCalendar({ id: calendarId, sessionId: timestampRef })
           .unwrap()
           .then((response) => {
+            refetch();
             if (response?.mode === calendarModes.READ_ONLY) setIsReadOnly(true);
             else setIsReadOnly(false);
             notification.success({
