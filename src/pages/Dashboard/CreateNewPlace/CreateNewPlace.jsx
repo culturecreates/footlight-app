@@ -192,8 +192,10 @@ function CreateNewPlace() {
     includeConcepts: true,
     sessionId: timestampRef,
   });
-  const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
-  const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
+  const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
+  const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery({
+    sessionId: timestampRef,
+  });
   const [addImage, { error: isAddImageError, isLoading: addImageLoading }] = useAddImageMutation();
   const [addPlace, { isLoading: addPlaceLoading }] = useAddPlaceMutation();
   const [updatePlace, { isLoading: updatePlaceLoading }] = useUpdatePlaceMutation();
@@ -707,11 +709,14 @@ function CreateNewPlace() {
     let sourceQuery = new URLSearchParams();
     sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
     sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
-    getEntities({
-      searchKey: inputValue,
-      classes: decodeURIComponent(query.toString()),
-      calendarId,
-    })
+    getEntities(
+      {
+        searchKey: inputValue,
+        classes: decodeURIComponent(query.toString()),
+        calendarId,
+      },
+      true,
+    )
       .unwrap()
       .then((response) => {
         let containedInPlaceFilter = [];
@@ -721,13 +726,16 @@ function CreateNewPlace() {
         setAllPlacesList(placesOptions(containedInPlaceFilter, user, calendarContentLanguage, sourceOptions.CMS));
       })
       .catch((error) => console.log(error));
-    getExternalSource({
-      searchKey: inputValue,
-      classes: decodeURIComponent(query.toString()),
-      sources: decodeURIComponent(sourceQuery.toString()),
-      calendarId,
-      excludeExistingCMS: true,
-    })
+    getExternalSource(
+      {
+        searchKey: inputValue,
+        classes: decodeURIComponent(query.toString()),
+        sources: decodeURIComponent(sourceQuery.toString()),
+        calendarId,
+        excludeExistingCMS: true,
+      },
+      true,
+    )
       .unwrap()
       .then((response) => {
         setAllPlacesArtsdataList(
@@ -1099,8 +1107,6 @@ function CreateNewPlace() {
         english: location?.state?.name,
       });
     }
-
-    placesSearch('');
   }, []);
 
   return !isPlaceLoading && !artsDataLoading && !taxonomyLoading && !isEntityDetailsLoading ? (
@@ -2495,7 +2501,10 @@ function CreateNewPlace() {
                   ]}>
                   <Popover
                     open={isPopoverOpen.containsPlace}
-                    onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, containsPlace: open })}
+                    onOpenChange={(open) => {
+                      debounceSearchPlace(quickCreateKeyword);
+                      setIsPopoverOpen({ ...isPopoverOpen, containsPlace: open });
+                    }}
                     overlayClassName="event-popover"
                     placement="bottom"
                     autoAdjustOverflow={false}
@@ -2698,7 +2707,10 @@ function CreateNewPlace() {
                   <Popover
                     data-cy="popover-place-contained-in-place"
                     open={isPopoverOpen.containedInPlace}
-                    onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, containedInPlace: open })}
+                    onOpenChange={(open) => {
+                      debounceSearchPlace(quickCreateKeyword);
+                      setIsPopoverOpen({ ...isPopoverOpen, containedInPlace: open });
+                    }}
                     overlayClassName="event-popover"
                     placement="bottom"
                     autoAdjustOverflow={false}

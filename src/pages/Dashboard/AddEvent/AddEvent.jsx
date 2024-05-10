@@ -59,7 +59,7 @@ import { ReactComponent as Money } from '../../../assets/icons/Money.svg';
 import { ReactComponent as MoneyFree } from '../../../assets/icons/Money-Free.svg';
 import TicketPrice from '../../../components/TicketPrice';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
-import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../services/entities';
+import { useLazyGetEntitiesQuery } from '../../../services/entities';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import SelectionItem from '../../../components/List/SelectionItem';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
@@ -86,7 +86,7 @@ import QuickCreatePlace from '../../../components/Modal/QuickCreatePlace';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
-import { useGetExternalSourceQuery, useLazyGetExternalSourceQuery } from '../../../services/externalSource';
+import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import KeyboardAccessibleLayout from '../../../layout/KeyboardAccessibleLayout/KeyboardAccessibleLayout';
@@ -148,23 +148,23 @@ function AddEvent() {
     sessionId: timestampRef,
   });
 
-  let query = new URLSearchParams();
-  query.append('classes', entitiesClass.organization);
-  query.append('classes', entitiesClass.person);
-  const { currentData: initialEntities, isLoading: initialEntityLoading } = useGetEntitiesQuery({
-    calendarId,
-    searchKey: '',
-    classes: decodeURIComponent(query.toString()),
-    sessionId: timestampRef,
-  });
-  const { currentData: initialExternalSource, isFetching: initialExternalSourceLoading } = useGetExternalSourceQuery({
-    calendarId,
-    searchKey: '',
-    classes: decodeURIComponent(query.toString()),
-    sessionId: timestampRef,
-  });
+  // let query = new URLSearchParams();
+  // query.append('classes', entitiesClass.organization);
+  // query.append('classes', entitiesClass.person);
+  // const { currentData: initialEntities, isLoading: initialEntityLoading } = useGetEntitiesQuery({
+  //   calendarId,
+  //   searchKey: '',
+  //   classes: decodeURIComponent(query.toString()),
+  //   sessionId: timestampRef,
+  // });
+  // const { currentData: initialExternalSource, isFetching: initialExternalSourceLoading } = useGetExternalSourceQuery({
+  //   calendarId,
+  //   searchKey: '',
+  //   classes: decodeURIComponent(query.toString()),
+  //   sessionId: timestampRef,
+  // });
   const [addEvent, { isLoading: addEventLoading, isSuccess: addEventSuccess }] = useAddEventMutation();
-  const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+  const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
   const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
   const [updateEventState, { isLoading: updateEventStateLoading }] = useUpdateEventStateMutation();
   const [updateEvent, { isLoading: updateEventLoading, isSuccess: updateEventSuccess }] = useUpdateEventMutation();
@@ -1086,11 +1086,14 @@ function AddEvent() {
     let sourceQuery = new URLSearchParams();
     sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
     sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
-    getEntities({
-      searchKey: inputValue,
-      classes: decodeURIComponent(query.toString()),
-      calendarId,
-    })
+    getEntities(
+      {
+        searchKey: inputValue,
+        classes: decodeURIComponent(query.toString()),
+        calendarId,
+      },
+      true,
+    )
       .unwrap()
       .then((response) => {
         setAllPlacesList(
@@ -1098,13 +1101,16 @@ function AddEvent() {
         );
       })
       .catch((error) => console.log(error));
-    getExternalSource({
-      searchKey: inputValue,
-      classes: decodeURIComponent(query.toString()),
-      sources: decodeURIComponent(sourceQuery.toString()),
-      calendarId,
-      excludeExistingCMS: true,
-    })
+    getExternalSource(
+      {
+        searchKey: inputValue,
+        classes: decodeURIComponent(query.toString()),
+        sources: decodeURIComponent(sourceQuery.toString()),
+        calendarId,
+        excludeExistingCMS: true,
+      },
+      true,
+    )
       .unwrap()
       .then((response) => {
         setAllPlacesArtsdataList(
@@ -1131,7 +1137,7 @@ function AddEvent() {
     let sourceQuery = new URLSearchParams();
     sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
     sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
-    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
+    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId }, true)
       .unwrap()
       .then((response) => {
         if (type == 'organizers') {
@@ -1149,13 +1155,16 @@ function AddEvent() {
         }
       })
       .catch((error) => console.log(error));
-    getExternalSource({
-      searchKey: value,
-      classes: decodeURIComponent(query.toString()),
-      sources: decodeURIComponent(sourceQuery.toString()),
-      calendarId,
-      excludeExistingCMS: true,
-    })
+    getExternalSource(
+      {
+        searchKey: value,
+        classes: decodeURIComponent(query.toString()),
+        sources: decodeURIComponent(sourceQuery.toString()),
+        calendarId,
+        excludeExistingCMS: true,
+      },
+      true,
+    )
       .unwrap()
       .then((response) => {
         if (type == 'organizers') {
@@ -1805,74 +1814,74 @@ function AddEvent() {
     }
   }, [currentCalendarData]);
 
-  useEffect(() => {
-    if (initialEntities && currentCalendarData && !initialExternalSourceLoading) {
-      setOrganizersList(
-        treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
-      );
-      setPerformerList(
-        treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
-      );
-      setSupporterList(
-        treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
-      );
-      setPerformerArtsdataList(
-        treeEntitiesOption(
-          initialExternalSource?.artsdata,
-          user,
-          calendarContentLanguage,
-          sourceOptions.ARTSDATA,
-          currentCalendarData,
-        ),
-      );
-      setSupporterArtsdataList(
-        treeEntitiesOption(
-          initialExternalSource?.artsdata,
-          user,
-          calendarContentLanguage,
-          sourceOptions.ARTSDATA,
-          currentCalendarData,
-        ),
-      );
-      setOrganizersArtsdataList(
-        treeEntitiesOption(
-          initialExternalSource?.artsdata,
-          user,
-          calendarContentLanguage,
-          sourceOptions.ARTSDATA,
-          currentCalendarData,
-        ),
-      );
-      setOrganizersImportsFootlightList(
-        treeEntitiesOption(
-          initialExternalSource?.footlight,
-          user,
-          calendarContentLanguage,
-          externalSourceOptions.FOOTLIGHT,
-          currentCalendarData,
-        ),
-      );
-      setPerformerImportsFootlightList(
-        treeEntitiesOption(
-          initialExternalSource?.footlight,
-          user,
-          calendarContentLanguage,
-          externalSourceOptions.FOOTLIGHT,
-          currentCalendarData,
-        ),
-      );
-      setSupporterImportsFootlightList(
-        treeEntitiesOption(
-          initialExternalSource?.footlight,
-          user,
-          calendarContentLanguage,
-          externalSourceOptions.FOOTLIGHT,
-          currentCalendarData,
-        ),
-      );
-      placesSearch('');
-    }
-  }, [initialEntityLoading, currentCalendarData, initialExternalSourceLoading]);
+  // useEffect(() => {
+  //   if (initialEntities && currentCalendarData && !initialExternalSourceLoading) {
+  //     setOrganizersList(
+  //       treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+  //     );
+  //     setPerformerList(
+  //       treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+  //     );
+  //     setSupporterList(
+  //       treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
+  //     );
+  //     setPerformerArtsdataList(
+  //       treeEntitiesOption(
+  //         initialExternalSource?.artsdata,
+  //         user,
+  //         calendarContentLanguage,
+  //         sourceOptions.ARTSDATA,
+  //         currentCalendarData,
+  //       ),
+  //     );
+  //     setSupporterArtsdataList(
+  //       treeEntitiesOption(
+  //         initialExternalSource?.artsdata,
+  //         user,
+  //         calendarContentLanguage,
+  //         sourceOptions.ARTSDATA,
+  //         currentCalendarData,
+  //       ),
+  //     );
+  //     setOrganizersArtsdataList(
+  //       treeEntitiesOption(
+  //         initialExternalSource?.artsdata,
+  //         user,
+  //         calendarContentLanguage,
+  //         sourceOptions.ARTSDATA,
+  //         currentCalendarData,
+  //       ),
+  //     );
+  //     setOrganizersImportsFootlightList(
+  //       treeEntitiesOption(
+  //         initialExternalSource?.footlight,
+  //         user,
+  //         calendarContentLanguage,
+  //         externalSourceOptions.FOOTLIGHT,
+  //         currentCalendarData,
+  //       ),
+  //     );
+  //     setPerformerImportsFootlightList(
+  //       treeEntitiesOption(
+  //         initialExternalSource?.footlight,
+  //         user,
+  //         calendarContentLanguage,
+  //         externalSourceOptions.FOOTLIGHT,
+  //         currentCalendarData,
+  //       ),
+  //     );
+  //     setSupporterImportsFootlightList(
+  //       treeEntitiesOption(
+  //         initialExternalSource?.footlight,
+  //         user,
+  //         calendarContentLanguage,
+  //         externalSourceOptions.FOOTLIGHT,
+  //         currentCalendarData,
+  //       ),
+  //     );
+  //     placesSearch('');
+  //   }
+  // }, [initialEntityLoading, currentCalendarData, initialExternalSourceLoading]);
 
   useEffect(() => {
     if (isReadOnly) {
@@ -1883,12 +1892,10 @@ function AddEvent() {
 
   return !isLoading &&
     !taxonomyLoading &&
-    !initialEntityLoading &&
     currentCalendarData &&
     !updateEventLoading &&
     !addEventLoading &&
-    !updateEventStateLoading &&
-    !initialExternalSourceLoading ? (
+    !updateEventStateLoading ? (
     <div>
       <Prompt when={showDialog} message={t('common.unsavedChanges')} beforeUnload={true} />
       <Form
@@ -2575,6 +2582,7 @@ function AddEvent() {
                   <CustomPopover
                     open={isPopoverOpen.locationPlace}
                     onOpenChange={(open) => {
+                      debounceSearchPlace(quickCreateKeyword);
                       setIsPopoverOpen({ ...isPopoverOpen, locationPlace: open });
                     }}
                     destroyTooltipOnHide={true}
@@ -3104,6 +3112,7 @@ function AddEvent() {
                     <CustomPopover
                       open={isPopoverOpen.organizer}
                       onOpenChange={(open) => {
+                        debounceSearchOrganizationPersonSearch(quickCreateKeyword, 'organizers');
                         setIsPopoverOpen({ ...isPopoverOpen, organizer: open });
                       }}
                       destroyTooltipOnHide={true}
@@ -3611,7 +3620,10 @@ function AddEvent() {
                     isPopoverOpen={isPopoverOpen.performer}>
                     <CustomPopover
                       open={isPopoverOpen.performer}
-                      onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, performer: open })}
+                      onOpenChange={(open) => {
+                        debounceSearchOrganizationPersonSearch(quickCreateKeyword, 'performers');
+                        setIsPopoverOpen({ ...isPopoverOpen, performer: open });
+                      }}
                       overlayClassName="event-popover"
                       placement="bottom"
                       autoAdjustOverflow={false}
@@ -3839,7 +3851,10 @@ function AddEvent() {
                     isPopoverOpen={isPopoverOpen.supporter}>
                     <CustomPopover
                       open={isPopoverOpen.supporter}
-                      onOpenChange={(open) => setIsPopoverOpen({ ...isPopoverOpen, supporter: open })}
+                      onOpenChange={(open) => {
+                        debounceSearchOrganizationPersonSearch(quickCreateKeyword, 'supporters');
+                        setIsPopoverOpen({ ...isPopoverOpen, supporter: open });
+                      }}
                       overlayClassName="event-popover"
                       placement="bottom"
                       autoAdjustOverflow={false}

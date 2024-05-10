@@ -5,7 +5,7 @@ import StatusTag from '../../Tags/UserStatus/StatusTag';
 import './listCard.css';
 
 const ListCard = (props) => {
-  const { id, actions, listItemHandler, title, description, activityStatus, invitedBy, styles } = props;
+  const { id, actions, listItemHandler, title, description, activityStatus, invitedBy, styles, invitedDate } = props;
   const { t } = useTranslation();
   return (
     <List.Item className="users-list-item-wrapper" key={id} extra={actions} {...styles}>
@@ -22,6 +22,8 @@ const ListCard = (props) => {
           <div className="invitation-details">
             <span className="invitation-details-text-prologue" data-cy="user-invited-by-title">
               {t('dashboard.settings.userManagement.invitedBy')}
+              &nbsp;{invitedDate ?? ''}&nbsp;
+              {t('dashboard.settings.userManagement.by')}
             </span>
             <span className="invitation-details-username" data-cy="user-invited-by">
               {invitedBy}

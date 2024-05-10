@@ -84,7 +84,9 @@ function People() {
     searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('peopleSearchQuery') ?? '',
   );
   const [filter, setFilter] = useState({
-    sort: sortByOptionsOrgsPlacesPerson[0]?.key,
+    sort: searchParams.get('sortBy')
+      ? searchParams.get('sortBy')
+      : sessionStorage.getItem('peopleSortBy') ?? sortByOptionsOrgsPlacesPerson[0]?.key,
     order: searchParams.get('order')
       ? searchParams.get('order')
       : sessionStorage.getItem('peopleOrder') ?? sortOrder?.ASC,
@@ -183,6 +185,7 @@ function People() {
     sessionStorage.removeItem('peopleOrder');
     sessionStorage.removeItem('peopleTaxonomyFilter');
     sessionStorage.removeItem('standardPeopleTaxonomyFilter');
+    sessionStorage.removeItem('peopleSortBy');
   };
 
   useEffect(() => {
@@ -237,6 +240,7 @@ function People() {
     sessionStorage.setItem('peoplePage', pageNumber);
     sessionStorage.setItem('peopleSearchQuery', peopleSearchQuery);
     sessionStorage.setItem('peopleOrder', filter?.order);
+    sessionStorage.setItem('peopleSortBy', filter?.sort);
     if (Object.keys(taxonomyFilter)?.length > 0)
       sessionStorage.setItem('peopleTaxonomyFilter', JSON.stringify(taxonomyFilter));
     else sessionStorage.removeItem('peopleTaxonomyFilter');
@@ -286,7 +290,12 @@ function People() {
               onChange={onChangeHandler}
               data-cy="input-person-search"
             />
-            <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
+            <Sort
+              filter={filter}
+              setFilter={setFilter}
+              setPageNumber={setPageNumber}
+              filterClearHandler={filterClearHandler}
+            />
             <Space>
               {allTaxonomyData?.data?.length > 0 &&
                 allTaxonomyData?.data?.map((taxonomy, index) => {

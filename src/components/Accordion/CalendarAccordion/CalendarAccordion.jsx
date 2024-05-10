@@ -69,7 +69,7 @@ function CalendarAccordion(props) {
     sessionId: timestampRef,
   });
 
-  const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+  const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
   const [getAllOrganization] = useLazyGetAllOrganizationQuery();
   const [getAllPeople] = useLazyGetAllPeopleQuery();
 

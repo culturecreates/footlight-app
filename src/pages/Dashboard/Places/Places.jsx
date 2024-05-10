@@ -92,7 +92,9 @@ function Places() {
     searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('placesSearchQuery') ?? '',
   );
   const [filter, setFilter] = useState({
-    sort: sortByOptionsOrgsPlacesPerson[0]?.key,
+    sort: searchParams.get('sortBy')
+      ? searchParams.get('sortBy')
+      : sessionStorage.getItem('placeSortBy') ?? sortByOptionsOrgsPlacesPerson[0]?.key,
     order: searchParams.get('order')
       ? searchParams.get('order')
       : sessionStorage.getItem('placeOrder') ?? sortOrder?.ASC,
@@ -194,6 +196,7 @@ function Places() {
     sessionStorage.removeItem('placeOrder');
     sessionStorage.removeItem('taxonomyFilter');
     sessionStorage.removeItem('standardTaxonomyFilter');
+    sessionStorage.removeItem('placeSortBy');
   };
 
   useEffect(() => {
@@ -248,6 +251,7 @@ function Places() {
     sessionStorage.setItem('placesPage', pageNumber);
     sessionStorage.setItem('placesSearchQuery', placesSearchQuery);
     sessionStorage.setItem('placeOrder', filter?.order);
+    sessionStorage.setItem('placeSortBy', filter?.sort);
     if (Object.keys(taxonomyFilter)?.length > 0)
       sessionStorage.setItem('placeTaxonomyFilter', JSON.stringify(taxonomyFilter));
     else sessionStorage.removeItem('placeTaxonomyFilter');
@@ -297,7 +301,12 @@ function Places() {
               onChange={onChangeHandler}
               data-cy="input-place-search"
             />
-            <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
+            <Sort
+              filter={filter}
+              setFilter={setFilter}
+              setPageNumber={setPageNumber}
+              filterClearHandler={filterClearHandler}
+            />
             <Space>
               {allTaxonomyData?.data?.length > 0 &&
                 allTaxonomyData?.data?.map((taxonomy, index) => {

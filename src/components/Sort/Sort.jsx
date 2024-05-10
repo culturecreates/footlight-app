@@ -2,10 +2,10 @@ import React from 'react';
 import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../constants/sortByOptions';
 import { useTranslation } from 'react-i18next';
 import { Button, Dropdown, Space } from 'antd';
-import { SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
+import { SortAscendingOutlined, SortDescendingOutlined, DownOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
 function Sort(props) {
-  const { filter, setFilter, setPageNumber } = props;
+  const { filter, setFilter, setPageNumber, filterClearHandler } = props;
   const { t } = useTranslation();
   const onSortOrderChange = () => {
     if (filter?.order == sortOrder?.ASC)
@@ -20,6 +20,16 @@ function Sort(props) {
       });
     setPageNumber(1);
   };
+
+  const onSortSelect = ({ selectedKeys }) => {
+    setFilter({
+      ...filter,
+      sort: selectedKeys[0],
+      order: sortOrder?.ASC,
+    });
+    setPageNumber(1);
+  };
+
   return (
     <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
       <span style={{ fontSize: '16px', fontWeight: 700 }} data-cy="span-sort-by-title">
@@ -34,10 +44,9 @@ function Sort(props) {
           items: sortByOptionsOrgsPlacesPerson,
           selectable: true,
           defaultSelectedKeys: [filter?.sort],
-          // onSelect: onSortSelect,
+          onSelect: onSortSelect,
         }}
         trigger={['click']}
-        open={false}
         data-cy="dropdown-sort-options">
         <Button size="large" className="filter-sort-button" style={{ cursor: 'default' }} data-cy="button-sort-options">
           <Space>
@@ -49,7 +58,7 @@ function Sort(props) {
                   </span>
                 );
             })}
-            {/* <DownOutlined style={{ fontSize: '12px', color: '#222732' }} /> */}
+            <DownOutlined style={{ fontSize: '12px', color: '#222732' }} />
           </Space>
         </Button>
       </Dropdown>
@@ -70,6 +79,17 @@ function Sort(props) {
         size={'large'}
         data-cy="button-sort-order"
       />
+      {(filter?.order === sortOrder?.DESC || filter?.sort != sortByOptionsOrgsPlacesPerson[0]?.key) && (
+        <Button
+          size="large"
+          className="filter-buttons"
+          style={{ color: '#1B3DE6' }}
+          onClick={filterClearHandler}
+          data-cy="button-filter-clear">
+          {t('dashboard.events.filter.clear')}&nbsp;
+          <CloseCircleOutlined style={{ color: '#1B3DE6', fontSize: '16px' }} />
+        </Button>
+      )}
     </div>
   );
 }

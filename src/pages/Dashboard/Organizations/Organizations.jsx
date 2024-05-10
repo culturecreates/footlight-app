@@ -82,7 +82,9 @@ function Organizations() {
     searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('organizationSearchQuery') ?? '',
   );
   const [filter, setFilter] = useState({
-    sort: sortByOptionsOrgsPlacesPerson[0]?.key,
+    sort: searchParams.get('sortBy')
+      ? searchParams.get('sortBy')
+      : sessionStorage.getItem('organizationSortBy') ?? sortByOptionsOrgsPlacesPerson[0]?.key,
     order: searchParams.get('order')
       ? searchParams.get('order')
       : sessionStorage.getItem('organizationOrder') ?? sortOrder?.ASC,
@@ -183,6 +185,7 @@ function Organizations() {
     sessionStorage.removeItem('organizationOrder');
     sessionStorage.removeItem('organizationTaxonomyFilter');
     sessionStorage.removeItem('standardOrganizationTaxonomyFilter');
+    sessionStorage.removeItem('organizationSortBy');
   };
 
   useEffect(() => {
@@ -226,6 +229,7 @@ function Organizations() {
     sessionStorage.setItem('organizationPage', pageNumber);
     sessionStorage.setItem('organizationSearchQuery', organizationSearchQuery);
     sessionStorage.setItem('organizationOrder', filter?.order);
+    sessionStorage.setItem('organizationSortBy', filter?.sort);
     if (Object.keys(taxonomyFilter)?.length > 0)
       sessionStorage.setItem('organizationTaxonomyFilter', JSON.stringify(taxonomyFilter));
     else sessionStorage.removeItem('organizationTaxonomyFilter');
@@ -275,7 +279,12 @@ function Organizations() {
               onChange={onChangeHandler}
               data-cy="input-search-organizations"
             />
-            <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
+            <Sort
+              filter={filter}
+              setFilter={setFilter}
+              setPageNumber={setPageNumber}
+              filterClearHandler={filterClearHandler}
+            />
             <Space>
               {allTaxonomyData?.data?.length > 0 &&
                 allTaxonomyData?.data?.map((taxonomy, index) => {
