@@ -48,7 +48,7 @@ function SearchPlaces() {
   const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
 
-  const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+  const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
   const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
 
   let query = new URLSearchParams();

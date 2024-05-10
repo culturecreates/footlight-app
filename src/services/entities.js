@@ -15,6 +15,7 @@ export const entitiesApi = createApi({
           'calendar-id': calendarId,
         },
       }),
+      keepUnusedDataFor: 10,
       transformResponse: (response) => response,
     }),
     getEntityDependencyDetails: builder.query({
