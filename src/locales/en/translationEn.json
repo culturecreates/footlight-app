@@ -104,7 +104,7 @@
         "sort": {
           "sortBy": "Sort by",
           "name": "Name",
-          "createdDate": "Created Date",
+          "createdDate": "Date created",
           "eventDate": "Event date"
         },
         "dates": {
@@ -823,7 +823,9 @@
         "contributor": "Contributor",
         "guest": "Guest",
         "superAdmin": "Super Admin",
-        "invitedBy": "Invited by",
+        "invitedBy": "Invited",
+        "by": "by",
+        "dateInvited": "Date invited",
         "tooltip": {
           "editUser": "Edit user",
           "sendInvitation": "Send invitation",
@@ -994,7 +996,7 @@
         "sort": {
           "sortBy": "Sort by",
           "name": "Name",
-          "createdDate": "Created Date"
+          "createdDate": "Date created"
         },
         "modal": {
           "titleDelete": "Confirm delete",
