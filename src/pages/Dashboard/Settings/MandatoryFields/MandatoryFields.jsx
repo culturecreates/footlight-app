@@ -84,6 +84,9 @@ function MandatoryFields() {
           ? false
           : requiredFields.includes(f?.name) || minimumRequiredFields.includes(f?.name),
         isAdminOnlyField: standardAdminOnlyFields?.includes(f?.name) || false,
+        rule: field?.formFieldProperties?.mandatoryFields?.standardFields?.find(
+          (standardField) => f?.name === standardField?.fieldName,
+        )?.rule,
       };
     });
     modifiedField = modifiedField?.concat(
@@ -127,7 +130,11 @@ function MandatoryFields() {
       f.formFields?.forEach((field) => {
         if (field.isRequiredField) {
           if (field.isDynamicField) formFieldProperties.mandatoryFields.dynamicFields.push(field?.name);
-          else formFieldProperties.mandatoryFields.standardFields.push({ fieldName: field?.name });
+          else
+            formFieldProperties.mandatoryFields.standardFields.push({
+              fieldName: field?.name,
+              ...(field.rule && { rule: field.rule }), // Conditionally include rule key
+            });
         }
       });
       return {
