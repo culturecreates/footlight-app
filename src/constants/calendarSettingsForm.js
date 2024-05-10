@@ -26,35 +26,51 @@ const calendarLanguages = [
 
 const timeZones = [
   {
-    label: 'Canada/Newfoundland',
-    value: 'Canada/Newfoundland',
-  },
-  {
-    label: 'Canada/Atlantic',
+    label: <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.Canada/Atlantic')}</Translation>,
     value: 'Canada/Atlantic',
   },
   {
-    label: 'Canada/Eastern',
-    value: 'Canada/Eastern',
+    label: (
+      <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.America/Blanc-Sablon')}</Translation>
+    ),
+    value: 'America/Blanc-Sablon',
   },
   {
-    label: 'Canada/Central',
+    label: <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.Canada/Central')}</Translation>,
     value: 'Canada/Central',
   },
   {
-    label: 'Canada/Mountain',
-    value: 'Canada/Mountain',
-  },
-  {
-    label: 'Canada/Saskatchewan',
+    label: (
+      <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.Canada/Saskatchewan')}</Translation>
+    ),
     value: 'Canada/Saskatchewan',
   },
   {
-    label: 'Canada/Yukon',
+    label: <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.Canada/Eastern')}</Translation>,
+    value: 'Canada/Eastern',
+  },
+  {
+    label: (
+      <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.America/Coral_Harbour')}</Translation>
+    ),
+    value: 'America/Coral_Harbour',
+  },
+  {
+    label: <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.Canada/Mountain')}</Translation>,
+    value: 'Canada/Mountain',
+  },
+  {
+    label: <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.Canada/Yukon')}</Translation>,
     value: 'Canada/Yukon',
   },
   {
-    label: 'Canada/Pacific',
+    label: (
+      <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.Canada/Newfoundland')}</Translation>
+    ),
+    value: 'Canada/Newfoundland',
+  },
+  {
+    label: <Translation>{(t) => t('dashboard.settings.calendarSettings.timzoneFormats.Canada/Pacific')}</Translation>,
     value: 'Canada/Pacific',
   },
 ];

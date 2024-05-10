@@ -969,6 +969,18 @@
         "calendarName": "Nom du calendrier",
         "calendarLanguage": "Langue du calendrier",
         "timezone": "Fuseau horaire",
+        "timzoneFormats": {
+          "Canada/Atlantic": "Heure de l'Atlantique",
+          "America/Blanc-Sablon": "Heure de Blanc-Sablon",
+          "Canada/Central": "Heure du Centre",
+          "Canada/Saskatchewan": "Heure de Saskatchewan",
+          "Canada/Eastern": "Heure de l'Est",
+          "America/Coral_Harbour": "Heure de Coral Harbour",
+          "Canada/Mountain": "Heure des Rocheuses",
+          "Canada/Yukon": "Heure du Yukon",
+          "Canada/Newfoundland": "Heure de Terre-Neuve",
+          "Canada/Pacific": "Heure du Pacifique"
+        },
         "contact": "Contact",
         "dateFormat": "Format d'affichage des dates",
         "imageAspectRatio": {

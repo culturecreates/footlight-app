@@ -974,6 +974,18 @@
         "calendarName": "Calendar name",
         "calendarLanguage": "Calendar Language",
         "timezone": "Time zone",
+        "timzoneFormats": {
+          "Canada/Atlantic": "Atlantic Time",
+          "America/Blanc-Sablon": "Blanc-Sablon Time",
+          "Canada/Central": "Central Time",
+          "Canada/Saskatchewan": "Saskatchewan Time",
+          "Canada/Eastern": "Eastern Time",
+          "America/Coral_Harbour": "Coral Harbour Time",
+          "Canada/Mountain": "Mountain Time",
+          "Canada/Yukon": "Yukon Time",
+          "Canada/Newfoundland": "Newfoundland Time",
+          "Canada/Pacific": "Pacific Time"
+        },
         "contact": "Contact",
         "dateFormat": "Date format display",
         "imageAspectRatio": {
