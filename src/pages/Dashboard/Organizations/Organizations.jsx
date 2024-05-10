@@ -175,7 +175,7 @@ function Organizations() {
           <LoadingIndicator data-cy="organizations-listing-loader-confirm" />
         </div>
       )}
-      {allOrganizationSuccess && (
+      {allOrganizationSuccess && currentCalendarData ? (
         <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
           <Main>
             <h4 className="events-heading" data-cy="heading-organizations">
@@ -257,7 +257,10 @@ function Organizations() {
                             <DeleteOutlined
                               key={'delete-icon'}
                               style={{ color: '#222732', fontSize: '24px' }}
-                              onClick={() => deleteOrganizationHandler(item?.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteOrganizationHandler(item?.id);
+                              }}
                               data-cy="delete-organization"
                             />
                           ),
@@ -276,6 +279,10 @@ function Organizations() {
             </div>
           </Main>
         </FeatureFlag>
+      ) : (
+        <div className="loader-grid">
+          <LoadingIndicator />
+        </div>
       )}
     </>
   );

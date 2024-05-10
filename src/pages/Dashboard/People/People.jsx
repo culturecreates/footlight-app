@@ -167,7 +167,7 @@ function People() {
           <LoadingIndicator data-cy="loading-indicator-people-confirm" />
         </div>
       )}
-      {allPeopleSuccess && (
+      {allPeopleSuccess && currentCalendarData ? (
         <FeatureFlag isFeatureEnabled={featureFlags.orgPersonPlacesView}>
           <Main>
             <h4 className="events-heading" data-cy="heading-people-title">
@@ -244,7 +244,10 @@ function People() {
                               data-cy="icon-delete-person"
                               key={'delete-icon'}
                               style={{ color: '#222732', fontSize: '24px' }}
-                              onClick={() => deletePersonHandler(item?.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deletePersonHandler(item?.id);
+                              }}
                             />
                           ),
                         ]}
@@ -262,6 +265,10 @@ function People() {
             </div>
           </Main>
         </FeatureFlag>
+      ) : (
+        <div className="loader-grid">
+          <LoadingIndicator />
+        </div>
       )}
     </>
   );
