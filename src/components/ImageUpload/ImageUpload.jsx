@@ -120,7 +120,6 @@ function ImageUpload(props) {
       </span>
     </div>
   );
-  console.log(thumbnailImage);
   return (
     <>
       <Form.Item name={formName ?? 'dragger'} valuePropName="fileList" getValueFromEvent={normFile}>
