@@ -20,6 +20,7 @@ function ImageUpload(props) {
     originalImageUrl,
     formName,
     isCalendarLogo,
+    thumbnailImage,
   } = props;
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -119,7 +120,7 @@ function ImageUpload(props) {
       </span>
     </div>
   );
-
+  console.log(thumbnailImage);
   return (
     <>
       <Form.Item name={formName ?? 'dragger'} valuePropName="fileList" getValueFromEvent={normFile}>
@@ -181,6 +182,7 @@ function ImageUpload(props) {
                 name: eventImageData?.original?.entityId,
                 status: 'done',
                 url: props.imageUrl,
+                ...(thumbnailImage && { thumbUrl: thumbnailImage }),
               },
             ]
           }

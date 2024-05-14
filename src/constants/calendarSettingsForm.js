@@ -447,7 +447,7 @@ export const calendarSettingsFormFields = {
     {
       name: 'calendarLogo',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.calendarLogo')}</Translation>,
-      field: ({ form, isCrop, logoUri, t }) => (
+      field: ({ form, isCrop, logoUri, t, thumbnailImage }) => (
         <>
           <Row>
             <Col>
@@ -468,6 +468,7 @@ export const calendarSettingsFormFields = {
             thumbnailAspectRatio={null}
             isCrop={isCrop}
             isCalendarLogo={true}
+            thumbnailImage={thumbnailImage}
           />
         </>
       ),

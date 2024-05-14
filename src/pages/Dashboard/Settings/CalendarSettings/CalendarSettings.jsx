@@ -365,6 +365,7 @@ function CalendarSettings() {
                       logoUri: currentCalendarData?.logo?.original?.uri,
                       aspectRatios: aspectRatioOptions,
                       setAspectRatioOptions,
+                      thumbnailImage: currentCalendarData?.logo?.thumbnail?.uri,
                       // customRatio,
                       // setCustomRatio,
                       t,
