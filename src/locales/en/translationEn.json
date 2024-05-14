@@ -1002,6 +1002,7 @@
           "large": "Large image"
         },
         "calendarLogo": "Calendar Logo",
+        "calendarLogoDescription": "Only JPEG and PNG files are supported.",
         "calendarWidgetSetup": "Calendar widget setup",
         "calendarWidgetDescription": "Add URL templates required for the calendar widget to function correctly. These templates link the event list displayed on other websites to the events displayed on your site.",
         "eventTemplate": "Event template",

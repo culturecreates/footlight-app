@@ -452,7 +452,7 @@ export const calendarSettingsFormFields = {
           <Row>
             <Col>
               <p className="calendar-settings-description" data-cy="para-calendar-image-upload-sub-text">
-                {t('dashboard.events.addEditEvent.otherInformation.image.subHeading')}
+                {t('dashboard.settings.calendarSettings.calendarLogoDescription')}
               </p>
             </Col>
           </Row>

@@ -997,6 +997,7 @@
           "large": "Grande image"
         },
         "calendarLogo": "Logo du calendrier",
+        "calendarLogoDescription": "Uniquement les fichiers .jpeg et .png sont acceptés.",
         "calendarWidgetSetup": "Configuration du widget calendrier",
         "calendarWidgetDescription": "Ajoutez les modèles d'URL nécessaires au bon fonctionnement du widget calendrier. Ces modèles relient la liste des événements affichée sur d'autres sites web aux événements affichés sur votre site.",
         "eventTemplate": "Modèle d'événement",
