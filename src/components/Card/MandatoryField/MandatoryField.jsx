@@ -9,7 +9,7 @@ import AddField from '../../Button/AddField';
 import { useTranslation } from 'react-i18next';
 
 function MandatoryField(props) {
-  const { field, formName } = props;
+  const { field, formName, formLabel } = props;
   let { updatedFormFields } = props;
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
@@ -61,7 +61,7 @@ function MandatoryField(props) {
     <Card className="mandatory-card-wrapper" bodyStyle={{ padding: '24px 16px 24px 16px' }}>
       <Row gutter={[0, 18]}>
         <Col span={24}>
-          <h5 className="mandatory-field-class-heading">{formName}</h5>
+          <h5 className="mandatory-field-class-heading">{formLabel}</h5>
         </Col>
         <Col span={11}>
           <h5 className="mandatory-field-required">{t('dashboard.settings.mandatoryFields.title')}</h5>
