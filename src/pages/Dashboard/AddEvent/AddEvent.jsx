@@ -4245,7 +4245,16 @@ function AddEvent() {
             </ChangeTypeLayout>
           </CardEvent>
           {taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false) && (
-            <CardEvent title={t('dashboard.events.addEditEvent.eventAccessibility.title')} marginResponsive="0px">
+            <CardEvent
+              title={t('dashboard.events.addEditEvent.eventAccessibility.title')}
+              marginResponsive="0px"
+              hidden={
+                standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_ACCESSIBILITY)
+                  ? adminCheckHandler()
+                    ? false
+                    : true
+                  : false
+              }>
               <>
                 <p className="add-event-date-heading" data-cy="event-accessibility-subheading">
                   {t('dashboard.events.addEditEvent.eventAccessibility.subHeading')}
@@ -4267,6 +4276,13 @@ function AddEvent() {
                       message: t('common.validations.informationRequired'),
                     },
                   ]}
+                  hidden={
+                    standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_ACCESSIBILITY)
+                      ? adminCheckHandler()
+                        ? false
+                        : true
+                      : false
+                  }
                   extra={
                     <p
                       className="add-event-date-heading"

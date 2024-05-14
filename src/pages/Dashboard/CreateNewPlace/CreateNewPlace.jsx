@@ -2909,7 +2909,14 @@ function CreateNewPlace() {
             ) && (
               <Card
                 marginResponsive="0px"
-                title={t('dashboard.places.createNew.addPlace.venueAccessibility.venueAccessibility')}>
+                title={t('dashboard.places.createNew.addPlace.venueAccessibility.venueAccessibility')}
+                hidden={
+                  standardAdminOnlyFields?.includes(placeFormRequiredFieldNames?.PLACE_ACCESSIBILITY)
+                    ? adminCheckHandler()
+                      ? false
+                      : true
+                    : false
+                }>
                 <>
                   <Row>
                     <Col>
