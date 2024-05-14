@@ -226,11 +226,11 @@ function AddEvent() {
     : [];
   let standardAdminOnlyFields =
     requiredFields && requiredFields?.length > 0
-      ? requiredFields[0]?.formFieldProperties?.mandatoryFields?.standardFields?.map((field) => field?.fieldName)
+      ? requiredFields[0]?.formFieldProperties?.adminOnlyFields?.standardFields?.map((field) => field?.fieldName)
       : [];
   let dynamicAdminOnlyFields =
     requiredFields && requiredFields?.length > 0
-      ? requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => field)
+      ? requiredFields[0]?.formFieldProperties?.adminOnlyFields?.dynamicFields?.map((field) => field)
       : [];
   requiredFields =
     requiredFields &&

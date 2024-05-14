@@ -159,6 +159,10 @@ function CreateNewPlace() {
         ?.map((field) => field?.fieldName)
         ?.concat(requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => field))
     : [];
+  let standardAdminOnlyFields =
+    requiredFields && requiredFields?.length > 0
+      ? requiredFields[0]?.formFieldProperties?.adminOnlyFields?.standardFields?.map((field) => field?.fieldName)
+      : [];
   requiredFields =
     requiredFields &&
     requiredFields?.length > 0 &&
@@ -1391,6 +1395,13 @@ function CreateNewPlace() {
                       message: t('dashboard.places.createNew.addPlace.validations.placeTypeRequired'),
                     },
                   ]}
+                  hidden={
+                    standardAdminOnlyFields?.includes(placeFormRequiredFieldNames?.PLACE_TYPE)
+                      ? adminCheckHandler()
+                        ? false
+                        : true
+                      : false
+                  }
                   style={{
                     display:
                       !taxonomyDetails(
@@ -2358,6 +2369,13 @@ function CreateNewPlace() {
                     'name',
                     false,
                   )}
+                  hidden={
+                    standardAdminOnlyFields?.includes(placeFormRequiredFieldNames?.REGION)
+                      ? adminCheckHandler()
+                        ? false
+                        : true
+                      : false
+                  }
                   initialValue={
                     placeData?.regions
                       ? placeData?.regions?.map((type) => {
@@ -2913,6 +2931,13 @@ function CreateNewPlace() {
                     initialValue={placeData?.accessibility?.map((type) => {
                       return type?.entityId;
                     })}
+                    hidden={
+                      standardAdminOnlyFields?.includes(placeFormRequiredFieldNames?.PLACE_ACCESSIBILITY)
+                        ? adminCheckHandler()
+                          ? false
+                          : true
+                        : false
+                    }
                     style={{
                       width: '100%',
                       display:
