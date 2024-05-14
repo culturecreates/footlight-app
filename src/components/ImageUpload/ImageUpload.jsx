@@ -19,6 +19,7 @@ function ImageUpload(props) {
     preview,
     originalImageUrl,
     formName,
+    isCalendarLogo,
   } = props;
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -138,7 +139,9 @@ function ImageUpload(props) {
                   <img
                     className="image-thumbnail"
                     style={{
-                      aspectRatio: currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio.replace(/:/g, '/'),
+                      aspectRatio: !isCalendarLogo
+                        ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio.replace(/:/g, '/')
+                        : '',
                     }}
                     src={file?.url ?? file?.thumbUrl}
                   />

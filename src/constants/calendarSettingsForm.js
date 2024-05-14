@@ -467,6 +467,7 @@ export const calendarSettingsFormFields = {
             largeAspectRatio={null}
             thumbnailAspectRatio={null}
             isCrop={isCrop}
+            isCalendarLogo={true}
           />
         </>
       ),
