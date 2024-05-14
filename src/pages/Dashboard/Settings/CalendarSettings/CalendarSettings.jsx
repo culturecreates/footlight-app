@@ -278,7 +278,14 @@ function CalendarSettings() {
           if (values?.calendarLogo) {
             if (values?.dragger && values?.dragger?.length == 0) calendarData['logo'] = null;
             else {
-              if (currentCalendarData?.logo?.type == 'ImageObject') calendarData['logo'] = currentCalendarData?.logo;
+              if (currentCalendarData?.logo?.type == 'ImageObject')
+                calendarData['logo'] = {
+                  original: {
+                    entityId: currentCalendarData?.logo?.original?.entityId,
+                    height: currentCalendarData?.logo?.original?.height,
+                    width: currentCalendarData?.logo?.original?.width,
+                  },
+                };
               else
                 calendarData = {
                   ...calendarData,

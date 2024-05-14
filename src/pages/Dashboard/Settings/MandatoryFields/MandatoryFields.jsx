@@ -163,8 +163,24 @@ function MandatoryFields() {
       namespace: currentCalendarData?.namespace,
       widgetSettings: currentCalendarData.widgetSettings,
       filterPersonalization: currentCalendarData.filterPersonalization,
-      logo: currentCalendarData.logo,
     };
+    if (currentCalendarData?.logo?.type == 'ImageObject')
+      calendarData['logo'] = {
+        original: {
+          entityId: currentCalendarData?.logo?.original?.entityId,
+          height: currentCalendarData?.logo?.original?.height,
+          width: currentCalendarData?.logo?.original?.width,
+        },
+      };
+    else
+      calendarData = {
+        ...calendarData,
+        logo: {
+          url: {
+            uri: currentCalendarData?.logo?.original?.uri,
+          },
+        },
+      };
 
     updateCalendar({ data: calendarData, calendarId: currentCalendarData.id })
       .unwrap()
