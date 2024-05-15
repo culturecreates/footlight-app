@@ -276,7 +276,6 @@ const RecurringModal = ({
       bodyStyle={{ padding: '0px' }}>
       <Row>
         <Col style={!screens.sm ? { padding: '16px' } : { padding: '24px' }}>
-          {/* <MultipleDatePicker /> */}
           {isModalVisible && (
             <Calendar
               className="recurring-cal"

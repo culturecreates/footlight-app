@@ -75,11 +75,8 @@ th {
 }
 
 .read-only-wrapper .events-readonly-artsdata-link-wrapper {
-  /* margin-left: 16px; */
   padding: 0 !important;
 }
-
-/*  */
 
 .events-read-only-wrapper .read-only-detail-heading {
   font-size: 24px;
