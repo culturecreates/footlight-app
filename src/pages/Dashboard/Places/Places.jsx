@@ -221,7 +221,6 @@ function Places() {
                 allPlacesData?.data?.length > 0 ? (
                   <List
                     data-cy="list-places"
-                    // className="event-list-wrapper"
                     itemLayout={screens.xs ? 'vertical' : 'horizontal'}
                     dataSource={allPlacesData?.data}
                     bordered={false}
