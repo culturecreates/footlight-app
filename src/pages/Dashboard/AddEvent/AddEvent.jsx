@@ -1710,15 +1710,22 @@ function AddEvent() {
             break;
           case eventFormRequiredFieldNames.DESCRIPTION:
             publishValidateFields.push('englishEditor', 'frenchEditor');
-            setDescriptionMinimumWordCount(Number(requiredField?.rule?.minimumWordCount) ?? 0);
+
+            setDescriptionMinimumWordCount(
+              requiredField?.rule?.minimumWordCount ? Number(requiredField?.rule?.minimumWordCount) : 1,
+            );
             break;
           case eventFormRequiredFieldNames.DESCRIPTION_EN:
             publishValidateFields.push('englishEditor');
-            setDescriptionMinimumWordCount(Number(requiredField?.rule?.minimumWordCount) ?? 0);
+            setDescriptionMinimumWordCount(
+              requiredField?.rule?.minimumWordCount ? Number(requiredField?.rule?.minimumWordCount) : 1,
+            );
             break;
           case eventFormRequiredFieldNames.DESCRIPTION_FR:
             publishValidateFields.push('frenchEditor');
-            setDescriptionMinimumWordCount(Number(requiredField?.rule?.minimumWordCount) ?? 0);
+            setDescriptionMinimumWordCount(
+              requiredField?.rule?.minimumWordCount ? Number(requiredField?.rule?.minimumWordCount) : 1,
+            );
             break;
           case eventFormRequiredFieldNames.START_DATE:
             publishValidateFields.push('datePickerWrapper', 'datePicker', 'dateRangePicker', 'startDateRecur');
