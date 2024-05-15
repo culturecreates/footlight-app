@@ -49,16 +49,6 @@
   border-bottom: 1px solid #b6c1c9;
 }
 
-/* @media (max-width: 575px) {
-  .date-range-picker-wrapper {
-    width: 100% !important;
-  }
-
-  .date-range-picker-calendar .ant-picker-panels {
-    flex-direction: column;
-  }
-} */
-
 @media (max-width: 768px) {
   .date-range-picker-calendar .ant-picker-panel:last-child .ant-picker-date-panel {
     display: none !important;

@@ -32,14 +32,10 @@
 .custom-common-modal-container .calendar {
   padding: 1px;
   width: 300px;
-  /* overflow: auto; */
   height: 296px;
   overflow-y: scroll;
 }
-/* .custom-common-modal-container .calendar .months-container {
-  height: 296px;
-  overflow-y: scroll;
-} */
+
 .custom-common-modal-container .calendar .months-container .month-container {
   height: 230px;
 }
@@ -108,9 +104,7 @@
   color: blue;
   font-weight: 700;
 }
-/* .recurring-time-picker .ant-picker-footer{
-    display: none;
-} */
+
 .custom-modal-title-wrapper {
   display: flex;
   align-items: center;

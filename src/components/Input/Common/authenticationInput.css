@@ -1,7 +1,6 @@
 .form-item-input {
   box-sizing: border-box;
   background: #ffffff;
-  /* border: 1px solid #b6c1c9; */
   border-radius: 4px;
 }
 .form-item-input .ant-input-group-addon:first-child {

@@ -435,13 +435,6 @@ const AddTaxonomyTest = () => {
                       <span className="field-description" data-cy="span-taxonomy-name-helper-text">
                         {t(`dashboard.taxonomy.addNew.nameDescription`)}
                       </span>
-                      {/* {location.state?.dynamic === 'dynamic' && (
-                            <Form.Item name="useTaxonomyName" valuePropName="checked">
-                              <Checkbox className="name-checkbox">
-                                {t(`dashboard.taxonomy.addNew.nameCheckbox`)}
-                              </Checkbox>
-                            </Form.Item>
-                          )} */}
                     </Form.Item>
                   </Col>
                 </Row>

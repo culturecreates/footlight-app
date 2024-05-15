@@ -240,7 +240,6 @@ function SelectionItem(props) {
                 Artsdata
               </span>
               {name && <span data-cy="span-artsdata-entity-name">{name}</span>}
-              {/* {description && <Badge color="#1B3DE6" size="small" />} */}
             </div>
             {description && <span data-cy="span-artsdata-entity-description">{description}</span>}
           </div>
