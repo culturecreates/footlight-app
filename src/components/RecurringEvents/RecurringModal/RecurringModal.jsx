@@ -32,11 +32,7 @@ const RecurringModal = ({
   currentLang,
   setCustomDates,
   customDates,
-  // numberOfTimes,
   setNumberOfTimes,
-  // isCustom,
-  // parentForm,
-  // parentSetFormState,
   subEventCount,
   setSubEventCount,
 }) => {
@@ -101,11 +97,6 @@ const RecurringModal = ({
   useEffect(() => {
     const getMonthSorted = handleDateSort(dateSource?.filter((date) => !date?.isDeleted));
     setSortedDates(getMonthSorted);
-    // let month = moment(getMonthSorted[0]?.initDate).format('MMMM');
-    // month = moment().month(month).format('M');
-    // month = month - 1;
-    // const el1 = document.querySelector(`[data-month-id="${month}"]`);
-    // if (el1) el1?.scrollIntoView();
     let numTimes = 0;
     dateSource?.map((date) => {
       if (!date?.isDeleted) numTimes = numTimes + (date?.time?.length ?? 0);
@@ -294,7 +285,6 @@ const RecurringModal = ({
               minDate={null}
               year={sortedDates?.length > 0 ? moment(sortedDates[0]?.initDate).year() : moment().year()}
               enableRangeSelection={true}
-              //  onRangeSelected={e =>selectDate(e) }
               onRangeSelected={async (e) => {
                 const dateLength = await getNumberOfDays(e.startDate, e.endDate);
                 if (dateLength && dateLength.length > 1) {
@@ -427,7 +417,6 @@ const RecurringModal = ({
                       <Col flex={'165px'}>
                         <Form.Item
                           name="startTimeCustom"
-                          //   className="status-comment-item"
                           label={t('dashboard.events.addEditEvent.dates.startTime')}
                           data-cy="custom-start-time-label">
                           <TimePickerStyled
@@ -447,7 +436,6 @@ const RecurringModal = ({
                       <Col flex={'165px'}>
                         <Form.Item
                           name="endTimeCustom"
-                          //   className="status-comment-item"
                           label={t('dashboard.events.addEditEvent.dates.endTime')}
                           data-cy="custom-end-time-label">
                           <TimePickerStyled

@@ -742,7 +742,6 @@ function AddEvent() {
                 addImage({ data: formdata, calendarId })
                   .unwrap()
                   .then((response) => {
-                    // let entityId = response?.data?.original?.entityId;
                     if (featureFlags.imageCropFeature) {
                       let entityId = response?.data?.original?.entityId;
                       imageCrop = {
