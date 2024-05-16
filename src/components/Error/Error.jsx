@@ -55,21 +55,19 @@ function ErrorAlert(props) {
         <div className="image-container">{image}</div>
         <section>
           <h1>{heading}</h1>
-          {/* {errorType !== 'serverDown' && ( */}
           <>
             <p className="error-message">{message}</p>
             <p className="error-time">{new Date().toISOString()}</p>
             <div className="btn-container">
               <Button
                 onClick={() => {
-                  navigate(-2);
+                  navigate('/');
                   dispatch(clearErrors());
                 }}>
                 {t('errorPage.buttonText')}
               </Button>
             </div>
           </>
-          {/* )} */}
         </section>
       </div>
     </div>

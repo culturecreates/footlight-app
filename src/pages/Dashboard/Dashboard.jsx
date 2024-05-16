@@ -23,6 +23,7 @@ import CustomModal from '../../components/Modal/Common/CustomModal';
 import { useTranslation } from 'react-i18next';
 import { calendarModes } from '../../constants/calendarModes';
 import { useAuth } from '../../hooks/useAuth';
+import { getErrorDetails } from '../../redux/reducer/ErrorSlice';
 
 const { Header, Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -39,6 +40,7 @@ function Dashboard() {
   const reloadStatus = useSelector(getReloadStatusForCalendar);
   const screens = useBreakpoint();
   const { t } = useTranslation();
+  const asycErrorDetails = useSelector(getErrorDetails);
 
   const {
     currentData: allCalendarsData,
@@ -148,7 +150,7 @@ function Dashboard() {
   };
 
   return (
-    <ErrorLayout>
+    <ErrorLayout asycErrorDetails={asycErrorDetails}>
       <Layout className="dashboard-wrapper">
         <Header className="dashboard-header">
           <NavigationBar
