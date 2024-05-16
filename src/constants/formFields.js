@@ -563,7 +563,6 @@ export const formFieldValue = [
       name = [],
       placeholder,
       required,
-      // validations,
       descriptionMinimumWordCount,
     }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
@@ -582,7 +581,6 @@ export const formFieldValue = [
 ];
 
 export const renderFormFields = ({
-  // type,
   datatype,
   element,
   initialValue = undefined,

@@ -53,24 +53,6 @@ export const EVENT = [
     en: 'Language of event',
     fr: "Langue de l'événement",
   },
-  // {
-  //   label: <Translation>{(t) => t('dashboard.taxonomy.standardFields.Event.PerformerRole')}</Translation>,
-  //   key: 'PerformerRole',
-  //   en: 'Organizer Role',
-  //   fr: "Rôle de l'organisation",
-  // },
-  // {
-  //   label: <Translation>{(t) => t('dashboard.taxonomy.standardFields.Event.OrganizerRole')}</Translation>,
-  //   key: 'OrganizerRole',
-  //   en: 'Performer Role',
-  //   fr: "Rôle d'interprète",
-  // },
-  // {
-  //   label: <Translation>{(t) => t('dashboard.taxonomy.standardFields.Event.SupporterRole')}</Translation>,
-  //   key: 'SupporterRole',
-  //   en: 'Contributor Role',
-  //   fr: 'Rôle de contributeur',
-  // },
 ];
 
 export const PERSON = [
@@ -82,15 +64,3 @@ export const PERSON = [
     fr: 'Occupation',
   },
 ];
-
-//   'EventAccessibility',
-//   'Audience',
-//   'EventType',
-//   'OrganizerRole',
-//   'PerformerRole',
-//   'SupporterRole',
-//   'inLanguage',
-
-// 'Type'
-
-// 'Occupation'

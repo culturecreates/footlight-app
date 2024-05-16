@@ -219,7 +219,6 @@ const UserReadOnly = () => {
                                   return (
                                     <CalendarAccordion
                                       readOnly={true}
-                                      // form={formInstance}
                                       data-cy="accordion-selected-calendars"
                                       key={index}
                                       selectedCalendarId={calendar?.calendarId}

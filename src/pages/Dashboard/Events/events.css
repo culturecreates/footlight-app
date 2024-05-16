@@ -85,10 +85,6 @@
 }
 
 @media only screen and (max-width: 768px) {
-  /* .events-wrapper .filter-container {
-    margin-top: 16px;
-  } */
-
   .events-wrapper .events-heading-wrapper .events-heading {
     font-size: 24px;
     white-space: normal;
@@ -112,10 +108,6 @@
     width: calc(100vw - 80px);
     margin-top: 10px;
   }
-
-  /* .events-wrapper .events-heading-wrapper {
-    width: 200px;
-  } */
 }
 
 @media only screen and (max-width: 600px) {

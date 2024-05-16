@@ -2707,7 +2707,6 @@ function CreateNewPlace() {
                 <Form.Item
                   name={formFieldNames.CONTAINED_IN_PLACE}
                   className="subheading-wrap"
-                  // initialValue={initialPlace && initialPlace[0]?.id}
                   data-cy="form-item-contains-place"
                   label={t('dashboard.places.createNew.addPlace.containedInPlace.addPlace')}
                   required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.CONTAINED_IN_PLACE)}
@@ -3109,7 +3108,6 @@ function CreateNewPlace() {
                                   : typeof place?.name === 'string' && place?.name
                               }
                               icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
-                              // description={moment(event.startDateTime).format('YYYY-MM-DD')}
                               bordered
                               itemWidth="100%"
                             />;

@@ -148,21 +148,6 @@ function AddEvent() {
     sessionId: timestampRef,
   });
 
-  // let query = new URLSearchParams();
-  // query.append('classes', entitiesClass.organization);
-  // query.append('classes', entitiesClass.person);
-  // const { currentData: initialEntities, isLoading: initialEntityLoading } = useGetEntitiesQuery({
-  //   calendarId,
-  //   searchKey: '',
-  //   classes: decodeURIComponent(query.toString()),
-  //   sessionId: timestampRef,
-  // });
-  // const { currentData: initialExternalSource, isFetching: initialExternalSourceLoading } = useGetExternalSourceQuery({
-  //   calendarId,
-  //   searchKey: '',
-  //   classes: decodeURIComponent(query.toString()),
-  //   sessionId: timestampRef,
-  // });
   const [addEvent, { isLoading: addEventLoading, isSuccess: addEventSuccess }] = useAddEventMutation();
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
   const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
@@ -773,7 +758,6 @@ function AddEvent() {
                 addImage({ data: formdata, calendarId })
                   .unwrap()
                   .then((response) => {
-                    // let entityId = response?.data?.original?.entityId;
                     if (featureFlags.imageCropFeature) {
                       let entityId = response?.data?.original?.entityId;
                       imageCrop = {
@@ -1821,75 +1805,6 @@ function AddEvent() {
     }
   }, [currentCalendarData]);
 
-  // useEffect(() => {
-  //   if (initialEntities && currentCalendarData && !initialExternalSourceLoading) {
-  //     setOrganizersList(
-  //       treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
-  //     );
-  //     setPerformerList(
-  //       treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
-  //     );
-  //     setSupporterList(
-  //       treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
-  //     );
-  //     setPerformerArtsdataList(
-  //       treeEntitiesOption(
-  //         initialExternalSource?.artsdata,
-  //         user,
-  //         calendarContentLanguage,
-  //         sourceOptions.ARTSDATA,
-  //         currentCalendarData,
-  //       ),
-  //     );
-  //     setSupporterArtsdataList(
-  //       treeEntitiesOption(
-  //         initialExternalSource?.artsdata,
-  //         user,
-  //         calendarContentLanguage,
-  //         sourceOptions.ARTSDATA,
-  //         currentCalendarData,
-  //       ),
-  //     );
-  //     setOrganizersArtsdataList(
-  //       treeEntitiesOption(
-  //         initialExternalSource?.artsdata,
-  //         user,
-  //         calendarContentLanguage,
-  //         sourceOptions.ARTSDATA,
-  //         currentCalendarData,
-  //       ),
-  //     );
-  //     setOrganizersImportsFootlightList(
-  //       treeEntitiesOption(
-  //         initialExternalSource?.footlight,
-  //         user,
-  //         calendarContentLanguage,
-  //         externalSourceOptions.FOOTLIGHT,
-  //         currentCalendarData,
-  //       ),
-  //     );
-  //     setPerformerImportsFootlightList(
-  //       treeEntitiesOption(
-  //         initialExternalSource?.footlight,
-  //         user,
-  //         calendarContentLanguage,
-  //         externalSourceOptions.FOOTLIGHT,
-  //         currentCalendarData,
-  //       ),
-  //     );
-  //     setSupporterImportsFootlightList(
-  //       treeEntitiesOption(
-  //         initialExternalSource?.footlight,
-  //         user,
-  //         calendarContentLanguage,
-  //         externalSourceOptions.FOOTLIGHT,
-  //         currentCalendarData,
-  //       ),
-  //     );
-  //     placesSearch('');
-  //   }
-  // }, [initialEntityLoading, currentCalendarData, initialExternalSourceLoading]);
-
   useEffect(() => {
     if (isReadOnly) {
       if (eventId) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`, { replace: true });
@@ -2569,7 +2484,6 @@ function AddEvent() {
               ]}>
               <Form.Item
                 name="locationPlace"
-                // className="subheading-wrap"
                 initialValue={initialPlace && initialPlace[0]?.id}
                 label={t('dashboard.events.addEditEvent.location.title')}
                 hidden={

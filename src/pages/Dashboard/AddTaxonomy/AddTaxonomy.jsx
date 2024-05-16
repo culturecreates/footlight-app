@@ -1,10 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import LoadingIndicator from '../../../components/LoadingIndicator';
-import {
-  // getStandardFieldArrayForClass,
-  getStandardFieldTranslation,
-  standardFieldsForTaxonomy,
-} from '../../../utils/standardFields';
+import { getStandardFieldTranslation, standardFieldsForTaxonomy } from '../../../utils/standardFields';
 import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
 import { Card, Checkbox, Col, Form, Input, Row, notification } from 'antd';
@@ -441,13 +437,6 @@ const AddTaxonomyTest = () => {
                       <span className="field-description" data-cy="span-taxonomy-name-helper-text">
                         {t(`dashboard.taxonomy.addNew.nameDescription`)}
                       </span>
-                      {/* {location.state?.dynamic === 'dynamic' && (
-                            <Form.Item name="useTaxonomyName" valuePropName="checked">
-                              <Checkbox className="name-checkbox">
-                                {t(`dashboard.taxonomy.addNew.nameCheckbox`)}
-                              </Checkbox>
-                            </Form.Item>
-                          )} */}
                     </Form.Item>
                   </Col>
                 </Row>

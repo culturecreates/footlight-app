@@ -587,7 +587,6 @@ const WidgetSettings = () => {
                               minWidth: '100%',
                               padding: '8px 0px',
                             }}
-                            // placeholder={<span>{t(`${localePath}.placeholder`)}</span>}
                             options={languageOptions}
                           />
                         </Form.Item>

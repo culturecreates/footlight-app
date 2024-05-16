@@ -27,7 +27,6 @@ import SelectOption from '../../../components/Select/SelectOption';
 import { offerTypes } from '../../../constants/ticketOffers';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
 import { entitiesClass } from '../../../constants/entitiesClass';
-// import { useGetEntitiesQuery } from '../../../services/entities';
 import SelectionItem from '../../../components/List/SelectionItem';
 import Alert from '../../../components/Alert';
 import { eventPublishState, eventPublishStateOptions } from '../../../constants/eventPublishState';
@@ -74,12 +73,6 @@ function EventReadOnly() {
   query.append('classes', entitiesClass.organization);
   query.append('classes', entitiesClass.person);
 
-  // const { currentData: initialEntities, isLoading: initialEntityLoading } = useGetEntitiesQuery({
-  //   calendarId,
-  //   searchKey: '',
-  //   classes: decodeURIComponent(query.toString()),
-  //   sessionId: timestampRef,
-  // });
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
 
   const { user } = useSelector(getUserDetails);
@@ -508,7 +501,6 @@ function EventReadOnly() {
                               inputReadOnly={true}
                               open={false}
                               suffixIcon={false}
-                              // style={{ width: '423px' }}
                             />
                           </div>
                         </Col>
