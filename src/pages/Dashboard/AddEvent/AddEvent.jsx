@@ -200,7 +200,6 @@ function AddEvent() {
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
-
   let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
   let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
   let requiredFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.event);
@@ -1370,7 +1369,7 @@ function AddEvent() {
 
   useEffect(() => {
     if (calendarId && eventData && currentCalendarData) {
-      let initialAddedFields = [],
+      let initialAddedFields = [...addedFields],
         isRecurring = false;
 
       if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState, false) || duplicateId) {
@@ -1732,9 +1731,9 @@ function AddEvent() {
             break;
           case eventFormRequiredFieldNames.LOCATION:
             publishValidateFields.push('location-form-wrapper');
-            initialAddedFields = initialAddedFields?.concat(locationType?.fieldNames);
             break;
           case eventFormRequiredFieldNames.VIRTUAL_LOCATION:
+            initialAddedFields = initialAddedFields?.concat(locationType?.fieldNames);
             publishValidateFields.push('location-form-wrapper');
             break;
           case eventFormRequiredFieldNames.IMAGE:
