@@ -552,7 +552,11 @@ function Events() {
               <Space>
                 <Col>
                   <SearchableCheckbox
-                    onFilterChange={(values) => onFilterChange(values, filterTypes.PUBLICATION)}
+                    onFilterChange={(values) => {
+                      console.log(values);
+
+                      onFilterChange(values, filterTypes.PUBLICATION);
+                    }}
                     data={eventPublishStateOptions?.map((publication) => {
                       return {
                         key: publication.key,

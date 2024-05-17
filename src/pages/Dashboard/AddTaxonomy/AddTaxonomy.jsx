@@ -275,6 +275,7 @@ const AddTaxonomyTest = () => {
   useEffect(() => {
     if (isReadOnly) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}`, { replace: true });
   }, [isReadOnly]);
+
   return (
     <>
       <Prompt
@@ -511,22 +512,18 @@ const AddTaxonomyTest = () => {
                             form.setFieldValue('userAccess', values);
                             setUserAccess(values);
                           }}
-                          data={[
-                            {
-                              key: userRolesWithTranslation[0].key,
+                          data={[userRolesWithTranslation[0]]?.map((role) => {
+                            return {
+                              key: role.key,
                               label: (
-                                <Checkbox
-                                  data-cy="checkbox-user-roles"
-                                  key={userRolesWithTranslation[0].key}
-                                  style={{ marginLeft: '8px' }}
-                                  value={t(`dashboard.taxonomy.addNew.adminOnly`)}>
+                                <Checkbox value={role.value} key={role.key} style={{ marginLeft: '8px' }}>
                                   {t(`dashboard.taxonomy.addNew.adminOnly`)}
                                 </Checkbox>
                               ),
-                              filtervalue: userRolesWithTranslation[0].key,
-                            },
-                          ]}
-                          value={userRolesWithTranslation[0]}>
+                              filtervalue: role.value,
+                            };
+                          })}
+                          value={[userRolesWithTranslation[0].key]}>
                           {userAccess?.length > 0
                             ? t(`dashboard.taxonomy.addNew.adminOnly`)
                             : t(`dashboard.taxonomy.addNew.userAccessPlaceHolder`)}
