@@ -3508,6 +3508,7 @@ function AddEvent() {
                 style={{
                   display: !addedFields?.includes(otherInformationFieldNames.performerWrap) && 'none',
                 }}
+                required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.PERFORMER)}
                 data-cy="form-item-event-performer-label">
                 <Row>
                   <Col>
@@ -3739,6 +3740,7 @@ function AddEvent() {
                 style={{
                   display: !addedFields?.includes(otherInformationFieldNames.supporterWrap) && 'none',
                 }}
+                required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.COLLABORATOR)}
                 data-cy="form-item-supporter-label">
                 <Row>
                   <Col>
