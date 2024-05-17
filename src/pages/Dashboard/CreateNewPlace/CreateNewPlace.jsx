@@ -835,7 +835,7 @@ function CreateNewPlace() {
 
   useEffect(() => {
     if (calendarId && currentCalendarData) {
-      let initialAddedFields = [],
+      let initialAddedFields = [...addedFields],
         initialPlaceAccessibiltiy = [],
         initialPlace;
       if (placeData) {
