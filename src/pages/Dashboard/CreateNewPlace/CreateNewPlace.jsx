@@ -1555,7 +1555,8 @@ function CreateNewPlace() {
                 </Form.Item>
                 <Form.Item
                   label={t('dashboard.places.createNew.addPlace.description.description')}
-                  data-cy="form-item-place-description-title">
+                  data-cy="form-item-place-description-title"
+                  required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.DESCRIPTION)}>
                   <ContentLanguageInput
                     calendarContentLanguage={calendarContentLanguage}
                     isFieldsDirty={{
