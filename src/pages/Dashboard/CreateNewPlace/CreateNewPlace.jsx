@@ -2436,7 +2436,7 @@ function CreateNewPlace() {
                   data-cy="form-item-opening-hours-title"
                   name={formFieldNames.OPENING_HOURS}
                   className={`${formFieldNames.OPENING_HOURS} subheading-wrap`}
-                  label={t('dashboard.places.createNew.addPlace.address.openingHours.openingHours')}
+                  label={t('dashboard.places.createNew.addPlace.address.openingHours.openingHoursLink')}
                   initialValue={
                     placeId
                       ? placeData?.openingHours?.uri

@@ -652,7 +652,8 @@
               "openingHours1": "Lien des heures",
               "openingHours2": " d'ouverture",
               "tooltip": "Ajoutez un lien vers les heures d'ouverture",
-              "placeholder": "Entrez l'url des heures d'ouverture"
+              "placeholder": "Entrez l'url des heures d'ouverture",
+              "openingHoursLink": "Lien des heures d'ouverture"
             }
           },
           "containedInPlace": {

@@ -655,7 +655,8 @@
               "openingHours1": "Opening hours",
               "openingHours2": " link",
               "tooltip": "Add a link to the opening hours",
-              "placeholder": "Enter opening hours URL"
+              "placeholder": "Enter opening hours URL",
+              "openingHoursLink": "Opening hours link"
             }
           },
           "containedInPlace": {
