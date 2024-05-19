@@ -89,7 +89,7 @@ const AddTaxonomyTest = () => {
             currentCalendarData?.fieldTaxonomyMaps,
           );
           setConceptData(res.concepts);
-          setUserAccess(res?.isAdminOnly && ['Admin only']);
+          setUserAccess(res?.isAdminOnly && [userRolesWithTranslation[0].key]);
           setStandardFields([
             ...availableStandardFields,
             getStandardFieldTranslation({ value: res?.mappedToField, classType: res?.taxonomyClass }),
@@ -503,13 +503,14 @@ const AddTaxonomyTest = () => {
                 {(location.state?.dynamic !== 'dynamic' || taxonomyId) && (
                   <Row>
                     <Col flex="423px">
-                      <Form.Item
+                      <div
                         label={t('dashboard.taxonomy.addNew.userAccess')}
                         name="userAccess"
                         className="user-access"
                         data-cy="form-item-user-access-title">
                         <SearchableCheckbox
                           data-cy="searchable-checkbox-user-roles"
+                          value={userAccess}
                           onFilterChange={(values) => {
                             form.setFieldValue('userAccess', values);
                             setUserAccess(values);
@@ -522,16 +523,15 @@ const AddTaxonomyTest = () => {
                                   {t(`dashboard.taxonomy.addNew.adminOnly`)}
                                 </Checkbox>
                               ),
-                              filtervalue: role.value,
+                              filtervalue: role.key,
                             };
-                          })}
-                          value={[userRolesWithTranslation[0].key]}>
+                          })}>
                           {userAccess?.length > 0
                             ? t(`dashboard.taxonomy.addNew.adminOnly`)
                             : t(`dashboard.taxonomy.addNew.userAccessPlaceHolder`)}
                           <DownOutlined style={{ fontSize: '16px' }} />
                         </SearchableCheckbox>
-                      </Form.Item>
+                      </div>
                       <div className="field-description" style={{ marginTop: 8 }} data-cy="div-user-access-helper-text">
                         {t(`dashboard.taxonomy.addNew.userAccessDescription`)}
                       </div>
