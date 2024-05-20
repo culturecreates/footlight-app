@@ -56,6 +56,24 @@ body {
   place-content: center;
 }
 
+.grabbable {
+  cursor: move; /* fallback if grab cursor is unsupported */
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+
+body.inheritCursors * {
+  cursor: inherit !important;
+}
+
+/* Apply a "closed-hand" cursor during drag operation. */
+.grabbable:active {
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+
 @media screen and (max-width: 480px) {
   .ant-pagination {
     display: flex;

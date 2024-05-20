@@ -28,7 +28,6 @@
   overflow-y: scroll;
   color: var(--content-neutral-primary, #222732);
   flex: 1;
-  justify-content: center;
 }
 
 .draggable-tree > .ant-form-item,
@@ -110,6 +109,49 @@
 
 .draggable-tree .ant-tree .ant-tree-treenode {
   align-items: center;
+  padding-top: 4px;
+}
+
+.draggable-tree .ant-tree-node-content-wrapper .ant-tree-node-content-wrapper-normal {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.draggable-tree .ant-tree-switcher-noop {
+  cursor: move !important;
+  cursor: grab !important;
+  cursor: -moz-grab !important;
+  cursor: -webkit-grab !important;
+}
+
+.draggable-tree .ant-tree-draggable-icon {
+  cursor: move;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+
+.draggable-tree .ant-tree-switcher-noop:active {
+  cursor: grabbing !important;
+  cursor: -moz-grabbing !important;
+  cursor: -webkit-grabbing !important;
+}
+
+.draggable-tree .ant-tree-draggable-icon :active {
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+
+.draggable-tree .ant-tree-node-content-wrapper .ant-tree-node-content-wrapper-normal .ant-tree-title {
+  width: 100%;
+}
+
+.draggable-tree .draggable-tree-concept-label {
+  display: flex;
+  flex: 1;
+  align-items: centers;
 }
 
 .custom-common-modal-container .ant-modal-footer .outlined-label {
