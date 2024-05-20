@@ -492,7 +492,7 @@
         "email": "Courriel",
         "memberOf": "Membre de",
         "location": "Endroit",
-        "Edit": "Edit",
+        "Edit": "Éditer",
         "socialMediaLinks": "Liens vers les réseaux sociaux"
       },
       "createNew": {
@@ -564,7 +564,7 @@
         "disambiguatingDescription": "Description identifiante",
         "description": "Description",
         "website": "Website",
-        "edit": "Edit",
+        "edit": "Éditer",
         "address": {
           "address": "Adresse",
           "streetAddress": "Adresse postale",
@@ -732,7 +732,7 @@
         "disambiguatingDescription": "Description identifiante",
         "description": "Description",
         "website": "Site web",
-        "edit": "Edit",
+        "edit": "Éditer",
         "socialMediaLinks": "Liens vers les réseaux sociaux"
       },
       "createNew": {
