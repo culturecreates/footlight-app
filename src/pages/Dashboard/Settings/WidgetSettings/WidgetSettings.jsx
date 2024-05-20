@@ -579,6 +579,7 @@ const WidgetSettings = () => {
                         <Form.Item
                           name="language"
                           label={t(`${localePath}.language`)}
+                          required
                           initialValue={languageOptions[0].value}
                           data-cy="widget-settings-language-label">
                           <SelectOption
