@@ -425,10 +425,6 @@ function QuickCreateOrganization(props) {
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.quickCreate.quickCreateOrganization.logo')}
                   name="draggerWrap"
-                  //   {...(isAddImageError && {
-                  //     help: t('dashboard.events.addEditEvent.validations.errorImage'),
-                  //     validateStatus: 'error',
-                  //   })}
                   rules={[
                     ({ getFieldValue }) => ({
                       validator() {

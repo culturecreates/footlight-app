@@ -116,14 +116,6 @@
   outline: none;
 }
 
-/* .collapse-wrapper .user-popover-options .selection-item-wrapper:focus-visible {
-    outline: none;
-  }
-  
-  .collapse-wrapper .user-popover-options:focus-visible {
-    outline: none;
-  } */
-
 .collapse-wrapper .recurring-day-buttons {
   background-color: #f9faff;
   border: 1px solid #b6c1c9;

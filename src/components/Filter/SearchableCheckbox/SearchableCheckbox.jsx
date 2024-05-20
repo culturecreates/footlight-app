@@ -8,7 +8,18 @@ import NoContent from '../../NoContent/NoContent';
 import LoadingIndicator from '../../LoadingIndicator';
 
 function SearchableCheckbox(props) {
-  const { children, allowSearch, data, onFilterChange, value, loading = false, selectedData, open, setOpen } = props;
+  const {
+    children,
+    allowSearch,
+    data,
+    onFilterChange,
+    value,
+    loading = false,
+    selectedData,
+    open,
+    setOpen,
+    onOpenChangeHandler,
+  } = props;
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   let items = data ?? [];
@@ -30,6 +41,8 @@ function SearchableCheckbox(props) {
         }}
         open={open == undefined ? isOpen : open}
         onOpenChange={(show) => {
+          if (onOpenChangeHandler) onOpenChangeHandler();
+
           if (open == undefined) setIsOpen(show);
           else setOpen(show);
         }}

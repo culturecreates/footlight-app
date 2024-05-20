@@ -29,6 +29,8 @@ import AddEvent from '../../../../components/Button/AddEvent';
 import { copyText } from '../../../../utils/copyText';
 import ReadOnlyProtectedComponent from '../../../../layout/ReadOnlyProtectedComponent';
 import { Confirm } from '../../../../components/Modal/Confirm/Confirm';
+import moment from 'moment-timezone';
+import i18n from 'i18next';
 
 const UserManagement = () => {
   const { useBreakpoint } = Grid;
@@ -589,6 +591,11 @@ const UserManagement = () => {
                     showSizeChanger: false,
                   }}
                   renderItem={(item, index) => {
+                    let userCurrentCalendarDetails = item?.roles?.filter((i) => {
+                      if (i.calendarId === calendarId) {
+                        return i;
+                      }
+                    });
                     return (
                       <ListCard
                         data-cy="list-card-user"
@@ -602,6 +609,14 @@ const UserManagement = () => {
                         activityStatus={currentCalendarUserStatus(item)}
                         styles={handleListCardStyles(item)}
                         invitedBy={item?.invitedBy && <Username userName={item?.invitedBy} />}
+                        invitedDate={
+                          userCurrentCalendarDetails?.length > 0 &&
+                          moment
+                            .tz(userCurrentCalendarDetails[0]?.invitedOn, item?.scheduleTimezone ?? 'Canada/Eastern')
+                            .locale(i18n.language)
+                            .format('DD-MMM-YYYY')
+                            ?.toUpperCase()
+                        }
                         actions={[
                           adminCheckHandler() && (
                             <Dropdown

@@ -187,7 +187,7 @@ function OrganizationsReadOnly() {
                     <div className="button-container">
                       <OutlinedButton
                         data-cy="button-edit-organization"
-                        label={t('dashboard.organization.readOnly.edit')}
+                        label={t('dashboard.organization.readOnly.Edit')}
                         size="middle"
                         style={{ height: '40px', width: '60px' }}
                         onClick={() =>
@@ -583,7 +583,6 @@ function OrganizationsReadOnly() {
                                 : typeof place?.name === 'string' && place?.name
                             }
                             icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
-                            // description={moment(event.startDateTime).format('YYYY-MM-DD')}
                             bordered
                             itemWidth="100%"
                           />;
@@ -611,7 +610,6 @@ function OrganizationsReadOnly() {
                                 : typeof person?.name === 'string' && person?.name
                             }
                             icon={<UserOutlined style={{ color: '#607EFC' }} />}
-                            // description={moment(event.startDateTime).format('YYYY-MM-DD')}
                             bordered
                             itemWidth="100%"
                           />;

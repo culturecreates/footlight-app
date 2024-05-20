@@ -1,10 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import {
-  LeftOutlined,
-  //  CalendarOutlined,
-  CloseCircleOutlined,
-  ExclamationCircleOutlined,
-} from '@ant-design/icons';
+import { LeftOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Button, Card, Col, Form, Input, message, notification, Popover, Row } from 'antd';
 import PrimaryButton from '../../../components/Button/Primary';
 import { createSearchParams, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -94,10 +89,7 @@ const AddUser = () => {
   const [getUser, { isFetching: isUserFetching }] = useLazyGetUserByIdQuery({ sessionId: timestampRef });
   const [getUserSearch] = useLazyGetAllUsersQuery({ sessionId: timestampRef });
 
-  const [
-    currentUserLeaveCalendar,
-    // { isSuccess: isCurrentUserLeaveCalendarSuccess, isError: isCurrentUserLeaveCalendarError },
-  ] = useCurrentUserLeaveCalendarMutation();
+  const [currentUserLeaveCalendar] = useCurrentUserLeaveCalendarMutation();
   const [inviteUser] = useInviteUserMutation();
   const [updateUserById] = useUpdateUserByIdMutation();
   const [getCurrentUserDetails, { isFetching: isCurrentUserFetching }] = useLazyGetCurrentUserQuery({
@@ -131,7 +123,6 @@ const AddUser = () => {
           const requiredRole = response?.roles.filter((r) => {
             return r.calendarId === calendarId;
           });
-          // const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
 
           setUserData({
             firstName: response?.firstName,
@@ -162,7 +153,6 @@ const AddUser = () => {
           const requiredRole = response?.roles.filter((r) => {
             return r.calendarId === calendarId;
           });
-          // const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
           setUserData({
             firstName: response?.firstName,
             lastName: response?.lastName,
@@ -199,7 +189,6 @@ const AddUser = () => {
         lastName: userData.lastName,
         phoneNumber: userData.phoneNumber,
         email: userData.email,
-        // userType: userData.userType,
         languagePreference: userData.languagePreference,
       });
     }
@@ -246,11 +235,7 @@ const AddUser = () => {
           lastName: response?.lastName,
           phoneNumber: response?.phoneNumber,
           email: response?.email,
-          // userType: requiredRole[0]?.role,
-          // languagePreference: {
           languagePreference: response.interfaceLanguage,
-          // label: selectedLanguage?.label ? selectedLanguage?.label : '',
-          // },
           calendars: response.roles,
           ...response,
         });

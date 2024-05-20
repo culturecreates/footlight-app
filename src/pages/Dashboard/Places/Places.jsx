@@ -65,7 +65,9 @@ function Places() {
     searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('placesSearchQuery') ?? '',
   );
   const [filter, setFilter] = useState({
-    sort: sortByOptionsOrgsPlacesPerson[0]?.key,
+    sort: searchParams.get('sortBy')
+      ? searchParams.get('sortBy')
+      : sessionStorage.getItem('placeSortBy') ?? sortByOptionsOrgsPlacesPerson[0]?.key,
     order: searchParams.get('order')
       ? searchParams.get('order')
       : sessionStorage.getItem('placeOrder') ?? sortOrder?.ASC,
@@ -120,6 +122,18 @@ function Places() {
     if (event.target.value === '') setPlacesSearchQuery('');
   };
 
+  const filterClearHandler = () => {
+    setFilter({
+      sort: sortByOptionsOrgsPlacesPerson[0]?.key,
+      order: sortOrder?.ASC,
+    });
+    setPageNumber(1);
+    sessionStorage.removeItem('placesPage');
+    sessionStorage.removeItem('placesSearchQuery');
+    sessionStorage.removeItem('placeOrder');
+    sessionStorage.removeItem('placeSortBy');
+  };
+
   useEffect(() => {
     let sortQuery = new URLSearchParams();
     sortQuery.append(
@@ -151,6 +165,7 @@ function Places() {
     sessionStorage.setItem('placesPage', pageNumber);
     sessionStorage.setItem('placesSearchQuery', placesSearchQuery);
     sessionStorage.setItem('placeOrder', filter?.order);
+    sessionStorage.setItem('placeSortBy', filter?.sort);
   }, [pageNumber, placesSearchQuery, filter]);
   return (
     <>
@@ -194,14 +209,18 @@ function Places() {
               onChange={onChangeHandler}
               data-cy="input-place-search"
             />
-            <Sort filter={filter} setFilter={setFilter} setPageNumber={setPageNumber} />
+            <Sort
+              filter={filter}
+              setFilter={setFilter}
+              setPageNumber={setPageNumber}
+              filterClearHandler={filterClearHandler}
+            />
             <></>
             <div className="responsvie-list-wrapper-class">
               {!allPlacesFetching ? (
                 allPlacesData?.data?.length > 0 ? (
                   <List
                     data-cy="list-places"
-                    // className="event-list-wrapper"
                     itemLayout={screens.xs ? 'vertical' : 'horizontal'}
                     dataSource={allPlacesData?.data}
                     bordered={false}

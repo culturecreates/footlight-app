@@ -117,13 +117,6 @@
   background-color: #eff2ff;
 }
 @media only screen and (max-width: 1024px) {
-  /* .event-list-wrapper {
-    width: 592px;
-  }
-  /* .event-list-wrapper .event-list-status-updated-by {
-    margin-left: auto;
-  } */
-
   .event-list-wrapper .event-list-title-heading {
     white-space: nowrap;
   }
@@ -140,13 +133,6 @@
   .event-list-wrapper .ant-list-item-meta-avatar {
     display: none;
   }
-  /* .event-list-wrapper .event-status-list-item {
-    text-align: left;
-  }
-  .event-list-wrapper .event-list-status-updated-by {
-    width: initial;
-    margin-left: initial;
-  } */
 
   .event-list-wrapper .event-list-item-wrapper {
     margin-top: 8px;
