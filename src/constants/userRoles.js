@@ -28,5 +28,4 @@ export const userRolesWithTranslation = [
     key: 'GUEST',
     value: userRoles.GUEST,
   },
-  // { label: <Translation>{(t) => t('dashboard.settings.userManagement.superAdmin')}</Translation>, key: 'SUPER ADMIN' },
 ];

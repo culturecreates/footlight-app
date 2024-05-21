@@ -146,21 +146,6 @@ function AddEvent() {
     sessionId: timestampRef,
   });
 
-  // let query = new URLSearchParams();
-  // query.append('classes', entitiesClass.organization);
-  // query.append('classes', entitiesClass.person);
-  // const { currentData: initialEntities, isLoading: initialEntityLoading } = useGetEntitiesQuery({
-  //   calendarId,
-  //   searchKey: '',
-  //   classes: decodeURIComponent(query.toString()),
-  //   sessionId: timestampRef,
-  // });
-  // const { currentData: initialExternalSource, isFetching: initialExternalSourceLoading } = useGetExternalSourceQuery({
-  //   calendarId,
-  //   searchKey: '',
-  //   classes: decodeURIComponent(query.toString()),
-  //   sessionId: timestampRef,
-  // });
   const [addEvent, { isLoading: addEventLoading, isSuccess: addEventSuccess }] = useAddEventMutation();
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
   const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
@@ -757,7 +742,6 @@ function AddEvent() {
                 addImage({ data: formdata, calendarId })
                   .unwrap()
                   .then((response) => {
-                    // let entityId = response?.data?.original?.entityId;
                     if (featureFlags.imageCropFeature) {
                       let entityId = response?.data?.original?.entityId;
                       imageCrop = {
@@ -2403,7 +2387,6 @@ function AddEvent() {
               ]}>
               <Form.Item
                 name="locationPlace"
-                // className="subheading-wrap"
                 initialValue={initialPlace && initialPlace[0]?.id}
                 label={t('dashboard.events.addEditEvent.location.title')}
                 hidden={
@@ -4218,58 +4201,6 @@ function AddEvent() {
                 </Row>
               )}
               {ticketType == offerTypes.REGISTER && (
-                // <Input.Group compact>
-                //   <Form.Item name="ticketLinkType">
-                //     <Select
-                // options={[
-                //   {
-                //     value: 'url',
-                //     label: 'URL',
-                //   },
-                //   {
-                //     value: 'email',
-                //     label: 'Email',
-                //   },
-                // ]}
-                //       onChange={() => form.setFieldValue('ticketLink', null)}
-                //       data-cy="select-url-status"
-                //     />
-                //   </Form.Item>
-                // <Form.Item
-                //   name="registerLink"
-                //   // label={t('dashboard.events.addEditEvent.tickets.registerLink')}
-                //   initialValue={eventData?.offerConfiguration?.url?.uri}
-                //   rules={[
-                //     form.getFieldValue('ticketLinkType') == 'url' && {
-                //       type: 'url',
-                //       message: t('dashboard.events.addEditEvent.validations.url'),
-                //     },
-
-                //     ({ getFieldValue }) => ({
-                //       validator(_, value) {
-                //         if (value || getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')) {
-                //           return Promise.resolve();
-                //         } else
-                //           return Promise.reject(
-                //             new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyRegister')),
-                //           );
-                //       },
-                //     }),
-                //     form.getFieldValue('ticketLinkType') == 'email' && {
-                //       type: 'email',
-                //       message: t('login.validations.invalidEmail'),
-                //     },
-                //   ]}
-                //   data-cy="form-item-register-link-label">
-                //   <StyledInput
-                //     style={{ width: '75%' }}
-                //     // addonBefore="URL"
-                //     autoComplete="off"
-                //     placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderLinks')}
-                //     data-cy="input-ticket-registration-link"
-                //   />
-                // </Form.Item>
-                // </Input.Group>
                 <Form.Item label={t('dashboard.events.addEditEvent.tickets.registerLink')}>
                   <Input.Group compact>
                     <Form.Item

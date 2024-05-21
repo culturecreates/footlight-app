@@ -20,7 +20,6 @@ import { postalAddressApi } from '../services/postalAddress';
 import ErrorSliceReducer from './reducer/ErrorSlice';
 import { externalSourceApi } from '../services/externalSource';
 import languageLiteralReducer from './reducer/languageLiteralSlice';
-// import localforage from 'localforage';
 
 const persistConfig = {
   key: 'root',

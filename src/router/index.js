@@ -6,7 +6,6 @@ import Dashboard from '../pages/Dashboard';
 import ResetPassword from '../pages/ResetPassword';
 import Events from '../pages/Dashboard/Events';
 import AddEvent from '../pages/Dashboard/AddEvent';
-// import { ReactComponent as NotFound } from '../../src/assets/images/illustatus.svg';
 import EventReadOnly from '../pages/Dashboard/EventReadOnly';
 import CreateAccount from '../pages/CreateAccount';
 import Users from '../pages/Dashboard/Users';
@@ -30,7 +29,6 @@ import AddUser from '../pages/Dashboard/AddUser/AddUser';
 import Taxonomy from '../pages/Dashboard/Taxonomy/Taxonomy';
 import SelectTaxonomyType from '../pages/Dashboard/SelectTaxonomyType/SelectTaxonomyType';
 import AddTaxonomy from '../pages/Dashboard/AddTaxonomy/AddTaxonomy';
-import RcCalendar from '../components/RC_Calendar/RcCalendar';
 
 export const router = createBrowserRouter([
   {
@@ -53,10 +51,6 @@ export const router = createBrowserRouter([
   {
     path: PathName.Join,
     element: <CreateAccount />,
-  },
-  {
-    path: 'calendar',
-    element: <RcCalendar />,
   },
   {
     path: PathName.Dashboard,
