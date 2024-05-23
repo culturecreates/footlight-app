@@ -8,13 +8,13 @@ class ErrorLayout extends React.Component {
 
   // eslint-disable-next-line no-unused-vars
   static getDerivedStateFromError(error) {
-    // Update state so the next render will show the fallback UI.
     console.log(error);
     return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo) {
-    // You can also log the error to an error reporting service
+    //TODO
+    // connect to a logger service
     console.log(error, errorInfo);
   }
 

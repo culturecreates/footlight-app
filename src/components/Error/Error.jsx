@@ -31,22 +31,21 @@ function ErrorAlert(props) {
     };
   }, [dispatch]);
 
+  heading = t('errorPage.heading');
+
   if (errorType === 'serverDown') {
     image = <GeneralErrors />;
     heading = t('errorPage.serverDown');
   } else if (errorType === 'failedAPI' && errorDetails?.isError) {
     image = <GeneralErrors />;
-    heading = t('errorPage.heading');
     message = errorDetails?.message;
   }
   if (errorType === 'general' && !errorDetails.isError) {
     image = <GeneralErrors />;
-    heading = t('errorPage.heading');
     message = error?.message;
   } else if (errorType === 'pageNotFound') {
     image = <Error404 />;
     message = t('errorPage.notFoundMessage');
-    heading = t('errorPage.heading');
   }
 
   return (
