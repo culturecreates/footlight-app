@@ -187,7 +187,7 @@ function OrganizationsReadOnly() {
                     <div className="button-container">
                       <OutlinedButton
                         data-cy="button-edit-organization"
-                        label={t('dashboard.organization.readOnly.Edit')}
+                        label={t('dashboard.organization.readOnly.edit')}
                         size="middle"
                         style={{ height: '40px', width: '60px' }}
                         onClick={() =>
