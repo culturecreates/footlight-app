@@ -48,9 +48,7 @@ const WidgetSettings = () => {
   const { eventDetailsUrlTemplate = '', listEventsUrlTemplate = '' } = currentCalendarData?.widgetSettings || {};
   const calendarSlug = currentCalendarData?.slug;
   const calendarName = currentCalendarData?.name[user?.interfaceLanguage?.toLowerCase()];
-  const encodedCalendarLogoUri = encodeURIComponent(currentCalendarData?.logo?.original?.uri || '');
-  const encodedEventDetailsUrlTemplate = encodeURIComponent(eventDetailsUrlTemplate);
-  const encodedListEventsUrlTemplate = encodeURIComponent(listEventsUrlTemplate);
+  const calendarLogoUri = currentCalendarData?.logo?.original?.uri || '';
 
   const [color, setColor] = useState('#607EFC');
   const [locationOptions, setLocationOptions] = useState([]);
@@ -155,7 +153,7 @@ const WidgetSettings = () => {
         arrayToQueryParam(allValues?.region ?? [], 'region') +
         arrayToQueryParam([...(allValues?.person ?? []), ...(allValues?.organizer ?? [])], 'person-organization');
 
-      const searchEventsFilters = encodeURIComponent(filtersParam);
+      const searchEventsFilters = filtersParam;
 
       const locale = onLanguageSelect(allValues?.language);
       const urlCopy = new URL(widgetUrl);
@@ -167,9 +165,9 @@ const WidgetSettings = () => {
       urlCopy.searchParams.append('limit', limit);
       urlCopy.searchParams.append('calendar', calendarSlug);
       urlCopy.searchParams.append('calendarName', calendarName);
-      urlCopy.searchParams.append('logo', encodedCalendarLogoUri);
-      urlCopy.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
-      urlCopy.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
+      urlCopy.searchParams.append('logo', calendarLogoUri);
+      urlCopy.searchParams.append('eventUrl', eventDetailsUrlTemplate);
+      urlCopy.searchParams.append('searchEventsUrl', listEventsUrlTemplate);
       urlCopy.searchParams.append('searchEventsFilters', searchEventsFilters);
       urlCopy.searchParams.append('locale', locale?.key.toLowerCase());
 
@@ -181,9 +179,9 @@ const WidgetSettings = () => {
       urlCopyMobile.searchParams.append('limit', limit);
       urlCopyMobile.searchParams.append('calendar', calendarSlug);
       urlCopyMobile.searchParams.append('calendarName', calendarName);
-      urlCopyMobile.searchParams.append('logo', encodedCalendarLogoUri);
-      urlCopyMobile.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
-      urlCopyMobile.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
+      urlCopyMobile.searchParams.append('logo', calendarLogoUri);
+      urlCopyMobile.searchParams.append('eventUrl', eventDetailsUrlTemplate);
+      urlCopyMobile.searchParams.append('searchEventsUrl', listEventsUrlTemplate);
       urlCopyMobile.searchParams.append('searchEventsFilters', searchEventsFilters);
       urlCopyMobile.searchParams.append('locale', locale?.key.toLowerCase());
       urlCopyMobile.searchParams.append('height', '600');
@@ -333,9 +331,9 @@ const WidgetSettings = () => {
     const limit = form.getFieldValue('limit') ?? 9;
     const locale = form.getFieldValue('locale') ?? languageOptions[0].value;
 
-    urlCopy.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
-    urlCopy.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
-    urlCopy.searchParams.append('logo', encodedCalendarLogoUri);
+    urlCopy.searchParams.append('eventUrl', eventDetailsUrlTemplate);
+    urlCopy.searchParams.append('searchEventsUrl', listEventsUrlTemplate);
+    urlCopy.searchParams.append('logo', calendarLogoUri);
     urlCopy.searchParams.append('locale', onLanguageSelect(locale)?.key.toLowerCase());
     urlCopy.searchParams.append('limit', limit);
     urlCopy.searchParams.append('color', color);
@@ -344,9 +342,9 @@ const WidgetSettings = () => {
     urlCopy.searchParams.append('height', height);
     setUrl(urlCopy);
 
-    urlCopyMobile.searchParams.append('eventUrl', encodedEventDetailsUrlTemplate);
-    urlCopyMobile.searchParams.append('searchEventsUrl', encodedListEventsUrlTemplate);
-    urlCopyMobile.searchParams.append('logo', encodedCalendarLogoUri);
+    urlCopyMobile.searchParams.append('eventUrl', eventDetailsUrlTemplate);
+    urlCopyMobile.searchParams.append('searchEventsUrl', listEventsUrlTemplate);
+    urlCopyMobile.searchParams.append('logo', calendarLogoUri);
     urlCopyMobile.searchParams.append('locale', onLanguageSelect(locale)?.key.toLowerCase());
     urlCopyMobile.searchParams.append('limit', limit);
     urlCopyMobile.searchParams.append('color', color);
