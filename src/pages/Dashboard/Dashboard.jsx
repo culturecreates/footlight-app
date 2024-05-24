@@ -202,6 +202,9 @@ function Dashboard() {
                   getCalendar,
                   setContentBackgroundColor,
                   isReadOnly,
+                  setIsReadOnly,
+                  refetch,
+                  allCalendarsData?.data,
                 ]}
               />
             </Content>
