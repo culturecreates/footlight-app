@@ -60,30 +60,38 @@ function Dashboard() {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
-    if (!accessToken && accessToken === '') {
-      const accessToken = Cookies.get('accessToken');
-      const refreshToken = Cookies.get('refreshToken');
+    const accessTokenFromCookie = Cookies.get('accessToken');
+    const refreshTokenFromCookie = Cookies.get('refreshToken');
+    const calendarIdFromCookie = Cookies.get('calendarId');
+    const calId = calendarId || calendarIdFromCookie;
 
-      if (!calendarId) {
-        calendarId = Cookies.get('calendarId');
-      }
-      if (accessToken && calendarId) {
-        getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
+    if (!calId) {
+      return;
+    }
+
+    if (!accessToken && !accessTokenFromCookie) {
+      navigate(PathName.Login);
+    } else if (location?.state?.previousPath?.toLowerCase() !== 'login') {
+      const token = accessToken || accessTokenFromCookie;
+      if (token && calId) {
+        getCurrentUserDetails({ accessToken: token, calendarId: calId })
           .unwrap()
           .then((response) => {
             dispatch(
-              setUser({ user: { ...response }, refreshToken: { token: refreshToken }, accessToken: accessToken }),
+              setUser({ user: { ...response }, refreshToken: { token: refreshTokenFromCookie }, accessToken: token }),
             );
+          })
+          .catch(() => {
+            navigate(PathName.Login);
           });
+      } else if (location?.state?.previousPath?.toLowerCase() === 'login' || !calendarId) {
+        dispatch(setInterfaceLanguage(user?.interfaceLanguage?.toLowerCase()));
+        i18n.changeLanguage(user?.interfaceLanguage?.toLowerCase());
       } else {
         navigate(PathName.Login);
       }
-    } else {
-      if (location?.state?.previousPath?.toLowerCase() === 'login' || !calendarId)
-        dispatch(setInterfaceLanguage(user?.interfaceLanguage?.toLowerCase()));
-      i18n.changeLanguage(user?.interfaceLanguage?.toLowerCase());
     }
-  }, [accessToken]);
+  }, [accessToken, isSuccess]);
 
   useEffect(() => {
     if (isSuccess) {
