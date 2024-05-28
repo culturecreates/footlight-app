@@ -19,6 +19,8 @@ function ImageUpload(props) {
     preview,
     originalImageUrl,
     formName,
+    isCalendarLogo,
+    thumbnailImage,
   } = props;
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -118,7 +120,6 @@ function ImageUpload(props) {
       </span>
     </div>
   );
-
   return (
     <>
       <Form.Item name={formName ?? 'dragger'} valuePropName="fileList" getValueFromEvent={normFile}>
@@ -138,7 +139,9 @@ function ImageUpload(props) {
                   <img
                     className="image-thumbnail"
                     style={{
-                      aspectRatio: currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio.replace(/:/g, '/'),
+                      aspectRatio: !isCalendarLogo
+                        ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio.replace(/:/g, '/')
+                        : '',
                     }}
                     src={file?.url ?? file?.thumbUrl}
                   />
@@ -178,6 +181,7 @@ function ImageUpload(props) {
                 name: eventImageData?.original?.entityId,
                 status: 'done',
                 url: props.imageUrl,
+                ...(thumbnailImage && { thumbUrl: thumbnailImage }),
               },
             ]
           }

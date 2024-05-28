@@ -1,0 +1,15 @@
+.mandatory-card-wrapper {
+  border: 1px solid #b6c1c9;
+  border-radius: 8px;
+}
+
+.mandatory-card-wrapper .mandatory-field-class-heading {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.mandatory-card-wrapper .mandatory-field-available,
+.mandatory-card-wrapper .mandatory-field-required {
+  font-size: 12px;
+  font-weight: 700;
+}

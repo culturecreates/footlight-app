@@ -656,7 +656,8 @@
               "openingHours1": "Opening hours",
               "openingHours2": " link",
               "tooltip": "Add a link to the opening hours",
-              "placeholder": "Enter opening hours URL"
+              "placeholder": "Enter opening hours URL",
+              "openingHoursLink": "Opening hours link"
             }
           },
           "containedInPlace": {
@@ -801,7 +802,8 @@
       "heading": "Settings",
       "tab1": "User management",
       "tab2": "Calendar Widget",
-      "tab3": "Calendar Widget",
+      "tab3": "Calendar settings",
+      "tab4": "Mandatory fields",
       "userManagement": {
         "searchPlaceholder": "Search users",
         "sort": "Sort by",
@@ -969,6 +971,85 @@
           "place": "Select place",
           "OrganizationsAndPeople": "Search Organizations and People"
         }
+      },
+      "calendarSettings": {
+        "generalSettings": "General settings",
+        "setUpCalendarDescription": "Set up how your calendar is displayed.",
+        "calendarName": "Calendar name",
+        "calendarLanguage": "Calendar Language",
+        "timezone": "Time zone",
+        "timzoneFormats": {
+          "Canada/Atlantic": "Atlantic Time",
+          "America/Blanc-Sablon": "Blanc-Sablon Time",
+          "Canada/Central": "Central Time",
+          "Canada/Saskatchewan": "Saskatchewan Time",
+          "Canada/Eastern": "Eastern Time",
+          "America/Coral_Harbour": "Coral Harbour Time",
+          "Canada/Mountain": "Mountain Time",
+          "Canada/Yukon": "Yukon Time",
+          "Canada/Newfoundland": "Newfoundland Time",
+          "Canada/Pacific": "Pacific Time"
+        },
+        "contact": "Contact",
+        "dateFormat": "Date format display",
+        "imageAspectRatio": {
+          "imageAspectRatio": "Image aspect ratio",
+          "thumbnail": "Thumbnail image",
+          "large": "Large image",
+          "custom": "Custom"
+        },
+        "imageMaxWidth": {
+          "imageMaxWidth": "Image maximum width",
+          "thumbnail": "Thumbnail image",
+          "large": "Large image"
+        },
+        "calendarLogo": "Calendar Logo",
+        "calendarLogoDescription": "Only JPEG and PNG files are supported.",
+        "calendarWidgetSetup": "Calendar widget setup",
+        "calendarWidgetDescription": "Add URL templates required for the calendar widget to function correctly. These templates link the event list displayed on other websites to the events displayed on your site.",
+        "eventTemplate": "Event template",
+        "eventTemplateDescription": "Add the template URL for an event page on your website. This URL contains placeholders needed for the calendar widget.",
+        "searchResultTemplate": "Search results template",
+        "searchResultTemplateDescription": "Add the template URL for a search results page on your website. This URL contains placeholders needed for the calendar widget.",
+        "filterPersonalization": "Filter personalization",
+        "filterDescription": "Select filters for list views in Footlight.",
+        "events": "Events",
+        "places": "Places",
+        "people": "People",
+        "organizations": "Organizations",
+        "readOnly": {
+          "title": "Make calendar read-only",
+          "description": "Disable editing temporarily in this calendar by turning this toggle on.",
+          "readOnlyMode": "Read-only"
+        },
+        "placeholders": {
+          "calendarNameEn": "Enter calendar name in English",
+          "calendarNameFr": "Enter calendar name in French",
+          "calendarLanguage": "Select languages to display on website",
+          "timezone": "Select timezone",
+          "contact": "Enter contact information",
+          "dateFormatDisplay": "Select date format",
+          "imageAspectRatio": "Select image aspect ratio",
+          "imageMaxWidth": "Enter image maximum width",
+          "eventTemplate": "Enter event template URL",
+          "searchResultTemplate": "Enter search results template URL",
+          "filterPersonalization": "Select filter personalization"
+        },
+        "notifications": {
+          "update": "Success! Your calendar settings have been updated."
+        }
+      },
+      "mandatoryFields": {
+        "title": "Mandatory fields",
+        "availableFields": "Available fields",
+        "description": "Select which fields should be mandatory in your calendar.",
+        "event": "Event",
+        "place": "Place",
+        "person": "Person",
+        "organization": "Organization",
+        "notification": {
+          "update": "Success! Your mandatory fields have been updated."
+        }
       }
     },
     "taxonomy": {
@@ -1055,6 +1136,7 @@
           "class": "Class is required",
           "conceptName": "Concept name is required"
         },
+        "addAsFilter": "Make this taxonomy type available as a filter.",
         "messages": {
           "create": "Success! Your Taxonomy has been created.",
           "update": "Success! Your Taxonomy has been updated."
@@ -1093,6 +1175,9 @@
     "keepEditing": "Keep editing",
     "copied": "Copied to clipboard",
     "discard": "Discard",
+    "validations": {
+      "informationRequired": "Information is required"
+    },
     "dismiss": "Dismiss",
     "forms": {
       "languageLiterals": {

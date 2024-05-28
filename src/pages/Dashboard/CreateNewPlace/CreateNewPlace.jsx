@@ -153,9 +153,24 @@ function CreateNewPlace() {
   const isRoutingToEventPage = location?.state?.data?.isRoutingToEventPage;
   const isRoutingToOrganization = location?.state?.data?.isRoutingToOrganization;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-  let requiredFields = currentCalendarData?.formSchema?.filter((form) => form?.formName === 'Place');
-  requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
-  let requiredFieldNames = requiredFields ? requiredFields?.requiredfields?.map((field) => field?.fieldName) : [];
+  let requiredFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.place);
+  let requiredFieldNames = requiredFields
+    ? requiredFields[0]?.formFieldProperties?.mandatoryFields?.standardFields
+        ?.map((field) => field?.fieldName)
+        ?.concat(requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => field))
+    : [];
+  let standardAdminOnlyFields =
+    requiredFields && requiredFields?.length > 0
+      ? requiredFields[0]?.formFieldProperties?.adminOnlyFields?.standardFields?.map((field) => field?.fieldName)
+      : [];
+  requiredFields =
+    requiredFields &&
+    requiredFields?.length > 0 &&
+    requiredFields[0]?.formFieldProperties?.mandatoryFields?.standardFields?.concat(
+      requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => {
+        return { fieldName: field };
+      }),
+    );
 
   const { currentData: placeData, isLoading: isPlaceLoading } = useGetPlaceQuery(
     { placeId: placeId, calendarId, sessionId: timestampRef },
@@ -172,10 +187,12 @@ function CreateNewPlace() {
     sessionId: timestampRef,
   });
 
+  let taxonomyClassQuery = new URLSearchParams();
+  taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
-    taxonomyClass: taxonomyClass.PLACE,
+    taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
     includeConcepts: true,
     sessionId: timestampRef,
   });
@@ -217,6 +234,7 @@ function CreateNewPlace() {
   const [address, setAddress] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
+  const [publishValidateFields, setPublishValidateFields] = useState([]);
 
   usePrompt(t('common.unsavedChanges'), showDialog);
 
@@ -413,16 +431,7 @@ function CreateNewPlace() {
     setShowDialog(false);
     var promise = new Promise(function (resolve, reject) {
       form
-        .validateFields([
-          ...new Set([
-            formFieldNames.FRENCH,
-            formFieldNames.ENGLISH,
-            formFieldNames.TYPE,
-            formFieldNames.STREET_ADDRESS_ENGLISH,
-            formFieldNames.STREET_ADDRESS_FRENCH,
-            formFieldNames.POSTAL_CODE,
-          ]),
-        ])
+        .validateFields(publishValidateFields ?? [])
         .then(() => {
           var values = form.getFieldsValue(true);
           let placeObj,
@@ -826,7 +835,7 @@ function CreateNewPlace() {
 
   useEffect(() => {
     if (calendarId && currentCalendarData) {
-      let initialAddedFields = [],
+      let initialAddedFields = [...addedFields],
         initialPlaceAccessibiltiy = [],
         initialPlace;
       if (placeData) {
@@ -841,10 +850,12 @@ function CreateNewPlace() {
               .unwrap()
               .then((response) => {
                 if (response?.accessibility?.length > 0) {
+                  let taxonomyClassQuery = new URLSearchParams();
+                  taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
                   getAllTaxonomy({
                     calendarId,
                     search: '',
-                    taxonomyClass: taxonomyClass.PLACE,
+                    taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
                     includeConcepts: true,
                     sessionId: timestampRef,
                   })
@@ -1019,6 +1030,77 @@ function CreateNewPlace() {
       else navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}`, { replace: true });
     }
   }, [isReadOnly]);
+
+  useEffect(() => {
+    let publishValidateFields = [],
+      initialAddedFields = [];
+    if (currentCalendarData) {
+      requiredFields?.forEach((requiredField) => {
+        switch (requiredField?.fieldName) {
+          case placeFormRequiredFieldNames.NAME:
+            publishValidateFields.push(formFieldNames.FRENCH, formFieldNames.ENGLISH);
+            break;
+          case placeFormRequiredFieldNames.DESCRIPTION:
+            publishValidateFields.push(formFieldNames.EDITOR_ENGLISH, formFieldNames.EDITOR_FRENCH);
+            // setDescriptionMinimumWordCount(Number(requiredField?.rule?.minimumWordCount));
+            break;
+          case placeFormRequiredFieldNames.PLACE_TYPE:
+            publishValidateFields.push(formFieldNames.TYPE);
+            break;
+          case placeFormRequiredFieldNames.STREET_ADDRESS:
+            publishValidateFields.push(formFieldNames.STREET_ADDRESS_ENGLISH, formFieldNames.STREET_ADDRESS_FRENCH);
+            break;
+          case placeFormRequiredFieldNames.DISAMBIGUATING_DESCRIPTION:
+            publishValidateFields.push(
+              formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH,
+              formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH,
+            );
+            break;
+          case placeFormRequiredFieldNames.IMAGE:
+            publishValidateFields.push(formFieldNames.DRAGGER_WRAP);
+            break;
+          case placeFormRequiredFieldNames.CITY:
+            // publishValidateFields.push('location-form-wrapper');
+            break;
+          case placeFormRequiredFieldNames.POSTAL_CODE:
+            publishValidateFields.push(formFieldNames.POSTAL_CODE);
+            break;
+          case placeFormRequiredFieldNames.PROVINCE:
+            publishValidateFields.push(formFieldNames.PROVINCE_ENGLISH, formFieldNames.PROVINCE_FRENCH);
+            break;
+          case placeFormRequiredFieldNames.COUNTRY:
+            publishValidateFields.push(formFieldNames.COUNTRY_ENGLISH, formFieldNames.COUNTRY_FRENCH);
+            break;
+          case placeFormRequiredFieldNames.COORDINATES:
+            publishValidateFields.push(formFieldNames.COORDINATES);
+            break;
+          case placeFormRequiredFieldNames.OPENING_HOURS:
+            publishValidateFields.push(formFieldNames.OPENING_HOURS);
+            initialAddedFields = initialAddedFields?.concat(formFieldNames?.OPENING_HOURS);
+            break;
+          case placeFormRequiredFieldNames.CONTAINS_PLACE:
+            publishValidateFields.push(formFieldNames.CONTAINS_PLACE);
+            break;
+          case placeFormRequiredFieldNames.CONTAINED_IN_PLACE:
+            publishValidateFields.push(formFieldNames.CONTAINED_IN_PLACE);
+            break;
+          case placeFormRequiredFieldNames.PLACE_ACCESSIBILITY:
+            publishValidateFields.push(formFieldNames.PLACE_ACCESSIBILITY);
+            initialAddedFields = initialAddedFields?.concat(formFieldNames?.ACCESSIBILITY_NOTE_WRAP);
+            break;
+          case placeFormRequiredFieldNames.REGION:
+            publishValidateFields.push(formFieldNames.REGION);
+            break;
+          default:
+            publishValidateFields.push([formFieldNames.DYNAMIC_FIELS, requiredField?.fieldName]);
+            break;
+        }
+      });
+      publishValidateFields = [...new Set(publishValidateFields)];
+      setPublishValidateFields(publishValidateFields);
+      setAddedFields(initialAddedFields);
+    }
+  }, [currentCalendarData]);
 
   useEffect(() => {
     if (artsDataId) {
@@ -1217,12 +1299,14 @@ function CreateNewPlace() {
                         rules={[
                           ({ getFieldValue }) => ({
                             validator(_, value) {
-                              if (value || getFieldValue(formFieldNames.ENGLISH)) {
-                                return Promise.resolve();
-                              } else
-                                return Promise.reject(
-                                  new Error(t('dashboard.places.createNew.addPlace.validations.nameRequired')),
-                                );
+                              if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.NAME)) {
+                                if (value || getFieldValue(formFieldNames.ENGLISH)) {
+                                  return Promise.resolve();
+                                } else
+                                  return Promise.reject(
+                                    new Error(t('dashboard.places.createNew.addPlace.validations.nameRequired')),
+                                  );
+                              }
                             },
                           }),
                         ]}>
@@ -1260,12 +1344,14 @@ function CreateNewPlace() {
                         rules={[
                           ({ getFieldValue }) => ({
                             validator(_, value) {
-                              if (value || getFieldValue(formFieldNames.FRENCH)) {
-                                return Promise.resolve();
-                              } else
-                                return Promise.reject(
-                                  new Error(t('dashboard.places.createNew.addPlace.validations.nameRequired')),
-                                );
+                              if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.NAME)) {
+                                if (value || getFieldValue(formFieldNames.FRENCH)) {
+                                  return Promise.resolve();
+                                } else
+                                  return Promise.reject(
+                                    new Error(t('dashboard.places.createNew.addPlace.validations.nameRequired')),
+                                  );
+                              }
                             },
                           }),
                         ]}>
@@ -1309,6 +1395,13 @@ function CreateNewPlace() {
                       message: t('dashboard.places.createNew.addPlace.validations.placeTypeRequired'),
                     },
                   ]}
+                  hidden={
+                    standardAdminOnlyFields?.includes(placeFormRequiredFieldNames?.PLACE_TYPE)
+                      ? adminCheckHandler()
+                        ? false
+                        : true
+                      : false
+                  }
                   style={{
                     display:
                       !taxonomyDetails(
@@ -1349,7 +1442,8 @@ function CreateNewPlace() {
                 </Form.Item>
                 <Form.Item
                   data-cy="form-item-place-disambiguating-description-title"
-                  label={t('dashboard.places.createNew.addPlace.disambiguatingDescription.disambiguatingDescription')}>
+                  label={t('dashboard.places.createNew.addPlace.disambiguatingDescription.disambiguatingDescription')}
+                  required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.DISAMBIGUATING_DESCRIPTION)}>
                   <ContentLanguageInput
                     calendarContentLanguage={calendarContentLanguage}
                     isFieldsDirty={{
@@ -1378,7 +1472,20 @@ function CreateNewPlace() {
                               externalCalendarEntityData?.length > 0 &&
                               externalCalendarEntityData[0].disambiguatingDescription?.fr
                         }
-                        dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH]}>
+                        dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH]}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (
+                                requiredFieldNames?.includes(placeFormRequiredFieldNames?.DISAMBIGUATING_DESCRIPTION)
+                              ) {
+                                if (value || getFieldValue(formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH)) {
+                                  return Promise.resolve();
+                                } else return Promise.reject(new Error(t('common.validations.informationRequired')));
+                              }
+                            },
+                          }),
+                        ]}>
                         <TextArea
                           autoSize
                           autoComplete="off"
@@ -1410,7 +1517,20 @@ function CreateNewPlace() {
                               externalCalendarEntityData?.length > 0 &&
                               externalCalendarEntityData[0].disambiguatingDescription?.en
                         }
-                        dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH]}>
+                        dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH]}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (
+                                requiredFieldNames?.includes(placeFormRequiredFieldNames?.DISAMBIGUATING_DESCRIPTION)
+                              ) {
+                                if (value || getFieldValue(formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH)) {
+                                  return Promise.resolve();
+                                } else return Promise.reject(new Error(t('common.validations.informationRequired')));
+                              }
+                            },
+                          }),
+                        ]}>
                         <TextArea
                           autoSize
                           autoComplete="off"
@@ -1435,7 +1555,8 @@ function CreateNewPlace() {
                 </Form.Item>
                 <Form.Item
                   label={t('dashboard.places.createNew.addPlace.description.description')}
-                  data-cy="form-item-place-description-title">
+                  data-cy="form-item-place-description-title"
+                  required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.DESCRIPTION)}>
                   <ContentLanguageInput
                     calendarContentLanguage={calendarContentLanguage}
                     isFieldsDirty={{
@@ -1471,6 +1592,31 @@ function CreateNewPlace() {
                         editorLanguage={'fr'}
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.description.frenchPlaceholder')}
                         descriptionMinimumWordCount={descriptionMinimumWordCount}
+                        rules={[
+                          () => ({
+                            validator() {
+                              if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.DESCRIPTION)) {
+                                if (
+                                  reactQuillRefFr?.current?.unprivilegedEditor?.getLength() > 1 ||
+                                  reactQuillRefEn?.current?.unprivilegedEditor?.getLength() > 1
+                                ) {
+                                  return Promise.resolve();
+                                } else
+                                  return Promise.reject(
+                                    new Error(
+                                      calendarContentLanguage === contentLanguage.ENGLISH ||
+                                      calendarContentLanguage === contentLanguage.FRENCH
+                                        ? t('common.validations.informationRequired')
+                                        : calendarContentLanguage === contentLanguage.BILINGUAL &&
+                                          t('common.validations.informationRequired', {
+                                            wordCount: descriptionMinimumWordCount,
+                                          }),
+                                    ),
+                                  );
+                              }
+                            },
+                          }),
+                        ]}
                       />
 
                       <TextEditor
@@ -1492,6 +1638,31 @@ function CreateNewPlace() {
                         editorLanguage={'en'}
                         placeholder={t('dashboard.events.addEditEvent.otherInformation.description.englishPlaceholder')}
                         descriptionMinimumWordCount={descriptionMinimumWordCount}
+                        rules={[
+                          () => ({
+                            validator() {
+                              if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.DESCRIPTION)) {
+                                if (
+                                  reactQuillRefFr?.current?.unprivilegedEditor?.getLength() > 1 ||
+                                  reactQuillRefEn?.current?.unprivilegedEditor?.getLength() > 1
+                                ) {
+                                  return Promise.resolve();
+                                } else
+                                  return Promise.reject(
+                                    new Error(
+                                      calendarContentLanguage === contentLanguage.ENGLISH ||
+                                      calendarContentLanguage === contentLanguage.FRENCH
+                                        ? t('common.validations.informationRequired')
+                                        : calendarContentLanguage === contentLanguage.BILINGUAL &&
+                                          t('common.validations.informationRequired', {
+                                            wordCount: descriptionMinimumWordCount,
+                                          }),
+                                    ),
+                                  );
+                              }
+                            },
+                          }),
+                        ]}
                       />
                     </BilingualInput>
                   </ContentLanguageInput>
@@ -1513,20 +1684,23 @@ function CreateNewPlace() {
                     help: t('dashboard.events.addEditEvent.validations.errorImage'),
                     validateStatus: 'error',
                   })}
+                  required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.IMAGE)}
                   rules={[
                     ({ getFieldValue }) => ({
                       validator() {
-                        if (
-                          (getFieldValue(formFieldNames.DRAGGER) != undefined &&
-                            getFieldValue(formFieldNames.DRAGGER)?.length > 0) ||
-                          (placeData?.image?.original?.uri && !getFieldValue(formFieldNames.DRAGGER)) ||
-                          (placeData?.image?.original?.uri && getFieldValue(formFieldNames.DRAGGER)?.length > 0)
-                        ) {
-                          return Promise.resolve();
-                        } else
-                          return Promise.reject(
-                            new Error(t('dashboard.events.addEditEvent.validations.otherInformation.emptyImage')),
-                          );
+                        if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.IMAGE)) {
+                          if (
+                            (getFieldValue(formFieldNames.DRAGGER) != undefined &&
+                              getFieldValue(formFieldNames.DRAGGER)?.length > 0) ||
+                            (placeData?.image?.original?.uri && !getFieldValue(formFieldNames.DRAGGER)) ||
+                            (placeData?.image?.original?.uri && getFieldValue(formFieldNames.DRAGGER)?.length > 0)
+                          ) {
+                            return Promise.resolve();
+                          } else
+                            return Promise.reject(
+                              new Error(t('dashboard.events.addEditEvent.validations.otherInformation.emptyImage')),
+                            );
+                        }
                       },
                     }),
                   ]}>
@@ -1595,6 +1769,12 @@ function CreateNewPlace() {
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                         })}
                         initialValue={initialValues}
+                        rules={[
+                          {
+                            required: requiredFieldNames?.includes(taxonomy?.id),
+                            message: t('common.validations.informationRequired'),
+                          },
+                        ]}
                         hidden={taxonomy?.isAdminOnly ? (adminCheckHandler() ? false : true) : false}>
                         <TreeSelectOption
                           data-cy={`treeselect-place-dynamic-field-${index}`}
@@ -1802,7 +1982,8 @@ function CreateNewPlace() {
                 </Form.Item>
                 <Form.Item
                   label={t('dashboard.places.createNew.addPlace.address.city.city')}
-                  data-cy="form-item-place-city-title">
+                  data-cy="form-item-place-city-title"
+                  required={requiredFieldNames?.includes(placeFormRequiredFieldNames.CITY)}>
                   <ContentLanguageInput
                     calendarContentLanguage={calendarContentLanguage}
                     isFieldsDirty={{
@@ -1831,7 +2012,18 @@ function CreateNewPlace() {
                               externalCalendarEntityData?.length > 0 &&
                               externalCalendarEntityData[0]?.address?.addressLocality?.fr
                         }
-                        dependencies={[formFieldNames.CITY_ENGLISH]}>
+                        dependencies={[formFieldNames.CITY_ENGLISH]}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.CITY)) {
+                                if (value || getFieldValue(formFieldNames.CITY_ENGLISH)) {
+                                  return Promise.resolve();
+                                } else return Promise.reject(new Error(t('common.validations.informationRequired')));
+                              }
+                            },
+                          }),
+                        ]}>
                         <TextArea
                           data-cy="input-text-area-place-city-french"
                           autoSize
@@ -1861,7 +2053,18 @@ function CreateNewPlace() {
                               externalCalendarEntityData?.length > 0 &&
                               externalCalendarEntityData[0]?.address?.addressLocality?.en
                         }
-                        dependencies={[formFieldNames.CITY_FRENCH]}>
+                        dependencies={[formFieldNames.CITY_FRENCH]}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.CITY)) {
+                                if (value || getFieldValue(formFieldNames.CITY_FRENCH)) {
+                                  return Promise.resolve();
+                                } else return Promise.reject(new Error(t('common.validations.informationRequired')));
+                              }
+                            },
+                          }),
+                        ]}>
                         <TextArea
                           data-cy="input-text-area-place-city-english"
                           autoSize
@@ -1897,7 +2100,7 @@ function CreateNewPlace() {
                   label={t('dashboard.places.createNew.addPlace.address.postalCode.postalCode')}
                   rules={[
                     {
-                      required: true,
+                      required: requiredFieldNames?.includes(placeFormRequiredFieldNames?.POSTAL_CODE),
                       message: t('dashboard.places.createNew.addPlace.validations.postalCodeRequired'),
                     },
                     {
@@ -1914,7 +2117,8 @@ function CreateNewPlace() {
                   <Col span={12}>
                     <Form.Item
                       label={t('dashboard.places.createNew.addPlace.address.province.province')}
-                      data-cy="form-item-province-title">
+                      data-cy="form-item-province-title"
+                      required={requiredFieldNames?.includes(placeFormRequiredFieldNames.PROVINCE)}>
                       <ContentLanguageInput
                         calendarContentLanguage={calendarContentLanguage}
                         isFieldsDirty={{
@@ -1943,7 +2147,19 @@ function CreateNewPlace() {
                                   externalCalendarEntityData?.length > 0 &&
                                   externalCalendarEntityData[0]?.address?.addressRegion?.fr
                             }
-                            dependencies={[formFieldNames.PROVINCE_ENGLISH]}>
+                            dependencies={[formFieldNames.PROVINCE_ENGLISH]}
+                            rules={[
+                              ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                  if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.PROVINCE)) {
+                                    if (value || getFieldValue(formFieldNames.PROVINCE_ENGLISH)) {
+                                      return Promise.resolve();
+                                    } else
+                                      return Promise.reject(new Error(t('common.validations.informationRequired')));
+                                  }
+                                },
+                              }),
+                            ]}>
                             <TextArea
                               data-cy="input-text-area-province-french"
                               autoSize
@@ -1973,7 +2189,19 @@ function CreateNewPlace() {
                                   externalCalendarEntityData?.length > 0 &&
                                   externalCalendarEntityData[0]?.address?.addressRegion?.en
                             }
-                            dependencies={[formFieldNames.PROVINCE_FRENCH]}>
+                            dependencies={[formFieldNames.PROVINCE_FRENCH]}
+                            rules={[
+                              ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                  if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.PROVINCE)) {
+                                    if (value || getFieldValue(formFieldNames.PROVINCE_FRENCH)) {
+                                      return Promise.resolve();
+                                    } else
+                                      return Promise.reject(new Error(t('common.validations.informationRequired')));
+                                  }
+                                },
+                              }),
+                            ]}>
                             <TextArea
                               data-cy="input-text-area-province-english"
                               autoSize
@@ -2000,7 +2228,8 @@ function CreateNewPlace() {
                   <Col span={12}>
                     <Form.Item
                       label={t('dashboard.places.createNew.addPlace.address.country.country')}
-                      data-cy="form-item-country-title">
+                      data-cy="form-item-country-title"
+                      required={requiredFieldNames?.includes(placeFormRequiredFieldNames.COUNTRY)}>
                       <ContentLanguageInput
                         calendarContentLanguage={calendarContentLanguage}
                         isFieldsDirty={{
@@ -2029,7 +2258,19 @@ function CreateNewPlace() {
                                   externalCalendarEntityData?.length > 0 &&
                                   externalCalendarEntityData[0]?.address?.addressCountry?.fr
                             }
-                            dependencies={[formFieldNames.COUNTRY_ENGLISH]}>
+                            dependencies={[formFieldNames.COUNTRY_ENGLISH]}
+                            rules={[
+                              ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                  if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.COUNTRY)) {
+                                    if (value || getFieldValue(formFieldNames.COUNTRY_ENGLISH)) {
+                                      return Promise.resolve();
+                                    } else
+                                      return Promise.reject(new Error(t('common.validations.informationRequired')));
+                                  }
+                                },
+                              }),
+                            ]}>
                             <TextArea
                               data-cy="input-text-area-country-french"
                               autoSize
@@ -2059,7 +2300,19 @@ function CreateNewPlace() {
                                   externalCalendarEntityData?.length > 0 &&
                                   externalCalendarEntityData[0]?.address?.addressCountry?.en
                             }
-                            dependencies={[formFieldNames.COUNTRY_FRENCH]}>
+                            dependencies={[formFieldNames.COUNTRY_FRENCH]}
+                            rules={[
+                              ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                  if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.COUNTRY)) {
+                                    if (value || getFieldValue(formFieldNames.COUNTRY_FRENCH)) {
+                                      return Promise.resolve();
+                                    } else
+                                      return Promise.reject(new Error(t('common.validations.informationRequired')));
+                                  }
+                                },
+                              }),
+                            ]}>
                             <TextArea
                               data-cy="input-text-area-country-english"
                               autoSize
@@ -2098,7 +2351,13 @@ function CreateNewPlace() {
                           externalCalendarEntityData[0]?.geo?.longitude
                   }
                   data-cy="form--item-place-coordinates-title"
-                  label={t('dashboard.places.createNew.addPlace.address.coordinates.coordinates')}>
+                  label={t('dashboard.places.createNew.addPlace.address.coordinates.coordinates')}
+                  rules={[
+                    {
+                      required: requiredFieldNames?.includes(placeFormRequiredFieldNames?.COORDINATES),
+                      message: t('common.validations.informationRequired'),
+                    },
+                  ]}>
                   <StyledInput data-cy="input-place-coordinates" />
                 </Form.Item>
                 <Form.Item
@@ -2111,16 +2370,24 @@ function CreateNewPlace() {
                     'name',
                     false,
                   )}
+                  hidden={
+                    standardAdminOnlyFields?.includes(placeFormRequiredFieldNames?.REGION)
+                      ? adminCheckHandler()
+                        ? false
+                        : true
+                      : false
+                  }
                   initialValue={
                     placeData?.regions
                       ? placeData?.regions?.map((type) => {
                           return type?.entityId;
                         })
-                      : artsDataId &&
-                        artsData?.regions &&
+                      : artsDataId
+                      ? artsData?.regions &&
                         artsData?.regions?.map((region) => {
                           return region?.entityId;
                         })
+                      : []
                   }
                   style={{
                     display:
@@ -2131,7 +2398,13 @@ function CreateNewPlace() {
                         'name',
                         false,
                       ) && 'none',
-                  }}>
+                  }}
+                  rules={[
+                    {
+                      required: requiredFieldNames?.includes(placeFormRequiredFieldNames?.REGION),
+                      message: t('common.validations.informationRequired'),
+                    },
+                  ]}>
                   <TreeSelectOption
                     data-cy="treeselect-place-region"
                     placeholder={t('dashboard.places.createNew.addPlace.address.region.placeholder')}
@@ -2164,7 +2437,7 @@ function CreateNewPlace() {
                   data-cy="form-item-opening-hours-title"
                   name={formFieldNames.OPENING_HOURS}
                   className={`${formFieldNames.OPENING_HOURS} subheading-wrap`}
-                  label={t('dashboard.places.createNew.addPlace.address.openingHours.openingHours')}
+                  label={t('dashboard.places.createNew.addPlace.address.openingHours.openingHoursLink')}
                   initialValue={
                     placeId
                       ? placeData?.openingHours?.uri
@@ -2179,6 +2452,10 @@ function CreateNewPlace() {
                     {
                       type: 'url',
                       message: t('dashboard.events.addEditEvent.validations.url'),
+                    },
+                    {
+                      required: requiredFieldNames?.includes(placeFormRequiredFieldNames.OPENING_HOURS),
+                      message: t('common.validations.informationRequired'),
                     },
                   ]}>
                   <StyledInput
@@ -2227,7 +2504,20 @@ function CreateNewPlace() {
                   data-cy="form-item-contains-place-title"
                   name={formFieldNames.CONTAINS_PLACE}
                   className="subheading-wrap"
-                  label={t('dashboard.places.createNew.addPlace.containsPlace.addPlace')}>
+                  // initialValue={initialPlace && initialPlace[0]?.id}
+                  label={t('dashboard.places.createNew.addPlace.containsPlace.addPlace')}
+                  required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.CONTAINS_PLACE)}
+                  rules={[
+                    () => ({
+                      validator() {
+                        if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.CONTAINS_PLACE)) {
+                          if (selectedContainsPlaces?.length > 0) {
+                            return Promise.resolve();
+                          } else return Promise.reject(new Error(t('common.validations.informationRequired')));
+                        }
+                      },
+                    }),
+                  ]}>
                   <Popover
                     open={isPopoverOpen.containsPlace}
                     onOpenChange={(open) => {
@@ -2419,7 +2709,19 @@ function CreateNewPlace() {
                   name={formFieldNames.CONTAINED_IN_PLACE}
                   className="subheading-wrap"
                   data-cy="form-item-contains-place"
-                  label={t('dashboard.places.createNew.addPlace.containedInPlace.addPlace')}>
+                  label={t('dashboard.places.createNew.addPlace.containedInPlace.addPlace')}
+                  required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.CONTAINED_IN_PLACE)}
+                  rules={[
+                    () => ({
+                      validator() {
+                        if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.CONTAINED_IN_PLACE)) {
+                          if (containedInPlace) {
+                            return Promise.resolve();
+                          } else return Promise.reject(new Error(t('common.validations.informationRequired')));
+                        }
+                      },
+                    }),
+                  ]}>
                   <Popover
                     data-cy="popover-place-contained-in-place"
                     open={isPopoverOpen.containedInPlace}
@@ -2607,7 +2909,14 @@ function CreateNewPlace() {
             ) && (
               <Card
                 marginResponsive="0px"
-                title={t('dashboard.places.createNew.addPlace.venueAccessibility.venueAccessibility')}>
+                title={t('dashboard.places.createNew.addPlace.venueAccessibility.venueAccessibility')}
+                hidden={
+                  standardAdminOnlyFields?.includes(placeFormRequiredFieldNames?.PLACE_ACCESSIBILITY)
+                    ? adminCheckHandler()
+                      ? false
+                      : true
+                    : false
+                }>
                 <>
                   <Row>
                     <Col>
@@ -2629,6 +2938,13 @@ function CreateNewPlace() {
                     initialValue={placeData?.accessibility?.map((type) => {
                       return type?.entityId;
                     })}
+                    hidden={
+                      standardAdminOnlyFields?.includes(placeFormRequiredFieldNames?.PLACE_ACCESSIBILITY)
+                        ? adminCheckHandler()
+                          ? false
+                          : true
+                        : false
+                    }
                     style={{
                       width: '100%',
                       display:
@@ -2639,7 +2955,13 @@ function CreateNewPlace() {
                           'name',
                           false,
                         ) && 'none',
-                    }}>
+                    }}
+                    rules={[
+                      {
+                        required: requiredFieldNames?.includes(placeFormRequiredFieldNames?.PLACE_ACCESSIBILITY),
+                        message: t('common.validations.informationRequired'),
+                      },
+                    ]}>
                     <TreeSelectOption
                       data-cy="treeselect-venue-accessibility"
                       placeholder={t('dashboard.places.createNew.addPlace.venueAccessibility.placeholder')}

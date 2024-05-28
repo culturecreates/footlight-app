@@ -28,6 +28,7 @@ const handleMultilevelTreeSelect = (children, user, calendarContentLanguage, par
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         }),
+      key: child?.id,
     };
   });
 };
@@ -71,6 +72,7 @@ export const treeTaxonomyOptions = (data, user, mappedToField, isDynamicField, c
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         }),
+        key: concept?.id,
       };
     });
   return options;

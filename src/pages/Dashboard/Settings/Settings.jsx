@@ -10,6 +10,8 @@ import WidgetSettings from './WidgetSettings/WidgetSettings';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
 import { userRoles } from '../../../constants/userRoles';
+import CalendarSettings from './CalendarSettings';
+import MandatoryFields from './MandatoryFields';
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -17,8 +19,7 @@ const Settings = () => {
   const { user } = useSelector(getUserDetails);
   const { calendarId } = useParams();
   const [
-    // eslint-disable-next-line no-unused-vars
-    _currentCalendarData, // eslint-disable-next-line no-unused-vars
+    currentCalendarData, // eslint-disable-next-line no-unused-vars
     _pageNumber, // eslint-disable-next-line no-unused-vars
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
@@ -63,6 +64,20 @@ const Settings = () => {
       label: t('dashboard.settings.tab2'),
       key: 'tab2',
       children: <WidgetSettings />,
+      disabled: false,
+      adminOnly: true,
+    },
+    {
+      label: t('dashboard.settings.tab3'),
+      key: 'tab3',
+      children: currentCalendarData && <CalendarSettings />,
+      disabled: false,
+      adminOnly: true,
+    },
+    {
+      label: t('dashboard.settings.tab4'),
+      key: 'tab4',
+      children: <MandatoryFields />,
       disabled: false,
       adminOnly: true,
     },
