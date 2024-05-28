@@ -57,10 +57,13 @@ function PlaceReadOnly() {
     isSuccess: placeSuccess,
     isError: placeError,
   } = useGetPlaceQuery({ placeId, calendarId, sessionId: timestampRef }, { skip: placeId ? false : true });
+
+  let taxonomyClassQuery = new URLSearchParams();
+  taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
-    taxonomyClass: taxonomyClass.PLACE,
+    taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
     includeConcepts: true,
     sessionId: timestampRef,
   });
@@ -133,10 +136,12 @@ function PlaceReadOnly() {
               ...initialPlace[0],
               ['openingHours']: initialPlace[0]?.openingHours?.uri,
             };
+            let taxonomyClassQuery = new URLSearchParams();
+            taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
             getAllTaxonomy({
               calendarId,
               search: '',
-              taxonomyClass: taxonomyClass.PLACE,
+              taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
               includeConcepts: true,
             })
               .unwrap()

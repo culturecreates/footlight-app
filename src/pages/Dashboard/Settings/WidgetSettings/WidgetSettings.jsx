@@ -48,7 +48,7 @@ const WidgetSettings = () => {
   const { eventDetailsUrlTemplate = '', listEventsUrlTemplate = '' } = currentCalendarData?.widgetSettings || {};
   const calendarSlug = currentCalendarData?.slug;
   const calendarName = currentCalendarData?.name[user?.interfaceLanguage?.toLowerCase()];
-  const calendarLogoUri = currentCalendarData?.image?.uri || '';
+  const calendarLogoUri = currentCalendarData?.logo?.original?.uri || '';
 
   const [color, setColor] = useState('#607EFC');
   const [locationOptions, setLocationOptions] = useState([]);
@@ -61,19 +61,23 @@ const WidgetSettings = () => {
   const [urlMobile, setUrlMObile] = useState(new URL(widgetUrl));
 
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
+
+  let taxonomyClassQuery = new URLSearchParams();
+  taxonomyClassQuery.append('taxonomy-class', taxonomyClass.EVENT);
   const { currentData: taxonomyDataEventType } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
     filters: '',
-    taxonomyClass: taxonomyClass.EVENT,
+    taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
     includeConcepts: true,
     sessionId: timestampRef,
   });
-
+  taxonomyClassQuery.delete('taxonomy-class');
+  taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
   const { currentData: taxonomyDataRegion } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
-    taxonomyClass: taxonomyClass.PLACE,
+    taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
     includeConcepts: true,
     sessionId: timestampRef,
   });

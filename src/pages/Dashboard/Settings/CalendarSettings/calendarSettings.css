@@ -1,0 +1,55 @@
+.calendar-settings-wrapper .calendar-settings-heading {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+  color: #222732;
+}
+
+.calendar-settings-wrapper .calendar-settings-description {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: #646d7b;
+}
+
+.calendar-settings-wrapper
+  .ant-form-item-label
+  > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after {
+  display: inline-block;
+  margin-right: 4px;
+  color: #ff4d4f;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+  content: '*';
+}
+
+.calendar-settings-wrapper
+  .ant-form-item-label
+  > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+  display: none;
+}
+
+.calendar-settings-wrapper .calendar-settings-small-label .ant-form-item-label > label {
+  font-size: 12px;
+}
+
+.calendar-settings-wrapper .ant-tabs-tab-btn {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 24px;
+  color: #646d7b;
+  background: #e8e8e8;
+}
+
+.calendar-settings-wrapper .ant-tabs-card.ant-tabs-small > .ant-tabs-nav .ant-tabs-tab {
+  padding: 4px;
+  background: #e8e8e8;
+}
+
+.calendar-settings-wrapper .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  background: #ffffff;
+  color: #222732;
+  font-size: 14px;
+  font-weight: 400;
+}

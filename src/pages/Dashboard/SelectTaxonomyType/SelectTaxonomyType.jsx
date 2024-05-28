@@ -53,9 +53,7 @@ const SelectTaxonomyType = () => {
     }
   }, [user, calendar]);
 
-  const onSaveHandler = () => {
-    console.log('clicked field option');
-  };
+  const onSaveHandler = () => {};
 
   const navigationHandler = (dynamic) => {
     formInstance.validateFields(['classType']).then(() => {

@@ -1,0 +1,39 @@
+.add-field-wrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.add-field-wrapper .disabled {
+  background-color: #f7f7f7;
+  color: #646d7b;
+  cursor: not-allowed;
+}
+
+.add-field-wrapper .enabled {
+  background: #eff2ff;
+  color: #1b3de6;
+  cursor: pointer;
+}
+
+.add-field-wrapper .add-field-icon {
+  border-radius: 4px;
+  border: 0px;
+  height: 20px;
+  width: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-field-wrapper .add-field-label {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  max-width: 170px;
+  height: auto;
+  text-align: left;
+  white-space: pre-line;
+  display: contents;
+  word-break: break-word;
+}

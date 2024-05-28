@@ -1,0 +1,13 @@
+.mandatory-fields-wrapper .mandatory-fields-heading {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+  color: #222732;
+}
+
+.mandatory-fields-wrapper .mandatory-fields-description {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: #646d7b;
+}
