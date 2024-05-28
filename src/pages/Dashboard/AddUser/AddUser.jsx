@@ -53,7 +53,11 @@ const AddUser = () => {
     _pageNumber, // eslint-disable-next-line no-unused-vars
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
-    setContentBackgroundColor,
+    setContentBackgroundColor, // eslint-disable-next-line no-unused-vars
+    _isReadOnly, // eslint-disable-next-line no-unused-vars
+    _setIsReadOnly, // eslint-disable-next-line no-unused-vars
+    _refetch,
+    allCalendarsData,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
   const userId = searchParams.get('id');
@@ -165,22 +169,34 @@ const AddUser = () => {
           });
         });
     } else if (!userId) {
-      getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
-        .unwrap()
-        .then((response) => {
-          setSelectedCalendars(
-            response?.roles
-              .map((calendar) => ({
-                ...calendar,
-                disabled: calendarId === calendar?.calendarId ? false : true,
-              }))
-              .sort((a, b) => a.disabled - b.disabled),
-          );
-        });
+      if (user?.isSuperAdmin) {
+        setSelectedCalendars(
+          allCalendarsData
+            ?.map((calendar) => ({
+              ...calendar,
+              calendarId: calendar.id,
+              disabled: calendarId === calendar?.id ? false : true,
+              role: userRoles.GUEST,
+            }))
+            .sort((a, b) => a.disabled - b.disabled),
+        );
+      } else
+        getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
+          .unwrap()
+          .then((response) => {
+            setSelectedCalendars(
+              response?.roles
+                .map((calendar) => ({
+                  ...calendar,
+                  disabled: calendarId === calendar?.calendarId ? false : true,
+                }))
+                .sort((a, b) => a.disabled - b.disabled),
+            );
+          });
     } else if (location.state?.data) {
       setSearchParams(createSearchParams({ id: location.state.data.id }));
     }
-  }, [userId]);
+  }, [userId, allCalendarsData]);
 
   useEffect(() => {
     if (userId) {
