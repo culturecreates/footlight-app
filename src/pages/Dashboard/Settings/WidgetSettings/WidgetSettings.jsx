@@ -121,6 +121,23 @@ const WidgetSettings = () => {
     return { label: item.label, value: item.key };
   });
 
+  const submitHandler = async () => {
+    try {
+      const response = await fetch('https://staging.api.footlight.io/calendars/tout-culture/events/redirect', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          locale: 'en',
+          id: 'tout-culture',
+        },
+      });
+
+      console.log(response);
+    } catch (error) {
+      console.error('Error during redirection:', error);
+    }
+  };
+
   const notify = ({ index, messageText }) => {
     notification.warning({
       duration: 2,
@@ -622,6 +639,10 @@ const WidgetSettings = () => {
                             }}
                           />
                         </Form.Item>
+                      </Col>
+
+                      <Col>
+                        <Button onClick={submitHandler}>test</Button>;
                       </Col>
 
                       <Col flex="448px" className="widget-settings-location">
