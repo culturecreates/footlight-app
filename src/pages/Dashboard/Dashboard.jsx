@@ -23,7 +23,7 @@ import CustomModal from '../../components/Modal/Common/CustomModal';
 import { useTranslation } from 'react-i18next';
 import { calendarModes } from '../../constants/calendarModes';
 import { useAuth } from '../../hooks/useAuth';
-import { getErrorDetails } from '../../redux/reducer/ErrorSlice';
+import { clearErrors, getErrorDetails } from '../../redux/reducer/ErrorSlice';
 
 const { Header, Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -128,6 +128,10 @@ function Dashboard() {
       dispatch(setReloadCalendar(false));
     }
   }, [reloadStatus, dispatch]);
+
+  useEffect(() => {
+    dispatch(clearErrors());
+  }, []);
 
   useEffect(() => {
     if (!user?.interfaceLanguage || user?.interfaceLanguage !== Cookies.get('interfaceLanguage')) {

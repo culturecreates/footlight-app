@@ -32,16 +32,14 @@ function ErrorAlert(props) {
   }, [dispatch]);
 
   heading = t('errorPage.heading');
+  image = <GeneralErrors />;
 
   if (errorType === 'serverDown') {
-    image = <GeneralErrors />;
     heading = t('errorPage.serverDown');
   } else if (errorType === 'failedAPI' && errorDetails?.isError) {
-    image = <GeneralErrors />;
     message = errorDetails?.message;
   }
   if (errorType === 'general' && !errorDetails.isError) {
-    image = <GeneralErrors />;
     message = error?.message;
   } else if (errorType === 'pageNotFound') {
     image = <Error404 />;
