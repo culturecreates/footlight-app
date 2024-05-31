@@ -557,7 +557,7 @@ const AddTaxonomyTest = () => {
             </CardEvent>
             <Col span={24}>
               <Row>
-                <Col flex="780px" style={{ margin: '32px 16px 0px 16px' }} className="concept-card">
+                <Col flex="780px" style={{ margin: '32px 0px' }} className="concept-card">
                   <Card bordered={false}>
                     <Row justify="space-between" wrap={false}>
                       <Col>
