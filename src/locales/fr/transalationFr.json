@@ -492,7 +492,7 @@
         "email": "Courriel",
         "memberOf": "Membre de",
         "location": "Endroit",
-        "Edit": "Éditer",
+        "edit": "Éditer",
         "socialMediaLinks": "Liens vers les réseaux sociaux"
       },
       "createNew": {
@@ -652,7 +652,8 @@
               "openingHours1": "Lien des heures",
               "openingHours2": " d'ouverture",
               "tooltip": "Ajoutez un lien vers les heures d'ouverture",
-              "placeholder": "Entrez l'url des heures d'ouverture"
+              "placeholder": "Entrez l'url des heures d'ouverture",
+              "openingHoursLink": "Lien des heures d'ouverture"
             }
           },
           "containedInPlace": {
@@ -796,6 +797,8 @@
       "heading": "Paramètres",
       "tab2": "Composante du module",
       "tab1": "Gestion des utilisateurs",
+      "tab3": "Paramètres du calendrier",
+      "tab4": "Champs obligatoires",
       "userManagement": {
         "searchPlaceholder": "Recherche d'utilisateurs",
         "sort": "Trier par",
@@ -962,6 +965,85 @@
           "place": "Sélectionner un lieu",
           "OrganizationsAndPeople": "Recherchez des Organisations ou des Personnes"
         }
+      },
+      "calendarSettings": {
+        "generalSettings": "Paramètres généraux",
+        "setUpCalendarDescription": "Configurez l'affichage de votre calendrier.",
+        "calendarName": "Nom du calendrier",
+        "calendarLanguage": "Langue du calendrier",
+        "timezone": "Fuseau horaire",
+        "timzoneFormats": {
+          "Canada/Atlantic": "Heure de l'Atlantique",
+          "America/Blanc-Sablon": "Heure de Blanc-Sablon",
+          "Canada/Central": "Heure du Centre",
+          "Canada/Saskatchewan": "Heure de Saskatchewan",
+          "Canada/Eastern": "Heure de l'Est",
+          "America/Coral_Harbour": "Heure de Coral Harbour",
+          "Canada/Mountain": "Heure des Rocheuses",
+          "Canada/Yukon": "Heure du Yukon",
+          "Canada/Newfoundland": "Heure de Terre-Neuve",
+          "Canada/Pacific": "Heure du Pacifique"
+        },
+        "contact": "Contact",
+        "dateFormat": "Format d'affichage des dates",
+        "imageAspectRatio": {
+          "imageAspectRatio": "Formats des image",
+          "thumbnail": "Vignette",
+          "large": "Grande image",
+          "custom": "Personnalisé"
+        },
+        "imageMaxWidth": {
+          "imageMaxWidth": "Largeur maximale",
+          "thumbnail": "Vignette",
+          "large": "Grande image"
+        },
+        "calendarLogo": "Logo du calendrier",
+        "calendarLogoDescription": "Uniquement les fichiers .jpeg et .png sont acceptés.",
+        "calendarWidgetSetup": "Configuration du widget calendrier",
+        "calendarWidgetDescription": "Ajoutez les modèles d'URL nécessaires au bon fonctionnement du widget calendrier. Ces modèles relient la liste des événements affichée sur d'autres sites web aux événements affichés sur votre site.",
+        "eventTemplate": "Modèle d'événement",
+        "eventTemplateDescription": "Ajoutez l'URL du modèle pour une page d'événement sur votre site web. Cette URL contient les espaces réservés nécessaires au widget calendrier.",
+        "searchResultTemplate": "Modèle de résultats de recherche",
+        "searchResultTemplateDescription": "Ajoutez l'URL du modèle pour une page de résultats de recherche sur votre site web. Cette URL contient les espaces réservés nécessaires au widget calendrier.",
+        "filterPersonalization": "Personnalisation des filtres",
+        "filterDescription": "Sélectionner les filtres pour les vues de listes dans le CMS Footlight.",
+        "events": "Événements",
+        "places": "Lieux",
+        "people": "Personnes",
+        "organizations": "Organisations",
+        "readOnly": {
+          "title": "Mettre le calendrier en lecture seule",
+          "description": "Activez cette option pour désactiver l'édition de ce calendrier.",
+          "readOnlyMode": "Lecture seule"
+        },
+        "placeholders": {
+          "calendarNameEn": "Entrez le nom du calendrier en anglais",
+          "calendarNameFr": "Entrez le nom du calendrier en français",
+          "calendarLanguage": "Sélectionnez les langues à afficher sur le site web",
+          "timezone": "Sélectionnez un fuseau horaire",
+          "contact": "Entrez les informations de contact",
+          "dateFormatDisplay": "Sélectionnez le format de la date",
+          "imageAspectRatio": "Sélectionnez le rapport d'aspect de l'image",
+          "imageMaxWidth": "Entrez la largeur maximale de l'image",
+          "eventTemplate": "Entrez l'URL du modèle d'événement",
+          "searchResultTemplate": "Entrez l'URL du modèle de résultats de recherche",
+          "filterPersonalization": "Sélectionnez la personnalisation du filtre"
+        },
+        "notification": {
+          "update": "Succès! Vos paramètres de calendrier ont été mis à jour."
+        }
+      },
+      "mandatoryFields": {
+        "title": "Champs obligatoires",
+        "availableFields": "Champs disponibles",
+        "description": "Sélectionnez les champs qui doivent être obligatoires dans votre calendrier.",
+        "event": "Événement",
+        "place": "Lieu",
+        "person": "Personne",
+        "organization": "Organisation",
+        "notification": {
+          "update": "Succès ! Vos champs obligatoires ont été mis à jour."
+        }
       }
     },
     "taxonomy": {
@@ -1053,6 +1135,7 @@
           "update": "Succès! Votre [organisation | personne | lieu] a été mis à jour."
         },
         "adminOnly": "Administrateur uniquement",
+        "addAsFilter": "Rendre ce type de taxonomie disponible en tant que filtre.",
         "concepts": {
           "heading": "Liste de concepts",
           "description": "Gérer une liste hiérarchique de concepts pour la taxonomie, dans toutes les langues du calendrier. Les concepts peuvent être sélectionnés à partir du champ de saisie correspondant. Faites glisser les concepts pour les réorganiser et/ou les imbriquer. Lorsque vous déplacez un concept dans une langue, il est déplacé dans toutes les langues.",
@@ -1088,6 +1171,9 @@
     "keepEditing": "Poursuivre l'édition",
     "discard": "Jeter",
     "copied": "Copié dans le presse-papiers",
+    "validations": {
+      "informationRequired": "Des informations sont requises"
+    },
     "dismiss": "J'ai compris",
     "forms": {
       "languageLiterals": {

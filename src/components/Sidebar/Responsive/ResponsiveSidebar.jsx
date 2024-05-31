@@ -134,8 +134,8 @@ function ResponsiveSidebar(props) {
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       calendarContentLanguage: calendarContentLanguage,
     });
-    setCalendarItem(selectedCalendar(currentCalendarData?.id, currentCalendarData?.image?.uri, calendarLabel));
-  }, [currentCalendarData]);
+    setCalendarItem(selectedCalendar(currentCalendarData?.id, currentCalendarData?.logo?.original?.uri, calendarLabel));
+  }, [currentCalendarData, user?.interfaceLanguage]);
   return (
     <Drawer
       className="sidebar-navigation-menu-responsive-drawer"

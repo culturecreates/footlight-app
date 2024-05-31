@@ -60,10 +60,12 @@ function EventReadOnly() {
     { eventId, calendarId, sessionId: timestampRef },
     { skip: eventId ? false : true },
   );
+  let taxonomyClassQuery = new URLSearchParams();
+  taxonomyClassQuery.append('taxonomy-class', taxonomyClass.EVENT);
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
-    taxonomyClass: taxonomyClass.EVENT,
+    taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
     includeConcepts: true,
   });
 
@@ -150,10 +152,12 @@ function EventReadOnly() {
       };
       let initialPlaceAccessibiltiy = [];
       if (initialPlace[0]?.accessibility?.length > 0) {
+        let taxonomyClassQuery = new URLSearchParams();
+        taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
         getAllTaxonomy({
           calendarId,
           search: '',
-          taxonomyClass: taxonomyClass.PLACE,
+          taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
           includeConcepts: true,
           sessionId: timestampRef,
         })

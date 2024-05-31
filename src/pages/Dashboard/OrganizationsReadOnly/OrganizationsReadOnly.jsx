@@ -45,10 +45,12 @@ function OrganizationsReadOnly() {
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
 
+  let taxonomyClassQuery = new URLSearchParams();
+  taxonomyClassQuery.append('taxonomy-class', taxonomyClass.ORGANIZATION);
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
-    taxonomyClass: taxonomyClass.ORGANIZATION,
+    taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
     includeConcepts: true,
   });
 
@@ -127,10 +129,12 @@ function OrganizationsReadOnly() {
               ...initialPlace[0],
               ['openingHours']: initialPlace[0]?.openingHours?.uri,
             };
+            let taxonomyClassQuery = new URLSearchParams();
+            taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
             getAllTaxonomy({
               calendarId,
               search: '',
-              taxonomyClass: taxonomyClass.PLACE,
+              taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
               includeConcepts: true,
             })
               .unwrap()
@@ -187,7 +191,7 @@ function OrganizationsReadOnly() {
                     <div className="button-container">
                       <OutlinedButton
                         data-cy="button-edit-organization"
-                        label={t('dashboard.organization.readOnly.Edit')}
+                        label={t('dashboard.organization.readOnly.edit')}
                         size="middle"
                         style={{ height: '40px', width: '60px' }}
                         onClick={() =>

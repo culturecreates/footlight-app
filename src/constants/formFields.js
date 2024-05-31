@@ -62,6 +62,12 @@ export const mappedFieldTypes = {
   SOCIAL_MEDIA_LINKS: 'socialMediaLinks',
 };
 
+export const formNames = {
+  ORGANIZATION: {
+    LOCATION: 'LOCATION',
+  },
+};
+
 const rules = [
   {
     dataType: dataTypes.URI_STRING,
@@ -78,6 +84,12 @@ const rules = [
     },
   },
 ];
+
+const checkMandatoryAdminOnlyFields = (fieldName, fieldList = []) => {
+  if (fieldList?.length > 0) {
+    return fieldList.some((field) => field.fieldName === fieldName);
+  }
+};
 
 export const formFieldValue = [
   {
@@ -105,18 +117,21 @@ export const formFieldValue = [
             }}>
             <BilingualInput fieldData={data}>
               <Form.Item
-                name={name?.concat(['fr'])}
+                name={[`${name}`, 'fr']}
                 key={contentLanguage.FRENCH}
-                dependencies={name?.concat(['en'])}
+                dependencies={[`${name}`, 'en']}
                 initialValue={data?.fr}
                 rules={
                   required
                     ? [
                         ({ getFieldValue }) => ({
                           validator(_, value) {
-                            if (value || getFieldValue(name?.concat(['en']))) {
+                            if (value || getFieldValue([`${name}`, 'en'])) {
                               return Promise.resolve();
-                            } else return Promise.reject(new Error(validations?.fr));
+                            } else
+                              return Promise.reject(
+                                new Error(validations ?? t('common.validations.informationRequired')),
+                              );
                           },
                         }),
                       ]
@@ -139,18 +154,21 @@ export const formFieldValue = [
               </Form.Item>
 
               <Form.Item
-                name={name?.concat(['en'])}
+                name={[`${name}`, 'en']}
                 key={contentLanguage.ENGLISH}
-                dependencies={name?.concat(['fr'])}
+                dependencies={[`${name}`, 'fr']}
                 initialValue={data?.en}
                 rules={
                   required
                     ? [
                         ({ getFieldValue }) => ({
                           validator(_, value) {
-                            if (value || getFieldValue(name?.concat(['fr']))) {
+                            if (value || getFieldValue([`${name}`, 'fr'])) {
                               return Promise.resolve();
-                            } else return Promise.reject(new Error(validations?.en));
+                            } else
+                              return Promise.reject(
+                                new Error(validations ?? t('common.validations.informationRequired')),
+                              );
                           },
                         }),
                       ]
@@ -575,6 +593,8 @@ export const renderFormFields = ({
   label,
   style,
   mappedField,
+  t,
+  validations,
 }) => {
   return (
     <>
@@ -597,9 +617,17 @@ export const renderFormFields = ({
         hidden={hidden}
         style={style}
         className={mappedField}
-        rules={rules?.map((rule) => {
-          if (datatype === rule?.dataType) return rule.rule;
-        })}
+        rules={rules
+          ?.map((rule) => {
+            if (datatype === rule?.dataType) return rule.rule;
+          })
+          .concat([
+            {
+              required: required,
+              message: validations ?? t('common.validations.informationRequired'),
+            },
+          ])
+          ?.filter((rule) => rule !== undefined)}
         help={
           position === 'bottom' && userTips ? (
             <p
@@ -643,13 +671,16 @@ export const returnFormDataWithFields = ({
   placeNavigationHandler,
   isExternalSourceFetching,
   isEntitiesFetching,
+  adminOnlyFields,
+  mandatoryFields,
 }) => {
   return renderFormFields({
+    fieldName: field?.name,
     name: [field?.mappedField],
     mappedField: field?.mappedField,
     type: field?.type,
     datatype: field?.datatype,
-    required: field?.isRequiredField,
+    required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
     element: formField?.element({
       mappedField: field?.mappedField,
       data: entityData && entityData[field?.mappedField],
@@ -679,7 +710,7 @@ export const returnFormDataWithFields = ({
         field?.mappedField === mappedFieldTypes.IMAGE
           ? entityData?.image?.original?.uri
           : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo?.original?.uri,
-      required: field?.isRequiredField,
+      required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
       t: t,
       userTips: bilingual({
         en: field?.userTips?.text?.en,
@@ -714,6 +745,7 @@ export const returnFormDataWithFields = ({
       placeNavigationHandler,
       isExternalSourceFetching,
       isEntitiesFetching,
+      // required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
     }),
     key: index,
     initialValue: formInitialValueHandler(field?.type, field?.mappedField, field?.datatype, entityData),
@@ -729,9 +761,16 @@ export const returnFormDataWithFields = ({
       calendarContentLanguage: calendarContentLanguage,
     }),
     position: field?.userTips?.position,
-    hidden: field?.isAdminOnlyField ? (adminCheckHandler() ? false : true) : false,
+    hidden: checkMandatoryAdminOnlyFields(field?.name, adminOnlyFields) ? (adminCheckHandler() ? false : true) : false,
     form,
     style,
     taxonomyAlias: field?.taxonomyAlias,
+    t,
+    validations: bilingual({
+      en: field?.validations?.en,
+      fr: field?.validations?.fr,
+      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+      locationPlace,
+    }),
   });
 };

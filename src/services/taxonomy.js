@@ -7,10 +7,24 @@ export const taxonomyApi = createApi({
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getAllTaxonomy: builder.query({
-      query: ({ calendarId, query = '', filters, page = 1, limit = 200, taxonomyClass, includeConcepts }) => ({
-        url: `taxonomy?query=${query}&${filters}&page=${page}&limit=${limit}&taxonomy-class=${taxonomyClass}&include-concepts=${includeConcepts}`,
+      query: ({
+        calendarId,
+        query = '',
+        filters,
+        page = 1,
+        limit = 200,
+        taxonomyClass,
+        includeConcepts,
+        addToFilter,
+      }) => ({
+        url: `taxonomy?query=${query}${
+          filters ? `&${filters}` : ''
+        }&page=${page}&limit=${limit}&${taxonomyClass}&include-concepts=${includeConcepts}`,
         headers: {
           'calendar-id': calendarId,
+        },
+        params: {
+          ...((addToFilter == true || addToFilter == false) && { addToFilter }),
         },
       }),
       providesTags: (result) =>

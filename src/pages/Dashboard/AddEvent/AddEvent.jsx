@@ -138,10 +138,12 @@ function AddEvent() {
     { eventId: eventId ?? duplicateId, calendarId, sessionId: timestampRef },
     { skip: eventId || duplicateId ? false : true },
   );
+  let taxonomyClassQuery = new URLSearchParams();
+  taxonomyClassQuery.append('taxonomy-class', taxonomyClass.EVENT);
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
-    taxonomyClass: taxonomyClass.EVENT,
+    taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
     includeConcepts: true,
     sessionId: timestampRef,
   });
@@ -198,14 +200,31 @@ function AddEvent() {
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
-
   let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
   let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
-  let requiredFields = currentCalendarData?.formSchema?.filter((form) => form?.formName === 'Event');
-  requiredFields = requiredFields && requiredFields?.length > 0 && requiredFields[0];
-  let requiredFieldNames = requiredFields ? requiredFields?.requiredFields?.map((field) => field?.fieldName) : [];
-  let standardAdminOnlyFields = requiredFields?.adminOnlyFields?.standardFields ?? [];
-  let dynamicAdminOnlyFields = requiredFields?.adminOnlyFields?.dynamicFields ?? [];
+  let requiredFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.event);
+  let requiredFieldNames = requiredFields
+    ? requiredFields[0]?.formFieldProperties?.mandatoryFields?.standardFields
+        ?.map((field) => field?.fieldName)
+        ?.concat(requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => field))
+    : [];
+  let standardAdminOnlyFields =
+    requiredFields && requiredFields?.length > 0
+      ? requiredFields[0]?.formFieldProperties?.adminOnlyFields?.standardFields?.map((field) => field?.fieldName)
+      : [];
+  let dynamicAdminOnlyFields =
+    requiredFields && requiredFields?.length > 0
+      ? requiredFields[0]?.formFieldProperties?.adminOnlyFields?.dynamicFields?.map((field) => field)
+      : [];
+  requiredFields =
+    requiredFields &&
+    requiredFields?.length > 0 &&
+    requiredFields[0]?.formFieldProperties?.mandatoryFields?.standardFields?.concat(
+      requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => {
+        return { fieldName: field };
+      }),
+    );
+
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const dateTimeConverter = (date, time) => {
     let dateSelected = date.format('DD-MM-YYYY');
@@ -323,10 +342,6 @@ function AddEvent() {
               'dateRangePicker',
               'datePickerWrapper',
               'startDateRecur',
-              'contactWebsiteUrl',
-              'eventLink',
-              'videoLink',
-              'facebookLink',
               ...(eventId && eventData?.publishState === eventPublishState.PUBLISHED && type !== eventPublishState.DRAFT
                 ? validateFields
                 : []),
@@ -1354,7 +1369,7 @@ function AddEvent() {
 
   useEffect(() => {
     if (calendarId && eventData && currentCalendarData) {
-      let initialAddedFields = [],
+      let initialAddedFields = [...addedFields],
         isRecurring = false;
 
       if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState, false) || duplicateId) {
@@ -1379,10 +1394,12 @@ function AddEvent() {
             ['openingHours']: initialPlace[0]?.openingHours?.uri,
             ['type']: entitiesClass?.place,
           };
+          let taxonomyClassQuery = new URLSearchParams();
+          taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
           getAllTaxonomy({
             calendarId,
             search: '',
-            taxonomyClass: taxonomyClass.PLACE,
+            taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
             includeConcepts: true,
             sessionId: timestampRef,
           })
@@ -1661,8 +1678,9 @@ function AddEvent() {
 
   useEffect(() => {
     if (currentCalendarData) {
-      let publishValidateFields = [];
-      requiredFields?.requiredFields?.map((requiredField) => {
+      let publishValidateFields = [],
+        initialAddedFields = [];
+      requiredFields?.map((requiredField) => {
         switch (requiredField?.fieldName) {
           case eventFormRequiredFieldNames.NAME:
             publishValidateFields.push('french', 'english');
@@ -1675,15 +1693,22 @@ function AddEvent() {
             break;
           case eventFormRequiredFieldNames.DESCRIPTION:
             publishValidateFields.push('englishEditor', 'frenchEditor');
-            setDescriptionMinimumWordCount(Number(requiredField?.rule?.minimumWordCount));
+
+            setDescriptionMinimumWordCount(
+              requiredField?.rule?.minimumWordCount ? Number(requiredField?.rule?.minimumWordCount) : 1,
+            );
             break;
           case eventFormRequiredFieldNames.DESCRIPTION_EN:
             publishValidateFields.push('englishEditor');
-            setDescriptionMinimumWordCount(Number(requiredField?.rule?.minimumWordCount));
+            setDescriptionMinimumWordCount(
+              requiredField?.rule?.minimumWordCount ? Number(requiredField?.rule?.minimumWordCount) : 1,
+            );
             break;
           case eventFormRequiredFieldNames.DESCRIPTION_FR:
             publishValidateFields.push('frenchEditor');
-            setDescriptionMinimumWordCount(Number(requiredField?.rule?.minimumWordCount));
+            setDescriptionMinimumWordCount(
+              requiredField?.rule?.minimumWordCount ? Number(requiredField?.rule?.minimumWordCount) : 1,
+            );
             break;
           case eventFormRequiredFieldNames.START_DATE:
             publishValidateFields.push('datePickerWrapper', 'datePicker', 'dateRangePicker', 'startDateRecur');
@@ -1707,18 +1732,75 @@ function AddEvent() {
           case eventFormRequiredFieldNames.LOCATION:
             publishValidateFields.push('location-form-wrapper');
             break;
+          case eventFormRequiredFieldNames.VIRTUAL_LOCATION:
+            initialAddedFields = initialAddedFields?.concat(locationType?.fieldNames);
+            publishValidateFields.push('location-form-wrapper');
+            break;
           case eventFormRequiredFieldNames.IMAGE:
             publishValidateFields.push('draggerWrap');
             break;
           case eventFormRequiredFieldNames.ORGANIZERS:
             publishValidateFields.push('organizers');
             break;
+          case eventFormRequiredFieldNames.EVENT_STATUS:
+            publishValidateFields.push('eventStatus');
+            break;
+          case eventFormRequiredFieldNames.CONTACT_TITLE:
+            publishValidateFields.push('englishContactTitle', 'frenchContactTitle');
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.contact);
+            break;
+          case eventFormRequiredFieldNames.CONTACT_WEBSITE:
+            publishValidateFields.push('contactWebsiteUrl');
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.contact);
+            break;
+          case eventFormRequiredFieldNames.PHONE_NUMBER:
+            publishValidateFields.push('contactPhoneNumber');
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.contact);
+            break;
+          case eventFormRequiredFieldNames.EMAIL:
+            publishValidateFields.push('contactEmail');
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.contact);
+            break;
+          case eventFormRequiredFieldNames.PERFORMER:
+            publishValidateFields.push('performers');
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.performerWrap);
+            break;
+          case eventFormRequiredFieldNames.COLLABORATOR:
+            publishValidateFields.push('supporters');
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.supporterWrap);
+
+            break;
+          case eventFormRequiredFieldNames.EVENT_LINK:
+            publishValidateFields.push(otherInformationFieldNames.eventLink);
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.eventLink);
+            break;
+          case eventFormRequiredFieldNames.VIDEO_URL:
+            publishValidateFields.push(otherInformationFieldNames.videoLink);
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.videoLink);
+            break;
+          case eventFormRequiredFieldNames.FACEBOOK_URL:
+            publishValidateFields.push(otherInformationFieldNames.facebookLink);
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.facebookLinkWrap);
+
+            break;
+          case eventFormRequiredFieldNames.KEYWORDS:
+            publishValidateFields.push(otherInformationFieldNames.keywords);
+            initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
+
+            break;
+          case eventFormRequiredFieldNames.EVENT_ACCESSIBILITY:
+            publishValidateFields.push('eventAccessibility');
+            initialAddedFields = initialAddedFields?.concat(eventAccessibilityFieldNames?.noteWrap);
+
+            break;
           default:
+            publishValidateFields.push(['dynamicFields', requiredField?.fieldName]);
             break;
         }
       });
       publishValidateFields = [...new Set(publishValidateFields)];
       setValidateFields(publishValidateFields);
+      setAddedFields(initialAddedFields);
     }
   }, [currentCalendarData]);
 
@@ -2079,7 +2161,13 @@ function AddEvent() {
                         hidden={
                           dynamicAdminOnlyFields?.includes(taxonomy?.id) ? (adminCheckHandler() ? false : true) : false
                         }
-                        data-cy={`form-item-${taxonomy?.id}`}>
+                        data-cy={`form-item-${taxonomy?.id}`}
+                        rules={[
+                          {
+                            required: requiredFieldNames?.includes(taxonomy?.id),
+                            message: t('common.validations.informationRequired'),
+                          },
+                        ]}>
                         <TreeSelectOption
                           allowClear
                           treeDefaultExpandAll
@@ -2319,14 +2407,19 @@ function AddEvent() {
                   </Col>
                 </Row>
               )}
-
               <Row>
                 <Col flex={'423px'}>
                   <Form.Item
                     name="eventStatus"
                     label={t('dashboard.events.addEditEvent.dates.status')}
                     initialValue={eventData?.eventStatus ?? eventStatus.EventScheduled}
-                    data-cy="form-item-event-status-label">
+                    data-cy="form-item-event-status-label"
+                    rules={[
+                      {
+                        required: requiredFieldNames?.includes(eventFormRequiredFieldNames.EVENT_STATUS),
+                        message: t('common.validations.informationRequired'),
+                      },
+                    ]}>
                     <Select options={eventStatusOptions} data-cy="select-event-status" />
                   </Form.Item>
                 </Col>
@@ -2368,7 +2461,10 @@ function AddEvent() {
           <CardEvent
             marginResponsive="0px"
             title={t('dashboard.events.addEditEvent.location.title')}
-            required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.LOCATION)}>
+            required={
+              requiredFieldNames?.includes(eventFormRequiredFieldNames?.LOCATION) ||
+              requiredFieldNames?.includes(eventFormRequiredFieldNames?.VIRTUAL_LOCATION)
+            }>
             <Form.Item
               name="location-form-wrapper"
               rules={[
@@ -3202,7 +3298,8 @@ function AddEvent() {
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}
                   className="subheading-wrap"
-                  data-cy="form-item-event-contact-title">
+                  data-cy="form-item-event-contact-title"
+                  required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.CONTACT_TITLE)}>
                   <ContentLanguageInput
                     calendarContentLanguage={calendarContentLanguage}
                     isFieldsDirty={{
@@ -3213,7 +3310,16 @@ function AddEvent() {
                       <Form.Item
                         name="frenchContactTitle"
                         initialValue={eventData?.contactPoint?.name?.fr}
-                        key={contentLanguage.FRENCH}>
+                        key={contentLanguage.FRENCH}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (value || getFieldValue('englishContactTitle')) {
+                                return Promise.resolve();
+                              } else return Promise.reject(new Error(t('common.validations.informationRequired')));
+                            },
+                          }),
+                        ]}>
                         <TextArea
                           autoSize
                           autoComplete="off"
@@ -3236,7 +3342,16 @@ function AddEvent() {
                       <Form.Item
                         name="englishContactTitle"
                         initialValue={eventData?.contactPoint?.name?.en}
-                        key={contentLanguage.ENGLISH}>
+                        key={contentLanguage.ENGLISH}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (value || getFieldValue('frenchContactTitle')) {
+                                return Promise.resolve();
+                              } else return Promise.reject(new Error(t('common.validations.informationRequired')));
+                            },
+                          }),
+                        ]}>
                         <TextArea
                           autoSize
                           autoComplete="off"
@@ -3270,6 +3385,10 @@ function AddEvent() {
                       type: 'url',
                       message: t('dashboard.events.addEditEvent.validations.url'),
                     },
+                    {
+                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.CONTACT_WEBSITE),
+                      message: t('common.validations.informationRequired'),
+                    },
                   ]}
                   data-cy="form-item-event-contact-website-label">
                   <StyledInput
@@ -3284,6 +3403,12 @@ function AddEvent() {
                   className="subheading-wrap"
                   label={t('dashboard.events.addEditEvent.otherInformation.contact.phoneNumber')}
                   initialValue={eventData?.contactPoint?.telephone}
+                  rules={[
+                    {
+                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.PHONE_NUMBER),
+                      message: t('common.validations.informationRequired'),
+                    },
+                  ]}
                   data-cy="form-item-event-contact-phone-number-label">
                   <StyledInput
                     placeholder={t('dashboard.events.addEditEvent.otherInformation.contact.placeHolderPhoneNumber')}
@@ -3299,6 +3424,10 @@ function AddEvent() {
                     {
                       type: 'email',
                       message: t('login.validations.invalidEmail'),
+                    },
+                    {
+                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EMAIL),
+                      message: t('common.validations.informationRequired'),
                     },
                   ]}
                   data-cy="form-item-event-contact-email-label">
@@ -3379,6 +3508,7 @@ function AddEvent() {
                 style={{
                   display: !addedFields?.includes(otherInformationFieldNames.performerWrap) && 'none',
                 }}
+                required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.PERFORMER)}
                 data-cy="form-item-event-performer-label">
                 <Row>
                   <Col>
@@ -3387,7 +3517,20 @@ function AddEvent() {
                     </p>
                   </Col>
                 </Row>
-                <Form.Item name="performers" initialValue={selectedPerformers}>
+                <Form.Item
+                  name="performers"
+                  initialValue={selectedPerformers}
+                  rules={[
+                    () => ({
+                      validator() {
+                        if (requiredFieldNames?.includes(eventFormRequiredFieldNames?.PERFORMER)) {
+                          if (selectedPerformers?.length > 0) {
+                            return Promise.resolve();
+                          } else return Promise.reject(new Error(t('common.validations.informationRequired')));
+                        }
+                      },
+                    }),
+                  ]}>
                   <KeyboardAccessibleLayout
                     setItem={(performer) => setSelectedPerformers([...selectedPerformers, performer])}
                     data={[performerList, performerImportsFootlightList, performerArtsdataList]}
@@ -3597,6 +3740,7 @@ function AddEvent() {
                 style={{
                   display: !addedFields?.includes(otherInformationFieldNames.supporterWrap) && 'none',
                 }}
+                required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.COLLABORATOR)}
                 data-cy="form-item-supporter-label">
                 <Row>
                   <Col>
@@ -3605,7 +3749,20 @@ function AddEvent() {
                     </p>
                   </Col>
                 </Row>
-                <Form.Item name="supporters" initialValue={selectedSupporters}>
+                <Form.Item
+                  name="supporters"
+                  initialValue={selectedSupporters}
+                  rules={[
+                    () => ({
+                      validator() {
+                        if (requiredFieldNames?.includes(eventFormRequiredFieldNames?.COLLABORATOR)) {
+                          if (selectedSupporters?.length > 0) {
+                            return Promise.resolve();
+                          } else return Promise.reject(new Error(t('common.validations.informationRequired')));
+                        }
+                      },
+                    }),
+                  ]}>
                   <KeyboardAccessibleLayout
                     setItem={(supporter) => setSelectedSupporters([...selectedSupporters, supporter])}
                     data={[supporterList, supporterImportsFootlightList, supporterArtsdataList]}
@@ -3823,6 +3980,10 @@ function AddEvent() {
                     type: 'url',
                     message: t('dashboard.events.addEditEvent.validations.url'),
                   },
+                  {
+                    required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EVENT_LINK),
+                    message: t('common.validations.informationRequired'),
+                  },
                 ]}
                 data-cy="form-item-event-link">
                 <StyledInput
@@ -3840,7 +4001,14 @@ function AddEvent() {
                 }}
                 label={t('dashboard.events.addEditEvent.otherInformation.videoLink')}
                 initialValue={eventData?.videoUrl}
-                rules={[{ validator: (rule, value) => validateVideoLink(rule, value) }]}
+                rules={[
+                  { validator: (rule, value) => validateVideoLink(rule, value) },
+
+                  {
+                    required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.VIDEO_URL),
+                    message: t('common.validations.informationRequired'),
+                  },
+                ]}
                 data-cy="form-item-video-link">
                 <StyledInput
                   addonBefore="URL"
@@ -3878,6 +4046,10 @@ function AddEvent() {
                       type: 'url',
                       message: t('dashboard.events.addEditEvent.validations.url'),
                     },
+                    {
+                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.FACEBOOK_URL),
+                      message: t('common.validations.informationRequired'),
+                    },
                   ]}
                   data-cy="form-item-facebook-link">
                   <StyledInput
@@ -3899,6 +4071,12 @@ function AddEvent() {
                 }}
                 label={t('dashboard.events.addEditEvent.otherInformation.keywords')}
                 initialValue={eventData?.keywords}
+                rules={[
+                  {
+                    required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.KEYWORDS),
+                    message: t('common.validations.informationRequired'),
+                  },
+                ]}
                 data-cy="form-item-select-keywords-label">
                 <SelectOption
                   mode="tags"
@@ -3989,7 +4167,16 @@ function AddEvent() {
             </ChangeTypeLayout>
           </CardEvent>
           {taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false) && (
-            <CardEvent title={t('dashboard.events.addEditEvent.eventAccessibility.title')} marginResponsive="0px">
+            <CardEvent
+              title={t('dashboard.events.addEditEvent.eventAccessibility.title')}
+              marginResponsive="0px"
+              hidden={
+                standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_ACCESSIBILITY)
+                  ? adminCheckHandler()
+                    ? false
+                    : true
+                  : false
+              }>
               <>
                 <p className="add-event-date-heading" data-cy="event-accessibility-subheading">
                   {t('dashboard.events.addEditEvent.eventAccessibility.subHeading')}
@@ -4005,7 +4192,20 @@ function AddEvent() {
                     display:
                       !taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false) && 'none',
                   }}
-                  help={
+                  rules={[
+                    {
+                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EVENT_ACCESSIBILITY),
+                      message: t('common.validations.informationRequired'),
+                    },
+                  ]}
+                  hidden={
+                    standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_ACCESSIBILITY)
+                      ? adminCheckHandler()
+                        ? false
+                        : true
+                      : false
+                  }
+                  extra={
                     <p
                       className="add-event-date-heading"
                       style={{ fontSize: '12px' }}

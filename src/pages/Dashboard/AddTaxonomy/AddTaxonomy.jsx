@@ -25,6 +25,7 @@ import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
 import { Prompt } from '../../../hooks/usePrompt';
 import { compareArraysOfObjects } from '../../../utils/genericObjectCompare';
 import { PathName } from '../../../constants/pathName';
+import StyledSwitch from '../../../components/Switch/StyledSwitch';
 
 const taxonomyClasses = taxonomyClassTranslations.map((item) => {
   return { ...item, value: item.key };
@@ -88,7 +89,7 @@ const AddTaxonomyTest = () => {
             currentCalendarData?.fieldTaxonomyMaps,
           );
           setConceptData(res.concepts);
-          setUserAccess(res?.isAdminOnly && ['Admin only']);
+          setUserAccess(res?.isAdminOnly && [userRolesWithTranslation[0].key]);
           setStandardFields([
             ...availableStandardFields,
             getStandardFieldTranslation({ value: res?.mappedToField, classType: res?.taxonomyClass }),
@@ -172,6 +173,7 @@ const AddTaxonomyTest = () => {
             fr: values?.englishdescription?.trim(),
           },
           concepts: { concepts: [...filteredConceptData] },
+          addToFilter: values?.addToFilter,
         };
 
         if (taxonomyId) {
@@ -275,6 +277,7 @@ const AddTaxonomyTest = () => {
   useEffect(() => {
     if (isReadOnly) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}`, { replace: true });
   }, [isReadOnly]);
+
   return (
     <>
       <Prompt
@@ -500,45 +503,55 @@ const AddTaxonomyTest = () => {
                 {(location.state?.dynamic !== 'dynamic' || taxonomyId) && (
                   <Row>
                     <Col flex="423px">
-                      <Form.Item
+                      <div
                         label={t('dashboard.taxonomy.addNew.userAccess')}
                         name="userAccess"
                         className="user-access"
                         data-cy="form-item-user-access-title">
                         <SearchableCheckbox
                           data-cy="searchable-checkbox-user-roles"
+                          value={userAccess}
                           onFilterChange={(values) => {
                             form.setFieldValue('userAccess', values);
                             setUserAccess(values);
                           }}
-                          data={[
-                            {
-                              key: userRolesWithTranslation[0].key,
+                          data={[userRolesWithTranslation[0]]?.map((role) => {
+                            return {
+                              key: role.key,
                               label: (
-                                <Checkbox
-                                  data-cy="checkbox-user-roles"
-                                  key={userRolesWithTranslation[0].key}
-                                  style={{ marginLeft: '8px' }}
-                                  value={t(`dashboard.taxonomy.addNew.adminOnly`)}>
+                                <Checkbox value={role.value} key={role.key} style={{ marginLeft: '8px' }}>
                                   {t(`dashboard.taxonomy.addNew.adminOnly`)}
                                 </Checkbox>
                               ),
-                              filtervalue: userRolesWithTranslation[0].key,
-                            },
-                          ]}
-                          value={userRolesWithTranslation[0]}>
+                              filtervalue: role.key,
+                            };
+                          })}>
                           {userAccess?.length > 0
                             ? t(`dashboard.taxonomy.addNew.adminOnly`)
                             : t(`dashboard.taxonomy.addNew.userAccessPlaceHolder`)}
                           <DownOutlined style={{ fontSize: '16px' }} />
                         </SearchableCheckbox>
-                      </Form.Item>
+                      </div>
                       <div className="field-description" style={{ marginTop: 8 }} data-cy="div-user-access-helper-text">
                         {t(`dashboard.taxonomy.addNew.userAccessDescription`)}
                       </div>
                     </Col>
                   </Row>
                 )}
+                <Row justify={'start'} align={'top'} gutter={[8, 0]}>
+                  <Col>
+                    <Form.Item valuePropName="checked" name="addToFilter" initialValue={taxonomyData?.addToFilter}>
+                      <StyledSwitch />
+                    </Form.Item>
+                  </Col>
+                  <Col>
+                    <span
+                      style={{ color: '#222732', minHeight: '32px', display: 'flex', alignItems: 'center' }}
+                      data-cy="span-add-to-filter-taxonomy-text">
+                      {t('dashboard.taxonomy.addNew.addAsFilter')}
+                    </span>
+                  </Col>
+                </Row>
               </>
               <></>
             </CardEvent>
