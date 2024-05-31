@@ -7,23 +7,37 @@ import { getUserDetails, clearUser } from '../../redux/reducer/userSlice';
 class ErrorLayout extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: '' };
   }
 
   static getDerivedStateFromError(error) {
     console.error(error);
-    return { hasError: true };
+    return { hasError: true, error };
   }
 
   componentDidCatch(error, errorInfo) {
     this.logError({ info: { error, errorInfo } });
-    const renderCount = sessionStorage.getItem('error'); // gets updated for each consecutive render of error component
-    if (renderCount >= 3) {
-      sessionStorage.clear();
-      this.props.clearUser();
+    this.infiniteLoopHandler();
+  }
+
+  infiniteLoopHandler() {
+    let renderCount = Cookies.get('error');
+    if (renderCount === undefined) {
+      renderCount = 0;
     } else {
-      sessionStorage.setItem('error', renderCount + 1);
+      renderCount = parseInt(renderCount, 10);
     }
+
+    if (renderCount < 3) {
+      Cookies.set('error', renderCount + 1);
+    } else {
+      Cookies.remove('error');
+      this.props.clearUser();
+    }
+  }
+
+  componentDidMount() {
+    if (!this.state.hasError) Cookies.remove('error');
   }
 
   logError({ info }) {
@@ -56,14 +70,13 @@ class ErrorLayout extends React.Component {
     if (accessToken) {
       return accessToken;
     }
-
     return Cookies.get('accessToken');
   }
 
   render() {
     const asyncError = this.props?.asycErrorDetails;
 
-    if (this.state.hasError) return <ErrorAlert errorType="general" />;
+    if (this.state.hasError) return <ErrorAlert errorType="general" info={this.state.error} />;
 
     if (asyncError?.isError) {
       if (asyncError.errorCode === '503') return <ErrorAlert errorType="serverDown" />;
@@ -71,7 +84,7 @@ class ErrorLayout extends React.Component {
       return <ErrorAlert errorType="failedAPI" />;
     }
 
-    sessionStorage.removeItem('error');
+    localStorage.removeItem('error');
     return this.props.children;
   }
 }

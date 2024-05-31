@@ -9,10 +9,9 @@ import { clearErrors, getErrorDetails } from '../../redux/reducer/ErrorSlice';
 import { useEffect } from 'react';
 
 function ErrorAlert(props) {
-  const { errorType = 'general' } = props;
+  const { errorType = 'general', info = '' } = props;
 
   const errorDetails = useSelector(getErrorDetails);
-
   const error = useRouteError();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -40,7 +39,7 @@ function ErrorAlert(props) {
     message = errorDetails?.message;
   }
   if (errorType === 'general' && !errorDetails.isError) {
-    message = error?.message;
+    message = info ? info : error?.message;
   } else if (errorType === 'pageNotFound') {
     image = <Error404 />;
     message = t('errorPage.notFoundMessage');
