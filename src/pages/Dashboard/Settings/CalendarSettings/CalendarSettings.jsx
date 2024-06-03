@@ -42,11 +42,6 @@ function CalendarSettings() {
   const [updateCalendar] = useUpdateCalendarMutation();
   const [addImage] = useAddImageMutation();
 
-  // const [customRatio, setCustomRatio] = React.useState({
-  //   large: '',
-  //   thumbnail: '',
-  // });
-
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const filterOptions = (data, taxonomyClass) => {
@@ -83,7 +78,6 @@ function CalendarSettings() {
   const handleInitialFilters = (data, selectedFilters) => {
     return data?.filter((filter) => selectedFilters?.includes(filter.value))?.map((filter) => filter.value) ?? [];
   };
-  // initialSelectedFilters = ['63a0a47c1c6b6c005aad30da', '6467a0a5137a2200640d6abd'];
 
   initialSelectedFilters = [
     {
