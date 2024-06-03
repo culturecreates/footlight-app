@@ -996,6 +996,14 @@
           "thumbnail": "Vignette",
           "large": "Grande image"
         },
+        "siteImageSettings": {
+          "title": "Paramètres de l'image du site",
+          "description": "Personnalisez les paramètres de l'image pour votre site web.",
+          "thumbnailSettings": "Paramètres des vignettes",
+          "largeSettings": "Grands paramètres",
+          "aspectRatio": "Format d'image",
+          "maximumWidth": "Largeur maximale"
+        },
         "calendarLogo": "Logo du calendrier",
         "calendarLogoDescription": "Uniquement les fichiers .jpeg et .png sont acceptés.",
         "calendarWidgetSetup": "Configuration du widget calendrier",

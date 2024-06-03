@@ -1001,6 +1001,14 @@
           "thumbnail": "Thumbnail image",
           "large": "Large image"
         },
+        "siteImageSettings": {
+          "title": "Site image settings",
+          "description": "Customize image settings for your website.",
+          "thumbnailSettings": "Thumbnail settings",
+          "largeSettings": "Large settings",
+          "aspectRatio": "Aspect ratio",
+          "maximumWidth": "Maximum width"
+        },
         "calendarLogo": "Calendar Logo",
         "calendarLogoDescription": "Only JPEG and PNG files are supported.",
         "calendarWidgetSetup": "Calendar widget setup",
