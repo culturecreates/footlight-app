@@ -1002,7 +1002,8 @@
           "thumbnailSettings": "Paramètres des vignettes",
           "largeSettings": "Grands paramètres",
           "aspectRatio": "Format d'image",
-          "maximumWidth": "Largeur maximale"
+          "maximumWidth": "Largeur maximale",
+          "addImageGallery": "Ajouter la galerie d'images"
         },
         "calendarLogo": "Logo du calendrier",
         "calendarLogoDescription": "Uniquement les fichiers .jpeg et .png sont acceptés.",

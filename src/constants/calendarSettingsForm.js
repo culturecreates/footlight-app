@@ -401,6 +401,22 @@ export const calendarSettingsFormFields = {
                 />
               </Form.Item>
             </Col>
+            <Col span={24}>
+              <Row justify={'start'} align={'top'} gutter={[8, 0]}>
+                <Col span={3}>
+                  <Form.Item valuePropName="checked" name="enableGallery">
+                    <StyledSwitch />
+                  </Form.Item>
+                </Col>
+                <Col>
+                  <span
+                    style={{ color: '#222732', minHeight: '32px', display: 'flex', alignItems: 'center' }}
+                    data-cy="span-featured-event-text">
+                    {t('dashboard.settings.calendarSettings.siteImageSettings.addImageGallery')}
+                  </span>
+                </Col>
+              </Row>
+            </Col>
           </Row>
         );
       },

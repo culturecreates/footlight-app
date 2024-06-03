@@ -1007,7 +1007,8 @@
           "thumbnailSettings": "Thumbnail settings",
           "largeSettings": "Large settings",
           "aspectRatio": "Aspect ratio",
-          "maximumWidth": "Maximum width"
+          "maximumWidth": "Maximum width",
+          "addImageGallery": "Add image gallery"
         },
         "calendarLogo": "Calendar Logo",
         "calendarLogoDescription": "Only JPEG and PNG files are supported.",
