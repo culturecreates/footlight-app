@@ -104,10 +104,7 @@ function CalendarSettings() {
     },
   ];
 
-  const imageConfig =
-    currentCalendarData?.imageConfig?.length > 0
-      ? currentCalendarData?.imageConfig?.filter((config) => config?.entityName == entitiesClass.event)[0]
-      : null;
+  const imageConfig = currentCalendarData?.imageConfig?.length > 0 ? currentCalendarData?.imageConfig[0] : null;
   let aspectRatioSet = new Set([
     '1:1',
     '2:1',
@@ -152,6 +149,7 @@ function CalendarSettings() {
     },
     calendarLogo: currentCalendarData?.logo?.original?.uri,
     readOnly: currentCalendarData?.mode === calendarModes.READ_ONLY ? true : false,
+    enableGallery: imageConfig?.enableGallery,
   };
 
   const udpateCalendarHandler = (data) => {
@@ -224,7 +222,11 @@ function CalendarSettings() {
             dateFormatDisplay: values.calendarDateFormat,
             imageConfig: [
               {
-                entityName: entitiesClass.event,
+                entityName: Object.keys(entitiesClass)
+                  .map((key) => {
+                    if (entitiesClass[key] !== entitiesClass.people) return entitiesClass[key];
+                  })
+                  ?.filter((key) => key),
                 large: {
                   aspectRatio: values.imageAspectRatio.large,
                   maxWidth: Number(values.imageMaxWidth.large),
@@ -233,6 +235,7 @@ function CalendarSettings() {
                   aspectRatio: values.imageAspectRatio.thumbnail,
                   maxWidth: Number(values.imageMaxWidth.thumbnail),
                 },
+                enableGallery: values?.enableGallery ?? false,
               },
             ],
             mode: values.readOnly ? calendarModes.READ_ONLY : calendarModes.READ_WRITE,
