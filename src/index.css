@@ -80,3 +80,22 @@ body.inheritCursors * {
     justify-content: center;
   }
 }
+
+@media screen and (max-width: 575px) {
+  .ant-input,
+  .ant-input-number,
+  .ant-select,
+  .ant-cascader,
+  .ant-time-picker,
+  .ant-calendar,
+  .ant-slider,
+  .ant-switch,
+  .ant-radio-button,
+  .ant-checkbox,
+  textarea[class^='ant-'],
+  input[class^='ant-'],
+  .text-editor .ql-container {
+    font-size: 16px !important;
+    /* height: 40px; */
+  }
+}
