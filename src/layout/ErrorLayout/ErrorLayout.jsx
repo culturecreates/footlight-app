@@ -17,28 +17,11 @@ class ErrorLayout extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     this.logError({ info: { error, errorInfo } });
-    this.infiniteLoopHandler();
   }
 
-  infiniteLoopHandler() {
-    let renderCount = Cookies.get('error');
-    if (renderCount === undefined) {
-      renderCount = 0;
-    } else {
-      renderCount = parseInt(renderCount, 10);
-    }
-
-    if (renderCount < 3) {
-      Cookies.set('error', renderCount + 1);
-    } else {
-      Cookies.remove('error');
-      this.props.clearUser();
-    }
-  }
-
-  componentDidMount() {
-    if (!this.state.hasError) Cookies.remove('error');
-  }
+  // componentDidMount() {
+  //   if (!this.state.hasError) ;
+  // }
 
   logError({ info }) {
     const errorLog = JSON.stringify({
@@ -84,7 +67,7 @@ class ErrorLayout extends React.Component {
       return <ErrorAlert errorType="failedAPI" />;
     }
 
-    localStorage.removeItem('error');
+    Cookies.remove('error');
     return this.props.children;
   }
 }

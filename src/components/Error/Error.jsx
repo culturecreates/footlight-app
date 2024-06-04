@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useNavigate, useRouteError } from 'react-router-dom';
 import { ReactComponent as GeneralErrors } from '../../assets/images/general-error.svg';
 import { ReactComponent as Error404 } from '../../assets/images/404-error.svg';
@@ -7,9 +8,11 @@ import { Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearErrors, getErrorDetails } from '../../redux/reducer/ErrorSlice';
 import { useEffect } from 'react';
+import Cookies from 'js-cookie';
+import { clearUser } from '../../redux/reducer/userSlice';
 
 function ErrorAlert(props) {
-  const { errorType = 'general', info = '' } = props;
+  const { errorType = 'general' } = props;
 
   const errorDetails = useSelector(getErrorDetails);
   const error = useRouteError();
@@ -19,8 +22,26 @@ function ErrorAlert(props) {
 
   let image, message, heading;
 
+  const infiniteLoopHandler = () => {
+    let renderCount = Cookies.get('error');
+    if (renderCount === undefined) {
+      renderCount = 0;
+    } else {
+      renderCount = parseInt(renderCount, 10);
+    }
+
+    if (renderCount < 3) {
+      Cookies.set('error', renderCount + 1);
+    } else {
+      Cookies.remove('error');
+      dispatch(clearUser());
+    }
+  };
+
   useEffect(() => {
     // effect to trigger api reload when browser back button is pressed
+    infiniteLoopHandler();
+
     const handlePopstate = () => {
       dispatch(clearErrors());
     };
@@ -39,7 +60,7 @@ function ErrorAlert(props) {
     message = errorDetails?.message;
   }
   if (errorType === 'general' && !errorDetails.isError) {
-    message = info ? info : error?.message;
+    message = error?.message;
   } else if (errorType === 'pageNotFound') {
     image = <Error404 />;
     message = t('errorPage.notFoundMessage');
