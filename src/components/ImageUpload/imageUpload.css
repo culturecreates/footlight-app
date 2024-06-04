@@ -26,7 +26,7 @@
   cursor: pointer;
 }
 .image-footer .image-name {
-  white-space: nowrap;
+  /* white-space: nowrap; */
   cursor: pointer;
 }
 .image-footer .image-thumbnail {
