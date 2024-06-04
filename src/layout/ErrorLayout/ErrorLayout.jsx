@@ -76,7 +76,7 @@ class ErrorLayout extends React.Component {
   render() {
     const asyncError = this.props?.asycErrorDetails;
 
-    if (this.state.hasError) return <ErrorAlert errorType="general" info={this.state.error} />;
+    if (this.state.hasError) return <ErrorAlert errorType="general" />;
 
     if (asyncError?.isError) {
       if (asyncError.errorCode === '503') return <ErrorAlert errorType="serverDown" />;
