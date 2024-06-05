@@ -96,6 +96,8 @@ body.inheritCursors * {
   input[class^='ant-'],
   .text-editor .ql-container {
     font-size: 16px !important;
-    /* height: 40px; */
+  }
+  .ant-form-item-label > label {
+    font-size: 16px !important;
   }
 }
