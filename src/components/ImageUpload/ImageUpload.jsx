@@ -4,7 +4,7 @@ import { message, Upload, Form } from 'antd';
 import { LoadingOutlined, DownloadOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import Outlined from '../Button/Outlined';
 import { useTranslation } from 'react-i18next';
-import ImageCrop from '../ImageCrop';
+import { ImageCrop } from '../ImageCrop';
 import { useOutletContext } from 'react-router-dom';
 
 function ImageUpload(props) {
