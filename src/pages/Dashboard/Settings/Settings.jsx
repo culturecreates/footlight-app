@@ -9,9 +9,9 @@ import { useOutletContext, useParams } from 'react-router';
 import WidgetSettings from './WidgetSettings/WidgetSettings';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
-import { userRoles } from '../../../constants/userRoles';
 import CalendarSettings from './CalendarSettings';
 import MandatoryFields from './MandatoryFields';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -47,11 +47,6 @@ const Settings = () => {
     return calendar.calendarId === calendarId;
   });
 
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
-  };
-
   const items = [
     {
       label: t('dashboard.settings.tab1'),
@@ -84,7 +79,7 @@ const Settings = () => {
   ];
 
   let tabItems = items?.filter((item) => {
-    if (item.adminOnly) return adminCheckHandler();
+    if (item.adminOnly) return adminCheckHandler({ calendar, user });
     else return true;
   });
   return (

@@ -24,7 +24,6 @@ import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
-import { userRoles } from '../../../constants/userRoles';
 import { useDeletePersonMutation, useLazyGetAllPeopleQuery } from '../../../services/people';
 import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../../constants/sortByOptions';
 import i18n from 'i18next';
@@ -34,6 +33,7 @@ import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import { useLazyGetEntityDependencyCountQuery } from '../../../services/entities';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 
 const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
@@ -137,11 +137,6 @@ function People() {
           },
         });
       });
-  };
-
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
   };
 
   const listItemHandler = (id) => {
@@ -483,7 +478,7 @@ function People() {
                         artsDataLink={artsDataLinkChecker(item?.sameAs)}
                         listItemHandler={() => listItemHandler(item?.id)}
                         actions={[
-                          adminCheckHandler() && !isReadOnly && (
+                          adminCheckHandler({ calendar, user }) && !isReadOnly && (
                             <DeleteOutlined
                               data-cy="icon-delete-person"
                               key={'delete-icon'}

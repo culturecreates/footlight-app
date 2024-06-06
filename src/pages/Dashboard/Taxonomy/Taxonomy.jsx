@@ -26,12 +26,12 @@ import { featureFlags } from '../../../utils/featureFlags';
 import './taxonomy.css';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import ListItem from '../../../components/List/ListItem.jsx/ListItem';
-import { userRoles } from '../../../constants/userRoles';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox/SearchableCheckbox';
 import { useLazyGetEntityDependencyCountQuery } from '../../../services/entities';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 
 const { useBreakpoint } = Grid;
 
@@ -86,7 +86,9 @@ const Taxonomy = () => {
   const [pageNumber, setPageNumber] = useState(1);
 
   const handleListCardStyles = () => {
-    const listCardStyles = !adminCheckHandler() ? { style: { cursor: 'initial' } } : { style: { cursor: 'pointer' } };
+    const listCardStyles = !adminCheckHandler({ calendar, user })
+      ? { style: { cursor: 'initial' } }
+      : { style: { cursor: 'pointer' } };
     return listCardStyles;
   };
 
@@ -190,7 +192,7 @@ const Taxonomy = () => {
     navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomySelectType}`);
   };
   const listItemHandler = (id) => {
-    adminCheckHandler() &&
+    adminCheckHandler({ calendar, user }) &&
       !isReadOnly &&
       navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}${PathName.AddTaxonomy}?id=${id}`);
   };
@@ -224,14 +226,10 @@ const Taxonomy = () => {
       });
   };
 
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
-  };
-
   useEffect(() => {
     if (user && calendar.length > 0) {
-      !adminCheckHandler() && dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Not Authorized' }));
+      !adminCheckHandler({ calendar, user }) &&
+        dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Not Authorized' }));
     }
   }, [user, calendar]);
 
@@ -263,7 +261,7 @@ const Taxonomy = () => {
               </div>
             </Col>
 
-            {adminCheckHandler() && (
+            {adminCheckHandler({ calendar, user }) && (
               <Col flex={'140px'} className="add-btn-container">
                 <ReadOnlyProtectedComponent creator={user?.id}>
                   <AddEvent
@@ -409,7 +407,7 @@ const Taxonomy = () => {
                   <List
                     data-cy="list-taxonomy"
                     className={`event-list-wrapper responsvie-list-wrapper-class ${
-                      adminCheckHandler() ? '' : 'non-admin-class'
+                      adminCheckHandler({ calendar, user }) ? '' : 'non-admin-class'
                     }`}
                     itemLayout={screens.xs ? 'vertical' : 'horizontal'}
                     dataSource={allTaxonomy?.data}
@@ -455,7 +453,7 @@ const Taxonomy = () => {
                         updatedByUserName={item?.modifier?.userName}
                         listItemHandler={() => listItemHandler(item?.id)}
                         actions={[
-                          adminCheckHandler() && !isReadOnly && (
+                          adminCheckHandler({ calendar, user }) && !isReadOnly && (
                             <DeleteOutlined
                               data-cy="icon-taxonomy-delete"
                               key={'delete-icon'}

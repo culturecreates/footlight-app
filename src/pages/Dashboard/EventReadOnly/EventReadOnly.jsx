@@ -32,7 +32,6 @@ import Alert from '../../../components/Alert';
 import { eventPublishState, eventPublishStateOptions } from '../../../constants/eventPublishState';
 import { pluralize } from '../../../utils/pluralise';
 import i18n from 'i18next';
-import { userRoles } from '../../../constants/userRoles';
 import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequiredFieldNames';
 import { contentLanguage } from '../../../constants/contentLanguage';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
@@ -42,6 +41,7 @@ import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { getEmbedUrl } from '../../../utils/getEmbedVideoUrl';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -94,11 +94,6 @@ function EventReadOnly() {
   let dynamicAdminOnlyFields = requiredFields?.adminOnlyFields?.dynamicFields;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === sameAsTypes.ARTSDATA_IDENTIFIER);
-
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
-  };
 
   useEffect(() => {
     if (eventData?.recurringEvent || eventData?.subEventConfiguration) setDateType(dateTypes.MULTIPLE);
@@ -275,7 +270,7 @@ function EventReadOnly() {
                         standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME) ||
                         standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_FR) ||
                         standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_EN)
-                          ? adminCheckHandler()
+                          ? adminCheckHandler({ calendar, user })
                             ? 'initial'
                             : 'none'
                           : 'initial',
@@ -305,7 +300,7 @@ function EventReadOnly() {
                     <div
                       style={{
                         display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_TYPE)
-                          ? adminCheckHandler()
+                          ? adminCheckHandler({ calendar, user })
                             ? 'initial'
                             : 'none'
                           : 'initial',
@@ -342,7 +337,7 @@ function EventReadOnly() {
                     <div
                       style={{
                         display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.AUDIENCE)
-                          ? adminCheckHandler()
+                          ? adminCheckHandler({ calendar, user })
                             ? 'initial'
                             : 'none'
                           : 'initial',
@@ -388,7 +383,7 @@ function EventReadOnly() {
                           <div
                             style={{
                               display: dynamicAdminOnlyFields?.includes(taxonomy?.id)
-                                ? adminCheckHandler()
+                                ? adminCheckHandler({ calendar, user })
                                   ? 'initial'
                                   : 'none'
                                 : 'initial',
@@ -590,7 +585,7 @@ function EventReadOnly() {
                       <div
                         style={{
                           display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.LOCATION)
-                            ? adminCheckHandler()
+                            ? adminCheckHandler({ calendar, user })
                               ? 'initial'
                               : 'none'
                             : 'initial',
@@ -674,7 +669,7 @@ function EventReadOnly() {
                         standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION) ||
                         standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION_EN) ||
                         standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION_FR)
-                          ? adminCheckHandler()
+                          ? adminCheckHandler({ calendar, user })
                             ? 'initial'
                             : 'none'
                           : 'initial',
@@ -706,7 +701,7 @@ function EventReadOnly() {
                     <div
                       style={{
                         display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
-                          ? adminCheckHandler()
+                          ? adminCheckHandler({ calendar, user })
                             ? 'initial'
                             : 'none'
                           : 'initial',
@@ -1026,7 +1021,7 @@ function EventReadOnly() {
                     className="read-only-event-section-wrapper"
                     style={{
                       display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.TICKET_INFO)
-                        ? adminCheckHandler()
+                        ? adminCheckHandler({ calendar, user })
                           ? ''
                           : 'none'
                         : '',

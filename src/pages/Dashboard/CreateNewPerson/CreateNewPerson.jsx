@@ -36,7 +36,6 @@ import { loadArtsDataEntity } from '../../../services/artsData';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
-import { userRoles } from '../../../constants/userRoles';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { Prompt, usePrompt } from '../../../hooks/usePrompt';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
@@ -51,6 +50,7 @@ import {
   setLanguageLiteralBannerDisplayStatus,
 } from '../../../redux/reducer/languageLiteralSlice';
 import Alert from '../../../components/Alert';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -131,11 +131,6 @@ function CreateNewPerson() {
   const calendar = user?.roles.filter((calendar) => {
     return calendar.calendarId === calendarId;
   });
-
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
-  };
 
   const addUpdatePersonApiHandler = (personObj) => {
     var promise = new Promise(function (resolve, reject) {
@@ -694,7 +689,9 @@ function CreateNewPerson() {
                                     message: t('common.validations.informationRequired'),
                                   },
                                 ]}
-                                hidden={taxonomy?.isAdminOnly ? (adminCheckHandler() ? false : true) : false}>
+                                hidden={
+                                  taxonomy?.isAdminOnly ? (adminCheckHandler({ calendar, user }) ? false : true) : false
+                                }>
                                 <TreeSelectOption
                                   data-cy={`treeselect-person-dynamic-fields-${index}`}
                                   allowClear

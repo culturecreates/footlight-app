@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { clearSessionStoredSearchQueries } from '../../../utils/clearSessionStoredSearchQueries';
 import { calendarModes } from '../../../constants/calendarModes';
-import { userRoles } from '../../../constants/userRoles';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 
 const { Sider } = Layout;
 
@@ -33,11 +33,6 @@ function Sidebar(props) {
     return calendar.calendarId === calendarId;
   });
 
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
-  };
-
   const items = sidebarItems.map((item, index) => {
     const key = String(index + 1);
     const itemJson = {
@@ -49,7 +44,7 @@ function Sidebar(props) {
       disabled: item.disabled,
     };
     if (item.adminOnly) {
-      if (adminCheckHandler()) return itemJson;
+      if (adminCheckHandler({ calendar, user })) return itemJson;
     } else return itemJson;
   });
 

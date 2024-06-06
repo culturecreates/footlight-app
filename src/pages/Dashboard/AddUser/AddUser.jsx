@@ -39,6 +39,7 @@ import CalendarAccordion from '../../../components/Accordion/CalendarAccordion';
 import { removeObjectArrayDuplicates } from '../../../utils/removeObjectArrayDuplicates';
 import Select from '../../../components/Select';
 import Cookies from 'js-cookie';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 
 const AddUser = () => {
   const navigate = useNavigate();
@@ -103,7 +104,7 @@ const AddUser = () => {
 
   useEffect(() => {
     if (userId !== user?.id) {
-      !adminCheckHandler() &&
+      !adminCheckHandler({ calendar, user }) &&
         dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Forbidden resource.' }));
     } else {
       setIsCurrentUser(true);
@@ -258,11 +259,6 @@ const AddUser = () => {
       });
   };
 
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
-  };
-
   const onSaveHandler = () => {
     if (!userId) {
       formInstance
@@ -325,7 +321,7 @@ const AddUser = () => {
             return { entityId: organizer?.value };
           });
           let userType = values?.userType[calendarId];
-          if (isCurrentUser && adminCheckHandler() == false) {
+          if (isCurrentUser && adminCheckHandler({ calendar, user }) == false) {
             updateCurrentUser({
               calendarId,
               body: {
@@ -404,7 +400,7 @@ const AddUser = () => {
                   icon: <ExclamationCircleOutlined />,
                 });
               });
-          } else if (adminCheckHandler()) {
+          } else if (adminCheckHandler({ calendar, user })) {
             updateUserById({
               id: userId,
               calendarId,
@@ -886,7 +882,7 @@ const AddUser = () => {
                                         calendarContentLanguage: calendarContentLanguage,
                                       })}
                                       role={calendar?.role}
-                                      readOnly={adminCheckHandler() ? false : true}
+                                      readOnly={adminCheckHandler({ calendar, user }) ? false : true}
                                       disabled={calendar?.disabled}
                                       organizationIds={calendar?.organizations}
                                       peopleIds={calendar?.people}
