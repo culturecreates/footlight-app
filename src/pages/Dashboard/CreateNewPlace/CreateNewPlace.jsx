@@ -90,6 +90,7 @@ import {
 } from '../../../redux/reducer/languageLiteralSlice';
 import Alert from '../../../components/Alert';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const { TextArea } = Input;
 
@@ -246,9 +247,7 @@ function CreateNewPlace() {
     accessibility: [],
   };
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   const addUpdatePlaceApiHandler = (placeObj, postalObj) => {
     var promise = new Promise(function (resolve, reject) {

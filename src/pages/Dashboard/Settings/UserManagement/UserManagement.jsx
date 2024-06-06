@@ -32,6 +32,7 @@ import { Confirm } from '../../../../components/Modal/Confirm/Confirm';
 import moment from 'moment-timezone';
 import i18n from 'i18next';
 import { adminCheckHandler } from '../../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const UserManagement = () => {
   const { useBreakpoint } = Grid;
@@ -84,9 +85,7 @@ const UserManagement = () => {
   const [deActivateUser] = useDeactivateUserMutation();
   const [withdrawInvitation] = useWithDrawInvitationMutation();
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   useEffect(() => {
     const filtersDecoded = setFiletrsForApiCall();

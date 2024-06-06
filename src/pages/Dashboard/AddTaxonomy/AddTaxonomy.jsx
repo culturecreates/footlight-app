@@ -27,6 +27,7 @@ import { compareArraysOfObjects } from '../../../utils/genericObjectCompare';
 import { PathName } from '../../../constants/pathName';
 import StyledSwitch from '../../../components/Switch/StyledSwitch';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const taxonomyClasses = taxonomyClassTranslations.map((item) => {
   return { ...item, value: item.key };
@@ -53,9 +54,7 @@ const AddTaxonomyTest = () => {
   const dispatch = useDispatch();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   const taxonomyId = searchParams.get('id');
   setContentBackgroundColor('#F9FAFF');

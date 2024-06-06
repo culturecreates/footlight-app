@@ -34,6 +34,7 @@ import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import { useLazyGetEntityDependencyCountQuery } from '../../../services/entities';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
@@ -120,9 +121,7 @@ function Places() {
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   let customFilters = currentCalendarData?.filterPersonalization?.customFields;
 

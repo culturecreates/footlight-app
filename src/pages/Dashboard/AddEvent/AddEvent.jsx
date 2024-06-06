@@ -105,6 +105,7 @@ import {
 import { removeUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 import { groupEventsByDate } from '../../../utils/groupSubEventsConfigByDate';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const { TextArea } = Input;
 
@@ -237,9 +238,7 @@ function AddEvent() {
 
   let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === sameAsTypes.ARTSDATA_IDENTIFIER);
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   let organizerPerformerSupporterTypes = {
     organizer: 'organizer',

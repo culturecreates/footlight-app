@@ -71,6 +71,7 @@ import {
 } from '../../../redux/reducer/languageLiteralSlice';
 import Alert from '../../../components/Alert';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -155,9 +156,7 @@ function CreateNewOrganization() {
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
   let formFieldProperties = formFields?.length > 0 && formFields[0]?.formFieldProperties;
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   let standardMandatoryFieldNames = formFieldProperties?.mandatoryFields?.standardFields?.map(
     (field) => field?.fieldName,

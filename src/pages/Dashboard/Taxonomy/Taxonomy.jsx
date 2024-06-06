@@ -32,6 +32,7 @@ import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox/Se
 import { useLazyGetEntityDependencyCountQuery } from '../../../services/entities';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const { useBreakpoint } = Grid;
 
@@ -68,9 +69,7 @@ const Taxonomy = () => {
 
   const totalCount = allTaxonomy?.totalCount;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   const defaultSort = sortByParam || sessionStorage.getItem('sortByTaxonomy') || `${sortByOptionsTaxonomy[0].key}`;
   const defaultOrder = orderParam || sessionStorage.getItem('orderTaxonomy') || sortOrder?.ASC;

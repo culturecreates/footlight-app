@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import CalendarSettings from './CalendarSettings';
 import MandatoryFields from './MandatoryFields';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -43,9 +44,7 @@ const Settings = () => {
     setTabKey(key);
   };
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   const items = [
     {

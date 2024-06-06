@@ -17,6 +17,7 @@ import i18n from 'i18next';
 import { calendarModes } from '../../../constants/calendarModes';
 import { handleLogout } from '../../../hooks/useAuth';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 function ResponsiveSidebar(props) {
   const { allCalendarsData, currentCalendarData, onClose, open, pageNumber, setPageNumber } = props;
@@ -37,9 +38,7 @@ function ResponsiveSidebar(props) {
       icon: item.icon,
     };
   });
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   const itemsOptions = sidebarItems.map((item, index) => {
     const key = String(index + 1);

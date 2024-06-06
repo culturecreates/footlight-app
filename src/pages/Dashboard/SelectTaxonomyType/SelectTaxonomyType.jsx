@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const SelectTaxonomyType = () => {
   const { t } = useTranslation();
@@ -39,9 +40,7 @@ const SelectTaxonomyType = () => {
     opacity: 0.5,
   };
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   useEffect(() => {
     if (user && calendar.length > 0) {

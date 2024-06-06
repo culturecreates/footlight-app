@@ -13,6 +13,7 @@ import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { clearSessionStoredSearchQueries } from '../../../utils/clearSessionStoredSearchQueries';
 import { calendarModes } from '../../../constants/calendarModes';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const { Sider } = Layout;
 
@@ -29,9 +30,7 @@ function Sidebar(props) {
   const [selectedKey, setSelectedKey] = useState([]);
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   const items = sidebarItems.map((item, index) => {
     const key = String(index + 1);
