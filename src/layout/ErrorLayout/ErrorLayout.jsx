@@ -3,6 +3,7 @@ import ErrorAlert from '../../components/Error/Error';
 import React from 'react';
 import Cookies from 'js-cookie';
 import { getUserDetails, clearUser } from '../../redux/reducer/userSlice';
+import { infiniteLoopHandler } from '../../utils/infiniteLoopHandler';
 
 class ErrorLayout extends React.Component {
   constructor(props) {
@@ -17,11 +18,14 @@ class ErrorLayout extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     this.logError({ info: { error, errorInfo } });
+    infiniteLoopHandler(() => {
+      this.props.clearUser();
+    });
   }
 
-  // componentDidMount() {
-  //   if (!this.state.hasError) ;
-  // }
+  componentDidMount() {
+    if (!this.state.hasError) Cookies.remove('error');
+  }
 
   logError({ info }) {
     const errorLog = JSON.stringify({
@@ -67,7 +71,6 @@ class ErrorLayout extends React.Component {
       return <ErrorAlert errorType="failedAPI" />;
     }
 
-    Cookies.remove('error');
     return this.props.children;
   }
 }

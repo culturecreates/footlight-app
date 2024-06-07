@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useNavigate, useRouteError } from 'react-router-dom';
 import { ReactComponent as GeneralErrors } from '../../assets/images/general-error.svg';
 import { ReactComponent as Error404 } from '../../assets/images/404-error.svg';
@@ -8,8 +7,8 @@ import { Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearErrors, getErrorDetails } from '../../redux/reducer/ErrorSlice';
 import { useEffect } from 'react';
-import Cookies from 'js-cookie';
 import { clearUser } from '../../redux/reducer/userSlice';
+import { infiniteLoopHandler } from '../../utils/infiniteLoopHandler';
 
 function ErrorAlert(props) {
   const { errorType = 'general' } = props;
@@ -22,27 +21,13 @@ function ErrorAlert(props) {
 
   let image, message, heading;
 
-  const infiniteLoopHandler = () => {
-    let renderCount = Cookies.get('error');
-    if (renderCount === undefined) {
-      renderCount = 0;
-    } else {
-      renderCount = parseInt(renderCount, 10);
-    }
-
-    if (renderCount < 3) {
-      Cookies.set('error', renderCount + 1);
-    } else {
-      Cookies.remove('error');
-      dispatch(clearUser());
-    }
-  };
-
   useEffect(() => {
     // effect to trigger api reload when browser back button is pressed
-    infiniteLoopHandler();
 
     const handlePopstate = () => {
+      infiniteLoopHandler(() => {
+        dispatch(clearUser());
+      });
       dispatch(clearErrors());
     };
     window.addEventListener('popstate', handlePopstate);
@@ -79,6 +64,9 @@ function ErrorAlert(props) {
               <Button
                 onClick={() => {
                   navigate('/');
+                  infiniteLoopHandler(() => {
+                    dispatch(clearUser());
+                  });
                   dispatch(clearErrors());
                 }}>
                 {t('errorPage.buttonText')}
