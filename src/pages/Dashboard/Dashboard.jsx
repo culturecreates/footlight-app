@@ -60,71 +60,76 @@ function Dashboard() {
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const checkToken = (accessToken, accessTokenFromCookie) => {
+    if (!accessToken && !accessTokenFromCookie) {
+      navigate(PathName.Login);
+      return;
+    }
+    return true;
+  };
+
   useEffect(() => {
     const accessTokenFromCookie = Cookies.get('accessToken');
     const refreshTokenFromCookie = Cookies.get('refreshToken');
     const calendarIdFromCookie = Cookies.get('calendarId');
     const calId = calendarId || calendarIdFromCookie;
 
-    if (!calId) {
-      return;
-    }
+    if (!calId) return;
 
-    if (!accessToken && !accessTokenFromCookie) {
-      navigate(PathName.Login);
-    } else if (location?.state?.previousPath?.toLowerCase() !== 'login') {
-      const token = accessToken || accessTokenFromCookie;
-      if (token && calId) {
-        getCurrentUserDetails({ accessToken: token, calendarId: calId })
-          .unwrap()
-          .then((response) => {
-            dispatch(
-              setUser({ user: { ...response }, refreshToken: { token: refreshTokenFromCookie }, accessToken: token }),
-            );
-          })
-          .catch(() => {
-            navigate(PathName.Login);
-          });
-      } else if (location?.state?.previousPath?.toLowerCase() === 'login' || !calendarId) {
-        dispatch(setInterfaceLanguage(user?.interfaceLanguage?.toLowerCase()));
-        i18n.changeLanguage(user?.interfaceLanguage?.toLowerCase());
-      } else {
+    if (!checkToken(accessToken, accessTokenFromCookie)) return;
+
+    const token = accessToken || accessTokenFromCookie;
+
+    getCurrentUserDetails({ accessToken: token, calendarId: calId })
+      .unwrap()
+      .then((response) => {
+        dispatch(
+          setUser({ user: { ...response }, refreshToken: { token: refreshTokenFromCookie }, accessToken: token }),
+        );
+      })
+      .catch(() => {
         navigate(PathName.Login);
-      }
+      });
+
+    if (location?.state?.previousPath?.toLowerCase() === 'login') {
+      dispatch(setInterfaceLanguage(user?.interfaceLanguage?.toLowerCase()));
+      i18n.changeLanguage(user?.interfaceLanguage?.toLowerCase());
     }
   }, [accessToken, isSuccess]);
 
   useEffect(() => {
-    if (isSuccess) {
-      const checkedCalendarId = findActiveCalendar();
-      if (checkedCalendarId != null) {
-        Cookies.set('calendarId', checkedCalendarId);
-      }
+    if (!isSuccess) return;
 
-      if (calendarId && accessToken) {
-        getCalendar({ id: calendarId, sessionId: timestampRef })
-          .unwrap()
-          .then((response) => {
-            if (response?.mode === calendarModes.READ_ONLY) {
-              setIsReadOnly(true);
-              setIsModalVisible(true);
-            } else setIsReadOnly(false);
-          })
-          .catch((error) => {
-            if (error.status === 404) {
-              navigate(PathName.NotFound);
-            }
-          });
-        dispatch(setSelectedCalendar(String(calendarId)));
-      } else {
-        let activeCalendarId = Cookies.get('calendarId');
-        if (activeCalendarId && accessToken) {
-          navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
-        } else if (!isLoading && allCalendarsData?.data) {
-          activeCalendarId = allCalendarsData?.data[0]?.id;
-          Cookies.set('calendarId', activeCalendarId);
-          navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
-        }
+    if (!checkToken(accessToken, Cookies.get('accessToken'))) return;
+
+    const checkedCalendarId = findActiveCalendar();
+    if (checkedCalendarId != null) {
+      Cookies.set('calendarId', checkedCalendarId);
+    }
+
+    if (calendarId && accessToken) {
+      getCalendar({ id: calendarId, sessionId: timestampRef })
+        .unwrap()
+        .then((response) => {
+          if (response?.mode === calendarModes.READ_ONLY) {
+            setIsReadOnly(true);
+            setIsModalVisible(true);
+          } else setIsReadOnly(false);
+        })
+        .catch((error) => {
+          if (error.status === 404) {
+            navigate(PathName.NotFound);
+          }
+        });
+      dispatch(setSelectedCalendar(String(calendarId)));
+    } else {
+      let activeCalendarId = Cookies.get('calendarId');
+      if (activeCalendarId && accessToken) {
+        navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
+      } else if (!isLoading && allCalendarsData?.data) {
+        activeCalendarId = allCalendarsData?.data[0]?.id;
+        Cookies.set('calendarId', activeCalendarId);
+        navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
       }
     }
   }, [calendarId, isLoading, allCalendarsData, isSuccess]);

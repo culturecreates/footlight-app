@@ -1,6 +1,7 @@
 import { userRoles } from '../constants/userRoles';
 
 export const adminCheckHandler = ({ user, calendar }) => {
-  if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
+  if (user?.isSuperAdmin) return true;
+  if (calendar[0]?.role === userRoles.ADMIN) return true;
   else return false;
 };
