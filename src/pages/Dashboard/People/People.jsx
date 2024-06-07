@@ -460,7 +460,7 @@ function People() {
                         data-cy="list-item-person"
                         key={index}
                         id={index}
-                        logo={item?.image?.thumbnail?.uri}
+                        logo={item?.image?.find((image) => image?.isMain)?.thumbnail?.uri}
                         defaultLogo={
                           <UserOutlined style={{ color: '#607EFC', fontSize: '18px' }} data-cy="logo-person" />
                         }

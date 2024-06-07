@@ -77,6 +77,8 @@ function PersonReadOnly() {
   const [derivedEntitiesData, setDerivedEntitiesData] = useState();
   const [derivedEntitiesDisplayStatus, setDerivedEntitiesDisplayStatus] = useState(false);
 
+  const mainImageData = personData?.image?.find((image) => image?.isMain) || null;
+
   const getArtsData = (id) => {
     setArtsDataLoading(true);
     loadArtsDataEntity({ entityId: id })
@@ -445,10 +447,10 @@ function PersonReadOnly() {
                   </Row>
                 </Col>
                 <Col>
-                  {personData?.image?.original?.uri && (
+                  {mainImageData?.original?.uri && (
                     <div>
                       <img
-                        src={personData?.image?.original?.uri}
+                        src={mainImageData?.original?.uri}
                         alt="avatar"
                         style={{
                           width: '151px',

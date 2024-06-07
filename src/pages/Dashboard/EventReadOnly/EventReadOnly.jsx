@@ -101,6 +101,7 @@ function EventReadOnly() {
   let dynamicAdminOnlyFields = requiredFields?.adminOnlyFields?.dynamicFields;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === sameAsTypes.ARTSDATA_IDENTIFIER);
+  const mainImageData = eventData?.image?.find((image) => image?.isMain) || null;
 
   const adminCheckHandler = () => {
     if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
@@ -121,7 +122,7 @@ function EventReadOnly() {
           name: organizer?.entity?.name,
           type: organizer?.type,
           logo: organizer?.entity?.logo,
-          image: organizer?.entity?.image,
+          image: organizer?.entity?.image?.find((image) => image?.isMain),
         };
       });
       setSelectedOrganizers(treeEntitiesOption(initialOrganizers, user, calendarContentLanguage, sourceOptions.CMS));
@@ -134,7 +135,7 @@ function EventReadOnly() {
           name: performer?.entity?.name,
           type: performer?.type,
           logo: performer?.entity?.logo,
-          image: performer?.entity?.image,
+          image: performer?.entity?.image?.find((image) => image?.isMain),
         };
       });
       setSelectedPerformers(treeEntitiesOption(initialPerformers, user, calendarContentLanguage, sourceOptions.CMS));
@@ -147,7 +148,7 @@ function EventReadOnly() {
           name: supporter?.entity?.name,
           type: supporter?.type,
           logo: supporter?.entity?.logo,
-          image: supporter?.entity?.image,
+          image: supporter?.entity?.image?.find((image) => image?.isMain),
         };
       });
       setSelectedSupporters(treeEntitiesOption(initialSupporters, user, calendarContentLanguage, sourceOptions.CMS));
@@ -710,7 +711,7 @@ function EventReadOnly() {
                     )}
                   </div>
                   <br />
-                  {eventData?.image && eventData?.image?.original?.uri && (
+                  {eventData?.image && mainImageData?.original?.uri && (
                     <div
                       style={{
                         display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
@@ -723,10 +724,10 @@ function EventReadOnly() {
                         {t('dashboard.events.addEditEvent.otherInformation.image.title')}
                       </p>
                       <ImageUpload
-                        imageUrl={eventData?.image?.large?.uri}
+                        imageUrl={mainImageData?.large?.uri}
                         imageReadOnly={true}
                         preview={true}
-                        eventImageData={eventData?.image}
+                        eventImageData={mainImageData}
                       />
                     </div>
                   )}

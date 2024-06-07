@@ -82,6 +82,7 @@ function PlaceReadOnly() {
   const [derivedEntitiesData, setDerivedEntitiesData] = useState();
   const [derivedEntitiesDisplayStatus, setDerivedEntitiesDisplayStatus] = useState(false);
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
+  const mainImageData = placeData?.image?.find((image) => image?.isMain) || null;
 
   const getArtsDataPlace = (id) => {
     setArtsDataLoading(true);
@@ -172,7 +173,7 @@ function PlaceReadOnly() {
             disambiguatingDescription: place?.disambiguatingDescription,
             id: place?.id,
             name: place?.name,
-            image: place?.image,
+            image: place?.image?.find((image) => image?.isMain),
             uri: place?.derivedFrom?.uri,
           };
         });
@@ -454,11 +455,11 @@ function PlaceReadOnly() {
                 </Row>
               </Col>
               <Col className="top-level-column">
-                {placeData?.image?.original?.uri && (
+                {mainImageData?.original?.uri && (
                   <div>
                     <img
                       data-cy="image-place-original"
-                      src={placeData?.image?.original?.uri}
+                      src={mainImageData?.original?.uri}
                       alt="avatar"
                       style={{
                         width: '151px',

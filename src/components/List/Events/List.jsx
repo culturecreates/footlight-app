@@ -161,7 +161,7 @@ function Lists(props) {
                       </div>
                     )}
                     <img
-                      src={eventItem?.image?.thumbnail?.uri}
+                      src={eventItem?.image?.find((image) => image?.isMain)?.thumbnail?.uri}
                       className="event-list-image"
                       style={{
                         border:
