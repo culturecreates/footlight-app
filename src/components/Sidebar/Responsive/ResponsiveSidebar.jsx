@@ -68,8 +68,10 @@ function ResponsiveSidebar(props) {
           <img
             style={{
               width: '32px',
+              minWidth: '32px',
               height: '32px',
               borderRadius: '73px',
+              objectFit: 'contain',
             }}
             src={uri}
           />
