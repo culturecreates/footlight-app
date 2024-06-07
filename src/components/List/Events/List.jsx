@@ -48,6 +48,21 @@ function Lists(props) {
   };
   const aspectRatioString = currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio;
 
+  const calculateImageDimensions = (aspectRatio, maxHeight, maxWidth) => {
+    const [widthRatio, heightRatio] = aspectRatio.split(':').map(Number);
+    let width = maxHeight * (widthRatio / heightRatio);
+    let height = maxHeight;
+
+    if (width > maxWidth) {
+      width = maxWidth;
+      height = maxWidth * (heightRatio / widthRatio);
+    }
+
+    return { width, height };
+  };
+
+  let imageDimensions = calculateImageDimensions(aspectRatioString, 110, 150);
+
   const listItemHandler = (id, creatorId, publishState) => {
     if (routinghandler(user, calendarId, creatorId, publishState, false, isReadOnly))
       navigate(`${location.pathname}${PathName.AddEvent}/${id}`);
@@ -168,7 +183,8 @@ function Lists(props) {
                           (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) &&
                           eventItem?.isFeatured &&
                           '3px solid #1B3DE6',
-                        ...(aspectRatioString && { maxWidth: '150px' }),
+                        width: `${imageDimensions.width}px`,
+                        height: `${imageDimensions.height}px`,
                       }}
                       data-cy="image-event-thumbnail"
                     />
