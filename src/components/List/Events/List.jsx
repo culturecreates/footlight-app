@@ -61,7 +61,7 @@ function Lists(props) {
     return { width, height };
   };
 
-  let imageDimensions = calculateImageDimensions(aspectRatioString, 110, 150);
+  let imageDimensions = calculateImageDimensions(aspectRatioString, 104, 150);
 
   const listItemHandler = (id, creatorId, publishState) => {
     if (routinghandler(user, calendarId, creatorId, publishState, false, isReadOnly))
