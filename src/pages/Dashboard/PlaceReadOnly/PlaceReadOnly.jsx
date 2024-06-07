@@ -35,6 +35,7 @@ import { sourceOptions } from '../../../constants/sourceOptions';
 import './placeReadOnly.css';
 import moment from 'moment';
 import { useLazyGetEntityDependencyDetailsQuery } from '../../../services/entities';
+import MultipleImageUpload from '../../../components/MultipleImageUpload';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -83,6 +84,7 @@ function PlaceReadOnly() {
   const [derivedEntitiesDisplayStatus, setDerivedEntitiesDisplayStatus] = useState(false);
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const mainImageData = placeData?.image?.find((image) => image?.isMain) || null;
+  const imageConfig = currentCalendarData?.imageConfig?.length > 0 && currentCalendarData?.imageConfig[0];
 
   const getArtsDataPlace = (id) => {
     setArtsDataLoading(true);
@@ -450,6 +452,42 @@ function PlaceReadOnly() {
                           </p>
                         </>
                       )}
+                      {placeData?.image?.length > 0 && imageConfig.enableGallery && (
+                        <div>
+                          <p className="read-only-event-content-sub-title-primary">
+                            {t('dashboard.events.addEditEvent.otherInformation.image.imageGallery')}
+                          </p>
+                          <MultipleImageUpload
+                            imageReadOnly={true}
+                            largeAspectRatio={
+                              currentCalendarData?.imageConfig?.length > 0 ? imageConfig?.large?.aspectRatio : null
+                            }
+                            thumbnailAspectRatio={
+                              currentCalendarData?.imageConfig?.length > 0 ? imageConfig?.thumbnail?.aspectRatio : null
+                            }
+                            eventImageData={placeData?.image?.filter((image) => !image?.isMain)}
+                          />
+                        </div>
+                      )}
+                    </Col>
+                  )}
+                  {placeData?.image?.length > 0 && imageConfig.enableGallery && (
+                    <Col span={24}>
+                      <div>
+                        <p className="read-only-event-content-sub-title-primary">
+                          {t('dashboard.events.addEditEvent.otherInformation.image.imageGallery')}
+                        </p>
+                        <MultipleImageUpload
+                          imageReadOnly={true}
+                          largeAspectRatio={
+                            currentCalendarData?.imageConfig?.length > 0 ? imageConfig?.large?.aspectRatio : null
+                          }
+                          thumbnailAspectRatio={
+                            currentCalendarData?.imageConfig?.length > 0 ? imageConfig?.thumbnail?.aspectRatio : null
+                          }
+                          eventImageData={placeData?.image?.filter((image) => !image?.isMain)}
+                        />
+                      </div>
                     </Col>
                   )}
                 </Row>

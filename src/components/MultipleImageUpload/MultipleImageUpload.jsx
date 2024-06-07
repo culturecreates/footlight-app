@@ -67,7 +67,7 @@ const getBase64 = (img, callback) => {
   });
 };
 const MultipleImageUpload = (props) => {
-  const { largeAspectRatio, thumbnailAspectRatio, eventImageData, form } = props;
+  const { largeAspectRatio, thumbnailAspectRatio, eventImageData, form, imageReadOnly } = props;
   const { t } = useTranslation();
 
   const [fileList, setFileList] = useState(
@@ -210,31 +210,54 @@ const MultipleImageUpload = (props) => {
             setImageCropOpen(true);
           }}
           multiple
-          itemRender={(originNode, file, currFileList, actions) => (
-            <DragableUploadListItem
-              originNode={originNode}
-              file={file}
-              fileList={currFileList}
-              moveRow={moveRow}
-              actions={actions}
-            />
-          )}>
-          <div style={{ padding: 8 }}>
-            <span
-              style={{
-                display: 'flex',
-                flexDirection: 'row-reverse',
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-                gap: '8px',
-              }}>
-              <Outlined size="large" label={t('dashboard.events.addEditEvent.otherInformation.image.browse')} />
-
-              <span className="upload-helper-text">
-                {t('dashboard.events.addEditEvent.otherInformation.image.dragAndDrop')}
+          itemRender={(originNode, file, currFileList, actions) =>
+            !imageReadOnly ? (
+              <DragableUploadListItem
+                originNode={originNode}
+                file={file}
+                fileList={currFileList}
+                moveRow={moveRow}
+                actions={actions}
+              />
+            ) : (
+              <span className="image-footer">
+                <span className="image-contents">
+                  <img className="image-thumbnail" src={file?.url ?? file?.thumbUrl} />
+                  <a
+                    className="image-name"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href={file?.url}
+                    data-cy="anchor-image-link">
+                    {file?.name}
+                  </a>
+                </span>
+                <span className="image-actions">
+                  <span onClick={actions?.download} data-cy="span-download-image">
+                    <DownloadOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
+                  </span>
+                </span>
               </span>
-            </span>
-          </div>
+            )
+          }>
+          {!imageReadOnly && (
+            <div style={{ padding: 8 }}>
+              <span
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row-reverse',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                  gap: '8px',
+                }}>
+                <Outlined size="large" label={t('dashboard.events.addEditEvent.otherInformation.image.browse')} />
+
+                <span className="upload-helper-text">
+                  {t('dashboard.events.addEditEvent.otherInformation.image.dragAndDrop')}
+                </span>
+              </span>
+            </div>
+          )}
         </Upload>
       </DndProvider>
       <MultipleImageCrop

@@ -29,6 +29,7 @@ import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { CalendarOutlined, UserOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { useLazyGetEntityDependencyDetailsQuery } from '../../../services/entities';
+import MultipleImageUpload from '../../../components/MultipleImageUpload';
 
 function OrganizationsReadOnly() {
   const { t } = useTranslation();
@@ -78,6 +79,7 @@ function OrganizationsReadOnly() {
   const [derivedEntitiesData, setDerivedEntitiesData] = useState();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
+  const imageConfig = currentCalendarData?.imageConfig?.length > 0 && currentCalendarData?.imageConfig[0];
 
   const getArtsData = (id) => {
     setArtsDataLoading(true);
@@ -405,6 +407,23 @@ function OrganizationsReadOnly() {
                       </p>
                     ))}
                   </Col>
+                )}
+                {organizationData?.image?.length > 0 && imageConfig.enableGallery && (
+                  <div>
+                    <p className="read-only-event-content-sub-title-primary">
+                      {t('dashboard.events.addEditEvent.otherInformation.image.imageGallery')}
+                    </p>
+                    <MultipleImageUpload
+                      imageReadOnly={true}
+                      largeAspectRatio={
+                        currentCalendarData?.imageConfig?.length > 0 ? imageConfig?.large?.aspectRatio : null
+                      }
+                      thumbnailAspectRatio={
+                        currentCalendarData?.imageConfig?.length > 0 ? imageConfig?.thumbnail?.aspectRatio : null
+                      }
+                      eventImageData={organizationData?.image?.filter((image) => !image?.isMain)}
+                    />
+                  </div>
                 )}
                 {organizationData?.contactPoint && (
                   <Col span={24}>

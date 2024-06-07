@@ -255,6 +255,7 @@
             "subHeading": "Les images doivent être au format paysage ou carré et mesurer au moins 600 px de large. Uniquement les fichiers .jpeg et .png sont acceptés.",
             "dragAndDrop": "ou glisser pour télécharger",
             "browse": "Parcourir",
+            "imageGallery": "Galerie d'images",
             "crop": {
               "title": "Positionnement de l’image",
               "subHeading": "Ajuster la position de l’image si nécessaire.",

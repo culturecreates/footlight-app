@@ -43,6 +43,7 @@ import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { getEmbedUrl } from '../../../utils/getEmbedVideoUrl';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
+import MultipleImageUpload from '../../../components/MultipleImageUpload';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -102,6 +103,7 @@ function EventReadOnly() {
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === sameAsTypes.ARTSDATA_IDENTIFIER);
   const mainImageData = eventData?.image?.find((image) => image?.isMain) || null;
+  const imageConfig = currentCalendarData?.imageConfig?.length > 0 && currentCalendarData?.imageConfig[0];
 
   const adminCheckHandler = () => {
     if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
@@ -711,7 +713,7 @@ function EventReadOnly() {
                     )}
                   </div>
                   <br />
-                  {eventData?.image && mainImageData?.original?.uri && (
+                  {eventData?.image?.length > 0 && mainImageData?.original?.uri && (
                     <div
                       style={{
                         display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
@@ -728,6 +730,30 @@ function EventReadOnly() {
                         imageReadOnly={true}
                         preview={true}
                         eventImageData={mainImageData}
+                      />
+                    </div>
+                  )}
+                  {eventData?.image?.length > 0 && imageConfig.enableGallery && (
+                    <div
+                      style={{
+                        display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
+                          ? adminCheckHandler()
+                            ? 'initial'
+                            : 'none'
+                          : 'initial',
+                      }}>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.otherInformation.image.imageGallery')}
+                      </p>
+                      <MultipleImageUpload
+                        imageReadOnly={true}
+                        largeAspectRatio={
+                          currentCalendarData?.imageConfig?.length > 0 ? imageConfig?.large?.aspectRatio : null
+                        }
+                        thumbnailAspectRatio={
+                          currentCalendarData?.imageConfig?.length > 0 ? imageConfig?.thumbnail?.aspectRatio : null
+                        }
+                        eventImageData={eventData?.image?.filter((image) => !image?.isMain)}
                       />
                     </div>
                   )}
