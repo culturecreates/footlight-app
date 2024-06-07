@@ -162,6 +162,7 @@ const MultipleImageUpload = (props) => {
                 width: undefined,
               },
             };
+          fileList[index].status = 'done';
         });
       }
     });
