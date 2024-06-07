@@ -21,6 +21,7 @@ import { eventStatus } from '../../../constants/eventStatus';
 import moment from 'moment-timezone';
 import { LinkOutlined, StarFilled } from '@ant-design/icons';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
+import { getWidthFromAspectRatio } from '../../../utils/getWidthFromAspectRatio';
 
 const { useBreakpoint } = Grid;
 
@@ -48,14 +49,13 @@ function Lists(props) {
   };
   const aspectRatioString = currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio;
 
-  const calculateImageDimensions = (aspectRatio, maxHeight, maxWidth) => {
-    const [widthRatio, heightRatio] = aspectRatio.split(':').map(Number);
-    let width = maxHeight * (widthRatio / heightRatio);
-    let height = maxHeight;
+  const calculateImageDimensions = (aspectRatio, fixedHeight, maxWidth) => {
+    let width = getWidthFromAspectRatio(aspectRatio, fixedHeight);
+    let height = fixedHeight;
 
     if (width > maxWidth) {
       width = maxWidth;
-      height = maxWidth * (heightRatio / widthRatio);
+      height = (maxWidth * aspectRatio.split(':')[1]) / aspectRatio.split(':')[0];
     }
 
     return { width, height };
