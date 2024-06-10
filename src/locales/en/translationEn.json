@@ -946,6 +946,7 @@
         "colorPlaceHolder": "Paste your colour code or select a colour",
         "height": "Height",
         "width": "Max width",
+        "font": "Font selection",
         "language": "Language selection",
         "eventType": "Event type",
         "region": "Region",
