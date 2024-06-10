@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import Outlined from '../Button/Outlined';
 import { MultipleImageCrop } from '../ImageCrop';
 const type = 'DragableUploadList';
+import './multipleImageUpload.css';
 let selectedImage, selectedUID;
 
 const DragableUploadListItem = ({ originNode, moveRow, file, fileList, actions }) => {
@@ -186,7 +187,7 @@ const MultipleImageUpload = (props) => {
     }, 0);
   };
   return (
-    <div>
+    <div className="multiple-image-upload-wrapper">
       <DndProvider backend={HTML5Backend}>
         <Upload
           fileList={fileList}
@@ -198,9 +199,6 @@ const MultipleImageUpload = (props) => {
           showUploadList={{
             showPreviewIcon: true,
             previewIcon: <EditOutlined style={{ color: '#1B3DE6' }} />,
-            //   showDownloadIcon: props?.imageReadOnly ? true : false,
-            downloadIcon: <DownloadOutlined style={{ color: '#1B3DE6' }} />,
-            //   showRemoveIcon: imageUrl ? true : false,
             removeIcon: <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />,
           }}
           onPreview={(file) => {
@@ -241,7 +239,7 @@ const MultipleImageUpload = (props) => {
             )
           }>
           {!imageReadOnly && (
-            <div style={{ padding: 8 }}>
+            <div style={{ padding: 8 }} className="upload-box">
               <span
                 style={{
                   display: 'flex',
