@@ -65,3 +65,23 @@
   display: grid;
   place-content: center;
 }
+
+.error-page .exit-button {
+  color: #1b3de6;
+  border-bottom: 1.5px solid #1b3de6;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  text-align: left;
+}
+
+.error-page .exit-button:hover {
+  cursor: pointer;
+  text-shadow: -0.2px -0.2px #1b3de6;
+}
+
+.error-page .escape-guide-container {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}

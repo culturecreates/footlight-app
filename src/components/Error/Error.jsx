@@ -9,6 +9,7 @@ import { clearErrors, getErrorDetails } from '../../redux/reducer/ErrorSlice';
 import { useEffect } from 'react';
 import { clearUser } from '../../redux/reducer/userSlice';
 import { infiniteLoopHandler } from '../../utils/infiniteLoopHandler';
+import { removeCachedData } from '../../utils/removeCachedData';
 
 function ErrorAlert(props) {
   const { errorType = 'general' } = props;
@@ -71,6 +72,18 @@ function ErrorAlert(props) {
                 }}>
                 {t('errorPage.buttonText')}
               </Button>
+            </div>
+            <div className="escape-guide-container">
+              <span className="error-message">{t('errorPage.backTologin')}</span>
+              <span
+                className="exit-button"
+                onClick={() => {
+                  removeCachedData();
+                  dispatch(clearErrors());
+                  navigate('/');
+                }}>
+                {t('errorPage.exit')}
+              </span>
             </div>
           </>
         </section>
