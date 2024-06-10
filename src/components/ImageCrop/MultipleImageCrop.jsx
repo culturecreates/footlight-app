@@ -12,7 +12,7 @@ import { ratioChecker } from '../../utils/ratioChecker';
 function MultipleImageCrop(props) {
   const { image, open, setOpen, largeAspectRatio, thumbnailAspectRatio, form, fileList, setFileList, selectedUID } =
     props;
-  let cropValues = { props };
+  let { cropValues } = props;
   const { t } = useTranslation();
 
   const ASPECT_RATIO_TYPE = {
