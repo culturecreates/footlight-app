@@ -76,7 +76,6 @@ import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-au
 import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequiredFieldNames';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
-import { userRoles } from '../../../constants/userRoles';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
@@ -90,6 +89,8 @@ import {
   setLanguageLiteralBannerDisplayStatus,
 } from '../../../redux/reducer/languageLiteralSlice';
 import Alert from '../../../components/Alert';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const { TextArea } = Input;
 
@@ -246,13 +247,8 @@ function CreateNewPlace() {
     accessibility: [],
   };
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
-  };
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
+
   const addUpdatePlaceApiHandler = (placeObj, postalObj) => {
     var promise = new Promise(function (resolve, reject) {
       if (!placeId || placeId === '') {
@@ -1397,7 +1393,7 @@ function CreateNewPlace() {
                   ]}
                   hidden={
                     standardAdminOnlyFields?.includes(placeFormRequiredFieldNames?.PLACE_TYPE)
-                      ? adminCheckHandler()
+                      ? adminCheckHandler({ calendar, user })
                         ? false
                         : true
                       : false
@@ -1775,7 +1771,7 @@ function CreateNewPlace() {
                             message: t('common.validations.informationRequired'),
                           },
                         ]}
-                        hidden={taxonomy?.isAdminOnly ? (adminCheckHandler() ? false : true) : false}>
+                        hidden={taxonomy?.isAdminOnly ? (adminCheckHandler({ calendar, user }) ? false : true) : false}>
                         <TreeSelectOption
                           data-cy={`treeselect-place-dynamic-field-${index}`}
                           allowClear
@@ -2372,7 +2368,7 @@ function CreateNewPlace() {
                   )}
                   hidden={
                     standardAdminOnlyFields?.includes(placeFormRequiredFieldNames?.REGION)
-                      ? adminCheckHandler()
+                      ? adminCheckHandler({ calendar, user })
                         ? false
                         : true
                       : false
@@ -2912,7 +2908,7 @@ function CreateNewPlace() {
                 title={t('dashboard.places.createNew.addPlace.venueAccessibility.venueAccessibility')}
                 hidden={
                   standardAdminOnlyFields?.includes(placeFormRequiredFieldNames?.PLACE_ACCESSIBILITY)
-                    ? adminCheckHandler()
+                    ? adminCheckHandler({ calendar, user })
                       ? false
                       : true
                     : false
@@ -2940,7 +2936,7 @@ function CreateNewPlace() {
                     })}
                     hidden={
                       standardAdminOnlyFields?.includes(placeFormRequiredFieldNames?.PLACE_ACCESSIBILITY)
-                        ? adminCheckHandler()
+                        ? adminCheckHandler({ calendar, user })
                           ? false
                           : true
                         : false
