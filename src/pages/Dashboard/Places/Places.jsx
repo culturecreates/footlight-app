@@ -24,7 +24,6 @@ import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
-import { userRoles } from '../../../constants/userRoles';
 import { useDeletePlacesMutation, useLazyGetAllPlacesQuery } from '../../../services/places';
 import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../../constants/sortByOptions';
 import i18n from 'i18next';
@@ -34,6 +33,8 @@ import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import { useLazyGetEntityDependencyCountQuery } from '../../../services/entities';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
@@ -120,9 +121,7 @@ function Places() {
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   let customFilters = currentCalendarData?.filterPersonalization?.customFields;
 
@@ -147,11 +146,6 @@ function Places() {
           },
         });
       });
-  };
-
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
   };
 
   const listItemHandler = (id) => {
@@ -495,7 +489,7 @@ function Places() {
                         artsDataLink={artsDataLinkChecker(item?.sameAs)}
                         listItemHandler={() => listItemHandler(item?.id)}
                         actions={[
-                          adminCheckHandler() && !isReadOnly && (
+                          adminCheckHandler({ calendar, user }) && !isReadOnly && (
                             <DeleteOutlined
                               data-cy="icon-delete-place"
                               key={'delete-icon'}

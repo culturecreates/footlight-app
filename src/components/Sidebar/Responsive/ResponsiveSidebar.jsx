@@ -15,8 +15,9 @@ import CalendarList from '../../Dropdown/Calendar';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import i18n from 'i18next';
 import { calendarModes } from '../../../constants/calendarModes';
-import { userRoles } from '../../../constants/userRoles';
 import { handleLogout } from '../../../hooks/useAuth';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 function ResponsiveSidebar(props) {
   const { allCalendarsData, currentCalendarData, onClose, open, pageNumber, setPageNumber } = props;
@@ -37,14 +38,7 @@ function ResponsiveSidebar(props) {
       icon: item.icon,
     };
   });
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
-
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
-  };
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   const itemsOptions = sidebarItems.map((item, index) => {
     const key = String(index + 1);
@@ -57,7 +51,7 @@ function ResponsiveSidebar(props) {
       disabled: item.disabled,
     };
     if (item.adminOnly) {
-      if (adminCheckHandler()) return itemJson;
+      if (adminCheckHandler({ calendar, user })) return itemJson;
     } else return itemJson;
   });
   const selectedCalendar = (id, uri, label = '') => {

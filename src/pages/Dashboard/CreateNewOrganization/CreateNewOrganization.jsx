@@ -39,7 +39,6 @@ import { formFieldsHandler } from '../../../utils/formFieldsHandler';
 import { formPayloadHandler } from '../../../utils/formPayloadHandler';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import { loadArtsDataEntity } from '../../../services/artsData';
-import { userRoles } from '../../../constants/userRoles';
 import {
   useGetEntitiesByIdQuery,
   useLazyGetEntitiesByIdQuery,
@@ -71,6 +70,8 @@ import {
   setLanguageLiteralBannerDisplayStatus,
 } from '../../../redux/reducer/languageLiteralSlice';
 import Alert from '../../../components/Alert';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -155,20 +156,13 @@ function CreateNewOrganization() {
   let formFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.organization);
   let formFieldProperties = formFields?.length > 0 && formFields[0]?.formFieldProperties;
   formFields = formFields?.length > 0 && formFields[0]?.formFields;
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   let standardMandatoryFieldNames = formFieldProperties?.mandatoryFields?.standardFields?.map(
     (field) => field?.fieldName,
   );
 
   let externalEntityData = externalCalendarEntityData?.length > 0 && externalCalendarEntityData[0];
-
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
-  };
 
   const addUpdateOrganizationApiHandler = (organizationObj, toggle) => {
     var promise = new Promise(function (resolve, reject) {
@@ -1135,7 +1129,9 @@ function CreateNewOrganization() {
                                     message: t('common.validations.informationRequired'),
                                   },
                                 ]}
-                                hidden={taxonomy?.isAdminOnly ? (adminCheckHandler() ? false : true) : false}>
+                                hidden={
+                                  taxonomy?.isAdminOnly ? (adminCheckHandler({ calendar, user }) ? false : true) : false
+                                }>
                                 <TreeSelectOption
                                   allowClear
                                   treeDefaultExpandAll
