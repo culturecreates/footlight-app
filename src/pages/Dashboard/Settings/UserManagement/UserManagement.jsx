@@ -631,7 +631,7 @@ const UserManagement = () => {
                               }}
                               trigger={['click']}>
                               <span>
-                                {!item?.isSuperAdmin || item._id == user.id ? (
+                                {!item?.isSuperAdmin && user?.id != item?._id ? (
                                   <MoreOutlined
                                     className="event-list-more-icon"
                                     key={index}
