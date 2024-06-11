@@ -111,7 +111,7 @@ const AddUser = () => {
     }
 
     if (userId && userId !== user?.id) {
-      getUser({ userId, calendarId })
+      getUser({ userId, calendarId, sessionId: timestampRef })
         .unwrap()
         .then((response) => {
           const activeCalendars = response?.roles?.filter((r) => {
@@ -869,26 +869,26 @@ const AddUser = () => {
                             <Col flex={'423px'}>
                               <Col>
                                 <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
-                                  {selectedCalendars?.map((calendar, index) => (
+                                  {selectedCalendars?.map((selectedCalendar, index) => (
                                     <CalendarAccordion
                                       form={formInstance}
                                       data-cy="accordion-selected-calendars"
                                       key={index}
-                                      selectedCalendarId={calendar?.calendarId}
+                                      selectedCalendarId={selectedCalendar?.calendarId}
                                       name={contentLanguageBilingual({
-                                        en: calendar?.name?.en,
-                                        fr: calendar?.name?.fr,
+                                        en: selectedCalendar?.name?.en,
+                                        fr: selectedCalendar?.name?.fr,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })}
-                                      role={calendar?.role}
+                                      role={selectedCalendar?.role}
                                       readOnly={adminCheckHandler({ calendar, user }) ? false : true}
-                                      disabled={calendar?.disabled}
-                                      organizationIds={calendar?.organizations}
-                                      peopleIds={calendar?.people}
+                                      disabled={selectedCalendar?.disabled}
+                                      organizationIds={selectedCalendar?.organizations}
+                                      peopleIds={selectedCalendar?.people}
                                       isCurrentUser={isCurrentUser}
                                       removeCalendarHandler={() => {
-                                        removeCalendarHandler({ item: calendar, index });
+                                        removeCalendarHandler({ item: selectedCalendar, index });
                                       }}
                                     />
                                   ))}

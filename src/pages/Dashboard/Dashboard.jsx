@@ -46,7 +46,7 @@ function Dashboard() {
     isLoading,
     isSuccess,
     refetch,
-  } = useGetAllCalendarsQuery({ sessionId: timestampRef }, { skip: accessToken ? false : true });
+  } = useGetAllCalendarsQuery({ sessionId: timestampRef });
 
   const [getCurrentUserDetails, { isLoading: isCurrentUserLoading }] = useLazyGetCurrentUserQuery();
 
@@ -69,6 +69,15 @@ function Dashboard() {
   };
 
   useEffect(() => {
+    if (location?.state?.previousPath?.toLowerCase() === 'login') {
+      dispatch(setInterfaceLanguage(user?.interfaceLanguage?.toLowerCase()));
+      i18n.changeLanguage(user?.interfaceLanguage?.toLowerCase());
+    }
+  }, [accessToken]);
+
+  useEffect(() => {
+    if (!isSuccess) return;
+
     const accessTokenFromCookie = Cookies.get('accessToken');
     const refreshTokenFromCookie = Cookies.get('refreshToken');
     const calendarIdFromCookie = Cookies.get('calendarId');
@@ -80,7 +89,7 @@ function Dashboard() {
 
     const token = accessToken || accessTokenFromCookie;
 
-    getCurrentUserDetails({ accessToken: token, calendarId: calId })
+    getCurrentUserDetails({ accessToken: token, calendarId: calId, sessionId: timestampRef })
       .unwrap()
       .then((response) => {
         dispatch(
@@ -90,12 +99,7 @@ function Dashboard() {
       .catch(() => {
         navigate(PathName.Login);
       });
-
-    if (location?.state?.previousPath?.toLowerCase() === 'login') {
-      dispatch(setInterfaceLanguage(user?.interfaceLanguage?.toLowerCase()));
-      i18n.changeLanguage(user?.interfaceLanguage?.toLowerCase());
-    }
-  }, [accessToken, isSuccess]);
+  }, [isSuccess]);
 
   useEffect(() => {
     if (!isSuccess) return;
