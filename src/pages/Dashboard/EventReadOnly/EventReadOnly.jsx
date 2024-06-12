@@ -723,7 +723,7 @@ function EventReadOnly() {
                           : 'initial',
                       }}>
                       <p className="read-only-event-content-sub-title-primary">
-                        {t('dashboard.events.addEditEvent.otherInformation.image.title')}
+                        {t('dashboard.events.addEditEvent.otherInformation.image.mainImage')}
                       </p>
                       <ImageUpload
                         imageUrl={mainImageData?.large?.uri}
@@ -743,7 +743,7 @@ function EventReadOnly() {
                           : 'initial',
                       }}>
                       <p className="read-only-event-content-sub-title-primary">
-                        {t('dashboard.events.addEditEvent.otherInformation.image.imageGallery')}
+                        {t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
                       </p>
                       <MultipleImageUpload
                         imageReadOnly={true}

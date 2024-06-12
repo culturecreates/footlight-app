@@ -19,6 +19,7 @@ import BilingualTextEditor from '../components/BilingualTextEditor';
 import Outlined from '../components/Button/Outlined';
 import { sourceOptions } from './sourceOptions';
 import LoadingIndicator from '../components/LoadingIndicator';
+import MultipleImageUpload from '../components/MultipleImageUpload';
 
 const { TextArea } = Input;
 
@@ -366,6 +367,9 @@ export const formFieldValue = [
       imageCropOpen,
       largeAspectRatio,
       thumbnailAspectRatio,
+      eventImageGalleryData,
+      enableGallery,
+      t,
     }) => (
       <>
         {position === 'top' && datatype === dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
@@ -383,6 +387,18 @@ export const formFieldValue = [
           thumbnailAspectRatio={thumbnailAspectRatio}
           formName={name}
         />
+        <Form.Item
+          label={t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
+          className="subheading-wrap"
+          data-cy="form-item-event-multiple-image"
+          hidden={!enableGallery}>
+          <MultipleImageUpload
+            form={form}
+            largeAspectRatio={largeAspectRatio}
+            thumbnailAspectRatio={thumbnailAspectRatio}
+            eventImageData={eventImageGalleryData?.image?.filter((image) => !image?.isMain)}
+          />
+        </Form.Item>
       </>
     ),
   },
@@ -724,6 +740,7 @@ export const returnFormDataWithFields = ({
       isCrop: isCrop,
       setImageCropOpen,
       imageCropOpen,
+      eventImageGalleryData: entityData?.image,
       eventImageData:
         field?.mappedField === mappedFieldTypes.IMAGE
           ? entityData?.image
@@ -734,6 +751,8 @@ export const returnFormDataWithFields = ({
         currentCalendarData?.imageConfig?.length > 0
           ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio
           : null,
+      enableGallery:
+        currentCalendarData?.imageConfig?.length > 0 ? currentCalendarData?.imageConfig[0]?.enableGallery : false,
       placesSearch,
       allPlacesList,
       allPlacesArtsdataList,

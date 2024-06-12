@@ -252,7 +252,9 @@
           },
           "image": {
             "title": "Image",
-            "subHeading": " Images should be landscape or square and at least 600px wide. Only JPEG and PNG files are supported.",
+            "mainImage": "Main image",
+            "additionalImages": "Additional images",
+            "subHeading": "Only JPEG and PNG files are supported.",
             "dragAndDrop": "or drag and drop to upload",
             "browse": "Browse",
             "imageGallery": "Image Gallery",
@@ -696,6 +698,8 @@
           },
           "image": {
             "image": "Image",
+            "mainImage": "Main image",
+            "additionalImages": "Additional images",
             "subheading": "Only .jpeg and .png files are accepted."
           },
           "addMoreDetails": "Add more details",

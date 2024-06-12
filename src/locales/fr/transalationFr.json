@@ -252,6 +252,8 @@
           },
           "image": {
             "title": "Image",
+            "mainImage": "Image principale",
+            "additionalImages": "Images supplémentaires",
             "subHeading": "Les images doivent être au format paysage ou carré et mesurer au moins 600 px de large. Uniquement les fichiers .jpeg et .png sont acceptés.",
             "dragAndDrop": "ou glisser pour télécharger",
             "browse": "Parcourir",
@@ -693,6 +695,8 @@
           },
           "image": {
             "image": "Image",
+            "mainImage": "Image principale",
+            "additionalImages": "Images supplémentaires",
             "subheading": "Uniquement les fichiers .jpeg et .png sont acceptés."
           },
           "addMoreDetails": "Ajouter plus de détails",

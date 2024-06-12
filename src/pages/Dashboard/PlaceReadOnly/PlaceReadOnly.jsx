@@ -452,30 +452,13 @@ function PlaceReadOnly() {
                           </p>
                         </>
                       )}
-                      {placeData?.image?.length > 0 && imageConfig.enableGallery && (
-                        <div>
-                          <p className="read-only-event-content-sub-title-primary">
-                            {t('dashboard.events.addEditEvent.otherInformation.image.imageGallery')}
-                          </p>
-                          <MultipleImageUpload
-                            imageReadOnly={true}
-                            largeAspectRatio={
-                              currentCalendarData?.imageConfig?.length > 0 ? imageConfig?.large?.aspectRatio : null
-                            }
-                            thumbnailAspectRatio={
-                              currentCalendarData?.imageConfig?.length > 0 ? imageConfig?.thumbnail?.aspectRatio : null
-                            }
-                            eventImageData={placeData?.image?.filter((image) => !image?.isMain)}
-                          />
-                        </div>
-                      )}
                     </Col>
                   )}
                   {placeData?.image?.length > 0 && imageConfig.enableGallery && (
                     <Col span={24}>
                       <div>
                         <p className="read-only-event-content-sub-title-primary">
-                          {t('dashboard.events.addEditEvent.otherInformation.image.imageGallery')}
+                          {t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
                         </p>
                         <MultipleImageUpload
                           imageReadOnly={true}
