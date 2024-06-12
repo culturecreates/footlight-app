@@ -11,7 +11,7 @@ const type = 'DragableUploadList';
 import './multipleImageUpload.css';
 let selectedImage, selectedUID;
 
-const DragableUploadListItem = ({ originNode, moveRow, file, fileList, actions }) => {
+const DragableUploadListItem = ({ originNode, moveRow, file, fileList }) => {
   const ref = useRef(null);
 
   const index = fileList.indexOf(file);
@@ -47,12 +47,9 @@ const DragableUploadListItem = ({ originNode, moveRow, file, fileList, actions }
       ref={ref}
       className={`ant-upload-draggable-list-item ${isOver ? dropClassName : ''}`}
       style={{
-        cursor: 'move',
+        cursor: 'grab',
       }}>
       {file.status === 'error' ? errorNode : originNode}
-      <span className="edit-image" data-cy="span-preview-crop-image">
-        <EditOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} onClick={actions?.preview} />
-      </span>
     </div>
   );
 };
@@ -258,18 +255,20 @@ const MultipleImageUpload = (props) => {
           )}
         </Upload>
       </DndProvider>
-      <MultipleImageCrop
-        setOpen={setImageCropOpen}
-        open={imageCropOpen}
-        largeAspectRatio={largeAspectRatio}
-        thumbnailAspectRatio={thumbnailAspectRatio}
-        image={selectedImage}
-        form={form}
-        cropValues={cropValues}
-        fileList={fileList}
-        selectedUID={selectedUID}
-        setFileList={setFileList}
-      />
+      {fileList?.length > 0 && selectedUID && (
+        <MultipleImageCrop
+          setOpen={setImageCropOpen}
+          open={imageCropOpen}
+          largeAspectRatio={largeAspectRatio}
+          thumbnailAspectRatio={thumbnailAspectRatio}
+          image={selectedImage}
+          form={form}
+          cropValues={fileList?.find((file) => file?.uid === selectedUID)?.cropValues ?? cropValues}
+          fileList={fileList}
+          selectedUID={selectedUID}
+          setFileList={setFileList}
+        />
+      )}
     </div>
   );
 };
