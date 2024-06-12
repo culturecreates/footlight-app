@@ -387,18 +387,20 @@ export const formFieldValue = [
           thumbnailAspectRatio={thumbnailAspectRatio}
           formName={name}
         />
-        <Form.Item
-          label={t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
-          className="subheading-wrap"
-          data-cy="form-item-event-multiple-image"
-          hidden={!enableGallery}>
-          <MultipleImageUpload
-            form={form}
-            largeAspectRatio={largeAspectRatio}
-            thumbnailAspectRatio={thumbnailAspectRatio}
-            eventImageData={eventImageGalleryData?.image?.filter((image) => !image?.isMain)}
-          />
-        </Form.Item>
+        {name?.includes(mappedFieldTypes.IMAGE) && (
+          <Form.Item
+            label={t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
+            className="subheading-wrap"
+            data-cy="form-item-event-multiple-image"
+            hidden={!enableGallery}>
+            <MultipleImageUpload
+              form={form}
+              largeAspectRatio={largeAspectRatio}
+              thumbnailAspectRatio={thumbnailAspectRatio}
+              eventImageData={eventImageGalleryData?.image?.filter((image) => !image?.isMain)}
+            />
+          </Form.Item>
+        )}
       </>
     ),
   },
