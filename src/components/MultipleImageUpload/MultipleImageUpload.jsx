@@ -1,4 +1,4 @@
-import { DownloadOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { DownloadOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Tooltip, Upload, message } from 'antd';
 import update from 'immutability-helper';
 import React, { useCallback, useRef, useState } from 'react';
@@ -6,10 +6,8 @@ import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
 import Outlined from '../Button/Outlined';
-import { MultipleImageCrop } from '../ImageCrop';
 const type = 'DragableUploadList';
 import './multipleImageUpload.css';
-let selectedImage, selectedUID;
 
 const DragableUploadListItem = ({ originNode, moveRow, file, fileList }) => {
   const ref = useRef(null);
@@ -65,7 +63,7 @@ const getBase64 = (img, callback) => {
   });
 };
 const MultipleImageUpload = (props) => {
-  const { largeAspectRatio, thumbnailAspectRatio, eventImageData, form, imageReadOnly } = props;
+  const { eventImageData, form, imageReadOnly } = props;
   const { t } = useTranslation();
 
   const [fileList, setFileList] = useState(
@@ -99,27 +97,7 @@ const MultipleImageUpload = (props) => {
         })
       : [],
   );
-  const [imageCropOpen, setImageCropOpen] = useState(false);
 
-  let cropValues = {
-    large: {
-      x: undefined,
-      y: undefined,
-      height: undefined,
-      width: undefined,
-    },
-    original: {
-      entityId: null,
-      height: undefined,
-      width: undefined,
-    },
-    thumbnail: {
-      x: undefined,
-      y: undefined,
-      height: undefined,
-      width: undefined,
-    },
-  };
   const moveRow = useCallback(
     (dragIndex, hoverIndex) => {
       const dragRow = fileList[dragIndex];
@@ -194,15 +172,7 @@ const MultipleImageUpload = (props) => {
           customRequest={customRequest}
           beforeUpload={beforeUpload}
           showUploadList={{
-            showPreviewIcon: true,
-            previewIcon: <EditOutlined style={{ color: '#1B3DE6' }} />,
             removeIcon: <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />,
-          }}
-          onPreview={(file) => {
-            selectedImage = file?.url;
-            selectedUID = file?.uid;
-            cropValues = file?.cropValues;
-            setImageCropOpen(true);
           }}
           multiple
           itemRender={(originNode, file, currFileList, actions) =>
@@ -255,20 +225,6 @@ const MultipleImageUpload = (props) => {
           )}
         </Upload>
       </DndProvider>
-      {fileList?.length > 0 && selectedUID && (
-        <MultipleImageCrop
-          setOpen={setImageCropOpen}
-          open={imageCropOpen}
-          largeAspectRatio={largeAspectRatio}
-          thumbnailAspectRatio={thumbnailAspectRatio}
-          image={selectedImage}
-          form={form}
-          cropValues={fileList?.find((file) => file?.uid === selectedUID)?.cropValues ?? cropValues}
-          fileList={fileList}
-          selectedUID={selectedUID}
-          setFileList={setFileList}
-        />
-      )}
     </div>
   );
 };
