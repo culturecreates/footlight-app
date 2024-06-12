@@ -101,14 +101,16 @@ const MultipleImageUpload = (props) => {
   const moveRow = useCallback(
     (dragIndex, hoverIndex) => {
       const dragRow = fileList[dragIndex];
-      setFileList(
-        update(fileList, {
-          $splice: [
-            [dragIndex, 1],
-            [hoverIndex, 0, dragRow],
-          ],
-        }),
-      );
+      let newFileList = update(fileList, {
+        $splice: [
+          [dragIndex, 1],
+          [hoverIndex, 0, dragRow],
+        ],
+      });
+      setFileList(newFileList);
+      form.setFieldsValue({
+        multipleImagesCrop: newFileList,
+      });
     },
     [fileList],
   );
