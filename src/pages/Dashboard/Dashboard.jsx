@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { calendarModes } from '../../constants/calendarModes';
 import { useAuth } from '../../hooks/useAuth';
 import { clearErrors, getErrorDetails } from '../../redux/reducer/ErrorSlice';
+import LoadingIndicator from '../../components/LoadingIndicator/LoadingIndicator';
 
 const { Header, Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -47,9 +48,9 @@ function Dashboard() {
     isLoading,
     isSuccess,
     refetch,
-  } = useGetAllCalendarsQuery({ sessionId: timestampRef }, { skip: accessToken ? false : true });
+  } = useGetAllCalendarsQuery({ sessionId: timestampRef });
 
-  const [getCurrentUserDetails] = useLazyGetCurrentUserQuery();
+  const [getCurrentUserDetails, { isLoading: isCurrentUserLoading }] = useLazyGetCurrentUserQuery();
 
   let { calendarId } = useParams();
   let [searchParams] = useSearchParams();
@@ -61,71 +62,80 @@ function Dashboard() {
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const checkToken = (accessToken, accessTokenFromCookie) => {
+    if (!accessToken && !accessTokenFromCookie) {
+      navigate(PathName.Login);
+      return;
+    }
+    return true;
+  };
+
   useEffect(() => {
+    if (location?.state?.previousPath?.toLowerCase() === 'login') {
+      dispatch(setInterfaceLanguage(user?.interfaceLanguage?.toLowerCase()));
+      i18n.changeLanguage(user?.interfaceLanguage?.toLowerCase());
+    }
+  }, [accessToken]);
+
+  useEffect(() => {
+    if (!isSuccess) return;
+
     const accessTokenFromCookie = Cookies.get('accessToken');
     const refreshTokenFromCookie = Cookies.get('refreshToken');
     const calendarIdFromCookie = Cookies.get('calendarId');
     const calId = calendarId || calendarIdFromCookie;
 
-    if (!calId) {
-      return;
-    }
+    if (!calId) return;
 
-    if (!accessToken && !accessTokenFromCookie) {
-      navigate(PathName.Login);
-    } else if (location?.state?.previousPath?.toLowerCase() !== 'login') {
-      const token = accessToken || accessTokenFromCookie;
-      if (token && calId) {
-        getCurrentUserDetails({ accessToken: token, calendarId: calId })
-          .unwrap()
-          .then((response) => {
-            dispatch(
-              setUser({ user: { ...response }, refreshToken: { token: refreshTokenFromCookie }, accessToken: token }),
-            );
-          })
-          .catch(() => {
-            navigate(PathName.Login);
-          });
-      } else if (location?.state?.previousPath?.toLowerCase() === 'login' || !calendarId) {
-        dispatch(setInterfaceLanguage(user?.interfaceLanguage?.toLowerCase()));
-        i18n.changeLanguage(user?.interfaceLanguage?.toLowerCase());
-      } else {
+    if (!checkToken(accessToken, accessTokenFromCookie)) return;
+
+    const token = accessToken || accessTokenFromCookie;
+
+    getCurrentUserDetails({ accessToken: token, calendarId: calId, sessionId: timestampRef })
+      .unwrap()
+      .then((response) => {
+        dispatch(
+          setUser({ user: { ...response }, refreshToken: { token: refreshTokenFromCookie }, accessToken: token }),
+        );
+      })
+      .catch(() => {
         navigate(PathName.Login);
-      }
-    }
-  }, [accessToken, isSuccess]);
+      });
+  }, [isSuccess]);
 
   useEffect(() => {
-    if (isSuccess) {
-      const checkedCalendarId = findActiveCalendar();
-      if (checkedCalendarId != null) {
-        Cookies.set('calendarId', checkedCalendarId);
-      }
+    if (!isSuccess) return;
 
-      if (calendarId && accessToken) {
-        getCalendar({ id: calendarId, sessionId: timestampRef })
-          .unwrap()
-          .then((response) => {
-            if (response?.mode === calendarModes.READ_ONLY) {
-              setIsReadOnly(true);
-              setIsModalVisible(true);
-            } else setIsReadOnly(false);
-          })
-          .catch((error) => {
-            if (error.status === 404) {
-              navigate(PathName.NotFound);
-            }
-          });
-        dispatch(setSelectedCalendar(String(calendarId)));
-      } else {
-        let activeCalendarId = Cookies.get('calendarId');
-        if (activeCalendarId && accessToken) {
-          navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
-        } else if (!isLoading && allCalendarsData?.data) {
-          activeCalendarId = allCalendarsData?.data[0]?.id;
-          Cookies.set('calendarId', activeCalendarId);
-          navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
-        }
+    if (!checkToken(accessToken, Cookies.get('accessToken'))) return;
+
+    const checkedCalendarId = findActiveCalendar();
+    if (checkedCalendarId != null) {
+      Cookies.set('calendarId', checkedCalendarId);
+    }
+
+    if (calendarId && accessToken) {
+      getCalendar({ id: calendarId, sessionId: timestampRef })
+        .unwrap()
+        .then((response) => {
+          if (response?.mode === calendarModes.READ_ONLY) {
+            setIsReadOnly(true);
+            setIsModalVisible(true);
+          } else setIsReadOnly(false);
+        })
+        .catch((error) => {
+          if (error.status === 404) {
+            navigate(PathName.NotFound);
+          }
+        });
+      dispatch(setSelectedCalendar(String(calendarId)));
+    } else {
+      let activeCalendarId = Cookies.get('calendarId');
+      if (activeCalendarId && accessToken) {
+        navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
+      } else if (!isLoading && allCalendarsData?.data) {
+        activeCalendarId = allCalendarsData?.data[0]?.id;
+        Cookies.set('calendarId', activeCalendarId);
+        navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
       }
     }
   }, [calendarId, isLoading, allCalendarsData, isSuccess]);
@@ -163,68 +173,74 @@ function Dashboard() {
 
   return (
     <ErrorLayout asycErrorDetails={asycErrorDetails}>
-      <Layout className="dashboard-wrapper">
-        <Header className="dashboard-header">
-          <NavigationBar
-            currentCalendarData={currentCalendarData}
-            allCalendarsData={allCalendarsData}
-            pageNumber={pageNumber}
-            setPageNumber={setPageNumber}
-          />
-        </Header>
-        <Layout>
-          <Sidebar
-            currentCalendarData={currentCalendarData}
-            allCalendarsData={allCalendarsData}
-            pageNumber={pageNumber}
-            setPageNumber={setPageNumber}
-          />
-          <Layout style={{ position: 'relative' }}>
-            <Content
-              className="site-layout-background"
-              style={{
-                padding: `${screens.md ? '34px 32px 32px 32px' : '32px 16px'}`,
-                margin: 0,
-                minHeight: 280,
-                overflowY: 'scroll',
-                background: contentBackgroundColor,
-              }}>
-              <CustomModal
-                open={isModalVisible}
-                centered
-                className="calendar-read-only-modal"
-                title={
-                  <span className="calendar-read-only-title" data-cy="span-calendar-read-only-title">
-                    {t('dashboard.calendar.readOnlyMode.heading')}
-                  </span>
-                }
-                onCancel={() => setIsModalVisible(false)}
-                footer={false}>
-                <Row gutter={[0, 10]}>
-                  <Col span={24}>
-                    <div className="calendar-read-only-content" data-cy="div-calendar-read-only-content">
-                      {t('dashboard.calendar.readOnlyMode.content')}
-                    </div>
-                  </Col>
-                </Row>
-              </CustomModal>
-              <Outlet
-                context={[
-                  currentCalendarData,
-                  pageNumber,
-                  setPageNumber,
-                  getCalendar,
-                  setContentBackgroundColor,
-                  isReadOnly,
-                  setIsReadOnly,
-                  refetch,
-                  allCalendarsData?.data,
-                ]}
-              />
-            </Content>
+      {isSuccess && !isCurrentUserLoading ? (
+        <Layout className="dashboard-wrapper">
+          <Header className="dashboard-header">
+            <NavigationBar
+              currentCalendarData={currentCalendarData}
+              allCalendarsData={allCalendarsData}
+              pageNumber={pageNumber}
+              setPageNumber={setPageNumber}
+            />
+          </Header>
+          <Layout>
+            <Sidebar
+              currentCalendarData={currentCalendarData}
+              allCalendarsData={allCalendarsData}
+              pageNumber={pageNumber}
+              setPageNumber={setPageNumber}
+            />
+            <Layout style={{ position: 'relative' }}>
+              <Content
+                className="site-layout-background"
+                style={{
+                  padding: `${screens.md ? '34px 32px 32px 32px' : '32px 16px'}`,
+                  margin: 0,
+                  minHeight: 280,
+                  overflowY: 'scroll',
+                  background: contentBackgroundColor,
+                }}>
+                <CustomModal
+                  open={isModalVisible}
+                  centered
+                  className="calendar-read-only-modal"
+                  title={
+                    <span className="calendar-read-only-title" data-cy="span-calendar-read-only-title">
+                      {t('dashboard.calendar.readOnlyMode.heading')}
+                    </span>
+                  }
+                  onCancel={() => setIsModalVisible(false)}
+                  footer={false}>
+                  <Row gutter={[0, 10]}>
+                    <Col span={24}>
+                      <div className="calendar-read-only-content" data-cy="div-calendar-read-only-content">
+                        {t('dashboard.calendar.readOnlyMode.content')}
+                      </div>
+                    </Col>
+                  </Row>
+                </CustomModal>
+                <Outlet
+                  context={[
+                    currentCalendarData,
+                    pageNumber,
+                    setPageNumber,
+                    getCalendar,
+                    setContentBackgroundColor,
+                    isReadOnly,
+                    setIsReadOnly,
+                    refetch,
+                    allCalendarsData?.data,
+                  ]}
+                />
+              </Content>
+            </Layout>
           </Layout>
         </Layout>
-      </Layout>
+      ) : (
+        <div style={{ height: '100%', display: 'grid', placeContent: 'center' }}>
+          <LoadingIndicator></LoadingIndicator>
+        </div>
+      )}
     </ErrorLayout>
   );
 }

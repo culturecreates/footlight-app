@@ -26,7 +26,6 @@ import { PathName } from '../../../constants/pathName';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
-import { userRoles } from '../../../constants/userRoles';
 import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
 import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../../constants/sortByOptions';
 import i18n from 'i18next';
@@ -35,6 +34,8 @@ import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import { useLazyGetEntityDependencyCountQuery } from '../../../services/entities';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const { useBreakpoint } = Grid;
 
@@ -108,9 +109,7 @@ function Organizations() {
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   let customFilters = currentCalendarData?.filterPersonalization?.customFields;
 
@@ -138,11 +137,6 @@ function Organizations() {
           },
         });
       });
-  };
-
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
   };
 
   const listItemHandler = (id) => {
@@ -475,7 +469,7 @@ function Organizations() {
                         artsDataLink={artsDataLinkChecker(item?.sameAs)}
                         listItemHandler={() => listItemHandler(item?.id)}
                         actions={[
-                          adminCheckHandler() && !isReadOnly && (
+                          adminCheckHandler({ calendar, user }) && !isReadOnly && (
                             <DeleteOutlined
                               key={'delete-icon'}
                               style={{ color: '#222732', fontSize: '24px' }}

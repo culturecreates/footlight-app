@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../redux/reducer/userSlice';
 import { userRoles } from '../../constants/userRoles';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 function ReadOnlyProtectedComponent({ children, creator, entityId, isReadOnly }) {
   let { calendarId } = useParams();
@@ -12,9 +13,7 @@ function ReadOnlyProtectedComponent({ children, creator, entityId, isReadOnly })
     return children;
   }
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   if (entityId) {
     user?.roles.forEach((calendar) => {
