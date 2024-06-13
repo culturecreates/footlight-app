@@ -722,11 +722,11 @@ export const returnFormDataWithFields = ({
       }),
       largeUrl:
         field?.mappedField === mappedFieldTypes.IMAGE
-          ? entityData?.image?.large?.uri
+          ? entityData?.image?.find((image) => image?.isMain)?.large?.uri
           : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo?.large?.uri,
       originalUrl:
         field?.mappedField === mappedFieldTypes.IMAGE
-          ? entityData?.image?.original?.uri
+          ? entityData?.image?.find((image) => image?.isMain)?.original?.uri
           : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo?.original?.uri,
       required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
       t: t,
@@ -743,7 +743,7 @@ export const returnFormDataWithFields = ({
       eventImageGalleryData: entityData?.image,
       eventImageData:
         field?.mappedField === mappedFieldTypes.IMAGE
-          ? entityData?.image
+          ? entityData?.image?.find((image) => image?.isMain)
           : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo,
       largeAspectRatio:
         currentCalendarData?.imageConfig?.length > 0 ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio : null,
