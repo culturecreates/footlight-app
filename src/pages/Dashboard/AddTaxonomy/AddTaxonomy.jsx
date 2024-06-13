@@ -55,6 +55,7 @@ const AddTaxonomyTest = () => {
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
+  const dynamic = location.state?.dynamic;
 
   const taxonomyId = searchParams.get('id');
   setContentBackgroundColor('#F9FAFF');
@@ -161,11 +162,11 @@ const AddTaxonomyTest = () => {
             fr: values?.frenchName?.trim(),
           },
           taxonomyClass: values?.class?.value,
-          isDynamicField: location.state?.dynamic
-            ? location.state?.dynamic === 'not-dynamic'
-            : taxonomyData?.isDynamicField,
+          isDynamicField: dynamic != false || taxonomyData?.isDynamicField,
           includeInFullTextSearch: true,
-          mappedToField: values?.mappedToField?.key ?? values?.mappedToField,
+          ...((taxonomyData?.isDynamicField != true || dynamic != true) && {
+            mappedToField: values?.mappedToField?.key ?? values?.mappedToField,
+          }),
           isAdminOnly: userAccess?.length > 0,
           disambiguatingDescription: {
             en: values?.frenchdescription?.trim(),
@@ -340,7 +341,7 @@ const AddTaxonomyTest = () => {
                     </span>
                   </Col>
                 </Row>
-                {(location.state?.dynamic === 'dynamic' || (taxonomyId && !taxonomyData?.isDynamicField)) && (
+                {(dynamic === false || (taxonomyId && !taxonomyData?.isDynamicField)) && (
                   <Row>
                     <Col flex={'423px'}>
                       <Form.Item
