@@ -55,7 +55,7 @@ export const router = createBrowserRouter([
   {
     path: PathName.Dashboard,
     element: <Dashboard />,
-    errorElement: <ErrorAlert />,
+    errorElement: <ErrorAlert errorType="general" />,
     children: [
       {
         path: `:calendarId${PathName.Events}`,

@@ -23,6 +23,7 @@ import CustomModal from '../../components/Modal/Common/CustomModal';
 import { useTranslation } from 'react-i18next';
 import { calendarModes } from '../../constants/calendarModes';
 import { useAuth } from '../../hooks/useAuth';
+import { clearErrors, getErrorDetails } from '../../redux/reducer/ErrorSlice';
 import LoadingIndicator from '../../components/LoadingIndicator/LoadingIndicator';
 
 const { Header, Content } = Layout;
@@ -40,6 +41,7 @@ function Dashboard() {
   const reloadStatus = useSelector(getReloadStatusForCalendar);
   const screens = useBreakpoint();
   const { t } = useTranslation();
+  const asycErrorDetails = useSelector(getErrorDetails);
 
   const {
     currentData: allCalendarsData,
@@ -146,6 +148,10 @@ function Dashboard() {
   }, [reloadStatus, dispatch]);
 
   useEffect(() => {
+    dispatch(clearErrors());
+  }, []);
+
+  useEffect(() => {
     if (!user?.interfaceLanguage || user?.interfaceLanguage !== Cookies.get('interfaceLanguage')) {
       dispatch(setUser({ ...user, interfaceLanguage: Cookies.get('interfaceLanguage') ?? 'en' }));
     }
@@ -166,7 +172,7 @@ function Dashboard() {
   };
 
   return (
-    <ErrorLayout>
+    <ErrorLayout asycErrorDetails={asycErrorDetails}>
       {isSuccess && !isCurrentUserLoading ? (
         <Layout className="dashboard-wrapper">
           <Header className="dashboard-header">

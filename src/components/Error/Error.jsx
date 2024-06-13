@@ -7,12 +7,14 @@ import { Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearErrors, getErrorDetails } from '../../redux/reducer/ErrorSlice';
 import { useEffect } from 'react';
+import { clearUser } from '../../redux/reducer/userSlice';
+import { infiniteLoopHandler } from '../../utils/infiniteLoopHandler';
+import { removeCachedData } from '../../utils/removeCachedData';
 
 function ErrorAlert(props) {
   const { errorType = 'general' } = props;
 
   const errorDetails = useSelector(getErrorDetails);
-
   const error = useRouteError();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -22,7 +24,11 @@ function ErrorAlert(props) {
 
   useEffect(() => {
     // effect to trigger api reload when browser back button is pressed
+
     const handlePopstate = () => {
+      infiniteLoopHandler(() => {
+        dispatch(clearUser());
+      });
       dispatch(clearErrors());
     };
     window.addEventListener('popstate', handlePopstate);
@@ -31,22 +37,19 @@ function ErrorAlert(props) {
     };
   }, [dispatch]);
 
+  heading = t('errorPage.heading');
+  image = <GeneralErrors />;
+
   if (errorType === 'serverDown') {
-    image = <GeneralErrors />;
     heading = t('errorPage.serverDown');
   } else if (errorType === 'failedAPI' && errorDetails?.isError) {
-    image = <GeneralErrors />;
-    heading = t('errorPage.heading');
     message = errorDetails?.message;
   }
   if (errorType === 'general' && !errorDetails.isError) {
-    image = <GeneralErrors />;
-    heading = t('errorPage.heading');
     message = error?.message;
   } else if (errorType === 'pageNotFound') {
     image = <Error404 />;
     message = t('errorPage.notFoundMessage');
-    heading = t('errorPage.heading');
   }
 
   return (
@@ -61,11 +64,26 @@ function ErrorAlert(props) {
             <div className="btn-container">
               <Button
                 onClick={() => {
-                  navigate(-2);
+                  navigate('/');
+                  infiniteLoopHandler(() => {
+                    dispatch(clearUser());
+                  });
                   dispatch(clearErrors());
                 }}>
                 {t('errorPage.buttonText')}
               </Button>
+            </div>
+            <div className="escape-guide-container">
+              <span className="error-message">{t('errorPage.backTologin')}</span>
+              <span
+                className="exit-button"
+                onClick={() => {
+                  removeCachedData();
+                  dispatch(clearErrors());
+                  navigate('/');
+                }}>
+                {t('errorPage.exit')}
+              </span>
             </div>
           </>
         </section>

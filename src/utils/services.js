@@ -27,12 +27,18 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
   if (result.error && result.error.status === 400) {
     //HTTP 400 Bad Request
     //The server cannot or will not process the request due to something that is perceived to be a client error.
-
+    api.dispatch(
+      setErrorStates({
+        errorCode: '400',
+        isError: true,
+        message: result.error?.data?.error,
+      }),
+    );
     notification.info({
       key: '400',
       message: <Translation>{(t) => t('common.server.status.400.message')}</Translation>,
       placement: 'top',
-      description: result.error?.data?.message,
+      description: result.error?.data?.error,
     });
   }
 
@@ -43,7 +49,7 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       setErrorStates({
         errorCode: '500',
         isError: true,
-        message: result.error?.data?.message,
+        message: result.error?.data?.error,
       }),
     );
 
@@ -107,7 +113,7 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
     // HTTP 403 Forbidden response status code indicates that the server understands the request but refuses to authorize it.
     // This status is similar to 401, but for the 403 Forbidden status code, re-authenticating makes no difference.
     // The access is tied to the application logic, such as insufficient rights to a resource.
-    api.dispatch(setErrorStates({ errorCode: '403', isError: true, message: result.error?.data?.message }));
+    api.dispatch(setErrorStates({ errorCode: '403', isError: true, message: result.error?.data?.error }));
 
     notification.info({
       key: '403',
@@ -119,7 +125,7 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
     // HTTP 403 Forbidden response status code indicates that the server understands the request but refuses to authorize it.
     // This status is similar to 401, but for the 403 Forbidden status code, re-authenticating makes no difference.
     // The access is tied to the application logic, such as insufficient rights to a resource.
-    api.dispatch(setErrorStates({ errorCode: '404', isError: true, message: result.error?.data?.message }));
+    api.dispatch(setErrorStates({ errorCode: '404', isError: true, message: result.error?.data?.error }));
 
     notification.info({
       key: '404',
@@ -146,10 +152,6 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       message: <Translation>{(t) => t('common.server.status.FETCH_ERROR.message')}</Translation>,
       placement: 'top',
     });
-  }
-
-  if (!result.error) {
-    api.dispatch(setErrorStates({ errorCode: '', isError: false, message: '' }));
   }
 
   return result;

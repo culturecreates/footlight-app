@@ -1161,7 +1161,9 @@
     "serverErrorsMessage": "Si le problème persiste, informez le propriétaire du site {{code}}",
     "jsErrorMessage": "Retourner à la page précédente",
     "buttonText": "Retour",
-    "serverDown": "Serveur en maintenance"
+    "serverDown": "Serveur en maintenance",
+    "backTologin": "Difficulté à faire marche arrière?",
+    "exit": "Retour à la connexion"
   },
   "common": {
     "tabEnglish": "Anglais",
