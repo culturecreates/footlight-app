@@ -397,7 +397,7 @@ export const formFieldValue = [
               form={form}
               largeAspectRatio={largeAspectRatio}
               thumbnailAspectRatio={thumbnailAspectRatio}
-              eventImageData={eventImageGalleryData?.image?.filter((image) => !image?.isMain)}
+              eventImageData={eventImageGalleryData}
             />
           </Form.Item>
         )}
@@ -740,7 +740,7 @@ export const returnFormDataWithFields = ({
       isCrop: isCrop,
       setImageCropOpen,
       imageCropOpen,
-      eventImageGalleryData: entityData?.image,
+      eventImageGalleryData: entityData?.image?.filter((image) => !image?.isMain || image?.isMain === undefined),
       eventImageData:
         field?.mappedField === mappedFieldTypes.IMAGE
           ? entityData?.image?.find((image) => image?.isMain)
