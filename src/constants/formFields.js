@@ -740,7 +740,7 @@ export const returnFormDataWithFields = ({
       isCrop: isCrop,
       setImageCropOpen,
       imageCropOpen,
-      eventImageGalleryData: entityData?.image?.filter((image) => !image?.isMain || image?.isMain === undefined),
+      eventImageGalleryData: entityData?.image?.filter((image) => !image?.isMain),
       eventImageData:
         field?.mappedField === mappedFieldTypes.IMAGE
           ? entityData?.image?.find((image) => image?.isMain)
