@@ -22,11 +22,33 @@
   gap: 8px;
 }
 
+.image-footer .image-contents {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 85%;
+}
+
+.image-footer .image-thumbnail {
+  width: auto;
+  min-width: none;
+}
+
+.image-footer .image-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  max-height: 100%;
+  display: inline-block;
+  margin-left: 10px;
+}
+
 .image-footer .image-actions {
   cursor: pointer;
 }
 .image-footer .image-name {
-  white-space: nowrap;
+  /* white-space: nowrap; */
   cursor: pointer;
 }
 .image-footer .image-thumbnail {

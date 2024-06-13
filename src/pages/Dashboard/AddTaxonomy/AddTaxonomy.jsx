@@ -16,7 +16,7 @@ import BilingualInput from '../../../components/BilingualInput';
 import { contentLanguage } from '../../../constants/contentLanguage';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
 import { DownOutlined, PlusOutlined } from '@ant-design/icons';
-import { userRoles, userRolesWithTranslation } from '../../../constants/userRoles';
+import { userRolesWithTranslation } from '../../../constants/userRoles';
 import DraggableTree from '../../../components/DraggableTree/DraggableTree';
 import Outlined from '../../../components/Button/Outlined';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,6 +26,8 @@ import { Prompt } from '../../../hooks/usePrompt';
 import { compareArraysOfObjects } from '../../../utils/genericObjectCompare';
 import { PathName } from '../../../constants/pathName';
 import StyledSwitch from '../../../components/Switch/StyledSwitch';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const taxonomyClasses = taxonomyClassTranslations.map((item) => {
   return { ...item, value: item.key };
@@ -52,12 +54,7 @@ const AddTaxonomyTest = () => {
   const dispatch = useDispatch();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
-  const adminCheckHandler = () => {
-    return calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin;
-  };
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   const taxonomyId = searchParams.get('id');
   setContentBackgroundColor('#F9FAFF');
@@ -103,7 +100,8 @@ const AddTaxonomyTest = () => {
 
   useEffect(() => {
     if (user && calendar.length > 0) {
-      !adminCheckHandler() && dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Not Authorized' }));
+      !adminCheckHandler({ calendar, user }) &&
+        dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Not Authorized' }));
     }
   }, [user, calendar]);
 

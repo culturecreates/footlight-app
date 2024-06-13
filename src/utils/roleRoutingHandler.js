@@ -1,11 +1,10 @@
 import { eventPublishState } from '../constants/eventPublishState';
 import { userRoles } from '../constants/userRoles';
+import { getCurrentCalendarDetailsFromUserDetails } from './getCurrentCalendarDetailsFromUserDetails';
 
 export const routinghandler = (user, calendarId, creatorId, publishState = '', isEntity = false, entityId) => {
   let entityAccess = false;
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   if (entityId) {
     user?.roles.forEach((calendar) => {

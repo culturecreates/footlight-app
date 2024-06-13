@@ -104,6 +104,8 @@ import {
 } from '../../../redux/reducer/languageLiteralSlice';
 import { removeUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 import { groupEventsByDate } from '../../../utils/groupSubEventsConfigByDate';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const { TextArea } = Input;
 
@@ -236,9 +238,7 @@ function AddEvent() {
 
   let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === sameAsTypes.ARTSDATA_IDENTIFIER);
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   let organizerPerformerSupporterTypes = {
     organizer: 'organizer',
@@ -1238,11 +1238,6 @@ function AddEvent() {
     }
   };
 
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
-  };
-
   const organizerPerformerSupporterPlaceNavigationHandler = (id, type, event) => {
     saveAsDraftHandler(event, true, eventPublishState.DRAFT)
       .then((savedEventId) => {
@@ -1961,7 +1956,7 @@ function AddEvent() {
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME) ||
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_EN) ||
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_FR)
-                    ? adminCheckHandler()
+                    ? adminCheckHandler({ calendar, user })
                       ? false
                       : true
                     : false
@@ -2054,7 +2049,7 @@ function AddEvent() {
                   })}
                   hidden={
                     standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_TYPE)
-                      ? adminCheckHandler()
+                      ? adminCheckHandler({ calendar, user })
                         ? false
                         : true
                       : false
@@ -2102,7 +2097,7 @@ function AddEvent() {
                   }}
                   hidden={
                     standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.AUDIENCE)
-                      ? adminCheckHandler()
+                      ? adminCheckHandler({ calendar, user })
                         ? false
                         : true
                       : false
@@ -2153,13 +2148,17 @@ function AddEvent() {
                         })}
                         initialValue={
                           dynamicAdminOnlyFields?.includes(taxonomy?.id)
-                            ? adminCheckHandler()
+                            ? adminCheckHandler({ calendar, user })
                               ? initialValues
                               : []
                             : initialValues
                         }
                         hidden={
-                          dynamicAdminOnlyFields?.includes(taxonomy?.id) ? (adminCheckHandler() ? false : true) : false
+                          dynamicAdminOnlyFields?.includes(taxonomy?.id)
+                            ? adminCheckHandler({ calendar, user })
+                              ? false
+                              : true
+                            : false
                         }
                         data-cy={`form-item-${taxonomy?.id}`}
                         rules={[
@@ -2196,7 +2195,7 @@ function AddEvent() {
             </>
             <div>
               {standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.FEATURED)
-                ? adminCheckHandler()
+                ? adminCheckHandler({ calendar, user })
                   ? FeaturedJSX
                   : null
                 : FeaturedJSX}
@@ -2240,7 +2239,7 @@ function AddEvent() {
                             }
                             hidden={
                               standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.START_DATE)
-                                ? adminCheckHandler()
+                                ? adminCheckHandler({ calendar, user })
                                   ? false
                                   : true
                                 : false
@@ -2332,7 +2331,7 @@ function AddEvent() {
                           }
                           hidden={
                             standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.START_DATE)
-                              ? adminCheckHandler()
+                              ? adminCheckHandler({ calendar, user })
                                 ? false
                                 : true
                               : false
@@ -2487,7 +2486,7 @@ function AddEvent() {
                 label={t('dashboard.events.addEditEvent.location.title')}
                 hidden={
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.LOCATION)
-                    ? adminCheckHandler()
+                    ? adminCheckHandler({ calendar, user })
                       ? false
                       : true
                     : false
@@ -2838,7 +2837,7 @@ function AddEvent() {
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION) ||
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION_EN) ||
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION_FR)
-                    ? adminCheckHandler()
+                    ? adminCheckHandler({ calendar, user })
                       ? false
                       : true
                     : false
@@ -3445,7 +3444,7 @@ function AddEvent() {
                 required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.IMAGE)}
                 hidden={
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
-                    ? adminCheckHandler()
+                    ? adminCheckHandler({ calendar, user })
                       ? false
                       : true
                     : false
@@ -4172,7 +4171,7 @@ function AddEvent() {
               marginResponsive="0px"
               hidden={
                 standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_ACCESSIBILITY)
-                  ? adminCheckHandler()
+                  ? adminCheckHandler({ calendar, user })
                     ? false
                     : true
                   : false
@@ -4200,7 +4199,7 @@ function AddEvent() {
                   ]}
                   hidden={
                     standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_ACCESSIBILITY)
-                      ? adminCheckHandler()
+                      ? adminCheckHandler({ calendar, user })
                         ? false
                         : true
                       : false
@@ -4338,7 +4337,7 @@ function AddEvent() {
             required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.TICKET_INFO)}
             hidden={
               standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.TICKET_INFO)
-                ? adminCheckHandler()
+                ? adminCheckHandler({ calendar, user })
                   ? false
                   : true
                 : false

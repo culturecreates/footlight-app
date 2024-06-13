@@ -31,6 +31,8 @@ import ReadOnlyProtectedComponent from '../../../../layout/ReadOnlyProtectedComp
 import { Confirm } from '../../../../components/Modal/Confirm/Confirm';
 import moment from 'moment-timezone';
 import i18n from 'i18next';
+import { adminCheckHandler } from '../../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const UserManagement = () => {
   const { useBreakpoint } = Grid;
@@ -83,9 +85,7 @@ const UserManagement = () => {
   const [deActivateUser] = useDeactivateUserMutation();
   const [withdrawInvitation] = useWithDrawInvitationMutation();
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   useEffect(() => {
     const filtersDecoded = setFiletrsForApiCall();
@@ -183,11 +183,6 @@ const UserManagement = () => {
     setFilter({ ...filter, userStatus: selectedKeys[0] });
   };
 
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
-  };
-
   const handleListCardStyles = (item) => {
     const listCardStyles =
       calendar[0]?.role === userRoles.GUEST && item._id != user.id
@@ -219,11 +214,11 @@ const UserManagement = () => {
       userStatus[0]?.status === userActivityStatus[3].key ||
       userStatus[0]?.status === userActivityStatus[4].key;
 
-    if (adminCheckHandler()) {
+    if (adminCheckHandler({ calendar, user })) {
       dropdownItems.push({ key: 'editUser', label: t('dashboard.settings.userManagement.tooltip.editUser') });
     }
 
-    if (adminCheckHandler() && userStatus[0]?.status === userActivityStatus[2].key) {
+    if (adminCheckHandler({ calendar, user }) && userStatus[0]?.status === userActivityStatus[2].key) {
       dropdownItems.push({
         key: 'withDrawInvitation',
         label: t('dashboard.settings.userManagement.tooltip.withDrawInvitation'),
@@ -237,7 +232,7 @@ const UserManagement = () => {
       });
     }
 
-    if (isUserInactiveInThisCalendar && adminCheckHandler()) {
+    if (isUserInactiveInThisCalendar && adminCheckHandler({ calendar, user })) {
       dropdownItems.push({
         key: 'sendInvitation',
         label: t('dashboard.settings.userManagement.tooltip.sendInvitation'),
@@ -410,7 +405,7 @@ const UserManagement = () => {
   };
 
   const listItemHandler = (id) => {
-    if (adminCheckHandler()) {
+    if (adminCheckHandler({ calendar, user })) {
       navigate(`${PathName.Dashboard}/${calendarId}${PathName.Settings}${PathName.UserManagement}/${id}`);
     } else if (id === user.id) {
       navigate(
@@ -484,7 +479,7 @@ const UserManagement = () => {
           </Col>
 
           <Col flex={'140px'} className="add-btn-container">
-            {adminCheckHandler() && (
+            {adminCheckHandler({ calendar, user }) && (
               <ReadOnlyProtectedComponent>
                 <AddEvent
                   label={t('dashboard.settings.userManagement.addUser')}
@@ -618,7 +613,7 @@ const UserManagement = () => {
                             ?.toUpperCase()
                         }
                         actions={[
-                          adminCheckHandler() && (
+                          adminCheckHandler({ calendar, user }) && (
                             <Dropdown
                               onOpenChange={(open) => {
                                 if (open) setSelectedItemId(item?._id);
@@ -636,7 +631,7 @@ const UserManagement = () => {
                               }}
                               trigger={['click']}>
                               <span>
-                                {!item?.isSuperAdmin || item._id == user.id ? (
+                                {!item?.isSuperAdmin && user?.id != item?._id ? (
                                   <MoreOutlined
                                     className="event-list-more-icon"
                                     key={index}

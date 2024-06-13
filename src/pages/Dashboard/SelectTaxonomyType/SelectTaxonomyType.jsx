@@ -11,7 +11,8 @@ import { PathName } from '../../../constants/pathName';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
-import { userRoles } from '../../../constants/userRoles';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const SelectTaxonomyType = () => {
   const { t } = useTranslation();
@@ -39,17 +40,12 @@ const SelectTaxonomyType = () => {
     opacity: 0.5,
   };
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
-
-  const adminCheckHandler = () => {
-    return calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin;
-  };
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   useEffect(() => {
     if (user && calendar.length > 0) {
-      !adminCheckHandler() && dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Not Authorized' }));
+      !adminCheckHandler({ calendar, user }) &&
+        dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Not Authorized' }));
     }
   }, [user, calendar]);
 
