@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import './mandatoryFields.css';
 import { Row, Col, notification } from 'antd';
 import MandatoryFieldCard from '../../../../components/Card/MandatoryField/MandatoryField';
@@ -10,9 +10,9 @@ import { taxonomyClass } from '../../../../constants/taxonomyClass';
 import { entitiesClass } from '../../../../constants/entitiesClass';
 import { useUpdateCalendarMutation } from '../../../../services/calendar';
 
-function MandatoryFields({ setDirtyStatus }) {
+function MandatoryFields({ setDirtyStatus, tabKey }) {
   const { t } = useTranslation();
-  const [currentCalendarData, , , getCalendar] = useOutletContext();
+  const [currentCalendarData, , , getCalendar, , , , refetch, ,] = useOutletContext();
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
 
@@ -205,6 +205,12 @@ function MandatoryFields({ setDirtyStatus }) {
       });
   };
 
+  useEffect(() => {
+    if (tabKey != '4') return;
+
+    refetch();
+  }, [tabKey]);
+
   return (
     allTaxonomyData &&
     currentCalendarData && (
@@ -237,6 +243,7 @@ function MandatoryFields({ setDirtyStatus }) {
                     formLabel={field?.formLabel}
                     updatedFormFields={updatedFormFields}
                     setDirtyStatus={setDirtyStatus}
+                    tabKey={tabKey}
                   />
                 </Col>
               ))}
