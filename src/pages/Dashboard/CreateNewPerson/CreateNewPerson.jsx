@@ -361,7 +361,7 @@ function CreateNewPerson() {
                     },
                   ];
 
-                if (values.multipleImagesCrop.length > 0) await uploadImageList();
+                if (values.multipleImagesCrop?.length > 0) await uploadImageList();
                 personPayload['image'] = imageCrop;
                 addUpdatePersonApiHandler(personPayload);
               })
@@ -371,9 +371,9 @@ function CreateNewPerson() {
                 element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
               });
         } else {
-          if (values.multipleImagesCrop.length > 0) await uploadImageList();
+          if (values.multipleImagesCrop?.length > 0) await uploadImageList();
           if (values?.image) {
-            if (values?.image && values?.image?.length == 0 && values.multipleImagesCrop.length == 0)
+            if (values?.image && values?.image?.length == 0 && values.multipleImagesCrop?.length == 0)
               personPayload['image'] = null;
           } else personPayload['image'] = imageCrop;
           addUpdatePersonApiHandler(personPayload);

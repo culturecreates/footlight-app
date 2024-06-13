@@ -347,7 +347,7 @@ function CreateNewOrganization() {
           ];
 
           const uploadImageList = async () => {
-            for (let i = 0; i < values.multipleImagesCrop.length; i++) {
+            for (let i = 0; i < values?.multipleImagesCrop.length; i++) {
               const file = values.multipleImagesCrop[i]?.originFileObj;
               if (!file) {
                 if (values.multipleImagesCrop[i]?.cropValues) imageCrop.push(values.multipleImagesCrop[i]?.cropValues);
@@ -429,7 +429,7 @@ function CreateNewOrganization() {
                         },
                       ];
 
-                    await uploadImageList();
+                    if (values.multipleImagesCrop?.length > 0) await uploadImageList();
                     organizationPayload['image'] = imageCrop;
                     addUpdateOrganizationApiHandler(organizationPayload, toggle)
                       .then((id) => resolve(id))
@@ -444,9 +444,9 @@ function CreateNewOrganization() {
                     element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
                   });
             } else {
-              if (values.multipleImagesCrop.length > 0) await uploadImageList();
+              if (values.multipleImagesCrop?.length > 0) await uploadImageList();
               if (values?.image) {
-                if (values?.image && values?.image?.length == 0 && values.multipleImagesCrop.length == 0)
+                if (values?.image && values?.image?.length == 0 && values.multipleImagesCrop?.length == 0)
                   organizationPayload['image'] = null;
                 else organizationPayload['image'] = imageCrop;
               }
@@ -474,7 +474,7 @@ function CreateNewOrganization() {
                       large: {},
                       thumbnail: {},
                     };
-                    if (values.multipleImagesCrop.length > 0) await uploadImageList();
+                    if (values.multipleImagesCrop?.length > 0) await uploadImageList();
                     organizationPayload['image'] = imageCrop;
                     addUpdateOrganizationApiHandler(organizationPayload, toggle);
                   })
@@ -484,7 +484,7 @@ function CreateNewOrganization() {
                     element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
                   });
             } else {
-              if (values.multipleImagesCrop.length > 0) {
+              if (values.multipleImagesCrop?.length > 0) {
                 await uploadImageList();
                 organizationPayload['image'] = imageCrop;
               }
@@ -538,7 +538,7 @@ function CreateNewOrganization() {
                         },
                       ];
 
-                    if (values.multipleImagesCrop.length > 0) await uploadImageList();
+                    if (values.multipleImagesCrop?.length > 0) await uploadImageList();
                     organizationPayload['image'] = imageCrop;
                     if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
                       const formdata = new FormData();
@@ -587,12 +587,12 @@ function CreateNewOrganization() {
                     element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
                   });
             } else {
-              if (values.multipleImagesCrop.length > 0) {
-                if (values.multipleImagesCrop.length > 0) await uploadImageList();
+              if (values.multipleImagesCrop?.length > 0) {
+                await uploadImageList();
                 organizationPayload['image'] = imageCrop;
               }
               if (values?.image) {
-                if (values?.image && values?.image?.length == 0 && values.multipleImagesCrop.length == 0)
+                if (values?.image && values?.image?.length == 0 && values.multipleImagesCrop?.length == 0)
                   organizationPayload['image'] = null;
                 else organizationPayload['image'] = imageCrop;
               }
@@ -642,12 +642,12 @@ function CreateNewOrganization() {
               if (values?.logo && values?.logo?.length == 0) organizationPayload['logo'] = null;
               else organizationPayload['logo'] = organizationData?.logo;
             }
-            if (values.multipleImagesCrop.length > 0) {
+            if (values.multipleImagesCrop?.length > 0) {
               await uploadImageList();
               organizationPayload['image'] = imageCrop;
             }
             if (values?.image) {
-              if (values?.image && values?.image?.length == 0 && values.multipleImagesCrop.length > 0)
+              if (values?.image && values?.image?.length == 0 && values.multipleImagesCrop?.length > 0)
                 organizationPayload['image'] = null;
               else organizationPayload['image'] = imageCrop;
             }

@@ -664,7 +664,7 @@ function CreateNewPlace() {
                       },
                     ];
 
-                  if (values.multipleImagesCrop.length > 0) await uploadImageList();
+                  if (values.multipleImagesCrop?.length > 0) await uploadImageList();
                   placeObj['image'] = imageCrop;
                   addUpdatePlaceApiHandler(placeObj, postalObj)
                     .then((id) => resolve(id))
@@ -679,9 +679,9 @@ function CreateNewPlace() {
                   element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
                 });
           } else {
-            if (values.multipleImagesCrop.length > 0) await uploadImageList();
+            if (values.multipleImagesCrop?.length > 0) await uploadImageList();
             if (values?.draggerWrap) {
-              if (values?.dragger && values?.dragger?.length == 0 && values.multipleImagesCrop.length == 0)
+              if (values?.dragger && values?.dragger?.length == 0 && values.multipleImagesCrop?.length == 0)
                 placeObj['image'] = null;
               else placeObj['image'] = imageCrop;
             }
