@@ -941,6 +941,7 @@
         "colorPlaceHolder": "Collez votre code couleur ou sélectionnez une couleur",
         "height": "Hauteur",
         "width": "Largeur maximale",
+        "font": "Font selection",
         "language": "Choix de langue",
         "eventType": "Type d'événement",
         "region": "Région",
@@ -1161,7 +1162,9 @@
     "serverErrorsMessage": "Si le problème persiste, informez le propriétaire du site {{code}}",
     "jsErrorMessage": "Retourner à la page précédente",
     "buttonText": "Retour",
-    "serverDown": "Serveur en maintenance"
+    "serverDown": "Serveur en maintenance",
+    "backTologin": "Difficulté à faire marche arrière?",
+    "exit": "Retour à la connexion"
   },
   "common": {
     "tabEnglish": "Anglais",

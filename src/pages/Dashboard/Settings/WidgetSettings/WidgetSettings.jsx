@@ -28,6 +28,7 @@ import { externalSourceOptions } from '../../../../constants/sourceOptions';
 import CustomModal from '../../../../components/Modal/Common/CustomModal';
 import { copyText } from '../../../../utils/copyText';
 import LoadingIndicator from '../../../../components/LoadingIndicator';
+import { widgetFontCollection } from '../../../../constants/fonts';
 
 const { useBreakpoint } = Grid;
 const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_BASE_URL;
@@ -145,6 +146,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
       const width = form.getFieldValue('width') ?? 0;
       const height = form.getFieldValue('height') ?? 600;
       const limit = form.getFieldValue('limit') ?? 9;
+      const font = form.getFieldValue('font') ?? 'Roboto';
 
       const filtersParam =
         arrayToQueryParam(allValues?.eventType ?? [], 'type') +
@@ -160,7 +162,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
 
       // Add query parameters to the URL
       urlCopy.searchParams.append('width', width);
-
+      urlCopy.searchParams.append('font', font);
       urlCopy.searchParams.append('limit', limit);
       urlCopy.searchParams.append('calendar', calendarSlug);
       urlCopy.searchParams.append('calendarName', calendarName);
@@ -176,6 +178,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
       urlCopyMobile.searchParams.append('limit', limit);
       urlCopyMobile.searchParams.append('calendar', calendarSlug);
       urlCopyMobile.searchParams.append('calendarName', calendarName);
+      urlCopyMobile.searchParams.append('font', font);
       urlCopyMobile.searchParams.append('logo', calendarLogoUri);
       urlCopyMobile.searchParams.append('searchEventsFilters', searchEventsFilters);
       urlCopyMobile.searchParams.append('locale', locale?.key.toLowerCase());
@@ -331,12 +334,15 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
 
     const height = form.getFieldValue('height') ?? 600;
     const limit = form.getFieldValue('limit') ?? 9;
+    const font = form.getFieldValue('font') ?? 'Roboto';
     const locale = form.getFieldValue('locale') ?? languageOptions[0].value;
 
     urlCopy.searchParams.append('logo', calendarLogoUri);
     urlCopy.searchParams.append('locale', onLanguageSelect(locale)?.key.toLowerCase());
     urlCopy.searchParams.append('limit', limit);
     urlCopy.searchParams.append('color', color);
+    urlCopy.searchParams.append('font', font);
+
     urlCopy.searchParams.append('calendar', calendarSlug);
     urlCopy.searchParams.append('calendarName', calendarName);
     urlCopy.searchParams.append('height', height);
@@ -346,6 +352,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
     urlCopyMobile.searchParams.append('locale', onLanguageSelect(locale)?.key.toLowerCase());
     urlCopyMobile.searchParams.append('limit', limit);
     urlCopyMobile.searchParams.append('color', color);
+    urlCopyMobile.searchParams.append('font', font);
     urlCopyMobile.searchParams.append('calendar', calendarSlug);
     urlCopyMobile.searchParams.append('calendarName', calendarName);
     urlCopyMobile.searchParams.append('height', '600');
@@ -522,6 +529,23 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
                             </Form.Item>
                           </Col>
                         </Row>
+                      </Col>
+                      <Col flex="448px">
+                        <Form.Item
+                          name="font"
+                          required
+                          label={t(`${localePath}.font`)}
+                          initialValue={widgetFontCollection[0]}
+                          data-cy="widget-settings-font">
+                          <SelectOption
+                            data-cy="widget-settings-font-dropdown"
+                            styles={{
+                              minWidth: '100%',
+                              padding: '8px 0px',
+                            }}
+                            options={widgetFontCollection}
+                          />
+                        </Form.Item>
                       </Col>
 
                       <Divider />
