@@ -947,6 +947,7 @@
         "colorPlaceHolder": "Paste your colour code or select a colour",
         "height": "Height",
         "width": "Max width",
+        "font": "Font selection",
         "language": "Language selection",
         "eventType": "Event type",
         "region": "Region",
@@ -1165,7 +1166,9 @@
     "serverErrorsMessage": "If the problem persists, let the site owner know {{code}}",
     "jsErrorMessage": "Go back to the previous page",
     "buttonText": "Back",
-    "serverDown": "Server under maintenance"
+    "serverDown": "Server under maintenance",
+    "backTologin": "Can’t get back to where you were?",
+    "exit": "Exit to login"
   },
   "common": {
     "tabEnglish": "English",
