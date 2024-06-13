@@ -216,7 +216,7 @@ function CalendarSettings() {
             dateFormatDisplay: values.calendarDateFormat,
             imageConfig: [
               {
-                entityName: Object.keys(entitiesClass)
+                entityNames: Object.keys(entitiesClass)
                   .map((key) => {
                     if (entitiesClass[key] !== entitiesClass.people) return entitiesClass[key];
                   })
