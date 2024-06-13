@@ -9,7 +9,7 @@ import AddField from '../../Button/AddField';
 import { useTranslation } from 'react-i18next';
 
 function MandatoryField(props) {
-  const { field, formName, formLabel } = props;
+  const { field, formName, formLabel, setDirtyStatus } = props;
   let { updatedFormFields } = props;
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
@@ -36,6 +36,7 @@ function MandatoryField(props) {
 
       setAddedFields(updatedFields);
       setAvailableFields([...availableFields, removedField]);
+      setDirtyStatus();
     }
   };
 
@@ -55,6 +56,7 @@ function MandatoryField(props) {
     });
     setAddedFields([...addedFields, { ...field, isRequiredField: true }]);
     setAvailableFields(updatedFields);
+    setDirtyStatus();
   };
 
   return (

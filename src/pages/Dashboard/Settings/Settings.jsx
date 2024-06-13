@@ -13,11 +13,14 @@ import CalendarSettings from './CalendarSettings';
 import MandatoryFields from './MandatoryFields';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import { useSearchParams } from 'react-router-dom';
 
 const Settings = () => {
   const { t } = useTranslation();
-  const [tabKey, setTabKey] = useState('tab1');
+  const [tabKey, setTabKey] = useState();
+  const [isFormDirty, setIsFormDirty] = useState(false);
   const { user } = useSelector(getUserDetails);
+  let [searchParams, setSearchParams] = useSearchParams();
   const { calendarId } = useParams();
   const [
     currentCalendarData, // eslint-disable-next-line no-unused-vars
@@ -32,16 +35,36 @@ const Settings = () => {
 
   useEffect(() => {
     // Check if tabKey exists in sessionStorage
-    const storedTabKey = sessionStorage.getItem('tabKey');
-    if (storedTabKey) {
-      setTabKey(storedTabKey);
+    let initialTabKey;
+    const tabKeyInParms = searchParams.get('tab');
+
+    if (tabKeyInParms) {
+      sessionStorage.setItem('tabKey', tabKeyInParms);
+      initialTabKey = tabKeyInParms;
+    } else {
+      initialTabKey = sessionStorage.getItem('tabKey') || '1';
+      sessionStorage.setItem('tabKey', initialTabKey);
     }
+
+    if (initialTabKey != '1' && initialTabKey != '2' && initialTabKey != '3' && initialTabKey != '4')
+      initialTabKey = '1';
+
+    setTabKey(initialTabKey);
   }, []);
 
   const onTabChange = (key) => {
     // Update tabKey in sessionStorage on tab change
-    sessionStorage.setItem('tabKey', key);
-    setTabKey(key);
+    if (isFormDirty) {
+      window.confirm(t('common.unsavedChanges'));
+      sessionStorage.setItem('tabKey', key);
+      setSearchParams({ tab: key });
+      setTabKey(key);
+      setIsFormDirty(false);
+    } else {
+      sessionStorage.setItem('tabKey', key);
+      setSearchParams({ tab: key });
+      setTabKey(key);
+    }
   };
 
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
@@ -49,29 +72,47 @@ const Settings = () => {
   const items = [
     {
       label: t('dashboard.settings.tab1'),
-      key: 'tab1',
-      children: <UserManagement />,
+      key: '1',
+      children: <UserManagement tabKey={tabKey} />,
       disabled: false,
       adminOnly: false,
     },
     {
       label: t('dashboard.settings.tab2'),
-      key: 'tab2',
-      children: <WidgetSettings />,
+      key: '2',
+      children: (
+        <WidgetSettings
+          setDirtyStatus={() => {
+            if (!isFormDirty) setIsFormDirty(true);
+          }}
+        />
+      ),
       disabled: false,
       adminOnly: true,
     },
     {
       label: t('dashboard.settings.tab3'),
-      key: 'tab3',
-      children: currentCalendarData && <CalendarSettings />,
+      key: '3',
+      children: currentCalendarData && (
+        <CalendarSettings
+          setDirtyStatus={() => {
+            if (!isFormDirty) setIsFormDirty(true);
+          }}
+        />
+      ),
       disabled: false,
       adminOnly: true,
     },
     {
       label: t('dashboard.settings.tab4'),
-      key: 'tab4',
-      children: <MandatoryFields />,
+      key: '4',
+      children: (
+        <MandatoryFields
+          setDirtyStatus={() => {
+            if (!isFormDirty) setIsFormDirty(true);
+          }}
+        />
+      ),
       disabled: false,
       adminOnly: true,
     },

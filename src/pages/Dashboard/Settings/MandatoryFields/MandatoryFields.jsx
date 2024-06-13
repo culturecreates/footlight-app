@@ -10,7 +10,7 @@ import { taxonomyClass } from '../../../../constants/taxonomyClass';
 import { entitiesClass } from '../../../../constants/entitiesClass';
 import { useUpdateCalendarMutation } from '../../../../services/calendar';
 
-function MandatoryFields() {
+function MandatoryFields({ setDirtyStatus }) {
   const { t } = useTranslation();
   const [currentCalendarData, , , getCalendar] = useOutletContext();
   const { calendarId } = useParams();
@@ -236,6 +236,7 @@ function MandatoryFields() {
                     formName={field?.formName}
                     formLabel={field?.formLabel}
                     updatedFormFields={updatedFormFields}
+                    setDirtyStatus={setDirtyStatus}
                   />
                 </Col>
               ))}

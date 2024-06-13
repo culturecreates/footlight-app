@@ -17,7 +17,7 @@ import { contentLanguage } from '../../../../constants/contentLanguage';
 import { useAddImageMutation } from '../../../../services/image';
 import { calendarModes } from '../../../../constants/calendarModes';
 
-function CalendarSettings() {
+function CalendarSettings({ setDirtyStatus }) {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const [currentCalendarData, , , getCalendar, , , setIsReadOnly, refetch] = useOutletContext();
@@ -345,7 +345,14 @@ function CalendarSettings() {
             </p>
           </Col>
           <Col flex={'448px'}>
-            <Form form={form} layout="vertical" name="calendar-settings" initialValues={initialValues}>
+            <Form
+              form={form}
+              layout="vertical"
+              name="calendar-settings"
+              initialValues={initialValues}
+              onFieldsChange={() => {
+                setDirtyStatus();
+              }}>
               {calendarSettingsFormFields.GENERAL_SETTINGS.map((item, index) => {
                 return (
                   <Form.Item
