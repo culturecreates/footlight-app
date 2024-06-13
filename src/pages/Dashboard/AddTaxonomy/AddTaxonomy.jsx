@@ -189,7 +189,7 @@ const AddTaxonomyTest = () => {
                   maxCount: 1,
                   duration: 3,
                 });
-                navigate(-1);
+                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}`, { replace: true });
               }
             });
         } else {
