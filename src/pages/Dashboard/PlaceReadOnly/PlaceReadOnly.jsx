@@ -176,7 +176,7 @@ function PlaceReadOnly() {
             id: place?.id,
             name: place?.name,
             image: place?.image?.find((image) => image?.isMain),
-            uri: place?.derivedFrom?.uri,
+            uri: artsDataLinkChecker(place?.sameAs),
           };
         });
         setSelectedContainsPlaces(

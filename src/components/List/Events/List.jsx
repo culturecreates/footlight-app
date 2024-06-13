@@ -21,6 +21,7 @@ import { eventStatus } from '../../../constants/eventStatus';
 import moment from 'moment-timezone';
 import { LinkOutlined, StarFilled } from '@ant-design/icons';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
+import { getWidthFromAspectRatio } from '../../../utils/getWidthFromAspectRatio';
 
 const { useBreakpoint } = Grid;
 
@@ -47,6 +48,20 @@ function Lists(props) {
     return data?.sameAs?.filter((item) => item?.type === sameAsTypes.ARTSDATA_IDENTIFIER);
   };
   const aspectRatioString = currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio;
+
+  const calculateImageDimensions = (aspectRatio, fixedHeight, maxWidth) => {
+    let width = getWidthFromAspectRatio(aspectRatio, fixedHeight);
+    let height = fixedHeight;
+
+    if (width > maxWidth) {
+      width = maxWidth;
+      height = (maxWidth * aspectRatio.split(':')[1]) / aspectRatio.split(':')[0];
+    }
+
+    return { width, height };
+  };
+
+  let imageDimensions = calculateImageDimensions(aspectRatioString, 104, 150);
 
   const listItemHandler = (id, creatorId, publishState) => {
     if (routinghandler(user, calendarId, creatorId, publishState, false, isReadOnly))
@@ -168,7 +183,8 @@ function Lists(props) {
                           (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) &&
                           eventItem?.isFeatured &&
                           '3px solid #1B3DE6',
-                        ...(aspectRatioString && { maxWidth: '150px' }),
+                        width: `${imageDimensions.width}px`,
+                        height: `${imageDimensions.height}px`,
                       }}
                       data-cy="image-event-thumbnail"
                     />

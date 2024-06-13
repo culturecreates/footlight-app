@@ -55,7 +55,6 @@ function ErrorAlert(props) {
         <div className="image-container">{image}</div>
         <section>
           <h1>{heading}</h1>
-          {/* {errorType !== 'serverDown' && ( */}
           <>
             <p className="error-message">{message}</p>
             <p className="error-time">{new Date().toISOString()}</p>
@@ -69,7 +68,6 @@ function ErrorAlert(props) {
               </Button>
             </div>
           </>
-          {/* )} */}
         </section>
       </div>
     </div>

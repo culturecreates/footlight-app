@@ -31,16 +31,7 @@ function TicketPrice(props) {
         {fields.map(({ key, name, ...restField }) => (
           <tr key={key}>
             <td style={{ width: '25%' }}>
-              <Form.Item
-                {...restField}
-                name={[name, firstFieldName]}
-                // rules={[
-                //   {
-                //     type: 'number',
-                //     message: t('dashboard.events.addEditEvent.validations.ticket.invalidData'),
-                //   },
-                // ]}
-              >
+              <Form.Item {...restField} name={[name, firstFieldName]}>
                 <StyledNumberInput
                   controls={false}
                   style={{ borderWidth: '0px' }}

@@ -76,7 +76,6 @@ import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-au
 import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequiredFieldNames';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
-import { userRoles } from '../../../constants/userRoles';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
 import { useLazyGetExternalSourceQuery } from '../../../services/externalSource';
@@ -91,6 +90,8 @@ import {
 } from '../../../redux/reducer/languageLiteralSlice';
 import Alert from '../../../components/Alert';
 import MultipleImageUpload from '../../../components/MultipleImageUpload';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const { TextArea } = Input;
 
@@ -249,13 +250,8 @@ function CreateNewPlace() {
   };
   let mainImageData = placeData?.image?.find((image) => image?.isMain) || null;
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
-  };
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
+
   const addUpdatePlaceApiHandler = (placeObj, postalObj) => {
     var promise = new Promise(function (resolve, reject) {
       if (!placeId || placeId === '') {
@@ -899,7 +895,7 @@ function CreateNewPlace() {
 
   useEffect(() => {
     if (calendarId && currentCalendarData) {
-      let initialAddedFields = [],
+      let initialAddedFields = [...addedFields],
         initialPlaceAccessibiltiy = [],
         initialPlace;
       if (placeData) {
@@ -1015,7 +1011,7 @@ function CreateNewPlace() {
                 id: place?.id,
                 name: place?.name,
                 image: place?.image,
-                uri: place?.derivedFrom?.uri,
+                uri: artsDataLinkChecker(place?.sameAs),
               };
             });
             setSelectedContainsPlaces(
@@ -1130,7 +1126,7 @@ function CreateNewPlace() {
               id: place?.id,
               name: place?.name,
               image: place?.image,
-              uri: place?.derivedFrom?.uri,
+              uri: artsDataLinkChecker(place?.sameAs),
             };
           });
           setSelectedContainsPlaces(
@@ -1523,7 +1519,7 @@ function CreateNewPlace() {
                   ]}
                   hidden={
                     standardAdminOnlyFields?.includes(placeFormRequiredFieldNames?.PLACE_TYPE)
-                      ? adminCheckHandler()
+                      ? adminCheckHandler({ calendar, user })
                         ? false
                         : true
                       : false
@@ -1681,7 +1677,8 @@ function CreateNewPlace() {
                 </Form.Item>
                 <Form.Item
                   label={t('dashboard.places.createNew.addPlace.description.description')}
-                  data-cy="form-item-place-description-title">
+                  data-cy="form-item-place-description-title"
+                  required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.DESCRIPTION)}>
                   <ContentLanguageInput
                     calendarContentLanguage={calendarContentLanguage}
                     isFieldsDirty={{
@@ -1919,7 +1916,7 @@ function CreateNewPlace() {
                             message: t('common.validations.informationRequired'),
                           },
                         ]}
-                        hidden={taxonomy?.isAdminOnly ? (adminCheckHandler() ? false : true) : false}>
+                        hidden={taxonomy?.isAdminOnly ? (adminCheckHandler({ calendar, user }) ? false : true) : false}>
                         <TreeSelectOption
                           data-cy={`treeselect-place-dynamic-field-${index}`}
                           allowClear
@@ -2516,7 +2513,7 @@ function CreateNewPlace() {
                   )}
                   hidden={
                     standardAdminOnlyFields?.includes(placeFormRequiredFieldNames?.REGION)
-                      ? adminCheckHandler()
+                      ? adminCheckHandler({ calendar, user })
                         ? false
                         : true
                       : false
@@ -2581,7 +2578,7 @@ function CreateNewPlace() {
                   data-cy="form-item-opening-hours-title"
                   name={formFieldNames.OPENING_HOURS}
                   className={`${formFieldNames.OPENING_HOURS} subheading-wrap`}
-                  label={t('dashboard.places.createNew.addPlace.address.openingHours.openingHours')}
+                  label={t('dashboard.places.createNew.addPlace.address.openingHours.openingHoursLink')}
                   initialValue={
                     placeId
                       ? placeData?.openingHours?.uri
@@ -2852,7 +2849,6 @@ function CreateNewPlace() {
                 <Form.Item
                   name={formFieldNames.CONTAINED_IN_PLACE}
                   className="subheading-wrap"
-                  // initialValue={initialPlace && initialPlace[0]?.id}
                   data-cy="form-item-contains-place"
                   label={t('dashboard.places.createNew.addPlace.containedInPlace.addPlace')}
                   required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.CONTAINED_IN_PLACE)}
@@ -3057,7 +3053,7 @@ function CreateNewPlace() {
                 title={t('dashboard.places.createNew.addPlace.venueAccessibility.venueAccessibility')}
                 hidden={
                   standardAdminOnlyFields?.includes(placeFormRequiredFieldNames?.PLACE_ACCESSIBILITY)
-                    ? adminCheckHandler()
+                    ? adminCheckHandler({ calendar, user })
                       ? false
                       : true
                     : false
@@ -3085,7 +3081,7 @@ function CreateNewPlace() {
                     })}
                     hidden={
                       standardAdminOnlyFields?.includes(placeFormRequiredFieldNames?.PLACE_ACCESSIBILITY)
-                        ? adminCheckHandler()
+                        ? adminCheckHandler({ calendar, user })
                           ? false
                           : true
                         : false
@@ -3254,7 +3250,6 @@ function CreateNewPlace() {
                                   : typeof place?.name === 'string' && place?.name
                               }
                               icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
-                              // description={moment(event.startDateTime).format('YYYY-MM-DD')}
                               bordered
                               itemWidth="100%"
                             />;

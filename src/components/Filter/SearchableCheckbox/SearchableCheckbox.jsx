@@ -18,7 +18,7 @@ function SearchableCheckbox(props) {
     selectedData,
     open,
     setOpen,
-    onOpenChanges,
+    onOpenChangeHandler,
   } = props;
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -41,9 +41,8 @@ function SearchableCheckbox(props) {
         }}
         open={open == undefined ? isOpen : open}
         onOpenChange={(show) => {
-          if (onOpenChanges) {
-            onOpenChanges();
-          }
+          if (onOpenChangeHandler) onOpenChangeHandler();
+
           if (open == undefined) setIsOpen(show);
           else setOpen(show);
         }}

@@ -233,7 +233,8 @@ function MandatoryFields() {
                 <Col span={24} key={index}>
                   <MandatoryFieldCard
                     field={field?.formFields}
-                    formName={field?.formLabel}
+                    formName={field?.formName}
+                    formLabel={field?.formLabel}
                     updatedFormFields={updatedFormFields}
                   />
                 </Col>

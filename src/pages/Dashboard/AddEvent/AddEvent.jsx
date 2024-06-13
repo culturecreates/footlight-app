@@ -105,6 +105,8 @@ import {
 import { removeUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 import { groupEventsByDate } from '../../../utils/groupSubEventsConfigByDate';
 import MultipleImageUpload from '../../../components/MultipleImageUpload';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const { TextArea } = Input;
 
@@ -149,21 +151,6 @@ function AddEvent() {
     sessionId: timestampRef,
   });
 
-  // let query = new URLSearchParams();
-  // query.append('classes', entitiesClass.organization);
-  // query.append('classes', entitiesClass.person);
-  // const { currentData: initialEntities, isLoading: initialEntityLoading } = useGetEntitiesQuery({
-  //   calendarId,
-  //   searchKey: '',
-  //   classes: decodeURIComponent(query.toString()),
-  //   sessionId: timestampRef,
-  // });
-  // const { currentData: initialExternalSource, isFetching: initialExternalSourceLoading } = useGetExternalSourceQuery({
-  //   calendarId,
-  //   searchKey: '',
-  //   classes: decodeURIComponent(query.toString()),
-  //   sessionId: timestampRef,
-  // });
   const [addEvent, { isLoading: addEventLoading, isSuccess: addEventSuccess }] = useAddEventMutation();
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery();
   const [getExternalSource, { isFetching: isExternalSourceFetching }] = useLazyGetExternalSourceQuery();
@@ -216,7 +203,6 @@ function AddEvent() {
 
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
-
   let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
   let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
   let requiredFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.event);
@@ -256,9 +242,7 @@ function AddEvent() {
 
   let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === sameAsTypes.ARTSDATA_IDENTIFIER);
 
-  const calendar = user?.roles.filter((calendar) => {
-    return calendar.calendarId === calendarId;
-  });
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   let organizerPerformerSupporterTypes = {
     organizer: 'organizer',
@@ -829,7 +813,6 @@ function AddEvent() {
                 addImage({ data: formdata, calendarId })
                   .unwrap()
                   .then(async (response) => {
-                    // let entityId = response?.data?.original?.entityId;
                     if (featureFlags.imageCropFeature) {
                       let entityId = response?.data?.original?.entityId;
                       imageCrop = [
@@ -1323,11 +1306,6 @@ function AddEvent() {
     }
   };
 
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
-  };
-
   const organizerPerformerSupporterPlaceNavigationHandler = (id, type, event) => {
     saveAsDraftHandler(event, true, eventPublishState.DRAFT)
       .then((savedEventId) => {
@@ -1454,7 +1432,7 @@ function AddEvent() {
 
   useEffect(() => {
     if (calendarId && eventData && currentCalendarData) {
-      let initialAddedFields = [],
+      let initialAddedFields = [...addedFields],
         isRecurring = false;
 
       if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState, false) || duplicateId) {
@@ -1809,15 +1787,22 @@ function AddEvent() {
             break;
           case eventFormRequiredFieldNames.DESCRIPTION:
             publishValidateFields.push('englishEditor', 'frenchEditor');
-            setDescriptionMinimumWordCount(Number(requiredField?.rule?.minimumWordCount) ?? 0);
+
+            setDescriptionMinimumWordCount(
+              requiredField?.rule?.minimumWordCount ? Number(requiredField?.rule?.minimumWordCount) : 1,
+            );
             break;
           case eventFormRequiredFieldNames.DESCRIPTION_EN:
             publishValidateFields.push('englishEditor');
-            setDescriptionMinimumWordCount(Number(requiredField?.rule?.minimumWordCount) ?? 0);
+            setDescriptionMinimumWordCount(
+              requiredField?.rule?.minimumWordCount ? Number(requiredField?.rule?.minimumWordCount) : 1,
+            );
             break;
           case eventFormRequiredFieldNames.DESCRIPTION_FR:
             publishValidateFields.push('frenchEditor');
-            setDescriptionMinimumWordCount(Number(requiredField?.rule?.minimumWordCount) ?? 0);
+            setDescriptionMinimumWordCount(
+              requiredField?.rule?.minimumWordCount ? Number(requiredField?.rule?.minimumWordCount) : 1,
+            );
             break;
           case eventFormRequiredFieldNames.START_DATE:
             publishValidateFields.push('datePickerWrapper', 'datePicker', 'dateRangePicker', 'startDateRecur');
@@ -1840,9 +1825,9 @@ function AddEvent() {
             break;
           case eventFormRequiredFieldNames.LOCATION:
             publishValidateFields.push('location-form-wrapper');
-            initialAddedFields = initialAddedFields?.concat(locationType?.fieldNames);
             break;
           case eventFormRequiredFieldNames.VIRTUAL_LOCATION:
+            initialAddedFields = initialAddedFields?.concat(locationType?.fieldNames);
             publishValidateFields.push('location-form-wrapper');
             break;
           case eventFormRequiredFieldNames.IMAGE:
@@ -1912,75 +1897,6 @@ function AddEvent() {
       setAddedFields(initialAddedFields);
     }
   }, [currentCalendarData]);
-
-  // useEffect(() => {
-  //   if (initialEntities && currentCalendarData && !initialExternalSourceLoading) {
-  //     setOrganizersList(
-  //       treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
-  //     );
-  //     setPerformerList(
-  //       treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
-  //     );
-  //     setSupporterList(
-  //       treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS, currentCalendarData),
-  //     );
-  //     setPerformerArtsdataList(
-  //       treeEntitiesOption(
-  //         initialExternalSource?.artsdata,
-  //         user,
-  //         calendarContentLanguage,
-  //         sourceOptions.ARTSDATA,
-  //         currentCalendarData,
-  //       ),
-  //     );
-  //     setSupporterArtsdataList(
-  //       treeEntitiesOption(
-  //         initialExternalSource?.artsdata,
-  //         user,
-  //         calendarContentLanguage,
-  //         sourceOptions.ARTSDATA,
-  //         currentCalendarData,
-  //       ),
-  //     );
-  //     setOrganizersArtsdataList(
-  //       treeEntitiesOption(
-  //         initialExternalSource?.artsdata,
-  //         user,
-  //         calendarContentLanguage,
-  //         sourceOptions.ARTSDATA,
-  //         currentCalendarData,
-  //       ),
-  //     );
-  //     setOrganizersImportsFootlightList(
-  //       treeEntitiesOption(
-  //         initialExternalSource?.footlight,
-  //         user,
-  //         calendarContentLanguage,
-  //         externalSourceOptions.FOOTLIGHT,
-  //         currentCalendarData,
-  //       ),
-  //     );
-  //     setPerformerImportsFootlightList(
-  //       treeEntitiesOption(
-  //         initialExternalSource?.footlight,
-  //         user,
-  //         calendarContentLanguage,
-  //         externalSourceOptions.FOOTLIGHT,
-  //         currentCalendarData,
-  //       ),
-  //     );
-  //     setSupporterImportsFootlightList(
-  //       treeEntitiesOption(
-  //         initialExternalSource?.footlight,
-  //         user,
-  //         calendarContentLanguage,
-  //         externalSourceOptions.FOOTLIGHT,
-  //         currentCalendarData,
-  //       ),
-  //     );
-  //     placesSearch('');
-  //   }
-  // }, [initialEntityLoading, currentCalendarData, initialExternalSourceLoading]);
 
   useEffect(() => {
     if (isReadOnly) {
@@ -2139,7 +2055,7 @@ function AddEvent() {
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME) ||
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_EN) ||
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_FR)
-                    ? adminCheckHandler()
+                    ? adminCheckHandler({ calendar, user })
                       ? false
                       : true
                     : false
@@ -2232,7 +2148,7 @@ function AddEvent() {
                   })}
                   hidden={
                     standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_TYPE)
-                      ? adminCheckHandler()
+                      ? adminCheckHandler({ calendar, user })
                         ? false
                         : true
                       : false
@@ -2280,7 +2196,7 @@ function AddEvent() {
                   }}
                   hidden={
                     standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.AUDIENCE)
-                      ? adminCheckHandler()
+                      ? adminCheckHandler({ calendar, user })
                         ? false
                         : true
                       : false
@@ -2331,13 +2247,17 @@ function AddEvent() {
                         })}
                         initialValue={
                           dynamicAdminOnlyFields?.includes(taxonomy?.id)
-                            ? adminCheckHandler()
+                            ? adminCheckHandler({ calendar, user })
                               ? initialValues
                               : []
                             : initialValues
                         }
                         hidden={
-                          dynamicAdminOnlyFields?.includes(taxonomy?.id) ? (adminCheckHandler() ? false : true) : false
+                          dynamicAdminOnlyFields?.includes(taxonomy?.id)
+                            ? adminCheckHandler({ calendar, user })
+                              ? false
+                              : true
+                            : false
                         }
                         data-cy={`form-item-${taxonomy?.id}`}
                         rules={[
@@ -2374,7 +2294,7 @@ function AddEvent() {
             </>
             <div>
               {standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.FEATURED)
-                ? adminCheckHandler()
+                ? adminCheckHandler({ calendar, user })
                   ? FeaturedJSX
                   : null
                 : FeaturedJSX}
@@ -2418,7 +2338,7 @@ function AddEvent() {
                             }
                             hidden={
                               standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.START_DATE)
-                                ? adminCheckHandler()
+                                ? adminCheckHandler({ calendar, user })
                                   ? false
                                   : true
                                 : false
@@ -2510,7 +2430,7 @@ function AddEvent() {
                           }
                           hidden={
                             standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.START_DATE)
-                              ? adminCheckHandler()
+                              ? adminCheckHandler({ calendar, user })
                                 ? false
                                 : true
                               : false
@@ -2661,12 +2581,11 @@ function AddEvent() {
               ]}>
               <Form.Item
                 name="locationPlace"
-                // className="subheading-wrap"
                 initialValue={initialPlace && initialPlace[0]?.id}
                 label={t('dashboard.events.addEditEvent.location.title')}
                 hidden={
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.LOCATION)
-                    ? adminCheckHandler()
+                    ? adminCheckHandler({ calendar, user })
                       ? false
                       : true
                     : false
@@ -3017,7 +2936,7 @@ function AddEvent() {
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION) ||
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION_EN) ||
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION_FR)
-                    ? adminCheckHandler()
+                    ? adminCheckHandler({ calendar, user })
                       ? false
                       : true
                     : false
@@ -3624,7 +3543,7 @@ function AddEvent() {
                 required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.IMAGE)}
                 hidden={
                   standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
-                    ? adminCheckHandler()
+                    ? adminCheckHandler({ calendar, user })
                       ? false
                       : true
                     : false
@@ -3707,6 +3626,7 @@ function AddEvent() {
                 style={{
                   display: !addedFields?.includes(otherInformationFieldNames.performerWrap) && 'none',
                 }}
+                required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.PERFORMER)}
                 data-cy="form-item-event-performer-label">
                 <Row>
                   <Col>
@@ -3938,6 +3858,7 @@ function AddEvent() {
                 style={{
                   display: !addedFields?.includes(otherInformationFieldNames.supporterWrap) && 'none',
                 }}
+                required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.COLLABORATOR)}
                 data-cy="form-item-supporter-label">
                 <Row>
                   <Col>
@@ -4369,7 +4290,7 @@ function AddEvent() {
               marginResponsive="0px"
               hidden={
                 standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_ACCESSIBILITY)
-                  ? adminCheckHandler()
+                  ? adminCheckHandler({ calendar, user })
                     ? false
                     : true
                   : false
@@ -4397,7 +4318,7 @@ function AddEvent() {
                   ]}
                   hidden={
                     standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_ACCESSIBILITY)
-                      ? adminCheckHandler()
+                      ? adminCheckHandler({ calendar, user })
                         ? false
                         : true
                       : false
@@ -4535,7 +4456,7 @@ function AddEvent() {
             required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.TICKET_INFO)}
             hidden={
               standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.TICKET_INFO)
-                ? adminCheckHandler()
+                ? adminCheckHandler({ calendar, user })
                   ? false
                   : true
                 : false

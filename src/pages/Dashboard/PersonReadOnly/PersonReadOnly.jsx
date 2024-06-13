@@ -508,7 +508,6 @@ function PersonReadOnly() {
                                     : typeof place?.name === 'string' && place?.name
                                 }
                                 icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
-                                // description={moment(event.startDateTime).format('YYYY-MM-DD')}
                                 bordered
                                 itemWidth="100%"
                               />;

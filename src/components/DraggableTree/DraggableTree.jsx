@@ -42,7 +42,7 @@ const DraggableTree = ({
       key: item.key,
       title: isTree1 ? (
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span>{item.name?.fr}</span>
+          <span className="draggable-tree-concept-label grabbable">{item.name?.fr}</span>
           <span
             onClick={(e) => {
               e.stopPropagation();
@@ -55,7 +55,7 @@ const DraggableTree = ({
         </div>
       ) : (
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span>{item.name?.en}</span>
+          <span className="draggable-tree-concept-label grabbable">{item.name?.en}</span>
           <span
             onClick={(e) => {
               e.stopPropagation();
@@ -198,20 +198,6 @@ const DraggableTree = ({
     };
 
     return helper(data);
-  };
-
-  const handleClick = (selectedKeys, e) => {
-    const currentNode = findItem(e.node.key);
-    setDeleteDisplayFlag(false);
-    if (e.selected) {
-      setSetSelectedNode(currentNode);
-      setNewConceptName({ en: '', fr: '' });
-      form.setFieldsValue({
-        frenchconcept: '',
-        englishconcept: '',
-      });
-      setAddNewPopup(true);
-    } else setSetSelectedNode();
   };
 
   const editConceptHandler = (node) => {
@@ -363,7 +349,6 @@ const DraggableTree = ({
                 setExpandedKeys(key);
               }}
               treeData={treeData2}
-              onSelect={handleClick}
             />
           </div>
         </Form.Item>
@@ -395,8 +380,6 @@ const DraggableTree = ({
                 setExpandedKeys(key);
               }}
               treeData={treeData1}
-              onSelect={handleClick}
-              on
             />
           </div>
         </Form.Item>

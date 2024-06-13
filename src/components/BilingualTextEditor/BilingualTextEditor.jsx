@@ -10,7 +10,7 @@ function BilingualTextEditor(props) {
   const { t } = useTranslation();
   const reactQuillRefFr = useRef(null);
   const reactQuillRefEn = useRef(null);
-  const [descriptionMinimumWordCount] = useState(props?.descriptionMinimumWordCount ?? null);
+  const [descriptionMinimumWordCount] = useState(props?.descriptionMinimumWordCount ?? 1);
 
   return (
     <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>

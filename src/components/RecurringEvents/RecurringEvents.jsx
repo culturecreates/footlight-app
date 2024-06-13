@@ -25,7 +25,6 @@ const RecurringEvents = function ({
   setFormFields,
   dateType,
 }) {
-  // const endDisable = moment().format('YYYY-MM-DD');
   const [nummberofDates, setNumberofDates] = useState(numberOfDaysEvent);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [customDates, setCustomDates] = useState([]);
@@ -246,10 +245,6 @@ const RecurringEvents = function ({
     return result;
   }
 
-  // const handleChange = (value) => {
-  //   if (value === 'CUSTOM') setIsModalVisible(true);
-  // };
-
   const openCustomize = () => {
     if (formFields && formFields?.frequency !== 'CUSTOM') {
       if (formFields?.startTimeRecur || formFields?.endTimeRecur) {
@@ -301,23 +296,6 @@ const RecurringEvents = function ({
 
   return (
     <div className="recurring-events-wrapper">
-      {/* <Form.Item
-        name="frequency"
-        className="status-comment-item"
-        rules={[{ required: true, message: 'Start date required' }]}>
-        <Select
-          style={{ width: 337 }}
-          placeholder={`Select Frequency`}
-          key="updateDropdownKey"
-          className="search-select"
-          optionFilterProp="children"
-          defaultValue="DAILY"
-          onChange={handleChange}>
-          <Option value="DAILY">Daily</Option>
-          <Option value="WEEKLY">Weekly</Option>
-          <Option value="CUSTOM">Custom</Option>
-        </Select>
-      </Form.Item> */}
       <div className="frequency-selector">
         <Form.Item
           name="frequency"
@@ -331,7 +309,6 @@ const RecurringEvents = function ({
             key="updateDropdownKey"
             optionFilterProp="children"
             data-cy="date-frequency-select"
-            // onChange={handleChange}
           />
         </Form.Item>
       </div>
@@ -342,52 +319,7 @@ const RecurringEvents = function ({
             style={{
               width: '423px',
               maxWidth: '423px',
-            }}>
-            {/* {customDates && customDates?.length != 0 && (
-              <Form.Item label={t('dashboard.events.addEditEvent.dates.multipleDates')}>
-                <DateRangePicker
-                  style={{ width: '100%' }}
-                  open={false}
-                  value={[moment(customDates[0]?.startDate), moment(customDates[customDates?.length - 1]?.startDate)]}
-                  allowClear={false}
-                  // inputReadOnly
-                  suffixIcon={
-                    customDates?.length > 0 && (
-                      <Tags style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }} color={'#DBF3FD'}>
-                        {customDates?.length} {t('dashboard.events.addEditEvent.dates.dates')}
-                        &nbsp;
-                        {numberOfTimes > 0 && formFields?.frequency === 'CUSTOM' && (
-                          <>
-                            ,&nbsp;{numberOfTimes}&nbsp;{t('dashboard.events.addEditEvent.dates.times')}
-                          </>
-                        )}
-                      </Tags>
-                    )
-                  }
-                />
-              </Form.Item>
-            )} */}
-            {/* {customDates?.map((item, index) => (
-              <Card
-                key={index}
-                bodyStyle={{
-                  borderRadius: '8px',
-                  border: '1px solid #B6C1C9',
-                }}>
-                <div className="custom-no-of-date">
-                  {moment(item.startDate).locale(i18n.language).format('MMMM DD, YYYY')}
-                </div>
-
-                {item?.time &&
-                  item?.time?.map((customTime, index) => (
-                    <div key={index}>
-                      {customTime.startTime} {customTime.endTime ? ' - ' : ''}
-                      {customTime.endTime && customTime.endTime}{' '}
-                    </div>
-                  ))}
-              </Card>
-            ))} */}
-          </div>
+            }}></div>
           <Form.Item
             name="customDates"
             className="status-comment-item"
@@ -429,24 +361,6 @@ const RecurringEvents = function ({
         <>
           {!isCustom && (
             <div className="flex-align">
-              {/* <div className="date-div">
-              <div className="update-select-title">{t('StartTime', { lng: currentLang })}</div>
-              <Form.Item
-                name="startTimeRecur"
-                className="status-comment-item"
-                rules={[{ required: false, message: 'Start time required' }]}>
-                <TimePicker format="HH:mm" />
-              </Form.Item>
-            </div>
-            <div className="date-div">
-              <div className="update-select-title ">{t('EndTime', { lng: currentLang })}</div>
-              <Form.Item
-                name="endTimeRecur"
-                className="status-comment-item"
-                rules={[{ required: false, message: 'End time required' }]}>
-                <TimePicker format="HH:mm" disabledHours={disabledHours} disabledMinutes={disabledMinutes} />
-              </Form.Item>
-            </div> */}
               <Row justify="space-between">
                 <Col flex={'203.5px'}>
                   <Form.Item
@@ -492,33 +406,7 @@ const RecurringEvents = function ({
             </div>
           )}
 
-          {formFields && formFields?.frequency === dateFrequencyOptions[1].value && (
-            <>
-              {/* <div className="update-select-title">{t('Days Of Week', { lng: currentLang })}</div> */}
-              {/* <Form.Item
-                name="daysOfWeek"
-                className="status-comment-item"
-                rules={[{ required: true, message: 'Start date required' }]}>
-                <Select
-                  style={{ width: 337 }}
-                  placeholder={`Select Days`}
-                  key="updateDropdownKey"
-                  className="search-select"
-                  optionFilterProp="children"
-                  showSearch
-                  mode="multiple"
-                  filterOption={(input, option) =>
-                    option.children && option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                  }>
-                  {daysOfWeek.map((item) => (
-                    <Option value={item.value} key={item.value}>
-                      {item.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item> */}
-            </>
-          )}
+          {formFields && formFields?.frequency === dateFrequencyOptions[1].value && <></>}
         </>
       )}
       <Form.Item
@@ -547,7 +435,6 @@ const RecurringEvents = function ({
         </div>
       </Form.Item>
       <div className="customize-div">
-        {/* {nummberofDates !== 0 && <div> {nummberofDates + ' Dates'}</div>} */}
         {(nummberofDates || formFields?.startDateRecur?.length == 2 || isCustom) > 0 && (
           <TextButton
             size="large"

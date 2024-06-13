@@ -1,10 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import {
-  LeftOutlined,
-  //  CalendarOutlined,
-  CloseCircleOutlined,
-  ExclamationCircleOutlined,
-} from '@ant-design/icons';
+import { LeftOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Button, Card, Col, Form, Input, message, notification, Popover, Row } from 'antd';
 import PrimaryButton from '../../../components/Button/Primary';
 import { createSearchParams, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -44,6 +39,7 @@ import CalendarAccordion from '../../../components/Accordion/CalendarAccordion';
 import { removeObjectArrayDuplicates } from '../../../utils/removeObjectArrayDuplicates';
 import Select from '../../../components/Select';
 import Cookies from 'js-cookie';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 
 const AddUser = () => {
   const navigate = useNavigate();
@@ -58,7 +54,11 @@ const AddUser = () => {
     _pageNumber, // eslint-disable-next-line no-unused-vars
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
-    setContentBackgroundColor,
+    setContentBackgroundColor, // eslint-disable-next-line no-unused-vars
+    _isReadOnly, // eslint-disable-next-line no-unused-vars
+    _setIsReadOnly, // eslint-disable-next-line no-unused-vars
+    _refetch,
+    allCalendarsData,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
   const userId = searchParams.get('id');
@@ -94,10 +94,7 @@ const AddUser = () => {
   const [getUser, { isFetching: isUserFetching }] = useLazyGetUserByIdQuery({ sessionId: timestampRef });
   const [getUserSearch] = useLazyGetAllUsersQuery({ sessionId: timestampRef });
 
-  const [
-    currentUserLeaveCalendar,
-    // { isSuccess: isCurrentUserLeaveCalendarSuccess, isError: isCurrentUserLeaveCalendarError },
-  ] = useCurrentUserLeaveCalendarMutation();
+  const [currentUserLeaveCalendar] = useCurrentUserLeaveCalendarMutation();
   const [inviteUser] = useInviteUserMutation();
   const [updateUserById] = useUpdateUserByIdMutation();
   const [getCurrentUserDetails, { isFetching: isCurrentUserFetching }] = useLazyGetCurrentUserQuery({
@@ -107,14 +104,14 @@ const AddUser = () => {
 
   useEffect(() => {
     if (userId !== user?.id) {
-      !adminCheckHandler() &&
+      !adminCheckHandler({ calendar, user }) &&
         dispatch(setErrorStates({ errorCode: '403', isError: true, message: 'Forbidden resource.' }));
     } else {
       setIsCurrentUser(true);
     }
 
     if (userId && userId !== user?.id) {
-      getUser({ userId, calendarId })
+      getUser({ userId, calendarId, sessionId: timestampRef })
         .unwrap()
         .then((response) => {
           const activeCalendars = response?.roles?.filter((r) => {
@@ -131,7 +128,6 @@ const AddUser = () => {
           const requiredRole = response?.roles.filter((r) => {
             return r.calendarId === calendarId;
           });
-          // const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
 
           setUserData({
             firstName: response?.firstName,
@@ -162,7 +158,6 @@ const AddUser = () => {
           const requiredRole = response?.roles.filter((r) => {
             return r.calendarId === calendarId;
           });
-          // const selectedLanguage = userLanguages.find((item) => item.key === response.interfaceLanguage);
           setUserData({
             firstName: response?.firstName,
             lastName: response?.lastName,
@@ -175,22 +170,34 @@ const AddUser = () => {
           });
         });
     } else if (!userId) {
-      getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
-        .unwrap()
-        .then((response) => {
-          setSelectedCalendars(
-            response?.roles
-              .map((calendar) => ({
-                ...calendar,
-                disabled: calendarId === calendar?.calendarId ? false : true,
-              }))
-              .sort((a, b) => a.disabled - b.disabled),
-          );
-        });
+      if (user?.isSuperAdmin) {
+        setSelectedCalendars(
+          allCalendarsData
+            ?.map((calendar) => ({
+              ...calendar,
+              calendarId: calendar.id,
+              disabled: calendarId === calendar?.id ? false : true,
+              role: userRoles.GUEST,
+            }))
+            .sort((a, b) => a.disabled - b.disabled),
+        );
+      } else
+        getCurrentUserDetails({ accessToken: accessToken, calendarId: calendarId })
+          .unwrap()
+          .then((response) => {
+            setSelectedCalendars(
+              response?.roles
+                .map((calendar) => ({
+                  ...calendar,
+                  disabled: calendarId === calendar?.calendarId ? false : true,
+                }))
+                .sort((a, b) => a.disabled - b.disabled),
+            );
+          });
     } else if (location.state?.data) {
       setSearchParams(createSearchParams({ id: location.state.data.id }));
     }
-  }, [userId]);
+  }, [userId, allCalendarsData]);
 
   useEffect(() => {
     if (userId) {
@@ -199,7 +206,6 @@ const AddUser = () => {
         lastName: userData.lastName,
         phoneNumber: userData.phoneNumber,
         email: userData.email,
-        // userType: userData.userType,
         languagePreference: userData.languagePreference,
       });
     }
@@ -246,20 +252,11 @@ const AddUser = () => {
           lastName: response?.lastName,
           phoneNumber: response?.phoneNumber,
           email: response?.email,
-          // userType: requiredRole[0]?.role,
-          // languagePreference: {
           languagePreference: response.interfaceLanguage,
-          // label: selectedLanguage?.label ? selectedLanguage?.label : '',
-          // },
           calendars: response.roles,
           ...response,
         });
       });
-  };
-
-  const adminCheckHandler = () => {
-    if (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) return true;
-    else return false;
   };
 
   const onSaveHandler = () => {
@@ -324,7 +321,7 @@ const AddUser = () => {
             return { entityId: organizer?.value };
           });
           let userType = values?.userType[calendarId];
-          if (isCurrentUser && adminCheckHandler() == false) {
+          if (isCurrentUser && adminCheckHandler({ calendar, user }) == false) {
             updateCurrentUser({
               calendarId,
               body: {
@@ -403,7 +400,7 @@ const AddUser = () => {
                   icon: <ExclamationCircleOutlined />,
                 });
               });
-          } else if (adminCheckHandler()) {
+          } else if (adminCheckHandler({ calendar, user })) {
             updateUserById({
               id: userId,
               calendarId,
@@ -872,26 +869,26 @@ const AddUser = () => {
                             <Col flex={'423px'}>
                               <Col>
                                 <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
-                                  {selectedCalendars?.map((calendar, index) => (
+                                  {selectedCalendars?.map((selectedCalendar, index) => (
                                     <CalendarAccordion
                                       form={formInstance}
                                       data-cy="accordion-selected-calendars"
                                       key={index}
-                                      selectedCalendarId={calendar?.calendarId}
+                                      selectedCalendarId={selectedCalendar?.calendarId}
                                       name={contentLanguageBilingual({
-                                        en: calendar?.name?.en,
-                                        fr: calendar?.name?.fr,
+                                        en: selectedCalendar?.name?.en,
+                                        fr: selectedCalendar?.name?.fr,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })}
-                                      role={calendar?.role}
-                                      readOnly={adminCheckHandler() ? false : true}
-                                      disabled={calendar?.disabled}
-                                      organizationIds={calendar?.organizations}
-                                      peopleIds={calendar?.people}
+                                      role={selectedCalendar?.role}
+                                      readOnly={adminCheckHandler({ calendar, user }) ? false : true}
+                                      disabled={selectedCalendar?.disabled}
+                                      organizationIds={selectedCalendar?.organizations}
+                                      peopleIds={selectedCalendar?.people}
                                       isCurrentUser={isCurrentUser}
                                       removeCalendarHandler={() => {
-                                        removeCalendarHandler({ item: calendar, index });
+                                        removeCalendarHandler({ item: selectedCalendar, index });
                                       }}
                                     />
                                   ))}

@@ -6,6 +6,7 @@ import Outlined from '../Button/Outlined';
 import { useTranslation } from 'react-i18next';
 import { ImageCrop } from '../ImageCrop';
 import { useOutletContext } from 'react-router-dom';
+import { getWidthFromAspectRatio } from '../../utils/getWidthFromAspectRatio';
 
 function ImageUpload(props) {
   const {
@@ -47,6 +48,14 @@ function ImageUpload(props) {
       width: eventImageData?.thumbnail?.width ?? undefined,
     },
   });
+
+  let aspectRatio;
+  let width;
+
+  if (!isCalendarLogo && currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio) {
+    aspectRatio = currentCalendarData.imageConfig[0]?.large.aspectRatio;
+    width = getWidthFromAspectRatio(aspectRatio, 48);
+  }
 
   const normFile = (e) => {
     if (Array.isArray(e)) {
@@ -139,11 +148,10 @@ function ImageUpload(props) {
                   <img
                     className="image-thumbnail"
                     style={{
-                      aspectRatio: !isCalendarLogo
-                        ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio.replace(/:/g, '/')
-                        : '',
+                      width: width ? `${width}px` : 'auto',
+                      minWidth: width ? `${width}px` : 'none',
                     }}
-                    src={file?.url ?? file?.thumbUrl}
+                    src={imageUrl || (file?.url ?? file?.thumbUrl)}
                   />
                   <a
                     className="image-name"
