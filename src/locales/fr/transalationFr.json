@@ -941,6 +941,7 @@
         "colorPlaceHolder": "Collez votre code couleur ou sélectionnez une couleur",
         "height": "Hauteur",
         "width": "Largeur maximale",
+        "font": "Font selection",
         "language": "Choix de langue",
         "eventType": "Type d'événement",
         "region": "Région",
