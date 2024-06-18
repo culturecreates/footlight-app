@@ -488,7 +488,7 @@ function Organizations() {
                   <NoContent style={{ height: '200px' }} data-cy="empty-organization" />
                 )
               ) : (
-                <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <LoadingIndicator data-cy="organizations-listing-loader" />
                 </div>
               )}

@@ -474,8 +474,7 @@ const Taxonomy = () => {
             </Row>
           </Col>
         ) : (
-          <div
-            style={{ height: '400px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <LoadingIndicator data-cy="loading-indicator-taxonomy-list" />
           </div>
         )}

@@ -1058,7 +1058,7 @@ function Events() {
         <Row className="events-content">
           <Col flex="832px">
             {isFetching && (
-              <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <LoadingIndicator />
               </div>
             )}
