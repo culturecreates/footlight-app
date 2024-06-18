@@ -19,6 +19,7 @@ import BilingualTextEditor from '../components/BilingualTextEditor';
 import Outlined from '../components/Button/Outlined';
 import { sourceOptions } from './sourceOptions';
 import LoadingIndicator from '../components/LoadingIndicator';
+import MultipleImageUpload from '../components/MultipleImageUpload';
 
 const { TextArea } = Input;
 
@@ -366,6 +367,9 @@ export const formFieldValue = [
       imageCropOpen,
       largeAspectRatio,
       thumbnailAspectRatio,
+      eventImageGalleryData,
+      enableGallery,
+      t,
     }) => (
       <>
         {position === 'top' && datatype === dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
@@ -383,6 +387,20 @@ export const formFieldValue = [
           thumbnailAspectRatio={thumbnailAspectRatio}
           formName={name}
         />
+        {name?.includes(mappedFieldTypes.IMAGE) && (
+          <Form.Item
+            label={t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
+            className="subheading-wrap"
+            data-cy="form-item-event-multiple-image"
+            hidden={!enableGallery}>
+            <MultipleImageUpload
+              form={form}
+              largeAspectRatio={largeAspectRatio}
+              thumbnailAspectRatio={thumbnailAspectRatio}
+              eventImageData={eventImageGalleryData}
+            />
+          </Form.Item>
+        )}
       </>
     ),
   },
@@ -704,11 +722,11 @@ export const returnFormDataWithFields = ({
       }),
       largeUrl:
         field?.mappedField === mappedFieldTypes.IMAGE
-          ? entityData?.image?.large?.uri
+          ? entityData?.image?.find((image) => image?.isMain)?.large?.uri
           : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo?.large?.uri,
       originalUrl:
         field?.mappedField === mappedFieldTypes.IMAGE
-          ? entityData?.image?.original?.uri
+          ? entityData?.image?.find((image) => image?.isMain)?.original?.uri
           : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo?.original?.uri,
       required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
       t: t,
@@ -722,9 +740,10 @@ export const returnFormDataWithFields = ({
       isCrop: isCrop,
       setImageCropOpen,
       imageCropOpen,
+      eventImageGalleryData: entityData?.image?.filter((image) => !image?.isMain),
       eventImageData:
         field?.mappedField === mappedFieldTypes.IMAGE
-          ? entityData?.image
+          ? entityData?.image?.find((image) => image?.isMain)
           : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo,
       largeAspectRatio:
         currentCalendarData?.imageConfig?.length > 0 ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio : null,
@@ -732,6 +751,8 @@ export const returnFormDataWithFields = ({
         currentCalendarData?.imageConfig?.length > 0
           ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio
           : null,
+      enableGallery:
+        currentCalendarData?.imageConfig?.length > 0 ? currentCalendarData?.imageConfig[0]?.enableGallery : false,
       placesSearch,
       allPlacesList,
       allPlacesArtsdataList,

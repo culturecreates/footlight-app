@@ -112,7 +112,7 @@ function QuickCreatePerson(props) {
             id: response?.id,
             name: response?.name,
             type: entitiesClass.person,
-            image: response?.image,
+            image: response?.image?.find((image) => image?.isMain),
           },
         ];
         createdPerson = treeEntitiesOption(createdPerson, user, calendarContentLanguage, sourceOptions.CMS);

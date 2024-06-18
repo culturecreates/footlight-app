@@ -252,9 +252,12 @@
           },
           "image": {
             "title": "Image",
+            "mainImage": "Image principale",
+            "additionalImages": "Images supplémentaires",
             "subHeading": "Les images doivent être au format paysage ou carré et mesurer au moins 600 px de large. Uniquement les fichiers .jpeg et .png sont acceptés.",
             "dragAndDrop": "ou glisser pour télécharger",
             "browse": "Parcourir",
+            "imageGallery": "Galerie d'images",
             "crop": {
               "title": "Positionnement de l’image",
               "subHeading": "Ajuster la position de l’image si nécessaire.",
@@ -693,6 +696,8 @@
           },
           "image": {
             "image": "Image",
+            "mainImage": "Image principale",
+            "additionalImages": "Images supplémentaires",
             "subheading": "Uniquement les fichiers .jpeg et .png sont acceptés."
           },
           "addMoreDetails": "Ajouter plus de détails",
@@ -997,6 +1002,15 @@
           "imageMaxWidth": "Largeur maximale",
           "thumbnail": "Vignette",
           "large": "Grande image"
+        },
+        "siteImageSettings": {
+          "title": "Paramètres de l'image du site",
+          "description": "Personnalisez les paramètres de l'image pour votre site web.",
+          "thumbnailSettings": "Paramètres des vignettes",
+          "largeSettings": "Grands paramètres",
+          "aspectRatio": "Format d'image",
+          "maximumWidth": "Largeur maximale",
+          "addImageGallery": "Ajouter la galerie d'images"
         },
         "calendarLogo": "Logo du calendrier",
         "calendarLogoDescription": "Uniquement les fichiers .jpeg et .png sont acceptés.",

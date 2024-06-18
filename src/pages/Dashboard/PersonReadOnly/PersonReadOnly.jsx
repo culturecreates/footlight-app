@@ -32,6 +32,7 @@ import Icon, { EnvironmentOutlined, CalendarOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import SelectionItem from '../../../components/List/SelectionItem';
 import { useLazyGetEntityDependencyDetailsQuery } from '../../../services/entities';
+import MultipleImageUpload from '../../../components/MultipleImageUpload';
 
 function PersonReadOnly() {
   const { t } = useTranslation();
@@ -76,6 +77,9 @@ function PersonReadOnly() {
   const [artsDataLoading, setArtsDataLoading] = useState(false);
   const [derivedEntitiesData, setDerivedEntitiesData] = useState();
   const [derivedEntitiesDisplayStatus, setDerivedEntitiesDisplayStatus] = useState(false);
+
+  const mainImageData = personData?.image?.find((image) => image?.isMain) || null;
+  const imageConfig = currentCalendarData?.imageConfig?.length > 0 && currentCalendarData?.imageConfig[0];
 
   const getArtsData = (id) => {
     setArtsDataLoading(true);
@@ -442,13 +446,30 @@ function PersonReadOnly() {
                         ))}
                       </Col>
                     )}
+                    {personData?.image?.length > 0 && imageConfig.enableGallery && (
+                      <Col span={24}>
+                        <p className="read-only-event-content-sub-title-primary">
+                          {t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
+                        </p>
+                        <MultipleImageUpload
+                          imageReadOnly={true}
+                          largeAspectRatio={
+                            currentCalendarData?.imageConfig?.length > 0 ? imageConfig?.large?.aspectRatio : null
+                          }
+                          thumbnailAspectRatio={
+                            currentCalendarData?.imageConfig?.length > 0 ? imageConfig?.thumbnail?.aspectRatio : null
+                          }
+                          eventImageData={personData?.image?.filter((image) => !image?.isMain)}
+                        />
+                      </Col>
+                    )}
                   </Row>
                 </Col>
                 <Col>
-                  {personData?.image?.original?.uri && (
+                  {mainImageData?.original?.uri && (
                     <div>
                       <img
-                        src={personData?.image?.original?.uri}
+                        src={mainImageData?.original?.uri}
                         alt="avatar"
                         style={{
                           width: '151px',
