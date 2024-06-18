@@ -163,7 +163,7 @@ const SelectTaxonomyType = () => {
                           iconrender={<PlusOutlined style={{ fontSize: '24px' }} />}
                           label={t('dashboard.taxonomy.selectType.newField')}
                           style={{ height: '104px', padding: 16 }}
-                          onClick={() => navigationHandler('not-dynamic')}
+                          onClick={() => navigationHandler(true)}
                         />
                       </Col>
                       <Col style={{ flex: '1' }}>
@@ -177,7 +177,7 @@ const SelectTaxonomyType = () => {
                             padding: 16,
                             ...(standardFields.length < 1 && selectedClass.label !== '' && buttonStyles),
                           }}
-                          onClick={() => navigationHandler('dynamic')}
+                          onClick={() => navigationHandler(false)}
                         />
                       </Col>
                     </Row>

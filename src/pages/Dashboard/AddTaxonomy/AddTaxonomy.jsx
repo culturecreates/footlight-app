@@ -55,6 +55,7 @@ const AddTaxonomyTest = () => {
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
+  const dynamic = location.state?.dynamic;
 
   const taxonomyId = searchParams.get('id');
   setContentBackgroundColor('#F9FAFF');
@@ -75,6 +76,9 @@ const AddTaxonomyTest = () => {
   });
   const [addTaxonomy] = useAddTaxonomyMutation();
   const [updateTaxonomy] = useUpdateTaxonomyMutation();
+
+  const { taxonomyClass } = taxonomyData || {};
+  const selectedClass = location.state?.selectedClass;
 
   useEffect(() => {
     if (taxonomyId && currentCalendarData) {
@@ -104,8 +108,6 @@ const AddTaxonomyTest = () => {
 
   useEffect(() => {
     // setting class initial value
-    const { taxonomyClass } = taxonomyData || {};
-    const selectedClass = location.state?.selectedClass;
 
     const value = taxonomyId ? taxonomyClass : selectedClass;
     let initialTaxonomyValue;
@@ -160,11 +162,11 @@ const AddTaxonomyTest = () => {
             fr: values?.frenchName?.trim(),
           },
           taxonomyClass: values?.class?.value,
-          isDynamicField: location.state?.dynamic
-            ? location.state?.dynamic === 'not-dynamic'
-            : taxonomyData?.isDynamicField,
+          isDynamicField: dynamic != false || taxonomyData?.isDynamicField,
           includeInFullTextSearch: true,
-          mappedToField: values?.mappedToField?.key ?? values?.mappedToField,
+          ...((taxonomyData?.isDynamicField != true || dynamic != true) && {
+            mappedToField: values?.mappedToField?.key ?? values?.mappedToField,
+          }),
           isAdminOnly: userAccess?.length > 0,
           disambiguatingDescription: {
             en: values?.frenchdescription?.trim(),
@@ -187,7 +189,7 @@ const AddTaxonomyTest = () => {
                   maxCount: 1,
                   duration: 3,
                 });
-                navigate(-1);
+                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}`, { replace: true });
               }
             });
         } else {
@@ -203,7 +205,8 @@ const AddTaxonomyTest = () => {
                   maxCount: 1,
                   duration: 3,
                 });
-                navigate(-3);
+
+                navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}`, { replace: true });
               }
             });
         }
@@ -331,15 +334,15 @@ const AddTaxonomyTest = () => {
                       label={t('dashboard.taxonomy.addNew.class')}
                       name="class"
                       required
-                      className={`classType ${taxonomyId != '' ? 'disabled-dropdown' : ''}`}>
-                      <Select data-cy="dropdown-taxonomy-class" options={taxonomyClasses} disabled={!!taxonomyId} />
+                      className={`classType disabled-dropdown`}>
+                      <Select data-cy="dropdown-taxonomy-class" options={taxonomyClasses} disabled />
                     </Form.Item>
                     <span className="field-description" data-cy="span-taxonomy-class-helper-text">
                       {t(`dashboard.taxonomy.addNew.destinationHeading`)}
                     </span>
                   </Col>
                 </Row>
-                {(location.state?.dynamic === 'dynamic' || (taxonomyId && !taxonomyData?.isDynamicField)) && (
+                {(dynamic === false || (taxonomyId && !taxonomyData?.isDynamicField)) && (
                   <Row>
                     <Col flex={'423px'}>
                       <Form.Item
@@ -498,44 +501,41 @@ const AddTaxonomyTest = () => {
                     </Form.Item>
                   </Col>
                 </Row>
-                {(location.state?.dynamic !== 'dynamic' || taxonomyId) && (
-                  <Row>
-                    <Col flex="423px">
-                      <div
-                        label={t('dashboard.taxonomy.addNew.userAccess')}
-                        name="userAccess"
-                        className="user-access"
-                        data-cy="form-item-user-access-title">
-                        <SearchableCheckbox
-                          data-cy="searchable-checkbox-user-roles"
-                          value={userAccess}
-                          onFilterChange={(values) => {
-                            form.setFieldValue('userAccess', values);
-                            setUserAccess(values);
-                          }}
-                          data={[userRolesWithTranslation[0]]?.map((role) => {
-                            return {
-                              key: role.key,
-                              label: (
-                                <Checkbox value={role.value} key={role.key} style={{ marginLeft: '8px' }}>
-                                  {t(`dashboard.taxonomy.addNew.adminOnly`)}
-                                </Checkbox>
-                              ),
-                              filtervalue: role.key,
-                            };
-                          })}>
-                          {userAccess?.length > 0
-                            ? t(`dashboard.taxonomy.addNew.adminOnly`)
-                            : t(`dashboard.taxonomy.addNew.userAccessPlaceHolder`)}
-                          <DownOutlined style={{ fontSize: '16px' }} />
-                        </SearchableCheckbox>
-                      </div>
-                      <div className="field-description" style={{ marginTop: 8 }} data-cy="div-user-access-helper-text">
-                        {t(`dashboard.taxonomy.addNew.userAccessDescription`)}
-                      </div>
-                    </Col>
-                  </Row>
-                )}
+
+                <Row>
+                  <Col flex="423px">
+                    <div className="userAccess-label">{t('dashboard.taxonomy.addNew.userAccess')}</div>
+                    <div name="userAccess" className="user-access" data-cy="form-item-user-access-title">
+                      <SearchableCheckbox
+                        data-cy="searchable-checkbox-user-roles"
+                        value={userAccess}
+                        onFilterChange={(values) => {
+                          form.setFieldValue('userAccess', values);
+                          setUserAccess(values);
+                        }}
+                        data={[userRolesWithTranslation[0]]?.map((role) => {
+                          return {
+                            key: role.key,
+                            label: (
+                              <Checkbox value={role.value} key={role.key} style={{ marginLeft: '8px' }}>
+                                {t(`dashboard.taxonomy.addNew.adminOnly`)}
+                              </Checkbox>
+                            ),
+                            filtervalue: role.key,
+                          };
+                        })}>
+                        {userAccess?.length > 0
+                          ? t(`dashboard.taxonomy.addNew.adminOnly`)
+                          : t(`dashboard.taxonomy.addNew.userAccessPlaceHolder`)}
+                        <DownOutlined style={{ fontSize: '16px' }} />
+                      </SearchableCheckbox>
+                    </div>
+                    <div className="field-description" style={{ marginTop: 8 }} data-cy="div-user-access-helper-text">
+                      {t(`dashboard.taxonomy.addNew.userAccessDescription`)}
+                    </div>
+                  </Col>
+                </Row>
+
                 <Row justify={'start'} align={'top'} gutter={[8, 0]}>
                   <Col>
                     <Form.Item valuePropName="checked" name="addToFilter" initialValue={taxonomyData?.addToFilter}>
