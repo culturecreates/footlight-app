@@ -41,6 +41,7 @@ import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { getEmbedUrl } from '../../../utils/getEmbedVideoUrl';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
+import MultipleImageUpload from '../../../components/MultipleImageUpload';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
@@ -93,6 +94,8 @@ function EventReadOnly() {
   let dynamicAdminOnlyFields = requiredFields?.adminOnlyFields?.dynamicFields;
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === sameAsTypes.ARTSDATA_IDENTIFIER);
+  const mainImageData = eventData?.image?.find((image) => image?.isMain) || null;
+  const imageConfig = currentCalendarData?.imageConfig?.length > 0 && currentCalendarData?.imageConfig[0];
 
   useEffect(() => {
     if (eventData?.recurringEvent || eventData?.subEventConfiguration) setDateType(dateTypes.MULTIPLE);
@@ -108,7 +111,7 @@ function EventReadOnly() {
           name: organizer?.entity?.name,
           type: organizer?.type,
           logo: organizer?.entity?.logo,
-          image: organizer?.entity?.image,
+          image: organizer?.entity?.image?.find((image) => image?.isMain),
         };
       });
       setSelectedOrganizers(treeEntitiesOption(initialOrganizers, user, calendarContentLanguage, sourceOptions.CMS));
@@ -121,7 +124,7 @@ function EventReadOnly() {
           name: performer?.entity?.name,
           type: performer?.type,
           logo: performer?.entity?.logo,
-          image: performer?.entity?.image,
+          image: performer?.entity?.image?.find((image) => image?.isMain),
         };
       });
       setSelectedPerformers(treeEntitiesOption(initialPerformers, user, calendarContentLanguage, sourceOptions.CMS));
@@ -134,7 +137,7 @@ function EventReadOnly() {
           name: supporter?.entity?.name,
           type: supporter?.type,
           logo: supporter?.entity?.logo,
-          image: supporter?.entity?.image,
+          image: supporter?.entity?.image?.find((image) => image?.isMain),
         };
       });
       setSelectedSupporters(treeEntitiesOption(initialSupporters, user, calendarContentLanguage, sourceOptions.CMS));
@@ -696,7 +699,7 @@ function EventReadOnly() {
                     )}
                   </div>
                   <br />
-                  {eventData?.image && eventData?.image?.original?.uri && (
+                  {eventData?.image?.length > 0 && mainImageData?.original?.uri && (
                     <div
                       style={{
                         display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
@@ -706,13 +709,37 @@ function EventReadOnly() {
                           : 'initial',
                       }}>
                       <p className="read-only-event-content-sub-title-primary">
-                        {t('dashboard.events.addEditEvent.otherInformation.image.title')}
+                        {t('dashboard.events.addEditEvent.otherInformation.image.mainImage')}
                       </p>
                       <ImageUpload
-                        imageUrl={eventData?.image?.large?.uri}
+                        imageUrl={mainImageData?.large?.uri}
                         imageReadOnly={true}
                         preview={true}
-                        eventImageData={eventData?.image}
+                        eventImageData={mainImageData}
+                      />
+                    </div>
+                  )}
+                  {eventData?.image?.length > 0 && imageConfig.enableGallery && (
+                    <div
+                      style={{
+                        display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
+                          ? adminCheckHandler()
+                            ? 'initial'
+                            : 'none'
+                          : 'initial',
+                      }}>
+                      <p className="read-only-event-content-sub-title-primary">
+                        {t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
+                      </p>
+                      <MultipleImageUpload
+                        imageReadOnly={true}
+                        largeAspectRatio={
+                          currentCalendarData?.imageConfig?.length > 0 ? imageConfig?.large?.aspectRatio : null
+                        }
+                        thumbnailAspectRatio={
+                          currentCalendarData?.imageConfig?.length > 0 ? imageConfig?.thumbnail?.aspectRatio : null
+                        }
+                        eventImageData={eventData?.image?.filter((image) => !image?.isMain)}
                       />
                     </div>
                   )}
