@@ -38,9 +38,9 @@ const UserManagement = () => {
   const { useBreakpoint } = Grid;
   const [
     // eslint-disable-next-line no-unused-vars
-    currentCalendarData,
-    pageNumber,
-    setPageNumber, // eslint-disable-next-line no-unused-vars
+    currentCalendarData, // eslint-disable-next-line no-unused-vars
+    _pageNumber, // eslint-disable-next-line no-unused-vars
+    _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     // eslint-disable-next-line no-unused-vars
     setContentBackgroundColor,
@@ -78,6 +78,10 @@ const UserManagement = () => {
   const [userSearchQuery, setUserSearchQuery] = useState(decodeURIComponent(defaultQuery));
   const [selectedItemId, setSelectedItemId] = useState(null);
 
+  const [pageNumber, setPageNumber] = useState(
+    searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('usersPage') ?? 1,
+  );
+
   const [getAllUsers, { currentData: userData, isFetching: isUsersLoading }] = useLazyGetAllUsersQuery();
   const [inviteUserMutation] = useInviteUserMutation();
   const [deleteUser] = useDeleteUserMutation();
@@ -109,7 +113,7 @@ const UserManagement = () => {
       ...(userSearchQuery !== '' && { query: userSearchQuery }),
     };
     setSearchParams(createSearchParams(params));
-    sessionStorage.setItem('page', pageNumber);
+    sessionStorage.setItem('usersPage', pageNumber);
     sessionStorage.setItem('queryUserListing', userSearchQuery);
     sessionStorage.setItem('orderUserListing', filter?.order);
     sessionStorage.setItem('sortByUserListing', filter?.sort);
@@ -156,8 +160,8 @@ const UserManagement = () => {
     });
     setUserSearchQuery('');
     setPageNumber(1);
-    sessionStorage.removeItem('page');
-    sessionStorage.removeItem('query');
+    sessionStorage.removeItem('usersPage');
+    sessionStorage.removeItem('queryUserListing');
     sessionStorage.removeItem('orderUserListing');
     sessionStorage.removeItem('sortByUserListing');
     sessionStorage.removeItem('userStatusUserListing');
