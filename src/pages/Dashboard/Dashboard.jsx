@@ -42,6 +42,7 @@ function Dashboard() {
   const screens = useBreakpoint();
   const { t } = useTranslation();
   const asycErrorDetails = useSelector(getErrorDetails);
+
   const checkToken = (accessToken, accessTokenFromCookie) => {
     return !!(accessToken || accessTokenFromCookie);
   };
