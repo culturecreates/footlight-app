@@ -82,7 +82,10 @@ const Taxonomy = () => {
     query: decodeURIComponent(defaultQuery),
     class: decodeURIComponent(defaultClass)?.split(','),
   });
-  const [pageNumber, setPageNumber] = useState(1);
+
+  const [pageNumber, setPageNumber] = useState(
+    searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('pageTaxonomy') ?? 1,
+  );
 
   const handleListCardStyles = () => {
     const listCardStyles = !adminCheckHandler({ calendar, user })
@@ -167,7 +170,7 @@ const Taxonomy = () => {
       query: '',
     });
     setPageNumber(1);
-    sessionStorage.removeItem('page');
+    sessionStorage.removeItem('pageTaxonomy');
     sessionStorage.removeItem('queryTaxonomy');
     sessionStorage.removeItem('orderUserListing');
     sessionStorage.removeItem('orderTaxonomy');
