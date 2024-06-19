@@ -42,13 +42,19 @@ function Dashboard() {
   const screens = useBreakpoint();
   const { t } = useTranslation();
   const asycErrorDetails = useSelector(getErrorDetails);
+  const checkToken = (accessToken, accessTokenFromCookie) => {
+    return !!(accessToken || accessTokenFromCookie);
+  };
 
   const {
     currentData: allCalendarsData,
     isLoading,
     isSuccess,
     refetch,
-  } = useGetAllCalendarsQuery({ sessionId: timestampRef });
+  } = useGetAllCalendarsQuery(
+    { sessionId: timestampRef },
+    { skip: checkToken(accessToken, Cookies.get('accessToken')) ? false : true },
+  );
 
   const [getCurrentUserDetails, { isLoading: isCurrentUserLoading }] = useLazyGetCurrentUserQuery();
 
@@ -62,14 +68,6 @@ function Dashboard() {
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const checkToken = (accessToken, accessTokenFromCookie) => {
-    if (!accessToken && !accessTokenFromCookie) {
-      navigate(PathName.Login);
-      return;
-    }
-    return true;
-  };
-
   useEffect(() => {
     if (location?.state?.previousPath?.toLowerCase() === 'login') {
       dispatch(setInterfaceLanguage(user?.interfaceLanguage?.toLowerCase()));
@@ -78,16 +76,16 @@ function Dashboard() {
   }, [accessToken]);
 
   useEffect(() => {
-    if (!isSuccess) return;
-
     const accessTokenFromCookie = Cookies.get('accessToken');
     const refreshTokenFromCookie = Cookies.get('refreshToken');
     const calendarIdFromCookie = Cookies.get('calendarId');
     const calId = calendarId || calendarIdFromCookie;
 
-    if (!calId) return;
+    if (!checkToken(accessToken, accessTokenFromCookie)) navigate(PathName.Login);
 
-    if (!checkToken(accessToken, accessTokenFromCookie)) return;
+    if (!isSuccess) return;
+
+    if (!calId) return;
 
     const token = accessToken || accessTokenFromCookie;
 
@@ -104,9 +102,9 @@ function Dashboard() {
   }, [isSuccess]);
 
   useEffect(() => {
-    if (!isSuccess) return;
+    if (!checkToken(accessToken, Cookies.get('accessToken'))) navigate(PathName.Login);
 
-    if (!checkToken(accessToken, Cookies.get('accessToken'))) return;
+    if (!isSuccess) return;
 
     const checkedCalendarId = findActiveCalendar();
     if (checkedCalendarId != null) {
