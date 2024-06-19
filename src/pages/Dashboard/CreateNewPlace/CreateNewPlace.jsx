@@ -89,6 +89,7 @@ import {
   setLanguageLiteralBannerDisplayStatus,
 } from '../../../redux/reducer/languageLiteralSlice';
 import Alert from '../../../components/Alert';
+import MultipleImageUpload from '../../../components/MultipleImageUpload';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
@@ -172,6 +173,7 @@ function CreateNewPlace() {
         return { fieldName: field };
       }),
     );
+  let imageConfig = currentCalendarData?.imageConfig?.length > 0 && currentCalendarData?.imageConfig[0];
 
   const { currentData: placeData, isLoading: isPlaceLoading } = useGetPlaceQuery(
     { placeId: placeId, calendarId, sessionId: timestampRef },
@@ -244,6 +246,7 @@ function CreateNewPlace() {
     additionalType: [],
     accessibility: [],
   };
+  let mainImageData = placeData?.image?.find((image) => image?.isMain) || null;
 
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
@@ -426,7 +429,7 @@ function CreateNewPlace() {
     var promise = new Promise(function (resolve, reject) {
       form
         .validateFields(publishValidateFields ?? [])
-        .then(() => {
+        .then(async () => {
           var values = form.getFieldsValue(true);
           let placeObj,
             languageKey,
@@ -470,26 +473,29 @@ function CreateNewPlace() {
               };
             });
           }
-          let imageCrop = form.getFieldValue('imageCrop');
-          imageCrop = {
-            large: {
-              xCoordinate: imageCrop?.large?.x,
-              yCoordinate: imageCrop?.large?.y,
-              height: imageCrop?.large?.height,
-              width: imageCrop?.large?.width,
+          let imageCrop = [form.getFieldValue('imageCrop')];
+          imageCrop = [
+            {
+              large: {
+                xCoordinate: imageCrop[0]?.large?.x,
+                yCoordinate: imageCrop[0]?.large?.y,
+                height: imageCrop[0]?.large?.height,
+                width: imageCrop[0]?.large?.width,
+              },
+              thumbnail: {
+                xCoordinate: imageCrop[0]?.thumbnail?.x,
+                yCoordinate: imageCrop[0]?.thumbnail?.y,
+                height: imageCrop[0]?.thumbnail?.height,
+                width: imageCrop[0]?.thumbnail?.width,
+              },
+              original: {
+                entityId: imageCrop[0]?.original?.entityId,
+                height: imageCrop[0]?.original?.height,
+                width: imageCrop[0]?.original?.width,
+              },
+              isMain: true,
             },
-            thumbnail: {
-              xCoordinate: imageCrop?.thumbnail?.x,
-              yCoordinate: imageCrop?.thumbnail?.y,
-              height: imageCrop?.thumbnail?.height,
-              width: imageCrop?.thumbnail?.width,
-            },
-            original: {
-              entityId: imageCrop?.original?.entityId,
-              height: imageCrop?.original?.height,
-              width: imageCrop?.original?.width,
-            },
-          };
+          ];
           if (values?.containedInPlace || values?.containedInPlace?.length > 0) {
             if (containedInPlace?.source === sourceOptions.CMS)
               containedInPlaceObj = {
@@ -574,33 +580,89 @@ function CreateNewPlace() {
             ...(values?.dynamicFields && { dynamicFields }),
             ...(values?.containsPlace && { containsPlace }),
           };
+          const uploadImageList = async () => {
+            for (let i = 0; i < values.multipleImagesCrop.length; i++) {
+              const file = values.multipleImagesCrop[i]?.originFileObj;
+              if (!file) {
+                if (values.multipleImagesCrop[i]?.cropValues) imageCrop.push(values.multipleImagesCrop[i]?.cropValues);
+                else imageCrop.push(values.multipleImagesCrop[i]);
+                continue;
+              }
 
+              const formdata = new FormData();
+              formdata.append('file', file);
+
+              try {
+                const response = await addImage({ data: formdata, calendarId }).unwrap();
+
+                // Process each image in the list
+                const { large, thumbnail } = values.multipleImagesCrop[i]?.cropValues || {};
+                const { original, height, width } = response?.data || {};
+
+                const galleryImage = {
+                  large: {
+                    xCoordinate: large?.x,
+                    yCoordinate: large?.y,
+                    height: large?.height,
+                    width: large?.width,
+                  },
+                  original: {
+                    entityId: original?.entityId ?? null,
+                    height,
+                    width,
+                  },
+                  thumbnail: {
+                    xCoordinate: thumbnail?.x,
+                    yCoordinate: thumbnail?.y,
+                    height: thumbnail?.height,
+                    width: thumbnail?.width,
+                  },
+                };
+
+                // Add the processed image to imageCrop
+                imageCrop.push(galleryImage);
+              } catch (error) {
+                console.log(error);
+                throw error; // rethrow to stop further execution
+              }
+            }
+          };
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
             const formdata = new FormData();
             formdata.append('file', values?.dragger[0].originFileObj);
             formdata &&
               addImage({ data: formdata, calendarId })
                 .unwrap()
-                .then((response) => {
+                .then(async (response) => {
                   if (featureFlags.imageCropFeature) {
                     let entityId = response?.data?.original?.entityId;
-                    imageCrop = {
-                      ...imageCrop,
-                      original: {
-                        ...imageCrop?.original,
-                        entityId,
+                    imageCrop = [
+                      {
+                        large: imageCrop[0]?.large,
+                        thumbnail: imageCrop[0]?.thumbnail,
+                        isMain: true,
+                        original: {
+                          entityId,
+                          height: response?.data?.height,
+                          width: response?.data?.width,
+                        },
                       },
-                    };
+                    ];
                   } else
-                    imageCrop = {
-                      ...imageCrop,
-                      original: {
-                        ...imageCrop?.original,
-                        entityId: response?.data?.original?.entityId,
-                        height: response?.data?.height,
-                        width: response?.data?.width,
+                    imageCrop = [
+                      {
+                        large: imageCrop[0]?.large,
+                        thumbnail: imageCrop[0]?.thumbnail,
+                        isMain: true,
+                        original: {
+                          entityId: response?.data?.original?.entityId,
+                          height: response?.data?.height,
+                          width: response?.data?.width,
+                        },
                       },
-                    };
+                    ];
+
+                  if (values.multipleImagesCrop?.length > 0) await uploadImageList();
                   placeObj['image'] = imageCrop;
                   addUpdatePlaceApiHandler(placeObj, postalObj)
                     .then((id) => resolve(id))
@@ -615,8 +677,10 @@ function CreateNewPlace() {
                   element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
                 });
           } else {
+            if (values.multipleImagesCrop?.length > 0) await uploadImageList();
             if (values?.draggerWrap) {
-              if (values?.dragger && values?.dragger?.length == 0) placeObj['image'] = null;
+              if (values?.dragger && values?.dragger?.length == 0 && values.multipleImagesCrop?.length == 0)
+                placeObj['image'] = null;
               else placeObj['image'] = imageCrop;
             }
 
@@ -884,28 +948,59 @@ function CreateNewPlace() {
               .catch((error) => console.log(error));
             form.setFieldValue(formFieldNames.CONTAINED_IN_PLACE, placeData?.containedInPlace?.entityId);
           }
-          if (placeData?.image) {
-            form.setFieldsValue({
-              imageCrop: {
+          if (placeData?.image?.length > 0) {
+            const mainImage = placeData.image.find((image) => image?.isMain) || null;
+            const imageGalleryImages = placeData.image.filter((image) => !image?.isMain);
+
+            if (mainImage) {
+              form.setFieldsValue({
+                imageCrop: {
+                  large: {
+                    x: mainImage?.large?.xCoordinate,
+                    y: mainImage?.large?.yCoordinate,
+                    height: mainImage?.large?.height,
+                    width: mainImage?.large?.width,
+                  },
+                  original: {
+                    entityId: mainImage?.original?.entityId ?? null,
+                    height: mainImage?.original?.height,
+                    width: mainImage?.original?.width,
+                  },
+                  thumbnail: {
+                    x: mainImage?.thumbnail?.xCoordinate,
+                    y: mainImage?.thumbnail?.yCoordinate,
+                    height: mainImage?.thumbnail?.height,
+                    width: mainImage?.thumbnail?.width,
+                  },
+                },
+              });
+            }
+
+            if (imageGalleryImages.length > 0) {
+              const galleryImages = imageGalleryImages.map((image) => ({
                 large: {
-                  x: placeData?.image?.large?.xCoordinate,
-                  y: placeData?.image?.large?.yCoordinate,
-                  height: placeData?.image?.large?.height,
-                  width: placeData?.image?.large?.width,
+                  x: image?.large?.xCoordinate,
+                  y: image?.large?.yCoordinate,
+                  height: image?.large?.height,
+                  width: image?.large?.width,
                 },
                 original: {
-                  entityId: placeData?.image?.original?.entityId ?? null,
-                  height: placeData?.image?.original?.height,
-                  width: placeData?.image?.original?.width,
+                  entityId: image?.original?.entityId ?? null,
+                  height: image?.original?.height,
+                  width: image?.original?.width,
                 },
                 thumbnail: {
-                  x: placeData?.image?.thumbnail?.xCoordinate,
-                  y: placeData?.image?.thumbnail?.yCoordinate,
-                  height: placeData?.image?.thumbnail?.height,
-                  width: placeData?.image?.thumbnail?.width,
+                  x: image?.thumbnail?.xCoordinate,
+                  y: image?.thumbnail?.yCoordinate,
+                  height: image?.thumbnail?.height,
+                  width: image?.thumbnail?.width,
                 },
-              },
-            });
+              }));
+
+              form.setFieldsValue({
+                multipleImagesCrop: galleryImages,
+              });
+            }
           }
           if (placeData?.containsPlace?.length > 0) {
             let initialContainsPlace = placeData?.containsPlace?.map((place) => {
@@ -942,28 +1037,59 @@ function CreateNewPlace() {
           getArtsDataPlace(sourceId);
         }
 
-        if (externalCalendarEntityData[0]?.image) {
-          form.setFieldsValue({
-            imageCrop: {
+        if (externalCalendarEntityData[0]?.image?.length > 0) {
+          const mainImage = externalCalendarEntityData[0].image.find((image) => image?.isMain) || null;
+          const imageGalleryImages = externalCalendarEntityData[0].image.filter((image) => !image?.isMain);
+
+          if (mainImage) {
+            form.setFieldsValue({
+              imageCrop: {
+                large: {
+                  x: mainImage?.large?.xCoordinate,
+                  y: mainImage?.large?.yCoordinate,
+                  height: mainImage?.large?.height,
+                  width: mainImage?.large?.width,
+                },
+                original: {
+                  entityId: mainImage?.original?.entityId ?? null,
+                  height: mainImage?.original?.height,
+                  width: mainImage?.original?.width,
+                },
+                thumbnail: {
+                  x: mainImage?.thumbnail?.xCoordinate,
+                  y: mainImage?.thumbnail?.yCoordinate,
+                  height: mainImage?.thumbnail?.height,
+                  width: mainImage?.thumbnail?.width,
+                },
+              },
+            });
+          }
+
+          if (imageGalleryImages.length > 0) {
+            const galleryImages = imageGalleryImages.map((image) => ({
               large: {
-                x: externalCalendarEntityData[0]?.image?.large?.xCoordinate,
-                y: externalCalendarEntityData[0]?.image?.large?.yCoordinate,
-                height: externalCalendarEntityData[0]?.image?.large?.height,
-                width: externalCalendarEntityData[0]?.image?.large?.width,
+                x: image?.large?.xCoordinate,
+                y: image?.large?.yCoordinate,
+                height: image?.large?.height,
+                width: image?.large?.width,
               },
               original: {
-                entityId: externalCalendarEntityData[0]?.image?.original?.entityId ?? null,
-                height: externalCalendarEntityData[0]?.image?.original?.height,
-                width: externalCalendarEntityData[0]?.image?.original?.width,
+                entityId: image?.original?.entityId ?? null,
+                height: image?.original?.height,
+                width: image?.original?.width,
               },
               thumbnail: {
-                x: externalCalendarEntityData[0]?.image?.thumbnail?.xCoordinate,
-                y: externalCalendarEntityData[0]?.image?.thumbnail?.yCoordinate,
-                height: externalCalendarEntityData[0]?.image?.thumbnail?.height,
-                width: externalCalendarEntityData[0]?.image?.thumbnail?.width,
+                x: image?.thumbnail?.xCoordinate,
+                y: image?.thumbnail?.yCoordinate,
+                height: image?.thumbnail?.height,
+                width: image?.thumbnail?.width,
               },
-            },
-          });
+            }));
+
+            form.setFieldsValue({
+              multipleImagesCrop: galleryImages,
+            });
+          }
         }
 
         if (externalCalendarEntityData[0]?.place?.entityId) {
@@ -1664,12 +1790,12 @@ function CreateNewPlace() {
                 </Form.Item>
                 <Form.Item
                   data-cy="form-item-place-image-title"
-                  label={t('dashboard.places.createNew.addPlace.image.image')}
+                  label={t('dashboard.places.createNew.addPlace.image.mainImage')}
                   name={formFieldNames.DRAGGER_WRAP}
                   className="draggerWrap"
                   initialValue={
                     placeData?.image
-                      ? placeData?.image?.original?.uri
+                      ? mainImageData?.original?.uri
                       : externalCalendarEntityId &&
                         externalCalendarEntityData?.length > 0 &&
                         externalCalendarEntityData[0].image &&
@@ -1687,8 +1813,8 @@ function CreateNewPlace() {
                           if (
                             (getFieldValue(formFieldNames.DRAGGER) != undefined &&
                               getFieldValue(formFieldNames.DRAGGER)?.length > 0) ||
-                            (placeData?.image?.original?.uri && !getFieldValue(formFieldNames.DRAGGER)) ||
-                            (placeData?.image?.original?.uri && getFieldValue(formFieldNames.DRAGGER)?.length > 0)
+                            (mainImageData?.original?.uri && !getFieldValue(formFieldNames.DRAGGER)) ||
+                            (mainImageData?.original?.uri && getFieldValue(formFieldNames.DRAGGER)?.length > 0)
                           ) {
                             return Promise.resolve();
                           } else
@@ -1710,14 +1836,14 @@ function CreateNewPlace() {
                     data-cy="image-upload-place"
                     imageUrl={
                       placeId
-                        ? placeData?.image?.large?.uri
+                        ? mainImageData?.large?.uri
                         : externalCalendarEntityId &&
                           externalCalendarEntityData?.length > 0 &&
                           externalCalendarEntityData[0]?.image?.large?.uri
                     }
                     originalImageUrl={
                       placeId
-                        ? placeData?.image?.original?.uri
+                        ? mainImageData?.original?.uri
                         : externalCalendarEntityId &&
                           externalCalendarEntityData?.length > 0 &&
                           externalCalendarEntityData[0]?.image?.original?.uri
@@ -1729,7 +1855,7 @@ function CreateNewPlace() {
                     form={form}
                     eventImageData={
                       placeId
-                        ? placeData?.image
+                        ? mainImageData
                         : externalCalendarEntityId &&
                           externalCalendarEntityData?.length > 0 &&
                           externalCalendarEntityData[0]?.image
@@ -1745,6 +1871,25 @@ function CreateNewPlace() {
                         : null
                     }
                     isCrop={featureFlags.imageCropFeature}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label={t('dashboard.places.createNew.addPlace.image.additionalImages')}
+                  data-cy="form-item-event-multiple-image"
+                  hidden={!imageConfig?.enableGallery}>
+                  <MultipleImageUpload
+                    form={form}
+                    largeAspectRatio={
+                      currentCalendarData?.imageConfig?.length > 0
+                        ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio
+                        : null
+                    }
+                    thumbnailAspectRatio={
+                      currentCalendarData?.imageConfig?.length > 0
+                        ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio
+                        : null
+                    }
+                    eventImageData={placeData?.image?.filter((image) => !image?.isMain)}
                   />
                 </Form.Item>
                 {allTaxonomyData?.data?.map((taxonomy, index) => {

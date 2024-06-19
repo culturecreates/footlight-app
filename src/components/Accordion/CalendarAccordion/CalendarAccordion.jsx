@@ -90,10 +90,24 @@ function CalendarAccordion(props) {
       .unwrap()
       .then((response) => {
         if (type == 'organizers') {
-          setOrganizersList(treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS));
+          setOrganizersList(
+            treeEntitiesOption(
+              response?.map((v) => ({ ...v, image: v?.image?.find((image) => image?.isMain) })),
+              user,
+              calendarContentLanguage,
+              sourceOptions.CMS,
+            ),
+          );
         }
         if (type == 'people') {
-          setPeopleList(treeEntitiesOption(response, user, calendarContentLanguage, sourceOptions.CMS));
+          setPeopleList(
+            treeEntitiesOption(
+              response?.map((v) => ({ ...v, image: v?.image?.find((image) => image?.isMain) })),
+              user,
+              calendarContentLanguage,
+              sourceOptions.CMS,
+            ),
+          );
         }
       })
       .catch((error) => console.log(error));
@@ -111,13 +125,27 @@ function CalendarAccordion(props) {
 
   useEffect(() => {
     if (initialEntities && currentCalendarData) {
-      setOrganizersList(treeEntitiesOption(initialEntities, user, calendarContentLanguage, sourceOptions.CMS));
+      setOrganizersList(
+        treeEntitiesOption(
+          initialEntities?.map((v) => ({ ...v, image: v?.image?.find((image) => image?.isMain) })),
+          user,
+          calendarContentLanguage,
+          sourceOptions.CMS,
+        ),
+      );
     }
   }, [initialEntityLoading, currentCalendarData]);
 
   useEffect(() => {
     if (initialPersonEntities && currentCalendarData) {
-      setPeopleList(treeEntitiesOption(initialPersonEntities, user, calendarContentLanguage, sourceOptions.CMS));
+      setPeopleList(
+        treeEntitiesOption(
+          initialPersonEntities?.map((v) => ({ ...v, image: v?.image?.find((image) => image?.isMain) })),
+          user,
+          calendarContentLanguage,
+          sourceOptions.CMS,
+        ),
+      );
     }
   }, [initialPersonEntityLoading, currentCalendarData]);
 
@@ -170,7 +198,11 @@ function CalendarAccordion(props) {
           if (response?.data?.length > 0)
             setSelectedPeople(
               treeEntitiesOption(
-                response?.data?.map((v) => ({ ...v, type: entitiesClass.people })),
+                response?.data?.map((v) => ({
+                  ...v,
+                  type: entitiesClass.people,
+                  image: v?.image?.find((image) => image?.isMain),
+                })),
                 user,
                 calendarContentLanguage,
                 sourceOptions.CMS,

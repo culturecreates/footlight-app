@@ -267,38 +267,36 @@ export const calendarSettingsFormFields = {
     },
     {
       name: '',
-      label: (
-        <Translation>{(t) => t('dashboard.settings.calendarSettings.imageAspectRatio.imageAspectRatio')}</Translation>
-      ),
-      field: ({
-        t,
-        aspectRatios,
-        //  customRatio, setCustomRatio, setAspectRatioOptions
-      }) => {
-        //Custom aspect ratio has been removed as per https://github.com/culturecreates/footlight-app/issues/635#issuecomment-2073409623
-
-        // const addItem = (e, type) => {
-        //   e.preventDefault();
-        //   if (aspectRatios.find((item) => item.value === customRatio[type])) return;
-        //   else
-        //     setAspectRatioOptions([
-        //       ...aspectRatios,
-        //       { label: customRatio[type], value: customRatio[type], title: customRatio[type] },
-        //     ]);
-        //   setCustomRatio({
-        //     large: '',
-        //     thumbnail: '',
-        //   });
-        // };
+      label: '',
+      field: ({ t, aspectRatios }) => {
         return (
           <Row gutter={[16, 0]}>
+            <Col>
+              <p className="calendar-settings-title">
+                <Translation>{(t) => t('dashboard.settings.calendarSettings.siteImageSettings.title')}</Translation>
+              </p>
+            </Col>
+            <Col>
+              <p className="calendar-settings-description">
+                <Translation>
+                  {(t) => t('dashboard.settings.calendarSettings.siteImageSettings.description')}
+                </Translation>
+              </p>
+            </Col>
+            <Col span={24}>
+              <span className="calendar-settings-label calendar-thumbnail-settings-required">
+                <Translation>
+                  {(t) => t('dashboard.settings.calendarSettings.siteImageSettings.thumbnailSettings')}
+                </Translation>
+              </span>
+            </Col>
             <Col span={12}>
               <Form.Item
-                name={['imageAspectRatio', 'large']}
+                name={['imageAspectRatio', 'thumbnail']}
                 className="calendar-settings-small-label"
-                label={t('dashboard.settings.calendarSettings.imageAspectRatio.large')}
+                label={t('dashboard.settings.calendarSettings.siteImageSettings.aspectRatio')}
                 rules={[REQUIRED_MESSAGE]}
-                data-cy="form-item-image-ratio-large">
+                data-cy="form-item-image-ratio-thumbnail">
                 <TreeSelectOption
                   size="large"
                   multiple={false}
@@ -309,26 +307,6 @@ export const calendarSettingsFormFields = {
                   notFoundContent={<NoContent />}
                   clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                   treeData={aspectRatios}
-                  // dropdownRender={(menu) => (
-                  //   <>
-                  //     {menu}
-                  //     <Divider style={{ margin: '8px 0' }} />
-                  //     <Space style={{ padding: '0 8px 4px' }}>
-                  //       <StyledInput
-                  //         value={customRatio.large}
-                  //         onChange={(e) =>
-                  //           setCustomRatio({
-                  //             ...customRatio,
-                  //             large: e.target.value,
-                  //           })
-                  //         }
-                  //       />
-                  //       <Button type="text" icon={<PlusOutlined />} onClick={(e) => addItem(e, 'large')}>
-                  //         {t('dashboard.settings.calendarSettings.imageAspectRatio.custom')}
-                  //       </Button>
-                  //     </Space>
-                  //   </>
-                  // )}
                   data-cy="treeselect-calendar-image-aspect-ratio"
                   tagRender={(props) => {
                     const { closable, onClose, label } = props;
@@ -347,10 +325,38 @@ export const calendarSettingsFormFields = {
             </Col>
             <Col span={12}>
               <Form.Item
-                name={['imageAspectRatio', 'thumbnail']}
+                name={['imageMaxWidth', 'thumbnail']}
                 className="calendar-settings-small-label"
-                label={t('dashboard.settings.calendarSettings.imageAspectRatio.thumbnail')}
-                data-cy="form-item-image-ratio-thumbnail"
+                label={t('dashboard.settings.calendarSettings.siteImageSettings.maximumWidth')}
+                data-cy="form-item-image-max-width-thumbnail"
+                rules={[REQUIRED_MESSAGE]}>
+                <StyledInput
+                  placeholder={t('dashboard.settings.calendarSettings.placeholders.imageMaxWidth')}
+                  data-cy="input-calendar-image-max-width-thumbnail"
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        );
+      },
+      rules: [],
+      hidden: false,
+      required: true,
+    },
+    {
+      name: '',
+      label: (
+        <Translation>{(t) => t('dashboard.settings.calendarSettings.siteImageSettings.largeSettings')}</Translation>
+      ),
+      field: ({ t, aspectRatios }) => {
+        return (
+          <Row gutter={[16, 0]}>
+            <Col span={12}>
+              <Form.Item
+                name={['imageAspectRatio', 'large']}
+                className="calendar-settings-small-label"
+                label={t('dashboard.settings.calendarSettings.siteImageSettings.aspectRatio')}
+                data-cy="form-item-image-ratio-large"
                 rules={[REQUIRED_MESSAGE]}>
                 <TreeSelectOption
                   size="large"
@@ -362,26 +368,6 @@ export const calendarSettingsFormFields = {
                   notFoundContent={<NoContent />}
                   clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                   treeData={aspectRatios}
-                  // dropdownRender={(menu) => (
-                  //   <>
-                  //     {menu}
-                  //     <Divider style={{ margin: '8px 0' }} />
-                  //     <Space style={{ padding: '0 8px 4px' }}>
-                  //       <StyledInput
-                  //         value={customRatio.thumbnail}
-                  //         onChange={(e) =>
-                  //           setCustomRatio({
-                  //             ...customRatio,
-                  //             thumbnail: e.target.value,
-                  //           })
-                  //         }
-                  //       />
-                  //       <Button type="text" icon={<PlusOutlined />} onClick={(e) => addItem(e, 'thumbnail')}>
-                  //         {t('dashboard.settings.calendarSettings.imageAspectRatio.custom')}
-                  //       </Button>
-                  //     </Space>
-                  //   </>
-                  // )}
                   data-cy="treeselect-calendar-filter-events"
                   tagRender={(props) => {
                     const { closable, onClose, label } = props;
@@ -398,24 +384,15 @@ export const calendarSettingsFormFields = {
                 />
               </Form.Item>
             </Col>
-          </Row>
-        );
-      },
-      rules: [],
-      hidden: false,
-      required: true,
-    },
-    {
-      name: '',
-      label: <Translation>{(t) => t('dashboard.settings.calendarSettings.imageMaxWidth.imageMaxWidth')}</Translation>,
-      field: ({ t }) => {
-        return (
-          <Row gutter={[16, 0]}>
             <Col span={12}>
               <Form.Item
                 name={['imageMaxWidth', 'large']}
                 className="calendar-settings-small-label"
-                label={<Translation>{(t) => t('dashboard.settings.calendarSettings.imageMaxWidth.large')}</Translation>}
+                label={
+                  <Translation>
+                    {(t) => t('dashboard.settings.calendarSettings.siteImageSettings.maximumWidth')}
+                  </Translation>
+                }
                 data-cy="form-item-image-max-width-large"
                 rules={[REQUIRED_MESSAGE]}>
                 <StyledInput
@@ -424,18 +401,21 @@ export const calendarSettingsFormFields = {
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
-              <Form.Item
-                name={['imageMaxWidth', 'thumbnail']}
-                className="calendar-settings-small-label"
-                label={t('dashboard.settings.calendarSettings.imageMaxWidth.thumbnail')}
-                data-cy="form-item-image-max-width-thumbnail"
-                rules={[REQUIRED_MESSAGE]}>
-                <StyledInput
-                  placeholder={t('dashboard.settings.calendarSettings.placeholders.imageMaxWidth')}
-                  data-cy="input-calendar-image-max-width-thumbnail"
-                />
-              </Form.Item>
+            <Col span={24}>
+              <Row justify={'start'} align={'top'} gutter={[8, 0]}>
+                <Col span={3}>
+                  <Form.Item valuePropName="checked" name="enableGallery">
+                    <StyledSwitch />
+                  </Form.Item>
+                </Col>
+                <Col>
+                  <span
+                    style={{ color: '#222732', minHeight: '32px', display: 'flex', alignItems: 'center' }}
+                    data-cy="span-featured-event-text">
+                    {t('dashboard.settings.calendarSettings.siteImageSettings.addImageGallery')}
+                  </span>
+                </Col>
+              </Row>
             </Col>
           </Row>
         );

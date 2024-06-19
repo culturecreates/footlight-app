@@ -104,6 +104,7 @@ import {
 } from '../../../redux/reducer/languageLiteralSlice';
 import { removeUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 import { groupEventsByDate } from '../../../utils/groupSubEventsConfigByDate';
+import MultipleImageUpload from '../../../components/MultipleImageUpload';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
@@ -227,6 +228,9 @@ function AddEvent() {
       }),
     );
 
+  let imageConfig = currentCalendarData?.imageConfig?.length > 0 && currentCalendarData?.imageConfig[0];
+  let mainImageData = eventData?.image?.find((image) => image?.isMain) || null;
+
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const dateTimeConverter = (date, time) => {
     let dateSelected = date.format('DD-MM-YYYY');
@@ -347,7 +351,7 @@ function AddEvent() {
                 : []),
             ]),
           ])
-          .then(() => {
+          .then(async () => {
             let fallbackStatus = activeFallbackFieldsInfo;
             if (clear) {
               dispatch(setLanguageLiteralBannerDisplayStatus(false));
@@ -729,25 +733,77 @@ function AddEvent() {
               subEventConfiguration: eventData?.subEventConfiguration,
             };
 
-            let imageCrop = form.getFieldValue('imageCrop');
-            imageCrop = {
-              large: {
-                xCoordinate: imageCrop?.large?.x,
-                yCoordinate: imageCrop?.large?.y,
-                height: imageCrop?.large?.height,
-                width: imageCrop?.large?.width,
+            let imageCrop = [form.getFieldValue('imageCrop')];
+            imageCrop = [
+              {
+                large: {
+                  xCoordinate: imageCrop[0]?.large?.x,
+                  yCoordinate: imageCrop[0]?.large?.y,
+                  height: imageCrop[0]?.large?.height,
+                  width: imageCrop[0]?.large?.width,
+                },
+                thumbnail: {
+                  xCoordinate: imageCrop[0]?.thumbnail?.x,
+                  yCoordinate: imageCrop[0]?.thumbnail?.y,
+                  height: imageCrop[0]?.thumbnail?.height,
+                  width: imageCrop[0]?.thumbnail?.width,
+                },
+                original: {
+                  entityId: imageCrop[0]?.original?.entityId,
+                  height: imageCrop[0]?.original?.height,
+                  width: imageCrop[0]?.original?.width,
+                },
+                isMain: true,
               },
-              thumbnail: {
-                xCoordinate: imageCrop?.thumbnail?.x,
-                yCoordinate: imageCrop?.thumbnail?.y,
-                height: imageCrop?.thumbnail?.height,
-                width: imageCrop?.thumbnail?.width,
-              },
-              original: {
-                entityId: imageCrop?.original?.entityId,
-                height: imageCrop?.original?.height,
-                width: imageCrop?.original?.width,
-              },
+            ];
+
+            const uploadImageList = async () => {
+              for (let i = 0; i < values.multipleImagesCrop.length; i++) {
+                const file = values.multipleImagesCrop[i]?.originFileObj;
+                if (!file) {
+                  if (values.multipleImagesCrop[i]?.cropValues)
+                    imageCrop.push(values.multipleImagesCrop[i]?.cropValues);
+                  else imageCrop.push(values.multipleImagesCrop[i]);
+                  continue;
+                }
+
+                const formdata = new FormData();
+                formdata.append('file', file);
+
+                try {
+                  const response = await addImage({ data: formdata, calendarId }).unwrap();
+
+                  // Process each image in the list
+                  const { large, thumbnail } = values.multipleImagesCrop[i]?.cropValues || {};
+                  const { original, height, width } = response?.data || {};
+
+                  const galleryImage = {
+                    large: {
+                      xCoordinate: large?.x,
+                      yCoordinate: large?.y,
+                      height: large?.height,
+                      width: large?.width,
+                    },
+                    original: {
+                      entityId: original?.entityId ?? null,
+                      height,
+                      width,
+                    },
+                    thumbnail: {
+                      xCoordinate: thumbnail?.x,
+                      yCoordinate: thumbnail?.y,
+                      height: thumbnail?.height,
+                      width: thumbnail?.width,
+                    },
+                  };
+
+                  // Add the processed image to imageCrop
+                  imageCrop.push(galleryImage);
+                } catch (error) {
+                  console.log(error);
+                  throw error; // rethrow to stop further execution
+                }
+              }
             };
 
             if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
@@ -756,32 +812,42 @@ function AddEvent() {
               formdata &&
                 addImage({ data: formdata, calendarId })
                   .unwrap()
-                  .then((response) => {
+                  .then(async (response) => {
                     if (featureFlags.imageCropFeature) {
                       let entityId = response?.data?.original?.entityId;
-                      imageCrop = {
-                        ...imageCrop,
-                        original: {
-                          entityId,
-                          height: response?.data?.height,
-                          width: response?.data?.width,
+                      imageCrop = [
+                        {
+                          large: imageCrop[0]?.large,
+                          thumbnail: imageCrop[0]?.thumbnail,
+                          isMain: true,
+                          original: {
+                            entityId,
+                            height: response?.data?.height,
+                            width: response?.data?.width,
+                          },
                         },
-                      };
+                      ];
                     } else
-                      imageCrop = {
-                        ...imageCrop,
-                        original: {
-                          ...imageCrop?.original,
-                          entityId: response?.data?.original?.entityId,
-                          height: response?.data?.height,
-                          width: response?.data?.width,
+                      imageCrop = [
+                        {
+                          large: imageCrop[0]?.large,
+                          thumbnail: imageCrop[0]?.thumbnail,
+                          isMain: true,
+                          original: {
+                            entityId: response?.data?.original?.entityId,
+                            height: response?.data?.height,
+                            width: response?.data?.width,
+                          },
                         },
-                      };
+                      ];
+
+                    if (values.multipleImagesCrop?.length > 0) await uploadImageList();
                     eventObj['image'] = imageCrop;
                     addUpdateEventApiHandler(eventObj, toggle)
                       .then((id) => resolve(id))
                       .catch((error) => {
                         reject(error);
+
                         console.log(error);
                       });
                   })
@@ -791,8 +857,10 @@ function AddEvent() {
                     element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
                   });
             } else {
+              if (values.multipleImagesCrop?.length > 0) await uploadImageList();
               if (values?.draggerWrap) {
-                if (values?.dragger && values?.dragger?.length == 0) eventObj['image'] = null;
+                if (values?.dragger && values?.dragger?.length == 0 && values.multipleImagesCrop?.length == 0)
+                  eventObj['image'] = null;
                 else eventObj['image'] = imageCrop;
               }
 
@@ -1474,7 +1542,7 @@ function AddEvent() {
               name: organizer?.entity?.name,
               type: organizer?.type,
               logo: organizer?.entity?.logo,
-              image: organizer?.entity?.image,
+              image: organizer?.entity?.image?.find((image) => image?.isMain),
               contactPoint: organizer?.entity?.contactPoint,
               creator: organizer?.entity?.creator,
             };
@@ -1497,7 +1565,7 @@ function AddEvent() {
               name: performer?.entity?.name,
               type: performer?.type,
               logo: performer?.entity?.logo,
-              image: performer?.entity?.image,
+              image: performer?.entity?.image?.find((image) => image?.isMain),
               creator: performer?.entity?.creator,
             };
           });
@@ -1520,7 +1588,7 @@ function AddEvent() {
               name: supporter?.entity?.name,
               type: supporter?.type,
               logo: supporter?.entity?.logo,
-              image: supporter?.entity?.image,
+              image: supporter?.entity?.image?.find((image) => image?.isMain),
               creator: supporter?.entity?.creator,
             };
           });
@@ -1640,28 +1708,59 @@ function AddEvent() {
           };
           setFormValue(obj);
         }
-        if (eventData?.image) {
-          form.setFieldsValue({
-            imageCrop: {
+        if (eventData?.image?.length > 0) {
+          const mainImage = eventData.image.find((image) => image?.isMain) || null;
+          const imageGalleryImages = eventData.image.filter((image) => !image?.isMain);
+
+          if (mainImage) {
+            form.setFieldsValue({
+              imageCrop: {
+                large: {
+                  x: mainImage?.large?.xCoordinate,
+                  y: mainImage?.large?.yCoordinate,
+                  height: mainImage?.large?.height,
+                  width: mainImage?.large?.width,
+                },
+                original: {
+                  entityId: mainImage?.original?.entityId ?? null,
+                  height: mainImage?.original?.height,
+                  width: mainImage?.original?.width,
+                },
+                thumbnail: {
+                  x: mainImage?.thumbnail?.xCoordinate,
+                  y: mainImage?.thumbnail?.yCoordinate,
+                  height: mainImage?.thumbnail?.height,
+                  width: mainImage?.thumbnail?.width,
+                },
+              },
+            });
+          }
+
+          if (imageGalleryImages.length > 0) {
+            const galleryImages = imageGalleryImages.map((image) => ({
               large: {
-                x: eventData?.image?.large?.xCoordinate,
-                y: eventData?.image?.large?.yCoordinate,
-                height: eventData?.image?.large?.height,
-                width: eventData?.image?.large?.width,
+                x: image?.large?.xCoordinate,
+                y: image?.large?.yCoordinate,
+                height: image?.large?.height,
+                width: image?.large?.width,
               },
               original: {
-                entityId: eventData?.image?.original?.entityId ?? null,
-                height: eventData?.image?.original?.height,
-                width: eventData?.image?.original?.width,
+                entityId: image?.original?.entityId ?? null,
+                height: image?.original?.height,
+                width: image?.original?.width,
               },
               thumbnail: {
-                x: eventData?.image?.thumbnail?.xCoordinate,
-                y: eventData?.image?.thumbnail?.yCoordinate,
-                height: eventData?.image?.thumbnail?.height,
-                width: eventData?.image?.thumbnail?.width,
+                x: image?.thumbnail?.xCoordinate,
+                y: image?.thumbnail?.yCoordinate,
+                height: image?.thumbnail?.height,
+                width: image?.thumbnail?.width,
               },
-            },
-          });
+            }));
+
+            form.setFieldsValue({
+              multipleImagesCrop: galleryImages,
+            });
+          }
         }
       } else {
         navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}/${eventId}`, {
@@ -3438,7 +3537,7 @@ function AddEvent() {
               </Form.Item>
 
               <Form.Item
-                label={t('dashboard.events.addEditEvent.otherInformation.image.title')}
+                label={t('dashboard.events.addEditEvent.otherInformation.image.mainImage')}
                 name="draggerWrap"
                 className="draggerWrap"
                 required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.IMAGE)}
@@ -3449,7 +3548,7 @@ function AddEvent() {
                       : true
                     : false
                 }
-                initialValue={eventData?.image && eventData?.image?.original?.uri}
+                initialValue={mainImageData && mainImageData?.original?.uri}
                 {...(isAddImageError && {
                   help: t('dashboard.events.addEditEvent.validations.errorImage'),
                   validateStatus: 'error',
@@ -3459,8 +3558,8 @@ function AddEvent() {
                     validator() {
                       if (
                         (getFieldValue('dragger') != undefined && getFieldValue('dragger')?.length > 0) ||
-                        (eventData?.image?.original?.uri && !getFieldValue('dragger')) ||
-                        (eventData?.image?.original?.uri && getFieldValue('dragger')?.length > 0)
+                        (mainImageData?.original?.uri && !getFieldValue('dragger')) ||
+                        (mainImageData?.original?.uri && getFieldValue('dragger')?.length > 0)
                       ) {
                         return Promise.resolve();
                       } else
@@ -3478,14 +3577,14 @@ function AddEvent() {
                   </Col>
                 </Row>
                 <ImageUpload
-                  imageUrl={eventData?.image?.large?.uri}
-                  originalImageUrl={eventData?.image?.original?.uri}
+                  imageUrl={mainImageData?.large?.uri}
+                  originalImageUrl={mainImageData?.original?.uri}
                   imageReadOnly={false}
                   preview={true}
                   setImageCropOpen={setImageCropOpen}
                   imageCropOpen={imageCropOpen}
                   form={form}
-                  eventImageData={eventData?.image}
+                  eventImageData={mainImageData}
                   largeAspectRatio={
                     currentCalendarData?.imageConfig?.length > 0
                       ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio
@@ -3497,6 +3596,26 @@ function AddEvent() {
                       : null
                   }
                   isCrop={featureFlags.imageCropFeature}
+                />
+              </Form.Item>
+              <Form.Item
+                name="multipleImages"
+                label={t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
+                data-cy="form-item-event-multiple-image"
+                hidden={!imageConfig?.enableGallery}>
+                <MultipleImageUpload
+                  form={form}
+                  largeAspectRatio={
+                    currentCalendarData?.imageConfig?.length > 0
+                      ? currentCalendarData?.imageConfig[0]?.large?.aspectRatio
+                      : null
+                  }
+                  thumbnailAspectRatio={
+                    currentCalendarData?.imageConfig?.length > 0
+                      ? currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio
+                      : null
+                  }
+                  eventImageData={eventData?.image?.filter((image) => !image?.isMain)}
                 />
               </Form.Item>
 

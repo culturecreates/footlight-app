@@ -1,0 +1,73 @@
+.multiple-image-upload .ant-upload-select {
+  background: #ffffff !important;
+  border: 1px dashed #b6c1c9 !important;
+  height: 80px;
+  display: flex;
+  align-items: center;
+}
+
+.multiple-image-upload-wrapper .image-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  height: 66px;
+  padding: 8px;
+  margin-top: 8px;
+}
+.multiple-image-upload-wrapper .image-footer .image-contents,
+.multiple-image-upload-wrapper .image-footer .image-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.multiple-image-upload-wrapper .image-footer .image-actions {
+  cursor: pointer;
+}
+.multiple-image-upload-wrapper .image-footer .image-name {
+  white-space: nowrap;
+  cursor: pointer;
+}
+.multiple-image-upload-wrapper .image-footer .image-thumbnail {
+  display: block;
+  height: 48px;
+  min-height: 48px;
+  overflow: hidden;
+  /* width: 48px; */
+}
+
+.multiple-image-upload-wrapper .image-footer .edit-image {
+  border: 1px solid #607efc;
+  border-radius: 2px;
+  padding: 2px 4px;
+}
+
+.multiple-image-upload-wrapper .multiple-image-upload .upload-helper-text {
+  color: #646d7b;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+@media (max-width: 480px) {
+  .multiple-image-upload-wrapper .image-footer .image-name {
+    text-wrap: wrap;
+    font-size: 12px;
+  }
+
+  .multiple-image-upload-wrapper .image-footer .image-actions .span-remove-image > span,
+  .multiple-image-upload-wrapper .image-footer .image-actions .span-edit-image > span {
+    font-size: 12px;
+  }
+
+  .multiple-image-upload-wrapper .multiple-image-upload .upload-helper-text {
+    font-size: 12px;
+  }
+
+  .multiple-image-upload-wrapper .multiple-image-upload .ant-upload {
+    padding: 8px 0 !important;
+  }
+}

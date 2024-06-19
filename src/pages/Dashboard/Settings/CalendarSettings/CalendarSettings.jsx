@@ -42,11 +42,6 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
   const [updateCalendar] = useUpdateCalendarMutation();
   const [addImage] = useAddImageMutation();
 
-  // const [customRatio, setCustomRatio] = React.useState({
-  //   large: '',
-  //   thumbnail: '',
-  // });
-
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const filterOptions = (data, taxonomyClass) => {
@@ -83,7 +78,6 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
   const handleInitialFilters = (data, selectedFilters) => {
     return data?.filter((filter) => selectedFilters?.includes(filter.value))?.map((filter) => filter.value) ?? [];
   };
-  // initialSelectedFilters = ['63a0a47c1c6b6c005aad30da', '6467a0a5137a2200640d6abd'];
 
   initialSelectedFilters = [
     {
@@ -104,10 +98,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
     },
   ];
 
-  const imageConfig =
-    currentCalendarData?.imageConfig?.length > 0
-      ? currentCalendarData?.imageConfig?.filter((config) => config?.entityName == entitiesClass.event)[0]
-      : null;
+  const imageConfig = currentCalendarData?.imageConfig?.length > 0 ? currentCalendarData?.imageConfig[0] : null;
   let aspectRatioSet = new Set([
     '1:1',
     '2:1',
@@ -152,6 +143,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
     },
     calendarLogo: currentCalendarData?.logo?.original?.uri,
     readOnly: currentCalendarData?.mode === calendarModes.READ_ONLY ? true : false,
+    enableGallery: imageConfig?.enableGallery,
   };
 
   const udpateCalendarHandler = (data) => {
@@ -224,7 +216,11 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
             dateFormatDisplay: values.calendarDateFormat,
             imageConfig: [
               {
-                entityName: entitiesClass.event,
+                entityNames: Object.keys(entitiesClass)
+                  .map((key) => {
+                    if (entitiesClass[key] !== entitiesClass.people) return entitiesClass[key];
+                  })
+                  ?.filter((key) => key),
                 large: {
                   aspectRatio: values.imageAspectRatio.large,
                   maxWidth: Number(values.imageMaxWidth.large),
@@ -233,6 +229,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
                   aspectRatio: values.imageAspectRatio.thumbnail,
                   maxWidth: Number(values.imageMaxWidth.thumbnail),
                 },
+                enableGallery: values?.enableGallery ?? false,
               },
             ],
             mode: values.readOnly ? calendarModes.READ_ONLY : calendarModes.READ_WRITE,
