@@ -14,7 +14,7 @@ import MandatoryFields from './MandatoryFields';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import { useSearchParams } from 'react-router-dom';
-import { Prompt } from '../../../hooks/usePrompt';
+import { RouteLeavingGuard } from '../../../hooks/usePrompt';
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -55,11 +55,20 @@ const Settings = () => {
 
   const onTabChange = (key) => {
     // Update tabKey in sessionStorage on tab change
-    if (isFormDirty) setIsFormDirty(false);
-
-    sessionStorage.setItem('tabKey', key);
-    setSearchParams({ tab: key });
-    setTabKey(key);
+    if (isFormDirty) {
+      const confirm = window.confirm(`${t('common.unsavedChanges')}`);
+      if (confirm) {
+        sessionStorage.setItem('tabKey', key);
+        setSearchParams({ tab: key });
+        setTabKey(key);
+        setIsFormDirty(false);
+      }
+    } else {
+      sessionStorage.setItem('tabKey', key);
+      setSearchParams({ tab: key });
+      setTabKey(key);
+      setIsFormDirty(false);
+    }
   };
 
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
@@ -122,8 +131,7 @@ const Settings = () => {
   });
   return (
     <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
-      <Prompt when={isFormDirty} message={t('common.unsavedChanges')} beforeUnload={true} />
-
+      <RouteLeavingGuard isBlocking={isFormDirty} />
       <Row className="settings-wrapper">
         <Col span={24}>
           <h4 className="settings-heading" data-cy="heading-settings-title">

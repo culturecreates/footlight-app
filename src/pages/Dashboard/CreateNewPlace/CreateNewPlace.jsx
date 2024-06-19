@@ -70,7 +70,7 @@ import {
 } from '../../../constants/placeAccessibilityTypeOptions';
 import { urlProtocolCheck } from '../../../components/Input/Common/input.settings';
 import { useAddImageMutation } from '../../../services/image';
-import { Prompt, usePrompt } from '../../../hooks/usePrompt';
+import { RouteLeavingGuard } from '../../../hooks/usePrompt';
 import { useAddPostalAddressMutation, useUpdatePostalAddressMutation } from '../../../services/postalAddress';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequiredFieldNames';
@@ -236,8 +236,6 @@ function CreateNewPlace() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
   const [publishValidateFields, setPublishValidateFields] = useState([]);
-
-  usePrompt(t('common.unsavedChanges'), showDialog);
 
   let externalEntityData = externalCalendarEntityData?.length > 0 && externalCalendarEntityData[0];
   externalEntityData = {
@@ -1111,7 +1109,8 @@ function CreateNewPlace() {
 
   return !isPlaceLoading && !artsDataLoading && !taxonomyLoading && !isEntityDetailsLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-      <Prompt when={showDialog} message={t('common.unsavedChanges')} beforeUnload={true} />
+      <RouteLeavingGuard isBlocking={showDialog} />
+
       <div className="add-edit-wrapper create-new-place-wrapper">
         <Form form={form} layout="vertical" name="place" onValuesChange={onValuesChangeHandler}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">

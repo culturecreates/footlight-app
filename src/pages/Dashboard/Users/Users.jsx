@@ -13,7 +13,6 @@ import StyledInput from '../../../components/Input/Common';
 import CustomModal from '../../../components/Modal/Common/CustomModal';
 import { useGetCurrentUserQuery, useUpdateCurrentUserMutation } from '../../../services/users';
 import { locale } from '../../../constants/localeSupport';
-import { usePrompt } from '../../../hooks/usePrompt';
 import { useSelector, useDispatch } from 'react-redux';
 import { getUserDetails, setUser } from '../../../redux/reducer/userSlice';
 import i18n from 'i18next';
@@ -42,8 +41,6 @@ function Users() {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const [showDialog, setShowDialog] = useState(false);
-
-  usePrompt(t('common.unsavedChanges'), showDialog);
 
   const handleModalCancel = () => {
     form?.setFieldsValue({
