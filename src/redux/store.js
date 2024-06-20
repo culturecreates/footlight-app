@@ -24,6 +24,20 @@ import languageLiteralReducer from './reducer/languageLiteralSlice';
 const persistConfig = {
   key: 'root',
   storage,
+  whitelist: ['user', 'interfaceLanguage', 'selectedCalendar', 'errors', 'languageLiteral'],
+  blacklist: [
+    'eventsApi',
+    'calendarApi',
+    'taxonomyApi',
+    'imageApi',
+    'placesApi',
+    'entitiesApi',
+    'inviteApi',
+    'organizationApi',
+    'peopleApi',
+    'postalAddressApi',
+    'externalSourceApi',
+  ],
 };
 const middlewares = [
   loginApi.middleware,
