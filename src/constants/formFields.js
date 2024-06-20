@@ -390,7 +390,6 @@ export const formFieldValue = [
         {name?.includes(mappedFieldTypes.IMAGE) && (
           <Form.Item
             label={t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
-            className="subheading-wrap"
             data-cy="form-item-event-multiple-image"
             hidden={!enableGallery}>
             <MultipleImageUpload
