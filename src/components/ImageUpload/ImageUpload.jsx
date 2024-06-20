@@ -107,6 +107,9 @@ function ImageUpload(props) {
   };
 
   const onRemove = () => {
+    form.setFieldsValue({
+      imageCrop: null,
+    });
     setImageUrl(false);
   };
 
