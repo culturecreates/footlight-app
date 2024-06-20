@@ -324,17 +324,21 @@ function CalendarSettings() {
     !taxonomyLoading && (
       <div style={{ paddingTop: '24px' }}>
         <Row className="calendar-settings-wrapper" gutter={[0, 18]}>
-          <Col span={22}>
-            <h5 className="calendar-settings-heading" data-cy="heading5-calendar-settings">
-              {t('dashboard.settings.calendarSettings.generalSettings')}
-            </h5>
-          </Col>
-          <Col span={2}>
-            <PrimaryButton
-              label={t('dashboard.events.addEditEvent.saveOptions.save')}
-              data-cy="button-save-calendar-settings"
-              onClick={onSaveHandler}
-            />
+          <Col span={24}>
+            <Row justify={'space-between'}>
+              <Col>
+                <h5 className="calendar-settings-heading" data-cy="heading5-calendar-settings">
+                  {t('dashboard.settings.calendarSettings.generalSettings')}
+                </h5>
+              </Col>
+              <Col>
+                <PrimaryButton
+                  label={t('dashboard.events.addEditEvent.saveOptions.save')}
+                  data-cy="button-save-calendar-settings"
+                  onClick={onSaveHandler}
+                />
+              </Col>
+            </Row>
           </Col>
           <Col span={24}>
             <p className="calendar-settings-description" data-cy="para-calendar-settings-description">
