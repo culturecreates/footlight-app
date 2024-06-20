@@ -40,6 +40,7 @@ import { removeObjectArrayDuplicates } from '../../../utils/removeObjectArrayDup
 import Select from '../../../components/Select';
 import Cookies from 'js-cookie';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { RouteLeavingGuard } from '../../../hooks/usePrompt';
 
 const AddUser = () => {
   const navigate = useNavigate();
@@ -75,6 +76,7 @@ const AddUser = () => {
     searchUserFirstName: false,
   });
   const [selectedCalendars, setSelectedCalendars] = useState([]);
+  const [isFormDirty, setIsFormDirty] = useState(false);
   const [userData, setUserData] = useState({
     firstName: '',
     lastName: '',
@@ -90,6 +92,10 @@ const AddUser = () => {
   const calendar = user?.roles?.filter((calendar) => {
     return calendar?.calendarId === calendarId;
   });
+
+  useEffect(() => {
+    console.log(selectedCalendars);
+  }, [selectedCalendars]);
 
   const [getUser, { isFetching: isUserFetching }] = useLazyGetUserByIdQuery({ sessionId: timestampRef });
   const [getUserSearch] = useLazyGetAllUsersQuery({ sessionId: timestampRef });
@@ -567,12 +573,18 @@ const AddUser = () => {
     }
   };
 
+  const setRouteBlockingFlag = () => {
+    if (!isFormDirty) setIsFormDirty(true);
+  };
+
   return (
     <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
+      <RouteLeavingGuard isBlocking={isFormDirty} />
       <Form
         name="userAdd/Edit"
         initialValues={userData}
         form={formInstance}
+        onValuesChange={setRouteBlockingFlag}
         onFinish={onSaveHandler}
         layout="vertical"
         fields={[
@@ -874,6 +886,7 @@ const AddUser = () => {
                                       form={formInstance}
                                       data-cy="accordion-selected-calendars"
                                       key={index}
+                                      setRouteBlockingFlag={setRouteBlockingFlag}
                                       selectedCalendarId={selectedCalendar?.calendarId}
                                       name={contentLanguageBilingual({
                                         en: selectedCalendar?.name?.en,
