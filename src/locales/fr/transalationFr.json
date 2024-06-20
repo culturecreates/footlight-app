@@ -800,9 +800,9 @@
     },
     "settings": {
       "heading": "Paramètres",
-      "tab2": "Composante du module",
+      "tab2": "Widgets de listage",
       "tab1": "Gestion des utilisateurs",
-      "tab3": "Paramètres du calendrier",
+      "tab3": "Paramètres généraux",
       "tab4": "Champs obligatoires",
       "userManagement": {
         "searchPlaceholder": "Recherche d'utilisateurs",
@@ -973,10 +973,10 @@
         }
       },
       "calendarSettings": {
-        "generalSettings": "Paramètres généraux",
-        "setUpCalendarDescription": "Configurez l'affichage de votre calendrier.",
-        "calendarName": "Nom du calendrier",
-        "calendarLanguage": "Langue du calendrier",
+        "generalSettings": "Paramètres de base",
+        "setUpCalendarDescription": "Configurez l'affichage de votre listage.",
+        "calendarName": "Nom du listage",
+        "calendarLanguage": "Langues",
         "timezone": "Fuseau horaire",
         "timzoneFormats": {
           "Canada/Atlantic": "Heure de l'Atlantique",
@@ -1012,12 +1012,12 @@
           "maximumWidth": "Largeur maximale",
           "addImageGallery": "Ajouter la galerie d'images"
         },
-        "calendarLogo": "Logo du calendrier",
+        "calendarLogo": "Logo",
         "calendarLogoDescription": "Uniquement les fichiers .jpeg et .png sont acceptés.",
-        "calendarWidgetSetup": "Configuration du widget calendrier",
-        "calendarWidgetDescription": "Ajoutez les modèles d'URL nécessaires au bon fonctionnement du widget calendrier. Ces modèles relient la liste des événements affichée sur d'autres sites web aux événements affichés sur votre site.",
+        "calendarWidgetSetup": "Widget de listage",
+        "calendarWidgetDescription": "Ajoutez les modèles d'URL nécessaires au bon fonctionnement du widget. Ces modèles relient la liste des événements affichée sur d'autres sites web aux événements affichés sur votre site.",
         "eventTemplate": "Modèle d'événement",
-        "eventTemplateDescription": "Ajoutez l'URL du modèle pour une page d'événement sur votre site web. Cette URL contient les espaces réservés nécessaires au widget calendrier.",
+        "eventTemplateDescription": "Ajoutez l'URL du modèle pour une page d'événement sur votre site web. Cette URL contient les espaces réservés nécessaires au widget.",
         "searchResultTemplate": "Modèle de résultats de recherche",
         "searchResultTemplateDescription": "Ajoutez l'URL du modèle pour une page de résultats de recherche sur votre site web. Cette URL contient les espaces réservés nécessaires au widget calendrier.",
         "filterPersonalization": "Personnalisation des filtres",
@@ -1027,8 +1027,8 @@
         "people": "Personnes",
         "organizations": "Organisations",
         "readOnly": {
-          "title": "Mettre le calendrier en lecture seule",
-          "description": "Activez cette option pour désactiver l'édition de ce calendrier.",
+          "title": "Mettre en lecture seule",
+          "description": "Activez cette option pour désactiver l'édition.",
           "readOnlyMode": "Lecture seule"
         },
         "placeholders": {
@@ -1051,7 +1051,7 @@
       "mandatoryFields": {
         "title": "Champs obligatoires",
         "availableFields": "Champs disponibles",
-        "description": "Sélectionnez les champs qui doivent être obligatoires dans votre calendrier.",
+        "description": "Sélectionnez les champs obligatoires.",
         "event": "Événement",
         "place": "Lieu",
         "person": "Personne",
