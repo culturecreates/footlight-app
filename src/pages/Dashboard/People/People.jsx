@@ -496,7 +496,7 @@ function People() {
                   <NoContent style={{ height: '200px' }} />
                 )
               ) : (
-                <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <LoadingIndicator data-cy="loading-indicator-people" />
                 </div>
               )}
