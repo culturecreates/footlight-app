@@ -210,17 +210,21 @@ function MandatoryFields() {
     currentCalendarData && (
       <div style={{ paddingTop: '24px' }}>
         <Row gutter={[0, 18]} className="mandatory-fields-wrapper">
-          <Col span={22}>
-            <h5 className="mandatory-fields-heading" data-cy="heading5-mandatory-fields">
-              {t('dashboard.settings.mandatoryFields.title')}
-            </h5>
-          </Col>
-          <Col span={2}>
-            <PrimaryButton
-              label={t('dashboard.events.addEditEvent.saveOptions.save')}
-              data-cy="button-save-mandatory-field"
-              onClick={onSaveHandler}
-            />
+          <Col span={24}>
+            <Row justify={'space-between'}>
+              <Col>
+                <h5 className="mandatory-fields-heading" data-cy="heading5-mandatory-fields">
+                  {t('dashboard.settings.mandatoryFields.title')}
+                </h5>
+              </Col>
+              <Col>
+                <PrimaryButton
+                  label={t('dashboard.events.addEditEvent.saveOptions.save')}
+                  data-cy="button-save-mandatory-field"
+                  onClick={onSaveHandler}
+                />
+              </Col>
+            </Row>
           </Col>
           <Col span={24}>
             <p className="mandatory-fields-description" data-cy="para-mandatory-fields-description">
