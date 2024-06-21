@@ -322,30 +322,31 @@ function CreateNewOrganization() {
               },
             };
           }
-          let imageCrop = [form.getFieldValue('imageCrop')];
-          imageCrop = [
-            {
-              large: {
-                xCoordinate: imageCrop[0]?.large?.x,
-                yCoordinate: imageCrop[0]?.large?.y,
-                height: imageCrop[0]?.large?.height,
-                width: imageCrop[0]?.large?.width,
+          let imageCrop = form.getFieldValue('imageCrop') ? [form.getFieldValue('imageCrop')] : [];
+          if (imageCrop.length > 0) {
+            imageCrop = [
+              {
+                large: {
+                  xCoordinate: imageCrop[0]?.large?.x,
+                  yCoordinate: imageCrop[0]?.large?.y,
+                  height: imageCrop[0]?.large?.height,
+                  width: imageCrop[0]?.large?.width,
+                },
+                thumbnail: {
+                  xCoordinate: imageCrop[0]?.thumbnail?.x,
+                  yCoordinate: imageCrop[0]?.thumbnail?.y,
+                  height: imageCrop[0]?.thumbnail?.height,
+                  width: imageCrop[0]?.thumbnail?.width,
+                },
+                original: {
+                  entityId: imageCrop[0]?.original?.entityId,
+                  height: imageCrop[0]?.original?.height,
+                  width: imageCrop[0]?.original?.width,
+                },
+                isMain: true,
               },
-              thumbnail: {
-                xCoordinate: imageCrop[0]?.thumbnail?.x,
-                yCoordinate: imageCrop[0]?.thumbnail?.y,
-                height: imageCrop[0]?.thumbnail?.height,
-                width: imageCrop[0]?.thumbnail?.width,
-              },
-              original: {
-                entityId: imageCrop[0]?.original?.entityId,
-                height: imageCrop[0]?.original?.height,
-                width: imageCrop[0]?.original?.width,
-              },
-              isMain: true,
-            },
-          ];
-
+            ];
+          }
           const uploadImageList = async () => {
             for (let i = 0; i < values?.multipleImagesCrop.length; i++) {
               const file = values.multipleImagesCrop[i]?.originFileObj;
@@ -445,11 +446,15 @@ function CreateNewOrganization() {
                   });
             } else {
               if (values.multipleImagesCrop?.length > 0) await uploadImageList();
-              if (values?.image) {
-                if (values?.image && values?.image?.length == 0 && values.multipleImagesCrop?.length == 0)
-                  organizationPayload['image'] = null;
-                else organizationPayload['image'] = imageCrop;
-              }
+              if (
+                values?.image &&
+                values?.image?.length === 0 &&
+                (!values.multipleImagesCrop || values.multipleImagesCrop?.length === 0)
+              ) {
+                // Main image is removed and no new image is added
+                // No gallery images are added
+                organizationPayload['image'] = [];
+              } else organizationPayload['image'] = imageCrop;
               addUpdateOrganizationApiHandler(organizationPayload, toggle)
                 .then((id) => resolve(id))
                 .catch((error) => {
@@ -591,11 +596,15 @@ function CreateNewOrganization() {
                 await uploadImageList();
                 organizationPayload['image'] = imageCrop;
               }
-              if (values?.image) {
-                if (values?.image && values?.image?.length == 0 && values.multipleImagesCrop?.length == 0)
-                  organizationPayload['image'] = null;
-                else organizationPayload['image'] = imageCrop;
-              }
+              if (
+                values?.image &&
+                values?.image?.length === 0 &&
+                (!values.multipleImagesCrop || values.multipleImagesCrop?.length === 0)
+              ) {
+                // Main image is removed and no new image is added
+                // No gallery images are added
+                organizationPayload['image'] = [];
+              } else organizationPayload['image'] = imageCrop;
               if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
                 const formdata = new FormData();
                 formdata.append('file', values?.logo[0].originFileObj);
@@ -646,11 +655,15 @@ function CreateNewOrganization() {
               await uploadImageList();
               organizationPayload['image'] = imageCrop;
             }
-            if (values?.image) {
-              if (values?.image && values?.image?.length == 0 && values.multipleImagesCrop?.length > 0)
-                organizationPayload['image'] = null;
-              else organizationPayload['image'] = imageCrop;
-            }
+            if (
+              values?.image &&
+              values?.image?.length === 0 &&
+              (!values.multipleImagesCrop || values.multipleImagesCrop?.length === 0)
+            ) {
+              // Main image is removed and no new image is added
+              // No gallery images are added
+              organizationPayload['image'] = [];
+            } else organizationPayload['image'] = imageCrop;
             addUpdateOrganizationApiHandler(organizationPayload, toggle)
               .then((id) => resolve(id))
               .catch((error) => {
