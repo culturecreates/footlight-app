@@ -38,6 +38,7 @@ function CalendarAccordion(props) {
     readOnly,
     removeCalendarHandler,
     isCurrentUser,
+    setRouteBlockingFlag,
   } = props;
   const { t } = useTranslation();
   const timestampRef = useRef(Date.now()).current;
@@ -317,6 +318,7 @@ function CalendarAccordion(props) {
                                   key={index}
                                   className="event-popover-options"
                                   onClick={() => {
+                                    setRouteBlockingFlag();
                                     setSelectedOrganizers([...selectedOrganizers, organizer]);
                                     setIsPopoverOpen(false);
                                   }}
@@ -428,6 +430,7 @@ function CalendarAccordion(props) {
                                   key={index}
                                   className="event-popover-options"
                                   onClick={() => {
+                                    setRouteBlockingFlag();
                                     setSelectedPeople([...selectedPeople, people]);
                                     setIsPeoplePopoverOpen(false);
                                   }}

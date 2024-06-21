@@ -68,7 +68,7 @@ import NoContent from '../../../components/NoContent/NoContent';
 import { locationType, locationTypeOptions, virtualLocationFieldNames } from '../../../constants/locationTypeOptions';
 import { otherInformationFieldNames, otherInformationOptions } from '../../../constants/otherInformationOptions';
 import { eventAccessibilityFieldNames, eventAccessibilityOptions } from '../../../constants/eventAccessibilityOptions';
-import { Prompt } from '../../../hooks/usePrompt';
+import { RouteLeavingGuard } from '../../../hooks/usePrompt';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import RecurringEvents from '../../../components/RecurringEvents';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
@@ -1912,7 +1912,7 @@ function AddEvent() {
     !addEventLoading &&
     !updateEventStateLoading ? (
     <div>
-      <Prompt when={showDialog} message={t('common.unsavedChanges')} beforeUnload={true} />
+      <RouteLeavingGuard isBlocking={showDialog} />
       <Form
         form={form}
         layout="vertical"

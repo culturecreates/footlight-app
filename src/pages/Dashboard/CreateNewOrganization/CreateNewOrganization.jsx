@@ -53,7 +53,7 @@ import { routinghandler } from '../../../utils/roleRoutingHandler';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { useLazyGetPlaceQuery } from '../../../services/places';
-import { Prompt, usePrompt } from '../../../hooks/usePrompt';
+import { RouteLeavingGuard } from '../../../hooks/usePrompt';
 import { useDebounce } from '../../../hooks/debounce';
 import { SEARCH_DELAY } from '../../../constants/search';
 import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
@@ -148,8 +148,6 @@ function CreateNewOrganization() {
   const [addedFields, setAddedFields] = useState([]);
   const [scrollToSelectedField, setScrollToSelectedField] = useState();
   const [showDialog, setShowDialog] = useState(false);
-
-  usePrompt(t('common.unsavedChanges'), showDialog);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.organization);
@@ -1051,7 +1049,8 @@ function CreateNewOrganization() {
 
   return fields && !organizationLoading && !taxonomyLoading && !artsDataLoading && !isEntityDetailsLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-      <Prompt when={showDialog} message={t('common.unsavedChanges')} beforeUnload={true} />
+      <RouteLeavingGuard isBlocking={showDialog} />
+
       <div className="add-edit-wrapper add-organization-wrapper">
         <Form form={form} layout="vertical" name="organization" onValuesChange={onValuesChangeHandler}>
           <Row gutter={[32, 24]}>
