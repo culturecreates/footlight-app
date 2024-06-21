@@ -1,5 +1,5 @@
 import { DownloadOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Tooltip, Upload, message } from 'antd';
+import { Upload, message } from 'antd';
 import update from 'immutability-helper';
 import React, { useCallback, useRef, useState } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
@@ -8,8 +8,10 @@ import { useTranslation } from 'react-i18next';
 import Outlined from '../Button/Outlined';
 const type = 'DragableUploadList';
 import './multipleImageUpload.css';
+import { getWidthFromAspectRatio } from '../../utils/getWidthFromAspectRatio';
+import { useOutletContext } from 'react-router-dom';
 
-const DragableUploadListItem = ({ originNode, moveRow, file, fileList }) => {
+const DragableUploadListItem = ({ moveRow, file, fileList, actions, width }) => {
   const ref = useRef(null);
 
   const index = fileList.indexOf(file);
@@ -39,7 +41,7 @@ const DragableUploadListItem = ({ originNode, moveRow, file, fileList }) => {
     }),
   });
   drop(drag(ref));
-  const errorNode = <Tooltip title="Upload Error">{originNode.props.children}</Tooltip>;
+  // const errorNode = <Tooltip title="Upload Error">{originNode.props.children}</Tooltip>;
   return (
     <div
       ref={ref}
@@ -47,7 +49,32 @@ const DragableUploadListItem = ({ originNode, moveRow, file, fileList }) => {
       style={{
         cursor: 'grab',
       }}>
-      {file.status === 'error' ? errorNode : originNode}
+      <span className="image-footer">
+        <span className="image-contents">
+          <img
+            className="image-thumbnail"
+            src={file?.url ?? file?.thumbUrl}
+            style={{
+              width: width ? `${width}px` : 'auto',
+              minWidth: width ? `${width}px` : 'none',
+            }}
+          />
+          <a
+            className="image-name"
+            target="_blank"
+            rel="noopener noreferrer"
+            href={file?.url}
+            data-cy="anchor-image-link">
+            {file?.name}
+          </a>
+        </span>
+        <span className="image-actions">
+          <span onClick={actions?.remove} data-cy="span-download-image">
+            <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
+          </span>
+        </span>
+      </span>
+      {/* {file.status === 'error' ? errorNode : originNode} */}
     </div>
   );
 };
@@ -65,6 +92,7 @@ const getBase64 = (img, callback) => {
 const MultipleImageUpload = (props) => {
   const { eventImageData, form, imageReadOnly } = props;
   const { t } = useTranslation();
+  const [currentCalendarData] = useOutletContext();
 
   const [fileList, setFileList] = useState(
     eventImageData?.length > 0
@@ -97,6 +125,14 @@ const MultipleImageUpload = (props) => {
         })
       : [],
   );
+
+  let aspectRatio;
+  let width;
+
+  if (currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio) {
+    aspectRatio = currentCalendarData.imageConfig[0]?.large.aspectRatio;
+    width = getWidthFromAspectRatio(aspectRatio, 48);
+  }
 
   const moveRow = useCallback(
     (dragIndex, hoverIndex) => {
@@ -174,6 +210,7 @@ const MultipleImageUpload = (props) => {
           customRequest={customRequest}
           beforeUpload={beforeUpload}
           showUploadList={{
+            showRemoveIcon: imageReadOnly ? false : true,
             removeIcon: <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />,
           }}
           multiple
@@ -185,11 +222,19 @@ const MultipleImageUpload = (props) => {
                 fileList={currFileList}
                 moveRow={moveRow}
                 actions={actions}
+                width={width}
               />
             ) : (
               <span className="image-footer">
                 <span className="image-contents">
-                  <img className="image-thumbnail" src={file?.url ?? file?.thumbUrl} />
+                  <img
+                    className="image-thumbnail"
+                    src={file?.url ?? file?.thumbUrl}
+                    style={{
+                      width: width ? `${width}px` : 'auto',
+                      minWidth: width ? `${width}px` : 'none',
+                    }}
+                  />
                   <a
                     className="image-name"
                     target="_blank"
