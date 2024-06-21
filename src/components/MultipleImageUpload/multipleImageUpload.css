@@ -52,6 +52,13 @@
   font-size: 16px;
 }
 
+.multiple-image-upload-wrapper .ant-upload-list-picture .ant-upload-list-item-name {
+  flex: auto;
+  margin: 0;
+  padding-right: 8px;
+  padding-left: 48px;
+}
+
 @media (max-width: 480px) {
   .multiple-image-upload-wrapper .image-footer .image-name {
     text-wrap: wrap;
