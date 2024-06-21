@@ -1,4 +1,4 @@
-import { DownloadOutlined, DeleteOutlined } from '@ant-design/icons';
+import { DownloadOutlined, DeleteOutlined, HolderOutlined } from '@ant-design/icons';
 import { Upload, message } from 'antd';
 import update from 'immutability-helper';
 import React, { useCallback, useRef, useState } from 'react';
@@ -51,6 +51,11 @@ const DragableUploadListItem = ({ moveRow, file, fileList, actions, width }) => 
       }}>
       <span className="image-footer">
         <span className="image-contents">
+          <span className="image-actions">
+            <span onClick={actions?.download} data-cy="span-download-image">
+              <HolderOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '22px' }} />
+            </span>
+          </span>
           <img
             className="image-thumbnail"
             src={file?.url ?? file?.thumbUrl}
