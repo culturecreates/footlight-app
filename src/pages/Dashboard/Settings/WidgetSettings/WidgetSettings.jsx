@@ -33,7 +33,7 @@ import { widgetFontCollection } from '../../../../constants/fonts';
 const { useBreakpoint } = Grid;
 const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_BASE_URL;
 
-const WidgetSettings = () => {
+const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
   const { t } = useTranslation();
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
@@ -192,6 +192,7 @@ const WidgetSettings = () => {
       setIframeCode(
         `<iframe src="${urlCopy.href}" width="100%" style="max-width:${width}px; border:none" height="${height}px"></iframe>`,
       );
+      setDirtyStatus();
     }
   };
 
@@ -322,6 +323,12 @@ const WidgetSettings = () => {
   }, [initialEntitiesOrganization]);
 
   useEffect(() => {
+    if (tabKey != '2') return;
+
+    form.resetFields();
+    setColor('#607EFC');
+    form.setFieldValue('color', color);
+
     const urlCopy = new URL(widgetUrl);
     const urlCopyMobile = new URL(widgetUrl);
 
@@ -355,7 +362,7 @@ const WidgetSettings = () => {
     setIframeCode(
       `<iframe src="${urlCopy.href}" width="100%" style="max-width:1000px; border:none" height="${height}px"></iframe>`,
     );
-  }, [calendarContentLanguage]);
+  }, [calendarContentLanguage, tabKey]);
 
   function arrayToQueryParam(arr, paramName) {
     if (!arr || arr.length === 0) {

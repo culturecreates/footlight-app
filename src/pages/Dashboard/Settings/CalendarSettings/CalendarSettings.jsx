@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import './calendarSettings.css';
 import { Row, Col, Form, Divider, notification, Button, message } from 'antd';
 import { CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
@@ -17,7 +17,7 @@ import { contentLanguage } from '../../../../constants/contentLanguage';
 import { useAddImageMutation } from '../../../../services/image';
 import { calendarModes } from '../../../../constants/calendarModes';
 
-function CalendarSettings() {
+function CalendarSettings({ setDirtyStatus, tabKey }) {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const [currentCalendarData, , , getCalendar, , , setIsReadOnly, refetch] = useOutletContext();
@@ -319,6 +319,12 @@ function CalendarSettings() {
       });
   };
 
+  useEffect(() => {
+    if (tabKey != '3') return;
+
+    form.resetFields();
+  }, [tabKey]);
+
   return (
     currentCalendarData &&
     !taxonomyLoading && (
@@ -346,7 +352,14 @@ function CalendarSettings() {
             </p>
           </Col>
           <Col flex={'448px'}>
-            <Form form={form} layout="vertical" name="calendar-settings" initialValues={initialValues}>
+            <Form
+              form={form}
+              layout="vertical"
+              name="calendar-settings"
+              initialValues={initialValues}
+              onFieldsChange={() => {
+                setDirtyStatus();
+              }}>
               {calendarSettingsFormFields.GENERAL_SETTINGS.map((item, index) => {
                 return (
                   <Form.Item

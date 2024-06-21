@@ -22,7 +22,7 @@ import Outlined from '../../../components/Button/Outlined';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
-import { Prompt } from '../../../hooks/usePrompt';
+import { RouteLeavingGuard } from '../../../hooks/usePrompt';
 import { compareArraysOfObjects } from '../../../utils/genericObjectCompare';
 import { PathName } from '../../../constants/pathName';
 import StyledSwitch from '../../../components/Switch/StyledSwitch';
@@ -281,14 +281,13 @@ const AddTaxonomyTest = () => {
 
   return (
     <>
-      <Prompt
-        when={
+      <RouteLeavingGuard
+        isBlocking={
           isDirty.formState ||
           (!isDirty.isSubmitting ? !compareArraysOfObjects(conceptData ?? [], taxonomyData?.concepts ?? []) : false)
         }
-        message={t('common.unsavedChanges')}
-        beforeUnload={true}
       />
+
       {!loading && (isSuccess || !taxonomyId) ? (
         <Form layout="vertical" form={form} onValuesChange={handleValueChange}>
           <Row className="add-taxonomy-wrapper" gutter={[16, 16]}>

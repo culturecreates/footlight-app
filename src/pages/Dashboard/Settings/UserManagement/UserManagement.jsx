@@ -34,8 +34,9 @@ import i18n from 'i18next';
 import { adminCheckHandler } from '../../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
-const UserManagement = () => {
-  const { useBreakpoint } = Grid;
+const { useBreakpoint } = Grid;
+
+const UserManagement = (props) => {
   const [
     // eslint-disable-next-line no-unused-vars
     currentCalendarData, // eslint-disable-next-line no-unused-vars
@@ -48,6 +49,7 @@ const UserManagement = () => {
     isReadOnly,
   ] = useOutletContext();
 
+  const { tabKey } = props;
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
   const { t } = useTranslation();
@@ -92,6 +94,8 @@ const UserManagement = () => {
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   useEffect(() => {
+    if (tabKey != '1') return;
+
     const filtersDecoded = setFiletrsForApiCall();
 
     getAllUsers({
@@ -119,7 +123,7 @@ const UserManagement = () => {
     sessionStorage.setItem('sortByUserListing', filter?.sort);
     sessionStorage.setItem('userRoleUserListing', filter?.userRole);
     sessionStorage.setItem('userStatusUserListing', filter?.userStatus);
-  }, [filter, pageNumber, userSearchQuery]);
+  }, [filter, pageNumber, userSearchQuery, tabKey]);
 
   // handlers
   const onSearchHandler = (event) => {

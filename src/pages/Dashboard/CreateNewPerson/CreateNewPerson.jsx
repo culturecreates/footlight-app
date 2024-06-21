@@ -37,7 +37,7 @@ import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
-import { Prompt, usePrompt } from '../../../hooks/usePrompt';
+import { RouteLeavingGuard } from '../../../hooks/usePrompt';
 import { getExternalSourceId } from '../../../utils/getExternalSourceId';
 import { useGetEntitiesByIdQuery, useLazyGetEntityDependencyDetailsQuery } from '../../../services/entities';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
@@ -115,8 +115,6 @@ function CreateNewPerson() {
   const [artsDataLoading, setArtsDataLoading] = useState(false);
   const [imageCropOpen, setImageCropOpen] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
-
-  usePrompt(t('common.unsavedChanges'), showDialog);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   let fields = formFieldsHandler(currentCalendarData?.forms, entitiesClass.person);
@@ -611,7 +609,8 @@ function CreateNewPerson() {
 
   return fields && !personLoading && !taxonomyLoading && !artsDataLoading && !isEntityDetailsLoading ? (
     <FeatureFlag isFeatureEnabled={featureFlags.editScreenPeoplePlaceOrganization}>
-      <Prompt when={showDialog} message={t('common.unsavedChanges')} beforeUnload={true} />
+      <RouteLeavingGuard isBlocking={showDialog} />
+
       <div className="add-edit-wrapper add-organization-wrapper">
         <Form form={form} layout="vertical" name="person" onValuesChange={onValuesChangeHandler}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
