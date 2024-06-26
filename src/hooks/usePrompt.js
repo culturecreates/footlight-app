@@ -1,72 +1,46 @@
-import { useCallback, useContext, useEffect, useRef } from 'react';
-import { UNSAFE_NavigationContext as NavigationContext } from 'react-router-dom';
-import { useBlocker, useBeforeUnload } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useBlocker, useBeforeUnload, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
-function useConfirmExit(confirmExit, when = true) {
-  const { navigator } = useContext(NavigationContext);
+export const RouteLeavingGuard = ({ isBlocking }) => {
+  function useCallbackPrompt(when) {
+    const navigate = useNavigate();
+    const { t } = useTranslation();
+    const location = useLocation();
+    const [lastLocation, setLastLocation] = useState(null);
+    const [confirmedNavigation, setConfirmedNavigation] = useState(false);
 
-  useEffect(() => {
-    if (!when) {
-      return;
-    }
+    const handleBlockedNavigation = useCallback(
+      (history) => {
+        if (!when || confirmedNavigation || history?.nextLocation?.pathname === location.pathname) {
+          return false;
+        }
 
-    const push = navigator.push;
-    const go = navigator.go;
+        const confirm = window.confirm(`${t('common.unsavedChanges')}`);
+        if (confirm) {
+          setConfirmedNavigation(true);
+          setLastLocation(history.nextLocation);
+          return false;
+        }
 
-    navigator.push = (...args) => {
-      const result = confirmExit();
-      if (result !== false) {
-        push(...args);
+        return true;
+      },
+      [confirmedNavigation, location.pathname, when, t],
+    );
+
+    useEffect(() => {
+      if (confirmedNavigation && lastLocation) {
+        navigate(lastLocation.pathname, { state: location.state });
       }
-    };
+    }, [confirmedNavigation, lastLocation, location.state, navigate]);
 
-    navigator.go = (...args) => {
-      const result = confirmExit();
-      if (result !== false) {
-        go(...args);
-      }
-    };
+    useBlocker(handleBlockedNavigation, when);
+  }
 
-    return () => {
-      navigator.push = push;
-      navigator.go = go;
-    };
-  }, [navigator, confirmExit, when]);
-}
+  useCallbackPrompt(isBlocking);
 
-export function usePrompt(message, when = true) {
-  useEffect(() => {
-    if (when) {
-      window.onbeforeunload = function () {
-        return message;
-      };
-    }
-    return () => {
-      window.onbeforeunload = null;
-    };
-  }, [message, when]);
-
-  useEffect(() => {
-    const handleBeforeUnload = (event) => {
-      event.preventDefault();
-      return message;
-    };
-
-    if (when) {
-      window.addEventListener('beforeunload', handleBeforeUnload, { capture: true });
-    }
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload, { capture: true });
-    };
-  }, [message, when]);
-
-  const confirmExit = useCallback(() => {
-    const confirm = window.confirm(message);
-    return confirm;
-  }, [message]);
-  useConfirmExit(confirmExit, when);
-}
+  return null;
+};
 
 export function useCustomPrompt(message, { beforeUnload } = {}) {
   let blocker = useBlocker(

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import './calendarSettings.css';
 import { Row, Col, Form, Divider, notification, Button, message } from 'antd';
 import { CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
@@ -17,7 +17,7 @@ import { contentLanguage } from '../../../../constants/contentLanguage';
 import { useAddImageMutation } from '../../../../services/image';
 import { calendarModes } from '../../../../constants/calendarModes';
 
-function CalendarSettings() {
+function CalendarSettings({ setDirtyStatus, tabKey }) {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const [currentCalendarData, , , getCalendar, , , setIsReadOnly, refetch] = useOutletContext();
@@ -319,22 +319,32 @@ function CalendarSettings() {
       });
   };
 
+  useEffect(() => {
+    if (tabKey != '3') return;
+
+    form.resetFields();
+  }, [tabKey]);
+
   return (
     currentCalendarData &&
     !taxonomyLoading && (
       <div style={{ paddingTop: '24px' }}>
         <Row className="calendar-settings-wrapper" gutter={[0, 18]}>
-          <Col span={22}>
-            <h5 className="calendar-settings-heading" data-cy="heading5-calendar-settings">
-              {t('dashboard.settings.calendarSettings.generalSettings')}
-            </h5>
-          </Col>
-          <Col span={2}>
-            <PrimaryButton
-              label={t('dashboard.events.addEditEvent.saveOptions.save')}
-              data-cy="button-save-calendar-settings"
-              onClick={onSaveHandler}
-            />
+          <Col span={24}>
+            <Row justify={'space-between'}>
+              <Col>
+                <h5 className="calendar-settings-heading" data-cy="heading5-calendar-settings">
+                  {t('dashboard.settings.calendarSettings.generalSettings')}
+                </h5>
+              </Col>
+              <Col>
+                <PrimaryButton
+                  label={t('dashboard.events.addEditEvent.saveOptions.save')}
+                  data-cy="button-save-calendar-settings"
+                  onClick={onSaveHandler}
+                />
+              </Col>
+            </Row>
           </Col>
           <Col span={24}>
             <p className="calendar-settings-description" data-cy="para-calendar-settings-description">
@@ -342,7 +352,14 @@ function CalendarSettings() {
             </p>
           </Col>
           <Col flex={'448px'}>
-            <Form form={form} layout="vertical" name="calendar-settings" initialValues={initialValues}>
+            <Form
+              form={form}
+              layout="vertical"
+              name="calendar-settings"
+              initialValues={initialValues}
+              onFieldsChange={() => {
+                setDirtyStatus();
+              }}>
               {calendarSettingsFormFields.GENERAL_SETTINGS.map((item, index) => {
                 return (
                   <Form.Item
