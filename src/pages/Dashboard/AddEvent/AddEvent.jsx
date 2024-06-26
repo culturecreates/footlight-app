@@ -376,6 +376,7 @@ function AddEvent() {
               recurringEvent,
               description = {},
               name = {},
+              subEventConfiguration = [],
               inLanguage = [];
 
             let eventObj;
@@ -491,6 +492,53 @@ function AddEvent() {
                   form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
               };
               recurringEvent = recurEvent;
+            }
+            if (
+              eventId &&
+              eventData?.subEventConfiguration &&
+              form.getFieldsValue()?.customDates &&
+              form.getFieldsValue().frequency === 'CUSTOM'
+            ) {
+              recurringEvent = undefined;
+              const customDates = form.getFieldsValue().customDates || [];
+              const subEventConfig = eventData?.subEventConfiguration || [];
+
+              customDates.forEach(({ startDate, customTimes = [] }) => {
+                if (customTimes.length === 0) {
+                  subEventConfig.forEach(({ startDate: subStartDate, startTime, endTime, sameAs }) => {
+                    if (subStartDate === startDate && !startTime && !endTime) {
+                      subEventConfiguration.push({
+                        startDate,
+                        sameAs,
+                      });
+                    } else
+                      subEventConfiguration.push({
+                        startDate,
+                      });
+                  });
+                } else {
+                  customTimes.forEach(({ startTime, endTime }) => {
+                    const sameAs = subEventConfig.find(
+                      ({ startDate: subStartDate, startTime: subStartTime, endTime: subEndTime }) => {
+                        return (
+                          subStartDate === startDate &&
+                          ((!subStartTime && !subEndTime) ||
+                            (subStartTime === startTime && !subEndTime) ||
+                            (!subStartTime && subEndTime === endTime) ||
+                            (subStartTime === startTime && subEndTime === endTime))
+                        );
+                      },
+                    );
+
+                    subEventConfiguration.push({
+                      startDate,
+                      startTime,
+                      endTime,
+                      sameAs: sameAs?.sameAs,
+                    });
+                  });
+                }
+              });
             }
             if (values?.eventType) {
               additionalType = values?.eventType?.map((eventTypeId) => {
@@ -730,7 +778,7 @@ function AddEvent() {
               ...(dateTypes.MULTIPLE && { recurringEvent }),
               inLanguage,
               isFeatured: values?.isFeatured,
-              subEventConfiguration: eventData?.subEventConfiguration,
+              subEventConfiguration,
             };
 
             let imageCrop = [form.getFieldValue('imageCrop')];
