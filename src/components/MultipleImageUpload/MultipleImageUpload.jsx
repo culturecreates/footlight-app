@@ -52,7 +52,12 @@ const DragableUploadListItem = ({ moveRow, file, fileList, actions, width }) => 
       <span className="image-footer">
         <span className="image-contents">
           <span className="image-actions">
-            <span onClick={actions?.download} data-cy="span-download-image">
+            <span
+              onClick={actions?.download}
+              data-cy="span-download-image"
+              style={{
+                cursor: 'grab',
+              }}>
               <HolderOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '22px' }} />
             </span>
           </span>
