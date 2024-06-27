@@ -806,8 +806,8 @@
     "settings": {
       "heading": "Settings",
       "tab1": "User management",
-      "tab2": "Calendar Widget",
-      "tab3": "Calendar settings",
+      "tab2": "Listing widgets",
+      "tab3": "General settings",
       "tab4": "Mandatory fields",
       "userManagement": {
         "searchPlaceholder": "Search users",
@@ -979,10 +979,10 @@
         }
       },
       "calendarSettings": {
-        "generalSettings": "General settings",
-        "setUpCalendarDescription": "Set up how your calendar is displayed.",
-        "calendarName": "Calendar name",
-        "calendarLanguage": "Calendar Language",
+        "generalSettings": "Basic settings",
+        "setUpCalendarDescription": "Set up how your listing is displayed.",
+        "calendarName": "Name",
+        "calendarLanguage": "Languages",
         "timezone": "Time zone",
         "timzoneFormats": {
           "Canada/Atlantic": "Atlantic Time",
@@ -1018,14 +1018,14 @@
           "maximumWidth": "Maximum width",
           "addImageGallery": "Add image gallery"
         },
-        "calendarLogo": "Calendar Logo",
+        "calendarLogo": "Logo",
         "calendarLogoDescription": "Only JPEG and PNG files are supported.",
-        "calendarWidgetSetup": "Calendar widget setup",
-        "calendarWidgetDescription": "Add URL templates required for the calendar widget to function correctly. These templates link the event list displayed on other websites to the events displayed on your site.",
+        "calendarWidgetSetup": "Listing widgets",
+        "calendarWidgetDescription": "Add URL templates required for the widget to function correctly. These templates link the event list displayed on other websites to the events displayed on your site.",
         "eventTemplate": "Event template",
-        "eventTemplateDescription": "Add the template URL for an event page on your website. This URL contains placeholders needed for the calendar widget.",
+        "eventTemplateDescription": "Add the template URL for an event page on your website. This URL contains placeholders needed for the widget.",
         "searchResultTemplate": "Search results template",
-        "searchResultTemplateDescription": "Add the template URL for a search results page on your website. This URL contains placeholders needed for the calendar widget.",
+        "searchResultTemplateDescription": "Add the template URL for a search results page on your website. This URL contains placeholders needed for the widget.",
         "filterPersonalization": "Filter personalization",
         "filterDescription": "Select filters for list views in Footlight.",
         "events": "Events",
@@ -1033,8 +1033,8 @@
         "people": "People",
         "organizations": "Organizations",
         "readOnly": {
-          "title": "Make calendar read-only",
-          "description": "Disable editing temporarily in this calendar by turning this toggle on.",
+          "title": "Make read-only",
+          "description": "Disable editing temporarily by turning this toggle on.",
           "readOnlyMode": "Read-only"
         },
         "placeholders": {
@@ -1057,7 +1057,7 @@
       "mandatoryFields": {
         "title": "Mandatory fields",
         "availableFields": "Available fields",
-        "description": "Select which fields should be mandatory in your calendar.",
+        "description": "Select which fields are required.",
         "event": "Event",
         "place": "Place",
         "person": "Person",
