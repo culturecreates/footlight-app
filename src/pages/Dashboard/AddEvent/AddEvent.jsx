@@ -540,7 +540,9 @@ function AddEvent() {
               const subEventConfig = eventData?.subEventConfiguration || [];
               if (hasSubEventConfigChanges(customDates, subEventConfig)) {
                 // True : Changes detected
-                sameAs = eventData?.sameAs?.filter((item) => item?.type !== sameAsTypes.ARTSDATA_IDENTIFIER);
+                if (eventData?.publishState === eventPublishState.PUBLISHED) {
+                  sameAs = eventData?.sameAs?.filter((item) => item?.type !== sameAsTypes.ARTSDATA_IDENTIFIER);
+                }
                 customDates.forEach(({ startDate, customTimes = [] }) => {
                   if (customTimes.length === 0) {
                     subEventConfig.forEach(({ startDate: subStartDate, startTime, endTime, sameAs }) => {
