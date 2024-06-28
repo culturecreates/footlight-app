@@ -1723,7 +1723,7 @@ function AddEvent() {
           };
           setFormValue(obj);
         }
-        if (eventData?.subEventConfiguration) {
+        if (eventData?.subEventConfiguration && eventData?.subEventConfiguration?.length > 0) {
           form.setFieldsValue({
             frequency: 'CUSTOM',
             startDateRecur: [
