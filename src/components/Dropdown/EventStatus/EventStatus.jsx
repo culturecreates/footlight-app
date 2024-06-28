@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button, Dropdown, Modal, message, notification } from 'antd';
-import { ExclamationCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Dropdown, Modal, notification } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { eventPublishOptions } from '../../../constants/eventPublishOptions';
 import './eventStatus.css';
@@ -95,27 +95,8 @@ function EventStatusOptions({ children, publishState, creator, eventId, isFeatur
       })
         .unwrap()
         .then(() => {})
-        .catch(() => {
-          message.warning({
-            duration: 10,
-            maxCount: 1,
-            key: 'event-review-publish-warning',
-            content: (
-              <>
-                {key === '0'
-                  ? t('dashboard.events.addEditEvent.validations.errorPublishing')
-                  : key === '1' && t('dashboard.events.addEditEvent.validations.errorDraft')}
-                &nbsp;
-                <Button
-                  type="text"
-                  icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
-                  onClick={() => message.destroy('event-review-publish-warning')}
-                  data-cy="button-cancel-publish-error-warning"
-                />
-              </>
-            ),
-            icon: <ExclamationCircleOutlined />,
-          });
+        .catch((e) => {
+          console.log(e);
         });
     } else if (key === '3') navigate(`${location.pathname}${PathName.AddEvent}?duplicateId=${eventId}`);
     else if (key === '4' || key === '5') {

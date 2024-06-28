@@ -50,6 +50,10 @@
   border-left: 0;
 }
 
+.widget-settings .color-select-wrapper .ant-form-item {
+  margin-bottom: 0px;
+}
+
 .widget-settings .color-select-wrapper .ant-input-lg {
   padding-left: 0px;
 }
