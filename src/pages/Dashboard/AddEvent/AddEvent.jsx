@@ -257,6 +257,41 @@ function AddEvent() {
     },
     { label: t('dashboard.events.addEditEvent.otherInformation.contact.email'), value: 'email' },
   ];
+  const hasSubEventConfigChanges = (customDates = [], subEventConfig = []) => {
+    // Convert both arrays to a simpler format for easier comparison
+    const formatCustomDates = customDates.flatMap(({ startDate, customTimes = [] }) =>
+      customTimes.length === 0 ? [{ startDate }] : customTimes.map((time) => ({ startDate, ...time })),
+    );
+
+    const formatSubEventConfig = subEventConfig.map(({ startDate, startTime, endTime }) => ({
+      startDate,
+      startTime,
+      endTime,
+      // sameAs,
+    }));
+
+    // Check if the length of both arrays are different
+    if (formatCustomDates.length !== formatSubEventConfig.length) {
+      return true;
+    }
+
+    // Function to compare two objects for equality
+    const isEqual = (obj1, obj2) =>
+      obj1 &&
+      obj2 &&
+      Object.keys(obj1).length === Object.keys(obj2).length &&
+      Object.keys(obj1).every((key) => obj1[key] === obj2[key]);
+
+    // Check each item in both arrays for differences
+    for (let i = 0; i < formatCustomDates.length; i++) {
+      if (!isEqual(formatCustomDates[i], formatSubEventConfig[i])) {
+        return true;
+      }
+    }
+
+    // If no differences found, return false
+    return false;
+  };
 
   const validateVideoLink = (rule, value) => {
     if (!value) {
@@ -270,7 +305,7 @@ function AddEvent() {
     return Promise.resolve();
   };
 
-  const addUpdateEventApiHandler = (eventObj, toggle) => {
+  const addUpdateEventApiHandler = (eventObj, toggle, sameAs) => {
     var promise = new Promise(function (resolve, reject) {
       if ((!eventId || eventId === '') && newEventId === null) {
         addEvent({
@@ -300,7 +335,7 @@ function AddEvent() {
       } else {
         eventObj = {
           ...eventObj,
-          sameAs: eventData?.sameAs,
+          sameAs,
         };
         updateEvent({
           data: eventObj,
@@ -376,7 +411,9 @@ function AddEvent() {
               recurringEvent,
               description = {},
               name = {},
-              inLanguage = [];
+              subEventConfiguration = [],
+              inLanguage = [],
+              sameAs = eventId ? (eventData?.sameAs ? eventData?.sameAs : []) : [];
 
             let eventObj;
 
@@ -491,6 +528,61 @@ function AddEvent() {
                   form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
               };
               recurringEvent = recurEvent;
+            }
+            if (
+              eventId &&
+              eventData?.subEventConfiguration &&
+              form.getFieldsValue()?.customDates &&
+              form.getFieldsValue().frequency === 'CUSTOM'
+            ) {
+              recurringEvent = undefined;
+              const customDates = form.getFieldsValue().customDates || [];
+              const subEventConfig = eventData?.subEventConfiguration || [];
+              if (hasSubEventConfigChanges(customDates, subEventConfig)) {
+                // True : Changes detected
+                if (eventData?.publishState === eventPublishState.PUBLISHED) {
+                  sameAs = eventData?.sameAs?.filter((item) => item?.type !== sameAsTypes.ARTSDATA_IDENTIFIER);
+                }
+                customDates.forEach(({ startDate, customTimes = [] }) => {
+                  if (customTimes.length === 0) {
+                    subEventConfig.forEach(({ startDate: subStartDate, startTime, endTime, sameAs }) => {
+                      if (subStartDate === startDate && !startTime && !endTime) {
+                        subEventConfiguration.push({
+                          startDate,
+                          sameAs,
+                        });
+                      } else
+                        subEventConfiguration.push({
+                          startDate,
+                        });
+                    });
+                  } else {
+                    customTimes.forEach(({ startTime, endTime }) => {
+                      const sameAs = subEventConfig.find(
+                        ({ startDate: subStartDate, startTime: subStartTime, endTime: subEndTime }) => {
+                          return (
+                            subStartDate === startDate &&
+                            ((!subStartTime && !subEndTime) ||
+                              (subStartTime === startTime && !subEndTime) ||
+                              (!subStartTime && subEndTime === endTime) ||
+                              (subStartTime === startTime && subEndTime === endTime))
+                          );
+                        },
+                      );
+
+                      subEventConfiguration.push({
+                        startDate,
+                        startTime,
+                        endTime,
+                        sameAs: sameAs?.sameAs,
+                      });
+                    });
+                  }
+                });
+              } else {
+                // False : No changes detected,both arrays are equal
+                subEventConfiguration = eventData?.subEventConfiguration;
+              }
             }
             if (values?.eventType) {
               additionalType = values?.eventType?.map((eventTypeId) => {
@@ -730,7 +822,7 @@ function AddEvent() {
               ...(dateTypes.MULTIPLE && { recurringEvent }),
               inLanguage,
               isFeatured: values?.isFeatured,
-              subEventConfiguration: eventData?.subEventConfiguration,
+              subEventConfiguration,
             };
 
             let imageCrop = [form.getFieldValue('imageCrop')];
@@ -843,7 +935,7 @@ function AddEvent() {
 
                     if (values.multipleImagesCrop?.length > 0) await uploadImageList();
                     eventObj['image'] = imageCrop;
-                    addUpdateEventApiHandler(eventObj, toggle)
+                    addUpdateEventApiHandler(eventObj, toggle, sameAs)
                       .then((id) => resolve(id))
                       .catch((error) => {
                         reject(error);
@@ -864,7 +956,7 @@ function AddEvent() {
                 else eventObj['image'] = imageCrop;
               }
 
-              addUpdateEventApiHandler(eventObj, toggle)
+              addUpdateEventApiHandler(eventObj, toggle, sameAs)
                 .then((id) => resolve(id))
                 .catch((error) => {
                   reject(error);
