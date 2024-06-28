@@ -192,7 +192,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
       setIframeCode(
         `<iframe src="${urlCopy.href}" width="100%" style="max-width:${width}px; border:none" height="${height}px"></iframe>`,
       );
-      setDirtyStatus();
+      setDirtyStatus(true);
     }
   };
 
