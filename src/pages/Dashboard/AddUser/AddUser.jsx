@@ -270,6 +270,7 @@ const AddUser = () => {
       formInstance
         .validateFields()
         .then((values) => {
+          setIsFormDirty(false);
           let organizations = values?.organizers[calendarId];
           organizations = organizations?.map((organizer) => {
             return { entityId: organizer?.value };
@@ -317,6 +318,7 @@ const AddUser = () => {
       formInstance
         .validateFields()
         .then((values) => {
+          setIsFormDirty(false);
           let organizations = values?.organizers[calendarId];
           organizations = organizations?.map((organizer) => {
             return { entityId: organizer?.value };
