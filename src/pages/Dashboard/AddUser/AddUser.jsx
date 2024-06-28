@@ -93,10 +93,6 @@ const AddUser = () => {
     return calendar?.calendarId === calendarId;
   });
 
-  useEffect(() => {
-    console.log(selectedCalendars);
-  }, [selectedCalendars]);
-
   const [getUser, { isFetching: isUserFetching }] = useLazyGetUserByIdQuery({ sessionId: timestampRef });
   const [getUserSearch] = useLazyGetAllUsersQuery({ sessionId: timestampRef });
 
@@ -846,7 +842,11 @@ const AddUser = () => {
                             validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.language')),
                         },
                       ]}>
-                      <Select options={userLanguages} data-cy="select-user-language" />
+                      <Select
+                        options={userLanguages}
+                        onChange={(value) => setFormItemValues({ value, fieldType: 'languagePreference' })}
+                        data-cy="select-user-language"
+                      />
                     </Form.Item>
 
                     {isCurrentUser && (
