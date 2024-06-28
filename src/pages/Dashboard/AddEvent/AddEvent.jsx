@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import './addEvent.css';
 import { Form, Row, Col, Input, message, Button, notification } from 'antd';
@@ -160,6 +161,8 @@ function AddEvent() {
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
 
   const [dateType, setDateType] = useState();
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
   const [ticketType, setTicketType] = useState();
   const [organizersList, setOrganizersList] = useState([]);
   const [performerList, setPerformerList] = useState([]);
@@ -444,6 +447,15 @@ function AddEvent() {
               property: 'en',
             });
             // Use a regular expression to remove <p><br></p> tags at the end
+
+            if (values.dateRangePicker) {
+              const [startDate, endDate] = values.dateRangePicker;
+              if (moment(startDate).isSame(endDate, 'day')) {
+                setDateType(dateTypes.SINGLE);
+              }
+            }
+
+            console.log(values);
 
             if (dateType === dateTypes.SINGLE) {
               if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
@@ -2306,7 +2318,7 @@ function AddEvent() {
                 <Row>
                   <Col>
                     <p className="add-event-date-heading" data-cy="heading-dates">
-                      {t('dashboard.events.addEditEvent.dates.heading')}
+                      {t('dashboard.events.addEditEvent.dates.heading')} hello
                     </p>
                   </Col>
                 </Row>
@@ -2442,7 +2454,18 @@ function AddEvent() {
                             },
                           ]}
                           data-cy="form-item-date-range-label">
-                          <DateRangePicker style={{ width: '100%' }} data-cy="date-range" />
+                          <DateRangePicker
+                            style={{ width: '100%' }}
+                            onCalendarChange={(dates) => {
+                              setStartDate(dates?.[0]);
+                              setEndDate(dates?.[1]);
+                            }}
+                            disabledDate={(current) =>
+                              (startDate && current.isSame(startDate, 'day')) ||
+                              (endDate && current.isSame(endDate, 'day'))
+                            }
+                            data-cy="date-range"
+                          />
                         </Form.Item>
                       )}
                       {dateType === dateTypes.MULTIPLE && (
@@ -2453,6 +2476,14 @@ function AddEvent() {
                             numberOfDaysEvent={eventData?.subEvents?.length}
                             form={form}
                             eventDetails={eventData}
+                            onCalendarChange={(dates) => {
+                              setStartDate(dates?.[0]);
+                              setEndDate(dates?.[1]);
+                            }}
+                            disabledDate={(current) =>
+                              (startDate && current.isSame(startDate, 'day')) ||
+                              (endDate && current.isSame(endDate, 'day'))
+                            }
                             setFormFields={setFormValue}
                             dateType={dateType}
                           />

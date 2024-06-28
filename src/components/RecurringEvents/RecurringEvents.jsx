@@ -24,6 +24,8 @@ const RecurringEvents = function ({
   eventDetails,
   setFormFields,
   dateType,
+  disabledDate,
+  onCalendarChange,
 }) {
   const [nummberofDates, setNumberofDates] = useState(numberOfDaysEvent);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -341,6 +343,8 @@ const RecurringEvents = function ({
             <DateRangePicker
               style={{ width: '423px' }}
               disabled={(isCustom || formFields?.frequency === 'CUSTOM') && startDateRecur?.length == 2 && true}
+              disabledDate={disabledDate}
+              onCalendarChange={onCalendarChange}
               suffixIcon={
                 subEventCount > 0 && (
                   <Tags
