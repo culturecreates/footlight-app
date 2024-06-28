@@ -32,7 +32,7 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       key: '400',
       message: <Translation>{(t) => t('common.server.status.400.message')}</Translation>,
       placement: 'top',
-      description: result.error?.data?.error,
+      description: result?.error?.data?.message,
     });
   }
 
