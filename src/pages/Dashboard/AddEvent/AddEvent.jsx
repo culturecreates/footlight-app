@@ -496,6 +496,7 @@ function AddEvent() {
             if (
               eventId &&
               eventData?.subEventConfiguration &&
+              eventData?.subEventConfiguration?.length > 0 &&
               form.getFieldsValue()?.customDates &&
               form.getFieldsValue().frequency === 'CUSTOM'
             ) {
