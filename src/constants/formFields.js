@@ -370,6 +370,7 @@ export const formFieldValue = [
       eventImageGalleryData,
       enableGallery,
       t,
+      setShowDialog,
     }) => (
       <>
         {position === 'top' && datatype === dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
@@ -393,6 +394,7 @@ export const formFieldValue = [
             data-cy="form-item-event-multiple-image"
             hidden={!enableGallery}>
             <MultipleImageUpload
+              setShowDialog={setShowDialog}
               form={form}
               largeAspectRatio={largeAspectRatio}
               thumbnailAspectRatio={thumbnailAspectRatio}
@@ -690,6 +692,7 @@ export const returnFormDataWithFields = ({
   isEntitiesFetching,
   adminOnlyFields,
   mandatoryFields,
+  setShowDialog,
 }) => {
   return renderFormFields({
     fieldName: field?.name,
@@ -766,6 +769,7 @@ export const returnFormDataWithFields = ({
       isExternalSourceFetching,
       isEntitiesFetching,
       // required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
+      setShowDialog,
     }),
     key: index,
     initialValue: formInitialValueHandler(field?.type, field?.mappedField, field?.datatype, entityData),

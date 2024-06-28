@@ -3622,6 +3622,7 @@ function AddEvent() {
                       : null
                   }
                   eventImageData={eventData?.image?.filter((image) => !image?.isMain)}
+                  setShowDialog={setShowDialog}
                 />
               </Form.Item>
 

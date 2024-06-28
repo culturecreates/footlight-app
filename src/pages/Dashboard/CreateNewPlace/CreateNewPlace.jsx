@@ -1884,6 +1884,7 @@ function CreateNewPlace() {
                   data-cy="form-item-event-multiple-image"
                   hidden={!imageConfig?.enableGallery}>
                   <MultipleImageUpload
+                    setShowDialog={setShowDialog}
                     form={form}
                     largeAspectRatio={
                       currentCalendarData?.imageConfig?.length > 0

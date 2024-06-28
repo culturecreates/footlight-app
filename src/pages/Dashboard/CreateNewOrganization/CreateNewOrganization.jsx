@@ -1261,6 +1261,7 @@ function CreateNewOrganization() {
                               isExternalSourceFetching,
                               mandatoryFields: formFieldProperties?.mandatoryFields?.standardFields ?? [],
                               adminOnlyFields: formFieldProperties?.adminOnlyFields?.standardFields ?? [],
+                              setShowDialog,
                             });
                           }
                         });

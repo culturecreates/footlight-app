@@ -100,7 +100,7 @@ const getBase64 = (img, callback) => {
   });
 };
 const MultipleImageUpload = (props) => {
-  const { eventImageData, form, imageReadOnly } = props;
+  const { eventImageData, form, imageReadOnly, setShowDialog } = props;
   const { t } = useTranslation();
   const [currentCalendarData] = useOutletContext();
 
@@ -194,6 +194,7 @@ const MultipleImageUpload = (props) => {
     form.setFieldsValue({
       multipleImagesCrop: newFileList,
     });
+    if (setShowDialog) setShowDialog(true);
   };
 
   const beforeUpload = (file) => {
