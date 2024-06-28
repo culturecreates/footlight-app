@@ -448,36 +448,12 @@ function AddEvent() {
             });
             // Use a regular expression to remove <p><br></p> tags at the end
 
-            if (values.dateRangePicker) {
-              const [startDate, endDate] = values.dateRangePicker;
-              if (moment(startDate).isSame(endDate, 'day')) {
-                setDateType(dateTypes.SINGLE);
-              }
-            }
+            let datePickerValue = values?.datePicker;
+            let startTimeValue = values?.startTime;
+            let endTimeValue = values?.endTime;
+            let dateTypeValue = dateType;
 
-            console.log(values);
-
-            if (dateType === dateTypes.SINGLE) {
-              if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
-              else
-                startDateTime = moment
-                  .tz(values?.datePicker, eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                  .format('YYYY-MM-DD');
-              if (values?.endTime) endDateTime = dateTimeConverter(values?.datePicker, values?.endTime);
-            }
-            if (dateType === dateTypes.RANGE) {
-              if (values?.startTime) startDateTime = dateTimeConverter(values?.dateRangePicker[0], values?.startTime);
-              else
-                startDateTime = moment
-                  .tz(values?.dateRangePicker[0], eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                  .format('YYYY-MM-DD');
-              if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
-              else
-                endDateTime = moment
-                  .tz(values?.dateRangePicker[1], eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                  .format('YYYY-MM-DD');
-            }
-            if (dateType === dateTypes.MULTIPLE) {
+            if (dateTypeValue === dateTypes.MULTIPLE) {
               const recurEvent = {
                 frequency: values.frequency,
                 startDate:
@@ -502,8 +478,50 @@ function AddEvent() {
                 customDates:
                   form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
               };
-              recurringEvent = recurEvent;
+
+              let customDatesFlag = recurEvent?.customDates ? true : false;
+              let customTimeFlag = false;
+
+              if (customDatesFlag && recurEvent.customDates.length === 1) {
+                const customTime = recurEvent.customDates[0]?.customTime;
+                if (!customTime || customTime.length <= 1) {
+                  customDatesFlag = false;
+                  customTimeFlag = customTime ? true : false;
+                }
+              }
+
+              if (!customDatesFlag) {
+                dateTypeValue = dateTypes.SINGLE;
+                const singleCustomDate = recurEvent.customDates[0];
+                datePickerValue = moment(singleCustomDate?.startDate);
+                if (customTimeFlag) {
+                  startTimeValue = singleCustomDate?.customTime[0]?.startTime;
+                  endTimeValue = singleCustomDate?.customTime[0]?.endTime;
+                }
+              } else recurringEvent = recurEvent;
             }
+
+            if (dateTypeValue === dateTypes.SINGLE) {
+              if (startTimeValue) startDateTime = dateTimeConverter(datePickerValue, startTimeValue);
+              else
+                startDateTime = moment
+                  .tz(datePickerValue, eventData?.scheduleTimezone ?? 'Canada/Eastern')
+                  .format('YYYY-MM-DD');
+              if (endTimeValue) endDateTime = dateTimeConverter(datePickerValue, endTimeValue);
+            }
+            if (dateTypeValue === dateTypes.RANGE) {
+              if (values?.startTime) startDateTime = dateTimeConverter(values?.dateRangePicker[0], values?.startTime);
+              else
+                startDateTime = moment
+                  .tz(values?.dateRangePicker[0], eventData?.scheduleTimezone ?? 'Canada/Eastern')
+                  .format('YYYY-MM-DD');
+              if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
+              else
+                endDateTime = moment
+                  .tz(values?.dateRangePicker[1], eventData?.scheduleTimezone ?? 'Canada/Eastern')
+                  .format('YYYY-MM-DD');
+            }
+
             if (values?.eventType) {
               additionalType = values?.eventType?.map((eventTypeId) => {
                 return {
