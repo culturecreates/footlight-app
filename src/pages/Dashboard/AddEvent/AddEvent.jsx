@@ -479,6 +479,7 @@ function AddEvent() {
                   form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
               };
 
+              // following code looks at custom date and convert them to a single day event if there is only one occurance
               let customDatesFlag = recurEvent?.customDates ? true : false;
               let customTimeFlag = false;
 
