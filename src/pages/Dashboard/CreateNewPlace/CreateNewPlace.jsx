@@ -473,29 +473,31 @@ function CreateNewPlace() {
               };
             });
           }
-          let imageCrop = [form.getFieldValue('imageCrop')];
-          imageCrop = [
-            {
-              large: {
-                xCoordinate: imageCrop[0]?.large?.x,
-                yCoordinate: imageCrop[0]?.large?.y,
-                height: imageCrop[0]?.large?.height,
-                width: imageCrop[0]?.large?.width,
+          let imageCrop = form.getFieldValue('imageCrop') ? [form.getFieldValue('imageCrop')] : [];
+          if (imageCrop.length > 0) {
+            imageCrop = [
+              {
+                large: {
+                  xCoordinate: imageCrop[0]?.large?.x,
+                  yCoordinate: imageCrop[0]?.large?.y,
+                  height: imageCrop[0]?.large?.height,
+                  width: imageCrop[0]?.large?.width,
+                },
+                thumbnail: {
+                  xCoordinate: imageCrop[0]?.thumbnail?.x,
+                  yCoordinate: imageCrop[0]?.thumbnail?.y,
+                  height: imageCrop[0]?.thumbnail?.height,
+                  width: imageCrop[0]?.thumbnail?.width,
+                },
+                original: {
+                  entityId: imageCrop[0]?.original?.entityId,
+                  height: imageCrop[0]?.original?.height,
+                  width: imageCrop[0]?.original?.width,
+                },
+                isMain: true,
               },
-              thumbnail: {
-                xCoordinate: imageCrop[0]?.thumbnail?.x,
-                yCoordinate: imageCrop[0]?.thumbnail?.y,
-                height: imageCrop[0]?.thumbnail?.height,
-                width: imageCrop[0]?.thumbnail?.width,
-              },
-              original: {
-                entityId: imageCrop[0]?.original?.entityId,
-                height: imageCrop[0]?.original?.height,
-                width: imageCrop[0]?.original?.width,
-              },
-              isMain: true,
-            },
-          ];
+            ];
+          }
           if (values?.containedInPlace || values?.containedInPlace?.length > 0) {
             if (containedInPlace?.source === sourceOptions.CMS)
               containedInPlaceObj = {
@@ -678,11 +680,15 @@ function CreateNewPlace() {
                 });
           } else {
             if (values.multipleImagesCrop?.length > 0) await uploadImageList();
-            if (values?.draggerWrap) {
-              if (values?.dragger && values?.dragger?.length == 0 && values.multipleImagesCrop?.length == 0)
-                placeObj['image'] = null;
-              else placeObj['image'] = imageCrop;
-            }
+            if (
+              values?.draggerWrap &&
+              values?.dragger?.length === 0 &&
+              (!values.multipleImagesCrop || values.multipleImagesCrop?.length === 0)
+            ) {
+              // Main image is removed and no new image is added
+              // No gallery images are added
+              placeObj['image'] = [];
+            } else placeObj['image'] = imageCrop;
 
             addUpdatePlaceApiHandler(placeObj, postalObj)
               .then((id) => resolve(id))
@@ -1878,6 +1884,7 @@ function CreateNewPlace() {
                   data-cy="form-item-event-multiple-image"
                   hidden={!imageConfig?.enableGallery}>
                   <MultipleImageUpload
+                    setShowDialog={setShowDialog}
                     form={form}
                     largeAspectRatio={
                       currentCalendarData?.imageConfig?.length > 0
