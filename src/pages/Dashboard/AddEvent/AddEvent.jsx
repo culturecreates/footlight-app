@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import './addEvent.css';
 import { Form, Row, Col, Input, message, Button, notification } from 'antd';
@@ -470,6 +469,10 @@ function AddEvent() {
             });
             // Use a regular expression to remove <p><br></p> tags at the end
 
+            // Below code handles dates and time for single, range and multiple dates
+            // custom dates that has only one occurance will be converted to single event
+            // multiple dates that has only one occurance will be converted to single event
+
             let datePickerValue = values?.datePicker;
             let startTimeValue = values?.startTime;
             let endTimeValue = values?.endTime;
@@ -512,10 +515,12 @@ function AddEvent() {
               customDatesFlag = !!recurEvent?.customDates;
 
               if (customDatesFlag && recurEvent.customDates.length === 1) {
+                // sets flags for customTime and customDates inclusion
                 const customTimes = recurEvent.customDates[0]?.customTimes || [];
                 customTimeFlag = customTimes.length == 1;
                 customDatesFlag = customTimes.length <= 1;
               } else if (subEventCount == 1) {
+                // sets flags and values for multipleDay event with only one occurance
                 multipleDatesFlag = true;
                 dateTypeValue = dateTypes.SINGLE;
                 datePickerValue = getWeekDayDates(recurEvent);
@@ -524,6 +529,7 @@ function AddEvent() {
               }
 
               if (customDatesFlag) {
+                // custom dates to single event conversion logic
                 dateTypeValue = dateTypes.SINGLE;
                 const singleCustomDate = recurEvent.customDates?.[0];
                 datePickerValue = moment(singleCustomDate?.startDate);
@@ -554,6 +560,7 @@ function AddEvent() {
                   .format('YYYY-MM-DD');
               if (endTimeValue) endDateTime = dateTimeConverter(datePickerValue, endTimeValue, customTimeFlag);
             }
+
             if (dateTypeValue === dateTypes.RANGE) {
               if (values?.startTime) startDateTime = dateTimeConverter(values?.dateRangePicker[0], values?.startTime);
               else
@@ -773,20 +780,22 @@ function AddEvent() {
             if (nameEn) name['en'] = nameEn;
             if (nameFr) name['fr'] = nameFr;
 
-            const startTimeFlag = values?.startTime && !(customDatesFlag || multipleDatesFlag);
-            const endTimeFlag = values?.endTime && !(customDatesFlag || multipleDatesFlag);
+            const isStartDateConvertedCustomDates = values?.startTime && !(customDatesFlag || multipleDatesFlag);
+            const isEndDateConvertedCustomDates = values?.endTime && !(customDatesFlag || multipleDatesFlag);
+            const isCustomOrMultipleDatesHasEndTime = customEndTimeFlag || multipleEndTimeFlag;
+            const isCustomOrMultipleDatesHasStartTime = customStartTimeFlag || multipleStartTimeFlag;
             eventObj = {
               name: !(Object.keys(name).length > 0) ? { ...name, ...eventData?.name } : name,
-              ...((startTimeFlag || customStartTimeFlag || multipleStartTimeFlag) && {
+              ...((isStartDateConvertedCustomDates || isCustomOrMultipleDatesHasStartTime) && {
                 startDateTime,
               }),
-              ...((startTimeFlag || !(customStartTimeFlag || multipleStartTimeFlag)) && {
+              ...((isStartDateConvertedCustomDates || !isCustomOrMultipleDatesHasStartTime) && {
                 startDate: startDateTime,
               }),
-              ...((endTimeFlag || customEndTimeFlag || multipleEndTimeFlag) && {
+              ...((isEndDateConvertedCustomDates || isCustomOrMultipleDatesHasEndTime) && {
                 endDateTime,
               }),
-              ...((endTimeFlag || !(customEndTimeFlag || multipleEndTimeFlag)) && {
+              ...((isEndDateConvertedCustomDates || !isCustomOrMultipleDatesHasEndTime) && {
                 endDate: endDateTime,
               }),
               eventStatus: values?.eventStatus,
