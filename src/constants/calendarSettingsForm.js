@@ -148,6 +148,7 @@ export const calendarSettingsFormFields = {
           fr: initialValues?.calendarNameFr,
           en: initialValues?.calendarNameEn,
         };
+
         return (
           <BilingualInput fieldData={fieldData}>
             <Form.Item name="calendarNameFr">
