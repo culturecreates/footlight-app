@@ -372,6 +372,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
                     {item.field({
                       form,
                       isCrop: false,
+                      initialValues,
                       largeAspectRatio: imageConfig?.large?.aspectRatio,
                       thumbnailAspectRatio: imageConfig?.thumbnail?.aspectRatio,
                       largeMaxWidth: imageConfig?.large?.maxWidth,

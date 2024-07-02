@@ -143,39 +143,46 @@ export const calendarSettingsFormFields = {
     {
       name: 'calendarName',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.calendarName')}</Translation>,
-      field: ({ t }) => (
-        <BilingualInput>
-          <Form.Item name="calendarNameFr">
-            <TextArea
-              autoSize
-              style={{
-                borderRadius: '4px',
-                border: '4px solid #E8E8E8',
-                width: '100%',
-              }}
-              size="large"
-              autoComplete="off"
-              placeholder={t('dashboard.settings.calendarSettings.placeholders.calendarNameFr')}
-              data-cy="input-calendar-name"
-            />
-          </Form.Item>
+      field: ({ t, initialValues }) => {
+        const fieldData = {
+          fr: initialValues?.calendarNameFr,
+          en: initialValues?.calendarNameEn,
+        };
 
-          <Form.Item name="calendarNameEn">
-            <TextArea
-              autoSize
-              style={{
-                borderRadius: '4px',
-                border: '4px solid #E8E8E8',
-                width: '100%',
-              }}
-              size="large"
-              autoComplete="off"
-              placeholder={t('dashboard.settings.calendarSettings.placeholders.calendarNameEn')}
-              data-cy="input-calendar-name"
-            />
-          </Form.Item>
-        </BilingualInput>
-      ),
+        return (
+          <BilingualInput fieldData={fieldData}>
+            <Form.Item name="calendarNameFr">
+              <TextArea
+                autoSize
+                style={{
+                  borderRadius: '4px',
+                  border: '4px solid #E8E8E8',
+                  width: '100%',
+                }}
+                size="large"
+                autoComplete="off"
+                placeholder={t('dashboard.settings.calendarSettings.placeholders.calendarNameFr')}
+                data-cy="input-calendar-name"
+              />
+            </Form.Item>
+
+            <Form.Item name="calendarNameEn">
+              <TextArea
+                autoSize
+                style={{
+                  borderRadius: '4px',
+                  border: '4px solid #E8E8E8',
+                  width: '100%',
+                }}
+                size="large"
+                autoComplete="off"
+                placeholder={t('dashboard.settings.calendarSettings.placeholders.calendarNameEn')}
+                data-cy="input-calendar-name"
+              />
+            </Form.Item>
+          </BilingualInput>
+        );
+      },
       rules: [
         ({ getFieldValue }) => ({
           validator() {
