@@ -477,10 +477,12 @@ function AddEvent() {
             let startTimeValue = values?.startTime;
             let endTimeValue = values?.endTime;
             let dateTypeValue = dateType;
+
             let customTimeFlag = false;
             let customStartTimeFlag = false;
             let customEndTimeFlag = false;
             let customDatesFlag = false;
+
             let multipleDatesFlag = false;
             let multipleStartTimeFlag = false;
             let multipleEndTimeFlag = false;
@@ -511,7 +513,6 @@ function AddEvent() {
                   form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
               };
 
-              // following code looks at custom date and convert them to a single day event if there is only one occurance
               customDatesFlag = !!recurEvent?.customDates;
 
               if (customDatesFlag && recurEvent.customDates.length === 1) {
@@ -528,25 +529,30 @@ function AddEvent() {
                 customDatesFlag = false;
               }
 
+              // following code convert custom date to a single day event if there is only one occurance
               if (customDatesFlag) {
-                // custom dates to single event conversion logic
+                // Custom dates to single event conversion logic
                 dateTypeValue = dateTypes.SINGLE;
                 const singleCustomDate = recurEvent.customDates?.[0];
-                datePickerValue = moment(singleCustomDate?.startDate);
+                datePickerValue = singleCustomDate ? moment(singleCustomDate.startDate) : undefined;
+
                 if (customTimeFlag) {
-                  startTimeValue = singleCustomDate?.customTimes?.[0]?.startTime;
-                  endTimeValue = singleCustomDate?.customTimes?.[0]?.endTime;
-                  if (startTimeValue) customStartTimeFlag = true;
-                  if (endTimeValue) customEndTimeFlag = true;
+                  const customTimes = singleCustomDate?.customTimes?.[0] || {};
+                  startTimeValue = customTimes.startTime ?? undefined;
+                  endTimeValue = customTimes.endTime ?? undefined;
+
+                  customStartTimeFlag = !!startTimeValue;
+                  customEndTimeFlag = !!endTimeValue;
                 } else {
                   startTimeValue = undefined;
                   endTimeValue = undefined;
                 }
               } else if (multipleDatesFlag) {
-                startTimeValue = recurEvent?.startTime;
-                endTimeValue = recurEvent?.endTime;
-                if (startTimeValue) multipleStartTimeFlag = true;
-                if (endTimeValue) multipleEndTimeFlag = true;
+                startTimeValue = recurEvent?.startTime ?? undefined;
+                endTimeValue = recurEvent?.endTime ?? undefined;
+
+                multipleStartTimeFlag = !!startTimeValue;
+                multipleEndTimeFlag = !!endTimeValue;
               } else {
                 recurringEvent = recurEvent;
               }
