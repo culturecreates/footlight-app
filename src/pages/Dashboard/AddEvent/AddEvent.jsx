@@ -245,7 +245,7 @@ function AddEvent() {
     if (moment.isMoment(date)) {
       dateSelected = date.format('DD-MM-YYYY');
     } else {
-      dateSelected = date;
+      dateSelected = moment(date).format('DD-MM-YYYY');
     }
 
     // adjustedCustomDate is used to handle dates that are coming from custom recurring event config
