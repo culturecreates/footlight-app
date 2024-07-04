@@ -150,6 +150,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
     updateCalendar({ calendarId, data })
       .unwrap()
       .then(() => {
+        setDirtyStatus(false);
         getCalendar({ id: calendarId, sessionId: timestampRef })
           .unwrap()
           .then((response) => {
@@ -358,7 +359,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
               name="calendar-settings"
               initialValues={initialValues}
               onFieldsChange={() => {
-                setDirtyStatus();
+                setDirtyStatus(true);
               }}>
               {calendarSettingsFormFields.GENERAL_SETTINGS.map((item, index) => {
                 return (
@@ -372,6 +373,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
                     {item.field({
                       form,
                       isCrop: false,
+                      initialValues,
                       largeAspectRatio: imageConfig?.large?.aspectRatio,
                       thumbnailAspectRatio: imageConfig?.thumbnail?.aspectRatio,
                       largeMaxWidth: imageConfig?.large?.maxWidth,

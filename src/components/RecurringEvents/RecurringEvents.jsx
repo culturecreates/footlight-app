@@ -24,6 +24,10 @@ const RecurringEvents = function ({
   eventDetails,
   setFormFields,
   dateType,
+  disabledDate,
+  onCalendarChange,
+  setSubEventCount,
+  subEventCount,
 }) {
   const [nummberofDates, setNumberofDates] = useState(numberOfDaysEvent);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -32,7 +36,6 @@ const RecurringEvents = function ({
   const [isCustom, setIsCustom] = useState(false);
   const [selectedWeekDays, setSelectedWeekDays] = useState([]);
   const [dateModified, setDateModified] = useState(false);
-  const [subEventCount, setSubEventCount] = useState(0);
   const startDateRecur = Form.useWatch('startDateRecur', form);
   const { t } = useTranslation();
   Form.useWatch('endTimeRecur', form);
@@ -341,6 +344,8 @@ const RecurringEvents = function ({
             <DateRangePicker
               style={{ width: '423px' }}
               disabled={(isCustom || formFields?.frequency === 'CUSTOM') && startDateRecur?.length == 2 && true}
+              disabledDate={disabledDate}
+              onCalendarChange={onCalendarChange}
               suffixIcon={
                 subEventCount > 0 && (
                   <Tags

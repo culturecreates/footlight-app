@@ -34,7 +34,7 @@ function MandatoryField(props) {
 
       setAddedFields(updatedFields);
       setAvailableFields([...availableFields, removedField]);
-      setDirtyStatus();
+      setDirtyStatus(true);
     }
   };
 
@@ -54,7 +54,7 @@ function MandatoryField(props) {
     });
     setAddedFields([...addedFields, { ...field, isRequiredField: true }]);
     setAvailableFields(updatedFields);
-    setDirtyStatus();
+    setDirtyStatus(true);
   };
 
   useEffect(() => {
