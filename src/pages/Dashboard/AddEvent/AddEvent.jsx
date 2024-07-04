@@ -107,6 +107,7 @@ import { groupEventsByDate } from '../../../utils/groupSubEventsConfigByDate';
 import MultipleImageUpload from '../../../components/MultipleImageUpload';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import { getWeekDayDates } from '../../../utils/getWeekDayDates';
 
 const { TextArea } = Input;
 
@@ -160,6 +161,9 @@ function AddEvent() {
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
 
   const [dateType, setDateType] = useState();
+  const [subEventCount, setSubEventCount] = useState(0);
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
   const [ticketType, setTicketType] = useState();
   const [organizersList, setOrganizersList] = useState([]);
   const [performerList, setPerformerList] = useState([]);
@@ -232,9 +236,29 @@ function AddEvent() {
   let mainImageData = eventData?.image?.find((image) => image?.isMain) || null;
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
-  const dateTimeConverter = (date, time) => {
-    let dateSelected = date.format('DD-MM-YYYY');
-    let timeSelected = time.format('hh:mm:ss a');
+  const dateTimeConverter = (date, time, isAdjustedCustomDate = false) => {
+    let dateSelected;
+    let timeSelected;
+
+    // Determine if the date is already in the 'DD-MM-YYYY' format.
+    // This is to hadle for cases where the date comes from a recurring event configurations that are being converted to single event
+    if (moment.isMoment(date)) {
+      dateSelected = date.format('DD-MM-YYYY');
+    } else {
+      dateSelected = moment(date).format('DD-MM-YYYY');
+    }
+
+    // adjustedCustomDate is used to handle dates that are coming from custom recurring event config
+    if (isAdjustedCustomDate) {
+      return moment.tz(dateSelected + ' ' + time, 'DD-MM-YYYY HH:mm a', 'Canada/Eastern');
+    }
+
+    if (moment.isMoment(time)) {
+      timeSelected = time.format('hh:mm:ss a');
+    } else {
+      timeSelected = time;
+    }
+
     // Combine date and time and explicitly set the timezone to 'Canada/Eastern'
     let dateTime = moment.tz(dateSelected + ' ' + timeSelected, 'DD-MM-YYYY HH:mm a', 'Canada/Eastern');
     return dateTime.toISOString();
@@ -445,27 +469,25 @@ function AddEvent() {
             });
             // Use a regular expression to remove <p><br></p> tags at the end
 
-            if (dateType === dateTypes.SINGLE) {
-              if (values?.startTime) startDateTime = dateTimeConverter(values?.datePicker, values?.startTime);
-              else
-                startDateTime = moment
-                  .tz(values?.datePicker, eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                  .format('YYYY-MM-DD');
-              if (values?.endTime) endDateTime = dateTimeConverter(values?.datePicker, values?.endTime);
-            }
-            if (dateType === dateTypes.RANGE) {
-              if (values?.startTime) startDateTime = dateTimeConverter(values?.dateRangePicker[0], values?.startTime);
-              else
-                startDateTime = moment
-                  .tz(values?.dateRangePicker[0], eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                  .format('YYYY-MM-DD');
-              if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
-              else
-                endDateTime = moment
-                  .tz(values?.dateRangePicker[1], eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                  .format('YYYY-MM-DD');
-            }
-            if (dateType === dateTypes.MULTIPLE) {
+            // Below code handles dates and time for single, range and multiple dates
+            // custom dates that has only one occurance will be converted to single event
+            // multiple dates that has only one occurance will be converted to single event
+
+            let datePickerValue = values?.datePicker;
+            let startTimeValue = values?.startTime;
+            let endTimeValue = values?.endTime;
+            let dateTypeValue = dateType;
+
+            let customTimeFlag = false;
+            let customStartTimeFlag = false;
+            let customEndTimeFlag = false;
+            let customDatesFlag = false;
+
+            let multipleDatesFlag = false;
+            let multipleStartTimeFlag = false;
+            let multipleEndTimeFlag = false;
+
+            if (dateTypeValue === dateTypes.MULTIPLE) {
               const recurEvent = {
                 frequency: values.frequency,
                 startDate:
@@ -490,8 +512,74 @@ function AddEvent() {
                 customDates:
                   form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
               };
-              recurringEvent = recurEvent;
+
+              customDatesFlag = !!recurEvent?.customDates;
+
+              if (customDatesFlag && recurEvent.customDates.length === 1) {
+                // sets flags for customTime and customDates inclusion
+                const customTimes = recurEvent.customDates[0]?.customTimes || [];
+                customTimeFlag = customTimes.length == 1;
+                customDatesFlag = customTimes.length <= 1;
+              } else if (subEventCount == 1) {
+                // sets flags and values for multipleDay event with only one occurance
+                multipleDatesFlag = true;
+                dateTypeValue = dateTypes.SINGLE;
+                datePickerValue = getWeekDayDates(recurEvent);
+              } else {
+                customDatesFlag = false;
+              }
+
+              // following code convert custom date to a single day event if there is only one occurance
+              if (customDatesFlag) {
+                // Custom dates to single event conversion logic
+                dateTypeValue = dateTypes.SINGLE;
+                const singleCustomDate = recurEvent.customDates?.[0];
+                datePickerValue = singleCustomDate ? moment(singleCustomDate.startDate) : undefined;
+
+                if (customTimeFlag) {
+                  const customTimes = singleCustomDate?.customTimes?.[0] || {};
+                  startTimeValue = customTimes.startTime ?? undefined;
+                  endTimeValue = customTimes.endTime ?? undefined;
+
+                  customStartTimeFlag = !!startTimeValue;
+                  customEndTimeFlag = !!endTimeValue;
+                } else {
+                  startTimeValue = undefined;
+                  endTimeValue = undefined;
+                }
+              } else if (multipleDatesFlag) {
+                startTimeValue = recurEvent?.startTime ?? undefined;
+                endTimeValue = recurEvent?.endTime ?? undefined;
+
+                multipleStartTimeFlag = !!startTimeValue;
+                multipleEndTimeFlag = !!endTimeValue;
+              } else {
+                recurringEvent = recurEvent;
+              }
             }
+
+            if (dateTypeValue === dateTypes.SINGLE) {
+              if (startTimeValue) startDateTime = dateTimeConverter(datePickerValue, startTimeValue, customTimeFlag);
+              else
+                startDateTime = moment
+                  .tz(datePickerValue, eventData?.scheduleTimezone ?? 'Canada/Eastern')
+                  .format('YYYY-MM-DD');
+              if (endTimeValue) endDateTime = dateTimeConverter(datePickerValue, endTimeValue, customTimeFlag);
+            }
+
+            if (dateTypeValue === dateTypes.RANGE) {
+              if (values?.startTime) startDateTime = dateTimeConverter(values?.dateRangePicker[0], values?.startTime);
+              else
+                startDateTime = moment
+                  .tz(values?.dateRangePicker[0], eventData?.scheduleTimezone ?? 'Canada/Eastern')
+                  .format('YYYY-MM-DD');
+              if (values?.endTime) endDateTime = dateTimeConverter(values?.dateRangePicker[1], values?.endTime);
+              else
+                endDateTime = moment
+                  .tz(values?.dateRangePicker[1], eventData?.scheduleTimezone ?? 'Canada/Eastern')
+                  .format('YYYY-MM-DD');
+            }
+
             if (values?.eventType) {
               additionalType = values?.eventType?.map((eventTypeId) => {
                 return {
@@ -698,12 +786,24 @@ function AddEvent() {
             if (nameEn) name['en'] = nameEn;
             if (nameFr) name['fr'] = nameFr;
 
+            const isStartDateConvertedCustomDates = values?.startTime && !(customDatesFlag || multipleDatesFlag);
+            const isEndDateConvertedCustomDates = values?.endTime && !(customDatesFlag || multipleDatesFlag);
+            const isCustomOrMultipleDatesHasEndTime = customEndTimeFlag || multipleEndTimeFlag;
+            const isCustomOrMultipleDatesHasStartTime = customStartTimeFlag || multipleStartTimeFlag;
             eventObj = {
               name: !(Object.keys(name).length > 0) ? { ...name, ...eventData?.name } : name,
-              ...(values?.startTime && { startDateTime }),
-              ...(!values?.startTime && { startDate: startDateTime }),
-              ...(values?.endTime && { endDateTime }),
-              ...(!values?.endTime && { endDate: endDateTime }),
+              ...((isStartDateConvertedCustomDates || isCustomOrMultipleDatesHasStartTime) && {
+                startDateTime,
+              }),
+              ...((isStartDateConvertedCustomDates || !isCustomOrMultipleDatesHasStartTime) && {
+                startDate: startDateTime,
+              }),
+              ...((isEndDateConvertedCustomDates || isCustomOrMultipleDatesHasEndTime) && {
+                endDateTime,
+              }),
+              ...((isEndDateConvertedCustomDates || !isCustomOrMultipleDatesHasEndTime) && {
+                endDate: endDateTime,
+              }),
               eventStatus: values?.eventStatus,
               ...((values?.englishEditor || values?.frenchEditor) && { description }),
               ...(values?.eventAccessibility && {
@@ -2312,7 +2412,7 @@ function AddEvent() {
                 <Row>
                   <Col>
                     <p className="add-event-date-heading" data-cy="heading-dates">
-                      {t('dashboard.events.addEditEvent.dates.heading')}
+                      {t('dashboard.events.addEditEvent.dates.heading')} hello
                     </p>
                   </Col>
                 </Row>
@@ -2448,7 +2548,18 @@ function AddEvent() {
                             },
                           ]}
                           data-cy="form-item-date-range-label">
-                          <DateRangePicker style={{ width: '100%' }} data-cy="date-range" />
+                          <DateRangePicker
+                            style={{ width: '100%' }}
+                            onCalendarChange={(dates) => {
+                              setStartDate(dates?.[0]);
+                              setEndDate(dates?.[1]);
+                            }}
+                            disabledDate={(current) =>
+                              (startDate && current.isSame(startDate, 'day')) ||
+                              (endDate && current.isSame(endDate, 'day'))
+                            }
+                            data-cy="date-range"
+                          />
                         </Form.Item>
                       )}
                       {dateType === dateTypes.MULTIPLE && (
@@ -2459,6 +2570,16 @@ function AddEvent() {
                             numberOfDaysEvent={eventData?.subEvents?.length}
                             form={form}
                             eventDetails={eventData}
+                            subEventCount={subEventCount}
+                            setSubEventCount={setSubEventCount}
+                            onCalendarChange={(dates) => {
+                              setStartDate(dates?.[0]);
+                              setEndDate(dates?.[1]);
+                            }}
+                            disabledDate={(current) =>
+                              (startDate && current.isSame(startDate, 'day')) ||
+                              (endDate && current.isSame(endDate, 'day'))
+                            }
                             setFormFields={setFormValue}
                             dateType={dateType}
                           />
