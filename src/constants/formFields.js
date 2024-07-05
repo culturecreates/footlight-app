@@ -33,7 +33,7 @@ export const formTypes = {
   TEXTAREA: 'TextArea',
   EDITOR: 'Editor',
   IMAGE: 'Image',
-  SEARCH: 'Search',
+  SEARCH: 'LocationSearch',
 };
 
 export const dataTypes = {
