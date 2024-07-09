@@ -170,8 +170,8 @@ const AddTaxonomyTest = () => {
           }),
           isAdminOnly: userAccess?.length > 0,
           disambiguatingDescription: {
-            en: values?.frenchdescription?.trim(),
-            fr: values?.englishdescription?.trim(),
+            fr: values?.frenchdescription?.trim(),
+            en: values?.englishdescription?.trim(),
           },
           concepts: { concepts: [...filteredConceptData] },
           addToFilter: values?.addToFilter,
