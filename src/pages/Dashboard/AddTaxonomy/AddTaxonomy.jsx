@@ -165,7 +165,7 @@ const AddTaxonomyTest = () => {
           taxonomyClass: values?.class?.value,
           isDynamicField: dynamic ?? false,
           includeInFullTextSearch: true,
-          ...((taxonomyData?.isDynamicField != true || dynamic != true) && {
+          ...(dynamic == false && {
             mappedToField: values?.mappedToField?.key ?? values?.mappedToField,
           }),
           isAdminOnly: userAccess?.length > 0,
