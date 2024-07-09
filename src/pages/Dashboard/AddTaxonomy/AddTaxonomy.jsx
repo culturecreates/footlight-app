@@ -55,7 +55,7 @@ const AddTaxonomyTest = () => {
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
-  const dynamic = location.state?.dynamic;
+  const dynamic = location.state?.dynamic ?? false;
 
   const taxonomyId = searchParams.get('id');
   setContentBackgroundColor('#F9FAFF');
