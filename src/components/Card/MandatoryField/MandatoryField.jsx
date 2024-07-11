@@ -9,13 +9,12 @@ import AddField from '../../Button/AddField';
 import { useTranslation } from 'react-i18next';
 
 function MandatoryField(props) {
-  const { field, formName, formLabel, setDirtyStatus, tabKey } = props;
-  let { updatedFormFields } = props;
+  const { field, formName, formLabel, setDirtyStatus, tabKey, updatedFormFields, setUpdatedFormFields } = props;
   const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
 
-  const [addedFields, setAddedFields] = useState();
-  const [availableFields, setAvailableFields] = useState();
+  const [addedFields, setAddedFields] = useState([]);
+  const [availableFields, setAvailableFields] = useState([]);
 
   const removeFromFields = (index) => {
     let removedField = addedFields[index];
@@ -25,7 +24,7 @@ function MandatoryField(props) {
     };
     if (!removedField?.preFilled) {
       let updatedFields = addedFields.filter((field, i) => i !== index);
-      updatedFormFields = updatedFormFields?.map((f) => {
+      const updatedForms = updatedFormFields?.map((f) => {
         if (f.formName === formName) {
           f.formFields = updatedFields?.concat([...availableFields, removedField]);
         }
@@ -34,7 +33,8 @@ function MandatoryField(props) {
 
       setAddedFields(updatedFields);
       setAvailableFields([...availableFields, removedField]);
-      setDirtyStatus(true);
+      setUpdatedFormFields(updatedForms);
+      setDirtyStatus();
     }
   };
 
@@ -46,15 +46,17 @@ function MandatoryField(props) {
         isRequiredField: false,
       };
     });
-    updatedFormFields = updatedFormFields?.map((f) => {
+    const updatedForms = updatedFormFields?.map((f) => {
       if (f.formName === formName) {
         f.formFields = updatedFields?.concat([...addedFields, { ...field, isRequiredField: true }]);
       }
       return f;
     });
+
     setAddedFields([...addedFields, { ...field, isRequiredField: true }]);
     setAvailableFields(updatedFields);
-    setDirtyStatus(true);
+    setUpdatedFormFields(updatedForms);
+    setDirtyStatus();
   };
 
   useEffect(() => {
@@ -62,7 +64,7 @@ function MandatoryField(props) {
 
     setAddedFields(field?.filter((f) => f?.isRequiredField || f?.preFilled));
     setAvailableFields(field?.filter((f) => !f?.isRequiredField && !f?.preFilled && !f?.isAdminOnlyField));
-  }, [tabKey]);
+  }, [tabKey, field]);
 
   return (
     <Card className="mandatory-card-wrapper" bodyStyle={{ padding: '24px 16px 24px 16px' }}>
