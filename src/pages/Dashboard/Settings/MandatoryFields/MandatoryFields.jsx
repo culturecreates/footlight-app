@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './mandatoryFields.css';
 import { Row, Col, notification } from 'antd';
 import MandatoryFieldCard from '../../../../components/Card/MandatoryField/MandatoryField';
@@ -15,6 +15,7 @@ function MandatoryFields({ setDirtyStatus, tabKey }) {
   const [currentCalendarData, , , getCalendar, , , , refetch, ,] = useOutletContext();
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
+  const [updatedFormFields, setUpdatedFormFields] = useState([]);
 
   let query = new URLSearchParams();
   query.append('taxonomy-class', taxonomyClass.ORGANIZATION);
@@ -42,88 +43,90 @@ function MandatoryFields({ setDirtyStatus, tabKey }) {
       formName: 'Place',
       formLabel: t('dashboard.settings.mandatoryFields.place'),
       taxonomyClass: entitiesClass.place,
-
       // prefilledFields: ['name', 'streetAddress', 'postalCode'],
     },
     {
       formName: 'Organization',
       formLabel: t('dashboard.settings.mandatoryFields.organization'),
       taxonomyClass: entitiesClass.organization,
-
       // prefilledFields: ['name'],
     },
     {
       formName: 'Person',
       formLabel: t('dashboard.settings.mandatoryFields.person'),
       taxonomyClass: entitiesClass.person,
-
       // prefilledFields: ['name'],
     },
   ];
 
-  fields = fields?.map((field) => {
-    const preFilled = prefilledFields?.find((f) => f.formName === field?.formName);
-    let minimumRequiredFields = [],
-      requiredFields = [],
-      standardAdminOnlyFields = [];
-    minimumRequiredFields =
-      field?.formFieldProperties?.minimumRequiredFields?.standardFields?.map((f) => f?.fieldName) ?? [];
-    minimumRequiredFields = minimumRequiredFields?.concat(
-      field?.formFieldProperties?.minimumRequiredFields?.dynamicFields?.map((f) => f),
-    );
-    requiredFields = field?.formFieldProperties?.mandatoryFields?.standardFields?.map((f) => f?.fieldName) ?? [];
-    requiredFields = requiredFields?.concat(field?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((f) => f));
-    standardAdminOnlyFields =
-      field?.formFieldProperties?.adminOnlyFields?.standardFields?.map((f) => f?.fieldName) ?? [];
+  useEffect(() => {
+    if (allTaxonomyData && currentCalendarData) {
+      const initializedFields = fields?.map((field) => {
+        const preFilled = prefilledFields?.find((f) => f.formName === field?.formName);
+        let minimumRequiredFields = [],
+          requiredFields = [],
+          standardAdminOnlyFields = [];
+        minimumRequiredFields =
+          field?.formFieldProperties?.minimumRequiredFields?.standardFields?.map((f) => f?.fieldName) ?? [];
+        minimumRequiredFields = minimumRequiredFields?.concat(
+          field?.formFieldProperties?.minimumRequiredFields?.dynamicFields?.map((f) => f),
+        );
+        requiredFields = field?.formFieldProperties?.mandatoryFields?.standardFields?.map((f) => f?.fieldName) ?? [];
+        requiredFields = requiredFields?.concat(
+          field?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((f) => f),
+        );
+        standardAdminOnlyFields =
+          field?.formFieldProperties?.adminOnlyFields?.standardFields?.map((f) => f?.fieldName) ?? [];
 
-    let modifiedField = field?.formFields?.map((f) => {
-      return {
-        ...f,
-        preFilled: minimumRequiredFields.includes(f?.name),
-        isRequiredField: standardAdminOnlyFields?.includes(f?.name)
-          ? false
-          : requiredFields.includes(f?.name) || minimumRequiredFields.includes(f?.name),
-        isAdminOnlyField: standardAdminOnlyFields?.includes(f?.name) || false,
-        rule: field?.formFieldProperties?.mandatoryFields?.standardFields?.find(
-          (standardField) => f?.name === standardField?.fieldName,
-        )?.rule,
-      };
-    });
-    modifiedField = modifiedField?.concat(
-      allTaxonomyData?.data
-        ?.filter((f) => f?.taxonomyClass === preFilled?.taxonomyClass && f?.isDynamicField)
-        ?.map((f) => {
+        let modifiedField = field?.formFields?.map((f) => {
           return {
-            mappedField: f?.id,
-            preFilled: false,
-            isRequiredField: field?.formFieldProperties?.mandatoryFields?.dynamicFields?.includes(f?.id) || false,
-            isAdminOnlyField: field?.formFieldProperties?.adminOnlyFields?.dynamicFields?.includes(f?.id) || false,
-            isDynamicField: true,
-            name: f?.id,
-            label: f?.name,
+            ...f,
+            preFilled: minimumRequiredFields.includes(f?.name),
+            isRequiredField: standardAdminOnlyFields?.includes(f?.name)
+              ? false
+              : requiredFields.includes(f?.name) || minimumRequiredFields.includes(f?.name),
+            isAdminOnlyField: standardAdminOnlyFields?.includes(f?.name) || false,
+            rule: field?.formFieldProperties?.mandatoryFields?.standardFields?.find(
+              (standardField) => f?.name === standardField?.fieldName,
+            )?.rule,
           };
-        }),
-    );
-    modifiedField = modifiedField?.sort((a, b) => {
-      if (a.preFilled && !b.preFilled) {
-        return -1;
-      } else if (!a.preFilled && b.preFilled) {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
-    return {
-      formName: field?.formName,
-      formFields: modifiedField,
-      formLabel: preFilled?.formLabel,
-    };
-  });
-
-  let updatedFormFields = fields;
+        });
+        modifiedField = modifiedField?.concat(
+          allTaxonomyData?.data
+            ?.filter((f) => f?.taxonomyClass === preFilled?.taxonomyClass && f?.isDynamicField)
+            ?.map((f) => {
+              return {
+                mappedField: f?.id,
+                preFilled: false,
+                isRequiredField: field?.formFieldProperties?.mandatoryFields?.dynamicFields?.includes(f?.id) || false,
+                isAdminOnlyField: field?.formFieldProperties?.adminOnlyFields?.dynamicFields?.includes(f?.id) || false,
+                isDynamicField: true,
+                name: f?.id,
+                label: f?.name,
+              };
+            }),
+        );
+        modifiedField = modifiedField?.sort((a, b) => {
+          if (a.preFilled && !b.preFilled) {
+            return -1;
+          } else if (!a.preFilled && b.preFilled) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+        return {
+          formName: field?.formName,
+          formFields: modifiedField,
+          formLabel: preFilled?.formLabel,
+        };
+      });
+      setUpdatedFormFields(initializedFields);
+    }
+  }, [allTaxonomyData, currentCalendarData]);
 
   const onSaveHandler = () => {
-    updatedFormFields = updatedFormFields?.map((f, index) => {
+    const savedFormFields = updatedFormFields?.map((f, index) => {
       let formFieldProperties = {
         mandatoryFields: { standardFields: [], dynamicFields: [] },
       };
@@ -159,7 +162,7 @@ function MandatoryFields({ setDirtyStatus, tabKey }) {
       imageConfig: currentCalendarData.imageConfig,
       mode: currentCalendarData.mode,
       languageFallbacks: currentCalendarData?.languageFallbacks,
-      forms: updatedFormFields,
+      forms: savedFormFields,
       namespace: currentCalendarData?.namespace,
       widgetSettings: currentCalendarData.widgetSettings,
       filterPersonalization: currentCalendarData.filterPersonalization,
@@ -185,7 +188,6 @@ function MandatoryFields({ setDirtyStatus, tabKey }) {
     updateCalendar({ data: calendarData, calendarId: currentCalendarData.id })
       .unwrap()
       .then(() => {
-        setDirtyStatus(false);
         getCalendar({ id: calendarId, sessionId: timestampRef })
           .unwrap()
           .then(() => {
@@ -240,13 +242,14 @@ function MandatoryFields({ setDirtyStatus, tabKey }) {
           </Col>
           <Col flex={'576px'}>
             <Row gutter={[8, 18]}>
-              {fields?.map((field, index) => (
+              {updatedFormFields?.map((field, index) => (
                 <Col span={24} key={index}>
                   <MandatoryFieldCard
                     field={field?.formFields}
                     formName={field?.formName}
                     formLabel={field?.formLabel}
                     updatedFormFields={updatedFormFields}
+                    setUpdatedFormFields={setUpdatedFormFields}
                     setDirtyStatus={setDirtyStatus}
                     tabKey={tabKey}
                   />
