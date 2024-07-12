@@ -513,8 +513,7 @@ function OrganizationsReadOnly() {
                                 className="read-only-event-content-sub-title-primary"
                                 data-cy={`para-organization-dynamic-taxonomy-name-${index}`}>
                                 {bilingual({
-                                  en: taxonomy?.name?.en,
-                                  fr: taxonomy?.name?.fr,
+                                  data: taxonomy?.name,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                 })}
                               </p>

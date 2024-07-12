@@ -348,8 +348,7 @@ function PlaceReadOnly() {
                                   className="read-only-event-content-sub-title-primary"
                                   data-cy="para-place-dynamic-taxonomy-name">
                                   {bilingual({
-                                    en: taxonomy?.name?.en,
-                                    fr: taxonomy?.name?.fr,
+                                    data: taxonomy?.name,
                                     interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   })}
                                 </p>

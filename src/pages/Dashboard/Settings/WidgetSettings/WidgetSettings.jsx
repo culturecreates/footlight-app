@@ -16,7 +16,7 @@ import { getUserDetails } from '../../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
 import Tags from '../../../../components/Tags/Common/Tags';
 import { treeTaxonomyOptions } from '../../../../components/TreeSelectOption/treeSelectOption.settings';
-import { userLanguages } from '../../../../constants/userLanguagesÏ';
+import { userLanguages } from '../../../../constants/userLanguages';
 import SelectOption from '../../../../components/Select/SelectOption';
 import { placeTaxonomyMappedFieldTypes } from '../../../../constants/placeMappedFieldTypes';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../../services/entities';
@@ -219,7 +219,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
           response.map((item) => {
             return {
               value: item?.id,
-              label: bilingual({ fr: item?.name?.fr, en: item?.name?.en, interfaceLanguage: user?.interfaceLanguage }),
+              label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
             };
           }),
         );
@@ -245,7 +245,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
           response.map((item) => {
             return {
               value: item?.id,
-              label: bilingual({ fr: item?.name?.fr, en: item?.name?.en, interfaceLanguage: user?.interfaceLanguage }),
+              label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
             };
           }),
         );
@@ -271,7 +271,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
           response.map((item) => {
             return {
               value: item?.id,
-              label: bilingual({ fr: item?.name?.fr, en: item?.name?.en, interfaceLanguage: user?.interfaceLanguage }),
+              label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
             };
           }),
         );
@@ -289,7 +289,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
         initialEntitiesLocations.map((item) => {
           return {
             value: item?.id,
-            label: bilingual({ fr: item?.name?.fr, en: item?.name?.en, interfaceLanguage: user?.interfaceLanguage }),
+            label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
           };
         }),
       );
@@ -302,7 +302,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
         initialEntitiesPerson.map((item) => {
           return {
             value: item?.id,
-            label: bilingual({ fr: item?.name?.fr, en: item?.name?.en, interfaceLanguage: user?.interfaceLanguage }),
+            label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
           };
         }),
       );
@@ -315,7 +315,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
         initialEntitiesOrganization.map((item) => {
           return {
             value: item?.id,
-            label: bilingual({ fr: item?.name?.fr, en: item?.name?.en, interfaceLanguage: user?.interfaceLanguage }),
+            label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
           };
         }),
       );

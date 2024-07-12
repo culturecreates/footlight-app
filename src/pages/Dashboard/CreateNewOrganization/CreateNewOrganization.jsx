@@ -1276,8 +1276,7 @@ function CreateNewOrganization() {
                                 key={index}
                                 name={['dynamicFields', taxonomy?.id]}
                                 label={bilingual({
-                                  en: taxonomy?.name?.en,
-                                  fr: taxonomy?.name?.fr,
+                                  data: taxonomy?.name,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                 })}
                                 initialValue={initialValues}

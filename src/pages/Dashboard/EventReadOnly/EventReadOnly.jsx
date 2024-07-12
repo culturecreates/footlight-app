@@ -239,8 +239,7 @@ function EventReadOnly() {
                 <div className="read-only-event-heading">
                   <h4>
                     {bilingual({
-                      en: eventData?.name?.en,
-                      fr: eventData?.name?.fr,
+                      data: eventData?.name,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                     })}
                   </h4>
@@ -419,8 +418,7 @@ function EventReadOnly() {
                             }}>
                             <p className="read-only-event-content-sub-title-primary">
                               {bilingual({
-                                en: taxonomy?.name?.en,
-                                fr: taxonomy?.name?.fr,
+                                data: eventData?.name,
                                 interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                               })}
                             </p>

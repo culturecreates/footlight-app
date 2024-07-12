@@ -351,8 +351,7 @@ function Places() {
                             }}
                             data-cy="button-filter-taxonomy-standard">
                             {bilingual({
-                              en: taxonomy?.name?.en,
-                              fr: taxonomy?.name?.fr,
+                              data: taxonomy?.name,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             })}
                             {standardTaxonomyFilter[taxonomy?.mappedToField]?.length > 0 && (
@@ -412,8 +411,7 @@ function Places() {
                             style={{ borderColor: taxonomyFilter[taxonomy?.id]?.length > 0 > 0 && '#607EFC' }}
                             data-cy="button-filter-taxonomy">
                             {bilingual({
-                              en: taxonomy?.name?.en,
-                              fr: taxonomy?.name?.fr,
+                              data: taxonomy?.name,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             })}
                             {taxonomyFilter[taxonomy?.id]?.length > 0 && (

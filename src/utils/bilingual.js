@@ -1,22 +1,46 @@
 //Function which returns the language key depending on the interface language
 
 import { contentLanguage, contentLanguageKeyMap } from '../constants/contentLanguage';
+import { userLanguages } from '../constants/userLanguages';
 
-export const bilingual = ({ fr, en, interfaceLanguage: interfaceLanguage }) => {
-  if (interfaceLanguage?.toLowerCase() === 'fr' && fr) return fr;
-  else if (interfaceLanguage?.toLowerCase() === 'en' && en) return en;
-  else if (fr && !en) return fr;
-  else return en;
+export const bilingual = ({ interfaceLanguage, data }) => {
+  /**
+   * Retrieves bilingual data based on the interface language.
+   * @param {Object} params - The parameters object.
+   * @param {string} params.interfaceLanguage - Active interface language.
+   * @param {Object} params.data - The data object containing multilingual content.
+   * @returns {string} .
+   */
+
+  if (!data) return '';
+  if (!interfaceLanguage) interfaceLanguage = contentLanguageKeyMap[contentLanguage.ENGLISH];
+
+  const activeLanguageKey = userLanguages
+    .find((lang) => {
+      const langKey = lang.value.toLowerCase();
+      return langKey === interfaceLanguage?.toLowerCase();
+    })
+    ?.key?.toLowerCase();
+
+  let activeData = data[activeLanguageKey];
+
+  if (!activeData) {
+    const dataObjectKeys = Object.keys(data);
+    return dataObjectKeys.length > 0 ? data[dataObjectKeys[0]] : '';
+  }
+
+  return activeData;
 };
 
-export const contentLanguageBilingual = ({ interfaceLanguage: interfaceLanguage, calendarContentLanguage, data }) => {
+export const contentLanguageBilingual = ({ interfaceLanguage, calendarContentLanguage, data }) => {
   /**
    * @param {Object} params - The parameters object.
-   * @param {string} params.interfaceLanguage - The language of the interface.
+   * @param {string} params.interfaceLanguage - Active interface language.
    * @param {string[]} params.calendarContentLanguage - Array of calendar content languages.
-   * @param {Object} params.data - The data object containing content for different languages.
-   * @returns {string} The content language key or an empty string if no data is available.
-   */
+   * @param {Object} params.data - Multilingual data object.
+   * @returns {string} The data of content language or an empty string if no data is available.
+   **/
+
   if (!data) return '';
 
   let contentLanguageKey = interfaceLanguage?.toLowerCase();

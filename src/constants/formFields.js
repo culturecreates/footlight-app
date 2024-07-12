@@ -709,13 +709,11 @@ export const returnFormDataWithFields = ({
       name: [field?.mappedField],
       preview: true,
       placeholder: bilingual({
-        en: field?.placeholder?.en,
-        fr: field?.placeholder?.fr,
+        data: field?.placeholder,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       }),
       validations: bilingual({
-        en: field?.validations?.en,
-        fr: field?.validations?.fr,
+        data: field?.validations,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       }),
       largeUrl:
@@ -729,8 +727,7 @@ export const returnFormDataWithFields = ({
       required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
       t: t,
       userTips: bilingual({
-        en: field?.userTips?.text?.en,
-        fr: field?.userTips?.text?.fr,
+        data: field?.userTips,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
         calendarContentLanguage: calendarContentLanguage,
       }),
@@ -770,13 +767,11 @@ export const returnFormDataWithFields = ({
     key: index,
     initialValue: formInitialValueHandler(field?.type, field?.mappedField, field?.datatype, entityData),
     label: bilingual({
-      en: field?.label?.en,
-      fr: field?.label?.fr,
+      data: field?.label,
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
     }),
     userTips: bilingual({
-      en: field?.userTips?.text?.en,
-      fr: field?.userTips?.text?.fr,
+      data: field?.userTips,
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       calendarContentLanguage: calendarContentLanguage,
     }),
@@ -787,8 +782,7 @@ export const returnFormDataWithFields = ({
     taxonomyAlias: field?.taxonomyAlias,
     t,
     validations: bilingual({
-      en: field?.validations?.en,
-      fr: field?.validations?.fr,
+      data: field?.validations,
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       locationPlace,
     }),

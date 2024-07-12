@@ -78,8 +78,7 @@ function MandatoryField(props) {
                 <AddField
                   key={index}
                   label={bilingual({
-                    en: field?.label?.en,
-                    fr: field?.label?.fr,
+                    data: field?.label,
                     interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                   })}
                   disabled={field?.preFilled}
@@ -101,8 +100,7 @@ function MandatoryField(props) {
                 <AddField
                   key={index}
                   label={bilingual({
-                    en: field?.label?.en,
-                    fr: field?.label?.fr,
+                    data: field?.label,
                     interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                   })}
                   onClick={() => addToFields(field)}
