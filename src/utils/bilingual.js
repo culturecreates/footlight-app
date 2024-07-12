@@ -10,6 +10,13 @@ export const bilingual = ({ fr, en, interfaceLanguage: interfaceLanguage }) => {
 };
 
 export const contentLanguageBilingual = ({ interfaceLanguage: interfaceLanguage, calendarContentLanguage, data }) => {
+  /**
+   * @param {Object} params - The parameters object.
+   * @param {string} params.interfaceLanguage - The language of the interface.
+   * @param {string[]} params.calendarContentLanguage - Array of calendar content languages.
+   * @param {Object} params.data - The data object containing content for different languages.
+   * @returns {string} The content language key or an empty string if no data is available.
+   */
   if (!data) return '';
 
   let contentLanguageKey = interfaceLanguage?.toLowerCase();
