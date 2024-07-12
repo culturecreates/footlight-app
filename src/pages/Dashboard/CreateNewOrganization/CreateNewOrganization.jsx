@@ -1169,14 +1169,12 @@ function CreateNewOrganization() {
                                     : artsDataLinkChecker(artsData?.sameAs)
                                 }
                                 name={contentLanguageBilingual({
-                                  en: artsData?.name?.en,
-                                  fr: artsData?.name?.fr,
+                                  data: artsData?.name,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
                                 disambiguatingDescription={contentLanguageBilingual({
-                                  en: artsData?.disambiguatingDescription?.en,
-                                  fr: artsData?.disambiguatingDescription?.fr,
+                                  data: artsData?.disambiguatingDescription,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
@@ -1341,14 +1339,12 @@ function CreateNewOrganization() {
                                       primaryIcon={<PlusOutlined />}
                                       disabled={false}
                                       label={contentLanguageBilingual({
-                                        en: field?.label?.en,
-                                        fr: field?.label?.fr,
+                                        data: field?.label,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })}
                                       promptText={contentLanguageBilingual({
-                                        en: field?.helperText?.en,
-                                        fr: field?.helperText?.fr,
+                                        data: field?.helperText,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })}
@@ -1385,8 +1381,7 @@ function CreateNewOrganization() {
                               name={
                                 place?.name?.en || place?.name?.fr
                                   ? contentLanguageBilingual({
-                                      en: place?.name?.en,
-                                      fr: place?.name?.fr,
+                                      data: place?.name,
                                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                       calendarContentLanguage: calendarContentLanguage,
                                     })
@@ -1413,8 +1408,7 @@ function CreateNewOrganization() {
                               name={
                                 person?.name?.en || person?.name?.fr
                                   ? contentLanguageBilingual({
-                                      en: person?.name?.en,
-                                      fr: person?.name?.fr,
+                                      data: person?.name,
                                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                       calendarContentLanguage: calendarContentLanguage,
                                     })
@@ -1442,8 +1436,7 @@ function CreateNewOrganization() {
                                 name={
                                   event?.name?.en || event?.name?.fr
                                     ? contentLanguageBilingual({
-                                        en: event?.name?.en,
-                                        fr: event?.name?.fr,
+                                        data: event?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })

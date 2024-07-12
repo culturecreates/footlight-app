@@ -471,14 +471,12 @@ function Places() {
                           <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} data-cy="logo-place" />
                         }
                         title={contentLanguageBilingual({
-                          en: item?.name?.en,
-                          fr: item?.name?.fr,
+                          data: item?.name,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                           calendarContentLanguage: calendarContentLanguage,
                         })}
                         description={contentLanguageBilingual({
-                          en: item?.disambiguatingDescription?.en,
-                          fr: item?.disambiguatingDescription?.fr,
+                          data: item?.disambiguatingDescription,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                           calendarContentLanguage: calendarContentLanguage,
                         })}

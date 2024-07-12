@@ -720,14 +720,12 @@ function CreateNewPerson() {
                                     : artsDataLinkChecker(artsData?.sameAs)
                                 }
                                 name={contentLanguageBilingual({
-                                  en: artsData?.name?.en,
-                                  fr: artsData?.name?.fr,
+                                  data: artsData?.name,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
                                 disambiguatingDescription={contentLanguageBilingual({
-                                  en: artsData?.disambiguatingDescription?.en,
-                                  fr: artsData?.disambiguatingDescription?.fr,
+                                  data: artsData?.disambiguatingDescription,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
@@ -874,8 +872,7 @@ function CreateNewPerson() {
                               name={
                                 place?.name?.en || place?.name?.fr
                                   ? contentLanguageBilingual({
-                                      en: place?.name?.en,
-                                      fr: place?.name?.fr,
+                                      data: place?.name,
                                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                       calendarContentLanguage: calendarContentLanguage,
                                     })
@@ -902,8 +899,7 @@ function CreateNewPerson() {
                                 name={
                                   org?.name?.en || org?.name?.fr
                                     ? contentLanguageBilingual({
-                                        en: org?.name?.en,
-                                        fr: org?.name?.fr,
+                                        data: org?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })
@@ -937,8 +933,7 @@ function CreateNewPerson() {
                                 name={
                                   event?.name?.en || event?.name?.fr
                                     ? contentLanguageBilingual({
-                                        en: event?.name?.en,
-                                        fr: event?.name?.fr,
+                                        data: event?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })

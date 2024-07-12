@@ -199,8 +199,7 @@ function PlaceReadOnly() {
               <Col flex="auto">
                 <Breadcrumbs
                   name={contentLanguageBilingual({
-                    en: placeData?.name?.en,
-                    fr: placeData?.name?.fr,
+                    data: placeData?.name,
                     interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                     calendarContentLanguage: calendarContentLanguage,
                   })}
@@ -234,8 +233,7 @@ function PlaceReadOnly() {
                 <div className="read-only-event-heading">
                   <h4 data-cy="heading-place-name">
                     {contentLanguageBilingual({
-                      en: placeData?.name?.en,
-                      fr: placeData?.name?.fr,
+                      data: placeData?.name,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
@@ -244,8 +242,7 @@ function PlaceReadOnly() {
                     className="read-only-event-content-sub-title-primary"
                     data-cy="para-place-disambiguating-description">
                     {contentLanguageBilingual({
-                      en: placeData?.disambiguatingDescription?.en,
-                      fr: placeData?.disambiguatingDescription?.fr,
+                      data: placeData?.disambiguatingDescription,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
@@ -261,14 +258,12 @@ function PlaceReadOnly() {
                   <ArtsDataInfo
                     artsDataLink={artsDataLinkChecker(placeData?.sameAs)}
                     name={contentLanguageBilingual({
-                      en: artsData?.name?.en,
-                      fr: artsData?.name?.fr,
+                      data: artsData?.name,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                     disambiguatingDescription={contentLanguageBilingual({
-                      en: artsData?.disambiguatingDescription?.en,
-                      fr: artsData?.disambiguatingDescription?.fr,
+                      data: artsData?.disambiguatingDescription,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
@@ -544,8 +539,7 @@ function PlaceReadOnly() {
                     <ArtsDataLink>
                       <span style={{ textDecoration: 'underline' }} data-cy="span-place-city">
                         {contentLanguageBilingual({
-                          en: placeData?.address?.addressLocality?.en,
-                          fr: placeData?.address?.addressLocality?.fr,
+                          data: placeData?.address?.addressLocality,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                           calendarContentLanguage: calendarContentLanguage,
                         })}
@@ -574,8 +568,7 @@ function PlaceReadOnly() {
                         <ArtsDataLink>
                           <span style={{ textDecoration: 'underline' }} data-cy="span-place-province">
                             {contentLanguageBilingual({
-                              en: placeData?.address?.addressRegion?.en,
-                              fr: placeData?.address?.addressRegion?.fr,
+                              data: placeData?.address?.addressRegion,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                               calendarContentLanguage: calendarContentLanguage,
                             })}
@@ -592,8 +585,7 @@ function PlaceReadOnly() {
                         <ArtsDataLink>
                           <span style={{ textDecoration: 'underline' }} data-cy="span-place-country">
                             {contentLanguageBilingual({
-                              en: placeData?.address?.addressCountry?.en,
-                              fr: placeData?.address?.addressCountry?.fr,
+                              data: placeData?.address?.addressCountry,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                               calendarContentLanguage: calendarContentLanguage,
                             })}
@@ -792,8 +784,7 @@ function PlaceReadOnly() {
                             name={
                               place?.name?.en || place?.name?.fr
                                 ? contentLanguageBilingual({
-                                    en: place?.name?.en,
-                                    fr: place?.name?.fr,
+                                    data: place?.name,
                                     interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                     calendarContentLanguage: calendarContentLanguage,
                                   })
@@ -821,8 +812,7 @@ function PlaceReadOnly() {
                               name={
                                 org?.name?.en || org?.name?.fr
                                   ? contentLanguageBilingual({
-                                      en: org?.name?.en,
-                                      fr: org?.name?.fr,
+                                      data: org?.name,
                                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                       calendarContentLanguage: calendarContentLanguage,
                                     })
@@ -855,8 +845,7 @@ function PlaceReadOnly() {
                             name={
                               person?.name?.en || person?.name?.fr
                                 ? contentLanguageBilingual({
-                                    en: person?.name?.en,
-                                    fr: person?.name?.fr,
+                                    data: person?.name,
                                     interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                     calendarContentLanguage: calendarContentLanguage,
                                   })
@@ -883,8 +872,7 @@ function PlaceReadOnly() {
                               name={
                                 event?.name?.en || event?.name?.fr
                                   ? contentLanguageBilingual({
-                                      en: event?.name?.en,
-                                      fr: event?.name?.fr,
+                                      data: event?.name,
                                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                       calendarContentLanguage: calendarContentLanguage,
                                     })

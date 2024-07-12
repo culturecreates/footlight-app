@@ -132,8 +132,7 @@ function SelectionItem(props) {
                       {(postalAddress?.streetAddress?.en || postalAddress?.streetAddress?.fr) && (
                         <span data-cy="span-street-address">
                           {contentLanguageBilingual({
-                            en: postalAddress?.streetAddress?.en,
-                            fr: postalAddress?.streetAddress?.fr,
+                            data: postalAddress?.streetAddress,
                             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             calendarContentLanguage: calendarContentLanguage,
                           })}
@@ -144,8 +143,7 @@ function SelectionItem(props) {
                       {postalAddress?.addressLocality && (
                         <span data-cy="span-address-locality">
                           {contentLanguageBilingual({
-                            en: postalAddress?.addressLocality?.en,
-                            fr: postalAddress?.addressLocality?.fr,
+                            data: postalAddress?.addressLocality,
                             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             calendarContentLanguage: calendarContentLanguage,
                           })}
@@ -155,8 +153,7 @@ function SelectionItem(props) {
                       {postalAddress?.addressRegion && (
                         <span data-cy="span-address-region">
                           {contentLanguageBilingual({
-                            en: postalAddress?.addressRegion?.en,
-                            fr: postalAddress?.addressRegion?.fr,
+                            data: postalAddress?.addressRegion,
                             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             calendarContentLanguage: calendarContentLanguage,
                           })}
@@ -170,8 +167,7 @@ function SelectionItem(props) {
                         <SmallButton
                           styles={{ marginTop: 5, marginBottom: 5 }}
                           label={contentLanguageBilingual({
-                            en: region[0]?.name?.en,
-                            fr: region[0]?.name?.fr,
+                            data: region[0]?.name,
                             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             calendarContentLanguage: calendarContentLanguage,
                           })}
@@ -215,8 +211,7 @@ function SelectionItem(props) {
                   {accessibility?.map((venueAccessibiltiy, index) => (
                     <span className="selection-item-sub-content" key={index} data-cy="span-accessibility">
                       {contentLanguageBilingual({
-                        en: venueAccessibiltiy?.name?.en,
-                        fr: venueAccessibiltiy?.name?.fr,
+                        data: venueAccessibiltiy?.name,
                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                         calendarContentLanguage: calendarContentLanguage,
                       })}

@@ -881,8 +881,7 @@ function Events() {
                             style={{ marginLeft: '8px' }}
                             onChange={(e) => onOrganizerCheckboxChange(e)}>
                             {contentLanguageBilingual({
-                              en: organizer?.name?.en,
-                              fr: organizer?.name?.fr,
+                              data: organizer?.name,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                               calendarContentLanguage: calendarContentLanguage,
                             })}

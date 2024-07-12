@@ -51,8 +51,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
         .map((taxonomy) => {
           return {
             label: contentLanguageBilingual({
-              en: taxonomy?.name?.en,
-              fr: taxonomy?.name?.fr,
+              data: taxonomy?.name,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             }),

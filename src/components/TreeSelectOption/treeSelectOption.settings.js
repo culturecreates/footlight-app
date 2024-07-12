@@ -10,8 +10,7 @@ const handleMultilevelTreeSelect = (children, user, calendarContentLanguage, par
   return children?.map((child) => {
     return {
       title: contentLanguageBilingual({
-        en: child?.name?.en,
-        fr: child?.name?.fr,
+        data: child?.name,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
         calendarContentLanguage: calendarContentLanguage,
       }),
@@ -23,8 +22,7 @@ const handleMultilevelTreeSelect = (children, user, calendarContentLanguage, par
         parentLabel +
         '-' +
         contentLanguageBilingual({
-          en: child?.name?.en,
-          fr: child?.name?.fr,
+          data: child?.name,
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         }),
@@ -47,8 +45,7 @@ export const treeTaxonomyOptions = (data, user, mappedToField, isDynamicField, c
     concepts[0]?.map((concept) => {
       return {
         title: contentLanguageBilingual({
-          en: concept?.name?.en,
-          fr: concept?.name?.fr,
+          data: concept?.name,
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         }),
@@ -59,16 +56,14 @@ export const treeTaxonomyOptions = (data, user, mappedToField, isDynamicField, c
             user,
             calendarContentLanguage,
             contentLanguageBilingual({
-              en: concept?.name?.en,
-              fr: concept?.name?.fr,
+              data: concept?.name,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             }),
           ),
         }),
         label: contentLanguageBilingual({
-          en: concept?.name?.en,
-          fr: concept?.name?.fr,
+          data: concept?.name,
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         }),
@@ -109,8 +104,7 @@ export const treeEntitiesOption = (
           name={
             entity?.name?.en || entity?.name?.fr
               ? contentLanguageBilingual({
-                  en: entity?.name?.en,
-                  fr: entity?.name?.fr,
+                  data: entity?.name,
                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                   calendarContentLanguage: calendarContentLanguage,
                 })
@@ -119,8 +113,7 @@ export const treeEntitiesOption = (
           description={
             entity?.disambiguatingDescription?.en || entity?.disambiguatingDescription?.fr
               ? contentLanguageBilingual({
-                  en: entity?.disambiguatingDescription?.en,
-                  fr: entity?.disambiguatingDescription?.fr,
+                  data: entity?.disambiguatingDescription,
                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                   calendarContentLanguage: calendarContentLanguage,
                 })
@@ -144,8 +137,7 @@ export const treeEntitiesOption = (
       description:
         entity?.disambiguatingDescription?.en || entity?.disambiguatingDescription?.fr
           ? contentLanguageBilingual({
-              en: entity?.disambiguatingDescription?.en,
-              fr: entity?.disambiguatingDescription?.fr,
+              data: entity?.disambiguatingDescription,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             })
@@ -173,8 +165,7 @@ export const treeDynamicTaxonomyOptions = (concepts, user, calendarContentLangua
     concepts?.map((concept) => {
       return {
         title: contentLanguageBilingual({
-          en: concept?.name?.en,
-          fr: concept?.name?.fr,
+          data: concept?.name,
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         }),
@@ -185,16 +176,14 @@ export const treeDynamicTaxonomyOptions = (concepts, user, calendarContentLangua
             user,
             calendarContentLanguage,
             contentLanguageBilingual({
-              en: concept?.name?.en,
-              fr: concept?.name?.fr,
+              data: concept?.name,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             }),
           ),
         }),
         label: contentLanguageBilingual({
-          en: concept?.name?.en,
-          fr: concept?.name?.fr,
+          data: concept?.name,
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         }),

@@ -13,8 +13,7 @@ export const taxonomyOptions = (data, user, mappedToField, calendarContentLangua
   let options = concepts[0]?.map((concept) => {
     return {
       label: contentLanguageBilingual({
-        en: concept?.name?.en,
-        fr: concept?.name?.fr,
+        data: concept?.name,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
         calendarContentLanguage: calendarContentLanguage,
       }),
@@ -35,8 +34,7 @@ export const placesOptions = (data, user, calendarContentLanguage, source = sour
           name={
             place?.name?.en || place?.name?.fr
               ? contentLanguageBilingual({
-                  en: place?.name?.en,
-                  fr: place?.name?.fr,
+                  data: place?.name,
                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                   calendarContentLanguage: calendarContentLanguage,
                 })
@@ -45,8 +43,7 @@ export const placesOptions = (data, user, calendarContentLanguage, source = sour
           description={
             place?.disambiguatingDescription?.en || place?.disambiguatingDescription?.fr
               ? contentLanguageBilingual({
-                  en: place?.disambiguatingDescription?.en,
-                  fr: place?.disambiguatingDescription?.fr,
+                  data: place?.disambiguatingDescription,
                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                   calendarContentLanguage: calendarContentLanguage,
                 })
@@ -60,8 +57,7 @@ export const placesOptions = (data, user, calendarContentLanguage, source = sour
       name:
         place?.name?.en || place?.name?.fr
           ? contentLanguageBilingual({
-              en: place?.name?.en,
-              fr: place?.name?.fr,
+              data: place?.name,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             })
@@ -69,8 +65,7 @@ export const placesOptions = (data, user, calendarContentLanguage, source = sour
       description:
         place?.disambiguatingDescription?.en || place?.disambiguatingDescription?.fr
           ? contentLanguageBilingual({
-              en: place?.disambiguatingDescription?.en,
-              fr: place?.disambiguatingDescription?.fr,
+              data: place?.disambiguatingDescription,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             })

@@ -451,14 +451,12 @@ function Organizations() {
                           />
                         }
                         title={contentLanguageBilingual({
-                          en: item?.name?.en,
-                          fr: item?.name?.fr,
+                          data: item?.name,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                           calendarContentLanguage: calendarContentLanguage,
                         })}
                         description={contentLanguageBilingual({
-                          en: item?.disambiguatingDescription?.en,
-                          fr: item?.disambiguatingDescription?.fr,
+                          data: item?.disambiguatingDescription,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                           calendarContentLanguage: calendarContentLanguage,
                         })}

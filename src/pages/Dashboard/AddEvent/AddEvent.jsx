@@ -2111,14 +2111,12 @@ function AddEvent() {
                     <ArtsDataInfo
                       artsDataLink={artsDataLinkChecker(artsDataLink[0]?.uri)}
                       name={contentLanguageBilingual({
-                        en: eventData?.name?.en,
-                        fr: eventData?.name?.fr,
+                        data: eventData?.name,
                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                         calendarContentLanguage: calendarContentLanguage,
                       })}
                       disambiguatingDescription={contentLanguageBilingual({
-                        en: eventData?.disambiguatingDescription?.en,
-                        fr: eventData?.disambiguatingDescription?.fr,
+                        data: eventData?.disambiguatingDescription,
                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                         calendarContentLanguage: calendarContentLanguage,
                       })}

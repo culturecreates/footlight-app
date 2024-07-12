@@ -204,8 +204,7 @@ function EventReadOnly() {
               <Col flex="auto">
                 <Breadcrumbs
                   name={contentLanguageBilingual({
-                    en: eventData?.name?.en,
-                    fr: eventData?.name?.fr,
+                    data: eventData?.name,
                     interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                     calendarContentLanguage: calendarContentLanguage,
                   })}
@@ -257,14 +256,12 @@ function EventReadOnly() {
                   <ArtsDataInfo
                     artsDataLink={artsDataLinkChecker(artsDataLink[0]?.uri)}
                     name={contentLanguageBilingual({
-                      en: eventData?.name?.en,
-                      fr: eventData?.name?.fr,
+                      data: eventData?.name,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                     disambiguatingDescription={contentLanguageBilingual({
-                      en: eventData?.disambiguatingDescription?.en,
-                      fr: eventData?.disambiguatingDescription?.fr,
+                      data: eventData?.disambiguatingDescription,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
@@ -1142,8 +1139,7 @@ function EventReadOnly() {
                                 <td>
                                   <p className="read-only-event-content">
                                     {contentLanguageBilingual({
-                                      en: offer?.name?.en,
-                                      fr: offer?.name?.fr,
+                                      data: offer?.name,
                                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                       calendarContentLanguage: calendarContentLanguage,
                                     })}

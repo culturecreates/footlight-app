@@ -891,8 +891,7 @@ const AddUser = () => {
                                       setRouteBlockingFlag={setRouteBlockingFlag}
                                       selectedCalendarId={selectedCalendar?.calendarId}
                                       name={contentLanguageBilingual({
-                                        en: selectedCalendar?.name?.en,
-                                        fr: selectedCalendar?.name?.fr,
+                                        data: selectedCalendar?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })}

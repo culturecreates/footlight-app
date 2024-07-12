@@ -207,8 +207,7 @@ export const formFieldValue = [
         return (
           <StyledInput
             placeholder={contentLanguageBilingual({
-              en: placeholder?.en,
-              fr: placeholder?.fr,
+              data: placeholder,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             })}
@@ -270,8 +269,7 @@ export const formFieldValue = [
         return (
           <StyledInput
             placeholder={contentLanguageBilingual({
-              en: placeholder?.en,
-              fr: placeholder?.fr,
+              data: placeholder,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             })}
@@ -287,8 +285,7 @@ export const formFieldValue = [
         autoSize
         autoComplete="off"
         placeholder={contentLanguageBilingual({
-          en: placeholder?.en,
-          fr: placeholder?.fr,
+          data: placeholder,
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         })}
@@ -322,8 +319,7 @@ export const formFieldValue = [
           treeDefaultExpandAll
           notFoundContent={<NoContent />}
           placeholder={contentLanguageBilingual({
-            en: placeholder?.en,
-            fr: placeholder?.fr,
+            data: placeholder,
             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
             calendarContentLanguage: calendarContentLanguage,
           })}

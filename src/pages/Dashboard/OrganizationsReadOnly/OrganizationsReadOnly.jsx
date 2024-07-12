@@ -177,8 +177,7 @@ function OrganizationsReadOnly() {
               <Col flex="auto">
                 <Breadcrumbs
                   name={contentLanguageBilingual({
-                    en: organizationData?.name?.en,
-                    fr: organizationData?.name?.fr,
+                    data: organizationData?.name,
                     interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                     calendarContentLanguage: calendarContentLanguage,
                   })}
@@ -215,16 +214,14 @@ function OrganizationsReadOnly() {
                 <div className="read-only-event-heading">
                   <h4 data-cy="heading-organization-name">
                     {contentLanguageBilingual({
-                      en: organizationData?.name?.en,
-                      fr: organizationData?.name?.fr,
+                      data: organizationData?.name,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                   </h4>
                   <p className="read-only-event-content-sub-title-primary" data-cy="para-organization-para">
                     {contentLanguageBilingual({
-                      en: organizationData?.disambiguatingDescription?.en,
-                      fr: organizationData?.disambiguatingDescription?.fr,
+                      data: organizationData?.disambiguatingDescription,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
@@ -240,14 +237,12 @@ function OrganizationsReadOnly() {
                   <ArtsDataInfo
                     artsDataLink={artsDataLinkChecker(organizationData?.sameAs)}
                     name={contentLanguageBilingual({
-                      en: artsData?.name?.en,
-                      fr: artsData?.name?.fr,
+                      data: artsData?.name,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                     disambiguatingDescription={contentLanguageBilingual({
-                      en: artsData?.disambiguatingDescription?.en,
-                      fr: artsData?.disambiguatingDescription?.fr,
+                      data: artsData?.disambiguatingDescription,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
@@ -598,8 +593,7 @@ function OrganizationsReadOnly() {
                             name={
                               place?.name?.en || place?.name?.fr
                                 ? contentLanguageBilingual({
-                                    en: place?.name?.en,
-                                    fr: place?.name?.fr,
+                                    data: place?.name,
                                     interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                     calendarContentLanguage: calendarContentLanguage,
                                   })
@@ -625,8 +619,7 @@ function OrganizationsReadOnly() {
                             name={
                               person?.name?.en || person?.name?.fr
                                 ? contentLanguageBilingual({
-                                    en: person?.name?.en,
-                                    fr: person?.name?.fr,
+                                    data: person?.name,
                                     interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                     calendarContentLanguage: calendarContentLanguage,
                                   })
@@ -653,8 +646,7 @@ function OrganizationsReadOnly() {
                               name={
                                 event?.name?.en || event?.name?.fr
                                   ? contentLanguageBilingual({
-                                      en: event?.name?.en,
-                                      fr: event?.name?.fr,
+                                      data: event?.name,
                                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                       calendarContentLanguage: calendarContentLanguage,
                                     })

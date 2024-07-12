@@ -243,8 +243,7 @@ function Lists(props) {
                   )}
                   <span className="event-list-description-name" data-cy="span-event-name">
                     {contentLanguageBilingual({
-                      en: eventItem?.name?.en,
-                      fr: eventItem?.name?.fr,
+                      data: eventItem?.name,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
@@ -254,8 +253,7 @@ function Lists(props) {
                   {eventItem?.location
                     ?.map((place) => {
                       return contentLanguageBilingual({
-                        en: place?.name?.en,
-                        fr: place?.name?.fr,
+                        data: place?.name,
                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                         calendarContentLanguage: calendarContentLanguage,
                       });

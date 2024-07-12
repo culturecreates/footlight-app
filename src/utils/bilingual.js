@@ -1,6 +1,6 @@
 //Function which returns the language key depending on the interface language
 
-import { contentLanguage } from '../constants/contentLanguage';
+import { contentLanguage, contentLanguageKeyMap } from '../constants/contentLanguage';
 
 export const bilingual = ({ fr, en, interfaceLanguage: interfaceLanguage }) => {
   if (interfaceLanguage?.toLowerCase() === 'fr' && fr) return fr;
@@ -9,36 +9,18 @@ export const bilingual = ({ fr, en, interfaceLanguage: interfaceLanguage }) => {
   else return en;
 };
 
-export const contentLanguageBilingual = ({ fr, en, interfaceLanguage: interfaceLanguage, calendarContentLanguage }) => {
-  let contentLanguageKey;
+export const contentLanguageBilingual = ({ interfaceLanguage: interfaceLanguage, calendarContentLanguage, data }) => {
+  if (!data) return '';
 
-  switch (calendarContentLanguage) {
-    case contentLanguage.FRENCH:
-      contentLanguageKey = 'fr';
-      break;
-    case contentLanguage.ENGLISH:
-      contentLanguageKey = 'en';
-      break;
-    case contentLanguage.BILINGUAL:
-      contentLanguageKey = interfaceLanguage?.toLowerCase();
-      break;
-    default:
-      contentLanguageKey = interfaceLanguage?.toLowerCase();
-      break;
+  let contentLanguageKey = interfaceLanguage?.toLowerCase();
+
+  if (calendarContentLanguage.length == 1) {
+    contentLanguageKey = contentLanguageKeyMap[calendarContentLanguage[0]];
   }
 
-  if (contentLanguageKey === 'fr') {
-    if (calendarContentLanguage === contentLanguage.FRENCH) {
-      if (fr) return fr;
-      else if (en) return en;
-    } else if (fr) return fr;
-    else if (en) return en;
-  } else if (contentLanguageKey === 'en') {
-    if (calendarContentLanguage === contentLanguage.ENGLISH) {
-      if (en) return en;
-      else if (fr) return fr;
-    } else if (en) return en;
-    else if (fr) return fr;
-  } else if (fr && !en) return fr;
-  else return en;
+  const languageKeysOfData = Object.keys(data);
+  const defaultKey =
+    languageKeysOfData.length > 0 ? languageKeysOfData[0] : contentLanguageKeyMap[contentLanguage.ENGLISH];
+
+  return data[contentLanguageKey] ?? data[defaultKey];
 };
