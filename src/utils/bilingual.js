@@ -1,7 +1,6 @@
 //Function which returns the language key depending on the interface language
 
 import { contentLanguage, contentLanguageKeyMap } from '../constants/contentLanguage';
-import { userLanguages } from '../constants/userLanguages';
 
 export const bilingual = ({ interfaceLanguage, data }) => {
   /**
@@ -9,27 +8,17 @@ export const bilingual = ({ interfaceLanguage, data }) => {
    * @param {Object} params - The parameters object.
    * @param {string} params.interfaceLanguage - Active interface language.
    * @param {Object} params.data - The data object containing multilingual content.
-   * @returns {string} .
+   * @returns {string} The string data of required content language or an empty string if no data is available.
    */
 
   if (!data) return '';
   if (!interfaceLanguage) interfaceLanguage = contentLanguageKeyMap[contentLanguage.ENGLISH];
 
-  const activeLanguageKey = userLanguages
-    .find((lang) => {
-      const langKey = lang.value.toLowerCase();
-      return langKey === interfaceLanguage?.toLowerCase();
-    })
-    ?.key?.toLowerCase();
+  let requiredLanguageData = data[interfaceLanguage];
 
-  let activeData = data[activeLanguageKey];
+  if (requiredLanguageData) return requiredLanguageData;
 
-  if (!activeData) {
-    const dataObjectKeys = Object.keys(data);
-    return dataObjectKeys.length > 0 ? data[dataObjectKeys[0]] : '';
-  }
-
-  return activeData;
+  return Object.values(data)[0] ?? '';
 };
 
 export const contentLanguageBilingual = ({ interfaceLanguage, calendarContentLanguage, data }) => {
@@ -38,7 +27,7 @@ export const contentLanguageBilingual = ({ interfaceLanguage, calendarContentLan
    * @param {string} params.interfaceLanguage - Active interface language.
    * @param {string[]} params.calendarContentLanguage - Array of calendar content languages.
    * @param {Object} params.data - Multilingual data object.
-   * @returns {string} The data of content language or an empty string if no data is available.
+   * @returns {string} The string data of required content language or an empty string if no data is available.
    **/
 
   if (!data) return '';
@@ -49,9 +38,13 @@ export const contentLanguageBilingual = ({ interfaceLanguage, calendarContentLan
     contentLanguageKey = contentLanguageKeyMap[calendarContentLanguage[0]];
   }
 
-  const languageKeysOfData = Object.keys(data);
-  const defaultKey =
-    languageKeysOfData.length > 0 ? languageKeysOfData[0] : contentLanguageKeyMap[contentLanguage.ENGLISH];
+  if (data[contentLanguageKey] === undefined)
+    for (const key in Object.values(contentLanguageKeyMap)) {
+      const lanKey = contentLanguageKeyMap[key];
+      if (data[lanKey] !== undefined) {
+        return data[lanKey];
+      }
+    }
 
-  return data[contentLanguageKey] ?? data[defaultKey];
+  return data[contentLanguageKey] ?? '';
 };

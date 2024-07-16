@@ -727,7 +727,7 @@ export const returnFormDataWithFields = ({
       required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
       t: t,
       userTips: bilingual({
-        data: field?.userTips,
+        data: field?.userTips?.text,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
         calendarContentLanguage: calendarContentLanguage,
       }),
@@ -771,7 +771,7 @@ export const returnFormDataWithFields = ({
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
     }),
     userTips: bilingual({
-      data: field?.userTips,
+      data: field?.userTips?.text,
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       calendarContentLanguage: calendarContentLanguage,
     }),
