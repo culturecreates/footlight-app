@@ -142,6 +142,7 @@ export const calendarSettingsFormFields = {
   GENERAL_SETTINGS: [
     {
       name: 'calendarName',
+      className: 'calendar-settings-calendar-name',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.calendarName')}</Translation>,
       field: ({ t, initialValues }) => {
         const fieldData = {
@@ -188,7 +189,7 @@ export const calendarSettingsFormFields = {
           validator() {
             if (getFieldValue('calendarNameFr') || getFieldValue('calendarNameEn')) {
               return Promise.resolve();
-            } else return Promise.reject(new Error(REQUIRED_MESSAGE.message));
+            } else return Promise.reject(REQUIRED_MESSAGE.message);
           },
         }),
       ],
@@ -252,6 +253,7 @@ export const calendarSettingsFormFields = {
       rules: [
         {
           type: 'email',
+          required: true,
           message: <Trans i18nKey="login.validations.invalidEmail" />,
         },
       ],
@@ -274,6 +276,7 @@ export const calendarSettingsFormFields = {
     },
     {
       name: '',
+      className: 'calendar-settings-thumbnail',
       label: '',
       field: ({ t, aspectRatios }) => {
         return (
@@ -346,12 +349,21 @@ export const calendarSettingsFormFields = {
           </Row>
         );
       },
-      rules: [],
+      rules: [
+        ({ getFieldValue }) => ({
+          validator() {
+            if (getFieldValue(['imageMaxWidth', 'thumbnail'])) {
+              return Promise.resolve();
+            } else return Promise.reject(REQUIRED_MESSAGE.message);
+          },
+        }),
+      ],
       hidden: false,
       required: true,
     },
     {
       name: '',
+      className: 'calendar-settings-large',
       label: (
         <Translation>{(t) => t('dashboard.settings.calendarSettings.siteImageSettings.largeSettings')}</Translation>
       ),
@@ -427,7 +439,15 @@ export const calendarSettingsFormFields = {
           </Row>
         );
       },
-      rules: [],
+      rules: [
+        ({ getFieldValue }) => ({
+          validator() {
+            if (getFieldValue(['imageMaxWidth', 'large'])) {
+              return Promise.resolve();
+            } else return Promise.reject(REQUIRED_MESSAGE.message);
+          },
+        }),
+      ],
       hidden: false,
       required: true,
     },

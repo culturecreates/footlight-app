@@ -38,6 +38,7 @@ export const routinghandler = (user, calendarId, creatorId, publishState = '', i
     case userRoles.ADMIN:
       return true;
     default:
+      if (user?.isSuperAdmin) return true;
       return false;
   }
 };
