@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef } from 'react';
 import './calendarSettings.css';
 import { Row, Col, Form, Divider, notification, Button, message } from 'antd';
@@ -177,6 +178,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
   const onSaveHandler = () => {
     let requiredFields =
       calendarSettingsFormFields?.GENERAL_SETTINGS?.filter((field) => field.required)?.map((field) => field.name) ?? [];
+    requiredFields = [...requiredFields, ['imageAspectRatio', 'thumbnail'], ['imageMaxWidth', 'thumbnail']];
     requiredFields = requiredFields.concat(
       calendarSettingsFormFields?.WIDGET_SETTINGS?.filter((field) => field.required)?.map((field) => field.name) ?? [],
     );
@@ -367,6 +369,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
                     label={item.label}
                     key={index}
                     rules={item.rules}
+                    className={item.className ?? ''}
                     required={item.required}
                     name={item.name}
                     hidden={item.hidden}>
