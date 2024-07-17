@@ -308,7 +308,7 @@ function Organizations() {
                                     }
                                     checkedKeys={standardTaxonomyFilter[taxonomy?.mappedToField] ?? []}
                                     treeData={treeTaxonomyOptions(
-                                      allTaxonomyData,
+                                      { data: [taxonomy] },
                                       user,
                                       taxonomy?.mappedToField,
                                       false,
@@ -370,7 +370,7 @@ function Organizations() {
                                     }
                                     checkedKeys={taxonomyFilter[taxonomy?.id] ?? []}
                                     treeData={treeTaxonomyOptions(
-                                      allTaxonomyData,
+                                      { data: [taxonomy] },
                                       user,
                                       taxonomy?.mappedToField,
                                       true,

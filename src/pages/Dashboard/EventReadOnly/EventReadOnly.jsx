@@ -47,6 +47,7 @@ import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import { PathName } from '../../../constants/pathName';
+import { routinghandler } from '../../../utils/roleRoutingHandler';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -270,24 +271,28 @@ function EventReadOnly() {
             </Col>
           )}
 
-          <Col flex="723px" className="top-level-column">
-            {eventPublishStateOptions?.map((state, index) => {
-              if (
-                (state?.value === eventPublishState?.PENDING_REVIEW || state?.value === eventPublishState?.PUBLISHED) &&
-                eventData?.publishState === state?.value
-              )
-                return (
-                  <Alert
-                    key={index}
-                    message={state.infoText}
-                    type="info"
-                    showIcon
-                    icon={<InfoCircleOutlined />}
-                    additionalClassName="alert-information"
-                  />
-                );
-            })}
-          </Col>
+          {!routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState, false) && (
+            <Col flex="723px" className="top-level-column">
+              {eventPublishStateOptions?.map((state, index) => {
+                if (
+                  (state?.value === eventPublishState?.PENDING_REVIEW ||
+                    state?.value === eventPublishState?.PUBLISHED) &&
+                  eventData?.publishState === state?.value
+                )
+                  return (
+                    <Alert
+                      key={index}
+                      message={state.infoText}
+                      type="info"
+                      showIcon
+                      icon={<InfoCircleOutlined />}
+                      additionalClassName="alert-information"
+                    />
+                  );
+              })}
+            </Col>
+          )}
+
           <Col flex={'723px'} className="read-only-event-section-col top-level-column">
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               <Col flex={'423px'}>

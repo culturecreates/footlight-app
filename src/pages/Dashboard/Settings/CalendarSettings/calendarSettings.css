@@ -76,3 +76,11 @@
   font-size: 14px;
   font-weight: 400;
 }
+
+.calendar-settings-calendar-name .ant-form-item {
+  margin-bottom: 0px;
+}
+
+#calendar-settings__help .ant-form-item-explain-error {
+  display: none;
+}
