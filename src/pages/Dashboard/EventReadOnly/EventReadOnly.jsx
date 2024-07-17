@@ -4,7 +4,7 @@ import { CalendarOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import moment from 'moment-timezone';
 import './eventReadOnly.css';
 import { useTranslation } from 'react-i18next';
-import { useParams, useOutletContext } from 'react-router-dom';
+import { useParams, useOutletContext, useNavigate } from 'react-router-dom';
 import { useGetEventQuery } from '../../../services/events';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -16,6 +16,7 @@ import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../ser
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import Tags from '../../../components/Tags/Common/Tags';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
+import OutlinedButton from '../../../components/Button/Outlined';
 import ImageUpload from '../../../components/ImageUpload';
 import TreeSelectOption from '../../../components/TreeSelectOption';
 import {
@@ -44,6 +45,9 @@ import { sameAsTypes } from '../../../constants/sameAsTypes';
 import MultipleImageUpload from '../../../components/MultipleImageUpload';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
+import { PathName } from '../../../constants/pathName';
+import { routinghandler } from '../../../utils/roleRoutingHandler';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -55,6 +59,7 @@ function EventReadOnly() {
     _setPageNumber, // eslint-disable-next-line no-unused-vars
     _getCalendar,
     setContentBackgroundColor,
+    isReadOnly,
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
 
@@ -83,6 +88,8 @@ function EventReadOnly() {
   const [selectedOrganizers, setSelectedOrganizers] = useState([]);
   const [selectedPerformers, setSelectedPerformers] = useState([]);
   const [selectedSupporters, setSelectedSupporters] = useState([]);
+
+  const navigate = useNavigate();
 
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
@@ -193,15 +200,39 @@ function EventReadOnly() {
     !taxonomyLoading && (
       <div>
         <Row gutter={[32, 24]} className="read-only-wrapper events-read-only-wrapper " style={{ margin: 0 }}>
-          <Col span={24} className="top-level-column">
-            <Breadcrumbs
-              name={contentLanguageBilingual({
-                en: eventData?.name?.en,
-                fr: eventData?.name?.fr,
-                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                calendarContentLanguage: calendarContentLanguage,
-              })}
-            />
+          <Col className="top-level-column" span={24}>
+            <Row>
+              <Col flex="auto">
+                <Breadcrumbs
+                  name={contentLanguageBilingual({
+                    en: eventData?.name?.en,
+                    fr: eventData?.name?.fr,
+                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                    calendarContentLanguage: calendarContentLanguage,
+                  })}
+                />
+              </Col>
+              <Col flex="60px" style={{ marginLeft: 'auto' }}>
+                <ReadOnlyProtectedComponent creator={eventData.createdByUserId} isReadOnly={isReadOnly}>
+                  <div className="button-container">
+                    <OutlinedButton
+                      data-cy="button-edit-place"
+                      label={t('dashboard.places.readOnly.edit')}
+                      size="middle"
+                      style={{ height: '40px', width: '60px' }}
+                      onClick={() =>
+                        navigate(
+                          `${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.AddEvent}/${eventData.id}`,
+                          {
+                            replace: true,
+                          },
+                        )
+                      }
+                    />
+                  </div>
+                </ReadOnlyProtectedComponent>
+              </Col>
+            </Row>
           </Col>
 
           <Col span={24} className="top-level-column">
@@ -244,24 +275,28 @@ function EventReadOnly() {
             </Col>
           )}
 
-          <Col flex="723px" className="top-level-column">
-            {eventPublishStateOptions?.map((state, index) => {
-              if (
-                (state?.value === eventPublishState?.PENDING_REVIEW || state?.value === eventPublishState?.PUBLISHED) &&
-                eventData?.publishState === state?.value
-              )
-                return (
-                  <Alert
-                    key={index}
-                    message={state.infoText}
-                    type="info"
-                    showIcon
-                    icon={<InfoCircleOutlined />}
-                    additionalClassName="alert-information"
-                  />
-                );
-            })}
-          </Col>
+          {!routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState, false) && (
+            <Col flex="723px" className="top-level-column">
+              {eventPublishStateOptions?.map((state, index) => {
+                if (
+                  (state?.value === eventPublishState?.PENDING_REVIEW ||
+                    state?.value === eventPublishState?.PUBLISHED) &&
+                  eventData?.publishState === state?.value
+                )
+                  return (
+                    <Alert
+                      key={index}
+                      message={state.infoText}
+                      type="info"
+                      showIcon
+                      icon={<InfoCircleOutlined />}
+                      additionalClassName="alert-information"
+                    />
+                  );
+              })}
+            </Col>
+          )}
+
           <Col flex={'723px'} className="read-only-event-section-col top-level-column">
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               <Col flex={'423px'}>
