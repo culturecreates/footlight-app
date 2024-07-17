@@ -298,12 +298,28 @@ const DraggableTree = ({
     });
   };
 
+  const deepCopy = (obj) => {
+    if (obj === null || typeof obj !== 'object') {
+      return obj;
+    }
+    if (Array.isArray(obj)) {
+      return obj.map(deepCopy);
+    }
+    const copiedObj = {};
+    for (let key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        copiedObj[key] = deepCopy(obj[key]);
+      }
+    }
+    return copiedObj;
+  };
+
   const deleteNodeFromData = (data, key) => {
     const deleteData = (items) => {
       for (let i = 0; i < items.length; i++) {
         if (items[i].key === key) {
           items.splice(i, 1);
-          return data;
+          return;
         }
         if (items[i].children) {
           deleteData(items[i].children);
@@ -311,7 +327,8 @@ const DraggableTree = ({
       }
     };
 
-    const newData = [...data];
+    // Create a deep copy of the data to avoid mutating the original array
+    const newData = deepCopy(data);
     deleteData(newData);
     return newData;
   };
