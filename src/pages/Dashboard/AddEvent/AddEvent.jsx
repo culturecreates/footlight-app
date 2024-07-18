@@ -597,6 +597,7 @@ function AddEvent() {
             if (
               eventId &&
               eventData?.subEventConfiguration &&
+              eventData?.subEventConfiguration?.length > 0 &&
               form.getFieldsValue()?.customDates &&
               form.getFieldsValue().frequency === 'CUSTOM'
             ) {
@@ -1873,7 +1874,7 @@ function AddEvent() {
           };
           setFormValue(obj);
         }
-        if (eventData?.subEventConfiguration) {
+        if (eventData?.subEventConfiguration && eventData?.subEventConfiguration?.length > 0) {
           form.setFieldsValue({
             frequency: 'CUSTOM',
             startDateRecur: [
