@@ -84,42 +84,21 @@ const Settings = () => {
     {
       label: t('dashboard.settings.tab2'),
       key: '2',
-      children: (
-        <WidgetSettings
-          tabKey={tabKey}
-          setDirtyStatus={() => {
-            if (!isFormDirty) setIsFormDirty(true);
-          }}
-        />
-      ),
+      children: <WidgetSettings tabKey={tabKey} setDirtyStatus={setIsFormDirty} />,
       disabled: false,
       adminOnly: true,
     },
     {
       label: t('dashboard.settings.tab3'),
       key: '3',
-      children: currentCalendarData && (
-        <CalendarSettings
-          tabKey={tabKey}
-          setDirtyStatus={() => {
-            if (!isFormDirty) setIsFormDirty(true);
-          }}
-        />
-      ),
+      children: currentCalendarData && <CalendarSettings tabKey={tabKey} setDirtyStatus={setIsFormDirty} />,
       disabled: false,
       adminOnly: true,
     },
     {
       label: t('dashboard.settings.tab4'),
       key: '4',
-      children: (
-        <MandatoryFields
-          tabKey={tabKey}
-          setDirtyStatus={() => {
-            if (!isFormDirty) setIsFormDirty(true);
-          }}
-        />
-      ),
+      children: <MandatoryFields tabKey={tabKey} setDirtyStatus={setIsFormDirty} />,
       disabled: false,
       adminOnly: true,
     },

@@ -96,9 +96,8 @@ th {
   padding-left: 0px;
 }
 
-.events-read-only-wrapper .artsdata-link-wrapper {
-  margin-left: 0px;
-  padding: 0 16px !important;
+.events-read-only-wrapper .top-level-column {
+  padding: 0px !important;
 }
 
 @media only screen and (max-width: 480px) {

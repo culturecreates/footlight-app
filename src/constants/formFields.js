@@ -33,7 +33,7 @@ export const formTypes = {
   TEXTAREA: 'TextArea',
   EDITOR: 'Editor',
   IMAGE: 'Image',
-  SEARCH: 'Search',
+  SEARCH: 'LocationSearch',
 };
 
 export const dataTypes = {
@@ -370,6 +370,7 @@ export const formFieldValue = [
       eventImageGalleryData,
       enableGallery,
       t,
+      setShowDialog,
     }) => (
       <>
         {position === 'top' && datatype === dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
@@ -390,10 +391,10 @@ export const formFieldValue = [
         {name?.includes(mappedFieldTypes.IMAGE) && (
           <Form.Item
             label={t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
-            className="subheading-wrap"
             data-cy="form-item-event-multiple-image"
             hidden={!enableGallery}>
             <MultipleImageUpload
+              setShowDialog={setShowDialog}
               form={form}
               largeAspectRatio={largeAspectRatio}
               thumbnailAspectRatio={thumbnailAspectRatio}
@@ -691,6 +692,7 @@ export const returnFormDataWithFields = ({
   isEntitiesFetching,
   adminOnlyFields,
   mandatoryFields,
+  setShowDialog,
 }) => {
   return renderFormFields({
     fieldName: field?.name,
@@ -767,6 +769,7 @@ export const returnFormDataWithFields = ({
       isExternalSourceFetching,
       isEntitiesFetching,
       // required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
+      setShowDialog,
     }),
     key: index,
     initialValue: formInitialValueHandler(field?.type, field?.mappedField, field?.datatype, entityData),

@@ -253,30 +253,31 @@ function CreateNewPerson() {
             };
           }
         });
-        let imageCrop = [form.getFieldValue('imageCrop')];
-        imageCrop = [
-          {
-            large: {
-              xCoordinate: imageCrop[0]?.large?.x,
-              yCoordinate: imageCrop[0]?.large?.y,
-              height: imageCrop[0]?.large?.height,
-              width: imageCrop[0]?.large?.width,
+        let imageCrop = form.getFieldValue('imageCrop') ? [form.getFieldValue('imageCrop')] : [];
+        if (imageCrop.length > 0) {
+          imageCrop = [
+            {
+              large: {
+                xCoordinate: imageCrop[0]?.large?.x,
+                yCoordinate: imageCrop[0]?.large?.y,
+                height: imageCrop[0]?.large?.height,
+                width: imageCrop[0]?.large?.width,
+              },
+              thumbnail: {
+                xCoordinate: imageCrop[0]?.thumbnail?.x,
+                yCoordinate: imageCrop[0]?.thumbnail?.y,
+                height: imageCrop[0]?.thumbnail?.height,
+                width: imageCrop[0]?.thumbnail?.width,
+              },
+              original: {
+                entityId: imageCrop[0]?.original?.entityId,
+                height: imageCrop[0]?.original?.height,
+                width: imageCrop[0]?.original?.width,
+              },
+              isMain: true,
             },
-            thumbnail: {
-              xCoordinate: imageCrop[0]?.thumbnail?.x,
-              yCoordinate: imageCrop[0]?.thumbnail?.y,
-              height: imageCrop[0]?.thumbnail?.height,
-              width: imageCrop[0]?.thumbnail?.width,
-            },
-            original: {
-              entityId: imageCrop[0]?.original?.entityId,
-              height: imageCrop[0]?.original?.height,
-              width: imageCrop[0]?.original?.width,
-            },
-            isMain: true,
-          },
-        ];
-
+          ];
+        }
         const uploadImageList = async () => {
           for (let i = 0; i < values.multipleImagesCrop.length; i++) {
             const file = values.multipleImagesCrop[i]?.originFileObj;
@@ -370,9 +371,14 @@ function CreateNewPerson() {
               });
         } else {
           if (values.multipleImagesCrop?.length > 0) await uploadImageList();
-          if (values?.image) {
-            if (values?.image && values?.image?.length == 0 && values.multipleImagesCrop?.length == 0)
-              personPayload['image'] = null;
+          if (
+            values?.image &&
+            values?.image?.length === 0 &&
+            (!values.multipleImagesCrop || values.multipleImagesCrop?.length === 0)
+          ) {
+            // Main image is removed and no new image is added
+            // No gallery images are added
+            personPayload['image'] = [];
           } else personPayload['image'] = imageCrop;
           addUpdatePersonApiHandler(personPayload);
         }
@@ -783,6 +789,7 @@ function CreateNewPerson() {
                               form,
                               mandatoryFields: formFieldProperties?.mandatoryFields?.standardFields ?? [],
                               adminOnlyFields: formFieldProperties?.adminOnlyFields?.standardFields ?? [],
+                              setShowDialog,
                             });
                           }
                         });

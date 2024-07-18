@@ -13,7 +13,6 @@ import { getUserDetails } from '../../../redux/reducer/userSlice';
 import i18n from 'i18next';
 import { PathName } from '../../../constants/pathName';
 import Username from '../../Username/index';
-import { routinghandler } from '../../../utils/roleRoutingHandler';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 import { dateTypes } from '../../../constants/dateTypes';
 import { userRoles } from '../../../constants/userRoles';
@@ -63,11 +62,6 @@ function Lists(props) {
 
   let imageDimensions = calculateImageDimensions(aspectRatioString, 104, 150);
 
-  const listItemHandler = (id, creatorId, publishState) => {
-    if (routinghandler(user, calendarId, creatorId, publishState, false, isReadOnly))
-      navigate(`${location.pathname}${PathName.AddEvent}/${id}`);
-    else navigate(`${location.pathname}/${id}`);
-  };
   return (
     <List
       className="event-list-wrapper"
@@ -163,7 +157,9 @@ function Lists(props) {
           ]}>
           <List.Item.Meta
             className="event-list-item-meta"
-            onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId, eventItem?.publishState)}
+            onClick={() => {
+              navigate(`${location.pathname}/${eventItem?.id}`);
+            }}
             avatar={
               <>
                 {screens.md && (
@@ -271,7 +267,9 @@ function Lists(props) {
           />
           <List.Item.Meta
             className="event-status-list-item"
-            onClick={() => listItemHandler(eventItem?.id, eventItem?.creator?.userId, eventItem?.publishState)}
+            onClick={() => {
+              navigate(`${location.pathname}/${eventItem?.id}`);
+            }}
             title={
               <div className="event-status-list-item-title-container">
                 <EventStatus label={eventItem?.publishState} />

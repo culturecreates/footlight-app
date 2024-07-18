@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef } from 'react';
 import './calendarSettings.css';
 import { Row, Col, Form, Divider, notification, Button, message } from 'antd';
@@ -150,6 +151,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
     updateCalendar({ calendarId, data })
       .unwrap()
       .then(() => {
+        setDirtyStatus(false);
         getCalendar({ id: calendarId, sessionId: timestampRef })
           .unwrap()
           .then((response) => {
@@ -176,6 +178,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
   const onSaveHandler = () => {
     let requiredFields =
       calendarSettingsFormFields?.GENERAL_SETTINGS?.filter((field) => field.required)?.map((field) => field.name) ?? [];
+    requiredFields = [...requiredFields, ['imageAspectRatio', 'thumbnail'], ['imageMaxWidth', 'thumbnail']];
     requiredFields = requiredFields.concat(
       calendarSettingsFormFields?.WIDGET_SETTINGS?.filter((field) => field.required)?.map((field) => field.name) ?? [],
     );
@@ -358,7 +361,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
               name="calendar-settings"
               initialValues={initialValues}
               onFieldsChange={() => {
-                setDirtyStatus();
+                setDirtyStatus(true);
               }}>
               {calendarSettingsFormFields.GENERAL_SETTINGS.map((item, index) => {
                 return (
@@ -366,12 +369,14 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
                     label={item.label}
                     key={index}
                     rules={item.rules}
+                    className={item.className ?? ''}
                     required={item.required}
                     name={item.name}
                     hidden={item.hidden}>
                     {item.field({
                       form,
                       isCrop: false,
+                      initialValues,
                       largeAspectRatio: imageConfig?.large?.aspectRatio,
                       thumbnailAspectRatio: imageConfig?.thumbnail?.aspectRatio,
                       largeMaxWidth: imageConfig?.large?.maxWidth,
