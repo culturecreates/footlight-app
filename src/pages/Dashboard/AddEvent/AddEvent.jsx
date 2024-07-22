@@ -435,7 +435,7 @@ function AddEvent() {
               recurringEvent,
               description = {},
               name = {},
-              subEventConfiguration = [],
+              subEventConfiguration = undefined,
               inLanguage = [],
               sameAs = eventId ? (eventData?.sameAs ? eventData?.sameAs : []) : [];
 
@@ -526,7 +526,7 @@ function AddEvent() {
 
             if (dateTypeValue === dateTypes.MULTIPLE) {
               const recurEvent = {
-                frequency: values.frequency,
+                frequency: form.getFieldsValue().frequency !== 'CUSTOM' && values.frequency,
                 startDate:
                   form.getFieldsValue().frequency !== 'CUSTOM'
                     ? moment(values.startDateRecur[0]).format('YYYY-MM-DD')
@@ -546,8 +546,8 @@ function AddEvent() {
                     ? moment(values.endTimeRecur).format('HH:mm')
                     : undefined,
                 weekDays: values.frequency === 'WEEKLY' ? values.daysOfWeek : undefined,
-                customDates:
-                  form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
+                // customDates:
+                //   form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
               };
 
               customDatesFlag = !!recurEvent?.customDates;
@@ -594,60 +594,55 @@ function AddEvent() {
                 recurringEvent = recurEvent;
               }
             }
-            if (
-              eventId &&
-              eventData?.subEventConfiguration &&
-              eventData?.subEventConfiguration?.length > 0 &&
-              form.getFieldsValue()?.customDates &&
-              form.getFieldsValue().frequency === 'CUSTOM'
-            ) {
+            const { customDates, frequency } = form.getFieldsValue() || {};
+            if (customDates && frequency === 'CUSTOM') {
               recurringEvent = undefined;
-              const customDates = form.getFieldsValue().customDates || [];
+              subEventConfiguration = [];
               const subEventConfig = eventData?.subEventConfiguration || [];
-              if (hasSubEventConfigChanges(customDates, subEventConfig)) {
-                // True : Changes detected
-                if (eventData?.publishState === eventPublishState.PUBLISHED) {
-                  sameAs = eventData?.sameAs?.filter((item) => item?.type !== sameAsTypes.ARTSDATA_IDENTIFIER);
-                }
-                customDates.forEach(({ startDate, customTimes = [] }) => {
-                  if (customTimes.length === 0) {
-                    subEventConfig.forEach(({ startDate: subStartDate, startTime, endTime, sameAs }) => {
-                      if (subStartDate === startDate && !startTime && !endTime) {
-                        subEventConfiguration.push({
-                          startDate,
-                          sameAs,
-                        });
-                      } else
-                        subEventConfiguration.push({
-                          startDate,
-                        });
-                    });
-                  } else {
-                    customTimes.forEach(({ startTime, endTime }) => {
-                      const sameAs = subEventConfig.find(
-                        ({ startDate: subStartDate, startTime: subStartTime, endTime: subEndTime }) => {
-                          return (
-                            subStartDate === startDate &&
-                            ((!subStartTime && !subEndTime) ||
-                              (subStartTime === startTime && !subEndTime) ||
-                              (!subStartTime && subEndTime === endTime) ||
-                              (subStartTime === startTime && subEndTime === endTime))
-                          );
-                        },
-                      );
 
-                      subEventConfiguration.push({
-                        startDate,
-                        startTime,
-                        endTime,
-                        sameAs: sameAs?.sameAs,
-                      });
+              const processCustomTimes = (startDate, customTimes) => {
+                if (customTimes.length === 0) {
+                  subEventConfiguration.push({ startDate });
+                } else {
+                  customTimes.forEach(({ startTime, endTime }) => {
+                    const sameAs = subEventConfig.find(
+                      ({ startDate: subStartDate, startTime: subStartTime, endTime: subEndTime }) => {
+                        return (
+                          subStartDate === startDate &&
+                          ((!subStartTime && !subEndTime) ||
+                            (subStartTime === startTime && !subEndTime) ||
+                            (!subStartTime && subEndTime === endTime) ||
+                            (subStartTime === startTime && subEndTime === endTime))
+                        );
+                      },
+                    );
+                    subEventConfiguration.push({
+                      startDate,
+                      startTime,
+                      endTime,
+                      sameAs: sameAs?.sameAs,
                     });
+                  });
+                }
+              };
+
+              if (eventId) {
+                if (hasSubEventConfigChanges(customDates, subEventConfig)) {
+                  // Changes detected
+                  if (eventData?.publishState === eventPublishState.PUBLISHED) {
+                    sameAs = eventData?.sameAs?.filter((item) => item?.type !== sameAsTypes.ARTSDATA_IDENTIFIER);
                   }
-                });
+                  customDates.forEach(({ startDate, customTimes = [] }) => {
+                    processCustomTimes(startDate, customTimes);
+                  });
+                } else {
+                  // No changes detected
+                  subEventConfiguration = subEventConfig;
+                }
               } else {
-                // False : No changes detected,both arrays are equal
-                subEventConfiguration = eventData?.subEventConfiguration;
+                customDates.forEach(({ startDate, customTimes = [] }) => {
+                  processCustomTimes(startDate, customTimes);
+                });
               }
             }
 
@@ -1813,7 +1808,7 @@ function AddEvent() {
         if (eventData?.inLanguage?.length > 0)
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.inLanguage);
         setAddedFields(initialAddedFields);
-        if (eventData?.recurringEvent) {
+        if (eventData?.recurringEvent && eventData?.recurringEvent?.frequency != 'CUSTOM') {
           form.setFieldsValue({
             frequency: eventData?.recurringEvent?.frequency,
             startDateRecur: [
