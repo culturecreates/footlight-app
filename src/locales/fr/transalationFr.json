@@ -117,7 +117,7 @@
           "dateRange": "Plage de dates"
         },
         "organizer": { "label": "Organisations", "placeholderSearch": "Rechercher un nom" },
-        "clear": "Éffacer"
+        "clear": "Effacer"
       },
       "readOnlyEvent": {
         "notification": {
@@ -453,7 +453,7 @@
         "pendingReview": "Attente d'approbation"
       },
       "list": {
-        "createdBy": "Crée le",
+        "createdBy": "Créé le",
         "updatedBy": "Modifié le",
         "by": "par",
         "to": "au",
@@ -946,7 +946,7 @@
         "colorPlaceHolder": "Collez votre code couleur ou sélectionnez une couleur",
         "height": "Hauteur",
         "width": "Largeur maximale",
-        "font": "Font selection",
+        "font": "Sélection de la police de caractères",
         "language": "Choix de langue",
         "eventType": "Type d'événement",
         "region": "Région",
