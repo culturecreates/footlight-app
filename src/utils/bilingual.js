@@ -1,6 +1,7 @@
 //Function which returns the language key depending on the interface language
 
 import { contentLanguage, contentLanguageKeyMap } from '../constants/contentLanguage';
+import { userLanguages } from '../constants/userLanguages';
 
 export const bilingual = ({ interfaceLanguage, data }) => {
   /**
@@ -16,9 +17,13 @@ export const bilingual = ({ interfaceLanguage, data }) => {
 
   let requiredLanguageData = data[interfaceLanguage];
 
-  if (requiredLanguageData) return requiredLanguageData;
+  if (!requiredLanguageData) {
+    const foundLanguage = userLanguages.find(({ key }) => data[key.toLowerCase()] !== undefined);
+    const lanKey = foundLanguage.key.toLowerCase();
+    requiredLanguageData = data[lanKey];
+  }
 
-  return Object.values(data)[0] ?? '';
+  return requiredLanguageData ?? '';
 };
 
 export const contentLanguageBilingual = ({ interfaceLanguage, calendarContentLanguage, data }) => {
@@ -34,17 +39,14 @@ export const contentLanguageBilingual = ({ interfaceLanguage, calendarContentLan
 
   let contentLanguageKey = interfaceLanguage?.toLowerCase();
 
-  if (calendarContentLanguage.length == 1) {
+  if (calendarContentLanguage?.length == 1) {
     contentLanguageKey = contentLanguageKeyMap[calendarContentLanguage[0]];
   }
 
-  if (data[contentLanguageKey] === undefined)
-    for (const key in Object.values(contentLanguageKeyMap)) {
-      const lanKey = contentLanguageKeyMap[key];
-      if (data[lanKey] !== undefined) {
-        return data[lanKey];
-      }
-    }
+  if (data[contentLanguageKey] === undefined) {
+    const activeKey = Object.values(contentLanguageKeyMap).find((lanKey) => data[lanKey] !== undefined);
+    return data[activeKey] ?? '';
+  }
 
-  return data[contentLanguageKey] ?? '';
+  return data[contentLanguageKey];
 };

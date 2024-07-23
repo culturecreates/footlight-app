@@ -1186,6 +1186,9 @@
   },
   "common": {
     "tabEnglish": "English",
+    "tabJapanese": "Japanese",
+    "tabKorean": "Korean",
+    "tabChinese": "Chinese",
     "noneFound": "None Found",
     "tabFrench": "French",
     "unsavedChanges": "You have unsaved changes. Are you sure you want to discard them?",
