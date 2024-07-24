@@ -5,8 +5,6 @@ import Tags from '../components/Tags/Common/Tags';
 import TreeSelectOption from '../components/TreeSelectOption/TreeSelectOption';
 import { treeTaxonomyOptions } from '../components/TreeSelectOption/treeSelectOption.settings';
 import { contentLanguage } from './contentLanguage';
-import ContentLanguageInput from '../components/ContentLanguageInput/ContentLanguageInput';
-import BilingualInput from '../components/BilingualInput/BilingualInput';
 import ImageUpload from '../components/ImageUpload/ImageUpload';
 import { bilingual, contentLanguageBilingual } from '../utils/bilingual';
 import { Translation } from 'react-i18next';
@@ -20,6 +18,7 @@ import Outlined from '../components/Button/Outlined';
 import { sourceOptions } from './sourceOptions';
 import LoadingIndicator from '../components/LoadingIndicator';
 import MultipleImageUpload from '../components/MultipleImageUpload';
+import CreateMultiLingualFormItems from '../layout/CreateMultiLingualFormItems';
 
 const { TextArea } = Input;
 
@@ -110,88 +109,28 @@ export const formFieldValue = [
     }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
         return (
-          <ContentLanguageInput
+          <CreateMultiLingualFormItems
             calendarContentLanguage={calendarContentLanguage}
-            isFieldsDirty={{
-              en: form.isFieldTouched(name?.concat(['en'])),
-              fr: form.isFieldTouched(name?.concat(['fr'])),
-            }}>
-            <BilingualInput fieldData={data}>
-              <Form.Item
-                name={[`${name}`, 'fr']}
-                key={contentLanguage.FRENCH}
-                dependencies={[`${name}`, 'en']}
-                initialValue={data?.fr}
-                rules={
-                  required
-                    ? [
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (value || getFieldValue([`${name}`, 'en'])) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(
-                                new Error(validations ?? t('common.validations.informationRequired')),
-                              );
-                          },
-                        }),
-                      ]
-                    : undefined
-                }>
-                <TextArea
-                  autoSize
-                  autoComplete="off"
-                  placeholder={placeholder?.fr}
-                  style={{
-                    borderRadius: '4px',
-                    border: `${
-                      calendarContentLanguage === contentLanguage.BILINGUAL ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
-                    }`,
-                    width: '423px',
-                  }}
-                  size="large"
-                  data-cy={`input-text-area-${mappedField}-french`}
-                />
-              </Form.Item>
-
-              <Form.Item
-                name={[`${name}`, 'en']}
-                key={contentLanguage.ENGLISH}
-                dependencies={[`${name}`, 'fr']}
-                initialValue={data?.en}
-                rules={
-                  required
-                    ? [
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (value || getFieldValue([`${name}`, 'fr'])) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(
-                                new Error(validations ?? t('common.validations.informationRequired')),
-                              );
-                          },
-                        }),
-                      ]
-                    : undefined
-                }>
-                <TextArea
-                  autoSize
-                  autoComplete="off"
-                  placeholder={placeholder?.en}
-                  style={{
-                    borderRadius: '4px',
-                    border: `${
-                      calendarContentLanguage === contentLanguage.BILINGUAL ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
-                    }`,
-                    width: '100%',
-                  }}
-                  size="large"
-                  data-cy={`input-text-area-${mappedField}-english`}
-                />
-              </Form.Item>
-            </BilingualInput>
-          </ContentLanguageInput>
+            form={form}
+            name={name}
+            data={data}
+            validations={validations}
+            dataCy={`input-text-area-${mappedField}-`}
+            placeholder={placeholder}
+            required={required}>
+            <TextArea
+              autoSize
+              autoComplete="off"
+              style={{
+                borderRadius: '4px',
+                border: `${
+                  calendarContentLanguage === contentLanguage.length > 1 ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
+                }`,
+                width: '423px',
+              }}
+              size="large"
+            />
+          </CreateMultiLingualFormItems>
         );
       else if (datatype === dataTypes.URI_STRING)
         return (

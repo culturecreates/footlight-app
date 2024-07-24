@@ -244,7 +244,7 @@ function CreateNewPerson() {
         var values = form.getFieldsValue(true);
         let personPayload = {};
         Object.keys(values)?.map((object) => {
-          let payload = formPayloadHandler(values[object], object, formFields);
+          let payload = formPayloadHandler(values[object], object, formFields, calendarContentLanguage);
           if (payload) {
             let newKeys = Object.keys(payload);
             personPayload = {

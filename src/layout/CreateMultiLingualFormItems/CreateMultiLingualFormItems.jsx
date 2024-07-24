@@ -23,7 +23,7 @@ import MultilingualInput from '../../components/MultilingualInput';
  * @returns {React.Element} MultilingualInput component with processed form items as children.
  */
 
-export const CreateMultiLingualFormItems = ({ children, ...rest }) => {
+const CreateMultiLingualFormItems = ({ children, ...rest }) => {
   const { calendarContentLanguage, form, name, data, required, validations, dataCy, placeholder } = rest;
   const { t } = useTranslation();
 
@@ -42,7 +42,7 @@ export const CreateMultiLingualFormItems = ({ children, ...rest }) => {
       .filter((lan) => lan !== language)
       .map((lan) => [name, contentLanguageKeyMap[lan]]);
 
-    dataCyCollection.push(`${dataCy}-${language.toLowerCase()}`);
+    dataCyCollection.push(`${dataCy}${language.toLowerCase()}`);
     placeholderCollection.push(placeholder[contentLanguageKeyMap[language]] ?? '');
 
     const validationRules = required // validation rules for each form item
@@ -67,7 +67,7 @@ export const CreateMultiLingualFormItems = ({ children, ...rest }) => {
         name={[`${name}`, contentLanguageKeyMap[language]]}
         key={language}
         dependencies={dependencies}
-        initialValue={data?.fr}
+        initialValue={data?.[contentLanguageKeyMap[language]]}
         rules={validationRules}>
         {children}
       </Form.Item>
@@ -85,3 +85,5 @@ export const CreateMultiLingualFormItems = ({ children, ...rest }) => {
     </MultilingualInput>
   );
 };
+
+export default CreateMultiLingualFormItems;

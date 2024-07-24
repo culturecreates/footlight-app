@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Tabs } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
 import '../BilingualInput/bilingualInput.css';
@@ -8,7 +7,7 @@ import LiteralBadge from '../Badge/LiteralBadge';
 import { contentLanguage, contentLanguageKeyMap } from '../../constants/contentLanguage';
 import { capitalizeFirstLetter } from '../../utils/stringManipulations';
 import { useOutletContext } from 'react-router-dom';
-import useLanguageFallbackSetup from '../../hooks/useLanguageFallbackSetup';
+import useChildrenWithLanguageFallback from '../../hooks/useChildrenWithLanguageFallback';
 
 /**
  * MultilingualInput Component
@@ -18,27 +17,33 @@ import useLanguageFallbackSetup from '../../hooks/useLanguageFallbackSetup';
  * @param {Object} props.fieldData - An object containing the field data for different languages.
  * @param {Array<string>} props.calendarContentLanguage - An array of languages to be displayed as tabs.
  * @param {string} [props.defaultTab] - The default tab key to be selected.
- * @param {Object} props.fallbackStatus - An object containing the fallback status for different languages.
+ * @param {Object} props.dataCyCollection - An array containing the data-cy attribute for each user interactable element eg. textarea. maintains the order of formItems.
+ * @param {Object} props.placeholderCollection - An object containing the placeholder attribute for each user interactable element eg. textarea. maintains the order of formItems.
  *
  * @returns {React.Element} The rendered form item components.
  */
 
 function MultilingualInput({ children, ...rest }) {
-  const { fieldData, calendarContentLanguage, defaultTab: defaultTabProp, isFieldsDirty } = rest;
+  const {
+    fieldData,
+    calendarContentLanguage,
+    defaultTab: defaultTabProp,
+    isFieldsDirty,
+    dataCyCollection,
+    placeholderCollection,
+  } = rest;
   const [currentCalendarData] = useOutletContext();
   const { t } = useTranslation();
 
-  const { fallbackStatus = {}, modifiedChildren } = useLanguageFallbackSetup({
+  const { fallbackStatus = {}, modifiedChildren } = useChildrenWithLanguageFallback({
     children,
     isFieldsDirty,
     currentCalendarData,
     calendarContentLanguage,
     fieldData,
+    dataCyCollection,
+    placeholderCollection,
   });
-
-  //   useEffect(() => {
-  //     console.log(fallbackStatus, modifiedChildren);
-  //   }, [fallbackStatus, modifiedChildren]);
 
   let labelCollection = {};
   let fallbackPromptTextCollection = {};
@@ -66,7 +71,7 @@ function MultilingualInput({ children, ...rest }) {
   });
 
   // fallback prompt text creation for each required tab
-  const fallbackKeys = fallbackStatus == Object ? Object.keys(fallbackStatus) : [];
+  const fallbackKeys = fallbackStatus ? Object.keys(fallbackStatus) : [];
   fallbackKeys.length > 0 &&
     fallbackKeys.forEach((key) => {
       fallbackPromptTextCollection[key] =
@@ -83,7 +88,7 @@ function MultilingualInput({ children, ...rest }) {
       forceRender: true,
       children: (
         <div className="bilingual-child-wrapper">
-          {children[index]}
+          {modifiedChildren[index]}
           {fallbackStatus?.[langKey]?.tagDisplayStatus && (
             <LiteralBadge
               tagTitle={fallbackStatus[langKey]?.fallbackLiteralKey}
