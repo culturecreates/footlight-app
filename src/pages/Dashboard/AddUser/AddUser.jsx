@@ -315,16 +315,17 @@ const AddUser = () => {
         .validateFields()
         .then((values) => {
           setIsFormDirty(false);
-          let organizations = values?.organizers[calendarId];
-          organizations = organizations?.map((organizer) => {
+          let organizations = values?.organizers?.[calendarId] ?? [];
+          organizations = organizations.map((organizer) => {
             return { entityId: organizer?.value };
           });
 
-          let people = values?.people[calendarId];
-          people = people?.map((organizer) => {
+          let people = values?.people?.[calendarId] ?? [];
+          people = people.map((organizer) => {
             return { entityId: organizer?.value };
           });
-          let userType = values?.userType[calendarId];
+
+          let userType = values?.userType?.[calendarId] ?? [];
           if (isCurrentUser && adminCheckHandler({ calendar, user }) == false) {
             updateCurrentUser({
               calendarId,
