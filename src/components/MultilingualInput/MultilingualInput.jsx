@@ -19,6 +19,7 @@ import useChildrenWithLanguageFallback from '../../hooks/useChildrenWithLanguage
  * @param {string} [props.defaultTab] - The default tab key to be selected.
  * @param {Object} props.dataCyCollection - An array containing the data-cy attribute for each user interactable element eg. textarea. maintains the order of formItems.
  * @param {Object} props.placeholderCollection - An object containing the placeholder attribute for each user interactable element eg. textarea. maintains the order of formItems.
+ * @param {Boolean} props.skipChildModification - A boolean to skip the modification of children. Default is false. Used as a prop for multilingual text editor.
  *
  * @returns {React.Element} The rendered form item components.
  */
@@ -31,19 +32,22 @@ function MultilingualInput({ children, ...rest }) {
     isFieldsDirty,
     dataCyCollection,
     placeholderCollection,
+    skipChildModification = false,
   } = rest;
   const [currentCalendarData] = useOutletContext();
   const { t } = useTranslation();
 
-  const { fallbackStatus = {}, modifiedChildren } = useChildrenWithLanguageFallback({
-    children,
-    isFieldsDirty,
-    currentCalendarData,
-    calendarContentLanguage,
-    fieldData,
-    dataCyCollection,
-    placeholderCollection,
-  });
+  const { fallbackStatus = {}, modifiedChildren = children } =
+    !skipChildModification &&
+    useChildrenWithLanguageFallback({
+      children,
+      isFieldsDirty,
+      currentCalendarData,
+      calendarContentLanguage,
+      fieldData,
+      dataCyCollection,
+      placeholderCollection,
+    });
 
   let labelCollection = {};
   let fallbackPromptTextCollection = {};

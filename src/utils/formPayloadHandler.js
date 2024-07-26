@@ -24,7 +24,7 @@ export const formPayloadHandler = (value, mappedField, formFields, calendarConte
 
     switch (currentDatatype) {
       case dataTypes.MULTI_LINGUAL:
-        if (currentField[0]?.type === formTypes.INPUT) {
+        if (currentField[0]?.type === formTypes.INPUT || currentField[0]?.type === formTypes.EDITOR) {
           calendarContentLanguage.forEach((language) => {
             const languageKey = contentLanguageKeyMap[language];
             returnValues[languageKey] = value?.[languageKey]?.trim();

@@ -13,12 +13,12 @@ import { formInitialValueHandler } from '../utils/formInitialValueHandler';
 import { featureFlags } from '../utils/featureFlags';
 import EventsSearch from '../components/Search/Events/EventsSearch';
 import SelectionItem from '../components/List/SelectionItem';
-import BilingualTextEditor from '../components/BilingualTextEditor';
 import Outlined from '../components/Button/Outlined';
 import { sourceOptions } from './sourceOptions';
 import LoadingIndicator from '../components/LoadingIndicator';
 import MultipleImageUpload from '../components/MultipleImageUpload';
 import CreateMultiLingualFormItems from '../layout/CreateMultiLingualFormItems';
+import MultiLingualTextEditor from '../components/MultilingualTextEditor/MultiLingualTextEditor';
 
 const { TextArea } = Input;
 
@@ -517,12 +517,14 @@ export const formFieldValue = [
       name = [],
       placeholder,
       required,
+      form,
       descriptionMinimumWordCount,
     }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
         return (
-          <BilingualTextEditor
+          <MultiLingualTextEditor
             data={data}
+            form={form}
             calendarContentLanguage={calendarContentLanguage}
             name={name}
             placeholder={placeholder}
