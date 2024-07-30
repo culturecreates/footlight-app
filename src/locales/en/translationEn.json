@@ -609,7 +609,10 @@
             "name": "Place Name",
             "placeholder": {
               "english": "Enter place name",
-              "french": "Enter place name"
+              "french": "Enter place name",
+              "korean": "Enter place name",
+              "japanese": "Enter place name",
+              "chinese": "Enter place name"
             }
           },
           "placeType": {
@@ -625,11 +628,20 @@
             "subheading": "Search for the name of place and/or address.",
             "streetAddressPlaceholder": {
               "english": "Enter street address in English",
-              "french": "Enter street address in French"
+              "french": "Enter street address in French",
+              "korean": "Enter street address in Korean",
+              "japanese": "Enter street address in Japanese",
+              "chinese": "Enter street address in Chinese"
             },
             "city": {
               "city": "City",
-              "placeholder": { "french": "Enter city in French", "english": "Enter city in English" }
+              "placeholder": {
+                "french": "Enter city in French",
+                "english": "Enter city in English",
+                "korean": "Enter city in Korean",
+                "japanese": "Enter city in Japanese",
+                "chinese": "Enter city in Chinese"
+              }
             },
             "postalCode": {
               "postalCode": "Postal code",
@@ -639,14 +651,20 @@
               "province": "Province",
               "placeholder": {
                 "english": "Enter province in English",
-                "french": "Enter province in French"
+                "french": "Enter province in French",
+                "korean": "Enter province in Korean",
+                "japanese": "Enter province in Japanese",
+                "chinese": "Enter province in Chinese"
               }
             },
             "country": {
               "country": "Country",
               "placeholder": {
                 "english": "Enter country in English",
-                "french": "Enter country in French"
+                "french": "Enter country in French",
+                "korean": "Enter country in Korean",
+                "japanese": "Enter country in Japanese",
+                "chinese": "Enter country in Chinese"
               }
             },
             "coordinates": {
@@ -683,7 +701,10 @@
               "note": "Note",
               "placeholder": {
                 "english": "Enter a note",
-                "french": "Enter a note"
+                "french": "Enter a note",
+                "korean": "Enter a note",
+                "japanese": "Enter a note",
+                "chinese": "Enter a note"
               },
               "tooltip": "Add supplementary accessibility information."
             }
@@ -692,7 +713,10 @@
             "disambiguatingDescription": "Disambiguating description",
             "placeholder": {
               "english": "Enter Disambiguating description",
-              "french": "Enter Disambiguating description"
+              "french": "Enter Disambiguating description",
+              "korean": "Enter Disambiguating description",
+              "japanese": "Enter Disambiguating description",
+              "chinese": "Enter Disambiguating description"
             }
           },
           "description": {

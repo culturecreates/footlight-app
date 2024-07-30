@@ -271,11 +271,12 @@ function CreateNewOrganization() {
       formFields
         ?.filter((field) => mandatoryFields?.includes(field?.name))
         ?.map((field) => {
+          let collection = [];
           if (field?.datatype === dataTypes.MULTI_LINGUAL) {
-            return [
-              [field?.mappedField, 'en'],
-              [field?.mappedField, 'fr'],
-            ];
+            calendarContentLanguage.forEach((language) => {
+              collection.push([field?.mappedField, contentLanguageKeyMap[language]]);
+            });
+            return collection;
           } else return field?.mappedField;
         })
         ?.flat(),
@@ -283,6 +284,7 @@ function CreateNewOrganization() {
     validateFieldList = validateFieldList?.concat(
       formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => ['dynamicFields', field]),
     );
+
     var promise = new Promise(function (resolve, reject) {
       form
         .validateFields(validateFieldList)

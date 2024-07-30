@@ -514,7 +514,7 @@ export const formFieldValue = [
       datatype,
       data,
       calendarContentLanguage,
-      name = [],
+      name = '',
       placeholder,
       required,
       form,
@@ -526,7 +526,7 @@ export const formFieldValue = [
             data={data}
             form={form}
             calendarContentLanguage={calendarContentLanguage}
-            name={name}
+            name={Array.isArray(name) ? name[0] : name}
             placeholder={placeholder}
             descriptionMinimumWordCount={descriptionMinimumWordCount}
             required={required}

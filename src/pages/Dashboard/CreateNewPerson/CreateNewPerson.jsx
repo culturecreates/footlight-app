@@ -52,6 +52,7 @@ import {
 import Alert from '../../../components/Alert';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -602,15 +603,17 @@ function CreateNewPerson() {
   }, []);
 
   useEffect(() => {
+    const newEntityName = location?.state?.name;
     if (artsDataId) {
       getArtsData(artsDataId);
-    } else if (location?.state?.name) {
-      setNewEntityData({
-        name: {
-          fr: location?.state?.name,
-          en: location?.state?.name,
-        },
+    } else if (newEntityName) {
+      const name = {};
+      calendarContentLanguage.forEach((language) => {
+        const langKey = contentLanguageKeyMap[language];
+        name[langKey] = newEntityName;
       });
+
+      setNewEntityData({ name });
     }
   }, []);
 

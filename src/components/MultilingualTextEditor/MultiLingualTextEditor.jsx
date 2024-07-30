@@ -9,16 +9,24 @@ import { getActiveFallbackFieldsInfo, setActiveFallbackFieldsInfo } from '../../
 import { useDispatch, useSelector } from 'react-redux';
 import LiteralBadge from '../Badge/LiteralBadge';
 
+/**
+ * MultiLingualTextEditor component handles multilingual text input using React Quill editors.
+ * It supports dynamic rules and fallback language prompts.
+ *
+ * @param {Object} props - The properties object.
+ * @param {string} props.name - The name of the form field.
+ * @param {Object} props.data - The initial data for the text editors.
+ * @param {Object} props.placeholder - Placeholder text for each language.
+ * @param {string[]} props.calendarContentLanguage - Array of language keys.
+ * @param {boolean} props.required - Flag to indicate if the field is required.
+ * @param {Object} props.form - The form instance from Ant Design.
+ * @param {number || undefined} props.descriptionMinimumWordCount - Minimum word count for description.
+ *
+ * @returns {JSX.Element} The rendered component, ie a text editor for each content language is wrapped in multilingual input.
+ */
+
 function MultiLingualTextEditor(props) {
-  const {
-    name,
-    data,
-    placeholder,
-    calendarContentLanguage,
-    required,
-    form,
-    descriptionMinimumWordCount = '40',
-  } = props;
+  const { name, data, placeholder, calendarContentLanguage, required, form, descriptionMinimumWordCount } = props;
   const { t } = useTranslation();
   const [currentCalendarData] = useOutletContext();
   const reactQuillRefs = useRef(
@@ -34,7 +42,6 @@ function MultiLingualTextEditor(props) {
     const fieldName = name.concat([lanKey]);
     isFieldsDirty[lanKey] = form.isFieldTouched(fieldName);
   });
-  const [isInitialRender, setIsInitialRender] = useState(true);
 
   // Function to generate rules based on language
   const generateRules = (language) => [
@@ -63,7 +70,7 @@ function MultiLingualTextEditor(props) {
           },
         })
       : [],
-    descriptionMinimumWordCount
+    descriptionMinimumWordCount && descriptionMinimumWordCount > 1
       ? () => ({
           validator() {
             const currentEditor = reactQuillRefs.current[language]?.current?.getEditor();
@@ -103,9 +110,12 @@ function MultiLingualTextEditor(props) {
       : [],
   ];
 
+  // Fallback status and prompt text config for text editors
+
   const dispatch = useDispatch();
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
 
+  const [isInitialRender, setIsInitialRender] = useState(true);
   const [fallbackStatus, setFallbackStatus] = useState(null);
   const [fallbackPromptTextCollection, setFallbackPromptTextCollection] = useState({});
   useEffect(() => {
@@ -181,7 +191,7 @@ function MultiLingualTextEditor(props) {
           return (
             <div key={language}>
               <TextEditor
-                formName={[`${name}`, [languageKey]]}
+                formName={[`${name}`, languageKey]}
                 initialValue={initialValue}
                 calendarContentLanguage={calendarContentLanguage}
                 editorLanguage={languageKey}

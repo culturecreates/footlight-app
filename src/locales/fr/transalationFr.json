@@ -607,7 +607,10 @@
             "name": "Nom du lieu",
             "placeholder": {
               "english": "Entrez le nom du lieu",
-              "french": "Entrez le nom du lieu"
+              "french": "Entrez le nom du lieu",
+              "korean": "Entrez le nom du lieu",
+              "japanese": "Entrez le nom du lieu",
+              "chinese": "Entrez le nom du lieu"
             }
           },
           "placeType": {
@@ -688,7 +691,10 @@
             "disambiguatingDescription": "Description identifiante",
             "placeholder": {
               "english": "Entrez la description identifiante",
-              "french": "Entrez la description identifiante"
+              "french": "Entrez la description identifiante",
+              "korean": "Entrez la description identifiante",
+              "japanese": "Entrez la description identifiante",
+              "chinese": "Entrez la description identifiante"
             }
           },
           "description": {
