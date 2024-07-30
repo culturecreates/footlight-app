@@ -8,21 +8,10 @@ import Select from '../components/Select';
 import { Col, Form, Row } from 'antd';
 import ImageUpload from '../components/ImageUpload';
 import TextArea from 'antd/lib/input/TextArea';
-import BilingualInput from '../components/BilingualInput';
 import { entitiesClass } from './entitiesClass';
-import { contentLanguage } from './contentLanguage';
 import StyledSwitch from '../components/Switch/StyledSwitch';
-
-const calendarLanguages = [
-  {
-    value: contentLanguage.ENGLISH,
-    label: <Translation>{(t) => t('dashboard.settings.addUser.dropDownOptions.langagePreference.en')}</Translation>,
-  },
-  {
-    value: contentLanguage.FRENCH,
-    label: <Translation>{(t) => t('dashboard.settings.addUser.dropDownOptions.langagePreference.fr')}</Translation>,
-  },
-];
+import CreateMultiLingualFormItems from '../layout/CreateMultiLingualFormItems/CreateMultiLingualFormItems';
+import { calendarLanguages } from './contentLanguage';
 
 const timeZones = [
   {
@@ -144,55 +133,30 @@ export const calendarSettingsFormFields = {
       name: 'calendarName',
       className: 'calendar-settings-calendar-name',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.calendarName')}</Translation>,
-      field: ({ t, initialValues }) => {
-        const fieldData = {
-          fr: initialValues?.calendarNameFr,
-          en: initialValues?.calendarNameEn,
-        };
-
+      field: ({ t, initialValues, form, calendarContentLanguage }) => {
         return (
-          <BilingualInput fieldData={fieldData}>
-            <Form.Item name="calendarNameFr">
-              <TextArea
-                autoSize
-                style={{
-                  borderRadius: '4px',
-                  border: '4px solid #E8E8E8',
-                  width: '100%',
-                }}
-                size="large"
-                autoComplete="off"
-                placeholder={t('dashboard.settings.calendarSettings.placeholders.calendarNameFr')}
-                data-cy="input-calendar-name"
-              />
-            </Form.Item>
-
-            <Form.Item name="calendarNameEn">
-              <TextArea
-                autoSize
-                style={{
-                  borderRadius: '4px',
-                  border: '4px solid #E8E8E8',
-                  width: '100%',
-                }}
-                size="large"
-                autoComplete="off"
-                placeholder={t('dashboard.settings.calendarSettings.placeholders.calendarNameEn')}
-                data-cy="input-calendar-name"
-              />
-            </Form.Item>
-          </BilingualInput>
+          <CreateMultiLingualFormItems
+            calendarContentLanguage={calendarContentLanguage}
+            form={form}
+            name="calendarName"
+            data={initialValues?.calendarName}
+            validations={t('common.validations.informationRequired')}
+            required={true}
+            placeholder={t('dashboard.settings.calendarSettings.placeholders.calendarNameFr')}
+            data-cy="input-calendar-name">
+            <TextArea
+              autoSize
+              style={{
+                borderRadius: '4px',
+                border: '4px solid #E8E8E8',
+                width: '100%',
+              }}
+              size="large"
+              autoComplete="off"
+            />
+          </CreateMultiLingualFormItems>
         );
       },
-      rules: [
-        ({ getFieldValue }) => ({
-          validator() {
-            if (getFieldValue('calendarNameFr') || getFieldValue('calendarNameEn')) {
-              return Promise.resolve();
-            } else return Promise.reject(REQUIRED_MESSAGE.message);
-          },
-        }),
-      ],
       hidden: false,
       required: true,
     },

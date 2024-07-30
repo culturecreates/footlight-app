@@ -14,14 +14,16 @@ import { getUserDetails } from '../../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
 import PrimaryButton from '../../../../components/Button/Primary';
 import { useUpdateCalendarMutation } from '../../../../services/calendar';
-import { contentLanguage } from '../../../../constants/contentLanguage';
+import { contentLanguage, contentLanguageKeyMap } from '../../../../constants/contentLanguage';
 import { useAddImageMutation } from '../../../../services/image';
 import { calendarModes } from '../../../../constants/calendarModes';
+import { use } from 'i18next';
 
 function CalendarSettings({ setDirtyStatus, tabKey }) {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const [currentCalendarData, , , getCalendar, , , setIsReadOnly, refetch] = useOutletContext();
+  const [currentCalendarData, , , getCalendar, , , setIsReadOnly, refetch, , isCurrentCalendarInfoLoading] =
+    useOutletContext();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId } = useParams();
   const { user } = useSelector(getUserDetails);
@@ -122,17 +124,13 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
   const [aspectRatioOptions, setAspectRatioOptions] = React.useState(aspectRatios);
 
   const initialValues = {
-    calendarNameEn: currentCalendarData?.name?.en,
-    calendarNameFr: currentCalendarData?.name?.fr,
+    calendarName: currentCalendarData?.name,
     calendarContactEmail: currentCalendarData?.contact,
     calendarTimeZone: currentCalendarData?.timezone,
     calendarDateFormat: currentCalendarData?.dateFormatDisplay,
     eventTemplate: currentCalendarData?.widgetSettings?.eventDetailsUrlTemplate,
     searchResultTemplate: currentCalendarData?.widgetSettings?.listEventsUrlTemplate,
-    calendarLanguage:
-      currentCalendarData?.contentLanguage === contentLanguage.BILINGUAL
-        ? [contentLanguage.ENGLISH, contentLanguage.FRENCH]
-        : [currentCalendarData?.contentLanguage],
+    calendarLanguage: currentCalendarData?.contentLanguage,
     imageAspectRatio: {
       large: imageConfig?.large?.aspectRatio,
       thumbnail: imageConfig?.thumbnail?.aspectRatio,
@@ -202,17 +200,11 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
         calendarData[entitiesClass.place] = values[entitiesClass.place]?.filter(
           (item) => !STATIC_FILTERS.FILTER_LIST.PLACE.includes(item),
         );
+
         if (values)
           calendarData = {
-            name: {
-              en: values.calendarNameEn,
-              fr: values.calendarNameFr,
-            },
-            contentLanguage:
-              values.calendarLanguage?.includes(contentLanguage.ENGLISH) &&
-              values.calendarLanguage?.includes(contentLanguage.FRENCH)
-                ? contentLanguage.BILINGUAL
-                : values.calendarLanguage[0],
+            name: values?.calendarName,
+            contentLanguage: values?.calendarLanguage,
             timezone: values.calendarTimeZone,
             contact: values.calendarContactEmail,
             dateFormatDisplay: values.calendarDateFormat,
@@ -329,6 +321,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
 
   return (
     currentCalendarData &&
+    !isCurrentCalendarInfoLoading &&
     !taxonomyLoading && (
       <div style={{ paddingTop: '24px' }}>
         <Row className="calendar-settings-wrapper" gutter={[0, 18]}>
@@ -376,6 +369,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
                       form,
                       isCrop: false,
                       initialValues,
+                      calendarContentLanguage,
                       largeAspectRatio: imageConfig?.large?.aspectRatio,
                       thumbnailAspectRatio: imageConfig?.thumbnail?.aspectRatio,
                       largeMaxWidth: imageConfig?.large?.maxWidth,

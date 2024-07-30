@@ -10,7 +10,7 @@ import { CloseCircleOutlined, CopyOutlined, ExclamationCircleOutlined } from '@a
 import NoContent from '../../../../components/NoContent/NoContent';
 import { useGetAllTaxonomyQuery } from '../../../../services/taxonomy';
 import { taxonomyClass } from '../../../../constants/taxonomyClass';
-import { contentLanguage } from '../../../../constants/contentLanguage';
+import { contentLanguageKeyMap } from '../../../../constants/contentLanguage';
 import { useOutletContext, useParams } from 'react-router-dom';
 import { getUserDetails } from '../../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
@@ -110,13 +110,14 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
   });
 
   const lanFormat = () => {
-    if (calendarContentLanguage === contentLanguage.BILINGUAL) {
-      return userLanguages;
-    } else if (calendarContentLanguage === contentLanguage.ENGLISH) {
-      return [userLanguages[0]];
-    } else {
-      return [userLanguages[1]];
-    }
+    let requiredLanguages = [];
+    calendarContentLanguage.forEach((language) => {
+      const languageItem = userLanguages.find((item) => {
+        return item.key.toLowerCase() === contentLanguageKeyMap[language];
+      });
+      if (languageItem) requiredLanguages.push(languageItem);
+    });
+    return requiredLanguages ?? [];
   };
 
   const languageOptions = lanFormat().map((item) => {

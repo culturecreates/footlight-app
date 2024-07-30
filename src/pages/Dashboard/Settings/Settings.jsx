@@ -111,16 +111,18 @@ const Settings = () => {
   return (
     <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
       <RouteLeavingGuard isBlocking={isFormDirty} />
-      <Row className="settings-wrapper">
-        <Col span={24}>
-          <h4 className="settings-heading" data-cy="heading-settings-title">
-            {t('dashboard.settings.heading')}
-          </h4>
-        </Col>
-        <Col span={24}>
-          <Tabs items={tabItems} activeKey={tabKey} onChange={onTabChange} />
-        </Col>
-      </Row>
+      {currentCalendarData && (
+        <Row className="settings-wrapper">
+          <Col span={24}>
+            <h4 className="settings-heading" data-cy="heading-settings-title">
+              {t('dashboard.settings.heading')}
+            </h4>
+          </Col>
+          <Col span={24}>
+            <Tabs items={tabItems} activeKey={tabKey} onChange={onTabChange} />
+          </Col>
+        </Row>
+      )}
     </FeatureFlag>
   );
 };

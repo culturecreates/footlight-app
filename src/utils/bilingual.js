@@ -23,7 +23,7 @@ export const bilingual = ({ interfaceLanguage, data }) => {
     requiredLanguageData = data[lanKey];
   }
 
-  return requiredLanguageData ?? '';
+  return requiredLanguageData || '';
 };
 
 export const contentLanguageBilingual = ({ interfaceLanguage, calendarContentLanguage, data }) => {

@@ -894,7 +894,10 @@
         "dropDownOptions": {
           "langagePreference": {
             "en": "Anglais",
-            "fr": "Français"
+            "fr": "Français",
+            "ko": "Korean",
+            "ja": "Japanese",
+            "zh": "Chinese"
           }
         },
         "organizationSearchHeading": "Organisation",
