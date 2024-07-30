@@ -13,3 +13,7 @@ export const placeHolderCollectionCreator = ({
   });
   return placeholderCollection;
 };
+
+export const isDataValid = (data) => {
+  return data && Object.values(data).some((value) => value && value != '');
+};

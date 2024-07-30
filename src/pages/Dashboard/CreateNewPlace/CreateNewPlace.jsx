@@ -90,7 +90,7 @@ import MultipleImageUpload from '../../../components/MultipleImageUpload';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems/CreateMultiLingualFormItems';
-import { placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
+import { isDataValid, placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import MultiLingualTextEditor from '../../../components/MultilingualTextEditor/MultiLingualTextEditor';
 
 const { TextArea } = Input;
@@ -516,13 +516,9 @@ function CreateNewPlace() {
             return filteredValues;
           };
 
-          const isFieldValueDefined = (values) => {
-            return values && Object.values(values).some((value) => value && value != '');
-          };
-
           placeObj = {
             name: getFilteredFieldValue(values.name),
-            ...(isFieldValueDefined(values?.description) && {
+            ...(isDataValid(values?.description) && {
               description: getFilteredFieldValue(values.description),
             }),
             ...(values?.openingHours && { openingHours: { uri: urlProtocolCheck(values?.openingHours) } }),
@@ -534,7 +530,7 @@ function CreateNewPlace() {
               longitude: values?.longitude,
             },
 
-            ...(isFieldValueDefined(values?.accessibilityNote) && {
+            ...(isDataValid(values?.accessibilityNote) && {
               accessibilityNote: getFilteredFieldValue(values?.accessibilityNote),
             }),
             accessibility: values?.placeAccessibility
@@ -562,7 +558,7 @@ function CreateNewPlace() {
                 })
               : undefined,
 
-            ...(isFieldValueDefined(values?.disambiguatingDescription) && {
+            ...(isDataValid(values?.disambiguatingDescription) && {
               disambiguatingDescription: getFilteredFieldValue(values?.disambiguatingDescription),
             }),
             ...(values?.dynamicFields && { dynamicFields }),
@@ -863,16 +859,18 @@ function CreateNewPlace() {
 
   useEffect(() => {
     let shouldDisplay = true;
-    for (let key in activeFallbackFieldsInfo) {
-      if (Object.prototype.hasOwnProperty.call(activeFallbackFieldsInfo, key)) {
-        const tagDisplayStatus =
-          activeFallbackFieldsInfo[key]?.en?.tagDisplayStatus || activeFallbackFieldsInfo[key]?.fr?.tagDisplayStatus;
-        if (tagDisplayStatus) {
-          shouldDisplay = false;
-          break;
-        }
+
+    const fallbackFieldNames = Object.keys(activeFallbackFieldsInfo) || [];
+    let individualFallbackFieldsCollection = [];
+    fallbackFieldNames.forEach((name) => {
+      individualFallbackFieldsCollection.push(...Object.values(activeFallbackFieldsInfo[name] || []));
+    });
+
+    individualFallbackFieldsCollection.forEach((element) => {
+      if (element?.tagDisplayStatus) {
+        shouldDisplay = false;
       }
-    }
+    });
 
     if (!shouldDisplay) {
       dispatch(setLanguageLiteralBannerDisplayStatus(true));
@@ -2679,7 +2677,7 @@ function CreateNewPlace() {
                             <SelectionItem
                               key={place._id}
                               name={
-                                place?.name?.en || place?.name?.fr
+                                isDataValid(place?.name)
                                   ? contentLanguageBilingual({
                                       data: place?.name,
                                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
@@ -2706,7 +2704,7 @@ function CreateNewPlace() {
                               <SelectionItem
                                 key={org._id}
                                 name={
-                                  org?.name?.en || org?.name?.fr
+                                  isDataValid(org?.name)
                                     ? contentLanguageBilingual({
                                         data: org?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
@@ -2739,7 +2737,7 @@ function CreateNewPlace() {
                             <SelectionItem
                               key={person._id}
                               name={
-                                person?.name?.en || person?.name?.fr
+                                isDataValid(person?.name)
                                   ? contentLanguageBilingual({
                                       data: person?.name,
                                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
@@ -2766,7 +2764,7 @@ function CreateNewPlace() {
                               <SelectionItem
                                 key={event._id}
                                 name={
-                                  event?.name?.en || event?.name?.fr
+                                  isDataValid(event?.name)
                                     ? contentLanguageBilingual({
                                         data: event?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),

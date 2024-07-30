@@ -53,6 +53,7 @@ import Alert from '../../../components/Alert';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
+import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -873,7 +874,7 @@ function CreateNewPerson() {
                             <SelectionItem
                               key={place._id}
                               name={
-                                place?.name?.en || place?.name?.fr
+                                isDataValid(place?.name)
                                   ? contentLanguageBilingual({
                                       data: place?.name,
                                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
@@ -900,7 +901,7 @@ function CreateNewPerson() {
                               <SelectionItem
                                 key={org._id}
                                 name={
-                                  org?.name?.en || org?.name?.fr
+                                  isDataValid(org?.name)
                                     ? contentLanguageBilingual({
                                         data: org?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
@@ -934,7 +935,7 @@ function CreateNewPerson() {
                               <SelectionItem
                                 key={event._id}
                                 name={
-                                  event?.name?.en || event?.name?.fr
+                                  isDataValid(event?.name)
                                     ? contentLanguageBilingual({
                                         data: event?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),

@@ -73,6 +73,7 @@ import Alert from '../../../components/Alert';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
+import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -1385,7 +1386,7 @@ function CreateNewOrganization() {
                             <SelectionItem
                               key={place._id}
                               name={
-                                place?.name?.en || place?.name?.fr
+                                isDataValid(place?.name)
                                   ? contentLanguageBilingual({
                                       data: place?.name,
                                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
@@ -1412,7 +1413,7 @@ function CreateNewOrganization() {
                             <SelectionItem
                               key={person._id}
                               name={
-                                person?.name?.en || person?.name?.fr
+                                isDataValid(person?.name)
                                   ? contentLanguageBilingual({
                                       data: person?.name,
                                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
@@ -1440,7 +1441,7 @@ function CreateNewOrganization() {
                               <SelectionItem
                                 key={event._id}
                                 name={
-                                  event?.name?.en || event?.name?.fr
+                                  isDataValid(event?.name)
                                     ? contentLanguageBilingual({
                                         data: event?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
