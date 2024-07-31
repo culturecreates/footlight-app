@@ -582,32 +582,24 @@ function AddEvent() {
             }
 
             if (values?.eventType) {
-              additionalType = values?.eventType?.map((eventTypeId) => {
-                return {
-                  entityId: eventTypeId,
-                };
-              });
+              additionalType = values?.eventType?.map((eventTypeId) => ({
+                entityId: eventTypeId,
+              }));
             }
             if (values?.eventDiscipline) {
-              eventDiscipline = values?.eventDiscipline?.map((eventDiscipline) => {
-                return {
-                  entityId: eventDiscipline,
-                };
-              });
+              eventDiscipline = values?.eventDiscipline?.map((eventDiscipline) => ({
+                entityId: eventDiscipline,
+              }));
             }
             if (values?.targetAudience) {
-              audience = values?.targetAudience?.map((audienceId) => {
-                return {
-                  entityId: audienceId,
-                };
-              });
+              audience = values?.targetAudience?.map((audienceId) => ({
+                entityId: audienceId,
+              }));
             }
             if (values?.inLanguage) {
-              inLanguage = values?.inLanguage?.map((inLanguageId) => {
-                return {
-                  entityId: inLanguageId,
-                };
-              });
+              inLanguage = values?.inLanguage?.map((inLanguageId) => ({
+                entityId: inLanguageId,
+              }));
             }
             if (values?.locationPlace || values?.locationPlace?.length > 0) {
               let place;
@@ -666,11 +658,9 @@ function AddEvent() {
               };
             }
             if (values?.eventAccessibility) {
-              accessibility = values?.eventAccessibility?.map((accessibilityId) => {
-                return {
-                  entityId: accessibilityId,
-                };
-              });
+              accessibility = values?.eventAccessibility?.map((accessibilityId) => ({
+                entityId: accessibilityId,
+              }));
             }
 
             if (values?.englishAccessibilityNote || values?.frenchAccessibilityNote) {
