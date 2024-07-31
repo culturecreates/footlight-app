@@ -400,7 +400,8 @@ function AddEvent() {
               recurringEvent,
               description = {},
               name = {},
-              inLanguage = [];
+              inLanguage = [],
+              eventDiscipline = [];
 
             let eventObj;
 
@@ -584,6 +585,13 @@ function AddEvent() {
               additionalType = values?.eventType?.map((eventTypeId) => {
                 return {
                   entityId: eventTypeId,
+                };
+              });
+            }
+            if (values?.eventDiscipline) {
+              eventDiscipline = values?.eventDiscipline?.map((eventDiscipline) => {
+                return {
+                  entityId: eventDiscipline,
                 };
               });
             }
@@ -812,6 +820,7 @@ function AddEvent() {
               ...(accessibilityNote && { accessibilityNote }),
               additionalType,
               audience,
+              discipline: eventDiscipline,
 
               url: {
                 uri: urlProtocolCheck(values?.eventLink),
@@ -1926,6 +1935,9 @@ function AddEvent() {
           case eventFormRequiredFieldNames.EVENT_TYPE:
             publishValidateFields.push('eventType');
             break;
+          case eventFormRequiredFieldNames.EVENT_DISCIPLINE:
+            publishValidateFields.push('eventDiscipline');
+            break;
           case eventFormRequiredFieldNames.AUDIENCE:
             publishValidateFields.push('targetAudience');
             break;
@@ -2334,6 +2346,56 @@ function AddEvent() {
                         </Tags>
                       );
                     }}
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="eventDiscipline"
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'EventDiscipline', 'name', false)}
+                  initialValue={eventData?.discipline?.map((type) => {
+                    return type?.entityId;
+                  })}
+                  hidden={
+                    standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_DISCIPLINE)
+                      ? adminCheckHandler({ calendar, user })
+                        ? false
+                        : true
+                      : false
+                  }
+                  style={{
+                    display: !taxonomyDetails(allTaxonomyData?.data, user, 'EventDiscipline', 'name', false) && 'none',
+                  }}
+                  rules={[
+                    {
+                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EVENT_DISCIPLINE),
+                      message: t('common.validations.informationRequired'),
+                    },
+                  ]}
+                  data-cy="form-item-event-discipline-label">
+                  <TreeSelectOption
+                    allowClear
+                    treeDefaultExpandAll
+                    notFoundContent={<NoContent />}
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    treeData={treeTaxonomyOptions(
+                      allTaxonomyData,
+                      user,
+                      'EventDiscipline',
+                      false,
+                      calendarContentLanguage,
+                    )}
+                    tagRender={(props) => {
+                      const { label, closable, onClose } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}
+                          data-cy={`tag-event-discipline-${label}`}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                    data-cy="treeselect-event-discipline"
                   />
                 </Form.Item>
                 {allTaxonomyData?.data?.map((taxonomy, index) => {

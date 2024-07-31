@@ -1073,6 +1073,7 @@
           "EventAccessibility": "Accessibilité de l'événement",
           "Audience": "Public",
           "EventType": "Type d'événement",
+          "EventDiscipline": "Discipline",
           "OrganizerRole": "Rôle de l'organisation",
           "PerformerRole": "Rôle d'interprète",
           "SupporterRole": "Rôle de contributeur"
