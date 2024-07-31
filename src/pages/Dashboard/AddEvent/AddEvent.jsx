@@ -646,7 +646,15 @@ function AddEvent() {
                 });
               }
             }
-
+            if (eventId) {
+              if (eventData?.subEventConfiguration) {
+                if (frequency !== 'CUSTOM') {
+                  if (eventData?.publishState === eventPublishState.PUBLISHED) {
+                    sameAs = eventData?.sameAs?.filter((item) => item?.type !== sameAsTypes.ARTSDATA_IDENTIFIER);
+                  }
+                }
+              }
+            }
             if (dateTypeValue === dateTypes.SINGLE) {
               if (startTimeValue) startDateTime = dateTimeConverter(datePickerValue, startTimeValue, customTimeFlag);
               else
