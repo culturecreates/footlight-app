@@ -2341,9 +2341,7 @@ function AddEvent() {
                 <Form.Item
                   name="eventDiscipline"
                   label={taxonomyDetails(allTaxonomyData?.data, user, 'EventDiscipline', 'name', false)}
-                  initialValue={eventData?.discipline?.map((type) => {
-                    return type?.entityId;
-                  })}
+                  initialValue={eventData?.discipline?.map((type) => type?.entityId)}
                   hidden={
                     standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_DISCIPLINE)
                       ? adminCheckHandler({ calendar, user })
