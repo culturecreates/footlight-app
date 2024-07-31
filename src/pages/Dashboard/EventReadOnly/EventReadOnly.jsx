@@ -431,9 +431,7 @@ function EventReadOnly() {
                           false,
                           calendarContentLanguage,
                         )}
-                        defaultValue={eventData?.discipline?.map((type) => {
-                          return type?.entityId;
-                        })}
+                        defaultValue={eventData?.discipline?.map((type) => type?.entityId)}
                         tagRender={(props) => {
                           const { label } = props;
                           return <Tags>{label}</Tags>;
