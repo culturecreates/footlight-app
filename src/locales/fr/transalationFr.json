@@ -641,7 +641,7 @@
             "country": {
               "country": "Pays",
               "placeholder": {
-                "english": "Indiquez le nom du pays en anglais."
+                "english": "Indiquez le nom du pays en anglais.",
                 "french": "Indiquez le nom du pays en français"
               }
             },
