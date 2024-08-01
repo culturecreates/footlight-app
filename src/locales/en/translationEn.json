@@ -92,6 +92,10 @@
       "heading": "Event calendar",
       "searchPlaceholder": "Search an event",
       "addEvent": "Event",
+      "duplicates": {
+        "mergeDuplicates": "Merge duplicates",
+        "cancel": "Cancel"
+      },
       "filter": {
         "users": {
           "label": "Users",

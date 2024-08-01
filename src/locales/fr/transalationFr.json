@@ -92,6 +92,10 @@
       "heading": "Calendrier des événements",
       "searchPlaceholder": "Rechercher un événement",
       "addEvent": "Événement",
+      "duplicates": {
+        "mergeDuplicates": "Fusionner les doublons",
+        "cancel": "Annuler"
+      },
       "filter": {
         "users": {
           "label": "Utilisateurs",
