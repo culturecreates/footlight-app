@@ -35,6 +35,8 @@ import { dateFilterOptions, dateFilterTypes } from '../../../constants/dateFilte
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
+import PrimaryButton from '../../../components/Button/Primary';
+import Text from '../../../components/Button/Text';
 
 const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
@@ -1065,17 +1067,29 @@ function Events() {
             {!isFetching &&
               currentCalendarData &&
               (eventsData?.data?.length > 0 ? (
-                <EventList
-                  data={eventsData}
-                  pageNumber={pageNumber}
-                  setPageNumber={setPageNumber}
-                  calendarContentLanguage={calendarContentLanguage}
-                />
+                <Checkbox.Group className="bulk-select-checkbox">
+                  <EventList
+                    data={eventsData}
+                    pageNumber={pageNumber}
+                    setPageNumber={setPageNumber}
+                    calendarContentLanguage={calendarContentLanguage}
+                  />
+                </Checkbox.Group>
               ) : (
                 <NoContent style={{ height: '200px' }} />
               ))}
           </Col>
         </Row>
+        <section id="footer">
+          <Row justify={'space-between'} align={'middle'}>
+            <Col className="footer">
+              <PrimaryButton data-cy="button-bulk-duplicate" label={t('dashboard.events.duplicates.mergeDuplicates')} />
+            </Col>
+            <Col className="footer">
+              <Text data-cy="button-bulk-cancel" size="large" label={t('dashboard.events.duplicates.cancel')} />
+            </Col>
+          </Row>
+        </section>
       </Col>
     </Row>
   ) : (

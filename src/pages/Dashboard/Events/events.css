@@ -84,6 +84,9 @@
   border-color: #1b3de6;
 }
 
+.events-wrapper .bulk-select-checkbox {
+  display: inherit;
+}
 @media only screen and (max-width: 768px) {
   .events-wrapper .events-heading-wrapper .events-heading {
     font-size: 24px;

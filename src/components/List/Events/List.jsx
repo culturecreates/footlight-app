@@ -21,6 +21,7 @@ import moment from 'moment-timezone';
 import { LinkOutlined, StarFilled } from '@ant-design/icons';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import { getWidthFromAspectRatio } from '../../../utils/getWidthFromAspectRatio';
+import CheckBox from '../../CheckBox';
 
 const { useBreakpoint } = Grid;
 
@@ -155,6 +156,7 @@ function Lists(props) {
               </EventStatusOptions>
             </span>,
           ]}>
+          <CheckBox data-cy="checkbox-add-duplicates" />
           <List.Item.Meta
             className="event-list-item-meta"
             onClick={() => {
@@ -167,7 +169,13 @@ function Lists(props) {
                     {(calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) && eventItem?.isFeatured && (
                       <div className="image-featured-badge">
                         <StarOutlined
-                          style={{ fontSize: '12px', color: '#FFFFFF', position: 'absolute', top: '15%', left: '10%' }}
+                          style={{
+                            fontSize: '12px',
+                            color: '#FFFFFF',
+                            position: 'absolute',
+                            top: '15%',
+                            left: '10%',
+                          }}
                         />
                       </div>
                     )}
