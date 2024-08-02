@@ -48,10 +48,10 @@
       "invalidEmail": "Indiquez une adresse courriel valide.",
       "emptyEmail": "Indiquez une adresse courriel.",
       "emptyPassword": "Indiquez votre mot de passe.",
-      "passwordMatch": "Les deux mots de passe ne correspondent pas.",
+      "passwordMatch": "Les mots de passe ne correspondent pas.",
       "digitCode": "Indiquez votre code"
     },
-    "successNotification": "Succès! Votre mot de passe a été réinitialisé.",
+    "successNotification": "Succès ! Votre mot de passe a été réinitialisé.",
     "failure": "Les informations de réinitialisation sont incorrectes ou ont expiré."
   },
   "createAccount": {
@@ -121,7 +121,7 @@
       },
       "readOnlyEvent": {
         "notification": {
-          "underReview": "Cet événement est en train d'être validé.",
+          "underReview": "Cet événement est en cours de validation.",
           "underPublished": "Cet événement a été publié. Si vous voulez faire des changements, veuillez contacter l'administrateur du calendrier."
         }
       },
@@ -150,7 +150,7 @@
           "eventType": "Type de l’événement",
           "placeHolderEventType": "Sélectionner le type de l'événementr",
           "targetAudience": "Public cible",
-          "placeHolderTargetAudience": "Sélectionner le public cibler"
+          "placeHolderTargetAudience": "Sélectionner le public cible"
         },
         "dates": {
           "dates": "Dates",
@@ -901,7 +901,7 @@
         "leave": "Quitter",
         "role": "Rôle",
         "organizationHelp": "Donner à cet utilisateur l'accès à modifier une ou plusieurs fiches d'organisations.",
-        "peopleHelp": "Donnez à cet utilisateur l'accès à modifier une ou plusieurs fiches de personnes.",
+        "peopleHelp": "Donner à cet utilisateur l'accès à modifier une ou plusieurs fiches de personnes.",
         "passwordModal": {
           "btnText": "Changer le mot de passe",
           "Password": "Mot de passe",
@@ -923,7 +923,7 @@
           "language": "Sélectionnez la langue préférée"
         },
         "notification": {
-          "invitation": "Succès! L'invitation a été envoyée.",
+          "invitation": "Succès ! L'invitation a été envoyée.",
           "updateUser": "Succès ! Le profil de l'utilisateur a été mis à jour.",
           "deleteUser": "Êtes-vous sûr de vouloir supprimer définitivement le compte de cet utilisateur?"
         },
