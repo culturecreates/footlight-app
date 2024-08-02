@@ -3,15 +3,15 @@
     "header": "Se connecter à Footlight",
     "email": "Courriel",
     "password": "Mot de passe",
-    "emailPlaceHolder": "Entrez votre courriel",
-    "passwordPlaceHolder": "Entrez votre mot de passe",
+    "emailPlaceHolder": "Indiquer le courriel",
+    "passwordPlaceHolder": "Indiquer le mot de passe",
     "rememberMe": "Se souvenir de moi",
     "loginButtonText": "Se connecter ",
     "resetMyPasswordText": "Réinitialisez votre mot de passe",
     "validations": {
-      "invalidEmail": "Entrez une adresse courriel valide.",
-      "emptyEmail": "Entrez une adresse courriel.",
-      "emptyPassword": "Entrez votre mot de passe."
+      "invalidEmail": "Indiquez une adresse courriel valide.",
+      "emptyEmail": "Indiquez une adresse courriel.",
+      "emptyPassword": "Indiquez votre mot de passe."
     },
     "changeLanguageTo": "English",
     "failure": "Adresse courriel ou mot de passe incorrect."
@@ -20,13 +20,13 @@
     "backToLogin": "Retour à la connection",
     "header": "Réinitialisez votre mot de passe",
     "email": "Courriel",
-    "emailPlaceHolder": "Entrez votre courriel",
+    "emailPlaceHolder": "Indiquer le courriel",
     "sentResetCodeText": "Envoyer",
     "alreadyHaveCode": "J'ai déjà un code",
     "validations": {
-      "invalidEmail": "Entrez une adresse courriel valide.",
-      "emptyEmail": "Entrez une adresse courriel.",
-      "emptyPassword": "S'il vous plait entrez votre mot de passe."
+      "invalidEmail": "Indiquez une adresse courriel valide.",
+      "emptyEmail": "Indiquez une adresse courriel.",
+      "emptyPassword": "S'il vous plait Indiquez votre mot de passe."
     },
     "successNotification": "Vérifiez votre adresse courriel pour votre code de réinitialisation.",
     "failure": "Nous ne trouvons pas de compte avec cette adresse courriel."
@@ -36,20 +36,20 @@
     "header": "Vérifiez votre courriel",
     "subHeading": "Saisissez votre code de réinitialisation à 6 chiffres. Créez et confirmez votre nouveau mot de passe.",
     "email": "Courriel",
-    "emailPlaceHolder": "Entrez votre courriel",
+    "emailPlaceHolder": "Indiquer le courriel",
     "inputNumber": "Code de réinitialisation à 6 chiffres",
-    "inputNumberPlaceholder": "Entrez votre code",
+    "inputNumberPlaceholder": "Indiquer le code",
     "newPassword": "Nouveau mot de passe",
     "confirmNewPassword": "Confirmez votre nouveau mot de passe.",
-    "passwordPlaceHolder": "Entrez votre mot de passe",
+    "passwordPlaceHolder": "Indiquer le mot de passe",
     "resetPassword": "Réinitialiser le mot de passe",
     "newResetcode": "Envoyer un nouveau code de réinitialisation",
     "validations": {
-      "invalidEmail": "Entrez une adresse courriel valide.",
-      "emptyEmail": "Entrez une adresse courriel.",
-      "emptyPassword": "Entrez votre mot de passe.",
+      "invalidEmail": "Indiquez une adresse courriel valide.",
+      "emptyEmail": "Indiquez une adresse courriel.",
+      "emptyPassword": "Indiquez votre mot de passe.",
       "passwordMatch": "Les deux mots de passe ne correspondent pas.",
-      "digitCode": "Entrez votre code"
+      "digitCode": "Indiquez votre code"
     },
     "successNotification": "Succès! Votre mot de passe a été réinitialisé.",
     "failure": "Les informations de réinitialisation sont incorrectes ou ont expiré."
@@ -62,7 +62,7 @@
     "newPassword": "Nouveau mot de passe",
     "confirmNewPassword": "Confirmez votre nouveau mot de passe.",
     "acceptInvitation": "Acceptez l'invitation",
-    "passwordPlaceHolder": "Entrez votre mot de passe",
+    "passwordPlaceHolder": "Indiquer le mot de passe",
     "successNotification": " Succès ! Votre compte a été créé.",
     "errorNotification": "Un problème s'est produit. Veuillez réessayer ou contacter support@culturecreates.com.",
     "acceptInvitationSuccess": "Succès ! Invitation acceptée."
@@ -128,10 +128,10 @@
       "addEditEvent": {
         "heading": { "newEvent": "Ajouter un événement", "editEvent": "Modifier un événement" },
         "addMoreDetails": "Ajouter plus de détails à votre événement",
-        "allDone": "Terminé",
+        "allDone": "Tous les détails sont ajoutés.",
         "featuredEvent": "Événement vedette",
         "fallbackConfirm": {
-          "contentPart1": "Vous n'avez pas mis à jour tous les textes qui ne correspondent pas à la langue de votre site web. ",
+          "contentPart1": "Vous n'avez pas mis à jour tous les textes qui ne correspondent pas à la langue de votre site web.",
           "contentPart2": "Voulez-vous publier tel quel ? ",
           "title": "Publier l'événement",
           "publish": "Publier"
@@ -145,17 +145,17 @@
         "language": {
           "title": "Titre de l'événement",
           "titleLabel": "Anglais",
-          "placeHolderFrench": "Entrez le titre en français.",
-          "placeHolderEnglish": "Entrez le titre en anglais.",
+          "placeHolderFrench": "Indiquer le titre en français",
+          "placeHolderEnglish": "Indiquer le titre en anglais",
           "eventType": "Type de l’événement",
-          "placeHolderEventType": "Sélectionnez le type de l'événement.",
+          "placeHolderEventType": "Sélectionner le type de l'événementr",
           "targetAudience": "Public cible",
-          "placeHolderTargetAudience": "Sélectionnez le public cible."
+          "placeHolderTargetAudience": "Sélectionner le public cibler"
         },
         "dates": {
           "dates": "Dates",
           "date": "Date",
-          "heading": "Sélectionnez le type de date que vous souhaitez saisir pour votre événement :",
+          "heading": "Sélectionnez le type de date que vous souhaitez saisir pour votre événement.",
           "singleDate": "Date unique",
           "dateRange": "Plage de dates",
           "multipleDates": "Plusieurs dates",
@@ -212,13 +212,13 @@
         },
         "location": {
           "title": "Endroit",
-          "placeHolderLocation": "Recherchez Lieux",
+          "placeHolderLocation": "Rechercher lieux",
           "virtualLocation": "Emplacement virtuel",
           "virtualLocationTooltip": "Ajoutez un lien vers un emplacement virtuel pour votre événement.",
-          "placeHolderVirtualLocationEn": "Entrez le texte anglais à afficher",
-          "placeHolderVirtualLocationFr": "Entrez le texte français à afficher",
+          "placeHolderVirtualLocationEn": "Indiquer le texte anglais à afficher",
+          "placeHolderVirtualLocationFr": "Indiquer le texte français à afficher",
           "onlineLink": "Lien pour l'événement en ligne",
-          "placeHolderOnlineLink": "Entrez l'adresse web URL",
+          "placeHolderOnlineLink": "Indiquer l'adresse web URL",
           "streetAddress": "Adresse postale",
           "venueAccessibility": "Accessibilité du lieu",
           "openingHours": "Heures d'ouverture",
@@ -229,11 +229,11 @@
             "cancel": "Annuler",
             "name": "Nom",
             "success": "Succès ! Votre organisation a été créé.",
-            "namePlaceholder": "Entrez un nom",
+            "namePlaceholder": "Indiquer un nom",
             "address": "Adresse",
-            "searchPlaceholder": "Recherchez Google Places",
+            "searchPlaceholder": "Rechercher Google Places",
             "type": "Type",
-            "typePlaceholder": "Sélectionnez un type",
+            "typePlaceholder": "Sélectionner un type",
             "validations": {
               "name": "Le nom est requis.",
               "address": "L'adresse est requise."
@@ -246,8 +246,8 @@
             "title": "Description de l'événement",
             "footerTitle": "Un minimum de {{wordCount}} mots est requis.",
             "word": "mot",
-            "frenchPlaceholder": "Entrez une description en français",
-            "englishPlaceholder": "Entrez une description en anglais",
+            "frenchPlaceholder": "Indiquer une description en français",
+            "englishPlaceholder": "Indiquer une description en anglais",
             "translate": "Traduire"
           },
           "image": {
@@ -272,17 +272,17 @@
           "organizer": {
             "title": "Organisateur",
             "subHeading": "Ajoutez un organisateur pour votre événement.",
-            "searchPlaceholder": "Recherchez des Organisations ou des Personnes"
+            "searchPlaceholder": "Rechercher des organisations ou des personnes"
           },
           "performer": {
             "title": "Compagnie / groupe / artiste / animateur de l'événement",
             "subHeading": "Ajoutez un interprète principal pour votre événement.",
-            "searchPlaceholder": "Recherchez des Organisations ou des Personnes"
+            "searchPlaceholder": "Rechercher des organisations ou des personnes"
           },
           "supporter": {
-            "title": "Supporteur/ Commanditaire",
+            "title": "Supporteur / Commanditaire",
             "subHeading": "Ajoutez le commanditaire ou l'organisme qui soutient l'événement.",
-            "searchPlaceholder": "Recherchez des organisations ou des personnes",
+            "searchPlaceholder": "Rechercher des organisations ou des personnes",
             "supporterTooltip": "Ajoutez le/la commanditaire ou l'organisme qui soutient l'événement. Un logo d'organisation sera requis."
           },
           "eventLink": "Lien de l’événement",
@@ -293,10 +293,10 @@
           "facebookLink": "Lien vers l'événement Facebook",
           "facebookLinkFooter": "Collez le lien de votre événement Facebook ici.",
           "facebookLinkTooltip": "Ajoutez le lien vers une page d'événement sur Facebook.",
-          "placeHolderLinks": "Entrez l'adresse web",
+          "placeHolderLinks": "Indiquer l'adresse web",
           "keywords": "Mots clés",
           "keywordsTooltip": "Ajoutez des mots-clés supplémentaires pour l'événement. Sélectionnez d'abord les types d'événements pertinents.",
-          "placeHolderKeywords": "Entrez des mots-clés supplémentaires.",
+          "placeHolderKeywords": "Indiquer des mots-clés supplémentaires",
           "contact": {
             "title": "Contact",
             "contactTitle": "Titre du contact",
@@ -305,18 +305,18 @@
             "website": "Site web",
             "phoneNumber": "Numéro de téléphone",
             "email": "Courriel",
-            "placeHolderContactTitleFrench": "Entrez le titre du contact français",
-            "placeHolderContactTitleEnglish": "Entrez le titre du contact anglais",
-            "placeHolderWebsite": "Entrez l'adresse web",
-            "placeHolderPhoneNumber": "Entrez le numéro de téléphone",
-            "placeHolderEmail": "Entrez l’adresse courriel",
+            "placeHolderContactTitleFrench": "Indiquer le titre du contact français",
+            "placeHolderContactTitleEnglish": "Indiquer le titre du contact anglais",
+            "placeHolderWebsite": "Indiquer l'adresse web",
+            "placeHolderPhoneNumber": "Indiquer le numéro de téléphone",
+            "placeHolderEmail": "Indiquer l’adresse courriel",
             "contactTooltip": "Ajoutez un contact pour votre événement. Vous pouvez en créer un ou copier les données de l'Organisateur.",
             "copyOrganizerContact": "Copiez le contact de l’organisateur."
           },
           "eventLanguage1": "Langue de",
           "eventLanguage2": " l'événement",
-          "eventLanguagePlaceholder": "Sélectionnez la langue de l'événement",
-          "eventLanguageTooltip": "Sélectionnez le français, l'anglais ou le bilingue."
+          "eventLanguagePlaceholder": "Sélectionner la langue de l'événement",
+          "eventLanguageTooltip": "Sélectionnez le français, l'anglais, ou bilingue."
         },
         "eventAccessibility": {
           "title": "Accessibilité",
@@ -324,9 +324,9 @@
           "label": "Fonctionnalité d'accessibilité",
           "subHeading": "Sélectionnez ce qui rend l'événement (spectacle ou exposition) accessible.",
           "footer": "Cette option est spécifique à l'événement. L'accessibilité du lieu est enregistrée avec le lieu dans Lieux.",
-          "placeHolderEventAccessibility": "Sélectionnez la fonctionnalité d'accessibilité",
-          "placeHolderEventAccessibilityFrenchNote": "Ajoutez des informations supplémentaires sur l'accessibilité.",
-          "placeHolderEventAccessibilityEnglishNote": "Ajoutez des informations supplémentaires sur l'accessibilité.",
+          "placeHolderEventAccessibility": "Sélectionner la fonctionnalité d'accessibilité",
+          "placeHolderEventAccessibilityFrenchNote": "Ajouter des informations supplémentaires sur l'accessibilité",
+          "placeHolderEventAccessibilityEnglishNote": "Ajouter des informations supplémentaires sur l'accessibilité",
           "noteTooltip": "Fournissez plus de détails sur les options d'accessibilité sélectionnées, telles que les dates."
         },
         "tickets": {
@@ -347,10 +347,10 @@
           "changeToRegisterTooltip": "A utiliser lorsque l'événement nécessite l'inscription des participants.",
           "price": "Prix",
           "description": "Description",
-          "enterType": "Entrez le Type",
+          "enterType": "Indiquez le Type",
           "anotherTicketType": "Autre type de billet",
           "placeHolderNotes": "Ajouter des informations supplémentaires sur la billeterie",
-          "placeHolderLinks": "Entrez l'adresse web",
+          "placeHolderLinks": "Indiquer l'adresse web",
           "CAD": "CAD $"
         },
         "status": "Statut",
@@ -386,9 +386,9 @@
             "emptyTicket": "L'événement nécessite des informations sur la billetterie.",
             "emptyPaidTicket": "Un lien d'achat, un prix ou une note sont requis.",
             "emptyRegister": "Un lien d'achat, un prix ou une note sont requis.",
-            "invalidData": "Entrez un nombre."
+            "invalidData": "Indiquez un nombre."
           },
-          "url": "Entrez un lien valide",
+          "url": "Indiquez un lien valide",
           "errorPublishing": "Cet événement a besoin de plus d'informations avant d'être publié.",
           "errorReview": "Cet événement a besoin de plus d'informations avant d'être envoyé pour validation.",
           "errorDraft": "Cet événement a besoin de plus d'informations avant d'être enregistré.",
@@ -416,8 +416,8 @@
             "logo": "Logo",
             "logoSubHeading": "Seuls les fichiers .jpeg/.jpg et .png sont acceptés.",
             "success": "Succès ! Votre fiche d'organisation a été créée.",
-            "namePlaceholder": "Entrez un nom",
-            "websitePlaceholder": "Entrez un site web",
+            "namePlaceholder": "Indiquer un nom",
+            "websitePlaceholder": "Indiquer un site web",
             "validations": {
               "name": "Le nom est requis."
             }
@@ -427,9 +427,9 @@
             "subHeading": "Ajoutez des informations de base sur cette personne. Vous pourrez modifier les détails complets dans la section Personnes plus tard.",
             "name": "Nom",
             "success": "Succès ! Votre fiche de personne a été créée.",
-            "namePlaceholder": "Entrez un nom",
-            "websitePlaceholder": "Indiquez un site web",
-            "occupationPlaceholder": "Sélectionnez une profession",
+            "namePlaceholder": "Indiquer un nom",
+            "websitePlaceholder": "Indiquer un site web",
+            "occupationPlaceholder": "Sélectionner une profession",
             "website": "Site web",
             "validations": {
               "name": "Le nom est requis."
@@ -485,7 +485,7 @@
       "readOnly": {
         "details": "Détails",
         "name": "Nom",
-        "disambiguatingDescription": "Description désambiguïsatrice",
+        "disambiguatingDescription": "Description (désambiguïsation)",
         "description": "Description",
         "website": "Site web",
         "contact": "Contact",
@@ -550,7 +550,7 @@
       "place": "Lieu",
       "places": "Lieux",
       "search": {
-        "placeholder": "Recherche - Lieux"
+        "placeholder": "Recherche de lieux"
       },
       "deletePlace": {
         "title": "Confirmer la suppression",
@@ -564,7 +564,7 @@
       },
       "readOnly": {
         "placeName": "Nom",
-        "disambiguatingDescription": "Description désambiguïsatrice",
+        "disambiguatingDescription": "Description (désambiguïsation)",
         "description": "Description",
         "website": "Site Web",
         "edit": "Editer",
@@ -579,7 +579,7 @@
           "openingHoursLink": "Lien des heures d'ouverture"
         },
         "containedInPlace": "Contenu dans un lieu",
-        "notContainedInPlace": "Contenu dans aucun endroit",
+        "notContainedInPlace": "Aucun lieu.",
         "venueAccessibility": "Accessibilité du site",
         "items": "Éléments"
       },
@@ -606,12 +606,12 @@
           "name": {
             "name": "Nom",
             "placeholder": {
-              "english": "Indiquez le nom du lieu",
-              "french": "Indiquez le nom du lieu"
+              "english": "Indiquer le nom du lieu",
+              "french": "Indiquer le nom du lieu"
             }
           },
           "placeType": {
-            "placeholder": "Sélectionnez le type de lieu"
+            "placeholder": "Sélectionner le type de lieu"
           },
           "address": {
             "address": "Adresse",
@@ -620,75 +620,75 @@
             "streetAddress": "Adresse postale",
             "subheading": "Indiquez le nom du lieu et/ou l'adresse.",
             "streetAddressPlaceholder": {
-              "english": "Indiquez l’adresse postale en anglais.",
-              "french": "Indiquez l’adresse postale en français."
+              "english": "Indiquer l’adresse postale en anglais",
+              "french": "Indiquer l’adresse postale en français"
             },
             "city": {
               "city": "Ville",
-              "placeholder": { "french": "Indiquez le nom de la ville en français.", "english": "Indiquez le nom de la ville en anglais." }
+              "placeholder": { "french": "Indiquer le nom de la ville en français", "english": "Indiquer le nom de la ville en anglais" }
             },
             "postalCode": {
               "postalCode": "Code postal",
-              "placeholder": "Indiquez le code postal."
+              "placeholder": "Indiquer le code postal."
             },
             "province": {
               "province": "Province",
               "placeholder": {
-                "english": "Indiquez le nom de la province en anglais.",
-                "french": "Indiquez le nom de la province en français."
+                "english": "Indiquer le nom de la province en anglais",
+                "french": "Indiquer le nom de la province en français"
               }
             },
             "country": {
               "country": "Pays",
               "placeholder": {
-                "english": "Indiquez le nom du pays en anglais.",
-                "french": "Indiquez le nom du pays en français"
+                "english": "Indiquer le nom du pays en anglais",
+                "french": "Indiquer le nom du pays en français"
               }
             },
             "coordinates": {
               "coordinates": "Coordonnées"
             },
             "region": {
-              "placeholder": "Sélectionnez la région"
+              "placeholder": "Sélectionner la région"
             },
             "openingHours": {
               "openingHours1": "Lien des heures",
               "openingHours2": " d'ouverture",
               "tooltip": "Ajoutez un lien vers les heures d'ouverture.",
-              "placeholder": "Indiquez le lien vers les heures d'ouverture.",
+              "placeholder": "Indiquer le lien vers les heures d'ouverture",
               "openingHoursLink": "Lien des heures d'ouverture"
             }
           },
           "containedInPlace": {
             "containedInPlace": "Contenu dans un lieu",
             "subheading": "Ajoutez un lieu qui contient ce lieu.",
-            "addPlace": "Ajoutez un lieu",
-            "placeholder": "Recherchez un lieu"
+            "addPlace": "Ajouter un lieu",
+            "placeholder": "Rechercher un lieu"
           },
           "containsPlace": {
             "containsPlace": "Contient un lieu",
             "subheading": "Ajoutez des lieux d'intérêt contenus dans ce lieu.",
-            "addPlace": "Ajoutez un Lieu",
-            "placeholder": "Recherchez un Lieu"
+            "addPlace": "Ajouter un lieu",
+            "placeholder": "Rechercher un lieu"
           },
           "venueAccessibility": {
             "venueAccessibility": "Accessibilité du site",
-            "placeholder": "Sélectionnez un élément",
+            "placeholder": "Sélectionner un élément",
             "subheading": "Ces éléments d'accessibilité seront affichés dans tous les événements se déroulant dans ce lieu.",
             "placeAccessibilityNote": {
               "note": "Note",
               "placeholder": {
-                "english": "Ajoutez une note",
-                "french": "Ajoutez une note"
+                "english": "Ajouter une note en anglais",
+                "french": "Ajouter une note en français"
               },
               "tooltip": "Ajoutez des informations supplémentaires sur l'accessibilité."
             }
           },
           "disambiguatingDescription": {
-            "disambiguatingDescription": "Description désambiguïsatrice",
+            "disambiguatingDescription": "Description (désambiguïsation)",
             "placeholder": {
-              "english": "Indiquez la description désambiguïsatrice.",
-              "french": "Indiquez la description désambiguïsatrice."
+              "english": "Indiquer la description aux fins de désambiguïsation en anglais",
+              "french": "Indiquer la description aux fins de désambiguïsation en français"
             }
           },
           "description": {
@@ -720,7 +720,7 @@
       "person": "Personne",
       "people": "Personnes",
       "search": {
-        "placeholder": "Rechercher des personnes"
+        "placeholder": "Rechercher une personne"
       },
       "deletePerson": {
         "title": "Confirmer la suppression",
@@ -735,7 +735,7 @@
       "readOnly": {
         "details": "Détails",
         "name": "Nom",
-        "disambiguatingDescription": "Description désambiguïsatrice",
+        "disambiguatingDescription": "Description (désambiguïsation)",
         "description": "Description",
         "website": "Site web",
         "edit": "Editer",
@@ -750,8 +750,8 @@
           "breadcrumb": "Retour à l'écran précédent",
           "linkText": "Artsdata",
           "footlightSectionHeading": "My Footlight",
-          "artsDataSectionHeading": "Imports from Artsdata",
-          "importsFromFootlight": "Imports from Footlight"
+          "artsDataSectionHeading": "Imports de Artsdata",
+          "importsFromFootlight": "Imports de Footlight"
         },
         "addPerson": {
           "newPerson": "Nouvelle personne",
@@ -780,14 +780,14 @@
       "lastName": "Nom",
       "email": "Courriel",
       "languagePreference": "Préférence de langue",
-      "changePassword": "Changer le mot de passe",
+      "changePassword": "Changez le mot de passe",
       "save": "Sauvegarder",
       "password": "Mot de passe",
-      "passwordPlaceHolder": "Indiquez votre mot de passe",
+      "passwordPlaceHolder": "Indiquer le mot de passe",
       "newPassword": "Nouveau mot de passe",
-      "newPasswordPlaceholder": "Indiquez nouveau mot de passe",
+      "newPasswordPlaceholder": "Indiquer nouveau mot de passe",
       "confirmNewPassword": "Confirmez votre nouveau mot de passe.",
-      "confirmNewPasswordPlaceHolder": "Confirmez nouveau mot de passe",
+      "confirmNewPasswordPlaceHolder": "Confirmer nouveau mot de passe",
       "cancel": "Annuler",
       "changePasswordButton": "Changer le mot de passe",
       "notification": {
@@ -874,12 +874,12 @@
         "email": "Courriel",
         "userType": "Type d’utilisateur",
         "placeHolder": {
-          "firstName": "Indiquez le prénom",
-          "lastName": "Indiquez le nom de famille",
-          "phoneNumber": "Indiquez le numéro du téléphone",
-          "email": "Indiquez l'adresse courriel",
-          "userType": "Sélectionnez le type d'utilisateur",
-          "language": "Sélectionnez la langue de l'interface"
+          "firstName": "Indiquer le prénom",
+          "lastName": "Indiquer le nom de famille",
+          "phoneNumber": "Indiquer le numéro du téléphone",
+          "email": "Indiquer l'adresse courriel",
+          "userType": "Sélectionner le type d'utilisateur",
+          "language": "Sélectionner la langue de l'interface"
         },
         "languagePreference": "Préférence de langue",
         "organization": "Organisation",
@@ -910,9 +910,9 @@
           "changePassword": "Changer le mot de passe",
           "Cancel": "Annuler",
           "placeHolder": {
-            "current": "Indiquez votre mot de passe",
-            "new": "Indiquez nouveau mot de passe",
-            "confirm": "Confirmez nouveau mot de passe"
+            "current": "Indiquer le mot de passe actuel",
+            "new": "Indiquer nouveau mot de passe",
+            "confirm": "Confirmer nouveau mot de passe"
           }
         },
         "validationTexts": {
@@ -943,7 +943,7 @@
         "limit": "Nombre d'événements à afficher",
         "color": "Couleur principale du thème",
         "colorDescreption": "Indiquez le code hexadécimal de la couleur principale. Choisissez une couleur donnant suffisamment de contraste pour une bonne lecture.",
-        "colorPlaceHolder": "Collez votre code couleur ou sélectionnez une couleur",
+        "colorPlaceHolder": "Coller le code couleur ou sélectionner une couleur",
         "height": "Hauteur",
         "width": "Largeur maximale",
         "font": "Sélection de la police de caractères",
@@ -969,7 +969,7 @@
           "eventType": "Sélectionner un type d'événement",
           "region": "Sélectionner une région",
           "place": "Sélectionner un lieu",
-          "OrganizationsAndPeople": "Recherchez des fiches d'organisation ou de personne"
+          "OrganizationsAndPeople": "Rechercher des fiches d'organisation ou de personne"
         }
       },
       "calendarSettings": {
@@ -1032,17 +1032,17 @@
           "readOnlyMode": "Lecture seule"
         },
         "placeholders": {
-          "calendarNameEn": "Indiquez le nom du calendrier en anglais",
-          "calendarNameFr": "Indiquez le nom du calendrier en français",
-          "calendarLanguage": "Sélectionnez les langues à afficher sur le site web",
-          "timezone": "Sélectionnez un fuseau horaire",
-          "contact": "Indiquez les informations de contact",
-          "dateFormatDisplay": "Sélectionnez le format de la date",
-          "imageAspectRatio": "Sélectionnez le rapport d'aspect de l'image",
-          "imageMaxWidth": "Indiquez la largeur maximale de l'image",
-          "eventTemplate": "Indiquez le lien du modèle d'événement",
-          "searchResultTemplate": "Entrez le lien du modèle de résultats de recherche",
-          "filterPersonalization": "Sélectionnez la personnalisation du filtre"
+          "calendarNameEn": "Indiquer le nom du calendrier en anglais",
+          "calendarNameFr": "Indiquer le nom du calendrier en français",
+          "calendarLanguage": "Sélectionner les langues à afficher sur le site web",
+          "timezone": "Sélectionner un fuseau horaire",
+          "contact": "Indiquer les informations de contact",
+          "dateFormatDisplay": "Sélectionner le format de la date",
+          "imageAspectRatio": "Sélectionner le rapport d'aspect de l'image",
+          "imageMaxWidth": "Indiquer la largeur maximale de l'image",
+          "eventTemplate": "Indiquer le lien du modèle d'événement",
+          "searchResultTemplate": "Indiquer le lien du modèle de résultats de recherche",
+          "filterPersonalization": "Sélectionner la personnalisation du filtre"
         },
         "notification": {
           "update": "Succès ! Vos paramètres de calendrier ont été mis à jour."
@@ -1112,7 +1112,7 @@
           "organization": "Organisation",
           "virtualLocation": "Emplacement virtuel"
         },
-        "classValidation": "Sélectionnez une classe",
+        "classValidation": "Sélectionnez une classe.",
         "classPlaceHolder": "Sélectionner une classe",
         "destinationHeading": "Sélectionnez la destination de votre taxonomie.",
         "inputType": "Type de données",
@@ -1129,18 +1129,18 @@
         "destinationHeading": "Sélectionnez la destination de votre taxonomie.",
         "name": "Nom de la taxonomie",
         "nameCheckbox": "Utilisez le nom de la taxonomie pour renommer le champ.",
-        "frNamePlaceHolder": "Indiquez le nom de la taxonomie en français",
-        "enNamePlaceHolder": "Indiquez le nom de la taxonomie en anglais",
+        "frNamePlaceHolder": "Indiquer le nom de la taxonomie en français",
+        "enNamePlaceHolder": "Indiquer le nom de la taxonomie en anglais",
         "mapToField": "Associer à un champ existant",
         "mapToFieldDescription": "Sélectionner un champ de saisie pour la taxonomie.",
         "nameDescription": "Ce nom est utilisé pour étiqueter le champ de saisie associé.",
-        "description": "Description désambiguïsatrice",
-        "frDescriptionPlaceHolder": "Indiquez la description désambiguïsatrice en français",
-        "enDescriptionPlaceHolder": "Indiquez la description désambiguïsatrice en anglais",
+        "description": "Description (désambiguïsation)",
+        "frDescriptionPlaceHolder": "Indiquer la description aux fins de désambiguïsation en français",
+        "enDescriptionPlaceHolder": "Indiquer la description aux fins de désambiguïsation en anglais",
         "descriptionExplation": "Ajouter pour différencier la taxonomie dans les résultats de recherche.",
         "userAccess": "Restreindre l'accès aux utilisateurs",
-        "userAccessPlaceHolder": "Sélectionnez",
-        "userAccessDescription": "Sélectionner les utilisateurs qui ont le droit de visualiser et d'utiliser ce champ.",
+        "userAccessPlaceHolder": "Sélectionner",
+        "userAccessDescription": "Sélectionnez les utilisateurs qui ont le droit de visualiser et d'utiliser ce champ.",
         "validations": {
           "name": "Le nom est requis.",
           "class": "La classe est requise",
@@ -1148,7 +1148,7 @@
         },
         "messages": {
           "create": "Succès ! Votre [organisation | personne | lieu] a été créé.",
-          "update": "Succès! Votre [organisation | personne | lieu] a été mis à jour."
+          "update": "Succès ! Votre [organisation | personne | lieu] a été mis à jour."
         },
         "adminOnly": "Administrateur uniquement",
         "addAsFilter": "Rendre ce type de taxonomie disponible en tant que filtre.",
@@ -1163,8 +1163,8 @@
           "save": "Sauvegarder",
           "editBtn": "Sauvegarder",
           "conceptName": "Nom",
-          "placeHolderFr": "Indiquez un nom en français",
-          "placeHolderEn": "Indiquez un nom en anglais",
+          "placeHolderFr": "Indiquer un nom en français",
+          "placeHolderEn": "Indiquer un nom en anglais",
           "deleteConceptHeading": "Supprimer le concept",
           "deleteConceptMessage": "Êtes-vous sûr de vouloir supprimer définitivement ce concept ? Cette action le supprimera également partout où il a été utilisé, y compris dans les événements."
         }
