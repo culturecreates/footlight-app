@@ -519,8 +519,8 @@
           "dataSource": "Data source",
           "question": {
             "firstPart": "Est-ce la bonne organisation ? Si non, ",
-            "secondPart": "créez une nouvelle fiche organisation",
-            "thirdPart": " et ne modifiez pas celle-ci."
+            "secondPart": "créer une nouvelle fiche organisation",
+            "thirdPart": ", ne pas modifier celle-ci."
           },
           "associatedEntities": {
             "title": "Associé à",
@@ -600,8 +600,8 @@
           "editPlace": "Modifier",
           "question": {
             "firstPart": "Est-ce le bon lieu ? Si non, ",
-            "secondPart": "créez une nouvelle fiche lieu",
-            "thirdPart": " et ne modifiez pas celle-ci."
+            "secondPart": "créer une nouvelle fiche lieu",
+            "thirdPart": ", ne pas modifier celle-ci."
           },
           "name": {
             "name": "Nom",
@@ -757,9 +757,9 @@
           "newPerson": "Nouvelle personne",
           "editPerson": "Modifier personne",
           "question": {
-            "firstPart": "Est-ce la bonne personne ? Si non,",
-            "secondPart": " créez une nouvelle fiche personne",
-            "thirdPart": " et ne modifiez pas celle-ci."
+            "firstPart": "Est-ce la bonne personne ? Si non, ",
+            "secondPart": "créer une nouvelle fiche personne",
+            "thirdPart": ", ne pas modifier celle-ci."
           },
           "dataSource": "Source de la donnée",
           "notification": {
