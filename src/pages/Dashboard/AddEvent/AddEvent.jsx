@@ -2462,7 +2462,7 @@ function AddEvent() {
                 <Row>
                   <Col>
                     <p className="add-event-date-heading" data-cy="heading-dates">
-                      {t('dashboard.events.addEditEvent.dates.heading')} hello
+                      {t('dashboard.events.addEditEvent.dates.heading')}
                     </p>
                   </Col>
                 </Row>
