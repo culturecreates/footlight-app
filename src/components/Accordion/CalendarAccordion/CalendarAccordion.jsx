@@ -12,7 +12,7 @@ import { entitiesClass } from '../../../constants/entitiesClass';
 import { useOutletContext, useParams } from 'react-router-dom';
 import LoadingIndicator from '../../LoadingIndicator';
 import { treeEntitiesOption } from '../../TreeSelectOption/treeSelectOption.settings';
-import { externalSourceOptions, sourceOptions } from '../../../constants/sourceOptions';
+import { sourceOptions } from '../../../constants/sourceOptions';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
 import { useDebounce } from '../../../hooks/debounce';
@@ -84,10 +84,14 @@ function CalendarAccordion(props) {
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
   const organizationPersonSearch = (value, type) => {
-    let sourceQuery = new URLSearchParams();
-    sourceQuery.append('sources', externalSourceOptions.ARTSDATA);
-    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
-    getEntities({ searchKey: value, classes: decodeURIComponent(query.toString()), calendarId })
+    const queryMap = {
+      organizers: query,
+      people: queryPerson,
+    };
+
+    const currentQuery = queryMap[type];
+
+    getEntities({ searchKey: value, classes: decodeURIComponent(currentQuery.toString()), calendarId })
       .unwrap()
       .then((response) => {
         if (type == 'organizers') {
