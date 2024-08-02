@@ -254,7 +254,7 @@
             "title": "Image",
             "mainImage": "Image principale",
             "additionalImages": "Images supplémentaires",
-            "subHeading": "Seuls les fichiers de formats .jpg/.jpeg et .png sont acceptés.",
+            "subHeading": "Utiliser les formats .jpeg/.jpg ou .png",
             "dragAndDrop": "ou glisser pour télécharger",
             "browse": "Parcourir",
             "imageGallery": "Galerie d'images",
@@ -380,7 +380,7 @@
             "englishShort": "La description en anglais est trop courte.",
             "frenchShort": "La description française est trop courte.",
             "unilingualDescriptionShort": "La description est trop courte",
-            "emptyImage": "Une image est requise. Les fichiers PNG et JPEG sont acceptés."
+            "emptyImage": "Une image est requise. Utiliser les formats .jpeg/.jpg ou .png"
           },
           "ticket": {
             "emptyTicket": "L'événement nécessite des informations sur la billetterie.",
@@ -414,7 +414,7 @@
             "subHeading": "Ajoutez des informations de base sur cette organisation.",
             "name": "Nom",
             "logo": "Logo",
-            "logoSubHeading": "Seuls les fichiers .jpeg/.jpg et .png sont acceptés.",
+            "logoSubHeading": "Utiliser les formats .jpeg/.jpg ou .png",
             "success": "Succès ! Votre fiche d'organisation a été créée.",
             "namePlaceholder": "Indiquer un nom",
             "websitePlaceholder": "Indiquer un site web",
@@ -698,7 +698,7 @@
             "image": "Image",
             "mainImage": "Image principale",
             "additionalImages": "Images supplémentaires",
-            "subheading": "Seuls les fichiers de formats .jpg/.jpeg et .png sont acceptés."
+            "subheading": "Utiliser les formats .jpeg/.jpg ou .png"
           },
           "addMoreDetails": "Ajouter plus de détails.",
           "dataSource": "Source de la donnée.",
@@ -1013,7 +1013,7 @@
           "addImageGallery": "Ajouter la galerie d'images"
         },
         "calendarLogo": "Logo",
-        "calendarLogoDescription": "Seuls les fichiers de formats .jpg/.jpeg et .png sont acceptés.",
+        "calendarLogoDescription": "Utiliser les formats .jpeg/.jpg ou .png",
         "calendarWidgetSetup": "Widget de listage",
         "calendarWidgetDescription": "Ajoutez les modèles de liens nécessaires au bon fonctionnement du widget. Ces modèles relient la liste des événements affichée sur d'autres sites web aux événements affichés sur votre site.",
         "eventTemplate": "Modèle d'événement",
