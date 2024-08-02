@@ -4445,18 +4445,25 @@ function AddEvent() {
                   <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
                 ) : (
                   otherInformationOptions.map((type) => {
-                    if (!addedFields?.includes(type.fieldNames))
-                      return (
-                        <ChangeType
-                          key={type.type}
-                          primaryIcon={<PlusOutlined />}
-                          disabled={type.disabled}
-                          label={type.label}
-                          promptText={type.tooltip}
-                          secondaryIcon={<InfoCircleOutlined />}
-                          onClick={() => addFieldsHandler(type?.fieldNames)}
-                        />
-                      );
+                    if (!addedFields?.includes(type.fieldNames)) {
+                      const taxonomyLabel =
+                        type.taxonomy && taxonomyDetails(allTaxonomyData?.data, user, type.mappedField, 'name', false);
+                      const label = taxonomyLabel || type.label;
+
+                      if (taxonomyLabel || !type.taxonomy) {
+                        return (
+                          <ChangeType
+                            key={type.type}
+                            primaryIcon={<PlusOutlined />}
+                            disabled={type.disabled}
+                            label={label}
+                            promptText={type.tooltip}
+                            secondaryIcon={<InfoCircleOutlined />}
+                            onClick={() => addFieldsHandler(type?.fieldNames)}
+                          />
+                        );
+                      }
+                    }
                   })
                 )}
               </Form.Item>
