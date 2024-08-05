@@ -451,7 +451,7 @@ export const calendarSettingsFormFields = {
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.readOnly.title')}</Translation>,
       field: ({ t }) => (
         <Row justify={'start'} align={'top'} gutter={[8, 0]}>
-          <Col>
+          <Col span={24}>
             <p className="calendar-settings-description">
               <Translation>{(t) => t('dashboard.settings.calendarSettings.readOnly.description')}</Translation>
             </p>

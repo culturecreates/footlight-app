@@ -1106,6 +1106,7 @@
           "EventAccessibility": "Event accessibility",
           "Audience": "Audience",
           "EventType": "Event type",
+          "EventDiscipline": "Discipline",
           "OrganizerRole": "Organizer Role",
           "PerformerRole": "Performer Role",
           "SupporterRole": "Contributor Role"

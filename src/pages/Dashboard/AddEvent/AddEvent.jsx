@@ -400,7 +400,8 @@ function AddEvent() {
               recurringEvent,
               description = {},
               name = {},
-              inLanguage = [];
+              inLanguage = [],
+              eventDiscipline = [];
 
             let eventObj;
 
@@ -581,25 +582,24 @@ function AddEvent() {
             }
 
             if (values?.eventType) {
-              additionalType = values?.eventType?.map((eventTypeId) => {
-                return {
-                  entityId: eventTypeId,
-                };
-              });
+              additionalType = values?.eventType?.map((eventTypeId) => ({
+                entityId: eventTypeId,
+              }));
+            }
+            if (values?.eventDiscipline) {
+              eventDiscipline = values?.eventDiscipline?.map((eventDiscipline) => ({
+                entityId: eventDiscipline,
+              }));
             }
             if (values?.targetAudience) {
-              audience = values?.targetAudience?.map((audienceId) => {
-                return {
-                  entityId: audienceId,
-                };
-              });
+              audience = values?.targetAudience?.map((audienceId) => ({
+                entityId: audienceId,
+              }));
             }
             if (values?.inLanguage) {
-              inLanguage = values?.inLanguage?.map((inLanguageId) => {
-                return {
-                  entityId: inLanguageId,
-                };
-              });
+              inLanguage = values?.inLanguage?.map((inLanguageId) => ({
+                entityId: inLanguageId,
+              }));
             }
             if (values?.locationPlace || values?.locationPlace?.length > 0) {
               let place;
@@ -658,11 +658,9 @@ function AddEvent() {
               };
             }
             if (values?.eventAccessibility) {
-              accessibility = values?.eventAccessibility?.map((accessibilityId) => {
-                return {
-                  entityId: accessibilityId,
-                };
-              });
+              accessibility = values?.eventAccessibility?.map((accessibilityId) => ({
+                entityId: accessibilityId,
+              }));
             }
 
             if (values?.englishAccessibilityNote || values?.frenchAccessibilityNote) {
@@ -812,6 +810,7 @@ function AddEvent() {
               ...(accessibilityNote && { accessibilityNote }),
               additionalType,
               audience,
+              discipline: eventDiscipline,
 
               url: {
                 uri: urlProtocolCheck(values?.eventLink),
@@ -1926,6 +1925,9 @@ function AddEvent() {
           case eventFormRequiredFieldNames.EVENT_TYPE:
             publishValidateFields.push('eventType');
             break;
+          case eventFormRequiredFieldNames.EVENT_DISCIPLINE:
+            publishValidateFields.push('eventDiscipline');
+            break;
           case eventFormRequiredFieldNames.AUDIENCE:
             publishValidateFields.push('targetAudience');
             break;
@@ -2334,6 +2336,54 @@ function AddEvent() {
                     }}
                   />
                 </Form.Item>
+                <Form.Item
+                  name="eventDiscipline"
+                  label={taxonomyDetails(allTaxonomyData?.data, user, 'EventDiscipline', 'name', false)}
+                  initialValue={eventData?.discipline?.map((type) => type?.entityId)}
+                  hidden={
+                    standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_DISCIPLINE)
+                      ? adminCheckHandler({ calendar, user })
+                        ? false
+                        : true
+                      : false
+                  }
+                  style={{
+                    display: !taxonomyDetails(allTaxonomyData?.data, user, 'EventDiscipline', 'name', false) && 'none',
+                  }}
+                  rules={[
+                    {
+                      required: requiredFieldNames?.includes(eventFormRequiredFieldNames?.EVENT_DISCIPLINE),
+                      message: t('common.validations.informationRequired'),
+                    },
+                  ]}
+                  data-cy="form-item-event-discipline-label">
+                  <TreeSelectOption
+                    allowClear
+                    treeDefaultExpandAll
+                    notFoundContent={<NoContent />}
+                    clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                    treeData={treeTaxonomyOptions(
+                      allTaxonomyData,
+                      user,
+                      'EventDiscipline',
+                      false,
+                      calendarContentLanguage,
+                    )}
+                    tagRender={(props) => {
+                      const { label, closable, onClose } = props;
+                      return (
+                        <Tags
+                          closable={closable}
+                          onClose={onClose}
+                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}
+                          data-cy={`tag-event-discipline-${label}`}>
+                          {label}
+                        </Tags>
+                      );
+                    }}
+                    data-cy="treeselect-event-discipline"
+                  />
+                </Form.Item>
                 {allTaxonomyData?.data?.map((taxonomy, index) => {
                   if (taxonomy?.isDynamicField) {
                     let initialValues;
@@ -2409,7 +2459,7 @@ function AddEvent() {
                 <Row>
                   <Col>
                     <p className="add-event-date-heading" data-cy="heading-dates">
-                      {t('dashboard.events.addEditEvent.dates.heading')} hello
+                      {t('dashboard.events.addEditEvent.dates.heading')}
                     </p>
                   </Col>
                 </Row>
@@ -4392,18 +4442,25 @@ function AddEvent() {
                   <NoContent label={t('dashboard.events.addEditEvent.allDone')} />
                 ) : (
                   otherInformationOptions.map((type) => {
-                    if (!addedFields?.includes(type.fieldNames))
-                      return (
-                        <ChangeType
-                          key={type.type}
-                          primaryIcon={<PlusOutlined />}
-                          disabled={type.disabled}
-                          label={type.label}
-                          promptText={type.tooltip}
-                          secondaryIcon={<InfoCircleOutlined />}
-                          onClick={() => addFieldsHandler(type?.fieldNames)}
-                        />
-                      );
+                    if (!addedFields?.includes(type.fieldNames)) {
+                      const taxonomyLabel =
+                        type.taxonomy && taxonomyDetails(allTaxonomyData?.data, user, type.mappedField, 'name', false);
+                      const label = taxonomyLabel || type.label;
+
+                      if (taxonomyLabel || !type.taxonomy) {
+                        return (
+                          <ChangeType
+                            key={type.type}
+                            primaryIcon={<PlusOutlined />}
+                            disabled={type.disabled}
+                            label={label}
+                            promptText={type.tooltip}
+                            secondaryIcon={<InfoCircleOutlined />}
+                            onClick={() => addFieldsHandler(type?.fieldNames)}
+                          />
+                        );
+                      }
+                    }
                   })
                 )}
               </Form.Item>

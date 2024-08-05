@@ -401,6 +401,40 @@ function EventReadOnly() {
                       />
                     </div>
                   )}
+                  {eventData?.discipline?.length > 0 && (
+                    <div
+                      style={{
+                        display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_DISCIPLINE)
+                          ? adminCheckHandler({ calendar, user })
+                            ? 'initial'
+                            : 'none'
+                          : 'initial',
+                      }}>
+                      <br />
+                      <p className="read-only-event-content-sub-title-primary">
+                        {taxonomyDetails(allTaxonomyData?.data, user, 'EventDiscipline', 'name', false)}
+                      </p>
+                      <TreeSelectOption
+                        style={{ marginBottom: '1rem' }}
+                        bordered={false}
+                        showArrow={false}
+                        open={false}
+                        disabled
+                        treeData={treeTaxonomyOptions(
+                          allTaxonomyData,
+                          user,
+                          'EventDiscipline',
+                          false,
+                          calendarContentLanguage,
+                        )}
+                        defaultValue={eventData?.discipline?.map((type) => type?.entityId)}
+                        tagRender={(props) => {
+                          const { label } = props;
+                          return <Tags>{label}</Tags>;
+                        }}
+                      />
+                    </div>
+                  )}
                   {allTaxonomyData?.data?.map((taxonomy, index) => {
                     if (taxonomy?.isDynamicField) {
                       let initialValues,

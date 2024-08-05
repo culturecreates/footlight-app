@@ -47,6 +47,13 @@ export const EVENT = [
     fr: "Type d'événement",
   },
   {
+    label: <Translation>{(t) => t('dashboard.taxonomy.standardFields.Event.EventDiscipline')}</Translation>,
+    key: 'EventDiscipline',
+    value: 'EventDiscipline',
+    en: 'Discipline',
+    fr: 'Discipline',
+  },
+  {
     label: <Translation>{(t) => t('dashboard.taxonomy.standardFields.place.inLanguage')}</Translation>,
     key: 'inLanguage',
     value: 'inLanguage',
