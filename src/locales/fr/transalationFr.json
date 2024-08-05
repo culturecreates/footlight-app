@@ -3,15 +3,15 @@
     "header": "Se connecter à Footlight",
     "email": "Courriel",
     "password": "Mot de passe",
-    "emailPlaceHolder": "Entrez votre courriel",
-    "passwordPlaceHolder": "Entrez votre mot de passe",
+    "emailPlaceHolder": "Indiquer le courriel",
+    "passwordPlaceHolder": "Indiquer le mot de passe",
     "rememberMe": "Se souvenir de moi",
     "loginButtonText": "Se connecter ",
     "resetMyPasswordText": "Réinitialisez votre mot de passe",
     "validations": {
-      "invalidEmail": "Entrez une adresse courriel valide.",
-      "emptyEmail": "Entrez une adresse courriel.",
-      "emptyPassword": "Entrez votre mot de passe."
+      "invalidEmail": "Indiquez une adresse courriel valide.",
+      "emptyEmail": "Indiquez une adresse courriel.",
+      "emptyPassword": "Indiquez votre mot de passe."
     },
     "changeLanguageTo": "English",
     "failure": "Adresse courriel ou mot de passe incorrect."
@@ -20,13 +20,13 @@
     "backToLogin": "Retour à la connection",
     "header": "Réinitialisez votre mot de passe",
     "email": "Courriel",
-    "emailPlaceHolder": "Entrez votre courriel",
+    "emailPlaceHolder": "Indiquer le courriel",
     "sentResetCodeText": "Envoyer",
     "alreadyHaveCode": "J'ai déjà un code",
     "validations": {
-      "invalidEmail": "Entrez une adresse courriel valide.",
-      "emptyEmail": "Entrez une adresse courriel.",
-      "emptyPassword": "S'il vous plait entrez votre mot de passe."
+      "invalidEmail": "Indiquez une adresse courriel valide.",
+      "emptyEmail": "Indiquez une adresse courriel.",
+      "emptyPassword": "S'il vous plait Indiquez votre mot de passe."
     },
     "successNotification": "Vérifiez votre adresse courriel pour votre code de réinitialisation.",
     "failure": "Nous ne trouvons pas de compte avec cette adresse courriel."
@@ -36,41 +36,41 @@
     "header": "Vérifiez votre courriel",
     "subHeading": "Saisissez votre code de réinitialisation à 6 chiffres. Créez et confirmez votre nouveau mot de passe.",
     "email": "Courriel",
-    "emailPlaceHolder": "Entrez votre courriel",
+    "emailPlaceHolder": "Indiquer le courriel",
     "inputNumber": "Code de réinitialisation à 6 chiffres",
-    "inputNumberPlaceholder": "Entrez votre code",
+    "inputNumberPlaceholder": "Indiquer le code",
     "newPassword": "Nouveau mot de passe",
-    "confirmNewPassword": "Confirmer votre nouveau mot de passe",
-    "passwordPlaceHolder": "Entrez votre mot de passe",
+    "confirmNewPassword": "Confirmez votre nouveau mot de passe.",
+    "passwordPlaceHolder": "Indiquer le mot de passe",
     "resetPassword": "Réinitialiser le mot de passe",
     "newResetcode": "Envoyer un nouveau code de réinitialisation",
     "validations": {
-      "invalidEmail": "Entrez une adresse courriel valide.",
-      "emptyEmail": "Entrez une adresse courriel.",
-      "emptyPassword": "Entrez votre mot de passe.",
-      "passwordMatch": "Les deux mots de passe ne correspondent pas.",
-      "digitCode": "Entrez votre code"
+      "invalidEmail": "Indiquez une adresse courriel valide.",
+      "emptyEmail": "Indiquez une adresse courriel.",
+      "emptyPassword": "Indiquez votre mot de passe.",
+      "passwordMatch": "Les mots de passe ne correspondent pas.",
+      "digitCode": "Indiquez votre code"
     },
-    "successNotification": "Succès! Votre mot de passe a été réinitialisé.",
+    "successNotification": "Succès ! Votre mot de passe a été réinitialisé.",
     "failure": "Les informations de réinitialisation sont incorrectes ou ont expiré."
   },
   "createAccount": {
     "createYourAccount": "Créez votre compte",
-    "firstName": "Prenom",
+    "firstName": "Prénom",
     "lastName": "Nom",
     "email": "Courriel",
     "newPassword": "Nouveau mot de passe",
-    "confirmNewPassword": "Confirmer votre nouveau mot de passe",
+    "confirmNewPassword": "Confirmez votre nouveau mot de passe.",
     "acceptInvitation": "Acceptez l'invitation",
-    "passwordPlaceHolder": "Entrez votre mot de passe",
+    "passwordPlaceHolder": "Indiquer le mot de passe",
     "successNotification": " Succès ! Votre compte a été créé.",
     "errorNotification": "Un problème s'est produit. Veuillez réessayer ou contacter support@culturecreates.com.",
-    "acceptInvitationSuccess": "Success ! Invitation acceptée."
+    "acceptInvitationSuccess": "Succès ! Invitation acceptée."
   },
   "dashboard": {
     "calendar": {
       "readOnlyMode": {
-        "readOnlyMode": "Read-only mode",
+        "readOnlyMode": "Mode lecture seule",
         "heading": "Calendrier en mode lecture seule",
         "content": "Le calendrier est actuellement en mode lecture seule. Les utilisateurs ne peuvent pas modifier son contenu. Réessayez plus tard ou contactez votre administrateur pour plus de détails."
       }
@@ -121,21 +121,21 @@
           "dateRange": "Plage de dates"
         },
         "organizer": { "label": "Organisations", "placeholderSearch": "Rechercher un nom" },
-        "clear": "Éffacer"
+        "clear": "Effacer"
       },
       "readOnlyEvent": {
         "notification": {
-          "underReview": "Cet événement est en train d'être validé.",
+          "underReview": "Cet événement est en cours de validation.",
           "underPublished": "Cet événement a été publié. Si vous voulez faire des changements, veuillez contacter l'administrateur du calendrier."
         }
       },
       "addEditEvent": {
         "heading": { "newEvent": "Ajouter un événement", "editEvent": "Modifier un événement" },
         "addMoreDetails": "Ajouter plus de détails à votre événement",
-        "allDone": "Terminé",
+        "allDone": "Tous les détails sont ajoutés.",
         "featuredEvent": "Événement vedette",
         "fallbackConfirm": {
-          "contentPart1": "Vous n'avez pas mis à jour tous les textes qui ne correspondent pas à la langue de votre site web. ",
+          "contentPart1": "Vous n'avez pas mis à jour tous les textes qui ne correspondent pas à la langue de votre site web.",
           "contentPart2": "Voulez-vous publier tel quel ? ",
           "title": "Publier l'événement",
           "publish": "Publier"
@@ -148,18 +148,18 @@
         },
         "language": {
           "title": "Titre de l'événement",
-          "titleLabel": "English",
-          "placeHolderFrench": "Entrez titre en français",
-          "placeHolderEnglish": "Entrez titre en anglais",
+          "titleLabel": "Anglais",
+          "placeHolderFrench": "Indiquer le titre en français",
+          "placeHolderEnglish": "Indiquer le titre en anglais",
           "eventType": "Type de l’événement",
-          "placeHolderEventType": "Sélectionnez type de l'événement",
+          "placeHolderEventType": "Sélectionner le type de l'événementr",
           "targetAudience": "Public cible",
-          "placeHolderTargetAudience": "Sélectionnez public cible"
+          "placeHolderTargetAudience": "Sélectionner le public cible"
         },
         "dates": {
           "dates": "Dates",
           "date": "Date",
-          "heading": "Sélectionnez le type de date que vous souhaitez saisir pour votre événement :",
+          "heading": "Sélectionnez le type de date que vous souhaitez saisir pour votre événement.",
           "singleDate": "Date unique",
           "dateRange": "Plage de dates",
           "multipleDates": "Plusieurs dates",
@@ -205,9 +205,9 @@
             "addTime": "Ajouter une heure",
             "add": "Ajouter",
             "addTimeToAllDates": "Ajouter l'heure à toutes les dates",
-            "addTimeToAllDatesWarning": "Vous êtes sûr de vous ? Cette action ne peut être annulée.",
+            "addTimeToAllDatesWarning": "Êtes-vous sûr ? Cette action ne peut être annulée.",
             "duplicateTimes": "Dupliquer les heures",
-            "replaceTimeonFolllowingDates": "Remplacer les heures aux dates suivantes : ",
+            "replaceTimeonFolllowingDates": "Remplacez les heures aux dates suivantes : ",
             "selectAll": "Sélectionner tout",
             "unselectAll": "tout déselectionner",
             "cancel": "Annuler",
@@ -216,13 +216,13 @@
         },
         "location": {
           "title": "Endroit",
-          "placeHolderLocation": "Recherchez Lieux",
+          "placeHolderLocation": "Rechercher lieux",
           "virtualLocation": "Emplacement virtuel",
           "virtualLocationTooltip": "Ajoutez un lien vers un emplacement virtuel pour votre événement.",
-          "placeHolderVirtualLocationEn": "Entrez le texte anglais à afficher",
-          "placeHolderVirtualLocationFr": "Entrez le texte français à afficher",
+          "placeHolderVirtualLocationEn": "Indiquer le texte anglais à afficher",
+          "placeHolderVirtualLocationFr": "Indiquer le texte français à afficher",
           "onlineLink": "Lien pour l'événement en ligne",
-          "placeHolderOnlineLink": "Entrez l'adresse web URL",
+          "placeHolderOnlineLink": "Indiquer l'adresse web URL",
           "streetAddress": "Adresse postale",
           "venueAccessibility": "Accessibilité du lieu",
           "openingHours": "Heures d'ouverture",
@@ -233,11 +233,11 @@
             "cancel": "Annuler",
             "name": "Nom",
             "success": "Succès ! Votre organisation a été créé.",
-            "namePlaceholder": "Entrez un nom",
+            "namePlaceholder": "Indiquer un nom",
             "address": "Adresse",
-            "searchPlaceholder": "Recherchez Google Places",
+            "searchPlaceholder": "Rechercher Google Places",
             "type": "Type",
-            "typePlaceholder": "Sélectionnez un type",
+            "typePlaceholder": "Sélectionner un type",
             "validations": {
               "name": "Le nom est requis.",
               "address": "L'adresse est requise."
@@ -250,21 +250,21 @@
             "title": "Description de l'événement",
             "footerTitle": "Un minimum de {{wordCount}} mots est requis.",
             "word": "mot",
-            "frenchPlaceholder": "Entrez une description en français",
-            "englishPlaceholder": "Entrez une description en anglais",
+            "frenchPlaceholder": "Indiquer une description en français",
+            "englishPlaceholder": "Indiquer une description en anglais",
             "translate": "Traduire"
           },
           "image": {
             "title": "Image",
             "mainImage": "Image principale",
             "additionalImages": "Images supplémentaires",
-            "subHeading": "Uniquement les fichiers .jpeg et .png sont acceptés.",
+            "subHeading": "Utiliser les formats .jpeg/.jpg ou .png",
             "dragAndDrop": "ou glisser pour télécharger",
             "browse": "Parcourir",
             "imageGallery": "Galerie d'images",
             "crop": {
               "title": "Positionnement de l’image",
-              "subHeading": "Ajuster la position de l’image si nécessaire.",
+              "subHeading": "Ajustez la position de l’image si nécessaire.",
               "savedFrameSize": "Ratios d'images disponibles",
               "ratio": "Ratio",
               "thumbnailImage": "Vignette",
@@ -276,31 +276,31 @@
           "organizer": {
             "title": "Organisateur",
             "subHeading": "Ajoutez un organisateur pour votre événement.",
-            "searchPlaceholder": "Recherchez des Organisations ou des Personnes"
+            "searchPlaceholder": "Rechercher des organisations ou des personnes"
           },
           "performer": {
-            "title": "Compagnie/groupe/artiste/animateur de l'événement",
+            "title": "Compagnie / groupe / artiste / animateur de l'événement",
             "subHeading": "Ajoutez un interprète principal pour votre événement.",
-            "searchPlaceholder": "Recherchez des Organisations ou des Personnes"
+            "searchPlaceholder": "Rechercher des organisations ou des personnes"
           },
           "supporter": {
-            "title": "Supporteur/ Commanditaire",
+            "title": "Supporteur / Commanditaire",
             "subHeading": "Ajoutez le commanditaire ou l'organisme qui soutient l'événement.",
-            "searchPlaceholder": "Recherchez des Organisations ou des Personnes",
-            "supporterTooltip": "Ajoutez le commanditaire ou l'organisme qui soutient l'événement. Un logo d'organisation sera requis."
+            "searchPlaceholder": "Rechercher des organisations ou des personnes",
+            "supporterTooltip": "Ajoutez le/la commanditaire ou l'organisme qui soutient l'événement. Un logo d'organisation sera requis."
           },
           "eventLink": "Lien de l’événement",
           "eventLinkTooltip": "Ajoutez le lien vers la page de l'événement sur un site Web.",
           "videoLink": "Vidéo",
           "videoLinks": "Vidéo",
-          "videoLinkTooltip": "Ajoutez une vidéo à votre contenu. Youtube et Vimeo sont acceptés.",
+          "videoLinkTooltip": "Ajoutez une vidéo à votre contenu. Les liens vers Youtube et Vimeo sont acceptés.",
           "facebookLink": "Lien vers l'événement Facebook",
-          "facebookLinkFooter": "Collez l'URL de votre événement Facebook ici.",
+          "facebookLinkFooter": "Collez le lien de votre événement Facebook ici.",
           "facebookLinkTooltip": "Ajoutez le lien vers une page d'événement sur Facebook.",
-          "placeHolderLinks": "Entrez l'adresse web URL",
+          "placeHolderLinks": "Indiquer l'adresse web",
           "keywords": "Mots clés",
           "keywordsTooltip": "Ajoutez des mots-clés supplémentaires pour l'événement. Sélectionnez d'abord les types d'événements pertinents.",
-          "placeHolderKeywords": "Entrez des mots clés supplémentaires",
+          "placeHolderKeywords": "Indiquer des mots-clés supplémentaires",
           "contact": {
             "title": "Contact",
             "contactTitle": "Titre du contact",
@@ -309,18 +309,18 @@
             "website": "Site web",
             "phoneNumber": "Numéro de téléphone",
             "email": "Courriel",
-            "placeHolderContactTitleFrench": "Entrez le titre du contact français",
-            "placeHolderContactTitleEnglish": "Entrez le titre du contact anglais",
-            "placeHolderWebsite": "Entrez l'adresse web URL",
-            "placeHolderPhoneNumber": "Entrez le numéro de téléphone",
-            "placeHolderEmail": "Entrez l’adresse courriel",
+            "placeHolderContactTitleFrench": "Indiquer le titre du contact français",
+            "placeHolderContactTitleEnglish": "Indiquer le titre du contact anglais",
+            "placeHolderWebsite": "Indiquer l'adresse web",
+            "placeHolderPhoneNumber": "Indiquer le numéro de téléphone",
+            "placeHolderEmail": "Indiquer l’adresse courriel",
             "contactTooltip": "Ajoutez un contact pour votre événement. Vous pouvez en créer un ou copier les données de l'Organisateur.",
-            "copyOrganizerContact": "Copier le contact de l’organisateur"
+            "copyOrganizerContact": "Copiez le contact de l’organisateur."
           },
           "eventLanguage1": "Langue de",
           "eventLanguage2": " l'événement",
-          "eventLanguagePlaceholder": "Sélectionnez la langue de l'événement",
-          "eventLanguageTooltip": "Sélectionnez le français, l'anglais ou le bilingue."
+          "eventLanguagePlaceholder": "Sélectionner la langue de l'événement",
+          "eventLanguageTooltip": "Sélectionnez le français, l'anglais, ou bilingue."
         },
         "eventAccessibility": {
           "title": "Accessibilité",
@@ -328,10 +328,10 @@
           "label": "Fonctionnalité d'accessibilité",
           "subHeading": "Sélectionnez ce qui rend l'événement (spectacle ou exposition) accessible.",
           "footer": "Cette option est spécifique à l'événement. L'accessibilité du lieu est enregistrée avec le lieu dans Lieux.",
-          "placeHolderEventAccessibility": "Sélectionnez la fonctionnalité d'accessibilité",
+          "placeHolderEventAccessibility": "Sélectionner la fonctionnalité d'accessibilité",
           "placeHolderEventAccessibilityFrenchNote": "Ajouter des informations supplémentaires sur l'accessibilité",
           "placeHolderEventAccessibilityEnglishNote": "Ajouter des informations supplémentaires sur l'accessibilité",
-          "noteTooltip": "Fournir plus de détails sur les options d'accessibilité sélectionnées, telles que les dates."
+          "noteTooltip": "Fournissez plus de détails sur les options d'accessibilité sélectionnées, telles que les dates."
         },
         "tickets": {
           "title": "Billets",
@@ -351,10 +351,10 @@
           "changeToRegisterTooltip": "A utiliser lorsque l'événement nécessite l'inscription des participants.",
           "price": "Prix",
           "description": "Description",
-          "enterType": "Entrez le Type",
+          "enterType": "Indiquez le Type",
           "anotherTicketType": "Autre type de billet",
           "placeHolderNotes": "Ajouter des informations supplémentaires sur la billeterie",
-          "placeHolderLinks": "Entrez l'adresse web URL",
+          "placeHolderLinks": "Indiquer l'adresse web",
           "CAD": "CAD $"
         },
         "status": "Statut",
@@ -366,11 +366,11 @@
           "revertToDraft": "Revenir au brouillon"
         },
         "notification": {
-          "saveAsDraft": "Succès! Votre événement a été enregistré comme brouillon.",
-          "sendToReview": "Succès! Votre événement a été envoyé pour validation.",
-          "publish": "Succès! Votre événement a été publié.",
-          "updateEvent": "Succès! Votre événement a été mis à jour.",
-          "editFailedReviewForGuest": "Cet événement a besoin de plus d'attention. Réviser et mettre à jour si nécessaire, puis envoyer pour validation."
+          "saveAsDraft": "Succès ! Votre événement a été enregistré comme brouillon.",
+          "sendToReview": " Succès ! Votre événement a été envoyé pour validation.",
+          "publish": "Succès ! Votre événement a été publié.",
+          "updateEvent": "Succès ! Votre événement a été mis à jour.",
+          "editFailedReviewForGuest": "L'événement a besoin d'être révisé. Réviser et mettre à jour si nécessaire, puis envoyer pour validation."
         },
         "validations": {
           "title": "Le titre de l'événement est requis.",
@@ -384,21 +384,21 @@
             "englishShort": "La description en anglais est trop courte.",
             "frenchShort": "La description française est trop courte.",
             "unilingualDescriptionShort": "La description est trop courte",
-            "emptyImage": "Une image est requise. Les fichiers PNG et JPEG sont acceptés."
+            "emptyImage": "Une image est requise. Utiliser les formats .jpeg/.jpg ou .png"
           },
           "ticket": {
             "emptyTicket": "L'événement nécessite des informations sur la billetterie.",
-            "emptyPaidTicket": "Un lien d'achat de billet, un prix de billet ou une note est requis.",
-            "emptyRegister": "Un lien d'achat de billet, un prix de billet ou une note est requis.",
-            "invalidData": "Entrez un nombre."
+            "emptyPaidTicket": "Un lien d'achat, un prix ou une note sont requis.",
+            "emptyRegister": "Un lien d'achat, un prix ou une note sont requis.",
+            "invalidData": "Indiquez un nombre."
           },
-          "url": "Entrez une URL valide.",
+          "url": "Indiquez un lien valide",
           "errorPublishing": "Cet événement a besoin de plus d'informations avant d'être publié.",
           "errorReview": "Cet événement a besoin de plus d'informations avant d'être envoyé pour validation.",
           "errorDraft": "Cet événement a besoin de plus d'informations avant d'être enregistré.",
           "errorImage": "Cette image ne peut pas être enregistrée. Ajustez l'image ou essayez-en une autre.",
           "organizer": {
-            "required": "Un organisateur est requise."
+            "required": "Ce champ ne peut être laissé vide."
           }
         },
         "quickCreate": {
@@ -418,10 +418,10 @@
             "subHeading": "Ajoutez des informations de base sur cette organisation.",
             "name": "Nom",
             "logo": "Logo",
-            "logoSubHeading": "Seuls les fichiers .jpeg et .png sont acceptés.",
-            "success": "Succès ! Votre organisation a été créé.",
-            "namePlaceholder": "Entrez un nom",
-            "websitePlaceholder": "Entrez un site web",
+            "logoSubHeading": "Utiliser les formats .jpeg/.jpg ou .png",
+            "success": "Succès ! Votre fiche d'organisation a été créée.",
+            "namePlaceholder": "Indiquer un nom",
+            "websitePlaceholder": "Indiquer un site web",
             "validations": {
               "name": "Le nom est requis."
             }
@@ -430,10 +430,10 @@
             "title": "Créer une personne",
             "subHeading": "Ajoutez des informations de base sur cette personne. Vous pourrez modifier les détails complets dans la section Personnes plus tard.",
             "name": "Nom",
-            "success": "Succès ! Votre personne a été créé.",
-            "namePlaceholder": "Entrez un nom",
-            "websitePlaceholder": "Entrez un site web",
-            "occupationPlaceholder": "Sélectionnez une profession",
+            "success": "Succès ! Votre fiche de personne a été créée.",
+            "namePlaceholder": "Indiquer un nom",
+            "websitePlaceholder": "Indiquer un site web",
+            "occupationPlaceholder": "Sélectionner une profession",
             "website": "Site web",
             "validations": {
               "name": "Le nom est requis."
@@ -457,7 +457,7 @@
         "pendingReview": "Attente d'approbation"
       },
       "list": {
-        "createdBy": "Crée le",
+        "createdBy": "Créé le",
         "updatedBy": "Modifié le",
         "by": "par",
         "to": "au",
@@ -478,7 +478,7 @@
       },
       "deleteOrganization": {
         "title": "Confirmer la suppression",
-        "description": "Êtes-vous sûr de vouloir supprimer définitivement cette organisation? Cette organisation sera supprimée partout où elle est utilisée.",
+        "description": "Êtes-vous sûr de vouloir supprimer définitivement cette fiche d'organization ? Elle sera supprimée dans tout CMS Footlight.",
         "impact": "Événements concernés : ",
         "published": "publié - {{number}}",
         "draft": "brouillon - {{number}}",
@@ -489,7 +489,7 @@
       "readOnly": {
         "details": "Détails",
         "name": "Nom",
-        "disambiguatingDescription": "Description identifiante",
+        "disambiguatingDescription": "Description (désambiguïsation)",
         "description": "Description",
         "website": "Site web",
         "contact": "Contact",
@@ -506,7 +506,7 @@
         "search": {
           "searchbarHeader": "Données associées",
           "title": "Nouvelle organisation",
-          "text": "Recherchez pour établir un lien avec une instance existante de l'organisation dans d'autres sources de données. Si vous ne trouvez pas l'organisation, vous pouvez la créer.",
+          "text": "Recherchez pour lier une instance existante de l'organisation dans d'autres sources de données. Si non trouvée, vous pouvez la créer.",
           "searchHeading": "Rechercher une autre instance",
           "breadcrumb": "Retour à l'écran précédent",
           "linkText": "Artsdata",
@@ -523,8 +523,8 @@
           "dataSource": "Data source",
           "question": {
             "firstPart": "Est-ce la bonne organisation ? Si non, ",
-            "secondPart": "créez une nouvelle organisation",
-            "thirdPart": " et ne modifiez pas celle-ci."
+            "secondPart": "créer une nouvelle fiche organisation",
+            "thirdPart": ", ne pas modifier celle-ci."
           },
           "associatedEntities": {
             "title": "Associé à",
@@ -536,9 +536,9 @@
           "addSocialMediaLinks": "Ajouter un lien"
         },
         "notification": {
-          "addSuccess": "Succès ! Votre organisation a été créé.",
-          "editSuccess": "Succès ! Votre organisation a été mis à jour.",
-          "saveError": "Cet organisation a besoin de plus d'informations avant d'être enregistré."
+          "addSuccess": "Succès ! La fiche de cette organisation a été créée.",
+          "editSuccess": "Succès ! Les informations sur l'organisation ont été mises à jour.",
+          "saveError": "Cette fiche d'organisation nécessite plus d'informations avant d'être enregistrée."
         },
         "validations": {
           "nameRequired": "Le nom est requis.",
@@ -546,7 +546,7 @@
           "unilingualEmptyDescription": "Une description est requise.",
           "englishShort": "La description en anglais est trop courte.",
           "frenchShort": "La description française est trop courte.",
-          "unilingualDescriptionShort": "La description est trop courte"
+          "unilingualDescriptionShort": "La description est trop courte."
         }
       }
     },
@@ -558,7 +558,7 @@
       },
       "deletePlace": {
         "title": "Confirmer la suppression",
-        "description": "Êtes-vous sûr de vouloir supprimer définitivement ce lieu ? Le lieu sera supprimé partout où il est utilisé.",
+        "description": "Êtes-vous sûr de vouloir supprimer définitivement cette fiche de lieu ? Elle sera supprimée dans tout CMS Footlight.",
         "impact": "Événements concernés : ",
         "published": "publié - {{number}}",
         "draft": "brouillon - {{number}}",
@@ -567,11 +567,11 @@
         "cancel": "Annuler"
       },
       "readOnly": {
-        "placeName": "Nom du lieu",
-        "disambiguatingDescription": "Description identifiante",
+        "placeName": "Nom",
+        "disambiguatingDescription": "Description (désambiguïsation)",
         "description": "Description",
-        "website": "Website",
-        "edit": "Éditer",
+        "website": "Site Web",
+        "edit": "Editer",
         "address": {
           "address": "Adresse",
           "streetAddress": "Adresse postale",
@@ -583,16 +583,16 @@
           "openingHoursLink": "Lien des heures d'ouverture"
         },
         "containedInPlace": "Contenu dans un lieu",
-        "notContainedInPlace": "Contenu dans aucun endroit.",
+        "notContainedInPlace": "Aucun lieu.",
         "venueAccessibility": "Accessibilité du site",
         "items": "Éléments"
       },
       "createNew": {
         "search": {
-          "title": "Nouveau lieu",
+          "title": "Nouvelle fiche de lieu",
           "searchbarHeader": "Données associées",
           "searchHeading": "Rechercher une autre instance",
-          "text": "Recherchez un lien vers une instance existante du lieu dans d'autres sources de données. Si vous ne trouvez pas le lieu, vous pouvez le créer.",
+          "text": "Recherchez pour lier une instance existante du lieu dans d'autres sources de données. Si non trouvée, vous pouvez le créer.",
           "breadcrumb": "Retour à l'écran précédent",
           "linkText": "Artsdata",
           "footlightSectionHeading": "My Footlight",
@@ -600,66 +600,66 @@
           "importsFromFootlight": "Imports from Footlight"
         },
         "addPlace": {
-          "newPlace": "Nouveau lieu",
-          "editPlace": "Modifier lieu",
+          "newPlace": "Nouvelle fiche de lieu",
+          "editPlace": "Modifier",
           "question": {
             "firstPart": "Est-ce le bon lieu ? Si non, ",
-            "secondPart": "créez un nouvel lieu",
-            "thirdPart": " et ne modifiez pas celui-ci."
+            "secondPart": "créer une nouvelle fiche lieu",
+            "thirdPart": ", ne pas modifier celle-ci."
           },
           "name": {
-            "name": "Nom du lieu",
+            "name": "Nom",
             "placeholder": {
-              "english": "Entrez le nom du lieu",
-              "french": "Entrez le nom du lieu"
+              "english": "Indiquer le nom du lieu",
+              "french": "Indiquer le nom du lieu"
             }
           },
           "placeType": {
-            "placeholder": "Sélectionnez le type de lieu"
+            "placeholder": "Sélectionner le type de lieu"
           },
           "address": {
             "address": "Adresse",
-            "searchAddressDescription": "Entrer le nom du lieu et/ou l'adresse.",
+            "searchAddressDescription": "Indiquez le nom du lieu et/ou l'adresse.",
             "searchAddressPlaceholder": "Rechercher",
             "streetAddress": "Adresse postale",
-            "subheading": "Entrer le nom du lieu et/ou l'adresse.",
+            "subheading": "Indiquez le nom du lieu et/ou l'adresse.",
             "streetAddressPlaceholder": {
-              "english": "Entrez l’adresse postale en anglais",
-              "french": "Entrez l’adresse postale en français"
+              "english": "Indiquer l’adresse postale en anglais",
+              "french": "Indiquer l’adresse postale en français"
             },
             "city": {
               "city": "Ville",
-              "placeholder": { "french": "Entrer la ville en français", "english": "Entrer la ville en anglais" }
+              "placeholder": { "french": "Indiquer le nom de la ville en français", "english": "Indiquer le nom de la ville en anglais" }
             },
             "postalCode": {
               "postalCode": "Code postal",
-              "placeholder": "Entrez le code postal"
+              "placeholder": "Indiquer le code postal."
             },
             "province": {
               "province": "Province",
               "placeholder": {
-                "english": "Entrer la province en anglais",
-                "french": "Entrer la province en français"
+                "english": "Indiquer le nom de la province en anglais",
+                "french": "Indiquer le nom de la province en français"
               }
             },
             "country": {
               "country": "Pays",
               "placeholder": {
-                "english": "Entrer la pays en anglais",
-                "french": "Entrer la pays en français"
+                "english": "Indiquer le nom du pays en anglais",
+                "french": "Indiquer le nom du pays en français"
               }
             },
             "coordinates": {
               "coordinates": "Coordonnées"
             },
             "region": {
-              "placeholder": "Sélectionnez le région"
+              "placeholder": "Sélectionner la région"
             },
             "openingHours": {
               "openingHours1": "Lien des heures",
               "openingHours2": " d'ouverture",
-              "tooltip": "Ajoutez un lien vers les heures d'ouverture",
-              "placeholder": "Entrez l'url des heures d'ouverture",
+              "tooltip": "Ajoutez un lien vers les heures d'ouverture.",
+              "placeholder": "Indiquer le lien vers les heures d'ouverture",
               "openingHoursLink": "Lien des heures d'ouverture"
             }
           },
@@ -682,17 +682,17 @@
             "placeAccessibilityNote": {
               "note": "Note",
               "placeholder": {
-                "english": "Ajouter une note",
-                "french": "Ajouter une note"
+                "english": "Ajouter une note en anglais",
+                "french": "Ajouter une note en français"
               },
               "tooltip": "Ajoutez des informations supplémentaires sur l'accessibilité."
             }
           },
           "disambiguatingDescription": {
-            "disambiguatingDescription": "Description identifiante",
+            "disambiguatingDescription": "Description (désambiguïsation)",
             "placeholder": {
-              "english": "Entrez la description identifiante",
-              "french": "Entrez la description identifiante"
+              "english": "Indiquer la description aux fins de désambiguïsation en anglais",
+              "french": "Indiquer la description aux fins de désambiguïsation en français"
             }
           },
           "description": {
@@ -702,14 +702,14 @@
             "image": "Image",
             "mainImage": "Image principale",
             "additionalImages": "Images supplémentaires",
-            "subheading": "Uniquement les fichiers .jpeg et .png sont acceptés."
+            "subheading": "Utiliser les formats .jpeg/.jpg ou .png"
           },
-          "addMoreDetails": "Ajouter plus de détails",
-          "dataSource": "Source de la donnée",
+          "addMoreDetails": "Ajouter plus de détails.",
+          "dataSource": "Source de la donnée.",
           "notification": {
-            "addSuccess": "Succès ! Votre lieu a été créé.",
-            "editSuccess": "Succès ! Votre lieu a été mis à jour.",
-            "saveError": "Cet lieu a besoin de plus d'informations avant d'être enregistré."
+            "addSuccess": "Succès ! Votre fiche de lieu a été créée.",
+            "editSuccess": "Succès ! Votre fiche de lieu a été mise à jour.",
+            "saveError": "Cette fiche de lieu nécessite plus d'informations avant d'être enregistrée."
           },
           "validations": {
             "nameRequired": "Le nom est requis.",
@@ -724,11 +724,11 @@
       "person": "Personne",
       "people": "Personnes",
       "search": {
-        "placeholder": "Rechercher des Personnes"
+        "placeholder": "Rechercher une personne"
       },
       "deletePerson": {
         "title": "Confirmer la suppression",
-        "description": "Êtes-vous sûr de vouloir supprimer définitivement cette personne? Cette personne sera supprimée partout où elle est utilisée.",
+        "description": "Êtes-vous sûr de vouloir supprimer définitivement la fiche de cette personne ? Elle sera supprimée dans tout CMS Footlight.",
         "impact": "Événements concernés : ",
         "published": "publié - {{number}}",
         "draft": "brouillon - {{number}}",
@@ -739,37 +739,37 @@
       "readOnly": {
         "details": "Détails",
         "name": "Nom",
-        "disambiguatingDescription": "Description identifiante",
+        "disambiguatingDescription": "Description (désambiguïsation)",
         "description": "Description",
         "website": "Site web",
-        "edit": "Éditer",
-        "socialMediaLinks": "Liens vers les réseaux sociaux"
+        "edit": "Editer",
+        "socialMediaLinks": "Liens vers les réseaux sociaux."
       },
       "createNew": {
         "search": {
           "title": "Nouvelle personne",
           "searchbarHeader": "Données associées",
           "searchHeading": "Rechercher une autre instance",
-          "text": "Recherchez pour établir un lien avec une instance existante de la personne dans d'autres sources de données. Si vous ne trouvez pas la personne, vous pouvez la créer.",
+          "text": "Recherchez pour établir un lien avec une instance existante de la personne dans d'autres sources de données. Si vous ne trouvez pas la personne, vous pouvez créer sa fiche.",
           "breadcrumb": "Retour à l'écran précédent",
           "linkText": "Artsdata",
           "footlightSectionHeading": "My Footlight",
-          "artsDataSectionHeading": "Imports from Artsdata",
-          "importsFromFootlight": "Imports from Footlight"
+          "artsDataSectionHeading": "Imports de Artsdata",
+          "importsFromFootlight": "Imports de Footlight"
         },
         "addPerson": {
           "newPerson": "Nouvelle personne",
           "editPerson": "Modifier personne",
           "question": {
-            "firstPart": "Est-ce la bonne personne ? Si non,",
-            "secondPart": " créez une nouvelle personne",
-            "thirdPart": " et ne modifiez pas celle-ci."
+            "firstPart": "Est-ce la bonne personne ? Si non, ",
+            "secondPart": "créer une nouvelle fiche personne",
+            "thirdPart": ", ne pas modifier celle-ci."
           },
           "dataSource": "Source de la donnée",
           "notification": {
-            "addSuccess": "Succès ! Votre personne a été créé.",
-            "editSuccess": "Succès ! Votre personne a été mis à jour.",
-            "saveError": "Cet personne a besoin de plus d'informations avant d'être enregistré."
+            "addSuccess": "Succès ! Votre fiche personne a été créée.",
+            "editSuccess": "Succès ! Votre fiche personne a été mise à jour.",
+            "saveError": "Cette fiche de personne a besoin de plus d'informations avant d'être enregistrée."
           },
           "validations": {
             "nameRequired": "Le nom est requis."
@@ -784,13 +784,13 @@
       "lastName": "Nom",
       "email": "Courriel",
       "languagePreference": "Préférence de langue",
-      "changePassword": "Changer le mot de passe",
+      "changePassword": "Changez le mot de passe",
       "save": "Sauvegarder",
       "password": "Mot de passe",
-      "passwordPlaceHolder": "Entrez votre mot de passe",
+      "passwordPlaceHolder": "Indiquer le mot de passe",
       "newPassword": "Nouveau mot de passe",
-      "newPasswordPlaceholder": "Entrez nouveau mot de passe",
-      "confirmNewPassword": "Confirmer votre nouveau mot de passe",
+      "newPasswordPlaceholder": "Indiquer nouveau mot de passe",
+      "confirmNewPassword": "Confirmez votre nouveau mot de passe.",
       "confirmNewPasswordPlaceHolder": "Confirmer nouveau mot de passe",
       "cancel": "Annuler",
       "changePasswordButton": "Changer le mot de passe",
@@ -798,8 +798,8 @@
         "profileUpdate": "Succès ! Votre profil d'utilisateur a été mis à jour."
       },
       "validations": {
-        "emptyFirstName": "Entrez votre prénom",
-        "emptyLasttName": "Entrez votre nom"
+        "emptyFirstName": "Indiquez votre prénom",
+        "emptyLasttName": "Indiquez votre nom"
       }
     },
     "settings": {
@@ -822,8 +822,8 @@
         "inActive": "Désactivé",
         "inActiveStatus": "Désactivé",
         "invite": "Invité",
-        "removed": "REMOVED",
-        "left": "LEFT",
+        "removed": "Supprimé",
+        "left": "Quitté",
         "pending": "Invité",
         "admin": "Administrateur",
         "editor": "Éditeur",
@@ -841,14 +841,14 @@
           "activate": "Activé",
           "deactivate": "Désactivé",
           "deleteUser": "Supprimer l'utilisateur",
-          "cancelInvitation": "Confirm cancellation",
+          "cancelInvitation": "Confirmer l'annulation",
           "modal": {
-            "deleteText": "Are you sure you want to permanently delete this user",
-            "deactivateText": "Are you sure you want to deactivate this user",
-            "activateText": "Êtes-vous sûr de vouloir activer cet utilisateur ?",
-            "copyText": "Lien d'invitation copié..",
+            "deleteText": "Êtes-vous sûr de vouloir supprimer définitivement le compte de cet utilisateur ?",
+            "deactivateText": "Êtes-vous sûr de vouloir désactiver le compte de cet utilisateur ?",
+            "activateText": "Êtes-vous sûr de vouloir activer le compte de cet utilisateur ?",
+            "copyText": "Lien d'invitation copié...",
             "cancelInvitationTitle": "Confirmer l'annulation",
-            "cancelInvitationMessage": "Êtes-vous sûr? Cette action retirera cet utilisateur de votre calendrier."
+            "cancelInvitationMessage": "Êtes-vous sûr ? Cette action retirera cet utilisateur de votre calendrier."
           }
         }
       },
@@ -869,7 +869,7 @@
         "newUser": "Nouvel utilisateur",
         "editUser": "Modifier l'utilisateur",
         "userProfile": "Profil de l'utilisateur",
-        "detailsCardDescriptionAddPage": "Fill user details to add this person to your calendar.",
+        "detailsCardDescriptionAddPage": "Remplissez les informations de l'utilisateur pour ajouter cette personne à votre calendrier.",
         "detailsCardDescriptionEditPage": "Veuillez ajouter les nouvelles informations d'identification de l'utilisateur.",
         "detailsCardDescriptionCurrentUser": "Modifiez vos paramètres d'utilisateur ici.",
         "firstName": "Prénom",
@@ -878,16 +878,16 @@
         "email": "Courriel",
         "userType": "Type d’utilisateur",
         "placeHolder": {
-          "firstName": "Entrez le prénom",
-          "lastName": "Entrez le nom de famille",
-          "phoneNumber": "Entrez le numéro du téléphone",
-          "email": "Entrez l'adresse courriel",
-          "userType": "Sélectionnez le type d'utilisateur",
+          "firstName": "Indiquer le prénom",
+          "lastName": "Indiquer le nom de famille",
+          "phoneNumber": "Indiquer le numéro du téléphone",
+          "email": "Indiquer l'adresse courriel",
+          "userType": "Sélectionner le type d'utilisateur",
           "language": "Sélectionner la langue de l'interface"
         },
         "languagePreference": "Préférence de langue",
         "organization": "Organisation",
-        "organizationDescription": "Ajouter une organisation qui sera liée à ce profile d’utilisateur.",
+        "organizationDescription": "Ajouter une organisation qui sera liée à ce profil d’utilisateur.",
         "searchOrganizations": "Recherchez des Organisations",
         "dropDownOptions": {
           "langagePreference": {
@@ -896,40 +896,40 @@
           }
         },
         "organizationSearchHeading": "Organisation",
-        "organizationSearchDescription": "Ajouter une organisation qui sera liée à ce profile d’utilisateur.",
+        "organizationSearchDescription": "Ajouter une organisation qui sera liée à ce profil d’utilisateur.",
         "changePassWord": "Changer le mot de passe",
         "calendars": "Calendriers",
         "calendarsDescription": "Sélectionnez des calendriers disponibles auxquels cet utilisateur peut se joindre.",
         "calendarSearchHeading": "Accès aux calendriers",
         "searchCalendars": "Rechercher des calendriers",
         "leave": "Quitter",
-        "role": "Role",
-        "organizationHelp": "Give this user edit access to one or more organizations.",
-        "peopleHelp": "Donnez à cet utilisateur un accès de modification à une ou plusieurs personnes.",
+        "role": "Rôle",
+        "organizationHelp": "Donner à cet utilisateur l'accès à modifier une ou plusieurs fiches d'organisations.",
+        "peopleHelp": "Donner à cet utilisateur l'accès à modifier une ou plusieurs fiches de personnes.",
         "passwordModal": {
           "btnText": "Changer le mot de passe",
           "Password": "Mot de passe",
           "newPassword": "Nouveau mot de passe",
-          "confirmNewPassword": "Confirmer votre nouveau mot de passe",
+          "confirmNewPassword": "Confirmez votre nouveau mot de passe.",
           "changePassword": "Changer le mot de passe",
           "Cancel": "Annuler",
           "placeHolder": {
-            "current": "Entrez votre mot de passe",
-            "new": "Entrez nouveau mot de passe",
-            "confirm": "Confirmez nouveau mot de passe"
+            "current": "Indiquer le mot de passe actuel",
+            "new": "Indiquer nouveau mot de passe",
+            "confirm": "Confirmer nouveau mot de passe"
           }
         },
         "validationTexts": {
           "firstName": "Le prénom est requis.",
           "lastName": "Le nom est requis.",
-          "email": "Entrez une adresse courriel.",
+          "email": "Indiquez une adresse courriel.",
           "userType": "Sélectionnez le type d'utilisateur.",
           "language": "Sélectionnez la langue préférée"
         },
         "notification": {
-          "invitation": "Succès! L'invitation a été envoyée.",
+          "invitation": "Succès ! L'invitation a été envoyée.",
           "updateUser": "Succès ! Le profil de l'utilisateur a été mis à jour.",
-          "deleteUser": "Êtes-vous sûr de vouloir supprimer définitivement cet utilisateur?"
+          "deleteUser": "Êtes-vous sûr de vouloir supprimer définitivement le compte de cet utilisateur?"
         },
         "delete": "Supprimer",
         "cancel": "Annuler",
@@ -946,39 +946,39 @@
         "previewMobile": "Version mobile",
         "limit": "Nombre d'événements à afficher",
         "color": "Couleur principale du thème",
-        "colorDescreption": "Entrez le code hexadécimal de la couleur principale. Choisissez une couleur qui donne suffisamment de contraste pour que l'utilisateur puisse lire le contenu.",
-        "colorPlaceHolder": "Collez votre code couleur ou sélectionnez une couleur",
+        "colorDescreption": "Indiquez le code hexadécimal de la couleur principale. Choisissez une couleur donnant suffisamment de contraste pour une bonne lecture.",
+        "colorPlaceHolder": "Coller le code couleur ou sélectionner une couleur",
         "height": "Hauteur",
         "width": "Largeur maximale",
-        "font": "Font selection",
+        "font": "Sélection de la police de caractères",
         "language": "Choix de langue",
         "eventType": "Type d'événement",
         "region": "Région",
         "location": "Lieu",
         "organizer": "Organisateur",
-        "person": "Compagnie/groupe/artiste/animateur de l'événement",
+        "person": "Compagnie / groupe / artiste / animateur de l'événement",
         "filterHeading": "Filtres de contenu",
         "filterSectionDescription": "Définir la langue du contenu et les événements à inclure.",
         "codeSectionTitle": "Partager le widget",
-        "codeSectionInfo": "Mettez ce code à l'endroit où vous souhaitez que le widget apparaisse sur une page web.",
+        "codeSectionInfo": "Placez ce code à l'endroit où vous souhaitez que le widget apparaisse sur une page web.",
         "copy": "Copier",
-        "copyNotification": "Code copied to clipboard",
+        "copyNotification": "Code copié dans le presse-papiers",
         "validation": {
-          "width": "Entrez la largeur en pixels",
-          "height": "Entrez la hauteur en pixels",
+          "width": "Indiquez la largeur en pixels",
+          "height": "Indiquez la hauteur en pixels",
           "color": "Collez votre code couleur ou sélectionnez une couleur",
-          "limit": "Entrez le nombre maximum à afficher"
+          "limit": "Indiquez le nombre maximum à afficher"
         },
         "placeholder": {
           "eventType": "Sélectionner un type d'événement",
           "region": "Sélectionner une région",
           "place": "Sélectionner un lieu",
-          "OrganizationsAndPeople": "Recherchez des Organisations ou des Personnes"
+          "OrganizationsAndPeople": "Rechercher des fiches d'organisation ou de personne"
         }
       },
       "calendarSettings": {
         "generalSettings": "Paramètres de base",
-        "setUpCalendarDescription": "Configurez l'affichage de votre listage.",
+        "setUpCalendarDescription": "Configurez l'affichage de votre listage (paramétrage de liste).",
         "calendarName": "Nom du listage",
         "calendarLanguage": "Langues",
         "timezone": "Fuseau horaire",
@@ -1011,45 +1011,45 @@
           "title": "Paramètres de l'image du site",
           "description": "Personnalisez les paramètres de l'image pour votre site web.",
           "thumbnailSettings": "Paramètres des vignettes",
-          "largeSettings": "Grands paramètres",
+          "largeSettings": "Paramètres grandes images",
           "aspectRatio": "Format d'image",
           "maximumWidth": "Largeur maximale",
           "addImageGallery": "Ajouter la galerie d'images"
         },
         "calendarLogo": "Logo",
-        "calendarLogoDescription": "Uniquement les fichiers .jpeg et .png sont acceptés.",
+        "calendarLogoDescription": "Utiliser les formats .jpeg/.jpg ou .png",
         "calendarWidgetSetup": "Widget de listage",
-        "calendarWidgetDescription": "Ajoutez les modèles d'URL nécessaires au bon fonctionnement du widget. Ces modèles relient la liste des événements affichée sur d'autres sites web aux événements affichés sur votre site.",
+        "calendarWidgetDescription": "Ajoutez les modèles de liens nécessaires au bon fonctionnement du widget. Ces modèles relient la liste des événements affichée sur d'autres sites web aux événements affichés sur votre site.",
         "eventTemplate": "Modèle d'événement",
-        "eventTemplateDescription": "Ajoutez l'URL du modèle pour une page d'événement sur votre site web. Cette URL contient les espaces réservés nécessaires au widget.",
+        "eventTemplateDescription": "Ajoutez le lien du modèle pour une page d'événement sur votre site web. Ce lien contient les espaces réservés nécessaires au widget.",
         "searchResultTemplate": "Modèle de résultats de recherche",
-        "searchResultTemplateDescription": "Ajoutez l'URL du modèle pour une page de résultats de recherche sur votre site web. Cette URL contient les espaces réservés nécessaires au widget calendrier.",
+        "searchResultTemplateDescription": "Ajoutez le lien du modèle pour une page de résultats de recherche sur votre site web. Ce lien contient les espaces réservés nécessaires au widget calendrier.",
         "filterPersonalization": "Personnalisation des filtres",
-        "filterDescription": "Sélectionner les filtres pour les vues de listes dans le CMS Footlight.",
+        "filterDescription": "Sélectionner les filtres pour l'affichage en listes dans CMS Footlight.",
         "events": "Événements",
         "places": "Lieux",
         "people": "Personnes",
         "organizations": "Organisations",
         "readOnly": {
-          "title": "Mettre en lecture seule",
+          "title": "Placer en mode lecture seule",
           "description": "Activez cette option pour désactiver l'édition.",
           "readOnlyMode": "Lecture seule"
         },
         "placeholders": {
-          "calendarNameEn": "Entrez le nom du calendrier en anglais",
-          "calendarNameFr": "Entrez le nom du calendrier en français",
-          "calendarLanguage": "Sélectionnez les langues à afficher sur le site web",
-          "timezone": "Sélectionnez un fuseau horaire",
-          "contact": "Entrez les informations de contact",
-          "dateFormatDisplay": "Sélectionnez le format de la date",
-          "imageAspectRatio": "Sélectionnez le rapport d'aspect de l'image",
-          "imageMaxWidth": "Entrez la largeur maximale de l'image",
-          "eventTemplate": "Entrez l'URL du modèle d'événement",
-          "searchResultTemplate": "Entrez l'URL du modèle de résultats de recherche",
-          "filterPersonalization": "Sélectionnez la personnalisation du filtre"
+          "calendarNameEn": "Indiquer le nom du calendrier en anglais",
+          "calendarNameFr": "Indiquer le nom du calendrier en français",
+          "calendarLanguage": "Sélectionner les langues à afficher sur le site web",
+          "timezone": "Sélectionner un fuseau horaire",
+          "contact": "Indiquer les informations de contact",
+          "dateFormatDisplay": "Sélectionner le format de la date",
+          "imageAspectRatio": "Sélectionner le rapport d'aspect de l'image",
+          "imageMaxWidth": "Indiquer la largeur maximale de l'image",
+          "eventTemplate": "Indiquer le lien du modèle d'événement",
+          "searchResultTemplate": "Indiquer le lien du modèle de résultats de recherche",
+          "filterPersonalization": "Sélectionner la personnalisation du filtre"
         },
         "notification": {
-          "update": "Succès! Vos paramètres de calendrier ont été mis à jour."
+          "update": "Succès ! Vos paramètres de calendrier ont été mis à jour."
         }
       },
       "mandatoryFields": {
@@ -1077,6 +1077,7 @@
           "EventAccessibility": "Accessibilité de l'événement",
           "Audience": "Public",
           "EventType": "Type d'événement",
+          "EventDiscipline": "Discipline",
           "OrganizerRole": "Rôle de l'organisation",
           "PerformerRole": "Rôle d'interprète",
           "SupporterRole": "Rôle de contributeur"
@@ -1097,7 +1098,7 @@
           "titleDelete": "Confirmer la suppression",
 
           "contentDelete": {
-            "description": "Êtes-vous sûr de vouloir supprimer définitivement cette taxonomie? Cette taxonomie sera supprimée partout où elle est utilisée.",
+            "description": "Êtes-vous sûr de vouloir supprimer définitivement cette taxonomie ? Cette taxonomie sera supprimée partout où elle est utilisée.",
             "impact": "Événements concernés : ",
             "published": "publié - {{number}}",
             "draft": "brouillon - {{number}}",
@@ -1115,7 +1116,7 @@
           "organization": "Organisation",
           "virtualLocation": "Emplacement virtuel"
         },
-        "classValidation": "Sélectionnez une classe",
+        "classValidation": "Sélectionnez une classe.",
         "classPlaceHolder": "Sélectionner une classe",
         "destinationHeading": "Sélectionnez la destination de votre taxonomie.",
         "inputType": "Type de données",
@@ -1126,32 +1127,32 @@
       },
       "addNew": {
         "heading": "Nouvelle taxonomie",
-        "editHeading": "Modifier taxonomy",
+        "editHeading": "Modifier taxonomie",
         "save": "Sauvegarder",
         "class": "Classe",
         "destinationHeading": "Sélectionnez la destination de votre taxonomie.",
         "name": "Nom de la taxonomie",
-        "nameCheckbox": "Use the taxonomy name to rename the field.",
-        "frNamePlaceHolder": "Entrez le nom de la taxonomie en français",
-        "enNamePlaceHolder": "entrez le nom de la taxonomie en anglais",
-        "mapToField": "Mapper à un champ existant",
+        "nameCheckbox": "Utilisez le nom de la taxonomie pour renommer le champ.",
+        "frNamePlaceHolder": "Indiquer le nom de la taxonomie en français",
+        "enNamePlaceHolder": "Indiquer le nom de la taxonomie en anglais",
+        "mapToField": "Associer à un champ existant",
         "mapToFieldDescription": "Sélectionner un champ de saisie pour la taxonomie.",
         "nameDescription": "Ce nom est utilisé pour étiqueter le champ de saisie associé.",
-        "description": "Description identifiante",
-        "frDescriptionPlaceHolder": "Entrez la description identifiante en français",
-        "enDescriptionPlaceHolder": "Entrez la description identifiante en anglais",
+        "description": "Description (désambiguïsation)",
+        "frDescriptionPlaceHolder": "Indiquer la description aux fins de désambiguïsation en français",
+        "enDescriptionPlaceHolder": "Indiquer la description aux fins de désambiguïsation en anglais",
         "descriptionExplation": "Ajouter pour différencier la taxonomie dans les résultats de recherche.",
         "userAccess": "Restreindre l'accès aux utilisateurs",
-        "userAccessPlaceHolder": "Sélectionnez",
-        "userAccessDescription": "Sélectionner les utilisateurs qui ont le droit de visualiser et d'utiliser ce champ.",
+        "userAccessPlaceHolder": "Sélectionner",
+        "userAccessDescription": "Sélectionnez les utilisateurs qui ont le droit de visualiser et d'utiliser ce champ.",
         "validations": {
           "name": "Le nom est requis.",
-          "class": "Le Classe est requis",
+          "class": "La classe est requise",
           "conceptName": "Le nom du concept est requis"
         },
         "messages": {
           "create": "Succès ! Votre [organisation | personne | lieu] a été créé.",
-          "update": "Succès! Votre [organisation | personne | lieu] a été mis à jour."
+          "update": "Succès ! Votre [organisation | personne | lieu] a été mis à jour."
         },
         "adminOnly": "Administrateur uniquement",
         "addAsFilter": "Rendre ce type de taxonomie disponible en tant que filtre.",
@@ -1161,36 +1162,36 @@
           "item": "Article",
           "french": "Français",
           "english": "Anglais",
-          "add": "Ajoute un concept",
-          "edit": "Éditer un concept",
+          "add": "Ajouter un concept",
+          "edit": "Editer un concept",
           "save": "Sauvegarder",
           "editBtn": "Sauvegarder",
           "conceptName": "Nom",
-          "placeHolderFr": "Entrez un nom en français",
-          "placeHolderEn": "Entrez un nom en anglais",
-          "deleteConceptHeading": "Supprimer concept",
+          "placeHolderFr": "Indiquer un nom en français",
+          "placeHolderEn": "Indiquer un nom en anglais",
+          "deleteConceptHeading": "Supprimer le concept",
           "deleteConceptMessage": "Êtes-vous sûr de vouloir supprimer définitivement ce concept ? Cette action le supprimera également partout où il a été utilisé, y compris dans les événements."
         }
       }
     }
   },
   "errorPage": {
-    "heading": "Oups, quelque chose s'est mal passé",
+    "heading": "Oups, une erreur s'est produite",
     "notFoundMessage": "La page demandée n'a pas été trouvée (404)",
     "serverErrorsMessage": "Si le problème persiste, informez le propriétaire du site {{code}}",
     "jsErrorMessage": "Retourner à la page précédente",
     "buttonText": "Retour",
     "serverDown": "Serveur en maintenance",
-    "backTologin": "Difficulté à faire marche arrière?",
-    "exit": "Retour à la connexion"
+    "backTologin": "Difficulté à revenir à la page précédente ?",
+    "exit": "Retour à la page de connexion"
   },
   "common": {
     "tabEnglish": "Anglais",
     "tabFrench": "Français",
     "noneFound": "Non trouvé",
-    "unsavedChanges": "Vous avez des modifications non sauvegardées. Etes-vous sûr de vouloir les jeter ?",
+    "unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous les ignorer ?",
     "keepEditing": "Poursuivre l'édition",
-    "discard": "Jeter",
+    "discard": "Ignorer",
     "copied": "Copié dans le presse-papiers",
     "validations": {
       "informationRequired": "Des informations sont requises"
@@ -1200,7 +1201,7 @@
       "languageLiterals": {
         "knownLanguagePromptText": "Ce texte ne correspond pas à la langue de votre site web.",
         "unKnownLanguagePromptText": "La langue de ce texte n'est pas définie.",
-        "bannerTitle": "Certains textes ne correspondent pas à la langue de votre site web. Révisez et mettez à jour si nécessaire."
+        "bannerTitle": "Certains textes ne sont pas dans la langue de votre site. Révisez et mettez à jour si nécessaire."
       }
     },
     "server": {
@@ -1220,7 +1221,7 @@
           "message": "Un problème s'est produit."
         },
         "500": {
-          "message": "Something went wrong."
+          "message": "Un problème applicatif s'est produit."
         }
       }
     }
