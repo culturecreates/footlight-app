@@ -54,6 +54,21 @@ const standardTaxonomyMaps = [
   },
 ];
 
+const storageKeys = {
+  page: 'page',
+  query: 'query',
+  order: 'order',
+  sortBy: 'sortBy',
+  users: 'users',
+  organizers: 'organizers',
+  publication: 'publication',
+  startDateRange: 'startDateRange',
+  endDateRange: 'endDateRange',
+  taxonomyFilter: 'taxonomyFilter',
+  standardTaxonomyFilter: 'standardTaxonomyFilter',
+  eventDuplicates: 'eventDuplicates',
+};
+
 function Events() {
   const { t } = useTranslation();
   const { calendarId } = useParams();
@@ -212,6 +227,8 @@ function Events() {
       ? JSON.parse(sessionStorage.getItem('standardTaxonomyFilter'))
       : {},
   );
+
+  const [selectedDuplicates, setSelectedDuplicates] = useState([]);
 
   let customFilters = currentCalendarData?.filterPersonalization?.customFields;
   const dateTypeSelector = (dates) => {
@@ -428,6 +445,28 @@ function Events() {
         break;
     }
   };
+
+  const getSelectedDuplicatesForPage = (pageNumber) => {
+    const storedData = sessionStorage.getItem(storageKeys.eventDuplicates);
+    const parsedData = storedData ? JSON.parse(storedData) : {};
+    return parsedData[`page_${pageNumber}`] || [];
+  };
+
+  const onCheckboxChangeHandler = (checkedValues) => {
+    // Retrieve existing data from session storage
+    const storedData = sessionStorage.getItem(storageKeys.eventDuplicates);
+    const parsedData = storedData ? JSON.parse(storedData) : {};
+
+    // Update the data for the current page
+    parsedData[`page_${pageNumber}`] = checkedValues;
+
+    // Store the updated data back in session storage
+    sessionStorage.setItem(storageKeys.eventDuplicates, JSON.stringify(parsedData));
+
+    // Update the state
+    setSelectedDuplicates(checkedValues);
+  };
+
   useEffect(() => {
     let uniqueArray = removeObjectArrayDuplicates(
       [{ _id: user?.id, ...user }]?.concat(selectedUsersData)?.concat(usersData),
@@ -529,6 +568,9 @@ function Events() {
         query: eventSearchQuery,
       };
     setSearchParams(createSearchParams(params));
+
+    const duplicates = getSelectedDuplicatesForPage(pageNumber);
+    setSelectedDuplicates(duplicates);
 
     sessionStorage.setItem('page', pageNumber);
     sessionStorage.setItem('query', eventSearchQuery);
@@ -1067,7 +1109,10 @@ function Events() {
             {!isFetching &&
               currentCalendarData &&
               (eventsData?.data?.length > 0 ? (
-                <Checkbox.Group className="bulk-select-checkbox">
+                <Checkbox.Group
+                  className="bulk-select-checkbox"
+                  onChange={onCheckboxChangeHandler}
+                  value={selectedDuplicates}>
                   <EventList
                     data={eventsData}
                     pageNumber={pageNumber}

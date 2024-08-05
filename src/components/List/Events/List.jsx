@@ -156,7 +156,7 @@ function Lists(props) {
               </EventStatusOptions>
             </span>,
           ]}>
-          <CheckBox data-cy="checkbox-add-duplicates" />
+          <CheckBox data-cy="checkbox-add-duplicates" value={eventItem?.id} />
           <List.Item.Meta
             className="event-list-item-meta"
             onClick={() => {
