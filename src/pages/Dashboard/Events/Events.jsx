@@ -37,6 +37,7 @@ import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import PrimaryButton from '../../../components/Button/Primary';
 import Text from '../../../components/Button/Text';
+// import CheckBox from '../../../components/CheckBox';
 
 const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
@@ -240,6 +241,8 @@ function Events() {
   };
 
   const [selectedDateType, setSelectedDateType] = useState(dateTypeSelector(filter.dates));
+  // const [indeterminate, setIndeterminate] = useState(false);
+  // const [checkAll, setCheckAll] = useState(false);
 
   const userSearch = (userSearchKey, selectedData) => {
     getAllUsers({
@@ -465,6 +468,39 @@ function Events() {
 
     // Update the state
     setSelectedDuplicates(checkedValues);
+    // setIndeterminate(true);
+  };
+
+  // const onCheckAllChange = (e) => {
+  //   const checkedValues = e.target.checked ? eventsData?.data?.map((event) => event?.id) : [];
+  //   setSelectedDuplicates(checkedValues);
+  //   const storedData = sessionStorage.getItem(storageKeys.eventDuplicates);
+  //   const parsedData = storedData ? JSON.parse(storedData) : {};
+
+  //   // Update the data for the current page
+  //   parsedData[`page_${pageNumber}`] = checkedValues;
+
+  //   // Store the updated data back in session storage
+  //   sessionStorage.setItem(storageKeys.eventDuplicates, JSON.stringify(parsedData));
+
+  //   // setIndeterminate(false);
+  //   // setCheckAll(e.target.checked);
+  // };
+
+  const mergeHandler = () => {
+    // Retrieve existing data from session storage
+    const storedData = sessionStorage.getItem(storageKeys.eventDuplicates);
+    const parsedData = storedData ? JSON.parse(storedData) : {};
+
+    // Get all the selected duplicates
+    const allSelectedDuplicates = Object.values(parsedData).flat();
+
+    // Redirect to the merge page
+    const queryString = new URLSearchParams({
+      selectedDuplicates: allSelectedDuplicates.join(','),
+    }).toString();
+
+    navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}${PathName.Merge}?${queryString}`);
   };
 
   useEffect(() => {
@@ -1098,6 +1134,14 @@ function Events() {
               </Col>
             </Row>
           </Col>
+          {/* <Col span={24}>
+            <CheckBox
+              label={'Select all'}
+              indeterminate={indeterminate}
+              onChange={onCheckAllChange}
+              checked={checkAll}
+            />
+          </Col> */}
         </Row>
         <Row className="events-content">
           <Col flex="832px">
@@ -1128,7 +1172,11 @@ function Events() {
         <section id="footer">
           <Row justify={'space-between'} align={'middle'}>
             <Col className="footer">
-              <PrimaryButton data-cy="button-bulk-duplicate" label={t('dashboard.events.duplicates.mergeDuplicates')} />
+              <PrimaryButton
+                data-cy="button-bulk-duplicate"
+                label={t('dashboard.events.duplicates.mergeDuplicates')}
+                onClick={mergeHandler}
+              />
             </Col>
             <Col className="footer">
               <Text data-cy="button-bulk-cancel" size="large" label={t('dashboard.events.duplicates.cancel')} />

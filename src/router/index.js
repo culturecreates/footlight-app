@@ -29,6 +29,7 @@ import AddUser from '../pages/Dashboard/AddUser/AddUser';
 import Taxonomy from '../pages/Dashboard/Taxonomy/Taxonomy';
 import SelectTaxonomyType from '../pages/Dashboard/SelectTaxonomyType/SelectTaxonomyType';
 import AddTaxonomy from '../pages/Dashboard/AddTaxonomy/AddTaxonomy';
+import MergeEvents from '../pages/Dashboard/MergeEvents';
 
 export const router = createBrowserRouter([
   {
@@ -77,6 +78,10 @@ export const router = createBrowserRouter([
             element: <AddEvent />,
           },
         ],
+      },
+      {
+        path: `:calendarId${PathName.Events}${PathName.Merge}`,
+        element: <MergeEvents />,
       },
       {
         path: `:calendarId${PathName.Profile}/:userId`,

@@ -22,5 +22,6 @@ export const PathName = {
   Profile: '/profile',
   Search: '/search',
   AddUser: '/add-user',
+  Merge: '/merge',
   NotFound: '/*',
 };
