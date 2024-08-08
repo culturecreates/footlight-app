@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { pluralize } from '../../utils/pluralise';
 import OutlinedButton from '../Button/Outlined';
 import { contentLanguage } from '../../constants/contentLanguage';
+
 function TextEditor(props) {
   const {
     formName,
@@ -34,6 +35,29 @@ function TextEditor(props) {
       .split(' ')
       ?.filter((n) => n != '').length,
   );
+  var formats = [
+    'background',
+    'bold',
+    'color',
+    'font',
+    'code',
+    'italic',
+    'link',
+    'size',
+    'strike',
+    'script',
+    'underline',
+    'blockquote',
+    'header',
+    'indent',
+    'list',
+    'align',
+    'direction',
+    'code-block',
+    'formula',
+    'image',
+    'video',
+  ];
   const modules = {
     toolbar: [
       [{ header: '1' }],
@@ -41,7 +65,7 @@ function TextEditor(props) {
       [{ align: [] }],
       [{ list: 'ordered' }, { list: 'bullet' }],
       [{ color: [] }, { background: [] }], // dropdown with defaults from theme
-      ['link'],
+      ['link', 'image', 'video'],
     ],
     clipboard: {
       matchVisual: false,
@@ -71,6 +95,16 @@ function TextEditor(props) {
     window.open(`${process.env.REACT_APP_DEEPL_URL}${editorLanguage}/${translateTo}/${newString}`);
   };
 
+  const onDropHandler = (e) => {
+    const items = e.dataTransfer.items;
+    for (let i = 0; i < items.length; i++) {
+      if ((items[i].kind === 'file' && items[i].type.startsWith('image/')) || items[i].type.startsWith('video/')) {
+        e.preventDefault();
+        return;
+      }
+    }
+  };
+
   useEffect(() => {
     const filteredCount = currentReactQuillRef?.current?.unprivilegedEditor
       ?.getText()
@@ -90,13 +124,14 @@ function TextEditor(props) {
   ]);
 
   return (
-    <>
+    <div onDrop={onDropHandler}>
       <Form.Item name={formName} initialValue={initialValue} dependencies={dependencies} rules={rules}>
         <ReactQuill
           ref={currentReactQuillRef}
           placeholder={placeholder}
           className="text-editor"
           modules={modules}
+          formats={formats}
           style={{
             border: `${
               calendarContentLanguage === contentLanguage.BILINGUAL ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
@@ -130,7 +165,7 @@ function TextEditor(props) {
           data-cy="button-translate"
         />
       )}
-    </>
+    </div>
   );
 }
 export default TextEditor;
