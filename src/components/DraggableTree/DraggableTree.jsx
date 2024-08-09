@@ -2,17 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { Form, Tree, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import CustomModal from '../Modal/Common/CustomModal';
-import PrimaryButton from '../../components/Button/Primary';
+import PrimaryButton from '../Button/Primary';
 import { EditOutlined } from '@ant-design/icons';
-import TextButton from '../../components/Button/Text';
+import TextButton from '../Button/Text';
 import { useOutletContext } from 'react-router-dom';
-import { contentLanguage } from '../../constants/contentLanguage';
+import { contentLanguage, contentLanguageKeyMap } from '../../constants/contentLanguage';
 import ContentLanguageInput from '../ContentLanguageInput';
-import Outlined from '../../components/Button/Outlined';
+import Outlined from '../Button/Outlined';
 import BilingualInput from '../BilingualInput';
 import './draggableTree.css';
-import LanguageFilter from './LanguageFilter';
 import { Confirm } from '../Modal/Confirm/Confirm';
+import FormItem from 'antd/es/form/FormItem';
+import { capitalizeFirstLetter } from '../../utils/stringManipulations';
+import { contentLanguageBilingual } from '../../utils/bilingual';
+import { useSelector } from 'react-redux';
+import { getUserDetails } from '../../redux/reducer/userSlice';
+import CreateMultiLingualFormItems from '../../layout/CreateMultiLingualFormItems/CreateMultiLingualFormItems';
+import { placeHolderCollectionCreator } from '../../utils/MultiLingualFormItemSupportFunctions';
 
 const DraggableTree = ({
   data,
@@ -23,6 +29,7 @@ const DraggableTree = ({
   setDeleteDisplayFlag,
   newConceptName,
   setNewConceptName,
+  setEmptyConceptName,
   form,
 }) => {
   const { TextArea } = Input;
@@ -30,80 +37,103 @@ const DraggableTree = ({
   const [currentCalendarData] = useOutletContext();
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
+  const { user } = useSelector(getUserDetails);
   const { t } = useTranslation();
-  const [treeData1, setTreeData1] = useState();
-  const [treeData2, setTreeData2] = useState();
+  const [treeDataCollection, setTreeDataCollection] = useState({});
   const [forEditing, setForEditing] = useState();
   const [selectedNode, setSetSelectedNode] = useState();
   const [expandedKeys, setExpandedKeys] = useState();
 
-  const generateFormattedData = (data, isTree1) => {
-    return data.map((item) => ({
-      key: item.key,
-      title: isTree1 ? (
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span className="draggable-tree-concept-label grabbable">{item.name?.fr}</span>
-          <span
-            onClick={(e) => {
-              e.stopPropagation();
-              setNewConceptName({ en: item.name?.en, fr: item.name?.fr });
-              setSetSelectedNode(item);
-              editConceptHandler(item);
-            }}>
-            <EditOutlined style={{ fontSize: 16 }} />
-          </span>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span className="draggable-tree-concept-label grabbable">{item.name?.en}</span>
-          <span
-            onClick={(e) => {
-              e.stopPropagation();
-              setSetSelectedNode(item);
-              setNewConceptName({ en: item.name?.en, fr: item.name?.fr });
-              editConceptHandler(item);
-            }}>
-            <EditOutlined style={{ fontSize: 16 }} />
-          </span>
-        </div>
-      ),
-      children: item.children ? generateFormattedData(item.children, isTree1) : undefined,
-    }));
+  const generateFormattedData = (data, language) => {
+    const treeData = data.map((item) => {
+      let conceptNameCollection = {};
+      calendarContentLanguage.forEach((lang) => {
+        conceptNameCollection[contentLanguageKeyMap[lang]] = contentLanguageBilingual({
+          requiredLanguage: language,
+          data: item?.name,
+          interfaceLanguage: user.interfaceLanguage,
+          calendarContentLanguage,
+        });
+      });
+      const card = {
+        key: item.key,
+        name: contentLanguageBilingual({
+          requiredLanguage: language,
+          data: item?.name,
+          interfaceLanguage: user.interfaceLanguage,
+          calendarContentLanguage,
+        }),
+        title: (
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span className="draggable-tree-concept-label grabbable">
+              {contentLanguageBilingual({
+                requiredLanguage: language,
+                data: item?.name,
+                interfaceLanguage: user.interfaceLanguage,
+                calendarContentLanguage,
+              })}
+            </span>
+            <span
+              onClick={(e) => {
+                e.stopPropagation();
+                setNewConceptName(conceptNameCollection);
+                setSetSelectedNode(item);
+                editConceptHandler(item);
+              }}>
+              <EditOutlined style={{ fontSize: 16 }} />
+            </span>
+          </div>
+        ),
+        children: item.children ? generateFormattedData(item.children, language) : undefined,
+      };
+      return card;
+    });
+    return treeData;
   };
 
-  const combineBothTreeData = (dataFr, dataEn) => {
+  const combineBothTreeData = (dataSets) => {
     const combinedData = [];
+    const dataSetKeyCollection = Object.keys(dataSets);
+    const firstTree = dataSets[dataSetKeyCollection[0]];
 
-    for (let index = 0; index < dataFr.length; index++) {
-      const elementFr = dataFr[index];
-      const elementEn = dataEn[index];
-      const savedElement = findItem(elementFr?.key);
-      const combinedElement = {
-        id: elementFr?.key,
-        key: elementFr?.key,
-        name: {
-          en: elementFr.title?.props?.children[0]?.props?.children,
-          fr: elementEn.title?.props?.children[0]?.props?.children,
-        },
-        ...(savedElement?.isNew && { isNew: savedElement?.isNew }),
+    for (let index = 0; index < dataSets[dataSetKeyCollection[0]]?.length; index++) {
+      let combinedNames = {};
+      let combinedElement = {
+        id: firstTree[index]?.key,
+        key: firstTree[index]?.key,
+        name: {},
         children: [],
       };
 
-      if (elementFr?.children?.length > 0) {
-        combinedElement.children = combineBothTreeData(elementFr.children, elementEn.children);
+      dataSetKeyCollection.forEach((conceptLanguageKey) => {
+        combinedNames[contentLanguageKeyMap[conceptLanguageKey]] = dataSets[conceptLanguageKey]?.[index]?.name;
+      });
+
+      combinedElement = { ...combinedElement, name: combinedNames };
+
+      if (firstTree[index]?.children?.length > 0) {
+        let childDataSets = {};
+        dataSetKeyCollection.forEach((conceptLanguageKey) => {
+          childDataSets[conceptLanguageKey] = dataSets[conceptLanguageKey]?.[index]?.children;
+        });
+        combinedElement.children = combineBothTreeData(childDataSets);
       }
 
+      const savedElement = findItem(combinedElement.key);
+      if (savedElement?.isNew) {
+        combinedElement.isNew = savedElement.isNew;
+      }
       combinedData.push(combinedElement);
     }
-
     return combinedData;
   };
 
-  const onDrop = ({ info, treeData, setTreeData, counterpartTreeData, setCounterpartTreeData, treeLanguage }) => {
+  const onDrop = ({ info, treeData }) => {
     const dropKey = info.node.key;
     const dragKey = info.dragNode.key;
     const dropPos = info.node.pos.split('-');
     const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+    let modifiedDataCollection = {};
 
     const loop = (data, key, callback) => {
       for (let i = 0; i < data.length; i++) {
@@ -116,69 +146,40 @@ const DraggableTree = ({
       }
     };
 
-    let dragObj;
-    loop(treeData, dragKey, (item, index, arr) => {
-      arr.splice(index, 1);
-      dragObj = item;
+    calendarContentLanguage.forEach((language) => {
+      let dragObj;
+      loop(treeData, dragKey, (item, index, arr) => {
+        arr.splice(index, 1);
+        dragObj = item;
+      });
+
+      if (!info.dropToGap) {
+        loop(treeData, dropKey, (item) => {
+          item.children = item.children || [];
+          item.children.unshift(dragObj);
+        });
+      } else if ((info.node.children || []).length > 0 && info.node.expanded && dropPosition === 1) {
+        loop(treeData, dropKey, (item) => {
+          item.children = item.children || [];
+          item.children.unshift(dragObj);
+        });
+      } else {
+        let ar = [];
+        let i;
+        loop(treeData, dropKey, (_item, index, arr) => {
+          ar = arr;
+          i = index;
+        });
+        if (dropPosition === -1) {
+          ar.splice(i, 0, dragObj);
+        } else {
+          ar.splice(i + 1, 0, dragObj);
+        }
+      }
+      modifiedDataCollection[language] = [...treeData];
     });
 
-    if (!info.dropToGap) {
-      loop(treeData, dropKey, (item) => {
-        item.children = item.children || [];
-        item.children.unshift(dragObj);
-      });
-    } else if ((info.node.children || []).length > 0 && info.node.expanded && dropPosition === 1) {
-      loop(treeData, dropKey, (item) => {
-        item.children = item.children || [];
-        item.children.unshift(dragObj);
-      });
-    } else {
-      let ar = [];
-      let i;
-      loop(treeData, dropKey, (_item, index, arr) => {
-        ar = arr;
-        i = index;
-      });
-      if (dropPosition === -1) {
-        ar.splice(i, 0, dragObj);
-      } else {
-        ar.splice(i + 1, 0, dragObj);
-      }
-    }
-
-    let dragObj2;
-    loop(counterpartTreeData, dragKey, (item, index, arr) => {
-      arr.splice(index, 1);
-      dragObj2 = item;
-    });
-    if (!info.dropToGap) {
-      loop(counterpartTreeData, dropKey, (item) => {
-        item.children = item.children || [];
-        item.children.unshift(dragObj2);
-      });
-    } else if ((info.node.children || []).length > 0 && info.node.expanded && dropPosition === 1) {
-      loop(counterpartTreeData, dropKey, (item) => {
-        item.children = item.children || [];
-        item.children.unshift(dragObj2);
-      });
-    } else {
-      let ar = [];
-      let i;
-      loop(counterpartTreeData, dropKey, (_item, index, arr) => {
-        ar = arr;
-        i = index;
-      });
-      if (dropPosition === -1) {
-        ar.splice(i, 0, dragObj2);
-      } else {
-        ar.splice(i + 1, 0, dragObj2);
-      }
-    }
-    setTreeData([...treeData]);
-    setCounterpartTreeData([...counterpartTreeData]);
-
-    if (treeLanguage == contentLanguage.FRENCH) setData(combineBothTreeData(treeData, counterpartTreeData));
-    else if (treeLanguage == contentLanguage.ENGLISH) setData(combineBothTreeData(counterpartTreeData, treeData));
+    setData(combineBothTreeData(modifiedDataCollection));
   };
 
   const findItem = (key) => {
@@ -213,7 +214,7 @@ const DraggableTree = ({
   };
 
   const handleAddChildModalClose = () => {
-    setNewConceptName({ en: '', fr: '' });
+    setEmptyConceptName();
     form.setFieldsValue({
       frenchconcept: '',
       englishconcept: '',
@@ -251,7 +252,7 @@ const DraggableTree = ({
         setData(updatedData);
       }
     }
-    setNewConceptName({ en: '', fr: '' });
+    setEmptyConceptName();
     handleAddChildModalClose();
     setSetSelectedNode();
   };
@@ -285,7 +286,7 @@ const DraggableTree = ({
           const updatedData = deleteNodeFromData(data, selectedNode.key);
           setData(updatedData);
           setForEditing(false);
-          setNewConceptName({ en: '', fr: '' });
+          setEmptyConceptName();
           handleAddChildModalClose();
         } else {
           setDeleteDisplayFlag(false);
@@ -334,73 +335,46 @@ const DraggableTree = ({
   };
 
   useEffect(() => {
-    setTreeData1(generateFormattedData(data, true));
-    setTreeData2(generateFormattedData(data, false));
-  }, [data]);
+    if (!calendarContentLanguage) return;
+    let t = {};
+    calendarContentLanguage.forEach((language) => {
+      t[language] = generateFormattedData(data, language);
+    });
+    setTreeDataCollection(t);
+  }, [data, calendarContentLanguage]);
 
   return (
     <div className="draggable-tree">
-      <LanguageFilter calendarContentLanguage={calendarContentLanguage}>
-        <Form.Item key={contentLanguage.ENGLISH}>
-          <span className="tag-header" data-cy="span-taxonomy-concept-english-title">
-            {t('dashboard.taxonomy.addNew.concepts.english')}
-          </span>
-          <div className="tree-item">
-            <Tree
-              data-cy="tree-taxonomy-concept-english"
-              className="draggable-tree"
-              draggable
-              blockNode
-              expandedKeys={expandedKeys}
-              onDrop={(info) =>
-                onDrop({
-                  info,
-                  treeData: treeData1,
-                  setTreeData: setTreeData1,
-                  counterpartTreeData: treeData2,
-                  setCounterpartTreeData: setTreeData2,
-                  treeLanguage: contentLanguage.ENGLISH,
-                })
-              }
-              onExpand={(key) => {
-                setExpandedKeys(key);
-              }}
-              treeData={treeData2}
-            />
-          </div>
-        </Form.Item>
-      </LanguageFilter>
+      {calendarContentLanguage.map((language) => {
+        return (
+          <FormItem key={language}>
+            <span className="tag-header" data-cy={`span-taxonomy-concept-${language.toLowerCase()}-title`}>
+              {t(`common.tab${capitalizeFirstLetter(language)}`)}
+            </span>
 
-      <LanguageFilter calendarContentLanguage={calendarContentLanguage}>
-        <Form.Item key={contentLanguage.FRENCH}>
-          <span className="tag-header" data-cy="span-taxonomy-concept-french-title">
-            {t('dashboard.taxonomy.addNew.concepts.french')}
-          </span>
-          <div className="tree-item" style={{ borderRight: 'solid 4px #eff2ff' }}>
-            <Tree
-              data-cy="tree-taxonomy-concept-french"
-              className="draggable-tree"
-              draggable
-              blockNode
-              expandedKeys={expandedKeys}
-              onDrop={(info) =>
-                onDrop({
-                  info,
-                  treeData: treeData2,
-                  setTreeData: setTreeData2,
-                  counterpartTreeData: treeData1,
-                  setCounterpartTreeData: setTreeData1,
-                  treeLanguage: contentLanguage.FRENCH,
-                })
-              }
-              onExpand={(key) => {
-                setExpandedKeys(key);
-              }}
-              treeData={treeData1}
-            />
-          </div>
-        </Form.Item>
-      </LanguageFilter>
+            <div className="tree-item">
+              <Tree
+                data-cy={`tree-taxonomy-concept-${language.toLowerCase()}`}
+                className="draggable-tree"
+                draggable
+                blockNode
+                expandedKeys={expandedKeys}
+                onDrop={(info) =>
+                  onDrop({
+                    info,
+                    treeData: treeDataCollection[language],
+                    treeLanguage: contentLanguage.ENGLISH,
+                  })
+                }
+                onExpand={(key) => {
+                  setExpandedKeys(key);
+                }}
+                treeData={treeDataCollection[language]}
+              />
+            </div>
+          </FormItem>
+        );
+      })}
 
       <div className="addmodal">
         <CustomModal
@@ -457,6 +431,31 @@ const DraggableTree = ({
           }>
           <div className="add-new-concept-wrapper">
             <Form.Item label={t('dashboard.taxonomy.addNew.concepts.conceptName')}>
+              <CreateMultiLingualFormItems
+                calendarContentLanguage={calendarContentLanguage}
+                form={form}
+                name="conceptName"
+                data={newConceptName}
+                required={true}
+                validations={t('dashboard.taxonomy.addNew.validations.name')}
+                dataCy="input-text-area-taxonomy-name-"
+                placeholder={placeHolderCollectionCreator({
+                  calendarContentLanguage,
+                  placeholderBase: 'dashboard.taxonomy.addNew.concepts.',
+                  t,
+                  postfixFillerText: 'NamePlaceHolder',
+                })}>
+                <TextArea
+                  autoSize
+                  autoComplete="off"
+                  style={{
+                    borderRadius: '4px',
+                    border: `${calendarContentLanguage?.length > 1 ? '4px solid #E8E8E8' : '1px solid #b6c1c9'}`,
+                    width: '423px',
+                  }}
+                  size="large"
+                />
+              </CreateMultiLingualFormItems>
               <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
                 <BilingualInput fieldData={newConceptName}>
                   <Form.Item
@@ -484,11 +483,7 @@ const DraggableTree = ({
                       }}
                       style={{
                         borderRadius: '4px',
-                        border: `${
-                          calendarContentLanguage === contentLanguage.BILINGUAL
-                            ? '4px solid #E8E8E8'
-                            : '1px solid #b6c1c9'
-                        }`,
+                        border: `${calendarContentLanguage.length > 1 ? '4px solid #E8E8E8' : '1px solid #b6c1c9'}`,
                         width: '423px',
                       }}
                       size="large"
@@ -519,11 +514,7 @@ const DraggableTree = ({
                       placeholder={t('dashboard.taxonomy.addNew.concepts.placeHolderEn')}
                       style={{
                         borderRadius: '4px',
-                        border: `${
-                          calendarContentLanguage === contentLanguage.BILINGUAL
-                            ? '4px solid #E8E8E8'
-                            : '1px solid #b6c1c9'
-                        }`,
+                        border: `${calendarContentLanguage.length > 1 ? '4px solid #E8E8E8' : '1px solid #b6c1c9'}`,
                         width: '423px',
                       }}
                       size="large"
