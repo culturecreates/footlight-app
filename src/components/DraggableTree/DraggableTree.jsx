@@ -7,9 +7,7 @@ import { EditOutlined } from '@ant-design/icons';
 import TextButton from '../Button/Text';
 import { useOutletContext } from 'react-router-dom';
 import { contentLanguage, contentLanguageKeyMap } from '../../constants/contentLanguage';
-import ContentLanguageInput from '../ContentLanguageInput';
 import Outlined from '../Button/Outlined';
-import BilingualInput from '../BilingualInput';
 import './draggableTree.css';
 import { Confirm } from '../Modal/Confirm/Confirm';
 import FormItem from 'antd/es/form/FormItem';
@@ -27,8 +25,6 @@ const DraggableTree = ({
   setAddNewPopup,
   deleteDisplayFlag,
   setDeleteDisplayFlag,
-  newConceptName,
-  setNewConceptName,
   setEmptyConceptName,
   form,
 }) => {
@@ -43,17 +39,16 @@ const DraggableTree = ({
   const [forEditing, setForEditing] = useState();
   const [selectedNode, setSetSelectedNode] = useState();
   const [expandedKeys, setExpandedKeys] = useState();
+  const [newConceptName, setNewConceptName] = useState();
 
   const generateFormattedData = (data, language) => {
     const treeData = data.map((item) => {
       let conceptNameCollection = {};
       calendarContentLanguage.forEach((lang) => {
-        conceptNameCollection[contentLanguageKeyMap[lang]] = contentLanguageBilingual({
-          requiredLanguage: language,
-          data: item?.name,
-          interfaceLanguage: user.interfaceLanguage,
-          calendarContentLanguage,
-        });
+        const conceptNameInCurrentLanguage = item?.name[contentLanguageKeyMap[lang]];
+        if (conceptNameInCurrentLanguage) {
+          conceptNameCollection[contentLanguageKeyMap[lang]] = conceptNameInCurrentLanguage;
+        }
       });
       const card = {
         key: item.key,
@@ -203,10 +198,11 @@ const DraggableTree = ({
 
   const editConceptHandler = (node) => {
     if (node) {
-      form.setFieldsValue({
-        frenchconcept: node?.name?.fr,
-        englishconcept: node?.name?.enƒ,
+      let conceptNameCollection = {};
+      calendarContentLanguage.forEach((language) => {
+        conceptNameCollection[contentLanguageKeyMap[language]] = node?.name[contentLanguageKeyMap[language]];
       });
+      form.setFieldValue('conceptName', conceptNameCollection);
       setAddNewPopup(true);
       setDeleteDisplayFlag(true);
       setForEditing(true);
@@ -215,19 +211,22 @@ const DraggableTree = ({
 
   const handleAddChildModalClose = () => {
     setEmptyConceptName();
-    form.setFieldsValue({
-      frenchconcept: '',
-      englishconcept: '',
+    let conceptNameCollection = {};
+    calendarContentLanguage.forEach((language) => {
+      conceptNameCollection[contentLanguageKeyMap[language]] = '';
     });
+    form.setFieldValue('conceptName', conceptNameCollection);
     setSetSelectedNode();
     setAddNewPopup(false);
   };
 
   const handleAddChild = () => {
+    const conceptNameCollection = form.getFieldValue('conceptName') || {};
+
     if (forEditing) {
       const updatedNode = {
         ...selectedNode,
-        name: { en: newConceptName?.en, fr: newConceptName?.fr },
+        name: conceptNameCollection,
       };
       const updatedData = updateNodeInData(data, selectedNode?.key, updatedNode);
       setData(updatedData);
@@ -236,7 +235,7 @@ const DraggableTree = ({
       const newChildNode = {
         key: Date.now().toString(),
         id: Date.now().toString(),
-        name: { en: newConceptName?.en, fr: newConceptName?.fr },
+        name: conceptNameCollection,
         children: [],
         isNew: true,
       };
@@ -451,77 +450,11 @@ const DraggableTree = ({
                   style={{
                     borderRadius: '4px',
                     border: `${calendarContentLanguage?.length > 1 ? '4px solid #E8E8E8' : '1px solid #b6c1c9'}`,
-                    width: '423px',
+                    width: '100%',
                   }}
                   size="large"
                 />
               </CreateMultiLingualFormItems>
-              <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                <BilingualInput fieldData={newConceptName}>
-                  <Form.Item
-                    name="frenchconcept"
-                    key={contentLanguage.FRENCH}
-                    dependencies={['english']}
-                    initialValue={newConceptName?.fr}
-                    rules={[
-                      ({ getFieldValue }) => ({
-                        validator(_, value) {
-                          if (value || getFieldValue('englishconcept')) {
-                            return Promise.resolve();
-                          } else
-                            return Promise.reject(new Error(t('dashboard.taxonomy.addNew.validations.conceptName')));
-                        },
-                      }),
-                    ]}>
-                    <TextArea
-                      data-cy="input-text-area-concept-name-french"
-                      autoSize
-                      autoComplete="off"
-                      placeholder={t('dashboard.taxonomy.addNew.concepts.placeHolderFr')}
-                      onChange={(e) => {
-                        setNewConceptName({ ...newConceptName, fr: e.target.value });
-                      }}
-                      style={{
-                        borderRadius: '4px',
-                        border: `${calendarContentLanguage.length > 1 ? '4px solid #E8E8E8' : '1px solid #b6c1c9'}`,
-                        width: '423px',
-                      }}
-                      size="large"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="englishconcept"
-                    key={contentLanguage.ENGLISH}
-                    dependencies={['french']}
-                    initialValue={newConceptName?.en}
-                    rules={[
-                      ({ getFieldValue }) => ({
-                        validator(_, value) {
-                          if (value || getFieldValue('frenchconcept')) {
-                            return Promise.resolve();
-                          } else
-                            return Promise.reject(new Error(t('dashboard.taxonomy.addNew.validations.conceptName')));
-                        },
-                      }),
-                    ]}>
-                    <TextArea
-                      data-cy="input-text-area-concept-name-english"
-                      autoSize
-                      autoComplete="off"
-                      onChange={(e) => {
-                        setNewConceptName({ ...newConceptName, en: e.target.value });
-                      }}
-                      placeholder={t('dashboard.taxonomy.addNew.concepts.placeHolderEn')}
-                      style={{
-                        borderRadius: '4px',
-                        border: `${calendarContentLanguage.length > 1 ? '4px solid #E8E8E8' : '1px solid #b6c1c9'}`,
-                        width: '423px',
-                      }}
-                      size="large"
-                    />
-                  </Form.Item>
-                </BilingualInput>
-              </ContentLanguageInput>
             </Form.Item>
           </div>
         </CustomModal>

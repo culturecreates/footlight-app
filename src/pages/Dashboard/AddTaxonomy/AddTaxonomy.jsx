@@ -27,7 +27,7 @@ import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurr
 import { placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems/CreateMultiLingualFormItems';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
-import DraggableTreeTest from '../../../components/DraggableTree/DraggableTree';
+import DraggableTree from '../../../components/DraggableTree/DraggableTree';
 
 const taxonomyClasses = taxonomyClassTranslations.map((item) => {
   return { ...item, value: item.key };
@@ -63,7 +63,6 @@ const AddTaxonomyTest = () => {
   const [dynamic, setDynamic] = useState(location.state?.dynamic ?? false);
   const [userAccess, setUserAccess] = useState();
   const [deleteDisplayFlag, setDeleteDisplayFlag] = useState(true);
-  const [newConceptName, setNewConceptName] = useState();
   const [conceptData, setConceptData] = useState([]);
   const [addNewPopup, setAddNewPopup] = useState(false);
   const [isDirty, setIsDirty] = useState({
@@ -157,7 +156,7 @@ const AddTaxonomyTest = () => {
     calendarContentLanguage.forEach((language) => {
       initialConceptName[contentLanguageKeyMap[language]] = '';
     });
-    setNewConceptName(initialConceptName, calendarContentLanguage);
+    form.setFieldValue('conceptName', initialConceptName);
   };
 
   const saveTaxonomyHandler = (e) => {
@@ -526,15 +525,13 @@ const AddTaxonomyTest = () => {
                               width: 'calc(100% - 100px)',
                             }}>
                             <Row style={{ flex: 1 }}>
-                              <DraggableTreeTest
+                              <DraggableTree
                                 data={conceptData}
                                 form={form}
                                 setEmptyConceptName={setEmptyConceptName}
                                 setData={setConceptData}
                                 addNewPopup={addNewPopup}
                                 setAddNewPopup={setAddNewPopup}
-                                newConceptName={newConceptName}
-                                setNewConceptName={setNewConceptName}
                                 deleteDisplayFlag={deleteDisplayFlag}
                                 setDeleteDisplayFlag={setDeleteDisplayFlag}
                               />

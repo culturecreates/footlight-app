@@ -38,6 +38,7 @@ export const contentLanguageBilingual = ({
    * @param {string} params.interfaceLanguage - Active interface language.
    * @param {string[]} params.calendarContentLanguage - Array of calendar content languages.
    * @param {Object} params.data - Multilingual data object.
+   * @param {string} params.requiredLanguage - Required content language. If data of any particular language is required.
    * @returns {string} The string data of required content language or an empty string if no data is available.
    **/
 
