@@ -1,0 +1,38 @@
+name: Trigger End-to-end Tests Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      baseUrl:
+        description: 'Base URL to run tests against'
+        required: true
+        default: 'https://staging.cms.footlight.io/'
+      grep:
+        description: 'Grep pattern for selecting tests'
+        required: false
+        default: ''
+      grepTags:
+        description: 'Grep tags for selecting tests'
+        required: false
+        default: '@essential'
+      numContainers:
+        description: 'Number of containers to use for browsers'
+        required: false
+        default: '2'
+
+jobs:
+  trigger-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger End-to-end Tests Workflow
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.DOCKER_PAT }}
+          event-type: trigger-end-to-end-tests
+          client-payload: |
+            {
+              "baseUrl": "${{ github.event.inputs.baseUrl }}",
+              "grep": "${{ github.event.inputs.grep }}",
+              "grepTags": "${{ github.event.inputs.grepTags }}",
+              "numContainers": "${{ github.event.inputs.numContainers }}"
+            }
