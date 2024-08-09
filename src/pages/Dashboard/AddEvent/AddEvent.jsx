@@ -281,6 +281,41 @@ function AddEvent() {
     },
     { label: t('dashboard.events.addEditEvent.otherInformation.contact.email'), value: 'email' },
   ];
+  const hasSubEventConfigChanges = (customDates = [], subEventConfig = []) => {
+    // Convert both arrays to a simpler format for easier comparison
+    const formatCustomDates = customDates.flatMap(({ startDate, customTimes = [] }) =>
+      customTimes.length === 0 ? [{ startDate }] : customTimes.map((time) => ({ startDate, ...time })),
+    );
+
+    const formatSubEventConfig = subEventConfig.map(({ startDate, startTime, endTime }) => ({
+      startDate,
+      startTime,
+      endTime,
+      // sameAs,
+    }));
+
+    // Check if the length of both arrays are different
+    if (formatCustomDates.length !== formatSubEventConfig.length) {
+      return true;
+    }
+
+    // Function to compare two objects for equality
+    const isEqual = (obj1, obj2) =>
+      obj1 &&
+      obj2 &&
+      Object.keys(obj1).length === Object.keys(obj2).length &&
+      Object.keys(obj1).every((key) => obj1[key] === obj2[key]);
+
+    // Check each item in both arrays for differences
+    for (let i = 0; i < formatCustomDates.length; i++) {
+      if (!isEqual(formatCustomDates[i], formatSubEventConfig[i])) {
+        return true;
+      }
+    }
+
+    // If no differences found, return false
+    return false;
+  };
 
   const validateVideoLink = (rule, value) => {
     if (!value) {
@@ -294,7 +329,7 @@ function AddEvent() {
     return Promise.resolve();
   };
 
-  const addUpdateEventApiHandler = (eventObj, toggle) => {
+  const addUpdateEventApiHandler = (eventObj, toggle, sameAs) => {
     var promise = new Promise(function (resolve, reject) {
       if ((!eventId || eventId === '') && newEventId === null) {
         addEvent({
@@ -324,7 +359,7 @@ function AddEvent() {
       } else {
         eventObj = {
           ...eventObj,
-          sameAs: eventData?.sameAs,
+          sameAs,
         };
         updateEvent({
           data: eventObj,
@@ -400,7 +435,9 @@ function AddEvent() {
               recurringEvent,
               description = {},
               name = {},
+              subEventConfiguration = undefined,
               inLanguage = [],
+              sameAs = eventId ? (eventData?.sameAs ? eventData?.sameAs : []) : [],
               eventDiscipline = [];
 
             let eventObj;
@@ -490,7 +527,7 @@ function AddEvent() {
 
             if (dateTypeValue === dateTypes.MULTIPLE) {
               const recurEvent = {
-                frequency: values.frequency,
+                frequency: form.getFieldsValue().frequency !== 'CUSTOM' && values.frequency,
                 startDate:
                   form.getFieldsValue().frequency !== 'CUSTOM'
                     ? moment(values.startDateRecur[0]).format('YYYY-MM-DD')
@@ -510,8 +547,8 @@ function AddEvent() {
                     ? moment(values.endTimeRecur).format('HH:mm')
                     : undefined,
                 weekDays: values.frequency === 'WEEKLY' ? values.daysOfWeek : undefined,
-                customDates:
-                  form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
+                // customDates:
+                //   form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
               };
 
               customDatesFlag = !!recurEvent?.customDates;
@@ -558,7 +595,66 @@ function AddEvent() {
                 recurringEvent = recurEvent;
               }
             }
+            const { customDates, frequency } = form.getFieldsValue() || {};
+            if (customDates && frequency === 'CUSTOM') {
+              recurringEvent = undefined;
+              subEventConfiguration = [];
+              const subEventConfig = eventData?.subEventConfiguration || [];
 
+              const processCustomTimes = (startDate, customTimes) => {
+                if (customTimes.length === 0) {
+                  subEventConfiguration.push({ startDate });
+                } else {
+                  customTimes.forEach(({ startTime, endTime }) => {
+                    const sameAs = subEventConfig.find(
+                      ({ startDate: subStartDate, startTime: subStartTime, endTime: subEndTime }) => {
+                        return (
+                          subStartDate === startDate &&
+                          ((!subStartTime && !subEndTime) ||
+                            (subStartTime === startTime && !subEndTime) ||
+                            (!subStartTime && subEndTime === endTime) ||
+                            (subStartTime === startTime && subEndTime === endTime))
+                        );
+                      },
+                    );
+                    subEventConfiguration.push({
+                      startDate,
+                      startTime,
+                      endTime,
+                      sameAs: sameAs?.sameAs,
+                    });
+                  });
+                }
+              };
+
+              if (eventId) {
+                if (hasSubEventConfigChanges(customDates, subEventConfig)) {
+                  // Changes detected
+                  if (eventData?.publishState === eventPublishState.PUBLISHED) {
+                    sameAs = eventData?.sameAs?.filter((item) => item?.type !== sameAsTypes.ARTSDATA_IDENTIFIER);
+                  }
+                  customDates.forEach(({ startDate, customTimes = [] }) => {
+                    processCustomTimes(startDate, customTimes);
+                  });
+                } else {
+                  // No changes detected
+                  subEventConfiguration = subEventConfig;
+                }
+              } else {
+                customDates.forEach(({ startDate, customTimes = [] }) => {
+                  processCustomTimes(startDate, customTimes);
+                });
+              }
+            }
+            if (eventId) {
+              if (eventData?.subEventConfiguration) {
+                if (frequency !== 'CUSTOM') {
+                  if (eventData?.publishState === eventPublishState.PUBLISHED) {
+                    sameAs = eventData?.sameAs?.filter((item) => item?.type !== sameAsTypes.ARTSDATA_IDENTIFIER);
+                  }
+                }
+              }
+            }
             if (dateTypeValue === dateTypes.SINGLE) {
               if (startTimeValue) startDateTime = dateTimeConverter(datePickerValue, startTimeValue, customTimeFlag);
               else
@@ -829,7 +925,7 @@ function AddEvent() {
               ...(dateTypes.MULTIPLE && { recurringEvent }),
               inLanguage,
               isFeatured: values?.isFeatured,
-              subEventConfiguration: eventData?.subEventConfiguration,
+              subEventConfiguration,
             };
 
             let imageCrop = form.getFieldValue('imageCrop') ? [form.getFieldValue('imageCrop')] : [];
@@ -944,7 +1040,7 @@ function AddEvent() {
 
                     if (values.multipleImagesCrop?.length > 0) await uploadImageList();
                     eventObj['image'] = imageCrop;
-                    addUpdateEventApiHandler(eventObj, toggle)
+                    addUpdateEventApiHandler(eventObj, toggle, sameAs)
                       .then((id) => resolve(id))
                       .catch((error) => {
                         reject(error);
@@ -969,7 +1065,7 @@ function AddEvent() {
                 eventObj['image'] = [];
               } else eventObj['image'] = imageCrop;
 
-              addUpdateEventApiHandler(eventObj, toggle)
+              addUpdateEventApiHandler(eventObj, toggle, sameAs)
                 .then((id) => resolve(id))
                 .catch((error) => {
                   reject(error);
@@ -1719,7 +1815,7 @@ function AddEvent() {
         if (eventData?.inLanguage?.length > 0)
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.inLanguage);
         setAddedFields(initialAddedFields);
-        if (eventData?.recurringEvent) {
+        if (eventData?.recurringEvent && eventData?.recurringEvent?.frequency != 'CUSTOM') {
           form.setFieldsValue({
             frequency: eventData?.recurringEvent?.frequency,
             startDateRecur: [
@@ -1780,7 +1876,7 @@ function AddEvent() {
           };
           setFormValue(obj);
         }
-        if (eventData?.subEventConfiguration) {
+        if (eventData?.subEventConfiguration && eventData?.subEventConfiguration?.length > 0) {
           form.setFieldsValue({
             frequency: 'CUSTOM',
             startDateRecur: [

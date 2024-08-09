@@ -43,7 +43,11 @@ const RecurringEvents = function ({
 
   useEffect(() => {
     if (eventDetails) {
-      if (formFields?.frequency === 'CUSTOM' || eventDetails.recurringEvent?.frequency === 'CUSTOM') {
+      if (
+        formFields?.frequency === 'CUSTOM' ||
+        eventDetails.recurringEvent?.frequency === 'CUSTOM' ||
+        eventDetails.subEventConfiguration
+      ) {
         setDateModified(true);
         setIsCustom(true);
       } else setIsCustom(false);
