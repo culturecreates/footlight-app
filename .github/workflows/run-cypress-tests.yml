@@ -27,7 +27,7 @@ jobs:
       - name: Trigger End-to-end Tests Workflow
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.DOCKER_PAT }}
           event-type: trigger-end-to-end-tests
           client-payload: |
             {
