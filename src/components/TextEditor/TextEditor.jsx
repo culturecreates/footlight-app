@@ -69,7 +69,7 @@ function TextEditor(props) {
 
     try {
       const response = await addImage({ data: formData, calendarId }).unwrap();
-      if (response) return response.data?.original?.uri;
+      if (response) return response.data?.original?.url?.uri;
     } catch (error) {
       console.error(error);
       return null;
