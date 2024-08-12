@@ -1,5 +1,5 @@
 import { Form } from 'antd';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import ReactQuill from 'react-quill';
 import './textEditor.css';
 import 'react-quill/dist/quill.snow.css';
@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { pluralize } from '../../utils/pluralise';
 import OutlinedButton from '../Button/Outlined';
 import { contentLanguage } from '../../constants/contentLanguage';
+import { useAddImageMutation } from '../../services/image';
+import { useParams } from 'react-router-dom';
 
 function TextEditor(props) {
   const {
@@ -27,6 +29,8 @@ function TextEditor(props) {
   } else {
     translateTo = 'en';
   }
+  const { calendarId } = useParams();
+  const [addImage] = useAddImageMutation();
 
   const { t } = useTranslation();
   const [wordCount, setWordCount] = useState(
@@ -58,19 +62,58 @@ function TextEditor(props) {
     'image',
     'video',
   ];
-  const modules = {
-    toolbar: [
-      [{ header: '1' }],
-      ['bold', 'italic', 'underline'],
-      [{ align: [] }],
-      [{ list: 'ordered' }, { list: 'bullet' }],
-      [{ color: [] }, { background: [] }], // dropdown with defaults from theme
-      ['link', 'image', 'video'],
-    ],
-    clipboard: {
-      matchVisual: false,
-    },
+
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await addImage({ data: formData, calendarId }).unwrap();
+      if (response) return response.data?.original?.uri;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   };
+
+  const imageHandler = async () => {
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files[0];
+      const range = currentReactQuillRef.current.getEditor().getSelection();
+      const imageUrl = await uploadImage(file);
+
+      if (imageUrl) {
+        currentReactQuillRef.current.getEditor().insertEmbed(range.index, 'image', imageUrl);
+      }
+    };
+  };
+
+  const modules = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          [{ header: '1' }],
+          ['bold', 'italic', 'underline'],
+          [{ align: [] }],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          [{ color: [] }, { background: [] }],
+          ['link', 'image', 'video'],
+        ],
+        handlers: {
+          image: imageHandler,
+        },
+      },
+      clipboard: {
+        matchVisual: false,
+      },
+    }),
+    [],
+  );
 
   const onChange = () => {
     const filteredCount = currentReactQuillRef?.current?.unprivilegedEditor
