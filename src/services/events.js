@@ -85,6 +85,7 @@ export const eventsApi = createApi({
 
 export const {
   useLazyGetEventsQuery,
+  useLazyGetEventQuery,
   useUpdateEventStateMutation,
   useDeleteEventMutation,
   useAddEventMutation,
