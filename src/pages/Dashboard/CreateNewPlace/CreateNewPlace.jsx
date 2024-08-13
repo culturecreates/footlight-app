@@ -1400,8 +1400,9 @@ function CreateNewPlace() {
                     dataCy="form-item-place-name-"
                     placeholder={placeHolderCollectionCreator({
                       calendarContentLanguage,
-                      placeholderBase: 'dashboard.places.createNew.addPlace.name.placeholder.',
+                      placeholderBase: 'dashboard.places.createNew.addPlace.name.placeholder',
                       t,
+                      hasCommonPlaceHolder: true,
                     })}>
                     <TextArea
                       autoSize
@@ -1502,8 +1503,9 @@ function CreateNewPlace() {
                     dataCy="input-place-disambiguating-description-"
                     placeholder={placeHolderCollectionCreator({
                       calendarContentLanguage,
-                      placeholderBase: 'dashboard.places.createNew.addPlace.disambiguatingDescription.placeholder.',
+                      placeholderBase: 'dashboard.places.createNew.addPlace.disambiguatingDescription.placeholder',
                       t,
+                      hasCommonPlaceHolder: true,
                     })}>
                     <TextArea
                       autoSize
@@ -1537,8 +1539,7 @@ function CreateNewPlace() {
                     placeholder={placeHolderCollectionCreator({
                       calendarContentLanguage,
                       t,
-                      postfixFillerText: 'Placeholder',
-                      placeholderBase: 'dashboard.events.addEditEvent.otherInformation.description.',
+                      placeholderBase: 'dashboard.events.addEditEvent.otherInformation.description.placeholder',
                     })}
                     descriptionMinimumWordCount={descriptionMinimumWordCount}
                     required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.DESCRIPTION)}
@@ -1783,7 +1784,7 @@ function CreateNewPlace() {
                     dataCy="input-text-area-place-street-address-"
                     placeholder={placeHolderCollectionCreator({
                       calendarContentLanguage,
-                      placeholderBase: 'dashboard.places.createNew.addPlace.address.streetAddressPlaceholder.',
+                      placeholderBase: 'dashboard.places.createNew.addPlace.address.streetAddressPlaceholder',
                       t,
                     })}>
                     <TextArea
@@ -1820,7 +1821,7 @@ function CreateNewPlace() {
                     dataCy="input-text-area-place-city-"
                     placeholder={placeHolderCollectionCreator({
                       calendarContentLanguage,
-                      placeholderBase: 'dashboard.places.createNew.addPlace.address.city.placeholder.',
+                      placeholderBase: 'dashboard.places.createNew.addPlace.address.city.placeholder',
                       t,
                     })}>
                     <TextArea
@@ -1887,7 +1888,7 @@ function CreateNewPlace() {
                         dataCy="input-text-area-province-"
                         placeholder={placeHolderCollectionCreator({
                           calendarContentLanguage,
-                          placeholderBase: 'dashboard.places.createNew.addPlace.address.province.placeholder.',
+                          placeholderBase: 'dashboard.places.createNew.addPlace.address.province.placeholder',
                           t,
                         })}>
                         <TextArea
@@ -1926,7 +1927,7 @@ function CreateNewPlace() {
                         dataCy="input-text-area-country-"
                         placeholder={placeHolderCollectionCreator({
                           calendarContentLanguage,
-                          placeholderBase: 'dashboard.places.createNew.addPlace.address.country.placeholder.',
+                          placeholderBase: 'dashboard.places.createNew.addPlace.address.country.placeholder',
                           t,
                         })}>
                         <TextArea
@@ -2619,7 +2620,7 @@ function CreateNewPlace() {
                       placeholder={placeHolderCollectionCreator({
                         calendarContentLanguage,
                         placeholderBase:
-                          'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.placeholder.',
+                          'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.placeholder',
                         t,
                       })}>
                       <TextArea

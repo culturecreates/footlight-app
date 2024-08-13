@@ -34,7 +34,7 @@ const taxonomyClasses = taxonomyClassTranslations.map((item) => {
 });
 const { TextArea } = Input;
 
-const AddTaxonomyTest = () => {
+const AddTaxonomy = () => {
   const [
     currentCalendarData, // eslint-disable-next-line no-unused-vars
     _pageNumber, // eslint-disable-next-line no-unused-vars
@@ -288,7 +288,7 @@ const AddTaxonomyTest = () => {
         }
       />
 
-      {!loading && (isSuccess || !taxonomyId) ? (
+      {!loading && calendarContentLanguage && (isSuccess || !taxonomyId) ? (
         <Form layout="vertical" form={form} onValuesChange={handleValueChange}>
           <Row className="add-taxonomy-wrapper" gutter={[16, 16]}>
             <Col span={24}>
@@ -377,9 +377,8 @@ const AddTaxonomyTest = () => {
                         dataCy="input-text-area-taxonomy-name-"
                         placeholder={placeHolderCollectionCreator({
                           calendarContentLanguage,
-                          placeholderBase: 'dashboard.taxonomy.addNew.placeHolder.',
+                          placeholderBase: 'dashboard.taxonomy.addNew.placeHolder.namePlaceHolder',
                           t,
-                          postfixFillerText: 'NamePlaceHolder',
                         })}>
                         <TextArea
                           autoSize
@@ -414,7 +413,7 @@ const AddTaxonomyTest = () => {
                         dataCy="input-text-area-taxonomy-description-"
                         placeholder={placeHolderCollectionCreator({
                           calendarContentLanguage,
-                          placeholderBase: 'dashboard.taxonomy.addNew.placeHolder.',
+                          placeholderBase: 'dashboard.taxonomy.addNew.placeHolder.descriptionPlaceHolder',
                           t,
                           postfixFillerText: 'DescriptionPlaceHolder',
                         })}>
@@ -555,4 +554,4 @@ const AddTaxonomyTest = () => {
   );
 };
 
-export default AddTaxonomyTest;
+export default AddTaxonomy;
