@@ -440,9 +440,8 @@ const DraggableTree = ({
                 dataCy="input-text-area-taxonomy-name-"
                 placeholder={placeHolderCollectionCreator({
                   calendarContentLanguage,
-                  placeholderBase: 'dashboard.taxonomy.addNew.concepts.',
+                  placeholderBase: 'dashboard.taxonomy.addNew.concepts.placeHolder',
                   t,
-                  postfixFillerText: 'NamePlaceHolder',
                 })}>
                 <TextArea
                   autoSize

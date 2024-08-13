@@ -1,15 +1,22 @@
 import { contentLanguageKeyMap } from '../constants/contentLanguage';
+import { capitalizeFirstLetter } from './stringManipulations';
 
 export const placeHolderCollectionCreator = ({
   calendarContentLanguage,
-  placeholderBase,
-  t,
-  postfixFillerText = '',
+  placeholderBase, // The base key for the placeholder text translation.
+  t, // i18n translation function.
+  hasCommonPlaceHolder = false, // If true, the same key will be used for all languages. Default is false.
 }) => {
   let placeholderCollection = {};
+
   calendarContentLanguage.map((language) => {
-    placeholderCollection[contentLanguageKeyMap[language]] =
-      t(placeholderBase + language.toLowerCase() + postfixFillerText) || '';
+    const languageTranslation = t(`common.tab${capitalizeFirstLetter(language)}`);
+    if (hasCommonPlaceHolder) {
+      placeholderCollection[contentLanguageKeyMap[language]] = t(placeholderBase) || '';
+    } else {
+      placeholderCollection[contentLanguageKeyMap[language]] =
+        t(placeholderBase, { language: languageTranslation }) || '';
+    }
   });
   return placeholderCollection;
 };

@@ -8,6 +8,7 @@ import { useOutletContext } from 'react-router-dom';
 import { getActiveFallbackFieldsInfo, setActiveFallbackFieldsInfo } from '../../redux/reducer/languageLiteralSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import LiteralBadge from '../Badge/LiteralBadge';
+import { removeEmptyParagraphsAtEnd } from '../../utils/removeEmptyParagraphsAtEnd';
 
 /**
  * MultiLingualTextEditor component handles multilingual text input using React Quill editors.
@@ -192,10 +193,10 @@ function MultiLingualTextEditor(props) {
             <div key={language}>
               <TextEditor
                 formName={[`${name}`, languageKey]}
-                initialValue={initialValue}
+                initialValue={removeEmptyParagraphsAtEnd(initialValue)}
                 calendarContentLanguage={calendarContentLanguage}
                 editorLanguage={languageKey}
-                placeholder={placeholder?.[language]}
+                placeholder={placeholder?.[languageKey]}
                 descriptionMinimumWordCount={descriptionMinimumWordCount}
                 currentReactQuillRef={reactQuillRefs.current[language]}
                 rules={generateRules(language)}

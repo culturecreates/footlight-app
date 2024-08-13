@@ -4,7 +4,6 @@ import { CloseCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import Tags from '../components/Tags/Common/Tags';
 import TreeSelectOption from '../components/TreeSelectOption/TreeSelectOption';
 import { treeTaxonomyOptions } from '../components/TreeSelectOption/treeSelectOption.settings';
-import { contentLanguage } from './contentLanguage';
 import ImageUpload from '../components/ImageUpload/ImageUpload';
 import { bilingual, contentLanguageBilingual } from '../utils/bilingual';
 import { Translation } from 'react-i18next';
@@ -123,9 +122,7 @@ export const formFieldValue = [
               autoComplete="off"
               style={{
                 borderRadius: '4px',
-                border: `${
-                  calendarContentLanguage === contentLanguage.length > 1 ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
-                }`,
+                border: `${calendarContentLanguage.length > 1 ? '4px solid #E8E8E8' : '1px solid #b6c1c9'}`,
                 width: '423px',
               }}
               size="large"
