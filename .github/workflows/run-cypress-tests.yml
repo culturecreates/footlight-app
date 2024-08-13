@@ -25,14 +25,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger End-to-end Tests Workflow
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.DOCKER_PAT }}
-          event-type: trigger-end-to-end-tests
-          client-payload: |
-            {
-              "baseUrl": "${{ github.event.inputs.baseUrl }}",
-              "grep": "${{ github.event.inputs.grep }}",
-              "grepTags": "${{ github.event.inputs.grepTags }}",
-              "numContainers": "${{ github.event.inputs.numContainers }}"
-            }
+        run: |
+          curl -X POST https://api.github.com/repos/kmdvs/cypress-gha-tests/actions/workflows/e2eTests.yml/dispatches \
+            -H "Authorization: token ${{secrets.DOCKER_PAT}}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d '{
+              "ref": "main",
+              "inputs": {
+                "baseUrl": "${{ github.event.inputs.baseUrl }}",
+                "grep": "${{ github.event.inputs.grep }}",
+                "grepTags": "${{ github.event.inputs.grepTags }}",
+                "numContainers": "${{ github.event.inputs.numContainers }}"
+              }
+            }'
