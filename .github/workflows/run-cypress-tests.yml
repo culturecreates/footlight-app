@@ -21,20 +21,73 @@ on:
         default: '2'
 
 jobs:
-  trigger-tests:
+  built-and-run-cypress:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chrome, firefox]
     steps:
-      - name: Trigger End-to-end Tests Workflow
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ vars.USERNAME_DEV }}
+          password: ${{ secrets.DOCKER_PAT }}
+
+      - name: Pull docker image
+        run: docker pull ghcr.io/kmdvs/cms-cypress_regression_tests:main
+
+      - name: Run Cypress tests
         run: |
-          curl -X POST https://api.github.com/repos/kmdvs/cypress-gha-tests/actions/workflows/e2eTests.yml/dispatches \
-            -H "Authorization: token ${{secrets.DOCKER_PAT}}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            -d '{
-              "ref": "main",
-              "inputs": {
-                "baseUrl": "${{ github.event.inputs.baseUrl }}",
-                "grep": "${{ github.event.inputs.grep }}",
-                "grepTags": "${{ github.event.inputs.grepTags }}",
-                "numContainers": "${{ github.event.inputs.numContainers }}"
-              }
-            }'
+          grep_value="${{ github.event.inputs.grep }}"
+          echo "Original grep_value: '$grep_value'"
+          grep_value_clean=$(echo "$grep_value" | tr -d '\n\r')
+          echo "Cleaned grep_value: '$grep_value_clean'"
+
+          if [ -z "$grep_value_clean" ]; then
+            grep_value_json='""'
+          else
+            grep_value_json=$(printf '%s' "$grep_value_clean" | sed 's/"/\\"/g; s/.*/"&"/')
+          fi
+
+          echo "JSON grep_value: '$grep_value_json'"
+          
+          # Properly format the --env argument for Cypress
+          env_json="{\"grepTags\":\"${{ github.event.inputs.grepTags }}\",\"grep\":${grep_value_json},\"baseUrl\":\"${{ github.event.inputs.baseUrl }}\"}"
+          echo "Formatted env JSON: $env_json"
+          
+          # Simulate the Cypress --env argument
+          env_arg=$(printf '%s' "$env_json")
+          echo "Simulated --env argument for Cypress: $env_arg"
+          
+          # Validate JSON formatting
+          echo "$env_json" | jq . # Validate JSON formatting
+
+
+          # Run Cypress tests with the formatted --env argument
+          docker run \
+          -e XDG_RUNTIME_DIR=/tmp/runtime \
+          -e CYPRESS_ADMIN_EN_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
+          -e CYPRESS_ADMIN_FR_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
+          -e CYPRESS_GUEST_EN_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
+          -e CYPRESS_GUEST_FR_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
+          -v ${GITHUB_WORKSPACE}/cypress/screenshots:/e2e/cypress/screenshots \
+          -v ${GITHUB_WORKSPACE}/cypress/videos:/e2e/cypress/videos \
+          ghcr.io/kmdvs/cms-cypress_regression_tests:main npx cypress run --browser ${{ matrix.browser }} --headless --env "$env_arg"
+
+      - name: Upload Cypress Screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cypress-screenshots-${{ matrix.browser }}
+          path: cypress/screenshots
+          if-no-files-found: ignore
+
+      - name: Upload Cypress Videos
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cypress-videos-${{ matrix.browser }}
+          path: cypress/videos
+          if-no-files-found: ignore
