@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       baseUrl:
-        description: 'Base URL to run tests against'
-        required: true
-        default: 'https://staging.cms.footlight.io/'
+        description: 'Base URL to run tests against, skip to run against the current branch'
+        required: false
+        default: ''
       grep:
         description: 'Grep pattern for selecting tests'
         required: false
@@ -20,6 +20,27 @@ on:
         required: false
         default: '2'
 
+  workflow_call:
+    inputs:
+      baseUrl:
+        description: 'Base URL to run tests against, skip to run against the current branch'
+        required: false
+        type: string
+      grep:
+        description: 'Grep pattern for selecting tests'
+        required: false
+        type: string
+      grepTags:
+        description: 'Grep tags for selecting tests'
+        required: false
+        type: string
+        default: '@essential'
+      numContainers:
+        description: 'Number of containers to use for browsers'
+        required: false
+        type: string
+        default: '2'
+
 jobs:
   built-and-run-cypress:
     runs-on: ubuntu-latest
@@ -28,6 +49,36 @@ jobs:
       matrix:
         browser: [chrome, firefox]
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create Docker network
+        run: docker network create footlight-network
+
+      - name: Build Footlight Container
+        if: ${{ github.event.inputs.baseUrl == '' }}
+        run: |
+          docker build -t footlight .
+      
+      - name: Run Footlight Container
+        if: ${{ github.event.inputs.baseUrl == '' }}
+        run: |
+          docker run -d --name footlight --network footlight-network -p 3000:3000 footlight
+
+      - name: Wait for Footlight to be ready
+        if: ${{ github.event.inputs.baseUrl == '' }}
+        run: |
+          for i in {1..5}; do
+            if curl -s http://localhost:3000; then
+              echo "Footlight is up and running!"
+              exit 0
+            fi
+            echo "Waiting for Footlight to be ready..."
+            sleep 10
+          done
+          echo "Footlight did not start in time!"
+          exit 1   
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -40,6 +91,12 @@ jobs:
 
       - name: Run Cypress tests
         run: |
+
+          base_url="${{ github.event.inputs.baseUrl }}"
+          if [ -z "$base_url" ]; then
+            base_url="http://footlight:3000/"
+          fi
+          
           grep_value="${{ github.event.inputs.grep }}"
           echo "Original grep_value: '$grep_value'"
           grep_value_clean=$(echo "$grep_value" | tr -d '\n\r')
@@ -54,7 +111,7 @@ jobs:
           echo "JSON grep_value: '$grep_value_json'"
           
           # Properly format the --env argument for Cypress
-          env_json="{\"grepTags\":\"${{ github.event.inputs.grepTags }}\",\"grep\":${grep_value_json},\"baseUrl\":\"${{ github.event.inputs.baseUrl }}\"}"
+          env_json="{\"grepTags\":\"${{ github.event.inputs.grepTags }}\",\"grep\":${grep_value_json}}"
           echo "Formatted env JSON: $env_json"
           
           # Simulate the Cypress --env argument
@@ -67,7 +124,9 @@ jobs:
 
           # Run Cypress tests with the formatted --env argument
           docker run \
+          --network footlight-network \
           -e XDG_RUNTIME_DIR=/tmp/runtime \
+          -e CYPRESS_BASE_URL=$base_url \
           -e CYPRESS_ADMIN_EN_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
           -e CYPRESS_ADMIN_FR_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
           -e CYPRESS_GUEST_EN_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
