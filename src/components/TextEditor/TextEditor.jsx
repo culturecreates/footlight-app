@@ -9,6 +9,8 @@ import OutlinedButton from '../Button/Outlined';
 import { contentLanguage } from '../../constants/contentLanguage';
 import { useAddImageMutation } from '../../services/image';
 import { useParams } from 'react-router-dom';
+import Quill from 'quill';
+const Delta = Quill.import('delta');
 
 function TextEditor(props) {
   const {
@@ -59,8 +61,6 @@ function TextEditor(props) {
     'direction',
     'code-block',
     'formula',
-    'image',
-    'video',
   ];
 
   const uploadImage = async (file) => {
@@ -74,6 +74,13 @@ function TextEditor(props) {
       console.error(error);
       return null;
     }
+  };
+
+  const removeImagesMatcher = (node, delta) => {
+    if (node.nodeName === 'IMG') {
+      return new Delta();
+    }
+    return delta;
   };
 
   const imageHandler = async () => {
@@ -102,7 +109,7 @@ function TextEditor(props) {
           [{ align: [] }],
           [{ list: 'ordered' }, { list: 'bullet' }],
           [{ color: [] }, { background: [] }],
-          ['link', 'image', 'video'],
+          ['link'],
         ],
         handlers: {
           image: imageHandler,
@@ -110,6 +117,7 @@ function TextEditor(props) {
       },
       clipboard: {
         matchVisual: false,
+        matchers: [[Node.ELEMENT_NODE, removeImagesMatcher]],
       },
     }),
     [],
