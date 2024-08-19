@@ -808,8 +808,7 @@ function CreateNewPlace() {
     setScrollToSelectedField(array?.at(-1));
   };
 
-  const onValuesChangeHandler = (changedValues, allValues) => {
-    console.log('changedValues', changedValues, 'allValues', allValues);
+  const onValuesChangeHandler = () => {
     setShowDialog(true);
   };
 
