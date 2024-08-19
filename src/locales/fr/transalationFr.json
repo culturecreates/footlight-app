@@ -669,7 +669,7 @@
           },
           "disambiguatingDescription": {
             "disambiguatingDescription": "Description (désambiguïsation)",
-            "placeholder": "Indiquer la description aux fins de désambiguïsation en {{language}}"
+            "placeholder": "Entrer une description désambiguïsante"
           },
           "description": {
             "description": "Description"
@@ -1118,8 +1118,7 @@
         "description": "Description (désambiguïsation)",
         "placeHolder": {
           "namePlaceHolder": "Indiquer le nom de la taxonomie en {{language}}",
-          "descriptionPlaceHolder": "Indiquer la description aux fins de désambiguïsation en {{language}}",
-          "englishDescriptionPlaceHolder": "Indiquer la description aux fins de désambiguïsation en anglais"
+          "descriptionPlaceHolder": "Indiquer la description aux fins de désambiguïsation en {{language}}"
         },
         "descriptionExplation": "Ajouter pour différencier la taxonomie dans les résultats de recherche.",
         "userAccess": "Restreindre l'accès aux utilisateurs",

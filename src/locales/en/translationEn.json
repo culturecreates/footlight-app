@@ -664,13 +664,7 @@
             "placeholder": "Select accessibility items",
             "placeAccessibilityNote": {
               "note": "Note",
-              "placeholder": {
-                "english": "Enter a note",
-                "french": "Enter a note",
-                "korean": "Enter a note",
-                "japanese": "Enter a note",
-                "chinese": "Enter a note"
-              },
+              "placeholder": "Enter a note",
               "tooltip": "Add supplementary accessibility information."
             }
           },
