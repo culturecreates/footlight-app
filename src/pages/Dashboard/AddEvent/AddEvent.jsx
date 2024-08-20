@@ -378,13 +378,10 @@ function AddEvent() {
             if (clear) {
               dispatch(setLanguageLiteralBannerDisplayStatus(false));
               dispatch(clearActiveFallbackFieldsInfo());
-              // fallbackStatus = {};
+              fallbackStatus = {};
             }
             var values = form.getFieldsValue(true);
-            console.log('values', values);
-            if (values) {
-              return;
-            }
+
             var startDateTime,
               endDateTime,
               additionalType = [],
@@ -620,11 +617,8 @@ function AddEvent() {
               }));
             }
 
-            if (values?.englishAccessibilityNote || values?.frenchAccessibilityNote) {
-              accessibilityNote = {
-                ...(values?.englishAccessibilityNote && { en: values?.englishAccessibilityNote?.trim() }),
-                ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote?.trim() }),
-              };
+            if (values?.accessibilityNote) {
+              accessibilityNote = values?.accessibilityNote;
             }
 
             if (values?.keywords?.length > 0) {
