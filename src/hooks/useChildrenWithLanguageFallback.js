@@ -61,14 +61,15 @@ function useChildrenWithLanguageFallback({
       .join('-');
 
     const modifiedActiveFallbackFieldsInfo = {
-      [combinedName]: fallbackStatus,
       ...activeFallbackFieldsInfo,
+      [combinedName]: fallbackStatus,
     };
 
     const fallbackActiveFlag = calendarContentLanguage.find((language) => {
       const languageKey = contentLanguageKeyMap[language];
       return fallbackStatus?.[languageKey]?.tagDisplayStatus;
     });
+
     const hasDirtyFields = Object.values(isFieldsDirty).some((value) => value == true);
     if (fallbackActiveFlag)
       dispatch(setActiveFallbackFieldsInfo({ data: modifiedActiveFallbackFieldsInfo, method: 'add' }));
