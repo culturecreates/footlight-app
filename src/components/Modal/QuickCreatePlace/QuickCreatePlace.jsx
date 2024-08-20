@@ -7,9 +7,7 @@ import PrimaryButton from '../../Button/Primary/Primary';
 import { Row, Col, Form, Input, notification, Dropdown } from 'antd';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
-import ContentLanguageInput from '../../ContentLanguageInput/ContentLanguageInput';
-import { contentLanguage } from '../../../constants/contentLanguage';
-import BilingualInput from '../../BilingualInput/BilingualInput';
+import { contentLanguage, contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { treeTaxonomyOptions } from '../../TreeSelectOption/treeSelectOption.settings';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -31,6 +29,11 @@ import QuickCreateSaving from '../QuickCreateSaving/QuickCreateSaving';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { eventPublishState } from '../../../constants/eventPublishState';
+import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems';
+import {
+  createInitialNamesObjectFromKeyword,
+  placeHolderCollectionCreator,
+} from '../../../utils/MultiLingualFormItemSupportFunctions';
 
 const { TextArea } = Input;
 
@@ -42,7 +45,6 @@ function QuickCreatePlace(props) {
     calendarId,
     keyword,
     setKeyword,
-    interfaceLanguage,
     setLocationPlace,
     locationPlace,
     eventForm,
@@ -166,9 +168,13 @@ function QuickCreatePlace(props) {
       .catch((error) => console.log(error));
   };
   const createPlaceHandler = (toggle = true) => {
+    const validationFieldNames = [];
+    calendarContentLanguage.forEach((language) => {
+      validationFieldNames.push(['name', contentLanguageKeyMap[language]]);
+    });
     return new Promise((resolve, reject) => {
       form
-        .validateFields(['french', 'english', 'address'])
+        .validateFields([...validationFieldNames, 'address'])
         .then(() => {
           var values = form.getFieldsValue(true);
           let languageKey;
@@ -344,99 +350,32 @@ function QuickCreatePlace(props) {
                       </span>
                     </Col>
                   </Row>
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                    <BilingualInput defaultTab={interfaceLanguage}>
-                      <Form.Item
-                        name="french"
-                        key={contentLanguage.FRENCH}
-                        initialValue={
-                          calendarContentLanguage === contentLanguage.BILINGUAL
-                            ? interfaceLanguage === 'fr'
-                              ? keyword
-                              : undefined
-                            : calendarContentLanguage === contentLanguage.FRENCH
-                            ? keyword
-                            : undefined
-                        }
-                        dependencies={['english']}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (value || getFieldValue('english')) {
-                                return Promise.resolve();
-                              } else
-                                return Promise.reject(
-                                  new Error(
-                                    t('dashboard.events.addEditEvent.location.quickCreatePlace.validations.name'),
-                                  ),
-                                );
-                            },
-                          }),
-                        ]}
-                        data-cy="form-item-quick-create-place-name-french-label">
-                        <TextArea
-                          autoSize
-                          autoComplete="off"
-                          placeholder={t('dashboard.events.addEditEvent.location.quickCreatePlace.namePlaceholder')}
-                          style={{
-                            borderRadius: '4px',
-                            border: `${
-                              calendarContentLanguage === contentLanguage.BILINGUAL
-                                ? '4px solid #E8E8E8'
-                                : '1px solid #b6c1c9'
-                            }`,
-                            width: '100%',
-                          }}
-                          size="large"
-                          data-cy="text-area-quick-create-place-name-french"
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        name="english"
-                        dependencies={['french']}
-                        initialValue={
-                          calendarContentLanguage === contentLanguage.BILINGUAL
-                            ? interfaceLanguage === 'en'
-                              ? keyword
-                              : undefined
-                            : calendarContentLanguage === contentLanguage.ENGLISH
-                            ? keyword
-                            : undefined
-                        }
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (value || getFieldValue('french')) {
-                                return Promise.resolve();
-                              } else
-                                return Promise.reject(
-                                  new Error(
-                                    t('dashboard.events.addEditEvent.location.quickCreatePlace.validations.name'),
-                                  ),
-                                );
-                            },
-                          }),
-                        ]}
-                        data-cy="form-item-quick-create-place-name-english-label">
-                        <TextArea
-                          autoSize
-                          autoComplete="off"
-                          placeholder={t('dashboard.events.addEditEvent.location.quickCreatePlace.namePlaceholder')}
-                          style={{
-                            borderRadius: '4px',
-                            border: `${
-                              calendarContentLanguage === contentLanguage.BILINGUAL
-                                ? '4px solid #E8E8E8'
-                                : '1px solid #b6c1c9'
-                            }`,
-                            width: '100%',
-                          }}
-                          size="large"
-                          data-cy="text-area-quick-create-place-name-english"
-                        />
-                      </Form.Item>
-                    </BilingualInput>
-                  </ContentLanguageInput>
+                  <CreateMultiLingualFormItems
+                    calendarContentLanguage={calendarContentLanguage}
+                    form={form}
+                    name={['name']}
+                    data={createInitialNamesObjectFromKeyword(keyword, calendarContentLanguage)}
+                    validations={t('dashboard.events.addEditEvent.validations.title')}
+                    dataCy={`text-area-quick-create-place-name-`}
+                    placeholder={placeHolderCollectionCreator({
+                      t,
+                      calendarContentLanguage,
+                      placeholderBase: 'dashboard.events.addEditEvent.location.quickCreatePlace.namePlaceholder',
+                      hasCommonPlaceHolder: true,
+                    })}
+                    required={true}>
+                    <TextArea
+                      autoSize
+                      autoComplete="off"
+                      style={{
+                        borderRadius: '4px',
+                        border: `${calendarContentLanguage.length > 1 ? '4px solid #E8E8E8' : '1px solid #b6c1c9'}`,
+                        width: '100%',
+                      }}
+                      size="large"
+                    />
+                  </CreateMultiLingualFormItems>
+
                   <Form.Item
                     name="address"
                     label={t('dashboard.events.addEditEvent.location.quickCreatePlace.address')}

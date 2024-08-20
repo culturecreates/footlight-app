@@ -6,9 +6,6 @@ import TextButton from '../../Button/Text/Text';
 import { useTranslation } from 'react-i18next';
 import PrimaryButton from '../../Button/Primary/Primary';
 import { Row, Col, Form, Input, notification } from 'antd';
-import ContentLanguageInput from '../../ContentLanguageInput/ContentLanguageInput';
-import { contentLanguage } from '../../../constants/contentLanguage';
-import BilingualInput from '../../BilingualInput/BilingualInput';
 import StyledInput from '../../Input/Common';
 import { treeEntitiesOption, treeTaxonomyOptions } from '../../TreeSelectOption/treeSelectOption.settings';
 import { useSelector } from 'react-redux';
@@ -27,6 +24,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import QuickCreateSaving from '../QuickCreateSaving/QuickCreateSaving';
 import { eventPublishState } from '../../../constants/eventPublishState';
+import {
+  createInitialNamesObjectFromKeyword,
+  placeHolderCollectionCreator,
+} from '../../../utils/MultiLingualFormItemSupportFunctions';
+import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems';
+import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 
 const { TextArea } = Input;
 
@@ -38,7 +41,6 @@ function QuickCreatePerson(props) {
     calendarId,
     keyword,
     setKeyword,
-    interfaceLanguage,
     setSelectedOrganizers,
     selectedOrganizers,
     selectedPerformers,
@@ -136,9 +138,13 @@ function QuickCreatePerson(props) {
       .catch((error) => console.log(error));
   };
   const createPersonHandler = (toggle = true) => {
+    const validationFieldNames = [];
+    calendarContentLanguage.forEach((language) => {
+      validationFieldNames.push(['name', contentLanguageKeyMap[language]]);
+    });
     return new Promise((resolve, reject) => {
       form
-        .validateFields(['french', 'english'])
+        .validateFields(validationFieldNames)
         .then(() => {
           var values = form.getFieldsValue(true);
           let name = {},
@@ -273,99 +279,31 @@ function QuickCreatePerson(props) {
                       </span>
                     </Col>
                   </Row>
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                    <BilingualInput defaultTab={interfaceLanguage}>
-                      <Form.Item
-                        name="french"
-                        key={contentLanguage.FRENCH}
-                        initialValue={
-                          calendarContentLanguage === contentLanguage.BILINGUAL
-                            ? interfaceLanguage === 'fr'
-                              ? keyword
-                              : undefined
-                            : calendarContentLanguage === contentLanguage.FRENCH
-                            ? keyword
-                            : undefined
-                        }
-                        dependencies={['english']}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (value || getFieldValue('english')) {
-                                return Promise.resolve();
-                              } else
-                                return Promise.reject(
-                                  new Error(
-                                    t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.validations.name'),
-                                  ),
-                                );
-                            },
-                          }),
-                        ]}
-                        data-cy="form-item-quick-create-person-name-french-label">
-                        <TextArea
-                          autoSize
-                          autoComplete="off"
-                          placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.namePlaceholder')}
-                          style={{
-                            borderRadius: '4px',
-                            border: `${
-                              calendarContentLanguage === contentLanguage.BILINGUAL
-                                ? '4px solid #E8E8E8'
-                                : '1px solid #b6c1c9'
-                            }`,
-                            width: '100%',
-                          }}
-                          size="large"
-                          data-cy="input-quick-create-person-name-french"
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        name="english"
-                        dependencies={['french']}
-                        initialValue={
-                          calendarContentLanguage === contentLanguage.BILINGUAL
-                            ? interfaceLanguage === 'en'
-                              ? keyword
-                              : undefined
-                            : calendarContentLanguage === contentLanguage.ENGLISH
-                            ? keyword
-                            : undefined
-                        }
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (value || getFieldValue('french')) {
-                                return Promise.resolve();
-                              } else
-                                return Promise.reject(
-                                  new Error(
-                                    t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.validations.name'),
-                                  ),
-                                );
-                            },
-                          }),
-                        ]}
-                        data-cy="form-item-quick-create-person-name-english-label">
-                        <TextArea
-                          autoSize
-                          autoComplete="off"
-                          placeholder={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.namePlaceholder')}
-                          style={{
-                            borderRadius: '4px',
-                            border: `${
-                              calendarContentLanguage === contentLanguage.BILINGUAL
-                                ? '4px solid #E8E8E8'
-                                : '1px solid #b6c1c9'
-                            }`,
-                            width: '100%',
-                          }}
-                          size="large"
-                          data-cy="input-quick-create-person-name-english"
-                        />
-                      </Form.Item>
-                    </BilingualInput>
-                  </ContentLanguageInput>
+                  <CreateMultiLingualFormItems
+                    calendarContentLanguage={calendarContentLanguage}
+                    form={form}
+                    name={['name']}
+                    data={createInitialNamesObjectFromKeyword(keyword, calendarContentLanguage)}
+                    validations={t('dashboard.events.addEditEvent.quickCreate.quickCreatePerson.validations.name')}
+                    dataCy={`input-quick-create-person-name-`}
+                    placeholder={placeHolderCollectionCreator({
+                      t,
+                      calendarContentLanguage,
+                      placeholderBase: 'dashboard.events.addEditEvent.quickCreate.quickCreatePerson.namePlaceholder',
+                      hasCommonPlaceHolder: true,
+                    })}
+                    required={true}>
+                    <TextArea
+                      autoSize
+                      autoComplete="off"
+                      style={{
+                        borderRadius: '4px',
+                        border: `${calendarContentLanguage.length > 1 ? '4px solid #E8E8E8' : '1px solid #b6c1c9'}`,
+                        width: '100%',
+                      }}
+                      size="large"
+                    />
+                  </CreateMultiLingualFormItems>
                   <Form.Item
                     name="occupation"
                     label={taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false)}
