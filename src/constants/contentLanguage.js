@@ -9,6 +9,7 @@ export const contentLanguage = {
 };
 
 export const contentLanguageKeyMap = {
+  // value must be a string of length 2. This is required for removeUneditedFallbackValues function to work properly.
   [contentLanguage.ENGLISH]: 'en',
   [contentLanguage.FRENCH]: 'fr',
   [contentLanguage.JAPANESE]: 'ja',

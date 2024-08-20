@@ -18,6 +18,7 @@ import useChildrenWithLanguageFallback from '../../hooks/useChildrenWithLanguage
  * @param {Array<string>} props.calendarContentLanguage - An array of languages to be displayed as tabs.
  * @param {string} [props.defaultTab] - The default tab key to be selected.
  * @param {Object} props.dataCyCollection - An array containing the data-cy attribute for each user interactable element eg. textarea. maintains the order of formItems.
+ * @param {Object} props.isFieldsDirty - Object with keys corresponding each content language and values as boolean to check if the field is dirty.
  * @param {Object} props.placeholderCollection - An object containing the placeholder attribute for each user interactable element eg. textarea. maintains the order of formItems.
  * @param {Boolean} props.skipChildModification - A boolean to skip the modification of children. Default is false. Used as a prop for multilingual text editor.
  *
