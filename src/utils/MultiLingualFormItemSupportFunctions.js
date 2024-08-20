@@ -24,3 +24,13 @@ export const placeHolderCollectionCreator = ({
 export const isDataValid = (data) => {
   return data && Object.values(data).some((value) => value && value != '');
 };
+
+export const createInitialNamesObjectFromKeyword = (keyword, calendarContentLanguage) => {
+  let name = {};
+  calendarContentLanguage.forEach((language) => {
+    const lanKey = contentLanguageKeyMap[language];
+    name[lanKey] = keyword;
+  });
+
+  return name;
+};
