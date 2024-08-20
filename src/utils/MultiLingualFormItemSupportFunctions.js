@@ -26,6 +26,7 @@ export const isDataValid = (data) => {
 };
 
 export const createInitialNamesObjectFromKeyword = (keyword, calendarContentLanguage) => {
+  // for creating initial names object for each language in quick create modals
   let name = {};
   calendarContentLanguage.forEach((language) => {
     const lanKey = contentLanguageKeyMap[language];
