@@ -149,23 +149,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
       .unwrap()
       .then(() => {
         setDirtyStatus(false);
-        getCalendar({ id: calendarId, sessionId: timestampRef })
-          .unwrap()
-          .then((response) => {
-            refetch();
-            if (response?.mode === calendarModes.READ_ONLY) setIsReadOnly(true);
-            else setIsReadOnly(false);
-            notification.success({
-              description: t('dashboard.settings.calendarSettings.notifications.update'),
-              placement: 'top',
-              closeIcon: <></>,
-              maxCount: 1,
-              duration: 3,
-            });
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        window.location.reload();
       })
       .catch((errorInfo) => {
         console.log(errorInfo);
