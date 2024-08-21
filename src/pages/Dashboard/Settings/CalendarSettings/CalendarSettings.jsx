@@ -149,12 +149,17 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
       .unwrap()
       .then(() => {
         setDirtyStatus(false);
-        window.location.reload();
+        reloadWithCallback();
       })
       .catch((errorInfo) => {
         console.log(errorInfo);
       });
   };
+
+  function reloadWithCallback() {
+    sessionStorage.setItem('reloadCallback', 'true');
+    window.location.reload();
+  }
 
   const onSaveHandler = () => {
     let requiredFields =
@@ -302,6 +307,20 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
 
     form.resetFields();
   }, [tabKey]);
+
+  useEffect(() => {
+    if (sessionStorage.getItem('reloadCallback') === 'true') {
+      sessionStorage.removeItem('reloadCallback');
+
+      notification.success({
+        description: t('dashboard.settings.calendarSettings.notifications.update'),
+        placement: 'top',
+        closeIcon: <></>,
+        maxCount: 1,
+        duration: 3,
+      });
+    }
+  }, []);
 
   return (
     currentCalendarData &&
