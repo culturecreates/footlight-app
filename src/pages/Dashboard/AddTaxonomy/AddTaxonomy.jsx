@@ -386,7 +386,7 @@ const AddTaxonomy = () => {
                           style={{
                             borderRadius: '4px',
                             border: `${
-                              calendarContentLanguage?.length > 1 ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
+                              calendarContentLanguage?.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'
                             }`,
                             width: '423px',
                           }}
@@ -423,7 +423,7 @@ const AddTaxonomy = () => {
                           style={{
                             borderRadius: '4px',
                             border: `${
-                              calendarContentLanguage?.length > 1 ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
+                              calendarContentLanguage?.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'
                             }`,
                             width: '423px',
                           }}

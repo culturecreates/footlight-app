@@ -122,7 +122,7 @@ export const formFieldValue = [
               autoComplete="off"
               style={{
                 borderRadius: '4px',
-                border: `${calendarContentLanguage.length > 1 ? '4px solid #E8E8E8' : '1px solid #b6c1c9'}`,
+                border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
                 width: '423px',
               }}
               size="large"
@@ -227,7 +227,7 @@ export const formFieldValue = [
         })}
         style={{
           borderRadius: '4px',
-          border: `${calendarContentLanguage.length > 1 ? '4px solid #E8E8E8' : '1px solid #b6c1c9'}`,
+          border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
           width: '423px',
         }}
         size="large"
