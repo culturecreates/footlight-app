@@ -14,13 +14,16 @@ export const bilingual = ({ interfaceLanguage, data }) => {
    */
 
   if (!data) return '';
+  if (data == Object && Object.keys(data).length === 0) return '';
   if (!interfaceLanguage) interfaceLanguage = contentLanguageKeyMap[contentLanguage.ENGLISH];
 
   let requiredLanguageData = data[interfaceLanguage];
+  const availableLanguageKeys = Object.keys(data);
 
   if (!requiredLanguageData) {
-    const foundLanguage = userLanguages.find(({ key }) => data[key.toLowerCase()] !== undefined);
-    const lanKey = foundLanguage.key.toLowerCase();
+    const foundLanguage = userLanguages.find(({ key }) => data[key?.toLowerCase()] !== undefined);
+    const lanKey = foundLanguage ? foundLanguage?.key?.toLowerCase() : availableLanguageKeys[0];
+
     requiredLanguageData = data[lanKey];
   }
 

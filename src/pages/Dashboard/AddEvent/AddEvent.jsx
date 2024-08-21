@@ -423,13 +423,13 @@ function AddEvent() {
             });
 
             const ticketNote = filterUneditedFallbackValues({
-              values: values?.englishTicketNote,
+              values: values?.ticketNote,
               activeFallbackFieldsInfo: fallbackStatus,
               fieldName: 'ticketNote',
             });
 
             description = filterUneditedFallbackValues({
-              values: values?.frenchEditor?.trim(),
+              values: values?.editor,
               activeFallbackFieldsInfo: fallbackStatus,
               fieldName: 'editor',
             });
