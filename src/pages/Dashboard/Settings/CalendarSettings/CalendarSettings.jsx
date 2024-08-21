@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef } from 'react';
 import './calendarSettings.css';
 import { Row, Col, Form, Divider, notification, Button, message } from 'antd';
@@ -14,16 +13,13 @@ import { getUserDetails } from '../../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
 import PrimaryButton from '../../../../components/Button/Primary';
 import { useUpdateCalendarMutation } from '../../../../services/calendar';
-import { contentLanguage, contentLanguageKeyMap } from '../../../../constants/contentLanguage';
 import { useAddImageMutation } from '../../../../services/image';
 import { calendarModes } from '../../../../constants/calendarModes';
-import { use } from 'i18next';
 
 function CalendarSettings({ setDirtyStatus, tabKey }) {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const [currentCalendarData, , , getCalendar, , , setIsReadOnly, refetch, , isCurrentCalendarInfoLoading] =
-    useOutletContext();
+  const [currentCalendarData, , , , , , , , , isCurrentCalendarInfoLoading] = useOutletContext();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId } = useParams();
   const { user } = useSelector(getUserDetails);
