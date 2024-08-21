@@ -584,7 +584,10 @@ function AddEvent() {
                 place,
               };
             }
-            if (Object.keys(virtualLocation)?.length > 0 || values?.virtualLocationOnlineLink) {
+            if (
+              (virtualLocation == Object && Object.keys(virtualLocation)?.length > 0) ||
+              values?.virtualLocationOnlineLink
+            ) {
               const name = virtualLocation;
 
               locationId = {
