@@ -1340,7 +1340,6 @@ function AddEvent() {
   };
 
   const onValuesChangeHandler = (changedValues, allValues) => {
-    console.log('changedValues', changedValues);
     if (eventId) {
       if (!updateEventSuccess) {
         //Check if the initial values are changed by quill editor

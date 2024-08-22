@@ -119,6 +119,7 @@ function MultiLingualTextEditor(props) {
   const [isInitialRender, setIsInitialRender] = useState(true);
   const [fallbackStatus, setFallbackStatus] = useState(null);
   const [fallbackPromptTextCollection, setFallbackPromptTextCollection] = useState({});
+
   useEffect(() => {
     if (!currentCalendarData) return;
 
@@ -184,10 +185,14 @@ function MultiLingualTextEditor(props) {
         skipChildModification={true}>
         {calendarContentLanguage.map((language) => {
           const languageKey = contentLanguageKeyMap[language];
-          const initialValue = data?.[languageKey] || fallbackStatus?.[languageKey]?.fallbackLiteralValue;
+          let initialValue = data?.[languageKey] || fallbackStatus?.[languageKey]?.fallbackLiteralValue;
           const tagDisplayStatus = fallbackStatus?.[languageKey]?.tagDisplayStatus;
           const fallbackLiteralKey = fallbackStatus?.[languageKey]?.fallbackLiteralKey;
           const promptText = fallbackPromptTextCollection[languageKey];
+
+          // Check if initialValue is a string and in correct format
+          if (typeof initialValue === 'string' && !/^<p>.*<\/p>$/.test(initialValue.trim()))
+            initialValue = `<p>${initialValue}</p>`;
 
           return (
             <div key={language}>
