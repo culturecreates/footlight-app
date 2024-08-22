@@ -53,7 +53,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Create Docker network
-        run: docker network create footlight-network
+        run: docker network create footlight-network.test
 
       - name: Build Footlight Container
         if: ${{ github.event.inputs.baseUrl == '' }}
@@ -63,7 +63,7 @@ jobs:
       - name: Run Footlight Container
         if: ${{ github.event.inputs.baseUrl == '' }}
         run: |
-          docker run -d --name footlight --network footlight-network -p 3000:3000 footlight
+          docker run -d --name footlight --network footlight-network.test -p 3000:3000 footlight
 
       - name: Wait for Footlight to be ready
         if: ${{ github.event.inputs.baseUrl == '' }}
@@ -124,7 +124,7 @@ jobs:
 
           # Run Cypress tests with the formatted --env argument
           docker run \
-          --network footlight-network \
+          --network footlight-network.test \
           -e XDG_RUNTIME_DIR=/tmp/runtime \
           -e CYPRESS_BASE_URL=$base_url \
           -e CYPRESS_ADMIN_EN_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
