@@ -80,7 +80,9 @@ function Dashboard() {
     const accessTokenFromCookie = Cookies.get('accessToken');
     const refreshTokenFromCookie = Cookies.get('refreshToken');
     const calendarIdFromCookie = Cookies.get('calendarId');
+
     const calId = calendarId || calendarIdFromCookie;
+    if (calendarId) Cookies.set('calendarId', calId);
 
     if (!checkToken(accessToken, accessTokenFromCookie)) navigate(PathName.Login);
 
