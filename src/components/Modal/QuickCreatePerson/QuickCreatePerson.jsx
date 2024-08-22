@@ -147,21 +147,10 @@ function QuickCreatePerson(props) {
         .validateFields(validationFieldNames)
         .then(() => {
           var values = form.getFieldsValue(true);
-          let name = {},
+          let name = values?.name,
             url = {},
             occupation = [],
             personObj = {};
-
-          if (values?.english)
-            name = {
-              en: values?.english,
-            };
-
-          if (values?.french)
-            name = {
-              ...name,
-              fr: values?.french,
-            };
 
           if (values?.contactWebsiteUrl)
             url = {
