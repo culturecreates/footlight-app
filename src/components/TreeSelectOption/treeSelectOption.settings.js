@@ -128,10 +128,9 @@ export const treeEntitiesOption = (
       name:
         entity?.name?.en || entity?.name?.fr
           ? contentLanguageBilingual({
-              en: entity?.name?.en,
-              fr: entity?.name?.fr,
+              data: entity?.name,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-              calendarContentLanguage: calendarContentLanguage,
+              calendarContentLanguage,
             })
           : typeof entity?.name === 'string' && entity?.name,
       description:

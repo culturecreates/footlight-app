@@ -7,7 +7,7 @@ import PrimaryButton from '../../Button/Primary/Primary';
 import { Row, Col, Form, Input, notification, Dropdown } from 'antd';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
-import { contentLanguage, contentLanguageKeyMap } from '../../../constants/contentLanguage';
+import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { treeTaxonomyOptions } from '../../TreeSelectOption/treeSelectOption.settings';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -118,13 +118,8 @@ function QuickCreatePlace(props) {
         form.setFieldsValue({
           address: results[0]?.formatted_address,
           addressCountry: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
-          addressCountryEn: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
           addressLocality: results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
-          addressLocalityEn: results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
           addressRegion: results[0].address_components.find((item) =>
-            item.types.includes('administrative_area_level_1'),
-          )?.short_name,
-          addressRegionEn: results[0].address_components.find((item) =>
             item.types.includes('administrative_area_level_1'),
           )?.short_name,
           postalCode: results[0].address_components.find((item) => item.types.includes('postal_code'))?.long_name,
@@ -139,7 +134,6 @@ function QuickCreatePlace(props) {
         else if (!streetNumber && !streetName) streetAddress = null;
         form.setFieldsValue({
           streetAddress: streetAddress,
-          streetAddressEn: streetAddress,
         });
         return getLatLng(results[0]);
       })
@@ -177,35 +171,24 @@ function QuickCreatePlace(props) {
         .validateFields([...validationFieldNames, 'address'])
         .then(() => {
           var values = form.getFieldsValue(true);
-          let languageKey;
-          if (calendarContentLanguage == contentLanguage.ENGLISH) languageKey = 'en';
-          else if (calendarContentLanguage == contentLanguage.FRENCH) languageKey = 'fr';
-          let postalObj = {
-            addressCountry: { [languageKey]: values.addressCountry },
-            addressLocality: { [languageKey]: values.addressLocality },
-            addressRegion: { [languageKey]: values.addressRegion },
-            postalCode: values.postalCode,
-            streetAddress: { [languageKey]: values.streetAddress },
-          };
+          let addressCountry = {};
+          let addressLocality = {};
+          let addressRegion = {};
+          let postalCode = {};
+          let streetAddress = {};
 
-          if (calendarContentLanguage == contentLanguage.BILINGUAL) {
-            postalObj.addressCountry = {
-              fr: values.addressCountry,
-              en: values.addressCountryEn,
-            };
-            postalObj.addressLocality = {
-              fr: values.addressLocality,
-              en: values.addressLocalityEn,
-            };
-            postalObj.addressRegion = {
-              fr: values.addressRegion,
-              en: values.addressRegionEn,
-            };
-            postalObj.streetAddress = {
-              fr: values.streetAddress,
-              en: values.streetAddressEn,
-            };
-          }
+          calendarContentLanguage.forEach((language) => {
+            const languageKey = contentLanguageKeyMap[language];
+
+            if (values?.addressCountry) addressCountry[languageKey] = values.addressCountry;
+            if (values?.addressLocality) addressLocality[languageKey] = values.addressLocality;
+            if (values?.addressRegion) addressRegion[languageKey] = values.addressRegion;
+            if (values?.postalCode) postalCode[languageKey] = values.postalCode;
+            if (values?.streetAddress) streetAddress[languageKey] = values.streetAddress;
+          });
+
+          const postalObj = { addressCountry, addressLocality, addressRegion, streetAddress };
+
           if (!toggle) {
             setOpen(false);
             setLoaderModalOpen(true);
@@ -214,19 +197,10 @@ function QuickCreatePlace(props) {
             .unwrap()
             .then((response) => {
               if (response && response?.statusCode == 202) {
-                let name = {},
+                let name = values?.name,
                   placeObj = {},
                   additionalType = undefined;
-                if (values?.english)
-                  name = {
-                    en: values?.english,
-                  };
 
-                if (values?.french)
-                  name = {
-                    ...name,
-                    fr: values?.french,
-                  };
                 if (values?.placeType) {
                   additionalType = values?.placeType?.map((placeTypeId) => {
                     return {
