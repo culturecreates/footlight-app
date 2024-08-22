@@ -4,7 +4,7 @@ import { WarningOutlined } from '@ant-design/icons';
 import '../BilingualInput/bilingualInput.css';
 import { useTranslation } from 'react-i18next';
 import LiteralBadge from '../Badge/LiteralBadge';
-import { contentLanguage, contentLanguageKeyMap } from '../../constants/contentLanguage';
+import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 import { capitalizeFirstLetter } from '../../utils/stringManipulations';
 import { useOutletContext } from 'react-router-dom';
 import useChildrenWithLanguageFallback from '../../hooks/useChildrenWithLanguageFallback';
@@ -53,9 +53,20 @@ function MultilingualInput({ children, ...rest }) {
   let labelCollection = {};
   let fallbackPromptTextCollection = {};
   let itemCollection = [];
-  let defaultTab =
-    defaultTabProp ||
-    (fieldData ? Object.keys(fieldData).find((key) => fieldData[key]) : contentLanguageKeyMap[contentLanguage.FRENCH]);
+  let defaultTab = defaultTabProp;
+
+  if (!defaultTabProp) {
+    let flag = false;
+    for (let index = 0; index < calendarContentLanguage.length; index++) {
+      const langKey = contentLanguageKeyMap[calendarContentLanguage[index]];
+      if (fieldData && fieldData[langKey]) {
+        defaultTab = langKey;
+        flag = true;
+        break;
+      }
+    }
+    if (!flag) defaultTab = contentLanguageKeyMap[calendarContentLanguage[0]];
+  }
 
   // label creation for each tab
   calendarContentLanguage.map((language) => {
