@@ -63,7 +63,7 @@ jobs:
       - name: Run Footlight Container
         if: ${{ github.event.inputs.baseUrl == '' }}
         run: |
-          docker run -d --name footlight --network footlight-network.test -p 3000:3000 footlight
+          docker run -d --name test.footlight.docker --network footlight-network.test -p 3000:3000 footlight
 
       - name: Wait for Footlight to be ready
         if: ${{ github.event.inputs.baseUrl == '' }}
@@ -94,7 +94,7 @@ jobs:
 
           base_url="${{ github.event.inputs.baseUrl }}"
           if [ -z "$base_url" ]; then
-            base_url="http://footlight:3000/"
+            base_url="http://test.footlight.docker:3000/"
           fi
           
           grep_value="${{ github.event.inputs.grep }}"
