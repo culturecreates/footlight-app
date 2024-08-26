@@ -869,9 +869,9 @@
           "langagePreference": {
             "en": "Anglais",
             "fr": "Français",
-            "ko": "Korean",
-            "ja": "Japanese",
-            "zh": "Chinese"
+            "ko": "Coréen",
+            "ja": "Japonais",
+            "zh": "Chinois"
           }
         },
         "organizationSearchHeading": "Organisation",
@@ -1166,9 +1166,9 @@
   "common": {
     "tabEnglish": "Anglais",
     "tabFrench": "Français",
-    "tabJapanese": "Japanese",
-    "tabKorean": "Korean",
-    "tabChinese": "Chinese",
+    "tabJapanese": "Japonais",
+    "tabKorean": "Coréen",
+    "tabChinese": "Chinois",
     "noneFound": "Non trouvé",
     "unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous les ignorer ?",
     "keepEditing": "Poursuivre l'édition",

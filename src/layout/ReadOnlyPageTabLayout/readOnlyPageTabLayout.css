@@ -23,3 +23,7 @@
   border-bottom: 2px solid #b6c1c9;
   width: 100%;
 }
+
+.read-only-tab-layout-wrapper {
+  max-width: 100%;
+}
