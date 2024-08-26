@@ -1435,16 +1435,17 @@ function AddEvent() {
   useEffect(() => {
     let shouldDisplay = true;
 
-    for (let key in activeFallbackFieldsInfo) {
-      if (Object.prototype.hasOwnProperty.call(activeFallbackFieldsInfo, key)) {
-        const tagDisplayStatus =
-          activeFallbackFieldsInfo[key]?.en?.tagDisplayStatus || activeFallbackFieldsInfo[key]?.fr?.tagDisplayStatus;
-        if (tagDisplayStatus) {
-          shouldDisplay = false;
-          break;
-        }
+    const fallbackFieldNames = Object.keys(activeFallbackFieldsInfo) || [];
+    let individualFallbackFieldsCollection = [];
+    fallbackFieldNames.forEach((name) => {
+      individualFallbackFieldsCollection.push(...Object.values(activeFallbackFieldsInfo[name] || []));
+    });
+
+    individualFallbackFieldsCollection.forEach((element) => {
+      if (element?.tagDisplayStatus) {
+        shouldDisplay = false;
       }
-    }
+    });
 
     if (!shouldDisplay) {
       dispatch(setLanguageLiteralBannerDisplayStatus(true));

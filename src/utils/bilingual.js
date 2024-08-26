@@ -34,22 +34,21 @@ export const contentLanguageBilingual = ({
   interfaceLanguage = i18next.language,
   calendarContentLanguage,
   data,
-  requiredLanguage,
+  requiredLanguageKey,
 }) => {
   /**
    * @param {Object} params - The parameters object.
    * @param {string} params.interfaceLanguage - Active interface language.
    * @param {string[]} params.calendarContentLanguage - Array of calendar content languages.
    * @param {Object} params.data - Multilingual data object.
-   * @param {string} params.requiredLanguage - Required content language. If data of any particular language is required.
+   * @param {string} params.requiredLanguagekey - Required content language. If data of any particular language is required.
    * @returns {string} The string data of required content language or an empty string if no data is available.
    **/
 
   let contentLanguageKey;
   if (!data) return '';
-  if (requiredLanguage) {
-    contentLanguageKey = contentLanguageKeyMap[requiredLanguage];
-    const requiredData = data[contentLanguageKey];
+  if (requiredLanguageKey) {
+    const requiredData = data[requiredLanguageKey];
     if (requiredData) return requiredData;
   }
 

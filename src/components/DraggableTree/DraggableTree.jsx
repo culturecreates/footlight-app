@@ -50,10 +50,11 @@ const DraggableTree = ({
           conceptNameCollection[contentLanguageKeyMap[lang]] = conceptNameInCurrentLanguage;
         }
       });
+      const requiredLanguageKey = contentLanguageKeyMap[language];
       const card = {
         key: item.key,
         name: contentLanguageBilingual({
-          requiredLanguage: language,
+          requiredLanguageKey,
           data: item?.name,
           interfaceLanguage: user.interfaceLanguage,
           calendarContentLanguage,
@@ -62,7 +63,7 @@ const DraggableTree = ({
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span className="draggable-tree-concept-label grabbable">
               {contentLanguageBilingual({
-                requiredLanguage: language,
+                requiredLanguageKey,
                 data: item?.name,
                 interfaceLanguage: user.interfaceLanguage,
                 calendarContentLanguage,
