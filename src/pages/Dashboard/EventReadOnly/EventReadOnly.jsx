@@ -200,16 +200,6 @@ function EventReadOnly() {
     }
   }, [isLoading]);
 
-  useEffect(() => {
-    if (!eventData) return;
-    // name
-    // initialVirtualLocation
-    // accessibilityNote;
-    // contactPoint;
-    // description;
-    // offerConfiguration;
-  }, [activeTabKey, eventData]);
-
   return (
     !isLoading &&
     !taxonomyLoading && (
