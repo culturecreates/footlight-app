@@ -2079,9 +2079,7 @@ function AddEvent() {
               <Form.Item
                 label={t('dashboard.events.addEditEvent.language.title')}
                 hidden={
-                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME) ||
-                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_EN) ||
-                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_FR)
+                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME)
                     ? adminCheckHandler({ calendar, user })
                       ? false
                       : true
@@ -2937,15 +2935,9 @@ function AddEvent() {
             <>
               <Form.Item
                 label={t('dashboard.events.addEditEvent.otherInformation.description.title')}
-                required={
-                  requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION) ||
-                  requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION_EN) ||
-                  requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION_FR)
-                }
+                required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION)}
                 hidden={
-                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION) ||
-                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION_EN) ||
-                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION_FR)
+                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION)
                     ? adminCheckHandler({ calendar, user })
                       ? false
                       : true
