@@ -692,7 +692,7 @@ function EventReadOnly() {
                         </p>
                       )}
 
-                      {initialVirtualLocation[0] == Object && initialVirtualLocation[0]?.name && (
+                      {initialVirtualLocation[0] && initialVirtualLocation[0]?.name && (
                         <p className="read-only-event-content">
                           {contentLanguageBilingual({
                             calendarContentLanguage,
@@ -830,20 +830,15 @@ function EventReadOnly() {
                         {t('dashboard.events.addEditEvent.otherInformation.contact.title')}
                       </p>
                     )}
-                    {eventData?.contactPoint?.name?.fr && (
+                    {eventData?.contactPoint && (
                       <>
-                        <p className="read-only-event-content-sub-title-secondary">
-                          {t('dashboard.events.addEditEvent.otherInformation.contact.frenchContactTitle')}
+                        <p className="read-only-event-content">
+                          {contentLanguageBilingual({
+                            calendarContentLanguage,
+                            data: eventData?.contactPoint?.name,
+                            requiredLanguageKey: activeTabKey,
+                          })}
                         </p>
-                        <p className="read-only-event-content">{eventData?.contactPoint?.name?.fr}</p>
-                      </>
-                    )}
-                    {eventData?.contactPoint?.name?.en && (
-                      <>
-                        <p className="read-only-event-content-sub-title-secondary">
-                          {t('dashboard.events.addEditEvent.otherInformation.contact.englishcontactTitle')}
-                        </p>
-                        <p className="read-only-event-content">{eventData?.contactPoint?.name?.en}</p>
                       </>
                     )}
                     {eventData?.contactPoint?.url?.uri && (
@@ -1167,7 +1162,7 @@ function EventReadOnly() {
                                     <p className="read-only-event-content">
                                       {contentLanguageBilingual({
                                         data: offer?.name,
-                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        requiredLanguageKey: activeTabKey,
                                         calendarContentLanguage: calendarContentLanguage,
                                       })}
                                     </p>

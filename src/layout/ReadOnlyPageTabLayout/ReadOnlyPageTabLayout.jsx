@@ -6,9 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { Tabs } from 'antd';
 import { useDispatch } from 'react-redux';
 import { setActiveTabKey } from '../../redux/reducer/readOnlyTabSlice';
-
-// eslint-disable-next-line no-unused-vars
-const ReadOnlyPageTabLayout = ({ children, ...rest }) => {
+import './readOnlyPageTabLayout.css';
+const ReadOnlyPageTabLayout = ({ children }) => {
   const [currentCalendarData, , , , , ,] = useOutletContext();
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -38,18 +37,20 @@ const ReadOnlyPageTabLayout = ({ children, ...rest }) => {
   }, []);
 
   return (
-    <Tabs
-      type="card"
-      items={itemCollection}
-      size="medium"
-      tabBarGutter="0"
-      tabPosition="top"
-      animated="false"
-      onChange={handleTabChange}
-      tabBarStyle={{ margin: '0' }}
-      className="bilingual-input-tab"
-      data-cy="bilingual-tabs"
-    />
+    <div className="read-only-tab-layout-wrapper">
+      <Tabs
+        type="card"
+        items={itemCollection}
+        size="medium"
+        tabBarGutter="0"
+        tabPosition="top"
+        animated="false"
+        onChange={handleTabChange}
+        tabBarStyle={{ marginBottom: '16px', fontSize: '16px', fontWeight: '600' }}
+        data-cy="bilingual-tabs"
+        className="read-only-tab-layout"
+      />
+    </div>
   );
 };
 
