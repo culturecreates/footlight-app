@@ -36,7 +36,7 @@ import Select from '../../../components/Select';
 import { eventStatus, eventStatusOptions } from '../../../constants/eventStatus';
 import TimePickerStyled from '../../../components/TimePicker/TimePicker';
 import DateRangePicker from '../../../components/DateRangePicker';
-import { dateTypeOptions, dateTypes } from '../../../constants/dateTypes';
+import { dateFrequencyTypes, dateTypeOptions, dateTypes } from '../../../constants/dateTypes';
 import ChangeType from '../../../components/ChangeType';
 import CardEvent from '../../../components/Card/Common/Event';
 import Tags from '../../../components/Tags/Common/Tags';
@@ -108,6 +108,7 @@ import MultipleImageUpload from '../../../components/MultipleImageUpload';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import { getWeekDayDates } from '../../../utils/getWeekDayDates';
+import { arraysAreEqual } from '../../../utils/arraysAreEqual';
 
 const { TextArea } = Input;
 
@@ -329,6 +330,59 @@ function AddEvent() {
     return Promise.resolve();
   };
 
+  const detectDateChange = ({
+    initialDateType,
+    currentDateType,
+    initialStartDate,
+    currentStartDate,
+    initialEndDate,
+    currentEndDate,
+    initialFrequency,
+    currentFrequency,
+    initialRecurringEvent,
+    currentRecurringEvent,
+    customDates,
+  }) => {
+    if (initialDateType !== currentDateType) return true;
+    else
+      switch (currentDateType) {
+        case dateTypes.RANGE:
+          if (initialStartDate != currentStartDate || initialEndDate != currentEndDate) return true;
+          else return false;
+        case dateTypes.MULTIPLE:
+          if (initialFrequency != currentFrequency) return true;
+          else
+            switch (currentFrequency) {
+              case dateFrequencyTypes.DAILY:
+                if (
+                  initialRecurringEvent?.startDate != currentRecurringEvent?.startDate ||
+                  initialRecurringEvent?.endDate != currentRecurringEvent?.endDate ||
+                  initialRecurringEvent?.startTime != currentRecurringEvent?.startTime ||
+                  initialRecurringEvent?.endTime != currentRecurringEvent?.endTime
+                )
+                  return true;
+                else return false;
+
+              case dateFrequencyTypes.WEEKLY:
+                if (
+                  initialRecurringEvent?.startDate != currentRecurringEvent?.startDate ||
+                  initialRecurringEvent?.endDate != currentRecurringEvent?.endDate ||
+                  initialRecurringEvent?.startTime != currentRecurringEvent?.startTime ||
+                  initialRecurringEvent?.endTime != currentRecurringEvent?.endTime ||
+                  !arraysAreEqual(initialRecurringEvent?.weekDays, currentRecurringEvent?.weekDays)
+                )
+                  return true;
+                else return false;
+
+              case dateFrequencyTypes.CUSTOM:
+                return hasSubEventConfigChanges(customDates, eventData?.subEventConfiguration);
+            }
+          break;
+        default:
+          break;
+      }
+  };
+
   const addUpdateEventApiHandler = (eventObj, toggle, sameAs) => {
     var promise = new Promise(function (resolve, reject) {
       if ((!eventId || eventId === '') && newEventId === null) {
@@ -524,9 +578,9 @@ function AddEvent() {
             let multipleDatesFlag = false;
             let multipleStartTimeFlag = false;
             let multipleEndTimeFlag = false;
-
+            let recurEvent = {};
             if (dateTypeValue === dateTypes.MULTIPLE) {
-              const recurEvent = {
+              recurEvent = {
                 frequency: form.getFieldsValue().frequency !== 'CUSTOM' && values.frequency,
                 startDate:
                   form.getFieldsValue().frequency !== 'CUSTOM'
@@ -630,9 +684,7 @@ function AddEvent() {
               if (eventId) {
                 if (hasSubEventConfigChanges(customDates, subEventConfig)) {
                   // Changes detected
-                  if (eventData?.publishState === eventPublishState.PUBLISHED) {
-                    sameAs = eventData?.sameAs?.filter((item) => item?.type !== sameAsTypes.ARTSDATA_IDENTIFIER);
-                  }
+
                   customDates.forEach(({ startDate, customTimes = [] }) => {
                     processCustomTimes(startDate, customTimes);
                   });
@@ -646,15 +698,7 @@ function AddEvent() {
                 });
               }
             }
-            if (eventId) {
-              if (eventData?.subEventConfiguration) {
-                if (frequency !== 'CUSTOM') {
-                  if (eventData?.publishState === eventPublishState.PUBLISHED) {
-                    sameAs = eventData?.sameAs?.filter((item) => item?.type !== sameAsTypes.ARTSDATA_IDENTIFIER);
-                  }
-                }
-              }
-            }
+
             if (dateTypeValue === dateTypes.SINGLE) {
               if (startTimeValue) startDateTime = dateTimeConverter(datePickerValue, startTimeValue, customTimeFlag);
               else
@@ -675,6 +719,30 @@ function AddEvent() {
                 endDateTime = moment
                   .tz(values?.dateRangePicker[1], eventData?.scheduleTimezone ?? 'Canada/Eastern')
                   .format('YYYY-MM-DD');
+            }
+
+            if (eventId && values?.initialDateType !== dateTypes.SINGLE) {
+              if (
+                detectDateChange({
+                  initialDateType: values.initialDateType,
+                  currentDateType: dateType,
+                  initialStartDate: eventData?.startDate ?? eventData?.startDateTime,
+                  currentStartDate: startDateTime,
+                  initialEndDate: eventData?.endDate ?? eventData?.endDateTime,
+                  currentEndDate: endDateTime,
+                  initialFrequency: eventData?.subEventConfiguration
+                    ? dateFrequencyTypes.CUSTOM
+                    : eventData?.recurringEvent?.frequency,
+                  currentFrequency: values.frequency,
+                  initialRecurringEvent: eventData?.recurringEvent,
+                  currentRecurringEvent: recurEvent,
+                  customDates,
+                })
+              ) {
+                if (eventData?.publishState === eventPublishState.PUBLISHED) {
+                  sameAs = eventData?.sameAs?.filter((item) => item?.type !== sameAsTypes.ARTSDATA_IDENTIFIER);
+                }
+              }
             }
 
             if (values?.eventType) {
@@ -1642,15 +1710,17 @@ function AddEvent() {
           eventData?.subEventConfiguration
         )
           isRecurring = true;
-        setDateType(
-          dateTimeTypeHandler(
-            eventData?.startDate,
-            eventData?.startDateTime,
-            eventData?.endDate,
-            eventData?.endDateTime,
-            isRecurring,
-          ),
+        let initialDateType = dateTimeTypeHandler(
+          eventData?.startDate,
+          eventData?.startDateTime,
+          eventData?.endDate,
+          eventData?.endDateTime,
+          isRecurring,
         );
+        setDateType(initialDateType);
+        form.setFieldsValue({
+          initialDateType,
+        });
         setTicketType(eventData?.offerConfiguration?.category);
         if (initialPlace && initialPlace?.length > 0) {
           initialPlace[0] = {
