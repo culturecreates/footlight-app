@@ -584,10 +584,7 @@ function AddEvent() {
                 place,
               };
             }
-            if (
-              (virtualLocation == Object && Object.keys(virtualLocation)?.length > 0) ||
-              values?.virtualLocationOnlineLink
-            ) {
+            if (Object.keys(virtualLocation ?? {})?.length > 0 || values?.virtualLocationOnlineLink) {
               const name = virtualLocation;
 
               locationId = {
@@ -727,7 +724,7 @@ function AddEvent() {
             const isCustomOrMultipleDatesHasEndTime = customEndTimeFlag || multipleEndTimeFlag;
             const isCustomOrMultipleDatesHasStartTime = customStartTimeFlag || multipleStartTimeFlag;
             eventObj = {
-              name: !(Object.keys(name).length > 0) ? { ...name, ...eventData?.name } : name,
+              name: !(Object.keys(name ?? {})?.length > 0) ? { ...name, ...eventData?.name } : name,
               ...((isStartDateConvertedCustomDates || isCustomOrMultipleDatesHasStartTime) && {
                 startDateTime,
               }),
@@ -741,7 +738,7 @@ function AddEvent() {
                 endDate: endDateTime,
               }),
               eventStatus: values?.eventStatus,
-              ...((values?.englishEditor || values?.frenchEditor) && { description }),
+              ...(Object.keys(description ?? {})?.length > 0 && { description }),
               ...(values?.eventAccessibility && {
                 accessibility,
               }),
