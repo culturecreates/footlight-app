@@ -555,6 +555,7 @@ function OrganizationsReadOnly() {
                                           : typeof place?.name === 'string' && place?.name
                                       }
                                       icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
+                                      calendarContentLanguage={calendarContentLanguage}
                                       bordered
                                       itemWidth="100%"
                                     />;
@@ -581,6 +582,7 @@ function OrganizationsReadOnly() {
                                           : typeof person?.name === 'string' && person?.name
                                       }
                                       icon={<UserOutlined style={{ color: '#607EFC' }} />}
+                                      calendarContentLanguage={calendarContentLanguage}
                                       bordered
                                       itemWidth="100%"
                                     />;
@@ -609,6 +611,7 @@ function OrganizationsReadOnly() {
                                         }
                                         icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
                                         description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                                        calendarContentLanguage={calendarContentLanguage}
                                         bordered
                                         itemWidth="100%"
                                       />

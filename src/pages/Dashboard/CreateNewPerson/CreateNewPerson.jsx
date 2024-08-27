@@ -883,6 +883,7 @@ function CreateNewPerson() {
                                   : typeof place?.name === 'string' && place?.name
                               }
                               icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
+                              calendarContentLanguage={calendarContentLanguage}
                               bordered
                               itemWidth="100%"
                             />;
@@ -916,6 +917,7 @@ function CreateNewPerson() {
                                     data-cy="organization-logo"
                                   />
                                 }
+                                calendarContentLanguage={calendarContentLanguage}
                                 bordered
                                 itemWidth="100%"
                               />
@@ -945,6 +947,7 @@ function CreateNewPerson() {
                                 }
                                 icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
                                 description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                                calendarContentLanguage={calendarContentLanguage}
                                 bordered
                                 itemWidth="100%"
                               />

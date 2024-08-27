@@ -57,6 +57,7 @@ export const placesOptions = (data, user, calendarContentLanguage, source = sour
                 })
               : typeof place?.description === 'string' && place?.description
           }
+          calendarContentLanguage={calendarContentLanguage}
           artsDataLink={place?.uri}
           showExternalSourceLink={true}
         />

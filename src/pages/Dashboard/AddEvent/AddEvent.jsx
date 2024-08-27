@@ -3187,6 +3187,7 @@ function AddEvent() {
                           );
                         }}
                         edit={organizer?.source === sourceOptions.CMS && true}
+                        calendarContentLanguage={calendarContentLanguage}
                         onEdit={(e) =>
                           organizerPerformerSupporterPlaceNavigationHandler(organizer?.value, organizer?.type, e)
                         }
@@ -3653,6 +3654,7 @@ function AddEvent() {
                         icon={performer?.label?.props?.icon}
                         name={performer?.name}
                         description={performer?.description}
+                        calendarContentLanguage={calendarContentLanguage}
                         bordered
                         closable
                         itemWidth="100%"
@@ -3899,6 +3901,7 @@ function AddEvent() {
                         onEdit={(e) =>
                           organizerPerformerSupporterPlaceNavigationHandler(supporter?.value, supporter?.type, e)
                         }
+                        calendarContentLanguage={calendarContentLanguage}
                         creatorId={supporter?.creatorId}
                         fallbackConfig={supporter?.fallBackStatus}
                       />

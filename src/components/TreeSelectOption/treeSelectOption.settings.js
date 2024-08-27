@@ -126,6 +126,7 @@ export const treeEntitiesOption = (
                 })
               : typeof entity?.description === 'string' && entity?.description
           }
+          calendarContentLanguage={calendarContentLanguage}
           artsDataLink={entity?.uri}
           showExternalSourceLink={true}
         />

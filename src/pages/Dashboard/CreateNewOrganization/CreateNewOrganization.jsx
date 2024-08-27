@@ -1396,6 +1396,7 @@ function CreateNewOrganization() {
                               }
                               icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
                               // description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                              calendarContentLanguage={calendarContentLanguage}
                               bordered
                               itemWidth="100%"
                             />;
@@ -1423,6 +1424,7 @@ function CreateNewOrganization() {
                               }
                               icon={<UserOutlined style={{ color: '#607EFC' }} />}
                               // description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                              calendarContentLanguage={calendarContentLanguage}
                               bordered
                               itemWidth="100%"
                             />;
@@ -1451,6 +1453,7 @@ function CreateNewOrganization() {
                                 }
                                 icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
                                 description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                                calendarContentLanguage={calendarContentLanguage}
                                 bordered
                                 itemWidth="100%"
                               />

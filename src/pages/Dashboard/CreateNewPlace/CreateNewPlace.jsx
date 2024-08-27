@@ -2688,6 +2688,7 @@ function CreateNewPlace() {
                               }
                               icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
                               bordered
+                              calendarContentLanguage={calendarContentLanguage}
                               itemWidth="100%"
                             />;
                           })}
@@ -2720,6 +2721,7 @@ function CreateNewPlace() {
                                     data-cy="organization-logo"
                                   />
                                 }
+                                calendarContentLanguage={calendarContentLanguage}
                                 bordered
                                 itemWidth="100%"
                               />
@@ -2747,6 +2749,7 @@ function CreateNewPlace() {
                                   : typeof person?.name === 'string' && person?.name
                               }
                               icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
+                              calendarContentLanguage={calendarContentLanguage}
                               bordered
                               itemWidth="100%"
                             />;
@@ -2775,6 +2778,7 @@ function CreateNewPlace() {
                                 }
                                 icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
                                 description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                                calendarContentLanguage={calendarContentLanguage}
                                 bordered
                                 itemWidth="100%"
                               />

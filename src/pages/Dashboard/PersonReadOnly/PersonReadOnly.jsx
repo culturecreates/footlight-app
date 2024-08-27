@@ -449,6 +449,7 @@ function PersonReadOnly() {
                                     : typeof place?.name === 'string' && place?.name
                                 }
                                 icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
+                                calendarContentLanguage={calendarContentLanguage}
                                 bordered
                                 itemWidth="100%"
                               />;
@@ -482,6 +483,7 @@ function PersonReadOnly() {
                                       data-cy="organization-logo"
                                     />
                                   }
+                                  calendarContentLanguage={calendarContentLanguage}
                                   bordered
                                   itemWidth="100%"
                                 />
@@ -512,6 +514,7 @@ function PersonReadOnly() {
                                   icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
                                   description={moment(event.startDateTime).format('YYYY-MM-DD')}
                                   bordered
+                                  calendarContentLanguage={calendarContentLanguage}
                                   itemWidth="100%"
                                 />
                               );

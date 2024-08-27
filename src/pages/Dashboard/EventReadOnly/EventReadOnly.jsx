@@ -799,6 +799,7 @@ function EventReadOnly() {
                               icon={organizer?.label?.props?.icon}
                               name={organizer?.name}
                               description={organizer?.description}
+                              calendarContentLanguage={calendarContentLanguage}
                               bordered
                               closable={false}
                               itemWidth="100%"
@@ -872,6 +873,7 @@ function EventReadOnly() {
                               icon={performer?.label?.props?.icon}
                               name={performer?.name}
                               description={performer?.description}
+                              calendarContentLanguage={calendarContentLanguage}
                               bordered
                               closable={false}
                               itemWidth="100%"
@@ -893,6 +895,7 @@ function EventReadOnly() {
                               icon={supporter?.label?.props?.icon}
                               name={supporter?.name}
                               description={supporter?.description}
+                              calendarContentLanguage={calendarContentLanguage}
                               bordered
                               itemWidth="100%"
                               closable={false}

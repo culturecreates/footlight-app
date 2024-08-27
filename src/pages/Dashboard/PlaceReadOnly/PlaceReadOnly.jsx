@@ -770,6 +770,7 @@ function PlaceReadOnly() {
                                       }
                                       icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
                                       // description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                                      calendarContentLanguage={calendarContentLanguage}
                                       bordered
                                       itemWidth="100%"
                                     />;
@@ -803,6 +804,7 @@ function PlaceReadOnly() {
                                             data-cy="organization-logo"
                                           />
                                         }
+                                        calendarContentLanguage={calendarContentLanguage}
                                         bordered
                                         itemWidth="100%"
                                       />
@@ -829,6 +831,7 @@ function PlaceReadOnly() {
                                             })
                                           : typeof person?.name === 'string' && person?.name
                                       }
+                                      calendarContentLanguage={calendarContentLanguage}
                                       icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
                                       bordered
                                       itemWidth="100%"
@@ -858,6 +861,7 @@ function PlaceReadOnly() {
                                         }
                                         icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
                                         description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                                        calendarContentLanguage={calendarContentLanguage}
                                         bordered
                                         itemWidth="100%"
                                       />

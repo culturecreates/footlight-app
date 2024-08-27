@@ -25,7 +25,7 @@ function SelectionItem(props) {
     region,
     accessibility,
     openingHours,
-    calendarContentLanguage,
+    calendarContentLanguage = [],
     artsDataLink,
     artsDataDetails,
     showExternalSourceLink,
