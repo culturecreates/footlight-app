@@ -33,6 +33,7 @@ import moment from 'moment';
 import SelectionItem from '../../../components/List/SelectionItem';
 import { useLazyGetEntityDependencyDetailsQuery } from '../../../services/entities';
 import MultipleImageUpload from '../../../components/MultipleImageUpload';
+import { getActiveTabKey } from '../../../redux/reducer/readOnlyTabSlice';
 
 function PersonReadOnly() {
   const { t } = useTranslation();
@@ -70,6 +71,7 @@ function PersonReadOnly() {
   });
 
   const { user } = useSelector(getUserDetails);
+  const activeTabKey = useSelector(getActiveTabKey);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -224,35 +226,19 @@ function PersonReadOnly() {
                         {t('dashboard.people.readOnly.details')}
                       </p>
                     </Col>
-                    {(personData?.name?.fr || personData?.name?.en) && (
+
+                    {Object.keys(personData?.name ?? {})?.length > 0 && (
                       <Col span={24}>
                         <p className="read-only-event-content-sub-title-primary" data-cy="para-person-name-title">
                           {t('dashboard.people.readOnly.name')}
                         </p>
-                        {personData?.name?.fr && (
-                          <>
-                            <p
-                              className="read-only-event-content-sub-title-secondary"
-                              data-cy="para-person-name-french-title">
-                              {t('common.tabFrench')}
-                            </p>
-                            <p className="read-only-event-content" data-cy="para-person-name-french">
-                              {personData?.name?.fr}
-                            </p>
-                          </>
-                        )}
-                        {personData?.name?.en && (
-                          <>
-                            <p
-                              className="read-only-event-content-sub-title-secondary"
-                              data-cy="para-person-name-english-title">
-                              {t('common.tabEnglish')}
-                            </p>
-                            <p className="read-only-event-content" data-cy="para-person-name-english">
-                              {personData?.name?.en}
-                            </p>
-                          </>
-                        )}
+                        <p className="read-only-event-content" data-cy="para-person-name-french">
+                          {contentLanguageBilingual({
+                            data: personData?.name,
+                            calendarContentLanguage,
+                            requiredLanguageKey: activeTabKey,
+                          })}
+                        </p>
                       </Col>
                     )}
                     {personData?.occupation?.length > 0 && (
@@ -328,80 +314,42 @@ function PersonReadOnly() {
                         })}
                       </Col>
                     )}
-                    {(personData?.disambiguatingDescription?.en || personData?.disambiguatingDescription?.fr) && (
+                    {Object.keys(personData?.disambiguatingDescription ?? {})?.length > 0 && (
                       <Col span={24}>
                         <p
                           className="read-only-event-content-sub-title-primary"
                           data-cy="para-person-disambiguating-description-title">
                           {t('dashboard.people.readOnly.disambiguatingDescription')}
                         </p>
-                        {personData?.disambiguatingDescription?.fr && (
-                          <>
-                            <p
-                              className="read-only-event-content-sub-title-secondary"
-                              data-cy="para-person-disambiguating-description-french-title">
-                              {t('common.tabFrench')}
-                            </p>
-                            <p
-                              className="read-only-event-content"
-                              data-cy="para-person-disambiguating-description-french">
-                              {personData?.disambiguatingDescription?.fr}
-                            </p>
-                          </>
-                        )}
-                        {personData?.disambiguatingDescription?.en && (
-                          <>
-                            <p
-                              className="read-only-event-content-sub-title-secondary"
-                              data-cy="para-person-disambiguating-description-english-title">
-                              {t('common.tabEnglish')}
-                            </p>
-                            <p
-                              className="read-only-event-content"
-                              data-cy="para-person-disambiguating-description-english">
-                              {personData?.disambiguatingDescription?.en}
-                            </p>
-                          </>
-                        )}
+                        <p className="read-only-event-content" data-cy="para-person-disambiguating-description-french">
+                          {contentLanguageBilingual({
+                            data: personData?.disambiguatingDescription,
+                            calendarContentLanguage,
+                            requiredLanguageKey: activeTabKey,
+                          })}
+                        </p>
                       </Col>
                     )}
-                    {(personData?.description?.fr || personData?.description?.en) && (
+
+                    {Object.keys(personData?.description ?? {})?.length > 0 && (
                       <Col span={24}>
                         <p
                           className="read-only-event-content-sub-title-primary"
                           data-cy="para-person-description-title">
                           {t('dashboard.people.readOnly.description')}
                         </p>
-                        {personData?.description?.fr && (
-                          <>
-                            <p
-                              className="read-only-event-content-sub-title-secondary"
-                              data-cy="para-person-description-french-title">
-                              {t('common.tabFrench')}
-                            </p>
-                            <p className="read-only-event-content">
-                              <div
-                                dangerouslySetInnerHTML={{ __html: personData?.description?.fr }}
-                                data-cy="div-person-description-french"
-                              />
-                            </p>
-                          </>
-                        )}
-                        {personData?.description?.en && (
-                          <>
-                            <p
-                              className="read-only-event-content-sub-title-secondary"
-                              data-cy="para-person-description-english-title">
-                              {t('common.tabEnglish')}
-                            </p>
-                            <p className="read-only-event-content">
-                              <div
-                                dangerouslySetInnerHTML={{ __html: personData?.description?.en }}
-                                data-cy="div-person-description-english"
-                              />
-                            </p>
-                          </>
-                        )}
+                        <p className="read-only-event-content">
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: contentLanguageBilingual({
+                                data: personData?.description,
+                                calendarContentLanguage,
+                                requiredLanguageKey: activeTabKey,
+                              }),
+                            }}
+                            data-cy="div-person-description-french"
+                          />
+                        </p>
                       </Col>
                     )}
                     {personData?.url?.uri && (
@@ -492,7 +440,7 @@ function PersonReadOnly() {
                               <SelectionItem
                                 key={place._id}
                                 name={
-                                  place?.name?.en || place?.name?.fr
+                                  Object.keys(place?.name ?? {})?.length > 0
                                     ? contentLanguageBilingual({
                                         data: place?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
@@ -519,7 +467,7 @@ function PersonReadOnly() {
                                 <SelectionItem
                                   key={org._id}
                                   name={
-                                    org?.name?.en || org?.name?.fr
+                                    Object.keys(org?.name ?? {})?.length > 0
                                       ? contentLanguageBilingual({
                                           data: org?.name,
                                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
@@ -553,7 +501,7 @@ function PersonReadOnly() {
                                 <SelectionItem
                                   key={event._id}
                                   name={
-                                    event?.name?.en || event?.name?.fr
+                                    Object.keys(event?.name ?? {})?.length > 0
                                       ? contentLanguageBilingual({
                                           data: event?.name,
                                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),

@@ -1,6 +1,8 @@
+import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 import { sourceOptions } from '../../constants/sourceOptions';
 import { contentLanguageBilingual } from '../../utils/bilingual';
-import { languageFallbackSetup } from '../../utils/languageFallbackSetup';
+import { languageFallbackStatusCreator } from '../../utils/languageFallbackStatusCreator';
+import { isDataValid } from '../../utils/MultiLingualFormItemSupportFunctions';
 import SelectionItem from '../List/SelectionItem';
 import { EnvironmentOutlined } from '@ant-design/icons';
 
@@ -24,6 +26,12 @@ export const taxonomyOptions = (data, user, mappedToField, calendarContentLangua
 };
 
 export const placesOptions = (data, user, calendarContentLanguage, source = sourceOptions.CMS, currentCalendarData) => {
+  let isFieldsDirty = {};
+  calendarContentLanguage.forEach((language) => {
+    const langKey = contentLanguageKeyMap[language];
+    isFieldsDirty[langKey] = false;
+  });
+
   let options = data?.map((place) => {
     return {
       label: (
@@ -32,7 +40,7 @@ export const placesOptions = (data, user, calendarContentLanguage, source = sour
           icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
           region={place?.regions}
           name={
-            place?.name?.en || place?.name?.fr
+            isDataValid(place?.name)
               ? contentLanguageBilingual({
                   data: place?.name,
                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
@@ -41,7 +49,7 @@ export const placesOptions = (data, user, calendarContentLanguage, source = sour
               : typeof place?.name === 'string' && place?.name
           }
           description={
-            place?.disambiguatingDescription?.en || place?.disambiguatingDescription?.fr
+            isDataValid(place?.disambiguatingDescription)
               ? contentLanguageBilingual({
                   data: place?.disambiguatingDescription,
                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
@@ -54,22 +62,20 @@ export const placesOptions = (data, user, calendarContentLanguage, source = sour
         />
       ),
       value: place?.id,
-      name:
-        place?.name?.en || place?.name?.fr
-          ? contentLanguageBilingual({
-              data: place?.name,
-              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-              calendarContentLanguage: calendarContentLanguage,
-            })
-          : typeof place?.name === 'string' && place?.name,
-      description:
-        place?.disambiguatingDescription?.en || place?.disambiguatingDescription?.fr
-          ? contentLanguageBilingual({
-              data: place?.disambiguatingDescription,
-              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-              calendarContentLanguage: calendarContentLanguage,
-            })
-          : typeof place?.description === 'string' && place?.description,
+      name: isDataValid(place?.name)
+        ? contentLanguageBilingual({
+            data: place?.name,
+            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+            calendarContentLanguage: calendarContentLanguage,
+          })
+        : typeof place?.name === 'string' && place?.name,
+      description: isDataValid(place?.disambiguatingDescription)
+        ? contentLanguageBilingual({
+            data: place?.disambiguatingDescription,
+            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+            calendarContentLanguage: calendarContentLanguage,
+          })
+        : typeof place?.description === 'string' && place?.description,
       postalAddress: place?.postalAddress ?? place?.address,
       region: place?.regions,
       accessibility: place?.accessibility ?? [],
@@ -81,11 +87,11 @@ export const placesOptions = (data, user, calendarContentLanguage, source = sour
       type: place?.type,
       creatorId: place?.creator?.userId ?? place?.createdByUserId,
       fallBackStatus: currentCalendarData
-        ? languageFallbackSetup({
-            currentCalendarData,
+        ? languageFallbackStatusCreator({
+            calendarContentLanguage,
             fieldData: place?.name,
             languageFallbacks: currentCalendarData?.languageFallbacks,
-            isFieldsDirty: true,
+            isFieldsDirty,
           })
         : null,
     };

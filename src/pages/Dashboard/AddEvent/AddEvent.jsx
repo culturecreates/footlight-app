@@ -104,7 +104,7 @@ import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import { getWeekDayDates } from '../../../utils/getWeekDayDates';
 import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems';
-import { placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
+import { isDataValid, placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import MultiLingualTextEditor from '../../../components/MultilingualTextEditor/MultiLingualTextEditor';
 import MultilingualInput from '../../../components/MultilingualInput';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
@@ -630,7 +630,7 @@ function AddEvent() {
 
               offerConfiguration = {
                 category: ticketType,
-                ...((values?.englishTicketNote || values?.frenchTicketNote) && {
+                ...(name && {
                   name,
                 }),
                 ...(ticketType === offerTypes.PAYING &&
@@ -1414,9 +1414,13 @@ function AddEvent() {
       if (selectedOrganizers[0]?.contact) {
         const { contact } = selectedOrganizers[0];
         const { email, name, telephone, url } = contact;
+
+        calendarContentLanguage.forEach((language) => {
+          const lanKey = contentLanguageKeyMap[language];
+          form.setFields([{ name: ['contactTitle', lanKey], value: name?.[lanKey] ?? '' }]);
+        });
+
         form.setFieldsValue({
-          frenchContactTitle: name?.fr,
-          englishContactTitle: name?.en,
           contactWebsiteUrl: url?.uri,
           contactPhoneNumber: telephone,
           contactEmail: email,
@@ -1576,8 +1580,7 @@ function AddEvent() {
           eventData?.contactPoint?.email ||
           eventData?.contactPoint?.telephone ||
           eventData?.contactPoint?.url?.uri ||
-          eventData?.contactPoint?.name?.fr ||
-          eventData?.contactPoint?.name?.en
+          isDataValid(eventData?.contactPoint?.name)
         )
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.contact);
         if (eventData?.organizer) {
@@ -1655,7 +1658,7 @@ function AddEvent() {
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.facebookLinkWrap);
         if (eventData?.keywords?.length > 0)
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
-        if (eventData?.accessibilityNote?.en || eventData?.accessibilityNote?.fr)
+        if (isDataValid(eventData?.accessibilityNote))
           initialAddedFields = initialAddedFields?.concat(eventAccessibilityFieldNames?.noteWrap);
         if (eventData?.inLanguage?.length > 0)
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.inLanguage);
@@ -2608,8 +2611,7 @@ function AddEvent() {
                 ({ getFieldValue }) => ({
                   validator() {
                     if (
-                      getFieldValue('frenchVirtualLocation') ||
-                      getFieldValue('englishVirtualLocation') ||
+                      isDataValid(getFieldValue('virtualLocation')) ||
                       getFieldValue('virtualLocationOnlineLink') ||
                       getFieldValue('locationPlace')
                     ) {
@@ -3260,7 +3262,6 @@ function AddEvent() {
                     data-cy="button-copy-organizer-contact"
                   />
                 )}
-
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}
                   className="subheading-wrap"
@@ -4267,17 +4268,13 @@ function AddEvent() {
                       rules={[
                         ({ getFieldValue }) => ({
                           validator() {
+                            const isticketNoteValid = isDataValid(getFieldValue('ticketNote'));
                             if (
                               ticketType == offerTypes.FREE ||
                               (ticketType == offerTypes.PAYING &&
-                                (getFieldValue('ticketLink') ||
-                                  getFieldValue('prices') ||
-                                  getFieldValue('frenchTicketNote') ||
-                                  getFieldValue('englishTicketNote'))) ||
+                                (getFieldValue('ticketLink') || getFieldValue('prices') || isticketNoteValid)) ||
                               (ticketType == offerTypes.REGISTER &&
-                                (getFieldValue('registerLink') ||
-                                  getFieldValue('frenchTicketNote') ||
-                                  getFieldValue('englishTicketNote')))
+                                (getFieldValue('registerLink') || isticketNoteValid))
                             ) {
                               return Promise.resolve();
                             } else
@@ -4345,7 +4342,8 @@ function AddEvent() {
 
                         ({ getFieldValue }) => ({
                           validator(_, value) {
-                            if (value || getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')) {
+                            const isticketNoteValid = isDataValid(getFieldValue('ticketNote'));
+                            if (value || isticketNoteValid) {
                               return Promise.resolve();
                             } else
                               return Promise.reject(
@@ -4404,14 +4402,14 @@ function AddEvent() {
                           },
                           ({ getFieldValue }) => ({
                             validator(_, value) {
+                              const isticketNoteValid = isDataValid(getFieldValue('ticketNote'));
                               if (
                                 (getFieldValue('prices') != undefined &&
                                   getFieldValue('prices')?.length > 0 &&
                                   getFieldValue('prices')[0] != undefined &&
                                   getFieldValue('prices')[0].price != '') ||
                                 value ||
-                                getFieldValue('frenchTicketNote') ||
-                                getFieldValue('englishTicketNote')
+                                isticketNoteValid
                               ) {
                                 return Promise.resolve();
                               } else

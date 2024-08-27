@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Button } from 'antd';
 import { CalendarOutlined, InfoCircleOutlined } from '@ant-design/icons';
@@ -35,7 +34,6 @@ import { eventPublishState, eventPublishStateOptions } from '../../../constants/
 import { pluralize } from '../../../utils/pluralise';
 import i18n from 'i18next';
 import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequiredFieldNames';
-import { contentLanguage } from '../../../constants/contentLanguage';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import { sourceOptions } from '../../../constants/sourceOptions';
@@ -187,7 +185,7 @@ function EventReadOnly() {
               ...initialPlace[0],
               ['accessibility']: initialPlaceAccessibiltiy,
             };
-            setLocationPlace(placesOptions(initialPlace)[0], user, calendarContentLanguage);
+            setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0]);
           })
           .catch((error) => console.log(error));
       } else {
@@ -195,7 +193,7 @@ function EventReadOnly() {
           ...initialPlace[0],
           ['accessibility']: [],
         };
-        setLocationPlace(placesOptions(initialPlace)[0], user, calendarContentLanguage);
+        setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0]);
       }
     }
   }, [isLoading]);
@@ -304,14 +302,11 @@ function EventReadOnly() {
                   <div className="read-only-event-section-wrapper">
                     <div
                       style={{
-                        display:
-                          standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME) ||
-                          standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_FR) ||
-                          standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_EN)
-                            ? adminCheckHandler({ calendar, user })
-                              ? 'initial'
-                              : 'none'
-                            : 'initial',
+                        display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME)
+                          ? adminCheckHandler({ calendar, user })
+                            ? 'initial'
+                            : 'none'
+                          : 'initial',
                       }}>
                       <p className="read-only-event-content-sub-title-primary">
                         {t('dashboard.events.addEditEvent.language.title')}
@@ -723,14 +718,11 @@ function EventReadOnly() {
                     </p>
                     <div
                       style={{
-                        display:
-                          standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION) ||
-                          standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION_EN) ||
-                          standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION_FR)
-                            ? adminCheckHandler({ calendar, user })
-                              ? 'initial'
-                              : 'none'
-                            : 'initial',
+                        display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION)
+                          ? adminCheckHandler({ calendar, user })
+                            ? 'initial'
+                            : 'none'
+                          : 'initial',
                       }}>
                       {eventData?.description && (
                         <>

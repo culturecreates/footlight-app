@@ -10,7 +10,8 @@ import ArtsDataLink from '../../Tags/ArtsDataLink/ArtsDataLink';
 import SmallButton from '../../Button/SmallButton';
 import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedComponent';
 import LiteralBadge from '../../Badge/LiteralBadge';
-
+import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
+import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions.js';
 function SelectionItem(props) {
   const {
     icon,
@@ -36,10 +37,26 @@ function SelectionItem(props) {
   const { t } = useTranslation();
   const { user } = useSelector(getUserDetails);
 
-  const promptText =
-    fallbackConfig?.en?.fallbackLiteralKey === '?' || fallbackConfig?.fr?.fallbackLiteralKey === '?'
-      ? t('common.forms.languageLiterals.unKnownLanguagePromptText')
-      : t('common.forms.languageLiterals.knownLanguagePromptText');
+  let literalKey = '?';
+
+  const promptFlag = calendarContentLanguage.some((language) => {
+    const langKey = contentLanguageKeyMap[language];
+    return fallbackConfig?.[langKey]?.fallbackLiteralKey === '?';
+  });
+
+  const fallbackFlag = calendarContentLanguage.some((language) => {
+    const langKey = contentLanguageKeyMap[language];
+    const config = fallbackConfig?.[langKey];
+    if (config?.tagDisplayStatus) {
+      literalKey = config.fallbackLiteralKey;
+      return true;
+    }
+    return false;
+  });
+
+  const promptText = promptFlag
+    ? t('common.forms.languageLiterals.unKnownLanguagePromptText')
+    : t('common.forms.languageLiterals.knownLanguagePromptText');
 
   return (
     <div
@@ -99,12 +116,7 @@ function SelectionItem(props) {
           title={
             <span className="selection-item-title" data-cy="span-entity-name">
               {name}
-              {(fallbackConfig?.fr?.tagDisplayStatus || fallbackConfig?.en?.tagDisplayStatus) && (
-                <LiteralBadge
-                  tagTitle={fallbackConfig?.en?.fallbackLiteralKey ?? fallbackConfig?.fr?.fallbackLiteralKey}
-                  promptText={promptText}
-                />
-              )}
+              {fallbackFlag && <LiteralBadge tagTitle={literalKey} promptText={promptText} />}
             </span>
           }
           description={
@@ -129,7 +141,7 @@ function SelectionItem(props) {
                 <Col>
                   <div className="selection-item-sub-content">
                     <address>
-                      {(postalAddress?.streetAddress?.en || postalAddress?.streetAddress?.fr) && (
+                      {isDataValid(postalAddress?.streetAddres) && (
                         <span data-cy="span-street-address">
                           {contentLanguageBilingual({
                             data: postalAddress?.streetAddress,
@@ -139,7 +151,7 @@ function SelectionItem(props) {
                           ,&nbsp;
                         </span>
                       )}
-                      {(postalAddress?.streetAddress?.en || postalAddress?.streetAddress?.fr) && <br />}
+                      {isDataValid(postalAddress?.streetAddres) && <br />}
                       {postalAddress?.addressLocality && (
                         <span data-cy="span-address-locality">
                           {contentLanguageBilingual({

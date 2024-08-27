@@ -1,0 +1,50 @@
+.ant-tabs-tab-btn {
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #222732;
+}
+.ant-tabs-card.ant-tabs-small > .ant-tabs-nav .ant-tabs-tab {
+  padding: 4px;
+  background: #ffffff;
+}
+
+.ant-tabs > .ant-tabs-nav .ant-tabs-nav-list {
+  border-radius: 4px 4px 0px 0px;
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  background: #e3e8ff;
+  color: #222732;
+}
+
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
+  border: 0;
+}
+
+.bilingual-child-wrapper {
+  position: relative;
+}
+
+.bilingual-child-wrapper .literal-badge {
+  top: 11px;
+  right: 3px;
+}
+
+.bilingual-child-wrapper .ant-form-item {
+  width: 100%;
+}
+
+.bilingual-child-with-badge .ant-input-lg {
+  padding-right: 35px;
+}
+
+@media screen and (max-width: 480px) {
+  .bilingual-input-tab .ant-input-lg {
+    font-size: 12px;
+  }
+
+  .bilingual-input-tab .ant-tabs-card.ant-tabs-small > .ant-tabs-nav .ant-tabs-tab {
+    font-size: 10px;
+  }
+}

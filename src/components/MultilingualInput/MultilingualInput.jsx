@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
-import '../BilingualInput/bilingualInput.css';
+import './multilingualInput.css';
 import { useTranslation } from 'react-i18next';
 import LiteralBadge from '../Badge/LiteralBadge';
 import { contentLanguageKeyMap } from '../../constants/contentLanguage';

@@ -131,8 +131,7 @@ function CreateNewPlace() {
     PLACE_ACCESSIBILITY: 'placeAccessibility',
     DISAMBIGUATING_DESCRIPTION: 'disambiguatingDescription',
     DESCRIPTION: 'description',
-    EDITOR_FRENCH: 'frenchEditor',
-    EDITOR_ENGLISH: 'englishEditor',
+    EDITOR: 'editor',
     DRAGGER: 'dragger',
     DRAGGER_WRAP: 'draggerWrap',
     DYNAMIC_FIELS: 'dynamicFields',
@@ -1182,10 +1181,10 @@ function CreateNewPlace() {
             publishValidateFields.push(formFieldNames.POSTAL_CODE);
             break;
           case placeFormRequiredFieldNames.PROVINCE:
-            publishValidateFields.push(formFieldNames.PROVINCE_ENGLISH, formFieldNames.PROVINCE_FRENCH);
+            publishValidateFields.push(formFieldNames.PROVINCE);
             break;
           case placeFormRequiredFieldNames.COUNTRY:
-            publishValidateFields.push(formFieldNames.COUNTRY_ENGLISH, formFieldNames.COUNTRY_FRENCH);
+            publishValidateFields.push(formFieldNames.COUNTRY);
             break;
           case placeFormRequiredFieldNames.COORDINATES:
             publishValidateFields.push(formFieldNames.COORDINATES);
@@ -1219,12 +1218,14 @@ function CreateNewPlace() {
   }, [currentCalendarData]);
 
   useEffect(() => {
+    const newEntityName = location?.state?.name;
     if (artsDataId) {
       getArtsDataPlace(artsDataId);
-    } else if (location?.state?.name) {
-      form.setFieldsValue({
-        french: location?.state?.name,
-        english: location?.state?.name,
+    } else if (newEntityName) {
+      const name = {};
+      calendarContentLanguage.forEach((language) => {
+        const langKey = contentLanguageKeyMap[language];
+        name[langKey] = newEntityName;
       });
     }
   }, []);
