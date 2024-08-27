@@ -26,4 +26,5 @@
 
 .read-only-tab-layout-wrapper {
   max-width: 100%;
+  min-width: 100%;
 }

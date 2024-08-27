@@ -253,7 +253,7 @@ function EventReadOnly() {
           </Col>
 
           {artsDataLink?.length > 0 && (
-            <Col flex="723px" className="events-readonly-artsdata-link-wrapper top-level-column">
+            <Col flex={'723px'} className="events-readonly-artsdata-link-wrapper top-level-column">
               <Row>
                 <Col flex={'723px'}>
                   <ArtsDataInfo
@@ -274,7 +274,7 @@ function EventReadOnly() {
             </Col>
           )}
           {!routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState, false) && (
-            <Col flex="723px" className="top-level-column">
+            <Col flex={'723px'} className="top-level-column">
               {eventPublishStateOptions?.map((state, index) => {
                 if (
                   (state?.value === eventPublishState?.PENDING_REVIEW ||
@@ -295,891 +295,927 @@ function EventReadOnly() {
             </Col>
           )}
 
-          <ReadOnlyPageTabLayout>
-            <Col flex={'723px'} className="read-only-event-section-col top-level-column">
-              <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                <Col flex={'423px'}>
-                  <div className="read-only-event-section-wrapper">
-                    <div
-                      style={{
-                        display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME)
-                          ? adminCheckHandler({ calendar, user })
-                            ? 'initial'
-                            : 'none'
-                          : 'initial',
-                      }}>
-                      <p className="read-only-event-content-sub-title-primary">
-                        {t('dashboard.events.addEditEvent.language.title')}
-                      </p>
-                      {eventData?.name && (
-                        <p className="read-only-event-content">
-                          {contentLanguageBilingual({
-                            calendarContentLanguage,
-                            data: eventData?.name,
-                            requiredLanguageKey: activeTabKey,
-                          })}
-                        </p>
-                      )}
-                    </div>
-                    {eventData?.additionalType.length > 0 && (
-                      <div
-                        style={{
-                          display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_TYPE)
-                            ? adminCheckHandler({ calendar, user })
-                              ? 'initial'
-                              : 'none'
-                            : 'initial',
-                        }}>
-                        <br />
-                        <p className="read-only-event-content-sub-title-primary">
-                          {taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false)}
-                        </p>
-                        <TreeSelectOption
-                          style={{ marginBottom: '1rem' }}
-                          bordered={false}
-                          showArrow={false}
-                          open={false}
-                          disabled
-                          treeData={treeTaxonomyOptions(
-                            allTaxonomyData,
-                            user,
-                            'EventType',
-                            false,
-                            calendarContentLanguage,
-                          )}
-                          defaultValue={eventData?.additionalType?.map((type) => {
-                            return type?.entityId;
-                          })}
-                          tagRender={(props) => {
-                            const { label } = props;
-                            return <Tags>{label}</Tags>;
-                          }}
-                        />
-                      </div>
-                    )}
-
-                    {eventData?.audience.length > 0 && (
-                      <div
-                        style={{
-                          display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.AUDIENCE)
-                            ? adminCheckHandler({ calendar, user })
-                              ? 'initial'
-                              : 'none'
-                            : 'initial',
-                        }}>
-                        <p className="read-only-event-content-sub-title-primary">
-                          {taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false)}
-                        </p>
-                        <TreeSelectOption
-                          style={{ marginBottom: '1rem' }}
-                          bordered={false}
-                          open={false}
-                          showArrow={false}
-                          disabled
-                          treeData={treeTaxonomyOptions(
-                            allTaxonomyData,
-                            user,
-                            'Audience',
-                            false,
-                            calendarContentLanguage,
-                          )}
-                          defaultValue={eventData?.audience?.map((audience) => {
-                            return audience?.entityId;
-                          })}
-                          tagRender={(props) => {
-                            const { label } = props;
-                            return <Tags>{label}</Tags>;
-                          }}
-                        />
-                      </div>
-                    )}
-                    {eventData?.discipline?.length > 0 && (
-                      <div
-                        style={{
-                          display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_DISCIPLINE)
-                            ? adminCheckHandler({ calendar, user })
-                              ? 'initial'
-                              : 'none'
-                            : 'initial',
-                        }}>
-                        <br />
-                        <p className="read-only-event-content-sub-title-primary">
-                          {taxonomyDetails(allTaxonomyData?.data, user, 'EventDiscipline', 'name', false)}
-                        </p>
-                        <TreeSelectOption
-                          style={{ marginBottom: '1rem' }}
-                          bordered={false}
-                          showArrow={false}
-                          open={false}
-                          disabled
-                          treeData={treeTaxonomyOptions(
-                            allTaxonomyData,
-                            user,
-                            'EventDiscipline',
-                            false,
-                            calendarContentLanguage,
-                          )}
-                          defaultValue={eventData?.discipline?.map((type) => type?.entityId)}
-                          tagRender={(props) => {
-                            const { label } = props;
-                            return <Tags>{label}</Tags>;
-                          }}
-                        />
-                      </div>
-                    )}
-                    {allTaxonomyData?.data?.map((taxonomy, index) => {
-                      if (taxonomy?.isDynamicField) {
-                        let initialValues,
-                          initialTaxonomy = [];
-                        eventData?.dynamicFields?.forEach((dynamicField) => {
-                          if (taxonomy?.id === dynamicField?.taxonomyId) {
-                            initialValues = dynamicField?.conceptIds;
-                            initialTaxonomy.push(taxonomy?.id);
-                          }
-                        });
-                        if (initialTaxonomy?.includes(taxonomy?.id) && initialValues?.length > 0)
-                          return (
+          <Col span={24} flex={'723px'} style={{ padding: '0px' }}>
+            <Row>
+              <ReadOnlyPageTabLayout>
+                <Col span={24}>
+                  <Row gutter={[32, 24]}>
+                    <Col flex={'723px'} className="read-only-event-section-col top-level-column">
+                      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                        <Col flex={'423px'}>
+                          <div className="read-only-event-section-wrapper">
                             <div
                               style={{
-                                display: dynamicAdminOnlyFields?.includes(taxonomy?.id)
+                                display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME)
                                   ? adminCheckHandler({ calendar, user })
                                     ? 'initial'
                                     : 'none'
                                   : 'initial',
                               }}>
                               <p className="read-only-event-content-sub-title-primary">
-                                {bilingual({
-                                  data: eventData?.name,
-                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                })}
+                                {t('dashboard.events.addEditEvent.language.title')}
                               </p>
-                              <TreeSelectOption
-                                key={index}
-                                style={{ marginBottom: '1rem' }}
-                                bordered={false}
-                                showArrow={false}
-                                open={false}
-                                disabled
-                                defaultValue={initialValues}
-                                treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
-                                tagRender={(props) => {
-                                  const { label } = props;
-                                  return <Tags>{label}</Tags>;
-                                }}
-                              />
-                            </div>
-                          );
-                      }
-                    })}
-                  </div>
-                </Col>
-                <Col flex="233px">
-                  <div style={{ width: '100%' }}></div>
-                </Col>
-              </Row>
-            </Col>
-            <Col flex={'723px'} className="read-only-event-section-col top-level-column">
-              <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                <Col flex={'423px'}>
-                  <div className="read-only-event-section-wrapper">
-                    <p className="read-only-event-content-title">{t('dashboard.events.addEditEvent.dates.dates')}</p>
-                    {dateType == dateTypes.SINGLE && (
-                      <>
-                        <p className="read-only-event-content-sub-title-primary">
-                          {t('dashboard.events.addEditEvent.dates.date')}
-                        </p>
-                        <p className="read-only-event-content-date">
-                          <CalendarOutlined style={{ fontSize: '24px', color: '#1B3DE6', marginRight: '9px' }} />
-                          {moment
-                            .tz(
-                              eventData?.startDateTime ?? eventData?.startDate,
-                              eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                            )
-                            .format('MM/DD/YYYY')}
-                        </p>
-                      </>
-                    )}
-
-                    {(dateType == dateTypes.RANGE || dateType === dateTypes.MULTIPLE) && (
-                      <>
-                        <span
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            marginBottom: '4px',
-                          }}>
-                          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span className="read-only-event-content-sub-title-primary">
-                              {t(
-                                `dashboard.events.addEditEvent.dates.${
-                                  dateType === dateTypes.MULTIPLE ? `multipleDates` : `dateRange`
-                                }`,
+                              {eventData?.name && (
+                                <p className="read-only-event-content">
+                                  {contentLanguageBilingual({
+                                    calendarContentLanguage,
+                                    data: eventData?.name,
+                                    requiredLanguageKey: activeTabKey,
+                                  })}
+                                </p>
                               )}
-                            </span>
-                            {dateType === dateTypes.MULTIPLE && <span>-</span>}
-                            <span
-                              className="read-only-event-content-sub-title-primary"
-                              style={{ textTransform: 'capitalize' }}>
-                              {eventData?.recurringEvent?.frequency
-                                ? eventData?.recurringEvent?.frequency?.toLowerCase()
-                                : eventData?.subEventConfiguration && dateFrequencyOptions[2].value}
-                            </span>
-                          </span>
-                          {dateType === dateTypes.MULTIPLE && eventData?.subEvents?.length > 0 && (
-                            <Tags
-                              style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }}
-                              color={'#DBF3FD'}>
-                              {pluralize(eventData?.subEvents?.length, t('dashboard.events.list.event'))}
-                            </Tags>
-                          )}
-                        </span>
-                        <Row>
-                          <Col flex="423px">
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              <CalendarOutlined style={{ fontSize: '24px', color: '#1B3DE6', marginRight: '9px' }} />
-                              <DateRangePicker
-                                defaultValue={[
-                                  moment.tz(
-                                    eventData?.startDate ?? eventData?.startDateTime,
-                                    eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                                  ),
-                                  moment.tz(
-                                    eventData?.endDate ?? eventData?.endDateTime,
-                                    eventData?.scheduleTimezone ?? 'Canada/Eastern',
-                                  ),
-                                ]}
-                                bordered={false}
-                                allowClear={false}
-                                inputReadOnly={true}
-                                open={false}
-                                suffixIcon={false}
-                              />
                             </div>
-                          </Col>
-                        </Row>
-                      </>
-                    )}
-                    <br />
-                    <Row justify="space-between">
-                      {eventData?.startDateTime &&
-                        eventData?.recurringEvent?.frequency !== dateFrequencyOptions[2].value &&
-                        !eventData?.subEventConfiguration && (
-                          <Col>
-                            <p className="read-only-event-content-sub-title-primary">
-                              {t('dashboard.events.addEditEvent.dates.startTime')}
-                            </p>
-                            <p className="read-only-event-content">
-                              {moment
-                                .tz(eventData?.startDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                                .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
-                            </p>
-                          </Col>
-                        )}
-                      {eventData?.endDateTime &&
-                        eventData?.recurringEvent?.frequency !== dateFrequencyOptions[2].value &&
-                        !eventData?.subEventConfiguration && (
-                          <Col>
-                            <p className="read-only-event-content-sub-title-primary">
-                              {t('dashboard.events.addEditEvent.dates.endTime')}
-                            </p>
-                            <p className="read-only-event-content">
-                              {moment
-                                .tz(eventData?.endDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
-                                .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
-                            </p>
-                          </Col>
-                        )}
-                    </Row>
-                    <br />
-                    {dateType === dateTypes.MULTIPLE &&
-                      eventData?.recurringEvent?.frequency === dateFrequencyOptions[1].value && (
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          {daysOfWeek.map((day, index) => {
-                            return (
-                              <Button
-                                key={index}
-                                className="recurring-day-buttons"
+                            {eventData?.additionalType.length > 0 && (
+                              <div
                                 style={{
-                                  ...(eventData?.recurringEvent?.weekDays?.includes(day?.value) && {
-                                    borderColor: '#607EFC',
-                                    backgroundColor: '#EFF2FF',
-                                  }),
+                                  display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.EVENT_TYPE)
+                                    ? adminCheckHandler({ calendar, user })
+                                      ? 'initial'
+                                      : 'none'
+                                    : 'initial',
                                 }}>
-                                {day.name}
-                              </Button>
-                            );
-                          })}
-                        </div>
-                      )}
+                                <br />
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {taxonomyDetails(allTaxonomyData?.data, user, 'EventType', 'name', false)}
+                                </p>
+                                <TreeSelectOption
+                                  style={{ marginBottom: '1rem' }}
+                                  bordered={false}
+                                  showArrow={false}
+                                  open={false}
+                                  disabled
+                                  treeData={treeTaxonomyOptions(
+                                    allTaxonomyData,
+                                    user,
+                                    'EventType',
+                                    false,
+                                    calendarContentLanguage,
+                                  )}
+                                  defaultValue={eventData?.additionalType?.map((type) => {
+                                    return type?.entityId;
+                                  })}
+                                  tagRender={(props) => {
+                                    const { label } = props;
+                                    return <Tags>{label}</Tags>;
+                                  }}
+                                />
+                              </div>
+                            )}
 
-                    <br />
-                    {eventData?.eventStatus && (
-                      <>
-                        <p className="read-only-event-content-sub-title-primary">
-                          {t('dashboard.events.addEditEvent.dates.status')}
-                        </p>
-                        <p className="read-only-event-content">
-                          {eventStatusOptions?.map((status) => {
-                            if (status?.value === eventData?.eventStatus) return status?.label;
-                          })}
-                        </p>
-                      </>
-                    )}
-                  </div>
-                </Col>
-                <Col flex="233px">
-                  <div style={{ width: '100%' }}></div>
-                </Col>
-              </Row>
-            </Col>
-            {eventData?.locations?.length > 0 && (
-              <Col flex={'723px'} className="read-only-event-section-col top-level-column">
-                <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                  <Col flex={'423px'}>
-                    <div className="read-only-event-section-wrapper">
-                      <p className="read-only-event-content-title">
-                        {t('dashboard.events.addEditEvent.location.title')}
-                      </p>
-                      {initialPlace && initialPlace?.length > 0 && (
-                        <div
-                          style={{
-                            display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.LOCATION)
-                              ? adminCheckHandler({ calendar, user })
-                                ? 'initial'
-                                : 'none'
-                              : 'initial',
-                          }}>
-                          <p className="read-only-event-content-sub-title-primary">
-                            {t('dashboard.events.addEditEvent.location.title')}
-                          </p>
-
-                          {locationPlace && (
-                            <SelectionItem
-                              icon={locationPlace?.label?.props?.icon}
-                              name={locationPlace?.name}
-                              description={locationPlace?.description}
-                              itemWidth="100%"
-                              postalAddress={locationPlace?.postalAddress}
-                              accessibility={locationPlace?.accessibility}
-                              openingHours={locationPlace?.openingHours}
-                              calendarContentLanguage={calendarContentLanguage}
-                              bordered
-                            />
-                          )}
-                        </div>
-                      )}
-
-                      {initialVirtualLocation[0] && initialVirtualLocation?.length > 0 && (
-                        <p className="read-only-event-content-sub-title-primary">
-                          <br />
-                          {t('dashboard.events.addEditEvent.location.virtualLocation')}
-                        </p>
-                      )}
-
-                      {initialVirtualLocation[0] && initialVirtualLocation[0]?.name && (
-                        <p className="read-only-event-content">
-                          {contentLanguageBilingual({
-                            calendarContentLanguage,
-                            data: initialVirtualLocation[0]?.name,
-                            requiredLanguageKey: activeTabKey,
-                          })}
-                        </p>
-                      )}
-
-                      {initialVirtualLocation[0] && initialVirtualLocation[0]?.url?.uri && (
-                        <>
-                          <p className="read-only-event-content-sub-title-secondary">
-                            {t('dashboard.events.addEditEvent.location.onlineLink')}
-                          </p>
-                          <a
-                            href={eventData?.contactPoint?.url?.uri}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="url-links">
-                            {initialVirtualLocation[0]?.url?.uri}
-                          </a>
-                        </>
-                      )}
-                    </div>
-                  </Col>
-                  <Col flex="233px">
-                    <div style={{ width: '100%' }}></div>
-                  </Col>
-                </Row>
-              </Col>
-            )}
-            <Col flex={'723px'} className="read-only-event-section-col top-level-column">
-              <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                <Col flex={'423px'}>
-                  <div className="read-only-event-section-wrapper">
-                    <p className="read-only-event-content-title">
-                      {t('dashboard.events.addEditEvent.otherInformation.title')}
-                    </p>
-                    <div
-                      style={{
-                        display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION)
-                          ? adminCheckHandler({ calendar, user })
-                            ? 'initial'
-                            : 'none'
-                          : 'initial',
-                      }}>
-                      {eventData?.description && (
-                        <>
-                          <p className="read-only-event-content-sub-title-primary">
-                            {t('dashboard.events.addEditEvent.otherInformation.description.title')}
-                          </p>
-                          <div
-                            dangerouslySetInnerHTML={{
-                              __html: contentLanguageBilingual({
-                                data: eventData?.description,
-                                calendarContentLanguage,
-                                requiredLanguageKey: activeTabKey,
-                              }),
-                            }}
-                          />
-                        </>
-                      )}
-                    </div>
-                    <br />
-                    {eventData?.image?.length > 0 && mainImageData?.original?.uri && (
-                      <div
-                        style={{
-                          display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
-                            ? adminCheckHandler({ calendar, user })
-                              ? 'initial'
-                              : 'none'
-                            : 'initial',
-                        }}>
-                        <p className="read-only-event-content-sub-title-primary">
-                          {t('dashboard.events.addEditEvent.otherInformation.image.mainImage')}
-                        </p>
-                        <ImageUpload
-                          imageUrl={mainImageData?.large?.uri}
-                          imageReadOnly={true}
-                          preview={true}
-                          eventImageData={mainImageData}
-                        />
-                      </div>
-                    )}
-                    {eventData?.image?.length > 0 && imageConfig.enableGallery && (
-                      <div
-                        style={{
-                          display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
-                            ? adminCheckHandler()
-                              ? 'initial'
-                              : 'none'
-                            : 'initial',
-                        }}>
-                        <p className="read-only-event-content-sub-title-primary">
-                          {t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
-                        </p>
-                        <MultipleImageUpload
-                          imageReadOnly={true}
-                          largeAspectRatio={
-                            currentCalendarData?.imageConfig?.length > 0 ? imageConfig?.large?.aspectRatio : null
-                          }
-                          thumbnailAspectRatio={
-                            currentCalendarData?.imageConfig?.length > 0 ? imageConfig?.thumbnail?.aspectRatio : null
-                          }
-                          eventImageData={eventData?.image?.filter((image) => !image?.isMain)}
-                        />
-                      </div>
-                    )}
-                    {eventData?.organizer?.length > 0 && (
-                      <>
-                        <p className="read-only-event-content-sub-title-primary">
-                          {t('dashboard.events.addEditEvent.otherInformation.organizer.title')}
-                        </p>
-
-                        {selectedOrganizers?.map((organizer, index) => {
-                          return (
-                            <SelectionItem
-                              key={index}
-                              icon={organizer?.label?.props?.icon}
-                              name={organizer?.name}
-                              description={organizer?.description}
-                              calendarContentLanguage={calendarContentLanguage}
-                              bordered
-                              closable={false}
-                              itemWidth="100%"
-                            />
-                          );
-                        })}
-                      </>
-                    )}
-                    {eventData?.contactPoint && (
-                      <p className="read-only-event-content-sub-title-primary">
-                        {t('dashboard.events.addEditEvent.otherInformation.contact.title')}
-                      </p>
-                    )}
-                    {eventData?.contactPoint && (
-                      <>
-                        <p className="read-only-event-content">
-                          {contentLanguageBilingual({
-                            calendarContentLanguage,
-                            data: eventData?.contactPoint?.name,
-                            requiredLanguageKey: activeTabKey,
-                          })}
-                        </p>
-                      </>
-                    )}
-                    {eventData?.contactPoint?.url?.uri && (
-                      <>
-                        <p className="read-only-event-content-sub-title-secondary">
-                          {t('dashboard.events.addEditEvent.otherInformation.contact.website')}
-                        </p>
-                        <p>
-                          <a
-                            href={eventData?.contactPoint?.url?.uri}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="url-links">
-                            {eventData?.contactPoint?.url?.uri}
-                          </a>
-                        </p>
-                      </>
-                    )}
-                    {eventData?.contactPoint?.telephone && (
-                      <>
-                        <p className="read-only-event-content-sub-title-secondary">
-                          {t('dashboard.events.addEditEvent.otherInformation.contact.phoneNumber')}
-                        </p>
-                        <p>
-                          <p className="url-links">{eventData?.contactPoint?.telephone}</p>
-                        </p>
-                      </>
-                    )}
-                    {eventData?.contactPoint?.email && (
-                      <>
-                        <p className="read-only-event-content-sub-title-secondary">
-                          {t('dashboard.events.addEditEvent.otherInformation.contact.email')}
-                        </p>
-                        <p>
-                          <p className="url-links">{eventData?.contactPoint?.email}</p>
-                        </p>
-                      </>
-                    )}
-                    {eventData?.performer?.length > 0 && (
-                      <>
-                        <p className="read-only-event-content-sub-title-primary">
-                          {t('dashboard.events.addEditEvent.otherInformation.performer.title')}
-                        </p>
-
-                        {selectedPerformers?.map((performer, index) => {
-                          return (
-                            <SelectionItem
-                              key={index}
-                              icon={performer?.label?.props?.icon}
-                              name={performer?.name}
-                              description={performer?.description}
-                              calendarContentLanguage={calendarContentLanguage}
-                              bordered
-                              closable={false}
-                              itemWidth="100%"
-                            />
-                          );
-                        })}
-                      </>
-                    )}
-                    {eventData?.collaborators?.length > 0 && (
-                      <>
-                        <p className="read-only-event-content-sub-title-primary">
-                          {t('dashboard.events.addEditEvent.otherInformation.supporter.title')}
-                        </p>
-
-                        {selectedSupporters?.map((supporter, index) => {
-                          return (
-                            <SelectionItem
-                              key={index}
-                              icon={supporter?.label?.props?.icon}
-                              name={supporter?.name}
-                              description={supporter?.description}
-                              calendarContentLanguage={calendarContentLanguage}
-                              bordered
-                              itemWidth="100%"
-                              closable={false}
-                            />
-                          );
-                        })}
-                      </>
-                    )}
-                    {eventData?.url && eventData?.url?.uri && (
-                      <>
-                        <p className="read-only-event-content-sub-title-primary">
-                          {t('dashboard.events.addEditEvent.otherInformation.eventLink')}
-                        </p>
-                        <p>
-                          <a href={eventData?.url?.uri} target="_blank" rel="noopener noreferrer" className="url-links">
-                            {eventData?.url?.uri}
-                          </a>
-                        </p>
-                      </>
-                    )}
-                    {eventData?.videoUrl && (
-                      <>
-                        <p className="read-only-event-content-sub-title-primary">
-                          {t('dashboard.events.addEditEvent.otherInformation.videoLink')}
-                        </p>
-                        <p>
-                          <a href={eventData?.videoUrl} target="_blank" rel="noopener noreferrer" className="url-links">
-                            {eventData?.videoUrl}
-                          </a>
-                        </p>
-                      </>
-                    )}
-                    {getEmbedUrl(eventData?.videoUrl) !== '' && (
-                      <Row>
-                        <Col span={24}>
-                          <iframe
-                            className="iframe-video-embed"
-                            width="100%"
-                            height="315"
-                            src={getEmbedUrl(eventData?.videoUrl)}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            allowfullscreen></iframe>
+                            {eventData?.audience.length > 0 && (
+                              <div
+                                style={{
+                                  display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.AUDIENCE)
+                                    ? adminCheckHandler({ calendar, user })
+                                      ? 'initial'
+                                      : 'none'
+                                    : 'initial',
+                                }}>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {taxonomyDetails(allTaxonomyData?.data, user, 'Audience', 'name', false)}
+                                </p>
+                                <TreeSelectOption
+                                  style={{ marginBottom: '1rem' }}
+                                  bordered={false}
+                                  open={false}
+                                  showArrow={false}
+                                  disabled
+                                  treeData={treeTaxonomyOptions(
+                                    allTaxonomyData,
+                                    user,
+                                    'Audience',
+                                    false,
+                                    calendarContentLanguage,
+                                  )}
+                                  defaultValue={eventData?.audience?.map((audience) => {
+                                    return audience?.entityId;
+                                  })}
+                                  tagRender={(props) => {
+                                    const { label } = props;
+                                    return <Tags>{label}</Tags>;
+                                  }}
+                                />
+                              </div>
+                            )}
+                            {eventData?.discipline?.length > 0 && (
+                              <div
+                                style={{
+                                  display: standardAdminOnlyFields?.includes(
+                                    eventFormRequiredFieldNames?.EVENT_DISCIPLINE,
+                                  )
+                                    ? adminCheckHandler({ calendar, user })
+                                      ? 'initial'
+                                      : 'none'
+                                    : 'initial',
+                                }}>
+                                <br />
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {taxonomyDetails(allTaxonomyData?.data, user, 'EventDiscipline', 'name', false)}
+                                </p>
+                                <TreeSelectOption
+                                  style={{ marginBottom: '1rem' }}
+                                  bordered={false}
+                                  showArrow={false}
+                                  open={false}
+                                  disabled
+                                  treeData={treeTaxonomyOptions(
+                                    allTaxonomyData,
+                                    user,
+                                    'EventDiscipline',
+                                    false,
+                                    calendarContentLanguage,
+                                  )}
+                                  defaultValue={eventData?.discipline?.map((type) => type?.entityId)}
+                                  tagRender={(props) => {
+                                    const { label } = props;
+                                    return <Tags>{label}</Tags>;
+                                  }}
+                                />
+                              </div>
+                            )}
+                            {allTaxonomyData?.data?.map((taxonomy, index) => {
+                              if (taxonomy?.isDynamicField) {
+                                let initialValues,
+                                  initialTaxonomy = [];
+                                eventData?.dynamicFields?.forEach((dynamicField) => {
+                                  if (taxonomy?.id === dynamicField?.taxonomyId) {
+                                    initialValues = dynamicField?.conceptIds;
+                                    initialTaxonomy.push(taxonomy?.id);
+                                  }
+                                });
+                                if (initialTaxonomy?.includes(taxonomy?.id) && initialValues?.length > 0)
+                                  return (
+                                    <div
+                                      style={{
+                                        display: dynamicAdminOnlyFields?.includes(taxonomy?.id)
+                                          ? adminCheckHandler({ calendar, user })
+                                            ? 'initial'
+                                            : 'none'
+                                          : 'initial',
+                                      }}>
+                                      <p className="read-only-event-content-sub-title-primary">
+                                        {bilingual({
+                                          data: eventData?.name,
+                                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                        })}
+                                      </p>
+                                      <TreeSelectOption
+                                        key={index}
+                                        style={{ marginBottom: '1rem' }}
+                                        bordered={false}
+                                        showArrow={false}
+                                        open={false}
+                                        disabled
+                                        defaultValue={initialValues}
+                                        treeData={treeDynamicTaxonomyOptions(
+                                          taxonomy?.concept,
+                                          user,
+                                          calendarContentLanguage,
+                                        )}
+                                        tagRender={(props) => {
+                                          const { label } = props;
+                                          return <Tags>{label}</Tags>;
+                                        }}
+                                      />
+                                    </div>
+                                  );
+                              }
+                            })}
+                          </div>
+                        </Col>
+                        <Col flex="233px">
+                          <div style={{ width: '100%' }}></div>
                         </Col>
                       </Row>
-                    )}
-                    {eventData?.facebookUrl && (
-                      <>
-                        <p className="read-only-event-content-sub-title-primary">
-                          {t('dashboard.events.addEditEvent.otherInformation.facebookLink')}
-                        </p>
-                        <div style={{ width: '420px' }}>
-                          <p>
-                            <a
-                              href={eventData?.facebookUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="url-links">
-                              {eventData?.facebookUrl}
-                            </a>
-                          </p>
-                        </div>
-                      </>
-                    )}
-                    {eventData?.keywords.length > 0 && (
-                      <>
-                        <p className="read-only-event-content-sub-title-primary">
-                          {t('dashboard.events.addEditEvent.otherInformation.keywords')}
-                        </p>
-                        <SelectOption
-                          mode="tags"
-                          bordered={false}
-                          open={false}
-                          disabled
-                          defaultValue={eventData?.keywords}
-                          tagRender={(props) => {
-                            const { label } = props;
-                            return <Tags>{label}</Tags>;
-                          }}
-                        />
-                      </>
-                    )}
-                    {eventData?.inLanguage.length > 0 && (
-                      <>
-                        <p className="read-only-event-content-sub-title-primary">
-                          {taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name', false)}
-                        </p>
-                        <TreeSelectOption
-                          style={{ marginBottom: '1rem' }}
-                          bordered={false}
-                          open={false}
-                          showArrow={false}
-                          disabled
-                          treeData={treeTaxonomyOptions(
-                            allTaxonomyData,
-                            user,
-                            'inLanguage',
-                            false,
-                            calendarContentLanguage,
-                          )}
-                          defaultValue={eventData?.inLanguage?.map((inLanguage) => {
-                            return inLanguage?.entityId;
-                          })}
-                          tagRender={(props) => {
-                            const { label } = props;
-                            return <Tags>{label}</Tags>;
-                          }}
-                        />
-                      </>
-                    )}
-                  </div>
-                </Col>
-                <Col flex="233px">
-                  <div style={{ width: '100%' }}></div>
-                </Col>
-              </Row>
-            </Col>
-            {(eventData?.accessibility.length > 0 || eventData?.accessibilityNote) && (
-              <Col flex={'723px'} className="read-only-event-section-col top-level-column">
-                <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                  <Col flex={'423px'}>
-                    <div className="read-only-event-section-wrapper">
-                      <p className="read-only-event-content-title">
-                        {t('dashboard.events.addEditEvent.eventAccessibility.title')}
-                      </p>
-                      {eventData?.accessibility.length > 0 && (
-                        <>
-                          <p className="read-only-event-content-sub-title-primary">
-                            {taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false)}
-                          </p>
-                          <TreeSelectOption
-                            style={{ marginBottom: '1rem' }}
-                            bordered={false}
-                            open={false}
-                            showArrow={false}
-                            disabled
-                            treeData={treeTaxonomyOptions(
-                              allTaxonomyData,
-                              user,
-                              'EventAccessibility',
-                              false,
-                              calendarContentLanguage,
+                    </Col>
+                    <Col flex={'723px'} className="read-only-event-section-col top-level-column">
+                      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                        <Col flex={'423px'}>
+                          <div className="read-only-event-section-wrapper">
+                            <p className="read-only-event-content-title">
+                              {t('dashboard.events.addEditEvent.dates.dates')}
+                            </p>
+                            {dateType == dateTypes.SINGLE && (
+                              <>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.events.addEditEvent.dates.date')}
+                                </p>
+                                <p className="read-only-event-content-date">
+                                  <CalendarOutlined
+                                    style={{ fontSize: '24px', color: '#1B3DE6', marginRight: '9px' }}
+                                  />
+                                  {moment
+                                    .tz(
+                                      eventData?.startDateTime ?? eventData?.startDate,
+                                      eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                    )
+                                    .format('MM/DD/YYYY')}
+                                </p>
+                              </>
                             )}
-                            defaultValue={eventData?.accessibility?.map((accessibility) => {
-                              return accessibility?.entityId;
-                            })}
-                            tagRender={(props) => {
-                              const { label } = props;
-                              return <Tags>{label}</Tags>;
-                            }}
-                          />
-                        </>
-                      )}
 
-                      {eventData?.accessibilityNote && (
-                        <>
-                          <p className="read-only-event-content-sub-title-primary">
-                            {t('dashboard.events.addEditEvent.eventAccessibility.note')}
-                          </p>
-                          <p className="read-only-event-content">
-                            {contentLanguageBilingual({
-                              calendarContentLanguage,
-                              data: eventData?.accessibilityNote,
-                              requiredLanguageKey: activeTabKey,
-                            })}
-                          </p>
-                        </>
-                      )}
-                    </div>
-                  </Col>
-                  <Col flex="233px">
-                    <div style={{ width: '100%' }}></div>
-                  </Col>
-                </Row>
-              </Col>
-            )}
-            {eventData?.offerConfiguration && (
-              <Col flex={'723px'} className="read-only-event-section-col top-level-column">
-                <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                  <Col flex={'423px'}>
-                    <div
-                      className="read-only-event-section-wrapper"
-                      style={{
-                        display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.TICKET_INFO)
-                          ? adminCheckHandler({ calendar, user })
-                            ? ''
-                            : 'none'
-                          : '',
-                      }}>
-                      <p className="read-only-event-content-title">
-                        {t('dashboard.events.addEditEvent.tickets.title')}
-                      </p>
-                      {eventData?.offerConfiguration?.category === offerTypes.FREE && (
-                        <>
-                          <p className="read-only-event-content-sub-title-primary">
-                            {t('dashboard.events.addEditEvent.tickets.description')}
-                          </p>
-                          <p>
-                            <p className="read-only-event-content">{t('dashboard.events.addEditEvent.tickets.free')}</p>
-                          </p>
-                        </>
-                      )}
-                      {(eventData?.offerConfiguration?.url?.uri || eventData?.offerConfiguration?.email) && (
-                        <>
-                          <p className="read-only-event-content-sub-title-primary">
-                            {eventData?.offerConfiguration?.category === offerTypes.PAYING
-                              ? t('dashboard.events.addEditEvent.tickets.buyTicketLink')
-                              : eventData?.offerConfiguration?.category === offerTypes.REGISTER &&
-                                t('dashboard.events.addEditEvent.tickets.registerLink')}
-                          </p>
-                          <p>
-                            <a
-                              href={eventData?.offerConfiguration?.url?.uri ?? eventData?.offerConfiguration?.email}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="url-links">
-                              {eventData?.offerConfiguration?.url?.uri ?? eventData?.offerConfiguration?.email}
-                            </a>
-                          </p>
-                        </>
-                      )}
-                      {eventData?.offerConfiguration?.category === offerTypes.PAYING &&
-                        eventData?.offerConfiguration?.prices?.length > 0 && (
-                          <table className="ticket-price-table">
-                            <tr>
-                              <th>
-                                <p className="read-only-event-content-sub-title-primary">
-                                  {t('dashboard.events.addEditEvent.tickets.price')}
-                                </p>
-                              </th>
-                              <th>
-                                <p className="read-only-event-content-sub-title-primary">
-                                  {t('dashboard.events.addEditEvent.tickets.description')}
-                                </p>
-                              </th>
-                            </tr>
-
-                            {eventData?.offerConfiguration?.prices?.map((offer, key) => {
-                              return (
-                                <tr key={key}>
-                                  <td>
-                                    <p className="read-only-event-content">
-                                      {offer?.price}&nbsp;
-                                      <span style={{ fontWeight: '400' }}>
-                                        {t('dashboard.events.addEditEvent.tickets.CAD')}
-                                      </span>
+                            {(dateType == dateTypes.RANGE || dateType === dateTypes.MULTIPLE) && (
+                              <>
+                                <span
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    marginBottom: '4px',
+                                  }}>
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <span className="read-only-event-content-sub-title-primary">
+                                      {t(
+                                        `dashboard.events.addEditEvent.dates.${
+                                          dateType === dateTypes.MULTIPLE ? `multipleDates` : `dateRange`
+                                        }`,
+                                      )}
+                                    </span>
+                                    {dateType === dateTypes.MULTIPLE && <span>-</span>}
+                                    <span
+                                      className="read-only-event-content-sub-title-primary"
+                                      style={{ textTransform: 'capitalize' }}>
+                                      {eventData?.recurringEvent?.frequency
+                                        ? eventData?.recurringEvent?.frequency?.toLowerCase()
+                                        : eventData?.subEventConfiguration && dateFrequencyOptions[2].value}
+                                    </span>
+                                  </span>
+                                  {dateType === dateTypes.MULTIPLE && eventData?.subEvents?.length > 0 && (
+                                    <Tags
+                                      style={{ color: '#1572BB', borderRadius: '4px', marginRight: '10px' }}
+                                      color={'#DBF3FD'}>
+                                      {pluralize(eventData?.subEvents?.length, t('dashboard.events.list.event'))}
+                                    </Tags>
+                                  )}
+                                </span>
+                                <Row>
+                                  <Col flex="423px">
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                      <CalendarOutlined
+                                        style={{ fontSize: '24px', color: '#1B3DE6', marginRight: '9px' }}
+                                      />
+                                      <DateRangePicker
+                                        defaultValue={[
+                                          moment.tz(
+                                            eventData?.startDate ?? eventData?.startDateTime,
+                                            eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                          ),
+                                          moment.tz(
+                                            eventData?.endDate ?? eventData?.endDateTime,
+                                            eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                          ),
+                                        ]}
+                                        bordered={false}
+                                        allowClear={false}
+                                        inputReadOnly={true}
+                                        open={false}
+                                        suffixIcon={false}
+                                      />
+                                    </div>
+                                  </Col>
+                                </Row>
+                              </>
+                            )}
+                            <br />
+                            <Row justify="space-between">
+                              {eventData?.startDateTime &&
+                                eventData?.recurringEvent?.frequency !== dateFrequencyOptions[2].value &&
+                                !eventData?.subEventConfiguration && (
+                                  <Col>
+                                    <p className="read-only-event-content-sub-title-primary">
+                                      {t('dashboard.events.addEditEvent.dates.startTime')}
                                     </p>
-                                  </td>
-                                  <td>
                                     <p className="read-only-event-content">
-                                      {contentLanguageBilingual({
-                                        data: offer?.name,
+                                      {moment
+                                        .tz(eventData?.startDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
+                                        .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
+                                    </p>
+                                  </Col>
+                                )}
+                              {eventData?.endDateTime &&
+                                eventData?.recurringEvent?.frequency !== dateFrequencyOptions[2].value &&
+                                !eventData?.subEventConfiguration && (
+                                  <Col>
+                                    <p className="read-only-event-content-sub-title-primary">
+                                      {t('dashboard.events.addEditEvent.dates.endTime')}
+                                    </p>
+                                    <p className="read-only-event-content">
+                                      {moment
+                                        .tz(eventData?.endDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
+                                        .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
+                                    </p>
+                                  </Col>
+                                )}
+                            </Row>
+                            <br />
+                            {dateType === dateTypes.MULTIPLE &&
+                              eventData?.recurringEvent?.frequency === dateFrequencyOptions[1].value && (
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                  {daysOfWeek.map((day, index) => {
+                                    return (
+                                      <Button
+                                        key={index}
+                                        className="recurring-day-buttons"
+                                        style={{
+                                          ...(eventData?.recurringEvent?.weekDays?.includes(day?.value) && {
+                                            borderColor: '#607EFC',
+                                            backgroundColor: '#EFF2FF',
+                                          }),
+                                        }}>
+                                        {day.name}
+                                      </Button>
+                                    );
+                                  })}
+                                </div>
+                              )}
+
+                            <br />
+                            {eventData?.eventStatus && (
+                              <>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.events.addEditEvent.dates.status')}
+                                </p>
+                                <p className="read-only-event-content">
+                                  {eventStatusOptions?.map((status) => {
+                                    if (status?.value === eventData?.eventStatus) return status?.label;
+                                  })}
+                                </p>
+                              </>
+                            )}
+                          </div>
+                        </Col>
+                        <Col flex="233px">
+                          <div style={{ width: '100%' }}></div>
+                        </Col>
+                      </Row>
+                    </Col>
+                    {eventData?.locations?.length > 0 && (
+                      <Col flex={'723px'} className="read-only-event-section-col top-level-column">
+                        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                          <Col flex={'423px'}>
+                            <div className="read-only-event-section-wrapper">
+                              <p className="read-only-event-content-title">
+                                {t('dashboard.events.addEditEvent.location.title')}
+                              </p>
+                              {initialPlace && initialPlace?.length > 0 && (
+                                <div
+                                  style={{
+                                    display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.LOCATION)
+                                      ? adminCheckHandler({ calendar, user })
+                                        ? 'initial'
+                                        : 'none'
+                                      : 'initial',
+                                  }}>
+                                  <p className="read-only-event-content-sub-title-primary">
+                                    {t('dashboard.events.addEditEvent.location.title')}
+                                  </p>
+
+                                  {locationPlace && (
+                                    <SelectionItem
+                                      icon={locationPlace?.label?.props?.icon}
+                                      name={locationPlace?.name}
+                                      description={locationPlace?.description}
+                                      itemWidth="100%"
+                                      postalAddress={locationPlace?.postalAddress}
+                                      accessibility={locationPlace?.accessibility}
+                                      openingHours={locationPlace?.openingHours}
+                                      calendarContentLanguage={calendarContentLanguage}
+                                      bordered
+                                    />
+                                  )}
+                                </div>
+                              )}
+
+                              {initialVirtualLocation[0] && initialVirtualLocation?.length > 0 && (
+                                <p className="read-only-event-content-sub-title-primary">
+                                  <br />
+                                  {t('dashboard.events.addEditEvent.location.virtualLocation')}
+                                </p>
+                              )}
+
+                              {initialVirtualLocation[0] && initialVirtualLocation[0]?.name && (
+                                <p className="read-only-event-content">
+                                  {contentLanguageBilingual({
+                                    calendarContentLanguage,
+                                    data: initialVirtualLocation[0]?.name,
+                                    requiredLanguageKey: activeTabKey,
+                                  })}
+                                </p>
+                              )}
+
+                              {initialVirtualLocation[0] && initialVirtualLocation[0]?.url?.uri && (
+                                <>
+                                  <p className="read-only-event-content-sub-title-secondary">
+                                    {t('dashboard.events.addEditEvent.location.onlineLink')}
+                                  </p>
+                                  <a
+                                    href={eventData?.contactPoint?.url?.uri}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="url-links">
+                                    {initialVirtualLocation[0]?.url?.uri}
+                                  </a>
+                                </>
+                              )}
+                            </div>
+                          </Col>
+                          <Col flex="233px">
+                            <div style={{ width: '100%' }}></div>
+                          </Col>
+                        </Row>
+                      </Col>
+                    )}
+                    <Col flex={'723px'} className="read-only-event-section-col top-level-column">
+                      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                        <Col flex={'423px'}>
+                          <div className="read-only-event-section-wrapper">
+                            <p className="read-only-event-content-title">
+                              {t('dashboard.events.addEditEvent.otherInformation.title')}
+                            </p>
+                            <div
+                              style={{
+                                display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION)
+                                  ? adminCheckHandler({ calendar, user })
+                                    ? 'initial'
+                                    : 'none'
+                                  : 'initial',
+                              }}>
+                              {eventData?.description && (
+                                <>
+                                  <p className="read-only-event-content-sub-title-primary">
+                                    {t('dashboard.events.addEditEvent.otherInformation.description.title')}
+                                  </p>
+                                  <div
+                                    dangerouslySetInnerHTML={{
+                                      __html: contentLanguageBilingual({
+                                        data: eventData?.description,
+                                        calendarContentLanguage,
                                         requiredLanguageKey: activeTabKey,
-                                        calendarContentLanguage: calendarContentLanguage,
-                                      })}
+                                      }),
+                                    }}
+                                  />
+                                </>
+                              )}
+                            </div>
+                            <br />
+                            {eventData?.image?.length > 0 && mainImageData?.original?.uri && (
+                              <div
+                                style={{
+                                  display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
+                                    ? adminCheckHandler({ calendar, user })
+                                      ? 'initial'
+                                      : 'none'
+                                    : 'initial',
+                                }}>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.events.addEditEvent.otherInformation.image.mainImage')}
+                                </p>
+                                <ImageUpload
+                                  imageUrl={mainImageData?.large?.uri}
+                                  imageReadOnly={true}
+                                  preview={true}
+                                  eventImageData={mainImageData}
+                                />
+                              </div>
+                            )}
+                            {eventData?.image?.length > 0 && imageConfig.enableGallery && (
+                              <div
+                                style={{
+                                  display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
+                                    ? adminCheckHandler()
+                                      ? 'initial'
+                                      : 'none'
+                                    : 'initial',
+                                }}>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
+                                </p>
+                                <MultipleImageUpload
+                                  imageReadOnly={true}
+                                  largeAspectRatio={
+                                    currentCalendarData?.imageConfig?.length > 0
+                                      ? imageConfig?.large?.aspectRatio
+                                      : null
+                                  }
+                                  thumbnailAspectRatio={
+                                    currentCalendarData?.imageConfig?.length > 0
+                                      ? imageConfig?.thumbnail?.aspectRatio
+                                      : null
+                                  }
+                                  eventImageData={eventData?.image?.filter((image) => !image?.isMain)}
+                                />
+                              </div>
+                            )}
+                            {eventData?.organizer?.length > 0 && (
+                              <>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.events.addEditEvent.otherInformation.organizer.title')}
+                                </p>
+
+                                {selectedOrganizers?.map((organizer, index) => {
+                                  return (
+                                    <SelectionItem
+                                      key={index}
+                                      icon={organizer?.label?.props?.icon}
+                                      name={organizer?.name}
+                                      description={organizer?.description}
+                                      calendarContentLanguage={calendarContentLanguage}
+                                      bordered
+                                      closable={false}
+                                      itemWidth="100%"
+                                    />
+                                  );
+                                })}
+                              </>
+                            )}
+                            {eventData?.contactPoint && (
+                              <p className="read-only-event-content-sub-title-primary">
+                                {t('dashboard.events.addEditEvent.otherInformation.contact.title')}
+                              </p>
+                            )}
+                            {eventData?.contactPoint && (
+                              <>
+                                <p className="read-only-event-content">
+                                  {contentLanguageBilingual({
+                                    calendarContentLanguage,
+                                    data: eventData?.contactPoint?.name,
+                                    requiredLanguageKey: activeTabKey,
+                                  })}
+                                </p>
+                              </>
+                            )}
+                            {eventData?.contactPoint?.url?.uri && (
+                              <>
+                                <p className="read-only-event-content-sub-title-secondary">
+                                  {t('dashboard.events.addEditEvent.otherInformation.contact.website')}
+                                </p>
+                                <p>
+                                  <a
+                                    href={eventData?.contactPoint?.url?.uri}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="url-links">
+                                    {eventData?.contactPoint?.url?.uri}
+                                  </a>
+                                </p>
+                              </>
+                            )}
+                            {eventData?.contactPoint?.telephone && (
+                              <>
+                                <p className="read-only-event-content-sub-title-secondary">
+                                  {t('dashboard.events.addEditEvent.otherInformation.contact.phoneNumber')}
+                                </p>
+                                <p>
+                                  <p className="url-links">{eventData?.contactPoint?.telephone}</p>
+                                </p>
+                              </>
+                            )}
+                            {eventData?.contactPoint?.email && (
+                              <>
+                                <p className="read-only-event-content-sub-title-secondary">
+                                  {t('dashboard.events.addEditEvent.otherInformation.contact.email')}
+                                </p>
+                                <p>
+                                  <p className="url-links">{eventData?.contactPoint?.email}</p>
+                                </p>
+                              </>
+                            )}
+                            {eventData?.performer?.length > 0 && (
+                              <>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.events.addEditEvent.otherInformation.performer.title')}
+                                </p>
+
+                                {selectedPerformers?.map((performer, index) => {
+                                  return (
+                                    <SelectionItem
+                                      key={index}
+                                      icon={performer?.label?.props?.icon}
+                                      name={performer?.name}
+                                      description={performer?.description}
+                                      calendarContentLanguage={calendarContentLanguage}
+                                      bordered
+                                      closable={false}
+                                      itemWidth="100%"
+                                    />
+                                  );
+                                })}
+                              </>
+                            )}
+                            {eventData?.collaborators?.length > 0 && (
+                              <>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.events.addEditEvent.otherInformation.supporter.title')}
+                                </p>
+
+                                {selectedSupporters?.map((supporter, index) => {
+                                  return (
+                                    <SelectionItem
+                                      key={index}
+                                      icon={supporter?.label?.props?.icon}
+                                      name={supporter?.name}
+                                      description={supporter?.description}
+                                      calendarContentLanguage={calendarContentLanguage}
+                                      bordered
+                                      itemWidth="100%"
+                                      closable={false}
+                                    />
+                                  );
+                                })}
+                              </>
+                            )}
+                            {eventData?.url && eventData?.url?.uri && (
+                              <>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.events.addEditEvent.otherInformation.eventLink')}
+                                </p>
+                                <p>
+                                  <a
+                                    href={eventData?.url?.uri}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="url-links">
+                                    {eventData?.url?.uri}
+                                  </a>
+                                </p>
+                              </>
+                            )}
+                            {eventData?.videoUrl && (
+                              <>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.events.addEditEvent.otherInformation.videoLink')}
+                                </p>
+                                <p>
+                                  <a
+                                    href={eventData?.videoUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="url-links">
+                                    {eventData?.videoUrl}
+                                  </a>
+                                </p>
+                              </>
+                            )}
+                            {getEmbedUrl(eventData?.videoUrl) !== '' && (
+                              <Row>
+                                <Col span={24}>
+                                  <iframe
+                                    className="iframe-video-embed"
+                                    width="100%"
+                                    height="315"
+                                    src={getEmbedUrl(eventData?.videoUrl)}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowfullscreen></iframe>
+                                </Col>
+                              </Row>
+                            )}
+                            {eventData?.facebookUrl && (
+                              <>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.events.addEditEvent.otherInformation.facebookLink')}
+                                </p>
+                                <div style={{ width: '420px' }}>
+                                  <p>
+                                    <a
+                                      href={eventData?.facebookUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="url-links">
+                                      {eventData?.facebookUrl}
+                                    </a>
+                                  </p>
+                                </div>
+                              </>
+                            )}
+                            {eventData?.keywords.length > 0 && (
+                              <>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.events.addEditEvent.otherInformation.keywords')}
+                                </p>
+                                <SelectOption
+                                  mode="tags"
+                                  bordered={false}
+                                  open={false}
+                                  disabled
+                                  defaultValue={eventData?.keywords}
+                                  tagRender={(props) => {
+                                    const { label } = props;
+                                    return <Tags>{label}</Tags>;
+                                  }}
+                                />
+                              </>
+                            )}
+                            {eventData?.inLanguage.length > 0 && (
+                              <>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name', false)}
+                                </p>
+                                <TreeSelectOption
+                                  style={{ marginBottom: '1rem' }}
+                                  bordered={false}
+                                  open={false}
+                                  showArrow={false}
+                                  disabled
+                                  treeData={treeTaxonomyOptions(
+                                    allTaxonomyData,
+                                    user,
+                                    'inLanguage',
+                                    false,
+                                    calendarContentLanguage,
+                                  )}
+                                  defaultValue={eventData?.inLanguage?.map((inLanguage) => {
+                                    return inLanguage?.entityId;
+                                  })}
+                                  tagRender={(props) => {
+                                    const { label } = props;
+                                    return <Tags>{label}</Tags>;
+                                  }}
+                                />
+                              </>
+                            )}
+                          </div>
+                        </Col>
+                        <Col flex="233px">
+                          <div style={{ width: '100%' }}></div>
+                        </Col>
+                      </Row>
+                    </Col>
+                    {(eventData?.accessibility.length > 0 || eventData?.accessibilityNote) && (
+                      <Col flex={'723px'} className="read-only-event-section-col top-level-column">
+                        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                          <Col flex={'423px'}>
+                            <div className="read-only-event-section-wrapper">
+                              <p className="read-only-event-content-title">
+                                {t('dashboard.events.addEditEvent.eventAccessibility.title')}
+                              </p>
+                              {eventData?.accessibility.length > 0 && (
+                                <>
+                                  <p className="read-only-event-content-sub-title-primary">
+                                    {taxonomyDetails(allTaxonomyData?.data, user, 'EventAccessibility', 'name', false)}
+                                  </p>
+                                  <TreeSelectOption
+                                    style={{ marginBottom: '1rem' }}
+                                    bordered={false}
+                                    open={false}
+                                    showArrow={false}
+                                    disabled
+                                    treeData={treeTaxonomyOptions(
+                                      allTaxonomyData,
+                                      user,
+                                      'EventAccessibility',
+                                      false,
+                                      calendarContentLanguage,
+                                    )}
+                                    defaultValue={eventData?.accessibility?.map((accessibility) => {
+                                      return accessibility?.entityId;
+                                    })}
+                                    tagRender={(props) => {
+                                      const { label } = props;
+                                      return <Tags>{label}</Tags>;
+                                    }}
+                                  />
+                                </>
+                              )}
+
+                              {eventData?.accessibilityNote && (
+                                <>
+                                  <p className="read-only-event-content-sub-title-primary">
+                                    {t('dashboard.events.addEditEvent.eventAccessibility.note')}
+                                  </p>
+                                  <p className="read-only-event-content">
+                                    {contentLanguageBilingual({
+                                      calendarContentLanguage,
+                                      data: eventData?.accessibilityNote,
+                                      requiredLanguageKey: activeTabKey,
+                                    })}
+                                  </p>
+                                </>
+                              )}
+                            </div>
+                          </Col>
+                          <Col flex="233px">
+                            <div style={{ width: '100%' }}></div>
+                          </Col>
+                        </Row>
+                      </Col>
+                    )}
+                    {eventData?.offerConfiguration && (
+                      <Col flex={'723px'} className="read-only-event-section-col top-level-column">
+                        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                          <Col flex={'423px'}>
+                            <div
+                              className="read-only-event-section-wrapper"
+                              style={{
+                                display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.TICKET_INFO)
+                                  ? adminCheckHandler({ calendar, user })
+                                    ? ''
+                                    : 'none'
+                                  : '',
+                              }}>
+                              <p className="read-only-event-content-title">
+                                {t('dashboard.events.addEditEvent.tickets.title')}
+                              </p>
+                              {eventData?.offerConfiguration?.category === offerTypes.FREE && (
+                                <>
+                                  <p className="read-only-event-content-sub-title-primary">
+                                    {t('dashboard.events.addEditEvent.tickets.description')}
+                                  </p>
+                                  <p>
+                                    <p className="read-only-event-content">
+                                      {t('dashboard.events.addEditEvent.tickets.free')}
                                     </p>
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </table>
-                        )}
-                      {eventData?.offerConfiguration?.name && (
-                        <>
-                          <p className="read-only-event-content-sub-title-primary">
-                            {t('dashboard.events.addEditEvent.tickets.note')}
-                          </p>
-                          <p className="read-only-event-content">
-                            {contentLanguageBilingual({
-                              calendarContentLanguage,
-                              requiredLanguageKey: activeTabKey,
-                              data: eventData?.offerConfiguration?.name,
-                            })}
-                          </p>
-                        </>
-                      )}
-                    </div>
-                  </Col>
-                  <Col flex="233px">
-                    <div style={{ width: '100%' }}></div>
-                  </Col>
-                </Row>
-              </Col>
-            )}
-          </ReadOnlyPageTabLayout>
+                                  </p>
+                                </>
+                              )}
+                              {(eventData?.offerConfiguration?.url?.uri || eventData?.offerConfiguration?.email) && (
+                                <>
+                                  <p className="read-only-event-content-sub-title-primary">
+                                    {eventData?.offerConfiguration?.category === offerTypes.PAYING
+                                      ? t('dashboard.events.addEditEvent.tickets.buyTicketLink')
+                                      : eventData?.offerConfiguration?.category === offerTypes.REGISTER &&
+                                        t('dashboard.events.addEditEvent.tickets.registerLink')}
+                                  </p>
+                                  <p>
+                                    <a
+                                      href={
+                                        eventData?.offerConfiguration?.url?.uri ?? eventData?.offerConfiguration?.email
+                                      }
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="url-links">
+                                      {eventData?.offerConfiguration?.url?.uri ?? eventData?.offerConfiguration?.email}
+                                    </a>
+                                  </p>
+                                </>
+                              )}
+                              {eventData?.offerConfiguration?.category === offerTypes.PAYING &&
+                                eventData?.offerConfiguration?.prices?.length > 0 && (
+                                  <table className="ticket-price-table">
+                                    <tr>
+                                      <th>
+                                        <p className="read-only-event-content-sub-title-primary">
+                                          {t('dashboard.events.addEditEvent.tickets.price')}
+                                        </p>
+                                      </th>
+                                      <th>
+                                        <p className="read-only-event-content-sub-title-primary">
+                                          {t('dashboard.events.addEditEvent.tickets.description')}
+                                        </p>
+                                      </th>
+                                    </tr>
+
+                                    {eventData?.offerConfiguration?.prices?.map((offer, key) => {
+                                      return (
+                                        <tr key={key}>
+                                          <td>
+                                            <p className="read-only-event-content">
+                                              {offer?.price}&nbsp;
+                                              <span style={{ fontWeight: '400' }}>
+                                                {t('dashboard.events.addEditEvent.tickets.CAD')}
+                                              </span>
+                                            </p>
+                                          </td>
+                                          <td>
+                                            <p className="read-only-event-content">
+                                              {contentLanguageBilingual({
+                                                data: offer?.name,
+                                                requiredLanguageKey: activeTabKey,
+                                                calendarContentLanguage: calendarContentLanguage,
+                                              })}
+                                            </p>
+                                          </td>
+                                        </tr>
+                                      );
+                                    })}
+                                  </table>
+                                )}
+                              {eventData?.offerConfiguration?.name && (
+                                <>
+                                  <p className="read-only-event-content-sub-title-primary">
+                                    {t('dashboard.events.addEditEvent.tickets.note')}
+                                  </p>
+                                  <p className="read-only-event-content">
+                                    {contentLanguageBilingual({
+                                      calendarContentLanguage,
+                                      requiredLanguageKey: activeTabKey,
+                                      data: eventData?.offerConfiguration?.name,
+                                    })}
+                                  </p>
+                                </>
+                              )}
+                            </div>
+                          </Col>
+                          <Col flex="233px">
+                            <div style={{ width: '100%' }}></div>
+                          </Col>
+                        </Row>
+                      </Col>
+                    )}
+                  </Row>
+                </Col>
+              </ReadOnlyPageTabLayout>
+            </Row>
+          </Col>
         </Row>
       </div>
     )
