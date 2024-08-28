@@ -49,7 +49,7 @@ export const contentLanguageBilingual = ({
   if (!data) return '';
   if (requiredLanguageKey) {
     const requiredData = data[requiredLanguageKey];
-    if (requiredData) return requiredData;
+    return requiredData ?? '';
   }
 
   contentLanguageKey = interfaceLanguage?.toLowerCase();
