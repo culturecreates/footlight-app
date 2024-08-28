@@ -19,6 +19,10 @@
   resize: vertical;
 }
 
+.text-editor .ql-container {
+  overflow: visible;
+}
+
 @media (max-width: 480px) {
   .text-editor .ql-snow .ql-editor h1 {
     font: 1.2em 'Roboto';

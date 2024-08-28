@@ -36,7 +36,7 @@ const Login = () => {
   };
   useEffect(() => {
     const savedAccessToken = Cookies.get('accessToken');
-    const calenderId = Cookies.get('calendarId');
+    const calenderId = sessionStorage.getItem('calendarId');
     if (location?.state?.previousPath === 'logout') {
       dispatch(clearUser());
     }
@@ -50,7 +50,7 @@ const Login = () => {
   }, []);
 
   useEffect(() => {
-    const calenderId = Cookies.get('calendarId');
+    const calenderId = sessionStorage.getItem('calendarId');
     if (accessToken && accessToken != '' && calenderId && calenderId != '') {
       navigate(PathName.Dashboard, { state: { previousPath: 'login' } });
     }
