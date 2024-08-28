@@ -155,7 +155,7 @@ function EventReadOnly() {
         ['openingHours']: initialPlace[0]?.openingHours?.uri,
       };
       let initialPlaceAccessibiltiy = [];
-      if (initialPlace[0]?.accessibility?.length > 0) {
+      if (initialPlace[0]?.accessibility?.length > 0 || initialPlace[0]?.regions?.length > 0) {
         let taxonomyClassQuery = new URLSearchParams();
         taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
         getAllTaxonomy({
@@ -182,6 +182,15 @@ function EventReadOnly() {
               ...initialPlace[0],
               ['accessibility']: initialPlaceAccessibiltiy,
             };
+            res?.data?.map((taxonomy) => {
+              if (taxonomy?.mappedToField == 'Region') {
+                taxonomy?.concept?.forEach((t) => {
+                  if (initialPlace[0]?.regions[0]?.entityId == t?.id) {
+                    initialPlace[0] = { ...initialPlace[0], regions: [t] };
+                  }
+                });
+              }
+            });
             setLocationPlace(placesOptions(initialPlace)[0], user, calendarContentLanguage);
           })
           .catch((error) => console.log(error));
@@ -670,6 +679,7 @@ function EventReadOnly() {
                             icon={locationPlace?.label?.props?.icon}
                             name={locationPlace?.name}
                             description={locationPlace?.description}
+                            region={locationPlace?.region}
                             itemWidth="100%"
                             postalAddress={locationPlace?.postalAddress}
                             accessibility={locationPlace?.accessibility}

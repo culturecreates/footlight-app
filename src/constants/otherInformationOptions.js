@@ -15,6 +15,7 @@ export const otherInformationOptions = [
   {
     type: 'contact',
     fieldNames: otherInformationFieldNames.contact,
+    taxonomy: false,
     disabled: false,
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}</Translation>,
     tooltip: (
@@ -24,6 +25,7 @@ export const otherInformationOptions = [
   {
     type: 'performers',
     fieldNames: otherInformationFieldNames.performerWrap,
+    taxonomy: false,
     disabled: false,
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.performer.title')}</Translation>,
     tooltip: (
@@ -33,6 +35,7 @@ export const otherInformationOptions = [
   {
     type: 'supporter',
     fieldNames: otherInformationFieldNames.supporterWrap,
+    taxonomy: false,
     disabled: false,
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.supporter.title')}</Translation>,
     tooltip: (
@@ -42,6 +45,7 @@ export const otherInformationOptions = [
   {
     type: 'eventLink',
     fieldNames: otherInformationFieldNames.eventLink,
+    taxonomy: false,
     disabled: false,
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.eventLink')}</Translation>,
     tooltip: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.eventLinkTooltip')}</Translation>,
@@ -49,6 +53,7 @@ export const otherInformationOptions = [
   {
     type: 'videoLink',
     fieldNames: otherInformationFieldNames.videoLink,
+    taxonomy: false,
     disabled: false,
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.videoLinks')}</Translation>,
     tooltip: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.videoLinkTooltip')}</Translation>,
@@ -56,6 +61,7 @@ export const otherInformationOptions = [
   {
     type: 'facebookLink',
     fieldNames: otherInformationFieldNames.facebookLinkWrap,
+    taxonomy: false,
     disabled: false,
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.facebookLink')}</Translation>,
     tooltip: (
@@ -66,12 +72,15 @@ export const otherInformationOptions = [
     type: 'keywords',
     fieldNames: otherInformationFieldNames.keywords,
     disabled: false,
+    taxonomy: false,
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.keywords')}</Translation>,
     tooltip: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.keywordsTooltip')}</Translation>,
   },
   {
     type: 'inLanguage',
     fieldNames: otherInformationFieldNames.inLanguage,
+    taxonomy: true,
+    mappedField: otherInformationFieldNames.inLanguage,
     disabled: false,
     label: (
       <>
