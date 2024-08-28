@@ -1,8 +1,12 @@
 export const clearSessionStoredSearchQueries = () => {
-  sessionStorage.removeItem('query');
-  sessionStorage.removeItem('queryTaxonomy');
-  sessionStorage.removeItem('peopleSearchQuery');
-  sessionStorage.removeItem('organizationSearchQuery');
-  sessionStorage.removeItem('placesSearchQuery');
-  sessionStorage.removeItem('queryUserListing');
+  [
+    'query',
+    'queryTaxonomy',
+    'peopleSearchQuery',
+    'organizationSearchQuery',
+    'placesSearchQuery',
+    'queryUserListing',
+  ].forEach((key) => {
+    sessionStorage.removeItem(key);
+  });
 };

@@ -7,12 +7,11 @@ import { PathName } from '../../../constants/pathName';
 import { contentLanguageBilingual } from '../../../utils/bilingual';
 import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
-import Cookies from 'js-cookie';
 
 function Calendar({ children, allCalendarsData, setPageNumber }) {
   const dispatch = useDispatch();
   const { user } = useSelector(getUserDetails);
-  const calendarIdInCookies = Cookies.get('calendarId');
+  const calendarIdInCookies = sessionStorage.getItem('calendarId');
 
   const [open, setOpen] = useState(false);
   const items = allCalendarsData?.data?.map((item) => {
@@ -47,7 +46,7 @@ function Calendar({ children, allCalendarsData, setPageNumber }) {
   const onClick = ({ key }) => {
     if (calendarIdInCookies != key) {
       dispatch(setSelectedCalendar(String(key)));
-      Cookies.set('calendarId', key);
+      sessionStorage.setItem('calendarId', key);
       setPageNumber(1);
       sessionStorage.clear();
       setOpen(false);
