@@ -336,7 +336,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
     const height = form.getFieldValue('height') ?? 600;
     const limit = form.getFieldValue('limit') ?? 9;
     const font = form.getFieldValue('font') ?? 'Roboto';
-    const locale = form.getFieldValue('locale') ?? languageOptions[0].value;
+    const locale = form.getFieldValue('locale') ?? languageOptions[0]?.value;
 
     urlCopy.searchParams.append('logo', calendarLogoUri);
     urlCopy.searchParams.append('locale', onLanguageSelect(locale)?.key.toLowerCase());
@@ -601,7 +601,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
                           name="language"
                           label={t(`${localePath}.language`)}
                           required
-                          initialValue={languageOptions[0].value}
+                          initialValue={languageOptions[0]?.value ?? []}
                           data-cy="widget-settings-language-label">
                           <SelectOption
                             data-cy="widget-settings-language"
