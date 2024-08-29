@@ -40,6 +40,12 @@ on:
         required: false
         type: string
         default: '2'
+    secrets:
+      DOCKER_PAT:
+        required: true
+      CYPRESS_PASSWORD:
+        required: true
+
 
 jobs:
   built-and-run-cypress:
@@ -127,6 +133,10 @@ jobs:
           --network footlight-network.test \
           -e XDG_RUNTIME_DIR=/tmp/runtime \
           -e CYPRESS_BASE_URL=$base_url \
+          -e CYPRESS_ADMIN_EN_EMAIL="${{ vars.CYPRESS_ADMIN_EN_EMAIL }}" \
+          -e CYPRESS_ADMIN_FR_EMAIL="${{ vars.CYPRESS_ADMIN_FR_EMAIL }}" \
+          -e CYPRESS_GUEST_EN_EMAIL="${{ vars.CYPRESS_GUEST_EN_EMAIL }}" \
+          -e CYPRESS_GUEST_FR_EMAIL="${{ vars.CYPRESS_GUEST_FR_EMAIL }}" \
           -e CYPRESS_ADMIN_EN_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
           -e CYPRESS_ADMIN_FR_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
           -e CYPRESS_GUEST_EN_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
