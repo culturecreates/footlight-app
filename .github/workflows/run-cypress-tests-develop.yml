@@ -1,0 +1,19 @@
+name: Trigger Cypress Tests on Develop Branch
+
+on:
+  pull_request:
+    branches:
+      - develop
+  workflow_dispatch:
+
+jobs:
+  trigger-end-to-end-tests:
+    uses: ./.github/workflows/run-cypress-tests.yml
+    with:
+      baseUrl: ''
+      grep: ''
+      grepTags: '@general'
+      numContainers: '2'
+    secrets:
+      DOCKER_PAT: ${{ secrets.DOCKER_PAT }}
+      CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
