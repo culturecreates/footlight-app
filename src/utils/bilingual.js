@@ -1,6 +1,5 @@
 //Function which returns the language key depending on the interface language
 
-import i18next from 'i18next';
 import { contentLanguage, contentLanguageKeyMap } from '../constants/contentLanguage';
 import { userLanguages } from '../constants/userLanguages';
 
@@ -30,37 +29,24 @@ export const bilingual = ({ interfaceLanguage, data }) => {
   return requiredLanguageData || '';
 };
 
-export const contentLanguageBilingual = ({
-  interfaceLanguage = i18next.language,
-  calendarContentLanguage,
-  data,
-  requiredLanguageKey,
-}) => {
+export const contentLanguageBilingual = ({ calendarContentLanguage, data, requiredLanguageKey }) => {
   /**
    * @param {Object} params - The parameters object.
-   * @param {string} params.interfaceLanguage - Active interface language.
    * @param {string[]} params.calendarContentLanguage - Array of calendar content languages.
    * @param {Object} params.data - Multilingual data object.
    * @param {string} params.requiredLanguagekey - Required content language. If data of any particular language is required.
    * @returns {string} The string data of required content language or an empty string if no data is available.
    **/
 
-  let contentLanguageKey;
+  let contentLanguageKey = contentLanguageKeyMap[calendarContentLanguage[0]];
   if (!data) return '';
-  if (requiredLanguageKey) {
-    const requiredData = data[requiredLanguageKey];
-    return requiredData ?? '';
-  }
-
-  contentLanguageKey = interfaceLanguage?.toLowerCase();
-  if (calendarContentLanguage?.length == 1) {
-    contentLanguageKey = contentLanguageKeyMap[calendarContentLanguage[0]];
+  if (requiredLanguageKey && data[requiredLanguageKey]) {
+    return data[requiredLanguageKey];
   }
 
   if (data[contentLanguageKey] === undefined) {
-    const activeKey = Object.values(contentLanguageKeyMap).find((lanKey) => data[lanKey] !== undefined);
-    return data[activeKey] ?? '';
+    contentLanguageKey = Object.values(contentLanguageKeyMap).find((lanKey) => data[lanKey] !== undefined);
   }
 
-  return data[contentLanguageKey];
+  return data[contentLanguageKey] ?? '';
 };

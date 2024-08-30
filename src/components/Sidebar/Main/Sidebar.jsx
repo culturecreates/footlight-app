@@ -101,6 +101,8 @@ function Sidebar(props) {
   }, [location]);
 
   useEffect(() => {
+    if (!calendarContentLanguage) return;
+
     const calendarLabel = contentLanguageBilingual({
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       calendarContentLanguage: calendarContentLanguage,

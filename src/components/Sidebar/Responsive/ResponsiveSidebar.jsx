@@ -124,6 +124,8 @@ function ResponsiveSidebar(props) {
     }
   };
   useEffect(() => {
+    if (!calendarContentLanguage) return;
+
     const calendarLabel = contentLanguageBilingual({
       data: currentCalendarData?.name,
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
