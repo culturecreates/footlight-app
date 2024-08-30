@@ -68,15 +68,13 @@ function MultilingualInput({ children, ...rest }) {
     if (!flag) defaultTab = contentLanguageKeyMap[calendarContentLanguage[0]];
   }
 
-  // label creation for each tab
+  // Label creation for each tab
   calendarContentLanguage.map((language) => {
     const langKey = contentLanguageKeyMap[language];
     const langLabel = t(`common.tab${capitalizeFirstLetter(language)}`);
     labelCollection[langKey] = langLabel;
 
-    if (!fieldData) return;
-
-    if (!fieldData[langKey] || fieldData[langKey] == '') {
+    if (!fieldData?.[langKey] || fieldData[langKey] === '') {
       labelCollection[langKey] = (
         <>
           {langLabel}&nbsp;
