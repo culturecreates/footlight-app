@@ -464,7 +464,7 @@ function EventReadOnly() {
                                       }}>
                                       <p className="read-only-event-content-sub-title-primary">
                                         {bilingual({
-                                          data: eventData?.name,
+                                          data: taxonomy?.name,
                                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         })}
                                       </p>

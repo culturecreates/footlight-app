@@ -174,7 +174,7 @@ function Dashboard() {
 
   return (
     <ErrorLayout asycErrorDetails={asycErrorDetails}>
-      {isSuccess && !isCurrentUserLoading ? (
+      {isSuccess && currentCalendarData && !isCurrentUserLoading ? (
         <Layout className="dashboard-wrapper">
           <Header className="dashboard-header">
             <NavigationBar
