@@ -435,6 +435,8 @@ function CreateNewPlace() {
             languageKey,
             dynamicFields,
             containedInPlaceObj,
+            latitude,
+            longitude,
             containsPlace = [];
 
           if (calendarContentLanguage == contentLanguage.ENGLISH) languageKey = 'en';
@@ -521,6 +523,11 @@ function CreateNewPlace() {
                 };
             });
           }
+          if (values?.coordinates) {
+            const coordinates = values.coordinates.split(',');
+            latitude = coordinates[0] || undefined;
+            longitude = coordinates[1] || undefined;
+          }
 
           placeObj = {
             name: {
@@ -538,8 +545,8 @@ function CreateNewPlace() {
               containedInPlace: containedInPlaceObj,
             }),
             geo: {
-              latitude: values?.latitude,
-              longitude: values?.longitude,
+              latitude,
+              longitude,
             },
 
             ...((values?.frenchAccessibilityNote || values?.englishAccessibilityNote) && {
