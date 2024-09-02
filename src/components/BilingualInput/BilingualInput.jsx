@@ -52,7 +52,7 @@ function BilingualInput(props) {
 
   const items = [
     {
-      label: <span data-cy="tab-french-title">{labelFr}</span>,
+      label: <span data-cy={`tab-${props.fieldName}-french`}>{labelFr}</span>,
       key: 'fr',
       forceRender: true,
       children: (
@@ -65,7 +65,7 @@ function BilingualInput(props) {
       ),
     },
     {
-      label: <span data-cy="tab-english-title">{labelEn}</span>,
+      label: <span data-cy={`tab-${props.fieldName}-english`}>{labelEn}</span>,
       key: 'en',
       forceRender: true,
       children: (

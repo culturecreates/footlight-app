@@ -14,7 +14,7 @@ function BilingualTextEditor(props) {
 
   return (
     <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-      <BilingualInput fieldData={data}>
+      <BilingualInput fieldData={data} fieldName={name}>
         <TextEditor
           formName={[`${name}`, 'fr']}
           key={contentLanguage.FRENCH}
