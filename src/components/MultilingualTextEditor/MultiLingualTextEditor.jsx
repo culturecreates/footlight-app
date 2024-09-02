@@ -19,6 +19,7 @@ import { removeEmptyParagraphsAtEnd } from '../../utils/removeEmptyParagraphsAtE
  * @param {Object} props.data - The initial data for the text editors.
  * @param {Object} props.placeholder - Placeholder text for each language.
  * @param {string[]} props.calendarContentLanguage - Array of language keys.
+ * @param {string} props.entityId - The entity id.
  * @param {boolean} props.required - Flag to indicate if the field is required.
  * @param {Object} props.form - The form instance from Ant Design.
  * @param {number || undefined} props.descriptionMinimumWordCount - Minimum word count for description.
@@ -27,7 +28,9 @@ import { removeEmptyParagraphsAtEnd } from '../../utils/removeEmptyParagraphsAtE
  */
 
 function MultiLingualTextEditor(props) {
-  const { name, data, placeholder, calendarContentLanguage, required, form, descriptionMinimumWordCount } = props;
+  const { name, data, placeholder, entityId, calendarContentLanguage, required, form, descriptionMinimumWordCount } =
+    props;
+
   const { t } = useTranslation();
   const [currentCalendarData] = useOutletContext();
   const reactQuillRefs = useRef(
@@ -181,6 +184,8 @@ function MultiLingualTextEditor(props) {
     !isInitialRender && (
       <MultilingualInput
         fieldData={data}
+        required={required}
+        entityId={entityId}
         calendarContentLanguage={calendarContentLanguage}
         skipChildModification={true}>
         {calendarContentLanguage.map((language) => {

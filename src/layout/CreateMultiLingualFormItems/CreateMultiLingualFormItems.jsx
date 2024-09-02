@@ -15,16 +15,17 @@ import MultilingualInput from '../../components/MultilingualInput';
  * @param {Object} props.form - The form instance from Ant Design.
  * @param {Array<string>} props.name - The name of the form field.
  * @param {Object} props.data - The initial data for the form fields.
- * @param {boolean} [props.required] - Whether the form items are required.
+ * @param {boolean} props.required - Whether the form items are required.
  * @param {string} [props.validations] - Custom validation message.
  * @param {string} props.dataCy - The data-cy attribute for testing purposes.
+ * @param {string} props.entityId - The entity id.
  * @param {Object} props.placeholder - Placeholder texts for the form items.
  *
  * @returns {React.Element} MultilingualInput component with processed form items as children.
  */
 
 const CreateMultiLingualFormItems = ({ children, ...rest }) => {
-  const { calendarContentLanguage, form, name, data, required, validations, dataCy, placeholder } = rest;
+  const { calendarContentLanguage, form, name, data, required, validations, dataCy, placeholder, entityId } = rest;
   const { t } = useTranslation();
 
   let isFieldDirty = {}; // to keep track of dirty fields
@@ -79,7 +80,9 @@ const CreateMultiLingualFormItems = ({ children, ...rest }) => {
       fieldData={data}
       calendarContentLanguage={calendarContentLanguage}
       isFieldsDirty={isFieldDirty}
+      entityId={entityId}
       dataCyCollection={dataCyCollection}
+      required={required}
       placeholderCollection={placeholderCollection}>
       {formItemList}
     </MultilingualInput>

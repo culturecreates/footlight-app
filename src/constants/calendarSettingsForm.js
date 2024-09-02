@@ -133,11 +133,12 @@ export const calendarSettingsFormFields = {
       name: 'calendarName',
       className: 'calendar-settings-calendar-name',
       label: <Translation>{(t) => t('dashboard.settings.calendarSettings.calendarName')}</Translation>,
-      field: ({ t, initialValues, form, calendarContentLanguage }) => {
+      field: ({ t, initialValues, form, calendarContentLanguage, entityId }) => {
         return (
           <CreateMultiLingualFormItems
             calendarContentLanguage={calendarContentLanguage}
             form={form}
+            entityId={entityId}
             name="calendarName"
             data={initialValues?.calendarName}
             validations={t('common.validations.informationRequired')}

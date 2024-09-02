@@ -101,6 +101,7 @@ export const formFieldValue = [
       placeholder,
       user,
       t,
+      entityId,
       validations,
       required,
       mappedField,
@@ -113,6 +114,7 @@ export const formFieldValue = [
             form={form}
             name={name}
             data={data}
+            entityId={entityId}
             validations={validations}
             dataCy={`input-text-area-${mappedField}-`}
             placeholder={placeholder}
@@ -513,6 +515,7 @@ export const formFieldValue = [
       placeholder,
       required,
       form,
+      entityId,
       descriptionMinimumWordCount,
     }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
@@ -522,6 +525,7 @@ export const formFieldValue = [
             form={form}
             calendarContentLanguage={calendarContentLanguage}
             name={name}
+            entityId={entityId}
             placeholder={placeholder}
             descriptionMinimumWordCount={descriptionMinimumWordCount}
             required={required}
@@ -625,6 +629,7 @@ export const returnFormDataWithFields = ({
   adminOnlyFields,
   mandatoryFields,
   setShowDialog,
+  entityId,
 }) => {
   return renderFormFields({
     fieldName: field?.name,
@@ -639,6 +644,7 @@ export const returnFormDataWithFields = ({
       datatype: field?.datatype,
       taxonomyData: allTaxonomyData,
       user: user,
+      entityId,
       type: field?.type,
       isDynamicField: false,
       calendarContentLanguage,

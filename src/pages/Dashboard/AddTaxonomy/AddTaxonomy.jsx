@@ -370,6 +370,7 @@ const AddTaxonomy = () => {
                       <CreateMultiLingualFormItems
                         calendarContentLanguage={calendarContentLanguage}
                         form={form}
+                        entityId={taxonomyId}
                         name="name"
                         data={taxonomyData?.name}
                         required={true}
@@ -407,6 +408,7 @@ const AddTaxonomy = () => {
                       data-cy="form-item-taxonomy-description-title">
                       <CreateMultiLingualFormItems
                         calendarContentLanguage={calendarContentLanguage}
+                        entityId={taxonomyId}
                         form={form}
                         name="disambiguatingDescription"
                         data={taxonomyData?.disambiguatingDescription}

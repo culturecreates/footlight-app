@@ -1383,6 +1383,7 @@ function CreateNewPlace() {
                 )}
                 <Form.Item label={t('dashboard.places.createNew.addPlace.name.name')} required={true}>
                   <CreateMultiLingualFormItems
+                    entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
                     name={[formFieldNames.NAME]}
@@ -1486,6 +1487,7 @@ function CreateNewPlace() {
                   label={t('dashboard.places.createNew.addPlace.disambiguatingDescription.disambiguatingDescription')}
                   required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.DISAMBIGUATING_DESCRIPTION)}>
                   <CreateMultiLingualFormItems
+                    entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
                     name={[formFieldNames.DISAMBIGUATING_DESCRIPTION]}
@@ -1767,6 +1769,7 @@ function CreateNewPlace() {
                   required={true}
                   data-cy="form-item-street-address-title">
                   <CreateMultiLingualFormItems
+                    entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
                     name={[formFieldNames.STREET_ADDRESS]}
@@ -1804,6 +1807,7 @@ function CreateNewPlace() {
                   data-cy="form-item-place-city-title"
                   required={requiredFieldNames?.includes(placeFormRequiredFieldNames.CITY)}>
                   <CreateMultiLingualFormItems
+                    entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
                     name={[formFieldNames.CITY]}
@@ -1871,6 +1875,7 @@ function CreateNewPlace() {
                       data-cy="form-item-province-title"
                       required={requiredFieldNames?.includes(placeFormRequiredFieldNames.PROVINCE)}>
                       <CreateMultiLingualFormItems
+                        entityId={placeId}
                         calendarContentLanguage={calendarContentLanguage}
                         form={form}
                         name={[formFieldNames.PROVINCE]}
@@ -1910,6 +1915,7 @@ function CreateNewPlace() {
                       data-cy="form-item-country-title"
                       required={requiredFieldNames?.includes(placeFormRequiredFieldNames.COUNTRY)}>
                       <CreateMultiLingualFormItems
+                        entityId={placeId}
                         calendarContentLanguage={calendarContentLanguage}
                         form={form}
                         name={[formFieldNames.COUNTRY]}
@@ -2610,6 +2616,7 @@ function CreateNewPlace() {
                         'none',
                     }}>
                     <CreateMultiLingualFormItems
+                      entityId={placeId}
                       calendarContentLanguage={calendarContentLanguage}
                       form={form}
                       name={[formFieldNames.ACCESSIBILITY_NOTE]}

@@ -2090,6 +2090,7 @@ function AddEvent() {
                 }
                 required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME)}>
                 <CreateMultiLingualFormItems
+                  entityId={eventId}
                   calendarContentLanguage={calendarContentLanguage}
                   form={form}
                   name={['name']}
@@ -2864,6 +2865,7 @@ function AddEvent() {
                 }}
                 data-cy="form-item-virtual-location-title">
                 <CreateMultiLingualFormItems
+                  entityId={eventId}
                   calendarContentLanguage={calendarContentLanguage}
                   form={form}
                   name={['virtualLocation']}
@@ -2947,10 +2949,12 @@ function AddEvent() {
                 }
                 data-cy="form-item-description-title">
                 <MultiLingualTextEditor
+                  entityId={eventId}
                   data={eventData?.description}
                   form={form}
                   calendarContentLanguage={calendarContentLanguage}
                   name={['editor']}
+                  required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION)}
                   placeholder={placeHolderCollectionCreator({
                     calendarContentLanguage,
                     t,
@@ -3269,6 +3273,7 @@ function AddEvent() {
                   data-cy="form-item-event-contact-title"
                   required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.CONTACT_TITLE)}>
                   <CreateMultiLingualFormItems
+                    entityId={eventId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
                     name={['contactTitle']}
@@ -4201,6 +4206,7 @@ function AddEvent() {
                   }}
                   data-cy="form-item-accessiblity-note-label">
                   <CreateMultiLingualFormItems
+                    entityId={eventId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
                     name={[eventAccessibilityFieldNames.noteWrap]}
@@ -4489,6 +4495,7 @@ function AddEvent() {
                 ticketType == offerTypes.REGISTER) && (
                 <Form.Item label={t('dashboard.events.addEditEvent.tickets.note')}>
                   <CreateMultiLingualFormItems
+                    entityId={eventId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
                     name={['ticketNote']}

@@ -8,6 +8,7 @@ import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 import { capitalizeFirstLetter } from '../../utils/stringManipulations';
 import { useOutletContext } from 'react-router-dom';
 import useChildrenWithLanguageFallback from '../../hooks/useChildrenWithLanguageFallback';
+import { isDataValid } from '../../utils/MultiLingualFormItemSupportFunctions';
 
 /**
  * MultilingualInput Component
@@ -17,9 +18,11 @@ import useChildrenWithLanguageFallback from '../../hooks/useChildrenWithLanguage
  * @param {Object} props.fieldData - An object containing the field data for different languages.
  * @param {Array<string>} props.calendarContentLanguage - An array of languages to be displayed as tabs.
  * @param {string} [props.defaultTab] - The default tab key to be selected.
+ * @param {boolean} props.required - Whether the form items are required.
  * @param {Object} props.dataCyCollection - An array containing the data-cy attribute for each user interactable element eg. textarea. maintains the order of formItems.
  * @param {Object} props.isFieldsDirty - Object with keys corresponding each content language and values as boolean to check if the field is dirty.
  * @param {Object} props.placeholderCollection - An object containing the placeholder attribute for each user interactable element eg. textarea. maintains the order of formItems.
+ * @param {string} props.entityId - The entity id.
  * @param {Boolean} props.skipChildModification - A boolean to skip the modification of children. Default is false. Used as a prop for multilingual text editor.
  *
  * @returns {React.Element} The rendered form item components.
@@ -32,8 +35,10 @@ function MultilingualInput({ children, ...rest }) {
     defaultTab: defaultTabProp,
     isFieldsDirty,
     dataCyCollection,
+    required,
     placeholderCollection,
     skipChildModification = false,
+    entityId,
   } = rest;
   const [currentCalendarData] = useOutletContext();
   const { t } = useTranslation();
@@ -68,13 +73,24 @@ function MultilingualInput({ children, ...rest }) {
     if (!flag) defaultTab = contentLanguageKeyMap[calendarContentLanguage[0]];
   }
 
+  const shouldDisplayLabel = (required, fieldData, entityId, langKey) => {
+    const hasFieldData = fieldData != null ? isDataValid(fieldData) : false;
+    const isFieldEmpty = !fieldData?.[langKey] || fieldData[langKey] === '';
+
+    if (entityId && isFieldEmpty) {
+      return required || (!required && hasFieldData);
+    }
+
+    return false;
+  };
+
   // Label creation for each tab
   calendarContentLanguage.map((language) => {
     const langKey = contentLanguageKeyMap[language];
     const langLabel = t(`common.tab${capitalizeFirstLetter(language)}`);
     labelCollection[langKey] = langLabel;
 
-    if (!fieldData?.[langKey] || fieldData[langKey] === '') {
+    if (shouldDisplayLabel(required, fieldData, entityId, langKey)) {
       labelCollection[langKey] = (
         <>
           {langLabel}&nbsp;
