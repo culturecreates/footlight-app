@@ -274,7 +274,7 @@ function QuickCreatePerson(props) {
                     </Col>
                   </Row>
                   <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                    <BilingualInput defaultTab={interfaceLanguage}>
+                    <BilingualInput defaultTab={interfaceLanguage} fieldName="person-name">
                       <Form.Item
                         name="french"
                         key={contentLanguage.FRENCH}

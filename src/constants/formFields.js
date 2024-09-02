@@ -116,7 +116,7 @@ export const formFieldValue = [
               en: form.isFieldTouched(name?.concat(['en'])),
               fr: form.isFieldTouched(name?.concat(['fr'])),
             }}>
-            <BilingualInput fieldData={data}>
+            <BilingualInput fieldData={data} fieldName={name}>
               <Form.Item
                 name={[`${name}`, 'fr']}
                 key={contentLanguage.FRENCH}

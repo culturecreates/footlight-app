@@ -151,7 +151,7 @@ export const calendarSettingsFormFields = {
         };
 
         return (
-          <BilingualInput fieldData={fieldData}>
+          <BilingualInput fieldData={fieldData} fieldName="calendar-name">
             <Form.Item name="calendarNameFr">
               <TextArea
                 autoSize

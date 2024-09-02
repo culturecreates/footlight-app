@@ -458,7 +458,7 @@ const DraggableTree = ({
           <div className="add-new-concept-wrapper">
             <Form.Item label={t('dashboard.taxonomy.addNew.concepts.conceptName')}>
               <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                <BilingualInput fieldData={newConceptName}>
+                <BilingualInput fieldData={newConceptName} fieldName="concept-name">
                   <Form.Item
                     name="frenchconcept"
                     key={contentLanguage.FRENCH}
