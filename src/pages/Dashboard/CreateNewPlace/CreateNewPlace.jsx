@@ -435,6 +435,8 @@ function CreateNewPlace() {
             languageKey,
             dynamicFields,
             containedInPlaceObj,
+            latitude,
+            longitude,
             containsPlace = [];
 
           if (calendarContentLanguage == contentLanguage.ENGLISH) languageKey = 'en';
@@ -521,6 +523,11 @@ function CreateNewPlace() {
                 };
             });
           }
+          if (values?.coordinates) {
+            const coordinates = values.coordinates.split(',');
+            latitude = coordinates[0] || undefined;
+            longitude = coordinates[1] || undefined;
+          }
 
           placeObj = {
             name: {
@@ -538,8 +545,8 @@ function CreateNewPlace() {
               containedInPlace: containedInPlaceObj,
             }),
             geo: {
-              latitude: values?.latitude,
-              longitude: values?.longitude,
+              latitude,
+              longitude,
             },
 
             ...((values?.frenchAccessibilityNote || values?.englishAccessibilityNote) && {
@@ -1408,7 +1415,8 @@ function CreateNewPlace() {
                           : externalCalendarEntityId &&
                             externalCalendarEntityData?.length > 0 &&
                             externalCalendarEntityData[0]?.name
-                      }>
+                      }
+                      fieldName="place-name">
                       <Form.Item
                         data-cy="form-item-place-name-french"
                         name={formFieldNames.FRENCH}
@@ -1586,7 +1594,8 @@ function CreateNewPlace() {
                           : externalCalendarEntityId &&
                             externalCalendarEntityData?.length > 0 &&
                             externalCalendarEntityData[0].disambiguatingDescription
-                      }>
+                      }
+                      fieldName="place-disambiguating-description">
                       <Form.Item
                         name={formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH}
                         key={contentLanguage.FRENCH}
@@ -1699,7 +1708,8 @@ function CreateNewPlace() {
                           : externalCalendarEntityId &&
                             externalCalendarEntityData?.length > 0 &&
                             externalCalendarEntityData[0].description
-                      }>
+                      }
+                      fieldName="place-description">
                       <TextEditor
                         data-cy="editor-place-description-french"
                         formName={formFieldNames.EDITOR_FRENCH}
@@ -2031,7 +2041,8 @@ function CreateNewPlace() {
                           : externalCalendarEntityId &&
                             externalCalendarEntityData?.length > 0 &&
                             externalCalendarEntityData[0]?.address?.streetAddress
-                      }>
+                      }
+                      fieldName="address-title">
                       <Form.Item
                         name={formFieldNames.STREET_ADDRESS_FRENCH}
                         key={contentLanguage.FRENCH}
@@ -2146,7 +2157,8 @@ function CreateNewPlace() {
                           : externalCalendarEntityId &&
                             externalCalendarEntityData?.length > 0 &&
                             externalCalendarEntityData[0]?.address?.addressLocality
-                      }>
+                      }
+                      fieldName="place-city">
                       <Form.Item
                         name={formFieldNames.CITY_FRENCH}
                         key={contentLanguage.FRENCH}
@@ -2281,7 +2293,8 @@ function CreateNewPlace() {
                               : externalCalendarEntityId &&
                                 externalCalendarEntityData?.length > 0 &&
                                 externalCalendarEntityData[0]?.address?.addressRegion
-                          }>
+                          }
+                          fieldName="place-province">
                           <Form.Item
                             name={formFieldNames.PROVINCE_FRENCH}
                             key={contentLanguage.FRENCH}
@@ -2392,7 +2405,8 @@ function CreateNewPlace() {
                               : externalCalendarEntityId &&
                                 externalCalendarEntityData?.length > 0 &&
                                 externalCalendarEntityData[0]?.address?.addressCountry
-                          }>
+                          }
+                          fieldName="place-country">
                           <Form.Item
                             name={formFieldNames.COUNTRY_FRENCH}
                             key={contentLanguage.FRENCH}
@@ -3153,7 +3167,7 @@ function CreateNewPlace() {
                         en: form.isFieldTouched(formFieldNames.ACCESSIBILITY_NOTE_ENGLISH),
                         fr: form.isFieldTouched(formFieldNames.ACCESSIBILITY_NOTE_FRENCH),
                       }}>
-                      <BilingualInput fieldData={placeData?.accessibilityNote}>
+                      <BilingualInput fieldData={placeData?.accessibilityNote} fieldName="place-accessibility-note">
                         <Form.Item
                           name={formFieldNames.ACCESSIBILITY_NOTE_FRENCH}
                           initialValue={placeData?.accessibilityNote?.fr}

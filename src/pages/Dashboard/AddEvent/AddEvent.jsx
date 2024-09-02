@@ -2176,7 +2176,7 @@ function AddEvent() {
                 <ContentLanguageInput
                   calendarContentLanguage={calendarContentLanguage}
                   isFieldsDirty={{ en: form.isFieldTouched('english'), fr: form.isFieldTouched('french') }}>
-                  <BilingualInput fieldData={eventData?.name}>
+                  <BilingualInput fieldData={eventData?.name} fieldName="event-title">
                     <Form.Item
                       name="french"
                       key={contentLanguage.FRENCH}
@@ -3005,7 +3005,9 @@ function AddEvent() {
                     en: form.isFieldTouched('englishVirtualLocation'),
                     fr: form.isFieldTouched('frenchVirtualLocation'),
                   }}>
-                  <BilingualInput fieldData={initialVirtualLocation && initialVirtualLocation[0]?.name}>
+                  <BilingualInput
+                    fieldData={initialVirtualLocation && initialVirtualLocation[0]?.name}
+                    fieldName="virtual-location">
                     <Form.Item
                       name="frenchVirtualLocation"
                       key={contentLanguage.FRENCH}
@@ -3125,7 +3127,7 @@ function AddEvent() {
                     en: form.isFieldTouched('englishEditor'),
                     fr: form.isFieldTouched('frenchEditor'),
                   }}>
-                  <BilingualInput fieldData={eventData?.description}>
+                  <BilingualInput fieldData={eventData?.description} fieldName="event-description">
                     <TextEditor
                       formName="frenchEditor"
                       key={contentLanguage.FRENCH}
@@ -3581,7 +3583,7 @@ function AddEvent() {
                       en: form.isFieldTouched('englishContactTitle'),
                       fr: form.isFieldTouched('frenchContactTitle'),
                     }}>
-                    <BilingualInput fieldData={eventData?.contactPoint?.name}>
+                    <BilingualInput fieldData={eventData?.contactPoint?.name} fieldName="contact-title">
                       <Form.Item
                         name="frenchContactTitle"
                         initialValue={eventData?.contactPoint?.name?.fr}
@@ -4560,7 +4562,7 @@ function AddEvent() {
                       en: form.isFieldTouched('englishAccessibilityNote'),
                       fr: form.isFieldTouched('frenchAccessibilityNote'),
                     }}>
-                    <BilingualInput fieldData={eventData?.accessibilityNote}>
+                    <BilingualInput fieldData={eventData?.accessibilityNote} fieldName="accessibility-note">
                       <Form.Item
                         name="frenchAccessibilityNote"
                         initialValue={eventData?.accessibilityNote?.fr}
@@ -4830,7 +4832,7 @@ function AddEvent() {
                   <ContentLanguageInput
                     calendarContentLanguage={calendarContentLanguage}
                     isFieldsDirty={{ en: form.isFieldTouched('prices'), fr: form.isFieldTouched('prices') }}>
-                    <BilingualInput>
+                    <BilingualInput fieldName="prices">
                       <Form.List
                         name="prices"
                         initialValue={eventData?.offerConfiguration?.prices ?? [undefined]}
@@ -4918,7 +4920,7 @@ function AddEvent() {
                       en: form.isFieldTouched('englishTicketNote'),
                       fr: form.isFieldTouched('frenchTicketNote'),
                     }}>
-                    <BilingualInput fieldData={eventData?.offerConfiguration?.name}>
+                    <BilingualInput fieldData={eventData?.offerConfiguration?.name} fieldName="ticket-note">
                       <Form.Item
                         name="frenchTicketNote"
                         key={contentLanguage.FRENCH}

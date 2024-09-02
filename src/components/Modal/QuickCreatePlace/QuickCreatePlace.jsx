@@ -344,7 +344,7 @@ function QuickCreatePlace(props) {
                       </span>
                     </Col>
                   </Row>
-                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
+                  <ContentLanguageInput calendarContentLanguage={calendarContentLanguage} fieldName="place-name">
                     <BilingualInput defaultTab={interfaceLanguage}>
                       <Form.Item
                         name="french"

@@ -369,7 +369,7 @@ const AddTaxonomyTest = () => {
                   <Col flex="423px">
                     <Form.Item label={t('dashboard.taxonomy.addNew.name')} required data-cy="form-item-taxonomy-name">
                       <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                        <BilingualInput fieldData={taxonomyData?.name}>
+                        <BilingualInput fieldData={taxonomyData?.name} fieldName="taxonomy-name">
                           <Form.Item
                             name="frenchName"
                             key={contentLanguage.FRENCH}
@@ -448,7 +448,10 @@ const AddTaxonomyTest = () => {
                       label={t('dashboard.taxonomy.addNew.description')}
                       data-cy="form-item-taxonomy-description-title">
                       <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                        <BilingualInput fieldData={taxonomyData?.disambiguatingDescription} key="description">
+                        <BilingualInput
+                          fieldData={taxonomyData?.disambiguatingDescription}
+                          key="description"
+                          fieldName="taxonomy-description">
                           <Form.Item
                             name="frenchdescription"
                             key={contentLanguage.FRENCH}
