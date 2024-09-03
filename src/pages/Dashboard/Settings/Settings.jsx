@@ -75,28 +75,28 @@ const Settings = () => {
 
   const items = [
     {
-      label: t('dashboard.settings.tab1'),
+      label: <span data-cy="tab-user-management">{t('dashboard.settings.tab1')}</span>,
       key: '1',
       children: <UserManagement tabKey={tabKey} />,
       disabled: false,
       adminOnly: false,
     },
     {
-      label: t('dashboard.settings.tab2'),
+      label: <span data-cy="tab-widget-settings">{t('dashboard.settings.tab2')}</span>,
       key: '2',
       children: <WidgetSettings tabKey={tabKey} setDirtyStatus={setIsFormDirty} />,
       disabled: false,
       adminOnly: true,
     },
     {
-      label: t('dashboard.settings.tab3'),
+      label: <span data-cy="tab-calendar-settings">{t('dashboard.settings.tab3')}</span>,
       key: '3',
       children: currentCalendarData && <CalendarSettings tabKey={tabKey} setDirtyStatus={setIsFormDirty} />,
       disabled: false,
       adminOnly: true,
     },
     {
-      label: t('dashboard.settings.tab4'),
+      label: <span data-cy="tab-mandatory-fields">{t('dashboard.settings.tab4')}</span>,
       key: '4',
       children: <MandatoryFields tabKey={tabKey} setDirtyStatus={setIsFormDirty} />,
       disabled: false,

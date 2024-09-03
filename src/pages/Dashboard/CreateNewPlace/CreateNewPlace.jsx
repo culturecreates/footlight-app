@@ -424,6 +424,8 @@ function CreateNewPlace() {
           let placeObj,
             dynamicFields,
             containedInPlaceObj,
+            latitude,
+            longitude,
             containsPlace = [];
 
           let postalObj = calendarContentLanguage.reduce(
@@ -525,8 +527,8 @@ function CreateNewPlace() {
               containedInPlace: containedInPlaceObj,
             }),
             geo: {
-              latitude: values?.latitude,
-              longitude: values?.longitude,
+              latitude,
+              longitude,
             },
 
             ...(isDataValid(values?.accessibilityNote) && {
