@@ -119,12 +119,12 @@ function EventReadOnly() {
   });
   formConstants?.formFieldProperties?.mandatoryFields?.dynamicFields?.forEach((field) => {
     if (isDataValid(field)) {
-      const fieldValue = Object.values(field)[0];
-      mandatoryDynamicFields.push(fieldValue);
+      mandatoryDynamicFields.push(field);
     }
   });
 
   const checkIfFieldIsToBeDisplayed = (field, data, type = 'standard') => {
+    if (data == String && data != '') return true;
     if (Array.isArray(data) && data.length > 0) return true;
     else if (data != null && isDataValid(data)) return true;
 
@@ -336,7 +336,7 @@ function EventReadOnly() {
             <Row>
               <ReadOnlyPageTabLayout>
                 <Col span={24}>
-                  <Row gutter={[32, 24]}>
+                  <Row gutter={[32, 24]} style={{ margin: 0 }}>
                     <Col flex={'723px'} className="read-only-event-section-col top-level-column">
                       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
                         <Col flex={'423px'}>
@@ -496,7 +496,14 @@ function EventReadOnly() {
                                     initialTaxonomy.push(taxonomy?.id);
                                   }
                                 });
-                                if (initialTaxonomy?.includes(taxonomy?.id) && initialValues?.length > 0)
+
+                                if (
+                                  checkIfFieldIsToBeDisplayed(
+                                    taxonomy?.id,
+                                    initialTaxonomy?.includes(taxonomy?.id) ? taxonomy : undefined,
+                                    'dynamic',
+                                  )
+                                )
                                   return (
                                     <div
                                       style={{
@@ -512,24 +519,26 @@ function EventReadOnly() {
                                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         })}
                                       </p>
-                                      <TreeSelectOption
-                                        key={index}
-                                        style={{ marginBottom: '1rem' }}
-                                        bordered={false}
-                                        showArrow={false}
-                                        open={false}
-                                        disabled
-                                        defaultValue={initialValues}
-                                        treeData={treeDynamicTaxonomyOptions(
-                                          taxonomy?.concept,
-                                          user,
-                                          calendarContentLanguage,
-                                        )}
-                                        tagRender={(props) => {
-                                          const { label } = props;
-                                          return <Tags>{label}</Tags>;
-                                        }}
-                                      />
+                                      {initialTaxonomy?.includes(taxonomy?.id) && initialValues?.length > 0 && (
+                                        <TreeSelectOption
+                                          key={index}
+                                          style={{ marginBottom: '1rem' }}
+                                          bordered={false}
+                                          showArrow={false}
+                                          open={false}
+                                          disabled
+                                          defaultValue={initialValues}
+                                          treeData={treeDynamicTaxonomyOptions(
+                                            taxonomy?.concept,
+                                            user,
+                                            calendarContentLanguage,
+                                          )}
+                                          tagRender={(props) => {
+                                            const { label } = props;
+                                            return <Tags>{label}</Tags>;
+                                          }}
+                                        />
+                                      )}
                                     </div>
                                   );
                               }
