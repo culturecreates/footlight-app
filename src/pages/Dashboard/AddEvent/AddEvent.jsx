@@ -428,6 +428,12 @@ function AddEvent() {
               fieldName: 'ticketNote',
             });
 
+            accessibilityNote = filterUneditedFallbackValues({
+              values: values?.noteWrap,
+              activeFallbackFieldsInfo: fallbackStatus,
+              fieldName: 'noteWrap',
+            });
+
             description = filterUneditedFallbackValues({
               values: values?.editor,
               activeFallbackFieldsInfo: fallbackStatus,
@@ -615,10 +621,6 @@ function AddEvent() {
               accessibility = values?.eventAccessibility?.map((accessibilityId) => ({
                 entityId: accessibilityId,
               }));
-            }
-
-            if (values?.accessibilityNote) {
-              accessibilityNote = values?.accessibilityNote;
             }
 
             if (values?.keywords?.length > 0) {
