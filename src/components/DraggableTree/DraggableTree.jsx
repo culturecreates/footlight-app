@@ -87,6 +87,10 @@ const DraggableTree = ({
     return treeData;
   };
 
+  useEffect(() => {
+    console.log(treeDataCollection);
+  }, [treeDataCollection]);
+
   const combineBothTreeData = (dataSets) => {
     const combinedData = [];
     const dataSetKeyCollection = Object.keys(dataSets);
@@ -124,7 +128,7 @@ const DraggableTree = ({
     return combinedData;
   };
 
-  const onDrop = ({ info, treeData }) => {
+  const onDrop = ({ info }) => {
     const dropKey = info.node.key;
     const dragKey = info.dragNode.key;
     const dropPos = info.node.pos.split('-');
@@ -144,25 +148,25 @@ const DraggableTree = ({
 
     calendarContentLanguage.forEach((language) => {
       let dragObj;
-      loop(treeData, dragKey, (item, index, arr) => {
+      loop(treeDataCollection[language], dragKey, (item, index, arr) => {
         arr.splice(index, 1);
         dragObj = item;
       });
 
       if (!info.dropToGap) {
-        loop(treeData, dropKey, (item) => {
+        loop(treeDataCollection[language], dropKey, (item) => {
           item.children = item.children || [];
           item.children.unshift(dragObj);
         });
       } else if ((info.node.children || []).length > 0 && info.node.expanded && dropPosition === 1) {
-        loop(treeData, dropKey, (item) => {
+        loop(treeDataCollection[language], dropKey, (item) => {
           item.children = item.children || [];
           item.children.unshift(dragObj);
         });
       } else {
         let ar = [];
         let i;
-        loop(treeData, dropKey, (_item, index, arr) => {
+        loop(treeDataCollection[language], dropKey, (_item, index, arr) => {
           ar = arr;
           i = index;
         });
@@ -172,7 +176,7 @@ const DraggableTree = ({
           ar.splice(i + 1, 0, dragObj);
         }
       }
-      modifiedDataCollection[language] = [...treeData];
+      modifiedDataCollection[language] = [...treeDataCollection[language]];
     });
 
     setData(combineBothTreeData(modifiedDataCollection));
