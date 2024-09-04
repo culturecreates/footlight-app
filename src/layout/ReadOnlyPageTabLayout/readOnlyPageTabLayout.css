@@ -4,7 +4,7 @@
 
 .read-only-tab-layout .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
   background: #f9faff;
-  color: #1b3de6;
+  color: var(--content-action-default, #1b3de6);
 }
 
 .read-only-tab-layout .ant-tabs-tab-btn {
@@ -14,7 +14,7 @@
 
 .read-only-tab-layout .ant-tabs-tab.ant-tabs-tab-active {
   border-bottom: 2px solid;
-  border-bottom-color: #1b3de6 !important;
+  border-bottom-color: var(--content-action-default, #1b3de6) !important;
   background: #f9faff;
   height: 103%;
 }
