@@ -117,7 +117,8 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
       });
       if (languageItem) requiredLanguages.push(languageItem);
     });
-    return requiredLanguages ?? [];
+
+    return requiredLanguages.length === 0 ? userLanguages : requiredLanguages;
   };
 
   const languageOptions = lanFormat().map((item) => {
