@@ -87,10 +87,6 @@ const DraggableTree = ({
     return treeData;
   };
 
-  useEffect(() => {
-    console.log(treeDataCollection);
-  }, [treeDataCollection]);
-
   const combineBothTreeData = (dataSets) => {
     const combinedData = [];
     const dataSetKeyCollection = Object.keys(dataSets);
