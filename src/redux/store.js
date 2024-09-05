@@ -20,6 +20,7 @@ import { postalAddressApi } from '../services/postalAddress';
 import ErrorSliceReducer from './reducer/ErrorSlice';
 import { externalSourceApi } from '../services/externalSource';
 import languageLiteralReducer from './reducer/languageLiteralSlice';
+import readOnlyTabReducer from './reducer/readOnlyTabSlice';
 
 const persistConfig = {
   key: 'root',
@@ -61,6 +62,7 @@ const appReducer = combineReducers({
   selectedCalendar: selectedCalendarReducer,
   errors: ErrorSliceReducer,
   languageLiteral: languageLiteralReducer,
+  readOnlyTabs: readOnlyTabReducer,
   [loginApi.reducerPath]: loginApi.reducer,
   [usersApi.reducerPath]: usersApi.reducer,
   [eventsApi.reducerPath]: eventsApi.reducer,

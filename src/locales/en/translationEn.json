@@ -139,8 +139,7 @@
         "language": {
           "title": "Event title",
           "titleLabel": "English",
-          "placeHolderFrench": "Enter French event title",
-          "placeHolderEnglish": "Enter English event title",
+          "placeHolder": "Enter {{language}} event title",
           "eventType": "Event type",
           "placeHolderEventType": "Select event type",
           "targetAudience": "Target audience",
@@ -215,8 +214,7 @@
           "placeHolderLocation": "Search Places",
           "virtualLocation": "Virtual location",
           "virtualLocationTooltip": "Add a link for virtual location for your event.",
-          "placeHolderVirtualLocationEn": "Enter English text to display",
-          "placeHolderVirtualLocationFr": "Enter French text to display",
+          "placeHolderVirtualLocation": "Enter {{language}} text to display",
           "onlineLink": "Link for the online event",
           "placeHolderOnlineLink": "Enter web address URL",
           "streetAddress": "Street address",
@@ -246,8 +244,7 @@
             "title": "Event Description",
             "footerTitle": "A minimum of {{wordCount}} words is required.",
             "word": "word",
-            "frenchPlaceholder": "Enter French description",
-            "englishPlaceholder": "Enter English description",
+            "placeholder": "Enter {{language}} description",
             "translate": "Translate"
           },
           "image": {
@@ -306,8 +303,7 @@
             "website": "Website",
             "phoneNumber": "Phone number",
             "email": "Email",
-            "placeHolderContactTitleFrench": "Enter French contact title",
-            "placeHolderContactTitleEnglish": "Enter English contact title",
+            "placeHolderContactTitle": "Enter {{language}} contact title",
             "placeHolderWebsite": "Enter web address URL",
             "placeHolderPhoneNumber": "Enter phone number",
             "placeHolderEmail": "Enter email address",
@@ -326,8 +322,7 @@
           "subHeading": "Select what makes the event (performance or exhibit) accessible. ",
           "footer": "This option is event specific. Building accessibility is saved with the venue in Places. ",
           "placeHolderEventAccessibility": "Select accessibility feature",
-          "placeHolderEventAccessibilityFrenchNote": "Add supplementary accessibility information.",
-          "placeHolderEventAccessibilityEnglishNote": "Add supplementary accessibility information.",
+          "placeHolderEventAccessibilityNote": "Add supplementary accessibility information.",
           "noteTooltip": "Provide more detail about selected accessiblity options, such as date information."
         },
         "tickets": {
@@ -607,10 +602,7 @@
           },
           "name": {
             "name": "Place Name",
-            "placeholder": {
-              "english": "Enter place name",
-              "french": "Enter place name"
-            }
+            "placeholder": "Enter place name"
           },
           "placeType": {
             "placeholder": "Select place type"
@@ -623,13 +615,10 @@
             "searchAddressPlaceholder": "Search",
             "streetAddress": "Street address",
             "subheading": "Search for the name of place and/or address.",
-            "streetAddressPlaceholder": {
-              "english": "Enter street address in English",
-              "french": "Enter street address in French"
-            },
+            "streetAddressPlaceholder": "Enter street address in {{language}}",
             "city": {
               "city": "City",
-              "placeholder": { "french": "Enter city in French", "english": "Enter city in English" }
+              "placeholder": "Enter city in {{language}}"
             },
             "postalCode": {
               "postalCode": "Postal code",
@@ -637,17 +626,11 @@
             },
             "province": {
               "province": "Province",
-              "placeholder": {
-                "english": "Enter province in English",
-                "french": "Enter province in French"
-              }
+              "placeholder": "Enter province in {{language}}"
             },
             "country": {
               "country": "Country",
-              "placeholder": {
-                "english": "Enter country in English",
-                "french": "Enter country in French"
-              }
+              "placeholder": "Enter country in English"
             },
             "coordinates": {
               "coordinates": "Coordinates"
@@ -681,19 +664,13 @@
             "placeholder": "Select accessibility items",
             "placeAccessibilityNote": {
               "note": "Note",
-              "placeholder": {
-                "english": "Enter a note",
-                "french": "Enter a note"
-              },
+              "placeholder": "Enter a note",
               "tooltip": "Add supplementary accessibility information."
             }
           },
           "disambiguatingDescription": {
             "disambiguatingDescription": "Disambiguating description",
-            "placeholder": {
-              "english": "Enter Disambiguating description",
-              "french": "Enter Disambiguating description"
-            }
+            "placeholder": "Enter Disambiguating description"
           },
           "description": {
             "description": "Description"
@@ -894,7 +871,10 @@
         "dropDownOptions": {
           "langagePreference": {
             "en": "English",
-            "fr": "French"
+            "fr": "French",
+            "ko": "Korean",
+            "ja": "Japanese",
+            "zh": "Chinese"
           }
         },
         "organizationSearchHeading": "Organization",
@@ -1134,14 +1114,14 @@
         "destinationHeading": "Select the destination for your taxonomy.",
         "name": "Taxonomy name",
         "nameCheckbox": "Use the taxonomy name to rename the field.",
-        "frNamePlaceHolder": "Enter taxonomy name in French",
-        "enNamePlaceHolder": "Enter taxonomy name in English",
+        "placeHolder": {
+          "namePlaceHolder": "Enter taxonomy name in {{language}}",
+          "descriptionPlaceHolder": "Enter {{language}} disambiguating description"
+        },
         "mapToField": "Map to existing field",
         "mapToFieldDescription": "Select an input field for the taxonomy.",
         "nameDescription": "This name is used to label the associated input field.",
         "description": "Disambiguating description",
-        "frDescriptionPlaceHolder": "Enter French disambiguating description",
-        "enDescriptionPlaceHolder": "Enter English disambiguating description",
         "descriptionExplation": "Add to differentiate taxonomy in search results.",
         "userAccess": "Restrict user access",
         "userAccessPlaceHolder": "Select",
@@ -1167,8 +1147,7 @@
           "edit": "Edit concept",
           "editBtn": "Save",
           "conceptName": "Name",
-          "placeHolderFr": "Enter French name",
-          "placeHolderEn": "Enter English name",
+          "placeHolder": "Enter {{language}} name",
           "deleteConceptMessage": "Are you sure you want to permanently delete this concept? This action will also delete it everywhere it was used, including in events.",
           "deleteConceptHeading": "Delete concept"
         }
@@ -1187,6 +1166,9 @@
   },
   "common": {
     "tabEnglish": "English",
+    "tabJapanese": "Japanese",
+    "tabKorean": "Korean",
+    "tabChinese": "Chinese",
     "noneFound": "None Found",
     "tabFrench": "French",
     "unsavedChanges": "You have unsaved changes. Are you sure you want to discard them?",

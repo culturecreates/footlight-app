@@ -11,13 +11,9 @@ import './addTaxonomy.css';
 import { useAddTaxonomyMutation, useLazyGetTaxonomyQuery, useUpdateTaxonomyMutation } from '../../../services/taxonomy';
 import Select from '../../../components/Select';
 import CardEvent from '../../../components/Card/Common/Event';
-import ContentLanguageInput from '../../../components/ContentLanguageInput';
-import BilingualInput from '../../../components/BilingualInput';
-import { contentLanguage } from '../../../constants/contentLanguage';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
 import { DownOutlined, PlusOutlined } from '@ant-design/icons';
 import { userRolesWithTranslation } from '../../../constants/userRoles';
-import DraggableTree from '../../../components/DraggableTree/DraggableTree';
 import Outlined from '../../../components/Button/Outlined';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
@@ -28,13 +24,17 @@ import { PathName } from '../../../constants/pathName';
 import StyledSwitch from '../../../components/Switch/StyledSwitch';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import { placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
+import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems/CreateMultiLingualFormItems';
+import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
+import DraggableTree from '../../../components/DraggableTree/DraggableTree';
 
 const taxonomyClasses = taxonomyClassTranslations.map((item) => {
   return { ...item, value: item.key };
 });
 const { TextArea } = Input;
 
-const AddTaxonomyTest = () => {
+const AddTaxonomy = () => {
   const [
     currentCalendarData, // eslint-disable-next-line no-unused-vars
     _pageNumber, // eslint-disable-next-line no-unused-vars
@@ -63,7 +63,6 @@ const AddTaxonomyTest = () => {
   const [dynamic, setDynamic] = useState(location.state?.dynamic ?? false);
   const [userAccess, setUserAccess] = useState();
   const [deleteDisplayFlag, setDeleteDisplayFlag] = useState(true);
-  const [newConceptName, setNewConceptName] = useState({ en: '', fr: '' });
   const [conceptData, setConceptData] = useState([]);
   const [addNewPopup, setAddNewPopup] = useState(false);
   const [isDirty, setIsDirty] = useState({
@@ -146,6 +145,20 @@ const AddTaxonomyTest = () => {
     }
   }, [currentCalendarData]);
 
+  useEffect(() => {
+    if (!calendarContentLanguage) return;
+
+    setEmptyConceptName();
+  }, [calendarContentLanguage]);
+
+  const setEmptyConceptName = () => {
+    const initialConceptName = {};
+    calendarContentLanguage.forEach((language) => {
+      initialConceptName[contentLanguageKeyMap[language]] = '';
+    });
+    form.setFieldValue('conceptName', initialConceptName);
+  };
+
   const saveTaxonomyHandler = (e) => {
     e.preventDefault();
     const filteredConceptData = modifyConceptData(conceptData);
@@ -154,14 +167,12 @@ const AddTaxonomyTest = () => {
       isSubmitting: true,
     });
     form
-      .validateFields(['frenchName', 'englishname', 'frenchdescription', 'englishdescription'])
+      .validateFields(['name', 'disambiguatingDescription'])
       .then(() => {
         var values = form.getFieldsValue(true);
+
         const body = {
-          name: {
-            en: values?.englishname?.trim(),
-            fr: values?.frenchName?.trim(),
-          },
+          name: values?.name,
           taxonomyClass: values?.class?.value,
           isDynamicField: dynamic ?? false,
           includeInFullTextSearch: true,
@@ -169,10 +180,7 @@ const AddTaxonomyTest = () => {
             mappedToField: values?.mappedToField?.key ?? values?.mappedToField,
           }),
           isAdminOnly: userAccess?.length > 0,
-          disambiguatingDescription: {
-            fr: values?.frenchdescription?.trim(),
-            en: values?.englishdescription?.trim(),
-          },
+          disambiguatingDescription: values?.disambiguatingDescription,
           concepts: { concepts: [...filteredConceptData] },
           addToFilter: values?.addToFilter,
         };
@@ -217,10 +225,8 @@ const AddTaxonomyTest = () => {
         setIsDirty({
           formState: form.isFieldsTouched([
             'userAccess',
-            'englishdescription',
-            'frenchdescription',
-            'englishname',
-            'frenchName',
+            'disambiguatingDescription',
+            'name',
             'mappedToField',
             'class',
           ]),
@@ -230,9 +236,10 @@ const AddTaxonomyTest = () => {
   };
 
   const handleSelectChange = (selectedKeys, option) => {
-    form.setFieldsValue({
-      frenchname: option?.fr,
-      englishname: option?.en,
+    Object.keys(option).forEach((key) => {
+      if (key != 'value' && key != 'key' && key != 'label') {
+        form.setFieldValue(['name', key], option[key]);
+      }
     });
   };
 
@@ -263,15 +270,7 @@ const AddTaxonomyTest = () => {
 
   const handleValueChange = () => {
     setIsDirty({
-      formState: form.isFieldsTouched([
-        'userAccess',
-        'englishdescription',
-        'frenchdescription',
-        'englishname',
-        'frenchName',
-        'mappedToField',
-        'class',
-      ]),
+      formState: form.isFieldsTouched(['userAccess', 'disambiguatingDescription', 'name', 'mappedToField', 'class']),
       isSubmitting: false,
     });
   };
@@ -289,7 +288,7 @@ const AddTaxonomyTest = () => {
         }
       />
 
-      {!loading && (isSuccess || !taxonomyId) ? (
+      {!loading && calendarContentLanguage && (isSuccess || !taxonomyId) ? (
         <Form layout="vertical" form={form} onValuesChange={handleValueChange}>
           <Row className="add-taxonomy-wrapper" gutter={[16, 16]}>
             <Col span={24}>
@@ -368,74 +367,34 @@ const AddTaxonomyTest = () => {
                 <Row>
                   <Col flex="423px">
                     <Form.Item label={t('dashboard.taxonomy.addNew.name')} required data-cy="form-item-taxonomy-name">
-                      <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                        <BilingualInput fieldData={taxonomyData?.name} fieldName="taxonomy-name">
-                          <Form.Item
-                            name="frenchName"
-                            key={contentLanguage.FRENCH}
-                            initialValue={taxonomyData?.name?.fr}
-                            dependencies={['englishname']}
-                            rules={[
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  if (value || getFieldValue('englishname')) {
-                                    return Promise.resolve();
-                                  } else
-                                    return Promise.reject(new Error(t('dashboard.taxonomy.addNew.validations.name')));
-                                },
-                              }),
-                            ]}>
-                            <TextArea
-                              data-cy="input-text-area-taxonomy-name-french"
-                              autoSize
-                              autoComplete="off"
-                              placeholder={t('dashboard.taxonomy.addNew.frNamePlaceHolder')}
-                              style={{
-                                borderRadius: '4px',
-                                border: `${
-                                  calendarContentLanguage === contentLanguage.BILINGUAL
-                                    ? '4px solid #E8E8E8'
-                                    : '1px solid #b6c1c9'
-                                }`,
-                                width: '423px',
-                              }}
-                              size="large"
-                            />
-                          </Form.Item>
-                          <Form.Item
-                            name="englishname"
-                            initialValue={taxonomyData?.name?.en}
-                            key={contentLanguage.ENGLISH}
-                            dependencies={['frenchName']}
-                            rules={[
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  if (value || getFieldValue('frenchName')) {
-                                    return Promise.resolve();
-                                  } else
-                                    return Promise.reject(new Error(t('dashboard.taxonomy.addNew.validations.name')));
-                                },
-                              }),
-                            ]}>
-                            <TextArea
-                              data-cy="input-text-area-taxonomy-english"
-                              autoSize
-                              autoComplete="off"
-                              placeholder={t('dashboard.taxonomy.addNew.enNamePlaceHolder')}
-                              style={{
-                                borderRadius: '4px',
-                                border: `${
-                                  calendarContentLanguage === contentLanguage.BILINGUAL
-                                    ? '4px solid #E8E8E8'
-                                    : '1px solid #b6c1c9'
-                                }`,
-                                width: '423px',
-                              }}
-                              size="large"
-                            />
-                          </Form.Item>
-                        </BilingualInput>
-                      </ContentLanguageInput>
+                      <CreateMultiLingualFormItems
+                        calendarContentLanguage={calendarContentLanguage}
+                        form={form}
+                        entityId={taxonomyId}
+                        name="name"
+                        data={taxonomyData?.name}
+                        required={true}
+                        validations={t('dashboard.taxonomy.addNew.validations.name')}
+                        dataCy="input-text-area-taxonomy-name-"
+                        placeholder={placeHolderCollectionCreator({
+                          calendarContentLanguage,
+                          placeholderBase: 'dashboard.taxonomy.addNew.placeHolder.namePlaceHolder',
+                          t,
+                        })}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          style={{
+                            borderRadius: '4px',
+                            border: `${
+                              calendarContentLanguage?.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'
+                            }`,
+                            width: '423px',
+                          }}
+                          size="large"
+                        />
+                      </CreateMultiLingualFormItems>
+
                       <span className="field-description" data-cy="span-taxonomy-name-helper-text">
                         {t(`dashboard.taxonomy.addNew.nameDescription`)}
                       </span>
@@ -447,57 +406,33 @@ const AddTaxonomyTest = () => {
                     <Form.Item
                       label={t('dashboard.taxonomy.addNew.description')}
                       data-cy="form-item-taxonomy-description-title">
-                      <ContentLanguageInput calendarContentLanguage={calendarContentLanguage}>
-                        <BilingualInput
-                          fieldData={taxonomyData?.disambiguatingDescription}
-                          key="description"
-                          fieldName="taxonomy-description">
-                          <Form.Item
-                            name="frenchdescription"
-                            key={contentLanguage.FRENCH}
-                            initialValue={taxonomyData?.disambiguatingDescription?.fr}
-                            dependencies={['englishdescription']}>
-                            <TextArea
-                              data-cy="input-text-area-taxonomy-description-french"
-                              autoSize
-                              autoComplete="off"
-                              placeholder={t('dashboard.taxonomy.addNew.frDescriptionPlaceHolder')}
-                              style={{
-                                borderRadius: '4px',
-                                border: `${
-                                  calendarContentLanguage === contentLanguage.BILINGUAL
-                                    ? '4px solid #E8E8E8'
-                                    : '1px solid #b6c1c9'
-                                }`,
-                                width: '423px',
-                              }}
-                              size="large"
-                            />
-                          </Form.Item>
-                          <Form.Item
-                            name="englishdescription"
-                            key={contentLanguage.ENGLISH}
-                            initialValue={taxonomyData?.disambiguatingDescription?.en}
-                            dependencies={['frenchdescription']}>
-                            <TextArea
-                              data-cy="input-text-area-taxonomy-description-english"
-                              autoSize
-                              autoComplete="off"
-                              placeholder={t('dashboard.taxonomy.addNew.enDescriptionPlaceHolder')}
-                              style={{
-                                borderRadius: '4px',
-                                border: `${
-                                  calendarContentLanguage === contentLanguage.BILINGUAL
-                                    ? '4px solid #E8E8E8'
-                                    : '1px solid #b6c1c9'
-                                }`,
-                                width: '423px',
-                              }}
-                              size="large"
-                            />
-                          </Form.Item>
-                        </BilingualInput>
-                      </ContentLanguageInput>
+                      <CreateMultiLingualFormItems
+                        calendarContentLanguage={calendarContentLanguage}
+                        entityId={taxonomyId}
+                        form={form}
+                        name="disambiguatingDescription"
+                        data={taxonomyData?.disambiguatingDescription}
+                        dataCy="input-text-area-taxonomy-description-"
+                        placeholder={placeHolderCollectionCreator({
+                          calendarContentLanguage,
+                          placeholderBase: 'dashboard.taxonomy.addNew.placeHolder.descriptionPlaceHolder',
+                          t,
+                          postfixFillerText: 'DescriptionPlaceHolder',
+                        })}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          style={{
+                            borderRadius: '4px',
+                            border: `${
+                              calendarContentLanguage?.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'
+                            }`,
+                            width: '423px',
+                          }}
+                          size="large"
+                        />
+                      </CreateMultiLingualFormItems>
+
                       <span className="field-description" data-cy="span-taxonomy-description-helper-text">
                         {t(`dashboard.taxonomy.addNew.descriptionExplation`)}
                       </span>
@@ -594,11 +529,10 @@ const AddTaxonomyTest = () => {
                               <DraggableTree
                                 data={conceptData}
                                 form={form}
+                                setEmptyConceptName={setEmptyConceptName}
                                 setData={setConceptData}
                                 addNewPopup={addNewPopup}
                                 setAddNewPopup={setAddNewPopup}
-                                newConceptName={newConceptName}
-                                setNewConceptName={setNewConceptName}
                                 deleteDisplayFlag={deleteDisplayFlag}
                                 setDeleteDisplayFlag={setDeleteDisplayFlag}
                               />
@@ -622,4 +556,4 @@ const AddTaxonomyTest = () => {
   );
 };
 
-export default AddTaxonomyTest;
+export default AddTaxonomy;

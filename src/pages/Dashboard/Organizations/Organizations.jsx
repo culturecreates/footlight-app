@@ -329,8 +329,7 @@ function Organizations() {
                             }}
                             data-cy="button-filter-taxonomy-standard-people">
                             {bilingual({
-                              en: taxonomy?.name?.en,
-                              fr: taxonomy?.name?.fr,
+                              data: taxonomy?.name,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             })}
                             {standardTaxonomyFilter[taxonomy?.mappedToField]?.length > 0 && (
@@ -390,8 +389,7 @@ function Organizations() {
                             style={{ borderColor: taxonomyFilter[taxonomy?.id]?.length > 0 > 0 && '#607EFC' }}
                             data-cy="button-filter-taxonomy-people">
                             {bilingual({
-                              en: taxonomy?.name?.en,
-                              fr: taxonomy?.name?.fr,
+                              data: taxonomy?.name,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             })}
                             {taxonomyFilter[taxonomy?.id]?.length > 0 && (
@@ -451,14 +449,12 @@ function Organizations() {
                           />
                         }
                         title={contentLanguageBilingual({
-                          en: item?.name?.en,
-                          fr: item?.name?.fr,
+                          data: item?.name,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                           calendarContentLanguage: calendarContentLanguage,
                         })}
                         description={contentLanguageBilingual({
-                          en: item?.disambiguatingDescription?.en,
-                          fr: item?.disambiguatingDescription?.fr,
+                          data: item?.disambiguatingDescription,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                           calendarContentLanguage: calendarContentLanguage,
                         })}

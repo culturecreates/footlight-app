@@ -21,10 +21,9 @@ function Calendar({ children, allCalendarsData, setPageNumber }) {
         <span className="calendar-name-wrapper">
           <span className="calendar-name">
             {contentLanguageBilingual({
-              en: item?.name?.en,
-              fr: item?.name?.fr,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: item?.contentLanguage,
+              data: item?.name,
             })}
           </span>
         </span>

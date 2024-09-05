@@ -37,7 +37,7 @@ function Dashboard() {
   const location = useLocation();
   const timestampRef = useRef(Date.now()).current;
   const { accessToken, user } = useSelector(getUserDetails);
-  const [getCalendar, { currentData: currentCalendarData }] = useLazyGetCalendarQuery();
+  const [getCalendar, { currentData: currentCalendarData, isCurrentCalendarInfoLoading }] = useLazyGetCalendarQuery();
   const reloadStatus = useSelector(getReloadStatusForCalendar);
   const screens = useBreakpoint();
   const { t } = useTranslation();
@@ -174,7 +174,7 @@ function Dashboard() {
 
   return (
     <ErrorLayout asycErrorDetails={asycErrorDetails}>
-      {isSuccess && !isCurrentUserLoading ? (
+      {isSuccess && currentCalendarData && !isCurrentUserLoading ? (
         <Layout className="dashboard-wrapper">
           <Header className="dashboard-header">
             <NavigationBar
@@ -231,6 +231,7 @@ function Dashboard() {
                     setIsReadOnly,
                     refetch,
                     allCalendarsData?.data,
+                    isCurrentCalendarInfoLoading,
                   ]}
                 />
               </Content>

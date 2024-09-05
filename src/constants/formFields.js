@@ -4,9 +4,6 @@ import { CloseCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import Tags from '../components/Tags/Common/Tags';
 import TreeSelectOption from '../components/TreeSelectOption/TreeSelectOption';
 import { treeTaxonomyOptions } from '../components/TreeSelectOption/treeSelectOption.settings';
-import { contentLanguage } from './contentLanguage';
-import ContentLanguageInput from '../components/ContentLanguageInput/ContentLanguageInput';
-import BilingualInput from '../components/BilingualInput/BilingualInput';
 import ImageUpload from '../components/ImageUpload/ImageUpload';
 import { bilingual, contentLanguageBilingual } from '../utils/bilingual';
 import { Translation } from 'react-i18next';
@@ -15,11 +12,12 @@ import { formInitialValueHandler } from '../utils/formInitialValueHandler';
 import { featureFlags } from '../utils/featureFlags';
 import EventsSearch from '../components/Search/Events/EventsSearch';
 import SelectionItem from '../components/List/SelectionItem';
-import BilingualTextEditor from '../components/BilingualTextEditor';
 import Outlined from '../components/Button/Outlined';
 import { sourceOptions } from './sourceOptions';
 import LoadingIndicator from '../components/LoadingIndicator';
 import MultipleImageUpload from '../components/MultipleImageUpload';
+import CreateMultiLingualFormItems from '../layout/CreateMultiLingualFormItems';
+import MultiLingualTextEditor from '../components/MultilingualTextEditor/MultiLingualTextEditor';
 
 const { TextArea } = Input;
 
@@ -103,6 +101,7 @@ export const formFieldValue = [
       placeholder,
       user,
       t,
+      entityId,
       validations,
       required,
       mappedField,
@@ -110,88 +109,27 @@ export const formFieldValue = [
     }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
         return (
-          <ContentLanguageInput
+          <CreateMultiLingualFormItems
             calendarContentLanguage={calendarContentLanguage}
-            isFieldsDirty={{
-              en: form.isFieldTouched(name?.concat(['en'])),
-              fr: form.isFieldTouched(name?.concat(['fr'])),
-            }}>
-            <BilingualInput fieldData={data} fieldName={name}>
-              <Form.Item
-                name={[`${name}`, 'fr']}
-                key={contentLanguage.FRENCH}
-                dependencies={[`${name}`, 'en']}
-                initialValue={data?.fr}
-                rules={
-                  required
-                    ? [
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (value || getFieldValue([`${name}`, 'en'])) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(
-                                new Error(validations ?? t('common.validations.informationRequired')),
-                              );
-                          },
-                        }),
-                      ]
-                    : undefined
-                }>
-                <TextArea
-                  autoSize
-                  autoComplete="off"
-                  placeholder={placeholder?.fr}
-                  style={{
-                    borderRadius: '4px',
-                    border: `${
-                      calendarContentLanguage === contentLanguage.BILINGUAL ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
-                    }`,
-                    width: '423px',
-                  }}
-                  size="large"
-                  data-cy={`input-text-area-${mappedField}-french`}
-                />
-              </Form.Item>
-
-              <Form.Item
-                name={[`${name}`, 'en']}
-                key={contentLanguage.ENGLISH}
-                dependencies={[`${name}`, 'fr']}
-                initialValue={data?.en}
-                rules={
-                  required
-                    ? [
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (value || getFieldValue([`${name}`, 'fr'])) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(
-                                new Error(validations ?? t('common.validations.informationRequired')),
-                              );
-                          },
-                        }),
-                      ]
-                    : undefined
-                }>
-                <TextArea
-                  autoSize
-                  autoComplete="off"
-                  placeholder={placeholder?.en}
-                  style={{
-                    borderRadius: '4px',
-                    border: `${
-                      calendarContentLanguage === contentLanguage.BILINGUAL ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
-                    }`,
-                    width: '100%',
-                  }}
-                  size="large"
-                  data-cy={`input-text-area-${mappedField}-english`}
-                />
-              </Form.Item>
-            </BilingualInput>
-          </ContentLanguageInput>
+            form={form}
+            name={name}
+            data={data}
+            entityId={entityId}
+            validations={validations}
+            dataCy={`input-text-area-${mappedField}-`}
+            placeholder={placeholder}
+            required={required}>
+            <TextArea
+              autoSize
+              autoComplete="off"
+              style={{
+                borderRadius: '4px',
+                border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                width: '423px',
+              }}
+              size="large"
+            />
+          </CreateMultiLingualFormItems>
         );
       else if (datatype === dataTypes.URI_STRING)
         return (
@@ -207,8 +145,7 @@ export const formFieldValue = [
         return (
           <StyledInput
             placeholder={contentLanguageBilingual({
-              en: placeholder?.en,
-              fr: placeholder?.fr,
+              data: placeholder,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             })}
@@ -270,8 +207,7 @@ export const formFieldValue = [
         return (
           <StyledInput
             placeholder={contentLanguageBilingual({
-              en: placeholder?.en,
-              fr: placeholder?.fr,
+              data: placeholder,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             })}
@@ -287,16 +223,13 @@ export const formFieldValue = [
         autoSize
         autoComplete="off"
         placeholder={contentLanguageBilingual({
-          en: placeholder?.en,
-          fr: placeholder?.fr,
+          data: placeholder,
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         })}
         style={{
           borderRadius: '4px',
-          border: `${
-            calendarContentLanguage === contentLanguage.BILINGUAL ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
-          }`,
+          border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
           width: '423px',
         }}
         size="large"
@@ -322,8 +255,7 @@ export const formFieldValue = [
           treeDefaultExpandAll
           notFoundContent={<NoContent />}
           placeholder={contentLanguageBilingual({
-            en: placeholder?.en,
-            fr: placeholder?.fr,
+            data: placeholder,
             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
             calendarContentLanguage: calendarContentLanguage,
           })}
@@ -579,17 +511,21 @@ export const formFieldValue = [
       datatype,
       data,
       calendarContentLanguage,
-      name = [],
+      name = '',
       placeholder,
       required,
+      form,
+      entityId,
       descriptionMinimumWordCount,
     }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
         return (
-          <BilingualTextEditor
+          <MultiLingualTextEditor
             data={data}
+            form={form}
             calendarContentLanguage={calendarContentLanguage}
             name={name}
+            entityId={entityId}
             placeholder={placeholder}
             descriptionMinimumWordCount={descriptionMinimumWordCount}
             required={required}
@@ -693,6 +629,7 @@ export const returnFormDataWithFields = ({
   adminOnlyFields,
   mandatoryFields,
   setShowDialog,
+  entityId,
 }) => {
   return renderFormFields({
     fieldName: field?.name,
@@ -707,19 +644,18 @@ export const returnFormDataWithFields = ({
       datatype: field?.datatype,
       taxonomyData: allTaxonomyData,
       user: user,
+      entityId,
       type: field?.type,
       isDynamicField: false,
       calendarContentLanguage,
       name: [field?.mappedField],
       preview: true,
       placeholder: bilingual({
-        en: field?.placeholder?.en,
-        fr: field?.placeholder?.fr,
+        data: field?.placeholder,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       }),
       validations: bilingual({
-        en: field?.validations?.en,
-        fr: field?.validations?.fr,
+        data: field?.validations,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       }),
       largeUrl:
@@ -733,8 +669,7 @@ export const returnFormDataWithFields = ({
       required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
       t: t,
       userTips: bilingual({
-        en: field?.userTips?.text?.en,
-        fr: field?.userTips?.text?.fr,
+        data: field?.userTips?.text,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
         calendarContentLanguage: calendarContentLanguage,
       }),
@@ -774,13 +709,11 @@ export const returnFormDataWithFields = ({
     key: index,
     initialValue: formInitialValueHandler(field?.type, field?.mappedField, field?.datatype, entityData),
     label: bilingual({
-      en: field?.label?.en,
-      fr: field?.label?.fr,
+      data: field?.label,
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
     }),
     userTips: bilingual({
-      en: field?.userTips?.text?.en,
-      fr: field?.userTips?.text?.fr,
+      data: field?.userTips?.text,
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       calendarContentLanguage: calendarContentLanguage,
     }),
@@ -791,8 +724,7 @@ export const returnFormDataWithFields = ({
     taxonomyAlias: field?.taxonomyAlias,
     t,
     validations: bilingual({
-      en: field?.validations?.en,
-      fr: field?.validations?.fr,
+      data: field?.validations,
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       locationPlace,
     }),
