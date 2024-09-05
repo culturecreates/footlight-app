@@ -135,10 +135,10 @@
   color: #222732;
 }
 
-.calendar .calendar-header .year-neighbor {
+.recurring-modal .calendar .calendar-header .year-neighbor {
   display: none !important;
 }
-.calendar .calendar-header .year-neighbor2 {
+.recurring-modal .calendar .calendar-header .year-neighbor2 {
   display: none !important;
 }
 
