@@ -10,13 +10,13 @@ import { CloseCircleOutlined, CopyOutlined, ExclamationCircleOutlined } from '@a
 import NoContent from '../../../../components/NoContent/NoContent';
 import { useGetAllTaxonomyQuery } from '../../../../services/taxonomy';
 import { taxonomyClass } from '../../../../constants/taxonomyClass';
-import { contentLanguage } from '../../../../constants/contentLanguage';
+import { contentLanguageKeyMap } from '../../../../constants/contentLanguage';
 import { useOutletContext, useParams } from 'react-router-dom';
 import { getUserDetails } from '../../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
 import Tags from '../../../../components/Tags/Common/Tags';
 import { treeTaxonomyOptions } from '../../../../components/TreeSelectOption/treeSelectOption.settings';
-import { userLanguages } from '../../../../constants/userLanguagesÏ';
+import { userLanguages } from '../../../../constants/userLanguages';
 import SelectOption from '../../../../components/Select/SelectOption';
 import { placeTaxonomyMappedFieldTypes } from '../../../../constants/placeMappedFieldTypes';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../../services/entities';
@@ -110,13 +110,15 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
   });
 
   const lanFormat = () => {
-    if (calendarContentLanguage === contentLanguage.BILINGUAL) {
-      return userLanguages;
-    } else if (calendarContentLanguage === contentLanguage.ENGLISH) {
-      return [userLanguages[0]];
-    } else {
-      return [userLanguages[1]];
-    }
+    let requiredLanguages = [];
+    calendarContentLanguage.forEach((language) => {
+      const languageItem = userLanguages.find((item) => {
+        return item.key.toLowerCase() === contentLanguageKeyMap[language];
+      });
+      if (languageItem) requiredLanguages.push(languageItem);
+    });
+
+    return requiredLanguages.length === 0 ? userLanguages : requiredLanguages;
   };
 
   const languageOptions = lanFormat().map((item) => {
@@ -219,7 +221,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
           response.map((item) => {
             return {
               value: item?.id,
-              label: bilingual({ fr: item?.name?.fr, en: item?.name?.en, interfaceLanguage: user?.interfaceLanguage }),
+              label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
             };
           }),
         );
@@ -245,7 +247,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
           response.map((item) => {
             return {
               value: item?.id,
-              label: bilingual({ fr: item?.name?.fr, en: item?.name?.en, interfaceLanguage: user?.interfaceLanguage }),
+              label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
             };
           }),
         );
@@ -271,7 +273,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
           response.map((item) => {
             return {
               value: item?.id,
-              label: bilingual({ fr: item?.name?.fr, en: item?.name?.en, interfaceLanguage: user?.interfaceLanguage }),
+              label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
             };
           }),
         );
@@ -289,7 +291,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
         initialEntitiesLocations.map((item) => {
           return {
             value: item?.id,
-            label: bilingual({ fr: item?.name?.fr, en: item?.name?.en, interfaceLanguage: user?.interfaceLanguage }),
+            label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
           };
         }),
       );
@@ -302,7 +304,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
         initialEntitiesPerson.map((item) => {
           return {
             value: item?.id,
-            label: bilingual({ fr: item?.name?.fr, en: item?.name?.en, interfaceLanguage: user?.interfaceLanguage }),
+            label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
           };
         }),
       );
@@ -315,7 +317,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
         initialEntitiesOrganization.map((item) => {
           return {
             value: item?.id,
-            label: bilingual({ fr: item?.name?.fr, en: item?.name?.en, interfaceLanguage: user?.interfaceLanguage }),
+            label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
           };
         }),
       );
@@ -335,7 +337,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
     const height = form.getFieldValue('height') ?? 600;
     const limit = form.getFieldValue('limit') ?? 9;
     const font = form.getFieldValue('font') ?? 'Roboto';
-    const locale = form.getFieldValue('locale') ?? languageOptions[0].value;
+    const locale = form.getFieldValue('locale') ?? languageOptions[0]?.value;
 
     urlCopy.searchParams.append('logo', calendarLogoUri);
     urlCopy.searchParams.append('locale', onLanguageSelect(locale)?.key.toLowerCase());
@@ -600,7 +602,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
                           name="language"
                           label={t(`${localePath}.language`)}
                           required
-                          initialValue={languageOptions[0].value}
+                          initialValue={languageOptions[0]?.value ?? []}
                           data-cy="widget-settings-language-label">
                           <SelectOption
                             data-cy="widget-settings-language"

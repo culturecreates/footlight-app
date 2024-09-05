@@ -52,6 +52,8 @@ import {
 import Alert from '../../../components/Alert';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
+import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -244,7 +246,7 @@ function CreateNewPerson() {
         var values = form.getFieldsValue(true);
         let personPayload = {};
         Object.keys(values)?.map((object) => {
-          let payload = formPayloadHandler(values[object], object, formFields);
+          let payload = formPayloadHandler(values[object], object, formFields, calendarContentLanguage);
           if (payload) {
             let newKeys = Object.keys(payload);
             personPayload = {
@@ -428,16 +430,17 @@ function CreateNewPerson() {
   useEffect(() => {
     let shouldDisplay = true;
 
-    for (let key in activeFallbackFieldsInfo) {
-      if (Object.prototype.hasOwnProperty.call(activeFallbackFieldsInfo, key)) {
-        const tagDisplayStatus =
-          activeFallbackFieldsInfo[key]?.en?.tagDisplayStatus || activeFallbackFieldsInfo[key]?.fr?.tagDisplayStatus;
-        if (tagDisplayStatus) {
-          shouldDisplay = false;
-          break;
-        }
+    const fallbackFieldNames = Object.keys(activeFallbackFieldsInfo) || [];
+    let individualFallbackFieldsCollection = [];
+    fallbackFieldNames.forEach((name) => {
+      individualFallbackFieldsCollection.push(...Object.values(activeFallbackFieldsInfo[name] || []));
+    });
+
+    individualFallbackFieldsCollection.forEach((element) => {
+      if (element?.tagDisplayStatus) {
+        shouldDisplay = false;
       }
-    }
+    });
 
     if (!shouldDisplay) {
       dispatch(setLanguageLiteralBannerDisplayStatus(true));
@@ -601,15 +604,17 @@ function CreateNewPerson() {
   }, []);
 
   useEffect(() => {
+    const newEntityName = location?.state?.name;
     if (artsDataId) {
       getArtsData(artsDataId);
-    } else if (location?.state?.name) {
-      setNewEntityData({
-        name: {
-          fr: location?.state?.name,
-          en: location?.state?.name,
-        },
+    } else if (newEntityName) {
+      const name = {};
+      calendarContentLanguage.forEach((language) => {
+        const langKey = contentLanguageKeyMap[language];
+        name[langKey] = newEntityName;
       });
+
+      setNewEntityData({ name });
     }
   }, []);
 
@@ -720,14 +725,12 @@ function CreateNewPerson() {
                                     : artsDataLinkChecker(artsData?.sameAs)
                                 }
                                 name={contentLanguageBilingual({
-                                  en: artsData?.name?.en,
-                                  fr: artsData?.name?.fr,
+                                  data: artsData?.name,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
                                 disambiguatingDescription={contentLanguageBilingual({
-                                  en: artsData?.disambiguatingDescription?.en,
-                                  fr: artsData?.disambiguatingDescription?.fr,
+                                  data: artsData?.disambiguatingDescription,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
@@ -806,8 +809,7 @@ function CreateNewPerson() {
                                 key={index}
                                 name={['dynamicFields', taxonomy?.id]}
                                 label={bilingual({
-                                  en: taxonomy?.name?.en,
-                                  fr: taxonomy?.name?.fr,
+                                  data: taxonomy?.name,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                 })}
                                 initialValue={initialValues}
@@ -872,16 +874,16 @@ function CreateNewPerson() {
                             <SelectionItem
                               key={place._id}
                               name={
-                                place?.name?.en || place?.name?.fr
+                                isDataValid(place?.name)
                                   ? contentLanguageBilingual({
-                                      en: place?.name?.en,
-                                      fr: place?.name?.fr,
+                                      data: place?.name,
                                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                       calendarContentLanguage: calendarContentLanguage,
                                     })
                                   : typeof place?.name === 'string' && place?.name
                               }
                               icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
+                              calendarContentLanguage={calendarContentLanguage}
                               bordered
                               itemWidth="100%"
                             />;
@@ -900,10 +902,9 @@ function CreateNewPerson() {
                               <SelectionItem
                                 key={org._id}
                                 name={
-                                  org?.name?.en || org?.name?.fr
+                                  isDataValid(org?.name)
                                     ? contentLanguageBilingual({
-                                        en: org?.name?.en,
-                                        fr: org?.name?.fr,
+                                        data: org?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })
@@ -916,6 +917,7 @@ function CreateNewPerson() {
                                     data-cy="organization-logo"
                                   />
                                 }
+                                calendarContentLanguage={calendarContentLanguage}
                                 bordered
                                 itemWidth="100%"
                               />
@@ -935,10 +937,9 @@ function CreateNewPerson() {
                               <SelectionItem
                                 key={event._id}
                                 name={
-                                  event?.name?.en || event?.name?.fr
+                                  isDataValid(event?.name)
                                     ? contentLanguageBilingual({
-                                        en: event?.name?.en,
-                                        fr: event?.name?.fr,
+                                        data: event?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })
@@ -946,6 +947,7 @@ function CreateNewPerson() {
                                 }
                                 icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
                                 description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                                calendarContentLanguage={calendarContentLanguage}
                                 bordered
                                 itemWidth="100%"
                               />

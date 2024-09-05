@@ -161,14 +161,12 @@ function SearchOrganizations() {
                           data-cy={`div-organization-footlight-${index}`}>
                           <EntityCard
                             title={contentLanguageBilingual({
-                              en: organizer?.name?.en,
-                              fr: organizer?.name?.fr,
+                              data: organizer?.name,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                               calendarContentLanguage: calendarContentLanguage,
                             })}
                             description={contentLanguageBilingual({
-                              en: organizer?.disambiguatingDescription?.en,
-                              fr: organizer?.disambiguatingDescription?.fr,
+                              data: organizer?.disambiguatingDescription,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                               calendarContentLanguage: calendarContentLanguage,
                             })}
@@ -223,14 +221,12 @@ function SearchOrganizations() {
                               data-cy={`div-organization-footlight-${index}`}>
                               <EntityCard
                                 title={contentLanguageBilingual({
-                                  en: organizer?.name?.en,
-                                  fr: organizer?.name?.fr,
+                                  data: organizer?.name,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
                                 description={contentLanguageBilingual({
-                                  en: organizer?.disambiguatingDescription?.en,
-                                  fr: organizer?.disambiguatingDescription?.fr,
+                                  data: organizer?.disambiguatingDescription,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
@@ -281,8 +277,7 @@ function SearchOrganizations() {
                               }}>
                               <EntityCard
                                 title={contentLanguageBilingual({
-                                  en: organizer?.name?.en,
-                                  fr: organizer?.name?.fr,
+                                  data: organizer?.name,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
