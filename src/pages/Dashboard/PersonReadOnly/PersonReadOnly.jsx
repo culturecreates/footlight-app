@@ -102,9 +102,10 @@ function PersonReadOnly() {
   });
 
   const checkIfFieldIsToBeDisplayed = (field, data, type = 'standard') => {
-    if (data == String && data != '') return true;
-    if (Array.isArray(data) && data.length > 0) return true;
-    else if (data != null && isDataValid(data)) return true;
+    if (typeof data === 'string' && data !== '') return true;
+    if (Array.isArray(data) && data.length > 0 && data.every((item) => item !== null && item !== undefined))
+      return true;
+    if (data !== null && isDataValid(data)) return true;
 
     if (type === 'standard') {
       return mandatoryStandardFields.includes(field);
