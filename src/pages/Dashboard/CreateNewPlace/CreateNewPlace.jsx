@@ -524,7 +524,7 @@ function CreateNewPlace() {
             });
           }
           if (values?.coordinates) {
-            const coordinates = values.coordinates.split(',');
+            const coordinates = values.coordinates.split(/[, ]+/);
             latitude = coordinates[0] || undefined;
             longitude = coordinates[1] || undefined;
           }
