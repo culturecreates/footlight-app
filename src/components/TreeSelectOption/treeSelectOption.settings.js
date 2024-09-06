@@ -4,14 +4,15 @@ import Icon, { UserOutlined } from '@ant-design/icons';
 import { ReactComponent as Organizations } from '../../assets/icons/organisations.svg';
 import { taxonomyClass } from '../../constants/taxonomyClass';
 import { sourceOptions } from '../../constants/sourceOptions';
-import { languageFallbackSetup } from '../../utils/languageFallbackSetup';
+import { languageFallbackStatusCreator } from '../../utils/languageFallbackStatusCreator';
+import { contentLanguageKeyMap } from '../../constants/contentLanguage';
+import { isDataValid } from '../../utils/MultiLingualFormItemSupportFunctions';
 
 const handleMultilevelTreeSelect = (children, user, calendarContentLanguage, parentLabel) => {
   return children?.map((child) => {
     return {
       title: contentLanguageBilingual({
-        en: child?.name?.en,
-        fr: child?.name?.fr,
+        data: child?.name,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
         calendarContentLanguage: calendarContentLanguage,
       }),
@@ -23,8 +24,7 @@ const handleMultilevelTreeSelect = (children, user, calendarContentLanguage, par
         parentLabel +
         '-' +
         contentLanguageBilingual({
-          en: child?.name?.en,
-          fr: child?.name?.fr,
+          data: child?.name,
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         }),
@@ -47,8 +47,7 @@ export const treeTaxonomyOptions = (data, user, mappedToField, isDynamicField, c
     concepts[0]?.map((concept) => {
       return {
         title: contentLanguageBilingual({
-          en: concept?.name?.en,
-          fr: concept?.name?.fr,
+          data: concept?.name,
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         }),
@@ -59,16 +58,14 @@ export const treeTaxonomyOptions = (data, user, mappedToField, isDynamicField, c
             user,
             calendarContentLanguage,
             contentLanguageBilingual({
-              en: concept?.name?.en,
-              fr: concept?.name?.fr,
+              data: concept?.name,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             }),
           ),
         }),
         label: contentLanguageBilingual({
-          en: concept?.name?.en,
-          fr: concept?.name?.fr,
+          data: concept?.name,
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         }),
@@ -85,6 +82,11 @@ export const treeEntitiesOption = (
   source = sourceOptions.CMS,
   currentCalendarData,
 ) => {
+  let isFieldsDirty = {};
+  calendarContentLanguage.forEach((language) => {
+    const langKey = contentLanguageKeyMap[language];
+    isFieldsDirty[langKey] = false;
+  });
   let options = data?.map((entity) => {
     return {
       label: (
@@ -107,59 +109,54 @@ export const treeEntitiesOption = (
             )
           }
           name={
-            entity?.name?.en || entity?.name?.fr
+            isDataValid(entity?.name)
               ? contentLanguageBilingual({
-                  en: entity?.name?.en,
-                  fr: entity?.name?.fr,
+                  data: entity?.name,
                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                   calendarContentLanguage: calendarContentLanguage,
                 })
               : typeof entity?.name === 'string' && entity?.name
           }
           description={
-            entity?.disambiguatingDescription?.en || entity?.disambiguatingDescription?.fr
+            isDataValid(entity?.disambiguatingDescription)
               ? contentLanguageBilingual({
-                  en: entity?.disambiguatingDescription?.en,
-                  fr: entity?.disambiguatingDescription?.fr,
+                  data: entity?.disambiguatingDescription,
                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                   calendarContentLanguage: calendarContentLanguage,
                 })
               : typeof entity?.description === 'string' && entity?.description
           }
+          calendarContentLanguage={calendarContentLanguage}
           artsDataLink={entity?.uri}
           showExternalSourceLink={true}
         />
       ),
       value: entity?.id,
       type: entity?.type,
-      name:
-        entity?.name?.en || entity?.name?.fr
-          ? contentLanguageBilingual({
-              en: entity?.name?.en,
-              fr: entity?.name?.fr,
-              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-              calendarContentLanguage: calendarContentLanguage,
-            })
-          : typeof entity?.name === 'string' && entity?.name,
-      description:
-        entity?.disambiguatingDescription?.en || entity?.disambiguatingDescription?.fr
-          ? contentLanguageBilingual({
-              en: entity?.disambiguatingDescription?.en,
-              fr: entity?.disambiguatingDescription?.fr,
-              interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-              calendarContentLanguage: calendarContentLanguage,
-            })
-          : typeof entity?.description === 'string' && entity?.description,
+      name: isDataValid(entity?.name)
+        ? contentLanguageBilingual({
+            data: entity?.name,
+            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+            calendarContentLanguage,
+          })
+        : typeof entity?.name === 'string' && entity?.name,
+      description: isDataValid(entity?.disambiguatingDescription)
+        ? contentLanguageBilingual({
+            data: entity?.disambiguatingDescription,
+            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+            calendarContentLanguage: calendarContentLanguage,
+          })
+        : typeof entity?.description === 'string' && entity?.description,
       contact: entity?.contactPoint,
       uri: entity?.uri,
       source: source,
       creatorId: entity?.creator?.userId,
       fallBackStatus: currentCalendarData
-        ? languageFallbackSetup({
-            currentCalendarData,
+        ? languageFallbackStatusCreator({
+            calendarContentLanguage,
             fieldData: entity?.name,
             languageFallbacks: currentCalendarData?.languageFallbacks,
-            isFieldsDirty: true,
+            isFieldsDirty,
           })
         : null,
     };
@@ -173,8 +170,7 @@ export const treeDynamicTaxonomyOptions = (concepts, user, calendarContentLangua
     concepts?.map((concept) => {
       return {
         title: contentLanguageBilingual({
-          en: concept?.name?.en,
-          fr: concept?.name?.fr,
+          data: concept?.name,
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         }),
@@ -185,16 +181,14 @@ export const treeDynamicTaxonomyOptions = (concepts, user, calendarContentLangua
             user,
             calendarContentLanguage,
             contentLanguageBilingual({
-              en: concept?.name?.en,
-              fr: concept?.name?.fr,
+              data: concept?.name,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             }),
           ),
         }),
         label: contentLanguageBilingual({
-          en: concept?.name?.en,
-          fr: concept?.name?.fr,
+          data: concept?.name,
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         }),
