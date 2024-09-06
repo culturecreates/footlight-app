@@ -507,6 +507,11 @@ function CreateNewPlace() {
                 };
             });
           }
+          if (values?.coordinates) {
+            const coordinates = values.coordinates.split(/[, ]+/);
+            latitude = coordinates[0] || undefined;
+            longitude = coordinates[1] || undefined;
+          }
 
           const getFilteredFieldValue = (values) => {
             let filteredValues = {};
