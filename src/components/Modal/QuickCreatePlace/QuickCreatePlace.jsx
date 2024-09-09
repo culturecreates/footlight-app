@@ -170,29 +170,36 @@ function QuickCreatePlace(props) {
       form
         .validateFields([...validationFieldNames, 'address'])
         .then(() => {
-          var values = form.getFieldsValue(true);
+          var values = form.getFieldsValue();
+          var persistValues = form.getFieldsValue(true); // if toggle is false form is unmounted, hence the need to use both default and true values
+
           let addressCountry = {};
           let addressLocality = {};
           let addressRegion = {};
-          let postalCode = {};
           let streetAddress = {};
 
           calendarContentLanguage.forEach((language) => {
             const languageKey = contentLanguageKeyMap[language];
 
-            if (values?.addressCountry) addressCountry[languageKey] = values.addressCountry;
-            if (values?.addressLocality) addressLocality[languageKey] = values.addressLocality;
-            if (values?.addressRegion) addressRegion[languageKey] = values.addressRegion;
-            if (values?.postalCode) postalCode[languageKey] = values.postalCode;
-            if (values?.streetAddress) streetAddress[languageKey] = values.streetAddress;
+            if (persistValues?.addressCountry) addressCountry[languageKey] = persistValues.addressCountry;
+            if (persistValues?.addressLocality) addressLocality[languageKey] = persistValues.addressLocality;
+            if (persistValues?.addressRegion) addressRegion[languageKey] = persistValues.addressRegion;
+            if (persistValues?.streetAddress) streetAddress[languageKey] = persistValues.streetAddress;
           });
 
-          const postalObj = { addressCountry, addressLocality, addressRegion, streetAddress };
+          const postalObj = {
+            addressCountry,
+            addressLocality,
+            addressRegion,
+            streetAddress,
+            postalCode: persistValues.postalCode,
+          };
 
           if (!toggle) {
             setOpen(false);
             setLoaderModalOpen(true);
           }
+
           addPostalAddress({ data: postalObj, calendarId })
             .unwrap()
             .then((response) => {
@@ -212,8 +219,8 @@ function QuickCreatePlace(props) {
                   name,
                   additionalType,
                   geo: {
-                    latitude: values?.latitude,
-                    longitude: values?.longitude,
+                    latitude: persistValues?.latitude,
+                    longitude: persistValues?.longitude,
                   },
                   postalAddressId: {
                     entityId: response?.id,

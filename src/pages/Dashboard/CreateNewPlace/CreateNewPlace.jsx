@@ -1229,10 +1229,9 @@ function CreateNewPlace() {
     if (artsDataId) {
       getArtsDataPlace(artsDataId);
     } else if (newEntityName) {
-      const name = {};
       calendarContentLanguage.forEach((language) => {
         const langKey = contentLanguageKeyMap[language];
-        name[langKey] = newEntityName;
+        form.setFieldValue([[formFieldNames.NAME], `${langKey}`], newEntityName);
       });
     }
   }, []);
