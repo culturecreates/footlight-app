@@ -1227,7 +1227,7 @@ function CreateNewPlace() {
       const name = {};
       calendarContentLanguage.forEach((language) => {
         const langKey = contentLanguageKeyMap[language];
-        name[langKey] = newEntityName;
+        form.setFieldValue([name, `${langKey}`], newEntityName);
       });
     }
   }, []);
