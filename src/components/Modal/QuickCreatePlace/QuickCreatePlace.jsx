@@ -219,8 +219,8 @@ function QuickCreatePlace(props) {
                   name,
                   additionalType,
                   geo: {
-                    latitude: values?.latitude,
-                    longitude: values?.longitude,
+                    latitude: persistValues?.latitude,
+                    longitude: persistValues?.longitude,
                   },
                   postalAddressId: {
                     entityId: response?.id,
