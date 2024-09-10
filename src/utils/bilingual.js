@@ -38,14 +38,15 @@ export const contentLanguageBilingual = ({ calendarContentLanguage, data, requir
    * @returns {string} The string data of required content language or an empty string if no data is available.
    **/
 
-  let contentLanguageKey = contentLanguageKeyMap[calendarContentLanguage[0]];
   if (!data) return '';
   if (requiredLanguageKey && data[requiredLanguageKey]) {
     return data[requiredLanguageKey];
   }
 
+  let contentLanguageKey = contentLanguageKeyMap[calendarContentLanguage[0]];
   if (data[contentLanguageKey] === undefined) {
-    contentLanguageKey = Object.values(contentLanguageKeyMap).find((lanKey) => data[lanKey] !== undefined);
+    contentLanguageKey =
+      Object.values(contentLanguageKeyMap).find((key) => data[key] !== undefined) || Object.keys(data)[0]; // Fallback to the first key in data
   }
 
   return data[contentLanguageKey] ?? '';
