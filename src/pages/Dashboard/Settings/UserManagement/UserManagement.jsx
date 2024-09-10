@@ -608,7 +608,7 @@ const UserManagement = (props) => {
                           return listItemHandler(item?._id);
                         }}
                         title={createTitleHandler(item?.firstName, item?.lastName, item?.userName)}
-                        description={roleHandler({ roles: item?.roles, calendarId })}
+                        description={roleHandler({ roles: item?.roles, calendarId, isSuperAdmin: item?.isSuperAdmin })}
                         activityStatus={currentCalendarUserStatus(item)}
                         styles={handleListCardStyles(item)}
                         invitedBy={item?.invitedBy && <Username userName={item?.invitedBy} />}

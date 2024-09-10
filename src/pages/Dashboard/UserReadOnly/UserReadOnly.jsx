@@ -180,11 +180,11 @@ const UserReadOnly = () => {
                       },
                     })}
 
-                  {userInfo?.roles &&
+                  {(userInfo?.roles || userInfo?.isSuperAdmin) &&
                     createUserInfoRowItem({
                       isCopiableText: false,
                       infoType: 'userType',
-                      infoText: roleHandler({ roles: userInfo.roles, calendarId }),
+                      infoText: roleHandler({ roles: userInfo.roles, calendarId, isSuperAdmin: userInfo.isSuperAdmin }),
                     })}
 
                   {userInfo?.interfaceLanguage &&
