@@ -358,8 +358,6 @@ function AddEvent() {
     const previousShowDialog = showDialog;
     setShowDialog(false);
 
-    console.log(type);
-
     const action = ({ clear = false, previousShowDialog, toggle, type }) => {
       var promise = new Promise(function (resolve, reject) {
         form
@@ -383,24 +381,6 @@ function AddEvent() {
               fallbackStatus = {};
             }
             var values = form.getFieldsValue(true);
-
-            if (values) {
-              console.log(
-                new Set([
-                  ...(calendarContentLanguage.map((language) => ['name', `${contentLanguageKeyMap[language]}`]) ?? []),
-                  'datePicker',
-                  'dateRangePicker',
-                  'datePickerWrapper',
-                  'startDateRecur',
-                  ...(eventId &&
-                  eventData?.publishState === eventPublishState.PUBLISHED &&
-                  type !== eventPublishState.DRAFT
-                    ? validateFields
-                    : []),
-                ]),
-              );
-              return;
-            }
 
             var startDateTime,
               endDateTime,
