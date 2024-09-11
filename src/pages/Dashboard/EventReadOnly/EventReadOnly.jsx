@@ -753,6 +753,13 @@ function EventReadOnly() {
                                       openingHours={locationPlace?.openingHours}
                                       calendarContentLanguage={calendarContentLanguage}
                                       bordered
+                                      onClickHandle={{
+                                        navigationFlag: true,
+                                        navigationExecute: () =>
+                                          navigate(
+                                            `${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${locationPlace?.key}`,
+                                          ),
+                                      }}
                                     />
                                   )}
                                 </div>
@@ -905,6 +912,13 @@ function EventReadOnly() {
                                         bordered
                                         closable={false}
                                         itemWidth="100%"
+                                        onClickHandle={{
+                                          navigationFlag: true,
+                                          navigationExecute: () =>
+                                            navigate(
+                                              `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizer?.value}`,
+                                            ),
+                                        }}
                                       />
                                     );
                                   })}
@@ -985,6 +999,13 @@ function EventReadOnly() {
                                         calendarContentLanguage={calendarContentLanguage}
                                         bordered
                                         closable={false}
+                                        onClickHandle={{
+                                          navigationFlag: true,
+                                          navigationExecute: () =>
+                                            navigate(
+                                              `${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${performer?.value}`,
+                                            ),
+                                        }}
                                         itemWidth="100%"
                                       />
                                     );

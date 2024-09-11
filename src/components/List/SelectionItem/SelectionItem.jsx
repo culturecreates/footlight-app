@@ -33,6 +33,7 @@ function SelectionItem(props) {
     edit,
     creatorId,
     fallbackConfig,
+    onClickHandle = { navigationFlag: false, navigationExecute: () => {} },
   } = props;
   const { t } = useTranslation();
   const { user } = useSelector(getUserDetails);
@@ -61,7 +62,12 @@ function SelectionItem(props) {
   return (
     <div
       className="selection-item-wrapper"
-      style={{ border: bordered && '1px solid#607EFC', width: itemWidth && itemWidth }}>
+      onClick={onClickHandle?.navigationFlag ? onClickHandle?.navigationExecute : null}
+      style={{
+        border: bordered && '1px solid#607EFC',
+        width: itemWidth && itemWidth,
+        ...(onClickHandle?.navigationFlag && { cursor: 'pointer' }),
+      }}>
       <List.Item
         className="selection-item-list-wrapper"
         data-cy="list-item"
