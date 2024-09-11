@@ -1009,7 +1009,7 @@ function AddEvent() {
           (isValuesChanged || Object.keys(activeFallbackFieldsInfo).length > 0 || duplicateId) &&
           (type === 'PUBLISH' || type === 'REVIEW')
         ) {
-          saveAsDraftHandler(event, type === false)
+          saveAsDraftHandler(event, true, type)
             .then((id) => {
               updateEventState({ id: eventId ?? id, calendarId, publishState })
                 .unwrap()
@@ -1018,7 +1018,7 @@ function AddEvent() {
                     description:
                       calendar[0]?.role === userRoles.GUEST
                         ? t('dashboard.events.addEditEvent.notification.sendToReview')
-                        : eventData?.publishState === eventPublishState.DRAFT
+                        : eventData?.publishState === eventPublishState.DRAFT || type === 'PUBLISH'
                         ? t('dashboard.events.addEditEvent.notification.publish')
                         : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
                     placement: 'top',
