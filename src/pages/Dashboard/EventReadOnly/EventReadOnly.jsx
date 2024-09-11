@@ -755,10 +755,8 @@ function EventReadOnly() {
                                       bordered
                                       onClickHandle={{
                                         navigationFlag: true,
-                                        navigationExecute: () =>
-                                          navigate(
-                                            `${PathName.Dashboard}/${calendarId}${PathName.Places}${PathName.AddPlace}?id=${locationPlace?.key}`,
-                                          ),
+                                        entityType: locationPlace?.type ?? 'Place',
+                                        entityId: locationPlace?.key,
                                       }}
                                     />
                                   )}
@@ -914,10 +912,8 @@ function EventReadOnly() {
                                         itemWidth="100%"
                                         onClickHandle={{
                                           navigationFlag: true,
-                                          navigationExecute: () =>
-                                            navigate(
-                                              `${PathName.Dashboard}/${calendarId}${PathName.Organizations}${PathName.AddOrganization}?id=${organizer?.value}`,
-                                            ),
+                                          entityType: organizer?.type,
+                                          entityId: organizer?.value,
                                         }}
                                       />
                                     );
@@ -1001,10 +997,8 @@ function EventReadOnly() {
                                         closable={false}
                                         onClickHandle={{
                                           navigationFlag: true,
-                                          navigationExecute: () =>
-                                            navigate(
-                                              `${PathName.Dashboard}/${calendarId}${PathName.People}${PathName.AddPerson}?id=${performer?.value}`,
-                                            ),
+                                          entityType: performer?.type,
+                                          entityId: performer?.value,
                                         }}
                                         itemWidth="100%"
                                       />
@@ -1032,6 +1026,11 @@ function EventReadOnly() {
                                         bordered
                                         itemWidth="100%"
                                         closable={false}
+                                        onClickHandle={{
+                                          navigationFlag: true,
+                                          entityType: supporter?.type,
+                                          entityId: supporter?.value,
+                                        }}
                                       />
                                     );
                                   })}
