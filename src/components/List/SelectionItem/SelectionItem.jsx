@@ -63,13 +63,10 @@ function SelectionItem(props) {
     ? t('common.forms.languageLiterals.unKnownLanguagePromptText')
     : t('common.forms.languageLiterals.knownLanguagePromptText');
 
-  const routinghandler = () => {
+  const routinghandler = (e) => {
     const type = onClickHandle?.entityType;
     const id = onClickHandle?.entityId;
-
-    if (onClickHandle?.test) {
-      onClickHandle?.test();
-    }
+    e.stopPropagation();
 
     if (type?.toUpperCase() == taxonomyClass.ORGANIZATION)
       navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${id}`);
