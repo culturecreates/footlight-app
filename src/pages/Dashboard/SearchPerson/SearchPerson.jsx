@@ -161,14 +161,12 @@ function SearchPerson() {
                         data-cy={`div-person-footlight-${index}`}>
                         <EntityCard
                           title={contentLanguageBilingual({
-                            en: person?.name?.en,
-                            fr: person?.name?.fr,
+                            data: person?.name,
                             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             calendarContentLanguage: calendarContentLanguage,
                           })}
                           description={contentLanguageBilingual({
-                            en: person?.disambiguatingDescription?.en,
-                            fr: person?.disambiguatingDescription?.fr,
+                            data: person?.disambiguatingDescription,
                             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             calendarContentLanguage: calendarContentLanguage,
                           })}
@@ -220,14 +218,12 @@ function SearchPerson() {
                             data-cy={`div-person-artsdata-${index}`}>
                             <EntityCard
                               title={contentLanguageBilingual({
-                                en: person?.name?.en,
-                                fr: person?.name?.fr,
+                                data: person?.name,
                                 interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                 calendarContentLanguage: calendarContentLanguage,
                               })}
                               description={contentLanguageBilingual({
-                                en: person?.disambiguatingDescription?.en,
-                                fr: person?.disambiguatingDescription?.fr,
+                                data: person?.disambiguatingDescription,
                                 interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                 calendarContentLanguage: calendarContentLanguage,
                               })}
@@ -279,8 +275,7 @@ function SearchPerson() {
                             data-cy={`div-person-artsdata-${index}`}>
                             <EntityCard
                               title={contentLanguageBilingual({
-                                en: person?.name?.en,
-                                fr: person?.name?.fr,
+                                data: person?.name,
                                 interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                 calendarContentLanguage: calendarContentLanguage,
                               })}

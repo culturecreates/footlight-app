@@ -124,9 +124,10 @@ function ResponsiveSidebar(props) {
     }
   };
   useEffect(() => {
+    if (!calendarContentLanguage) return;
+
     const calendarLabel = contentLanguageBilingual({
-      en: currentCalendarData?.name?.en,
-      fr: currentCalendarData?.name?.fr,
+      data: currentCalendarData?.name,
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       calendarContentLanguage: calendarContentLanguage,
     });

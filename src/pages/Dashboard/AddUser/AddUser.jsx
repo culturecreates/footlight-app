@@ -18,7 +18,7 @@ import {
   useUpdateUserByIdMutation,
 } from '../../../services/users';
 import AuthenticationInput from '../../../components/Input/Common/AuthenticationInput';
-import { userLanguages } from '../../../constants/userLanguagesÏ';
+import { userLanguages } from '../../../constants/userLanguages';
 import { useState, useEffect } from 'react';
 import { userRoles } from '../../../constants/userRoles';
 import { useDispatch, useSelector } from 'react-redux';
@@ -892,8 +892,7 @@ const AddUser = () => {
                                       setRouteBlockingFlag={setRouteBlockingFlag}
                                       selectedCalendarId={selectedCalendar?.calendarId}
                                       name={contentLanguageBilingual({
-                                        en: selectedCalendar?.name?.en,
-                                        fr: selectedCalendar?.name?.fr,
+                                        data: selectedCalendar?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })}

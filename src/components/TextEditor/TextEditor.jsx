@@ -6,12 +6,13 @@ import 'react-quill/dist/quill.snow.css';
 import { useTranslation } from 'react-i18next';
 import { pluralize } from '../../utils/pluralise';
 import OutlinedButton from '../Button/Outlined';
-import { contentLanguage } from '../../constants/contentLanguage';
+import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 import { useAddImageMutation } from '../../services/image';
 import { useParams } from 'react-router-dom';
 import Quill from 'quill';
 const Delta = Quill.import('delta');
 
+import i18next from 'i18next';
 function TextEditor(props) {
   const {
     formName,
@@ -26,11 +27,18 @@ function TextEditor(props) {
   } = props;
   let translateTo;
 
-  if (editorLanguage == 'en') {
-    translateTo = 'fr';
-  } else {
-    translateTo = 'en';
-  }
+  const currentInterfaceLanguage = i18next.language;
+  const languageKeys = Object.keys(contentLanguageKeyMap);
+  languageKeys.map((key) => {
+    if (editorLanguage != contentLanguageKeyMap[key]) return;
+
+    if (editorLanguage != currentInterfaceLanguage) translateTo = currentInterfaceLanguage;
+    else
+      translateTo =
+        contentLanguageKeyMap[
+          calendarContentLanguage.find((language) => contentLanguageKeyMap[language] != editorLanguage)
+        ];
+  });
   const { calendarId } = useParams();
   const [addImage] = useAddImageMutation();
 
@@ -184,9 +192,7 @@ function TextEditor(props) {
           modules={modules}
           formats={formats}
           style={{
-            border: `${
-              calendarContentLanguage === contentLanguage.BILINGUAL ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
-            }`,
+            border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
           }}
           preserveWhitespace
           onChange={onChange}
@@ -207,7 +213,7 @@ function TextEditor(props) {
           {pluralize(wordCount, t('dashboard.events.addEditEvent.otherInformation.description.word'))}
         </p>
       </div>
-      {calendarContentLanguage === contentLanguage.BILINGUAL && (
+      {calendarContentLanguage.length > 1 && (
         <OutlinedButton
           label={t('dashboard.events.addEditEvent.otherInformation.description.translate')}
           size="middle"

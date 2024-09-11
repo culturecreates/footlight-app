@@ -881,8 +881,7 @@ function Events() {
                             style={{ marginLeft: '8px' }}
                             onChange={(e) => onOrganizerCheckboxChange(e)}>
                             {contentLanguageBilingual({
-                              en: organizer?.name?.en,
-                              fr: organizer?.name?.fr,
+                              data: organizer?.name,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                               calendarContentLanguage: calendarContentLanguage,
                             })}
@@ -956,8 +955,7 @@ function Events() {
                             }}
                             data-cy="button-filter-dates">
                             {bilingual({
-                              en: taxonomy?.name?.en,
-                              fr: taxonomy?.name?.fr,
+                              data: taxonomy?.name,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             })}
                             {standardTaxonomyFilter[taxonomy?.mappedToField]?.length > 0 && (
@@ -1017,8 +1015,7 @@ function Events() {
                             style={{ borderColor: taxonomyFilter[taxonomy?.id]?.length > 0 > 0 && '#607EFC' }}
                             data-cy="button-filter-dates">
                             {bilingual({
-                              en: taxonomy?.name?.en,
-                              fr: taxonomy?.name?.fr,
+                              data: taxonomy?.name,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             })}
                             {taxonomyFilter[taxonomy?.id]?.length > 0 && (

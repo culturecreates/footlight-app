@@ -479,6 +479,7 @@ function CalendarAccordion(props) {
                 }
                 name={people?.name}
                 description={people?.description}
+                calendarContentLanguage={calendarContentLanguage}
                 bordered
                 closable={readOnly ? false : true}
                 itemWidth="100%"

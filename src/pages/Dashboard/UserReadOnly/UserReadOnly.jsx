@@ -223,8 +223,7 @@ const UserReadOnly = () => {
                                       key={index}
                                       selectedCalendarId={calendar?.calendarId}
                                       name={contentLanguageBilingual({
-                                        en: calendar?.name?.en,
-                                        fr: calendar?.name?.fr,
+                                        data: calendar?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })}

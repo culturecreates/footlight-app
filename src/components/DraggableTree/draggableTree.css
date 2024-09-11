@@ -8,6 +8,8 @@
   justify-content: space-between;
   width: 100%;
   min-height: 100px;
+  overflow-x: scroll;
+  overflow-y: hidden;
 }
 
 .draggable-tree .ant-tree-list {
@@ -55,6 +57,8 @@
 
 .draggable-tree > .ant-form-item {
   flex: 1;
+  max-width: 100%;
+  min-width: 50%;
 }
 
 .draggable-tree .ant-tree .ant-tree-treenode-draggable .ant-tree-draggable-icon {
@@ -172,6 +176,25 @@
 
 .custom-common-modal-container .add-new-concept-wrapper .ant-form-item-label > label::after {
   display: none;
+}
+
+.draggable-tree > :nth-last-child(2) {
+  border-right: solid 4px #eff2ff;
+}
+
+.draggable-tree > :nth-last-child(2) {
+  position: relative;
+}
+
+.draggable-tree > :nth-last-child(2)::before {
+  content: '';
+  position: absolute;
+  top: 0px;
+  bottom: 0;
+  right: -4px;
+  width: 4px;
+  height: 28px;
+  background-color: #ffffff;
 }
 
 @media screen and (max-width: 480px) {
