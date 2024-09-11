@@ -363,7 +363,7 @@ function AddEvent() {
         form
           .validateFields([
             ...new Set([
-              'name',
+              ...(calendarContentLanguage.map((language) => ['name', `${contentLanguageKeyMap[language]}`]) ?? []),
               'datePicker',
               'dateRangePicker',
               'datePickerWrapper',
@@ -1834,7 +1834,7 @@ function AddEvent() {
             break;
           case eventFormRequiredFieldNames.DESCRIPTION:
             calendarContentLanguage.forEach((language) => {
-              publishValidateFields.push(['editor', [contentLanguageKeyMap[language]]]);
+              publishValidateFields.push(['editor', contentLanguageKeyMap[language]]);
             });
             setDescriptionMinimumWordCount(
               requiredField?.rule?.minimumWordCount ? Number(requiredField?.rule?.minimumWordCount) : 1,
@@ -2955,7 +2955,7 @@ function AddEvent() {
                   data={eventData?.description}
                   form={form}
                   calendarContentLanguage={calendarContentLanguage}
-                  name={['editor']}
+                  name={'editor'}
                   required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION)}
                   placeholder={placeHolderCollectionCreator({
                     calendarContentLanguage,
