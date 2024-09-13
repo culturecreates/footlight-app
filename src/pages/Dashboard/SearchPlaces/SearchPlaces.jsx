@@ -160,14 +160,12 @@ function SearchPlaces() {
                           data-cy={`div-place-footlight-${index}`}>
                           <EntityCard
                             title={contentLanguageBilingual({
-                              en: place?.name?.en,
-                              fr: place?.name?.fr,
+                              data: place?.name,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                               calendarContentLanguage: calendarContentLanguage,
                             })}
                             description={contentLanguageBilingual({
-                              en: place?.disambiguatingDescription?.en,
-                              fr: place?.disambiguatingDescription?.fr,
+                              data: place?.disambiguatingDescription,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                               calendarContentLanguage: calendarContentLanguage,
                             })}
@@ -219,14 +217,12 @@ function SearchPlaces() {
                               data-cy={`div-place-artsdata-${index}`}>
                               <EntityCard
                                 title={contentLanguageBilingual({
-                                  en: place?.name?.en,
-                                  fr: place?.name?.fr,
+                                  data: place?.name,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
                                 description={contentLanguageBilingual({
-                                  en: place?.disambiguatingDescription?.en,
-                                  fr: place?.disambiguatingDescription?.fr,
+                                  data: place?.disambiguatingDescription,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
@@ -278,8 +274,7 @@ function SearchPlaces() {
                               data-cy={`div-place-artsdata-${index}`}>
                               <EntityCard
                                 title={contentLanguageBilingual({
-                                  en: place?.name?.en,
-                                  fr: place?.name?.fr,
+                                  data: place?.name,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}

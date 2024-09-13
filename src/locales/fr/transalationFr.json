@@ -145,8 +145,7 @@
         "language": {
           "title": "Titre de l'événement",
           "titleLabel": "Anglais",
-          "placeHolderFrench": "Indiquer le titre en français",
-          "placeHolderEnglish": "Indiquer le titre en anglais",
+          "placeHolder": "Indiquer le titre en {{language}}",
           "eventType": "Type de l’événement",
           "placeHolderEventType": "Sélectionner le type de l'événementr",
           "targetAudience": "Public cible",
@@ -215,8 +214,7 @@
           "placeHolderLocation": "Rechercher lieux",
           "virtualLocation": "Emplacement virtuel",
           "virtualLocationTooltip": "Ajoutez un lien vers un emplacement virtuel pour votre événement.",
-          "placeHolderVirtualLocationEn": "Indiquer le texte anglais à afficher",
-          "placeHolderVirtualLocationFr": "Indiquer le texte français à afficher",
+          "placeHolderVirtualLocation": "Indiquer le texte {{language}} à afficher",
           "onlineLink": "Lien pour l'événement en ligne",
           "placeHolderOnlineLink": "Indiquer l'adresse web URL",
           "streetAddress": "Adresse postale",
@@ -246,8 +244,7 @@
             "title": "Description de l'événement",
             "footerTitle": "Un minimum de {{wordCount}} mots est requis.",
             "word": "mot",
-            "frenchPlaceholder": "Indiquer une description en français",
-            "englishPlaceholder": "Indiquer une description en anglais",
+            "placeholder": "Indiquer une description en {{language}}",
             "translate": "Traduire"
           },
           "image": {
@@ -305,8 +302,7 @@
             "website": "Site web",
             "phoneNumber": "Numéro de téléphone",
             "email": "Courriel",
-            "placeHolderContactTitleFrench": "Indiquer le titre du contact français",
-            "placeHolderContactTitleEnglish": "Indiquer le titre du contact anglais",
+            "placeHolderContactTitle": "Indiquer le titre du contact {{language}}",
             "placeHolderWebsite": "Indiquer l'adresse web",
             "placeHolderPhoneNumber": "Indiquer le numéro de téléphone",
             "placeHolderEmail": "Indiquer l’adresse courriel",
@@ -325,8 +321,7 @@
           "subHeading": "Sélectionnez ce qui rend l'événement (spectacle ou exposition) accessible.",
           "footer": "Cette option est spécifique à l'événement. L'accessibilité du lieu est enregistrée avec le lieu dans Lieux.",
           "placeHolderEventAccessibility": "Sélectionner la fonctionnalité d'accessibilité",
-          "placeHolderEventAccessibilityFrenchNote": "Ajouter des informations supplémentaires sur l'accessibilité",
-          "placeHolderEventAccessibilityEnglishNote": "Ajouter des informations supplémentaires sur l'accessibilité",
+          "placeHolderEventAccessibilityNote": "Ajouter des informations supplémentaires sur l'accessibilité",
           "noteTooltip": "Fournissez plus de détails sur les options d'accessibilité sélectionnées, telles que les dates."
         },
         "tickets": {
@@ -605,10 +600,7 @@
           },
           "name": {
             "name": "Nom",
-            "placeholder": {
-              "english": "Indiquer le nom du lieu",
-              "french": "Indiquer le nom du lieu"
-            }
+            "placeholder": "Indiquer le nom du lieu"
           },
           "placeType": {
             "placeholder": "Sélectionner le type de lieu"
@@ -619,13 +611,10 @@
             "searchAddressPlaceholder": "Rechercher",
             "streetAddress": "Adresse postale",
             "subheading": "Indiquez le nom du lieu et/ou l'adresse.",
-            "streetAddressPlaceholder": {
-              "english": "Indiquer l’adresse postale en anglais",
-              "french": "Indiquer l’adresse postale en français"
-            },
+            "streetAddressPlaceholder": "Indiquer l’adresse postale en {{language}}",
             "city": {
               "city": "Ville",
-              "placeholder": { "french": "Indiquer le nom de la ville en français", "english": "Indiquer le nom de la ville en anglais" }
+              "placeholder": "Indiquer le nom de la ville en {{language}}"
             },
             "postalCode": {
               "postalCode": "Code postal",
@@ -633,17 +622,11 @@
             },
             "province": {
               "province": "Province",
-              "placeholder": {
-                "english": "Indiquer le nom de la province en anglais",
-                "french": "Indiquer le nom de la province en français"
-              }
+              "placeholder": "Indiquer le nom de la province en {{language}}"
             },
             "country": {
               "country": "Pays",
-              "placeholder": {
-                "english": "Indiquer le nom du pays en anglais",
-                "french": "Indiquer le nom du pays en français"
-              }
+              "placeholder": "Indiquer le nom du pays en {{language}}"
             },
             "coordinates": {
               "coordinates": "Coordonnées"
@@ -686,10 +669,7 @@
           },
           "disambiguatingDescription": {
             "disambiguatingDescription": "Description (désambiguïsation)",
-            "placeholder": {
-              "english": "Indiquer la description aux fins de désambiguïsation en anglais",
-              "french": "Indiquer la description aux fins de désambiguïsation en français"
-            }
+            "placeholder": "Entrer une description désambiguïsante"
           },
           "description": {
             "description": "Description"
@@ -888,7 +868,10 @@
         "dropDownOptions": {
           "langagePreference": {
             "en": "Anglais",
-            "fr": "Français"
+            "fr": "Français",
+            "ko": "Coréen",
+            "ja": "Japonais",
+            "zh": "Chinois"
           }
         },
         "organizationSearchHeading": "Organisation",
@@ -1129,14 +1112,14 @@
         "destinationHeading": "Sélectionnez la destination de votre taxonomie.",
         "name": "Nom de la taxonomie",
         "nameCheckbox": "Utilisez le nom de la taxonomie pour renommer le champ.",
-        "frNamePlaceHolder": "Indiquer le nom de la taxonomie en français",
-        "enNamePlaceHolder": "Indiquer le nom de la taxonomie en anglais",
         "mapToField": "Associer à un champ existant",
         "mapToFieldDescription": "Sélectionner un champ de saisie pour la taxonomie.",
         "nameDescription": "Ce nom est utilisé pour étiqueter le champ de saisie associé.",
         "description": "Description (désambiguïsation)",
-        "frDescriptionPlaceHolder": "Indiquer la description aux fins de désambiguïsation en français",
-        "enDescriptionPlaceHolder": "Indiquer la description aux fins de désambiguïsation en anglais",
+        "placeHolder": {
+          "namePlaceHolder": "Indiquer le nom de la taxonomie en {{language}}",
+          "descriptionPlaceHolder": "Indiquer la description aux fins de désambiguïsation en {{language}}"
+        },
         "descriptionExplation": "Ajouter pour différencier la taxonomie dans les résultats de recherche.",
         "userAccess": "Restreindre l'accès aux utilisateurs",
         "userAccessPlaceHolder": "Sélectionner",
@@ -1163,8 +1146,7 @@
           "save": "Sauvegarder",
           "editBtn": "Sauvegarder",
           "conceptName": "Nom",
-          "placeHolderFr": "Indiquer un nom en français",
-          "placeHolderEn": "Indiquer un nom en anglais",
+          "placeHolder": "Indiquer un nom en {{language}}",
           "deleteConceptHeading": "Supprimer le concept",
           "deleteConceptMessage": "Êtes-vous sûr de vouloir supprimer définitivement ce concept ? Cette action le supprimera également partout où il a été utilisé, y compris dans les événements."
         }
@@ -1184,6 +1166,9 @@
   "common": {
     "tabEnglish": "Anglais",
     "tabFrench": "Français",
+    "tabJapanese": "Japonais",
+    "tabKorean": "Coréen",
+    "tabChinese": "Chinois",
     "noneFound": "Non trouvé",
     "unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous les ignorer ?",
     "keepEditing": "Poursuivre l'édition",

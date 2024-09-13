@@ -29,9 +29,7 @@ import { userRoles } from '../../../constants/userRoles';
 import PublishState from '../../../components/Dropdown/PublishState/PublishState';
 import { eventPublishState } from '../../../constants/eventPublishState';
 import DateAction from '../../../components/Button/DateAction';
-import BilingualInput from '../../../components/BilingualInput';
 import DatePickerStyled from '../../../components/DatePicker';
-import TextEditor from '../../../components/TextEditor';
 import Select from '../../../components/Select';
 import { eventStatus, eventStatusOptions } from '../../../constants/eventStatus';
 import TimePickerStyled from '../../../components/TimePicker/TimePicker';
@@ -74,8 +72,6 @@ import RecurringEvents from '../../../components/RecurringEvents';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import { eventFormRequiredFieldNames } from '../../../constants/eventFormRequiredFieldNames';
 import StyledSwitch from '../../../components/Switch/index';
-import ContentLanguageInput from '../../../components/ContentLanguageInput';
-import { contentLanguage } from '../../../constants/contentLanguage';
 import QuickCreateOrganization from '../../../components/Modal/QuickCreateOrganization/QuickCreateOrganization';
 import { featureFlags } from '../../../utils/featureFlags';
 import QuickSelect from '../../../components/Modal/QuickSelect/QuickSelect';
@@ -91,7 +87,6 @@ import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import KeyboardAccessibleLayout from '../../../layout/KeyboardAccessibleLayout/KeyboardAccessibleLayout';
 import CustomPopover from '../../../components/Popover/Popover';
-import { removeEmptyParagraphsAtEnd } from '../../../utils/removeEmptyParagraphsAtEnd';
 import Alert from '../../../components/Alert';
 import ChangeTypeLayout from '../../../layout/ChangeTypeLayout/ChangeTypeLayout';
 import { getEmbedUrl, validateVimeoURL, validateYouTubeURL } from '../../../utils/getEmbedVideoUrl';
@@ -102,13 +97,18 @@ import {
   getLanguageLiteralBannerDisplayStatus,
   setLanguageLiteralBannerDisplayStatus,
 } from '../../../redux/reducer/languageLiteralSlice';
-import { removeUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
+import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 import { groupEventsByDate } from '../../../utils/groupSubEventsConfigByDate';
 import MultipleImageUpload from '../../../components/MultipleImageUpload';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import { getWeekDayDates } from '../../../utils/getWeekDayDates';
 import { arraysAreEqual } from '../../../utils/arraysAreEqual';
+import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems';
+import { isDataValid, placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
+import MultiLingualTextEditor from '../../../components/MultilingualTextEditor/MultiLingualTextEditor';
+import MultilingualInput from '../../../components/MultilingualInput';
+import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 
 const { TextArea } = Input;
 
@@ -206,8 +206,6 @@ function AddEvent() {
 
   setContentBackgroundColor('#F9FAFF');
 
-  const reactQuillRefFr = useRef(null);
-  const reactQuillRefEn = useRef(null);
   let initialVirtualLocation = eventData?.locations?.filter((location) => location.isVirtualLocation == true);
   let initialPlace = eventData?.locations?.filter((location) => location.isVirtualLocation == false);
   let requiredFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.event);
@@ -448,13 +446,13 @@ function AddEvent() {
     event?.preventDefault();
     const previousShowDialog = showDialog;
     setShowDialog(false);
+
     const action = ({ clear = false, previousShowDialog, toggle, type }) => {
       var promise = new Promise(function (resolve, reject) {
         form
           .validateFields([
             ...new Set([
-              'french',
-              'english',
+              ...(calendarContentLanguage.map((language) => ['name', `${contentLanguageKeyMap[language]}`]) ?? []),
               'datePicker',
               'dateRangePicker',
               'datePickerWrapper',
@@ -472,6 +470,7 @@ function AddEvent() {
               fallbackStatus = {};
             }
             var values = form.getFieldsValue(true);
+
             var startDateTime,
               endDateTime,
               additionalType = [],
@@ -496,69 +495,42 @@ function AddEvent() {
 
             let eventObj;
 
-            const englishVirtualLocation = removeUneditedFallbackValues({
-              values: values?.englishVirtualLocation?.trim(),
+            name = filterUneditedFallbackValues({
+              values: values?.name,
               activeFallbackFieldsInfo: fallbackStatus,
-              fieldName: 'frenchVirtualLocation-englishVirtualLocation',
-              property: 'en',
+              fieldName: 'name',
             });
 
-            const frenchVirtualLocation = removeUneditedFallbackValues({
-              values: values?.frenchVirtualLocation?.trim(),
+            const virtualLocation = filterUneditedFallbackValues({
+              values: values?.virtualLocation,
               activeFallbackFieldsInfo: fallbackStatus,
-              fieldName: 'frenchVirtualLocation-englishVirtualLocation',
-              property: 'fr',
-            });
-            const englishContactTitle = removeUneditedFallbackValues({
-              values: values?.englishContactTitle?.trim(),
-              activeFallbackFieldsInfo: fallbackStatus,
-              fieldName: 'frenchContactTitle-englishContactTitle',
-              property: 'en',
-            });
-            const frenchContactTitle = removeUneditedFallbackValues({
-              values: values?.frenchContactTitle?.trim(),
-              activeFallbackFieldsInfo: fallbackStatus,
-              fieldName: 'frenchContactTitle-englishContactTitle',
-              property: 'fr',
+              fieldName: 'virtualLocation',
             });
 
-            const englishTicketNote = removeUneditedFallbackValues({
-              values: values?.englishTicketNote?.trim(),
+            const contactTitle = filterUneditedFallbackValues({
+              values: values?.contactTitle,
               activeFallbackFieldsInfo: fallbackStatus,
-              fieldName: 'frenchTicketNote-englishTicketNote',
-              property: 'en',
+              fieldName: 'contactTitle',
             });
 
-            const frenchTicketNote = removeUneditedFallbackValues({
-              values: values?.frenchTicketNote?.trim(),
+            const ticketNote = filterUneditedFallbackValues({
+              values: values?.ticketNote,
               activeFallbackFieldsInfo: fallbackStatus,
-              fieldName: 'frenchTicketNote-englishTicketNote',
-              property: 'fr',
+              fieldName: 'ticketNote',
             });
-            const descriptionFr = removeUneditedFallbackValues({
-              values: values?.frenchEditor?.trim(),
+
+            accessibilityNote = filterUneditedFallbackValues({
+              values: values?.noteWrap,
               activeFallbackFieldsInfo: fallbackStatus,
-              fieldName: 'frenchEditor-englishEditor',
-              property: 'fr',
+              fieldName: 'noteWrap',
             });
-            const descriptionEn = removeUneditedFallbackValues({
-              values: values?.englishEditor?.trim(),
+
+            description = filterUneditedFallbackValues({
+              values: values?.editor,
               activeFallbackFieldsInfo: fallbackStatus,
-              fieldName: 'frenchEditor-englishEditor',
-              property: 'en',
+              fieldName: 'editor',
             });
-            const nameFr = removeUneditedFallbackValues({
-              values: values?.french?.trim(),
-              activeFallbackFieldsInfo: fallbackStatus,
-              fieldName: 'french-english',
-              property: 'fr',
-            });
-            const nameEn = removeUneditedFallbackValues({
-              values: values?.english?.trim(),
-              activeFallbackFieldsInfo: fallbackStatus,
-              fieldName: 'french-english',
-              property: 'en',
-            });
+
             // Use a regular expression to remove <p><br></p> tags at the end
 
             // Below code handles dates and time for single, range and multiple dates
@@ -782,11 +754,8 @@ function AddEvent() {
                 place,
               };
             }
-            if (values?.frenchVirtualLocation || values?.englishVirtualLocation || values?.virtualLocationOnlineLink) {
-              const name = {};
-
-              if (frenchVirtualLocation) name['fr'] = frenchVirtualLocation;
-              if (englishVirtualLocation) name['en'] = englishVirtualLocation;
+            if (Object.keys(virtualLocation ?? {})?.length > 0 || values?.virtualLocationOnlineLink) {
+              const name = virtualLocation;
 
               locationId = {
                 ...locationId,
@@ -800,17 +769,8 @@ function AddEvent() {
                 },
               };
             }
-            if (
-              values?.frenchContactTitle ||
-              values?.englishContactTitle ||
-              values?.contactWebsiteUrl ||
-              values?.contactEmail ||
-              values?.contactPhoneNumber
-            ) {
-              const name = {};
-
-              if (frenchContactTitle) name['fr'] = frenchContactTitle;
-              if (englishContactTitle) name['en'] = englishContactTitle;
+            if (contactTitle || values?.contactWebsiteUrl || values?.contactEmail || values?.contactPhoneNumber) {
+              const name = contactTitle;
 
               contactPoint = {
                 name,
@@ -827,26 +787,16 @@ function AddEvent() {
               }));
             }
 
-            if (values?.englishAccessibilityNote || values?.frenchAccessibilityNote) {
-              accessibilityNote = {
-                ...(values?.englishAccessibilityNote && { en: values?.englishAccessibilityNote?.trim() }),
-                ...(values?.frenchAccessibilityNote && { fr: values?.frenchAccessibilityNote?.trim() }),
-              };
-            }
-
             if (values?.keywords?.length > 0) {
               keywords = values?.keywords;
             }
 
             if (ticketType) {
-              const name = {};
-
-              if (englishTicketNote) name['en'] = englishTicketNote;
-              if (frenchTicketNote) name['fr'] = frenchTicketNote;
+              const name = ticketNote;
 
               offerConfiguration = {
                 category: ticketType,
-                ...((values?.englishTicketNote || values?.frenchTicketNote) && {
+                ...(name && {
                   name,
                 }),
                 ...(ticketType === offerTypes.PAYING &&
@@ -935,25 +885,12 @@ function AddEvent() {
               });
             }
 
-            if (descriptionFr && descriptionFr !== '<p><br></p>')
-              description = {
-                fr: descriptionFr,
-              };
-            if (descriptionEn && descriptionEn !== '<p><br></p>')
-              description = {
-                ...description,
-                en: descriptionEn,
-              };
-
-            if (nameEn) name['en'] = nameEn;
-            if (nameFr) name['fr'] = nameFr;
-
             const isStartDateConvertedCustomDates = values?.startTime && !(customDatesFlag || multipleDatesFlag);
             const isEndDateConvertedCustomDates = values?.endTime && !(customDatesFlag || multipleDatesFlag);
             const isCustomOrMultipleDatesHasEndTime = customEndTimeFlag || multipleEndTimeFlag;
             const isCustomOrMultipleDatesHasStartTime = customStartTimeFlag || multipleStartTimeFlag;
             eventObj = {
-              name: !(Object.keys(name).length > 0) ? { ...name, ...eventData?.name } : name,
+              name: !(Object.keys(name ?? {})?.length > 0) ? { ...name, ...eventData?.name } : name,
               ...((isStartDateConvertedCustomDates || isCustomOrMultipleDatesHasStartTime) && {
                 startDateTime,
               }),
@@ -967,7 +904,7 @@ function AddEvent() {
                 endDate: endDateTime,
               }),
               eventStatus: values?.eventStatus,
-              ...((values?.englishEditor || values?.frenchEditor) && { description }),
+              ...(Object.keys(description ?? {})?.length > 0 && { description }),
               ...(values?.eventAccessibility && {
                 accessibility,
               }),
@@ -1236,7 +1173,7 @@ function AddEvent() {
           (isValuesChanged || Object.keys(activeFallbackFieldsInfo).length > 0 || duplicateId) &&
           (type === 'PUBLISH' || type === 'REVIEW')
         ) {
-          saveAsDraftHandler(event, type === false)
+          saveAsDraftHandler(event, true, type)
             .then((id) => {
               updateEventState({ id: eventId ?? id, calendarId, publishState })
                 .unwrap()
@@ -1245,7 +1182,7 @@ function AddEvent() {
                     description:
                       calendar[0]?.role === userRoles.GUEST
                         ? t('dashboard.events.addEditEvent.notification.sendToReview')
-                        : eventData?.publishState === eventPublishState.DRAFT
+                        : eventData?.publishState === eventPublishState.DRAFT || type === 'PUBLISH'
                         ? t('dashboard.events.addEditEvent.notification.publish')
                         : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
                     placement: 'top',
@@ -1397,6 +1334,12 @@ function AddEvent() {
         </>
       );
     else return roleCheckHandler();
+  };
+
+  const createPriceIsFieldsDirty = () => {
+    const isFieldDirty = {};
+    Object.values(contentLanguageKeyMap).forEach((key) => (isFieldDirty[key] = form.isFieldTouched('prices')));
+    return isFieldDirty;
   };
 
   const placesSearch = (inputValue = '') => {
@@ -1563,9 +1506,8 @@ function AddEvent() {
     if (eventId) {
       if (!updateEventSuccess) {
         //Check if the initial values are changed by quill editor
-        if (changedValues?.frenchEditor || changedValues?.englishEditor) {
-          if (changedValues?.frenchEditor && allValues?.frenchEditor) setShowDialog(true);
-          if (changedValues?.englishEditor && allValues?.englishEditor) setShowDialog(true);
+        if (changedValues?.editor) {
+          if (changedValues?.editor && allValues?.editor) setShowDialog(true);
         } else if (!showDialog) setShowDialog(true);
       }
     } else {
@@ -1638,9 +1580,13 @@ function AddEvent() {
       if (selectedOrganizers[0]?.contact) {
         const { contact } = selectedOrganizers[0];
         const { email, name, telephone, url } = contact;
+
+        calendarContentLanguage.forEach((language) => {
+          const lanKey = contentLanguageKeyMap[language];
+          form.setFields([{ name: ['contactTitle', lanKey], value: name?.[lanKey] ?? '' }]);
+        });
+
         form.setFieldsValue({
-          frenchContactTitle: name?.fr,
-          englishContactTitle: name?.en,
           contactWebsiteUrl: url?.uri,
           contactPhoneNumber: telephone,
           contactEmail: email,
@@ -1656,16 +1602,17 @@ function AddEvent() {
   useEffect(() => {
     let shouldDisplay = true;
 
-    for (let key in activeFallbackFieldsInfo) {
-      if (Object.prototype.hasOwnProperty.call(activeFallbackFieldsInfo, key)) {
-        const tagDisplayStatus =
-          activeFallbackFieldsInfo[key]?.en?.tagDisplayStatus || activeFallbackFieldsInfo[key]?.fr?.tagDisplayStatus;
-        if (tagDisplayStatus) {
-          shouldDisplay = false;
-          break;
-        }
+    const fallbackFieldNames = Object.keys(activeFallbackFieldsInfo) || [];
+    let individualFallbackFieldsCollection = [];
+    fallbackFieldNames.forEach((name) => {
+      individualFallbackFieldsCollection.push(...Object.values(activeFallbackFieldsInfo[name] || []));
+    });
+
+    individualFallbackFieldsCollection.forEach((element) => {
+      if (element?.tagDisplayStatus) {
+        shouldDisplay = false;
       }
-    }
+    });
 
     if (!shouldDisplay) {
       dispatch(setLanguageLiteralBannerDisplayStatus(true));
@@ -1801,8 +1748,7 @@ function AddEvent() {
           eventData?.contactPoint?.email ||
           eventData?.contactPoint?.telephone ||
           eventData?.contactPoint?.url?.uri ||
-          eventData?.contactPoint?.name?.fr ||
-          eventData?.contactPoint?.name?.en
+          isDataValid(eventData?.contactPoint?.name)
         )
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.contact);
         if (eventData?.organizer) {
@@ -1880,7 +1826,7 @@ function AddEvent() {
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.facebookLinkWrap);
         if (eventData?.keywords?.length > 0)
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.keywords);
-        if (eventData?.accessibilityNote?.en || eventData?.accessibilityNote?.fr)
+        if (isDataValid(eventData?.accessibilityNote))
           initialAddedFields = initialAddedFields?.concat(eventAccessibilityFieldNames?.noteWrap);
         if (eventData?.inLanguage?.length > 0)
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.inLanguage);
@@ -2048,29 +1994,14 @@ function AddEvent() {
       requiredFields?.map((requiredField) => {
         switch (requiredField?.fieldName) {
           case eventFormRequiredFieldNames.NAME:
-            publishValidateFields.push('french', 'english');
-            break;
-          case eventFormRequiredFieldNames.NAME_EN:
-            publishValidateFields.push('english');
-            break;
-          case eventFormRequiredFieldNames.NAME_FR:
-            publishValidateFields.push('french');
+            calendarContentLanguage.forEach((language) => {
+              publishValidateFields.push(['name', contentLanguageKeyMap[language]]);
+            });
             break;
           case eventFormRequiredFieldNames.DESCRIPTION:
-            publishValidateFields.push('englishEditor', 'frenchEditor');
-
-            setDescriptionMinimumWordCount(
-              requiredField?.rule?.minimumWordCount ? Number(requiredField?.rule?.minimumWordCount) : 1,
-            );
-            break;
-          case eventFormRequiredFieldNames.DESCRIPTION_EN:
-            publishValidateFields.push('englishEditor');
-            setDescriptionMinimumWordCount(
-              requiredField?.rule?.minimumWordCount ? Number(requiredField?.rule?.minimumWordCount) : 1,
-            );
-            break;
-          case eventFormRequiredFieldNames.DESCRIPTION_FR:
-            publishValidateFields.push('frenchEditor');
+            calendarContentLanguage.forEach((language) => {
+              publishValidateFields.push(['editor', contentLanguageKeyMap[language]]);
+            });
             setDescriptionMinimumWordCount(
               requiredField?.rule?.minimumWordCount ? Number(requiredField?.rule?.minimumWordCount) : 1,
             );
@@ -2079,14 +2010,7 @@ function AddEvent() {
             publishValidateFields.push('datePickerWrapper', 'datePicker', 'dateRangePicker', 'startDateRecur');
             break;
           case eventFormRequiredFieldNames.TICKET_INFO:
-            publishValidateFields.push(
-              'ticketPickerWrapper',
-              'prices',
-              'ticketLink',
-              'registerLink',
-              'englishTicketNote',
-              'frenchTicketNote',
-            );
+            publishValidateFields.push('ticketPickerWrapper', 'prices', 'ticketLink', 'registerLink', 'ticketNote');
             break;
           case eventFormRequiredFieldNames.EVENT_TYPE:
             publishValidateFields.push('eventType');
@@ -2114,7 +2038,9 @@ function AddEvent() {
             publishValidateFields.push('eventStatus');
             break;
           case eventFormRequiredFieldNames.CONTACT_TITLE:
-            publishValidateFields.push('englishContactTitle', 'frenchContactTitle');
+            calendarContentLanguage.forEach((language) => {
+              publishValidateFields.push(['contactTitle', [contentLanguageKeyMap[language]]]);
+            });
             initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.contact);
             break;
           case eventFormRequiredFieldNames.CONTACT_WEBSITE:
@@ -2279,14 +2205,12 @@ function AddEvent() {
                     <ArtsDataInfo
                       artsDataLink={artsDataLinkChecker(artsDataLink[0]?.uri)}
                       name={contentLanguageBilingual({
-                        en: eventData?.name?.en,
-                        fr: eventData?.name?.fr,
+                        data: eventData?.name,
                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                         calendarContentLanguage: calendarContentLanguage,
                       })}
                       disambiguatingDescription={contentLanguageBilingual({
-                        en: eventData?.disambiguatingDescription?.en,
-                        fr: eventData?.disambiguatingDescription?.fr,
+                        data: eventData?.disambiguatingDescription,
                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                         calendarContentLanguage: calendarContentLanguage,
                       })}
@@ -2326,93 +2250,38 @@ function AddEvent() {
               <Form.Item
                 label={t('dashboard.events.addEditEvent.language.title')}
                 hidden={
-                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME) ||
-                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_EN) ||
-                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME_FR)
+                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.NAME)
                     ? adminCheckHandler({ calendar, user })
                       ? false
                       : true
                     : false
                 }
-                required={
-                  requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME) ||
-                  requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME_EN) ||
-                  requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME_FR)
-                }>
-                <ContentLanguageInput
+                required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME)}>
+                <CreateMultiLingualFormItems
+                  entityId={eventId}
                   calendarContentLanguage={calendarContentLanguage}
-                  isFieldsDirty={{ en: form.isFieldTouched('english'), fr: form.isFieldTouched('french') }}>
-                  <BilingualInput fieldData={eventData?.name}>
-                    <Form.Item
-                      name="french"
-                      key={contentLanguage.FRENCH}
-                      initialValue={
-                        duplicateId ? eventData?.name?.fr && 'Copie de ' + eventData?.name?.fr : eventData?.name?.fr
-                      }
-                      dependencies={['english']}
-                      rules={[
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (value || getFieldValue('english')) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
-                          },
-                        }),
-                      ]}>
-                      <TextArea
-                        autoSize
-                        autoComplete="off"
-                        placeholder={t('dashboard.events.addEditEvent.language.placeHolderFrench')}
-                        style={{
-                          borderRadius: '4px',
-                          border: `${
-                            calendarContentLanguage === contentLanguage.BILINGUAL
-                              ? '4px solid #E8E8E8'
-                              : '1px solid #b6c1c9'
-                          }`,
-                          width: '423px',
-                        }}
-                        size="large"
-                        data-cy="text-area-event-french-name"
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      name="english"
-                      key={contentLanguage.ENGLISH}
-                      initialValue={
-                        duplicateId ? eventData?.name?.en && 'Copy of ' + eventData?.name?.en : eventData?.name?.en
-                      }
-                      dependencies={['french']}
-                      rules={[
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (value || getFieldValue('french')) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(new Error(t('dashboard.events.addEditEvent.validations.title')));
-                          },
-                        }),
-                      ]}>
-                      <TextArea
-                        autoSize
-                        autoComplete="off"
-                        placeholder={t('dashboard.events.addEditEvent.language.placeHolderEnglish')}
-                        style={{
-                          borderRadius: '4px',
-                          border: `${
-                            calendarContentLanguage === contentLanguage.BILINGUAL
-                              ? '4px solid #E8E8E8'
-                              : '1px solid #b6c1c9'
-                          }`,
-                          width: '423px',
-                        }}
-                        size="large"
-                        data-cy="text-area-event-english-name"
-                      />
-                    </Form.Item>
-                  </BilingualInput>
-                </ContentLanguageInput>
+                  form={form}
+                  name={['name']}
+                  data={eventData?.name}
+                  validations={t('dashboard.events.addEditEvent.validations.title')}
+                  dataCy={`text-area-event-name-`}
+                  placeholder={placeHolderCollectionCreator({
+                    t,
+                    calendarContentLanguage,
+                    placeholderBase: 'dashboard.events.addEditEvent.language.placeHolder',
+                  })}
+                  required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.NAME)}>
+                  <TextArea
+                    autoSize
+                    autoComplete="off"
+                    style={{
+                      borderRadius: '4px',
+                      border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                      width: '423px',
+                    }}
+                    size="large"
+                  />
+                </CreateMultiLingualFormItems>
 
                 <Form.Item
                   name="eventType"
@@ -2563,8 +2432,7 @@ function AddEvent() {
                         key={index}
                         name={['dynamicFields', taxonomy?.id]}
                         label={bilingual({
-                          en: taxonomy?.name?.en,
-                          fr: taxonomy?.name?.fr,
+                          data: taxonomy?.name,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                         })}
                         initialValue={
@@ -2912,8 +2780,7 @@ function AddEvent() {
                 ({ getFieldValue }) => ({
                   validator() {
                     if (
-                      getFieldValue('frenchVirtualLocation') ||
-                      getFieldValue('englishVirtualLocation') ||
+                      isDataValid(getFieldValue('virtualLocation')) ||
                       getFieldValue('virtualLocationOnlineLink') ||
                       getFieldValue('locationPlace')
                     ) {
@@ -3165,59 +3032,29 @@ function AddEvent() {
                   display: !addedFields?.includes(virtualLocationFieldNames.virtualLocationName) && 'none',
                 }}
                 data-cy="form-item-virtual-location-title">
-                <ContentLanguageInput
+                <CreateMultiLingualFormItems
+                  entityId={eventId}
                   calendarContentLanguage={calendarContentLanguage}
-                  isFieldsDirty={{
-                    en: form.isFieldTouched('englishVirtualLocation'),
-                    fr: form.isFieldTouched('frenchVirtualLocation'),
-                  }}>
-                  <BilingualInput fieldData={initialVirtualLocation && initialVirtualLocation[0]?.name}>
-                    <Form.Item
-                      name="frenchVirtualLocation"
-                      key={contentLanguage.FRENCH}
-                      initialValue={initialVirtualLocation && initialVirtualLocation[0]?.name?.fr}
-                      data-cy="form-item-virtual-location-french">
-                      <TextArea
-                        autoSize
-                        autoComplete="off"
-                        placeholder={t('dashboard.events.addEditEvent.location.placeHolderVirtualLocationFr')}
-                        style={{
-                          borderRadius: '4px',
-                          border: `${
-                            calendarContentLanguage === contentLanguage.BILINGUAL
-                              ? '4px solid #E8E8E8'
-                              : '1px solid #b6c1c9'
-                          }`,
-                          width: '423px',
-                        }}
-                        size="large"
-                        data-cy="text-area-virtual-location-french"
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      name="englishVirtualLocation"
-                      key={contentLanguage.ENGLISH}
-                      initialValue={initialVirtualLocation && initialVirtualLocation[0]?.name?.en}
-                      data-cy="form-item-virtual-location-english">
-                      <TextArea
-                        autoSize
-                        autoComplete="off"
-                        placeholder={t('dashboard.events.addEditEvent.location.placeHolderVirtualLocationEn')}
-                        style={{
-                          borderRadius: '4px',
-                          border: `${
-                            calendarContentLanguage === contentLanguage.BILINGUAL
-                              ? '4px solid #E8E8E8'
-                              : '1px solid #b6c1c9'
-                          }`,
-                          width: '423px',
-                        }}
-                        size="large"
-                        data-cy="text-area-virtual-location-english"
-                      />
-                    </Form.Item>
-                  </BilingualInput>
-                </ContentLanguageInput>
+                  form={form}
+                  name={['virtualLocation']}
+                  data={initialVirtualLocation && initialVirtualLocation[0]?.name}
+                  dataCy="form-item-virtual-location-"
+                  placeholder={placeHolderCollectionCreator({
+                    t,
+                    calendarContentLanguage,
+                    placeholderBase: 'dashboard.events.addEditEvent.location.placeHolderVirtualLocation',
+                  })}>
+                  <TextArea
+                    autoSize
+                    autoComplete="off"
+                    style={{
+                      borderRadius: '4px',
+                      border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                      width: '423px',
+                    }}
+                    size="large"
+                  />
+                </CreateMultiLingualFormItems>
               </Form.Item>
               <Form.Item
                 name={virtualLocationFieldNames.virtualLocationOnlineLink}
@@ -3270,167 +3107,29 @@ function AddEvent() {
             <>
               <Form.Item
                 label={t('dashboard.events.addEditEvent.otherInformation.description.title')}
-                required={
-                  requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION) ||
-                  requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION_EN) ||
-                  requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION_FR)
-                }
+                required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION)}
                 hidden={
-                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION) ||
-                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION_EN) ||
-                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION_FR)
+                  standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.DESCRIPTION)
                     ? adminCheckHandler({ calendar, user })
                       ? false
                       : true
                     : false
                 }
                 data-cy="form-item-description-title">
-                <ContentLanguageInput
+                <MultiLingualTextEditor
+                  entityId={eventId}
+                  data={eventData?.description}
+                  form={form}
                   calendarContentLanguage={calendarContentLanguage}
-                  isFieldsDirty={{
-                    en: form.isFieldTouched('englishEditor'),
-                    fr: form.isFieldTouched('frenchEditor'),
-                  }}>
-                  <BilingualInput fieldData={eventData?.description}>
-                    <TextEditor
-                      formName="frenchEditor"
-                      key={contentLanguage.FRENCH}
-                      calendarContentLanguage={calendarContentLanguage}
-                      initialValue={
-                        eventData?.description?.fr ? removeEmptyParagraphsAtEnd(eventData?.description?.fr) : undefined
-                      }
-                      dependencies={['englishEditor']}
-                      currentReactQuillRef={reactQuillRefFr}
-                      editorLanguage={'fr'}
-                      placeholder={t('dashboard.events.addEditEvent.otherInformation.description.frenchPlaceholder')}
-                      descriptionMinimumWordCount={descriptionMinimumWordCount}
-                      rules={[
-                        () => ({
-                          validator() {
-                            if (
-                              reactQuillRefFr?.current?.unprivilegedEditor?.getLength() > 1 ||
-                              reactQuillRefEn?.current?.unprivilegedEditor?.getLength() > 1
-                            ) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(
-                                new Error(
-                                  calendarContentLanguage === contentLanguage.ENGLISH ||
-                                  calendarContentLanguage === contentLanguage.FRENCH
-                                    ? t(
-                                        'dashboard.events.addEditEvent.validations.otherInformation.unilingualEmptyDescription',
-                                      )
-                                    : calendarContentLanguage === contentLanguage.BILINGUAL &&
-                                      t('dashboard.events.addEditEvent.validations.otherInformation.emptyDescription', {
-                                        wordCount: descriptionMinimumWordCount,
-                                      }),
-                                ),
-                              );
-                          },
-                        }),
-                        () => ({
-                          validator() {
-                            if (
-                              reactQuillRefFr?.current?.unprivilegedEditor
-                                ?.getText()
-                                .split(' ')
-                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
-                            ) {
-                              return Promise.resolve();
-                            } else if (
-                              reactQuillRefEn?.current?.unprivilegedEditor
-                                ?.getText()
-                                .split(' ')
-                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
-                            )
-                              return Promise.resolve();
-                            else
-                              return Promise.reject(
-                                new Error(
-                                  calendarContentLanguage === contentLanguage.ENGLISH ||
-                                  calendarContentLanguage === contentLanguage.FRENCH
-                                    ? t(
-                                        'dashboard.events.addEditEvent.validations.otherInformation.unilingualDescriptionShort',
-                                      )
-                                    : calendarContentLanguage === contentLanguage.BILINGUAL &&
-                                      t('dashboard.events.addEditEvent.validations.otherInformation.frenchShort'),
-                                ),
-                              );
-                          },
-                        }),
-                      ]}
-                    />
-
-                    <TextEditor
-                      formName="englishEditor"
-                      key={contentLanguage.ENGLISH}
-                      initialValue={
-                        eventData?.description?.en ? removeEmptyParagraphsAtEnd(eventData?.description?.en) : undefined
-                      }
-                      calendarContentLanguage={calendarContentLanguage}
-                      dependencies={['frenchEditor']}
-                      currentReactQuillRef={reactQuillRefEn}
-                      editorLanguage={'en'}
-                      placeholder={t('dashboard.events.addEditEvent.otherInformation.description.englishPlaceholder')}
-                      descriptionMinimumWordCount={descriptionMinimumWordCount}
-                      rules={[
-                        () => ({
-                          validator() {
-                            if (
-                              reactQuillRefFr?.current?.unprivilegedEditor?.getLength() > 1 ||
-                              reactQuillRefEn?.current?.unprivilegedEditor?.getLength() > 1
-                            ) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(
-                                new Error(
-                                  calendarContentLanguage === contentLanguage.ENGLISH ||
-                                  calendarContentLanguage === contentLanguage.FRENCH
-                                    ? t(
-                                        'dashboard.events.addEditEvent.validations.otherInformation.unilingualEmptyDescription',
-                                      )
-                                    : calendarContentLanguage === contentLanguage.BILINGUAL &&
-                                      t('dashboard.events.addEditEvent.validations.otherInformation.emptyDescription', {
-                                        wordCount: descriptionMinimumWordCount,
-                                      }),
-                                ),
-                              );
-                          },
-                        }),
-                        () => ({
-                          validator() {
-                            if (
-                              reactQuillRefEn?.current?.unprivilegedEditor
-                                ?.getText()
-                                .split(' ')
-                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
-                            ) {
-                              return Promise.resolve();
-                            } else if (
-                              reactQuillRefFr?.current?.unprivilegedEditor
-                                ?.getText()
-                                .split(' ')
-                                ?.filter((n) => n != '')?.length > descriptionMinimumWordCount
-                            )
-                              return Promise.resolve();
-                            else
-                              return Promise.reject(
-                                new Error(
-                                  calendarContentLanguage === contentLanguage.ENGLISH ||
-                                  calendarContentLanguage === contentLanguage.FRENCH
-                                    ? t(
-                                        'dashboard.events.addEditEvent.validations.otherInformation.unilingualDescriptionShort',
-                                      )
-                                    : calendarContentLanguage === contentLanguage.BILINGUAL &&
-                                      t('dashboard.events.addEditEvent.validations.otherInformation.englishShort'),
-                                ),
-                              );
-                          },
-                        }),
-                      ]}
-                    />
-                  </BilingualInput>
-                </ContentLanguageInput>
+                  name={'editor'}
+                  required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION)}
+                  placeholder={placeHolderCollectionCreator({
+                    calendarContentLanguage,
+                    t,
+                    placeholderBase: 'dashboard.events.addEditEvent.otherInformation.description.placeholder',
+                  })}
+                  descriptionMinimumWordCount={descriptionMinimumWordCount}
+                />
               </Form.Item>
 
               <Form.Item
@@ -3660,6 +3359,7 @@ function AddEvent() {
                           );
                         }}
                         edit={organizer?.source === sourceOptions.CMS && true}
+                        calendarContentLanguage={calendarContentLanguage}
                         onEdit={(e) =>
                           organizerPerformerSupporterPlaceNavigationHandler(organizer?.value, organizer?.type, e)
                         }
@@ -3735,85 +3435,36 @@ function AddEvent() {
                     data-cy="button-copy-organizer-contact"
                   />
                 )}
-
                 <Form.Item
                   label={t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}
                   className="subheading-wrap"
                   data-cy="form-item-event-contact-title"
                   required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.CONTACT_TITLE)}>
-                  <ContentLanguageInput
+                  <CreateMultiLingualFormItems
+                    entityId={eventId}
                     calendarContentLanguage={calendarContentLanguage}
-                    isFieldsDirty={{
-                      en: form.isFieldTouched('englishContactTitle'),
-                      fr: form.isFieldTouched('frenchContactTitle'),
-                    }}>
-                    <BilingualInput fieldData={eventData?.contactPoint?.name}>
-                      <Form.Item
-                        name="frenchContactTitle"
-                        initialValue={eventData?.contactPoint?.name?.fr}
-                        key={contentLanguage.FRENCH}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (value || getFieldValue('englishContactTitle')) {
-                                return Promise.resolve();
-                              } else return Promise.reject(new Error(t('common.validations.informationRequired')));
-                            },
-                          }),
-                        ]}>
-                        <TextArea
-                          autoSize
-                          autoComplete="off"
-                          placeholder={t(
-                            'dashboard.events.addEditEvent.otherInformation.contact.placeHolderContactTitleFrench',
-                          )}
-                          style={{
-                            borderRadius: '4px',
-                            border: `${
-                              calendarContentLanguage === contentLanguage.BILINGUAL
-                                ? '4px solid #E8E8E8'
-                                : '1px solid #b6c1c9'
-                            }`,
-                            width: '423px',
-                          }}
-                          size="large"
-                          data-cy="input-contact-title-french"
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        name="englishContactTitle"
-                        initialValue={eventData?.contactPoint?.name?.en}
-                        key={contentLanguage.ENGLISH}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (value || getFieldValue('frenchContactTitle')) {
-                                return Promise.resolve();
-                              } else return Promise.reject(new Error(t('common.validations.informationRequired')));
-                            },
-                          }),
-                        ]}>
-                        <TextArea
-                          autoSize
-                          autoComplete="off"
-                          placeholder={t(
-                            'dashboard.events.addEditEvent.otherInformation.contact.placeHolderContactTitleEnglish',
-                          )}
-                          style={{
-                            borderRadius: '4px',
-                            border: `${
-                              calendarContentLanguage === contentLanguage.BILINGUAL
-                                ? '4px solid #E8E8E8'
-                                : '1px solid #b6c1c9'
-                            }`,
-                            width: '423px',
-                          }}
-                          size="large"
-                          data-cy="input-contact-title-english"
-                        />
-                      </Form.Item>
-                    </BilingualInput>
-                  </ContentLanguageInput>
+                    form={form}
+                    name={['contactTitle']}
+                    data={eventData?.contactPoint?.name}
+                    required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.CONTACT_TITLE)}
+                    validations={t('common.validations.informationRequired')}
+                    dataCy="input-contact-title-"
+                    placeholder={placeHolderCollectionCreator({
+                      calendarContentLanguage,
+                      placeholderBase: 'dashboard.events.addEditEvent.otherInformation.contact.placeHolderContactTitle',
+                      t,
+                    })}>
+                    <TextArea
+                      autoSize
+                      autoComplete="off"
+                      style={{
+                        borderRadius: '4px',
+                        border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                        width: '423px',
+                      }}
+                      size="large"
+                    />
+                  </CreateMultiLingualFormItems>
                 </Form.Item>
 
                 <Form.Item
@@ -4176,6 +3827,7 @@ function AddEvent() {
                         icon={performer?.label?.props?.icon}
                         name={performer?.name}
                         description={performer?.description}
+                        calendarContentLanguage={calendarContentLanguage}
                         bordered
                         closable
                         itemWidth="100%"
@@ -4422,6 +4074,7 @@ function AddEvent() {
                         onEdit={(e) =>
                           organizerPerformerSupporterPlaceNavigationHandler(supporter?.value, supporter?.type, e)
                         }
+                        calendarContentLanguage={calendarContentLanguage}
                         creatorId={supporter?.creatorId}
                         fallbackConfig={supporter?.fallBackStatus}
                       />
@@ -4720,61 +4373,32 @@ function AddEvent() {
                     display: !addedFields?.includes(eventAccessibilityFieldNames.noteWrap) && 'none',
                   }}
                   data-cy="form-item-accessiblity-note-label">
-                  <ContentLanguageInput
+                  <CreateMultiLingualFormItems
+                    entityId={eventId}
                     calendarContentLanguage={calendarContentLanguage}
-                    isFieldsDirty={{
-                      en: form.isFieldTouched('englishAccessibilityNote'),
-                      fr: form.isFieldTouched('frenchAccessibilityNote'),
-                    }}>
-                    <BilingualInput fieldData={eventData?.accessibilityNote}>
-                      <Form.Item
-                        name="frenchAccessibilityNote"
-                        initialValue={eventData?.accessibilityNote?.fr}
-                        key={contentLanguage.FRENCH}>
-                        <TextArea
-                          autoComplete="off"
-                          placeholder={t(
-                            'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityFrenchNote',
-                          )}
-                          style={{
-                            borderRadius: '4px',
-                            border: `${
-                              calendarContentLanguage === contentLanguage.BILINGUAL
-                                ? '4px solid #E8E8E8'
-                                : '1px solid #b6c1c9'
-                            }`,
-                            width: '423px',
-                            resize: 'vertical',
-                          }}
-                          size="large"
-                          data-cy="text-area-accessibility-note-french"
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        name="englishAccessibilityNote"
-                        initialValue={eventData?.accessibilityNote?.en}
-                        key={contentLanguage.ENGLISH}>
-                        <TextArea
-                          autoComplete="off"
-                          placeholder={t(
-                            'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityEnglishNote',
-                          )}
-                          style={{
-                            borderRadius: '4px',
-                            border: `${
-                              calendarContentLanguage === contentLanguage.BILINGUAL
-                                ? '4px solid #E8E8E8'
-                                : '1px solid #b6c1c9'
-                            }`,
-                            width: '423px',
-                            resize: 'vertical',
-                          }}
-                          size="large"
-                          data-cy="text-area-accessibility-note-english"
-                        />
-                      </Form.Item>
-                    </BilingualInput>
-                  </ContentLanguageInput>
+                    form={form}
+                    name={[eventAccessibilityFieldNames.noteWrap]}
+                    data={eventData?.accessibilityNote}
+                    dataCy="text-area-accessibility-note-"
+                    placeholder={placeHolderCollectionCreator({
+                      calendarContentLanguage,
+                      placeholderBase:
+                        'dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibilityNote',
+                      t,
+                      hasCommonPlaceHolder: true,
+                    })}>
+                    <TextArea
+                      autoSize
+                      autoComplete="off"
+                      style={{
+                        borderRadius: '4px',
+                        border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                        width: '423px',
+                        resize: 'vertical',
+                      }}
+                      size="large"
+                    />
+                  </CreateMultiLingualFormItems>
                 </Form.Item>
               </>
               <ChangeTypeLayout>
@@ -4821,17 +4445,13 @@ function AddEvent() {
                       rules={[
                         ({ getFieldValue }) => ({
                           validator() {
+                            const isticketNoteValid = isDataValid(getFieldValue('ticketNote'));
                             if (
                               ticketType == offerTypes.FREE ||
                               (ticketType == offerTypes.PAYING &&
-                                (getFieldValue('ticketLink') ||
-                                  getFieldValue('prices') ||
-                                  getFieldValue('frenchTicketNote') ||
-                                  getFieldValue('englishTicketNote'))) ||
+                                (getFieldValue('ticketLink') || getFieldValue('prices') || isticketNoteValid)) ||
                               (ticketType == offerTypes.REGISTER &&
-                                (getFieldValue('registerLink') ||
-                                  getFieldValue('frenchTicketNote') ||
-                                  getFieldValue('englishTicketNote')))
+                                (getFieldValue('registerLink') || isticketNoteValid))
                             ) {
                               return Promise.resolve();
                             } else
@@ -4899,7 +4519,8 @@ function AddEvent() {
 
                         ({ getFieldValue }) => ({
                           validator(_, value) {
-                            if (value || getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')) {
+                            const isticketNoteValid = isDataValid(getFieldValue('ticketNote'));
+                            if (value || isticketNoteValid) {
                               return Promise.resolve();
                             } else
                               return Promise.reject(
@@ -4958,14 +4579,14 @@ function AddEvent() {
                           },
                           ({ getFieldValue }) => ({
                             validator(_, value) {
+                              const isticketNoteValid = isDataValid(getFieldValue('ticketNote'));
                               if (
                                 (getFieldValue('prices') != undefined &&
                                   getFieldValue('prices')?.length > 0 &&
                                   getFieldValue('prices')[0] != undefined &&
                                   getFieldValue('prices')[0].price != '') ||
                                 value ||
-                                getFieldValue('frenchTicketNote') ||
-                                getFieldValue('englishTicketNote')
+                                isticketNoteValid
                               ) {
                                 return Promise.resolve();
                               } else
@@ -4993,25 +4614,24 @@ function AddEvent() {
                     </Input.Group>
                   </Form.Item>
 
-                  <ContentLanguageInput
+                  <MultilingualInput
+                    fieldData={eventData?.offerConfiguration?.prices}
                     calendarContentLanguage={calendarContentLanguage}
-                    isFieldsDirty={{ en: form.isFieldTouched('prices'), fr: form.isFieldTouched('prices') }}>
-                    <BilingualInput>
+                    isFieldsDirty={createPriceIsFieldsDirty}
+                    dataCyCollection={['dataCyCollection']}
+                    skipChildModification={true}>
+                    {calendarContentLanguage.map((language) => (
                       <Form.List
-                        name="prices"
+                        key={language}
+                        name={[`prices`]}
                         initialValue={eventData?.offerConfiguration?.prices ?? [undefined]}
-                        key={contentLanguage.FRENCH}
                         rules={[
                           ({ getFieldValue }) => ({
                             validator() {
                               if (
-                                (getFieldValue('prices') != undefined &&
-                                  getFieldValue('prices')?.length > 0 &&
-                                  getFieldValue('prices')[0] != undefined &&
-                                  getFieldValue('prices')[0].price != '') ||
+                                (getFieldValue(`prices`) != undefined && getFieldValue(`prices`)?.length > 0) ||
                                 getFieldValue('ticketLink') ||
-                                getFieldValue('frenchTicketNote') ||
-                                getFieldValue('englishTicketNote')
+                                getFieldValue('ticketNote')
                               ) {
                                 return Promise.resolve();
                               } else
@@ -5029,48 +4649,12 @@ function AddEvent() {
                             form={form}
                             firstFieldName={'price'}
                             secondFieldName={'name'}
-                            thirdFieldName={'fr'}
+                            thirdFieldName={contentLanguageKeyMap[language]}
                           />
                         )}
                       </Form.List>
-                      <Form.List
-                        name="prices"
-                        initialValue={eventData?.offerConfiguration?.prices ?? [undefined]}
-                        key={contentLanguage.ENGLISH}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator() {
-                              if (
-                                (getFieldValue('prices') != undefined &&
-                                  getFieldValue('prices')?.length > 0 &&
-                                  getFieldValue('prices')[0] != undefined &&
-                                  getFieldValue('prices')[0].price != '') ||
-                                getFieldValue('ticketLink') ||
-                                getFieldValue('frenchTicketNote') ||
-                                getFieldValue('englishTicketNote')
-                              ) {
-                                return Promise.resolve();
-                              } else
-                                return Promise.reject(
-                                  new Error(t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')),
-                                );
-                            },
-                          }),
-                        ]}>
-                        {(fields, { add, remove }) => (
-                          <TicketPrice
-                            add={add}
-                            remove={remove}
-                            fields={fields}
-                            form={form}
-                            firstFieldName={'price'}
-                            secondFieldName={'name'}
-                            thirdFieldName={'en'}
-                          />
-                        )}
-                      </Form.List>
-                    </BilingualInput>
-                  </ContentLanguageInput>
+                    ))}
+                  </MultilingualInput>
                 </>
               )}
               <br />
@@ -5078,111 +4662,41 @@ function AddEvent() {
                 ticketType == offerTypes.PAYING ||
                 ticketType == offerTypes.REGISTER) && (
                 <Form.Item label={t('dashboard.events.addEditEvent.tickets.note')}>
-                  <ContentLanguageInput
+                  <CreateMultiLingualFormItems
+                    entityId={eventId}
                     calendarContentLanguage={calendarContentLanguage}
-                    isFieldsDirty={{
-                      en: form.isFieldTouched('englishTicketNote'),
-                      fr: form.isFieldTouched('frenchTicketNote'),
-                    }}>
-                    <BilingualInput fieldData={eventData?.offerConfiguration?.name}>
-                      <Form.Item
-                        name="frenchTicketNote"
-                        key={contentLanguage.FRENCH}
-                        initialValue={eventData?.offerConfiguration?.name?.fr}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator() {
-                              if (
-                                (getFieldValue('prices') != undefined &&
-                                  getFieldValue('prices')?.length > 0 &&
-                                  getFieldValue('prices')[0] != undefined &&
-                                  getFieldValue('prices')[0].price != '') ||
-                                getFieldValue('ticketLink') ||
-                                getFieldValue('registerLink') ||
-                                (ticketType == offerTypes.PAYING || ticketType == offerTypes.REGISTER
-                                  ? getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')
-                                  : true)
-                              ) {
-                                return Promise.resolve();
-                              } else
-                                return Promise.reject(
-                                  new Error(
-                                    ticketType == offerTypes.PAYING
-                                      ? t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')
-                                      : ticketType == offerTypes.REGISTER &&
-                                        t('dashboard.events.addEditEvent.validations.ticket.emptyRegister'),
-                                  ),
-                                );
-                            },
-                          }),
-                        ]}>
-                        <TextArea
-                          autoComplete="off"
-                          placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderNotes')}
-                          style={{
-                            borderRadius: '4px',
-                            border: `${
-                              calendarContentLanguage === contentLanguage.BILINGUAL
-                                ? '4px solid #E8E8E8'
-                                : '1px solid #b6c1c9'
-                            }`,
-                            width: '423px',
-                            resize: 'vertical',
-                          }}
-                          size="large"
-                          data-cy="input-ticket-price-note-french"
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        name="englishTicketNote"
-                        key={contentLanguage.ENGLISH}
-                        initialValue={eventData?.offerConfiguration?.name?.en}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator() {
-                              if (
-                                (getFieldValue('prices') != undefined &&
-                                  getFieldValue('prices')?.length > 0 &&
-                                  getFieldValue('prices')[0] != undefined &&
-                                  getFieldValue('prices')[0].price != '') ||
-                                getFieldValue('ticketLink') ||
-                                getFieldValue('registerLink') ||
-                                (ticketType == offerTypes.PAYING || ticketType == offerTypes.REGISTER
-                                  ? getFieldValue('frenchTicketNote') || getFieldValue('englishTicketNote')
-                                  : true)
-                              ) {
-                                return Promise.resolve();
-                              } else
-                                return Promise.reject(
-                                  new Error(
-                                    ticketType == offerTypes.PAYING
-                                      ? t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')
-                                      : ticketType == offerTypes.REGISTER &&
-                                        t('dashboard.events.addEditEvent.validations.ticket.emptyRegister'),
-                                  ),
-                                );
-                            },
-                          }),
-                        ]}>
-                        <TextArea
-                          autoComplete="off"
-                          placeholder={t('dashboard.events.addEditEvent.tickets.placeHolderNotes')}
-                          style={{
-                            borderRadius: '4px',
-                            border: `${
-                              calendarContentLanguage === contentLanguage.BILINGUAL
-                                ? '4px solid #E8E8E8'
-                                : '1px solid #b6c1c9'
-                            }`,
-                            width: '423px',
-                            resize: 'vertical',
-                          }}
-                          size="large"
-                          data-cy="input-ticket-price-note-english"
-                        />
-                      </Form.Item>
-                    </BilingualInput>
-                  </ContentLanguageInput>
+                    form={form}
+                    name={['ticketNote']}
+                    data={eventData?.offerConfiguration?.name}
+                    required={
+                      (form.getFieldValue('prices') !== undefined && form.getFieldValue('prices')?.length > 0) ||
+                      form.getFieldValue('ticketLink') ||
+                      form.getFieldValue('registerLink')
+                    }
+                    validations={
+                      ticketType === offerTypes.PAYING
+                        ? t('dashboard.events.addEditEvent.validations.ticket.emptyPaidTicket')
+                        : ticketType === offerTypes.REGISTER &&
+                          t('dashboard.events.addEditEvent.validations.ticket.emptyRegister')
+                    }
+                    dataCy="input-ticket-price-note-"
+                    placeholder={placeHolderCollectionCreator({
+                      calendarContentLanguage,
+                      placeholderBase: 'dashboard.events.addEditEvent.tickets.placeHolderNotes',
+                      t,
+                      hasCommonPlaceHolder: true,
+                    })}>
+                    <TextArea
+                      autoSize
+                      autoComplete="off"
+                      style={{
+                        borderRadius: calendarContentLanguage.length > 1 ? '4px' : '1px',
+                        border: calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9',
+                        width: '423px',
+                      }}
+                      size="large"
+                    />
+                  </CreateMultiLingualFormItems>
                 </Form.Item>
               )}
             </>

@@ -31,10 +31,8 @@ import {
 } from '../../../services/places';
 import { useDispatch, useSelector } from 'react-redux';
 import { routinghandler } from '../../../utils/roleRoutingHandler';
-import ContentLanguageInput from '../../../components/ContentLanguageInput';
 import Card from '../../../components/Card/Common/Event';
-import { contentLanguage } from '../../../constants/contentLanguage';
-import BilingualInput from '../../../components/BilingualInput';
+import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import { placeTaxonomyMappedFieldTypes } from '../../../constants/placeMappedFieldTypes';
@@ -57,7 +55,6 @@ import {
 } from '../../../services/entities';
 import { entitiesClass } from '../../../constants/entitiesClass';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
-import TextEditor from '../../../components/TextEditor';
 import ImageUpload from '../../../components/ImageUpload';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import ArtsDataInfo from '../../../components/ArtsDataInfo/ArtsDataInfo';
@@ -92,6 +89,9 @@ import Alert from '../../../components/Alert';
 import MultipleImageUpload from '../../../components/MultipleImageUpload';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems/CreateMultiLingualFormItems';
+import { isDataValid, placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
+import MultiLingualTextEditor from '../../../components/MultilingualTextEditor/MultiLingualTextEditor';
 
 const { TextArea } = Input;
 
@@ -119,32 +119,24 @@ function CreateNewPlace() {
 
   const formFieldNames = {
     NAME: 'name',
-    ENGLISH: 'english',
-    FRENCH: 'french',
     TYPE: 'type',
-    STREET_ADDRESS_ENGLISH: 'streetAddressEn',
-    STREET_ADDRESS_FRENCH: 'streetAddress',
-    CITY_FRENCH: 'addressLocality',
-    CITY_ENGLISH: 'addressLocalityEn',
+    STREET_ADDRESS: 'streetAddress',
+    CITY: 'addressLocality',
+    PROVINCE: 'addressRegion',
+    COUNTRY: 'addressCountry',
+    ACCESSIBILITY_NOTE: 'accessibilityNote',
     POSTAL_CODE: 'postalCode',
-    PROVINCE_ENGLISH: 'addressRegionEn',
-    PROVINCE_FRENCH: 'addressRegion',
-    COUNTRY_ENGLISH: 'addressCountryEn',
-    COUNTRY_FRENCH: 'addressCountry',
     COORDINATES: 'coordinates',
     CONTAINED_IN_PLACE: 'containedInPlace',
     PLACE_ACCESSIBILITY: 'placeAccessibility',
-    DISAMBIGUATING_DESCRIPTION_ENGLISH: 'englishDisambiguatingDescription',
-    DISAMBIGUATING_DESCRIPTION_FRENCH: 'frenchDisambiguatingDescription',
-    EDITOR_FRENCH: 'frenchEditor',
-    EDITOR_ENGLISH: 'englishEditor',
+    DISAMBIGUATING_DESCRIPTION: 'disambiguatingDescription',
+    DESCRIPTION: 'description',
+    EDITOR: 'editor',
     DRAGGER: 'dragger',
     DRAGGER_WRAP: 'draggerWrap',
     DYNAMIC_FIELS: 'dynamicFields',
     OPENING_HOURS: 'openingHours',
     ACCESSIBILITY_NOTE_WRAP: 'accessibilityNotewrap',
-    ACCESSIBILITY_NOTE_ENGLISH: 'englishAccessibilityNote',
-    ACCESSIBILITY_NOTE_FRENCH: 'frenchAccessibilityNote',
     REGION: 'region',
     CONTAINS_PLACE: 'containsPlace',
   };
@@ -211,9 +203,6 @@ function CreateNewPlace() {
   const [getAllTaxonomy] = useLazyGetAllTaxonomyQuery({ sessionId: timestampRef });
   const [updatePostalAddress] = useUpdatePostalAddressMutation();
   const [getEntitiesById] = useLazyGetEntitiesByIdQuery();
-
-  const reactQuillRefFr = useRef(null);
-  const reactQuillRefEn = useRef(null);
 
   const [artsData, setArtsData] = useState(null);
   const [artsDataLoading, setArtsDataLoading] = useState(false);
@@ -431,39 +420,36 @@ function CreateNewPlace() {
         .validateFields(publishValidateFields ?? [])
         .then(async () => {
           var values = form.getFieldsValue(true);
+
           let placeObj,
-            languageKey,
             dynamicFields,
             containedInPlaceObj,
+            latitude,
+            longitude,
             containsPlace = [];
 
-          if (calendarContentLanguage == contentLanguage.ENGLISH) languageKey = 'en';
-          else if (calendarContentLanguage == contentLanguage.FRENCH) languageKey = 'fr';
-          let postalObj = {
-            ...(values?.addressCountry && { addressCountry: { [languageKey]: values?.addressCountry?.trim() } }),
-            ...(values?.addressLocality && { addressLocality: { [languageKey]: values?.addressLocality?.trim() } }),
-            ...(values?.addressRegion && { addressRegion: { [languageKey]: values?.addressRegion?.trim() } }),
-            postalCode: values?.postalCode?.trim(),
-            ...(values?.streetAddress && { streetAddress: { [languageKey]: values?.streetAddress?.trim() } }),
-          };
+          let postalObj = calendarContentLanguage.reduce(
+            (acc, language) => {
+              const languageKey = contentLanguageKeyMap[language];
 
-          if (calendarContentLanguage == contentLanguage.BILINGUAL) {
-            postalObj.addressCountry = {
-              ...(values?.addressCountry && { fr: values.addressCountry?.trim(), en: values.addressCountryEn?.trim() }),
-            };
-            postalObj.addressLocality = {
-              ...(values?.addressLocality && {
-                fr: values.addressLocality?.trim(),
-                en: values.addressLocalityEn?.trim(),
-              }),
-            };
-            postalObj.addressRegion = {
-              ...(values?.addressRegion && { fr: values.addressRegion?.trim(), en: values.addressRegionEn?.trim() }),
-            };
-            postalObj.streetAddress = {
-              ...(values?.streetAddress && { fr: values.streetAddress?.trim(), en: values.streetAddressEn?.trim() }),
-            };
-          }
+              const addIfValidString = (field, fieldName) => {
+                if (values?.[fieldName]?.[languageKey] && typeof values[fieldName]?.[languageKey] === 'string') {
+                  acc[field] = {
+                    ...(acc[field] || {}),
+                    [languageKey]: values[fieldName]?.[languageKey]?.trim(),
+                  };
+                }
+              };
+
+              addIfValidString('addressCountry', 'addressCountry');
+              addIfValidString('addressLocality', 'addressLocality');
+              addIfValidString('addressRegion', 'addressRegion');
+              addIfValidString('streetAddress', 'streetAddress');
+
+              return acc;
+            },
+            { postalCode: typeof values?.postalCode === 'string' ? values.postalCode.trim() : values?.postalCode },
+          );
 
           if (values?.dynamicFields) {
             dynamicFields = Object.keys(values?.dynamicFields)?.map((dynamicField) => {
@@ -521,32 +507,37 @@ function CreateNewPlace() {
                 };
             });
           }
+          if (values?.coordinates) {
+            const coordinates = values.coordinates.split(/[, ]+/);
+            latitude = coordinates[0] || undefined;
+            longitude = coordinates[1] || undefined;
+          }
+
+          const getFilteredFieldValue = (values) => {
+            let filteredValues = {};
+            Object.keys(values).map((key) => {
+              const value = values[key]?.trim();
+              if (value) filteredValues[key] = value;
+            });
+            return filteredValues;
+          };
 
           placeObj = {
-            name: {
-              ...(values?.english && { en: values?.english?.trim() }),
-              ...(values?.french && { fr: values?.french?.trim() }),
-            },
-            ...((values?.frenchEditor || values?.englishEditor) && {
-              description: {
-                en: values?.englishEditor,
-                fr: values?.frenchEditor,
-              },
+            name: getFilteredFieldValue(values.name),
+            ...(isDataValid(values?.description) && {
+              description: getFilteredFieldValue(values.description),
             }),
             ...(values?.openingHours && { openingHours: { uri: urlProtocolCheck(values?.openingHours) } }),
             ...(values?.containedInPlace && {
               containedInPlace: containedInPlaceObj,
             }),
             geo: {
-              latitude: values?.latitude,
-              longitude: values?.longitude,
+              latitude,
+              longitude,
             },
 
-            ...((values?.frenchAccessibilityNote || values?.englishAccessibilityNote) && {
-              accessibilityNote: {
-                fr: values?.frenchAccessibilityNote?.trim(),
-                en: values?.englishAccessibilityNote?.trim(),
-              },
+            ...(isDataValid(values?.accessibilityNote) && {
+              accessibilityNote: getFilteredFieldValue(values?.accessibilityNote),
             }),
             accessibility: values?.placeAccessibility
               ? values?.placeAccessibility.map((item) => {
@@ -573,15 +564,13 @@ function CreateNewPlace() {
                 })
               : undefined,
 
-            ...((values.frenchDisambiguatingDescription || values.englishDisambiguatingDescription) && {
-              disambiguatingDescription: {
-                fr: values.frenchDisambiguatingDescription?.trim(),
-                en: values.englishDisambiguatingDescription?.trim(),
-              },
+            ...(isDataValid(values?.disambiguatingDescription) && {
+              disambiguatingDescription: getFilteredFieldValue(values?.disambiguatingDescription),
             }),
             ...(values?.dynamicFields && { dynamicFields }),
             ...(values?.containsPlace && { containsPlace }),
           };
+
           const uploadImageList = async () => {
             for (let i = 0; i < values.multipleImagesCrop.length; i++) {
               const file = values.multipleImagesCrop[i]?.originFileObj;
@@ -726,20 +715,6 @@ function CreateNewPlace() {
   const handleSelect = (address) => {
     geocodeByAddress(address)
       .then((results) => {
-        form.setFieldsValue({
-          address: results[0]?.formatted_address,
-          addressCountry: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
-          addressCountryEn: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
-          addressLocality: results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
-          addressLocalityEn: results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
-          addressRegion: results[0].address_components.find((item) =>
-            item.types.includes('administrative_area_level_1'),
-          )?.short_name,
-          addressRegionEn: results[0].address_components.find((item) =>
-            item.types.includes('administrative_area_level_1'),
-          )?.short_name,
-          postalCode: results[0].address_components.find((item) => item.types.includes('postal_code'))?.long_name,
-        });
         let streetNumber =
           results[0].address_components.find((item) => item.types.includes('street_number'))?.long_name ?? null;
         let streetName = results[0].address_components.find((item) => item.types.includes('route'))?.long_name ?? null;
@@ -748,10 +723,31 @@ function CreateNewPlace() {
         else if (streetNumber && !streetName) streetAddress = streetNumber;
         else if (!streetNumber && streetName) streetAddress = streetName;
         else if (!streetNumber && !streetName) streetAddress = null;
-        form.setFieldsValue({
-          streetAddress: streetAddress,
-          streetAddressEn: streetAddress,
+
+        calendarContentLanguage.forEach((language) => {
+          const langKey = contentLanguageKeyMap[language];
+          form.setFieldValue([formFieldNames.STREET_ADDRESS, langKey], streetAddress);
+          form.setFieldValue(
+            [formFieldNames.COUNTRY, langKey],
+            results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
+          );
+
+          form.setFieldValue(
+            [formFieldNames.CITY, langKey],
+            results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
+          );
+          form.setFieldValue(
+            [formFieldNames.PROVINCE, langKey],
+            results[0].address_components.find((item) => item.types.includes('administrative_area_level_1'))
+              ?.short_name,
+          );
         });
+
+        form.setFieldValue(
+          formFieldNames.POSTAL_CODE,
+          results[0].address_components.find((item) => item.types.includes('postal_code'))?.long_name,
+        );
+
         return getLatLng(results[0]);
       })
       .then((latLng) => {
@@ -875,16 +871,18 @@ function CreateNewPlace() {
 
   useEffect(() => {
     let shouldDisplay = true;
-    for (let key in activeFallbackFieldsInfo) {
-      if (Object.prototype.hasOwnProperty.call(activeFallbackFieldsInfo, key)) {
-        const tagDisplayStatus =
-          activeFallbackFieldsInfo[key]?.en?.tagDisplayStatus || activeFallbackFieldsInfo[key]?.fr?.tagDisplayStatus;
-        if (tagDisplayStatus) {
-          shouldDisplay = false;
-          break;
-        }
+
+    const fallbackFieldNames = Object.keys(activeFallbackFieldsInfo) || [];
+    let individualFallbackFieldsCollection = [];
+    fallbackFieldNames.forEach((name) => {
+      individualFallbackFieldsCollection.push(...Object.values(activeFallbackFieldsInfo[name] || []));
+    });
+
+    individualFallbackFieldsCollection.forEach((element) => {
+      if (element?.tagDisplayStatus) {
+        shouldDisplay = false;
       }
-    }
+    });
 
     if (!shouldDisplay) {
       dispatch(setLanguageLiteralBannerDisplayStatus(true));
@@ -1164,23 +1162,28 @@ function CreateNewPlace() {
       requiredFields?.forEach((requiredField) => {
         switch (requiredField?.fieldName) {
           case placeFormRequiredFieldNames.NAME:
-            publishValidateFields.push(formFieldNames.FRENCH, formFieldNames.ENGLISH);
+            calendarContentLanguage.forEach((language) => {
+              publishValidateFields.push([formFieldNames.NAME, contentLanguageKeyMap[language]]);
+            });
             break;
           case placeFormRequiredFieldNames.DESCRIPTION:
-            publishValidateFields.push(formFieldNames.EDITOR_ENGLISH, formFieldNames.EDITOR_FRENCH);
+            calendarContentLanguage.forEach((language) => {
+              publishValidateFields.push([formFieldNames.DESCRIPTION, contentLanguageKeyMap[language]]);
+            });
             // setDescriptionMinimumWordCount(Number(requiredField?.rule?.minimumWordCount));
             break;
           case placeFormRequiredFieldNames.PLACE_TYPE:
             publishValidateFields.push(formFieldNames.TYPE);
             break;
           case placeFormRequiredFieldNames.STREET_ADDRESS:
-            publishValidateFields.push(formFieldNames.STREET_ADDRESS_ENGLISH, formFieldNames.STREET_ADDRESS_FRENCH);
+            calendarContentLanguage.forEach((language) => {
+              publishValidateFields.push([formFieldNames.STREET_ADDRESS, contentLanguageKeyMap[language]]);
+            });
             break;
           case placeFormRequiredFieldNames.DISAMBIGUATING_DESCRIPTION:
-            publishValidateFields.push(
-              formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH,
-              formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH,
-            );
+            calendarContentLanguage.forEach((language) => {
+              publishValidateFields.push([formFieldNames.DISAMBIGUATING_DESCRIPTION, contentLanguageKeyMap[language]]);
+            });
             break;
           case placeFormRequiredFieldNames.IMAGE:
             publishValidateFields.push(formFieldNames.DRAGGER_WRAP);
@@ -1192,10 +1195,10 @@ function CreateNewPlace() {
             publishValidateFields.push(formFieldNames.POSTAL_CODE);
             break;
           case placeFormRequiredFieldNames.PROVINCE:
-            publishValidateFields.push(formFieldNames.PROVINCE_ENGLISH, formFieldNames.PROVINCE_FRENCH);
+            publishValidateFields.push(formFieldNames.PROVINCE);
             break;
           case placeFormRequiredFieldNames.COUNTRY:
-            publishValidateFields.push(formFieldNames.COUNTRY_ENGLISH, formFieldNames.COUNTRY_FRENCH);
+            publishValidateFields.push(formFieldNames.COUNTRY);
             break;
           case placeFormRequiredFieldNames.COORDINATES:
             publishValidateFields.push(formFieldNames.COORDINATES);
@@ -1229,12 +1232,13 @@ function CreateNewPlace() {
   }, [currentCalendarData]);
 
   useEffect(() => {
+    const newEntityName = location?.state?.name;
     if (artsDataId) {
       getArtsDataPlace(artsDataId);
-    } else if (location?.state?.name) {
-      form.setFieldsValue({
-        french: location?.state?.name,
-        english: location?.state?.name,
+    } else if (newEntityName) {
+      calendarContentLanguage.forEach((language) => {
+        const langKey = contentLanguageKeyMap[language];
+        form.setFieldValue([formFieldNames.NAME, `${langKey}`], newEntityName);
       });
     }
   }, []);
@@ -1348,14 +1352,12 @@ function CreateNewPlace() {
                             : artsDataLinkChecker(artsData?.sameAs)
                         }
                         name={contentLanguageBilingual({
-                          en: artsData?.name?.en,
-                          fr: artsData?.name?.fr,
+                          data: artsData?.name,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                           calendarContentLanguage: calendarContentLanguage,
                         })}
                         disambiguatingDescription={contentLanguageBilingual({
-                          en: artsData?.disambiguatingDescription?.en,
-                          fr: artsData?.disambiguatingDescription?.fr,
+                          data: artsData?.disambiguatingDescription,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                           calendarContentLanguage: calendarContentLanguage,
                         })}
@@ -1393,114 +1395,40 @@ function CreateNewPlace() {
                   </Row>
                 )}
                 <Form.Item label={t('dashboard.places.createNew.addPlace.name.name')} required={true}>
-                  <ContentLanguageInput
+                  <CreateMultiLingualFormItems
+                    entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
-                    isFieldsDirty={{
-                      fr: form.isFieldTouched(formFieldNames.FRENCH),
-                      en: form.isFieldTouched(formFieldNames.ENGLISH),
-                    }}>
-                    <BilingualInput
-                      fieldData={
-                        placeData?.name
-                          ? placeData?.name
-                          : artsDataId
-                          ? artsData?.name
-                          : externalCalendarEntityId &&
-                            externalCalendarEntityData?.length > 0 &&
-                            externalCalendarEntityData[0]?.name
-                      }>
-                      <Form.Item
-                        data-cy="form-item-place-name-french"
-                        name={formFieldNames.FRENCH}
-                        key={contentLanguage.FRENCH}
-                        initialValue={
-                          placeData?.name?.fr
-                            ? placeData?.name?.fr
-                            : artsDataId
-                            ? artsData?.name?.fr
-                            : externalCalendarEntityId &&
-                              externalCalendarEntityData?.length > 0 &&
-                              externalCalendarEntityData[0].name?.fr
-                        }
-                        dependencies={[formFieldNames.ENGLISH]}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.NAME)) {
-                                if (value || getFieldValue(formFieldNames.ENGLISH)) {
-                                  return Promise.resolve();
-                                } else
-                                  return Promise.reject(
-                                    new Error(t('dashboard.places.createNew.addPlace.validations.nameRequired')),
-                                  );
-                              }
-                            },
-                          }),
-                        ]}>
-                        <TextArea
-                          data-cy="input-text-area-place-name-french"
-                          autoSize
-                          autoComplete="off"
-                          placeholder={t('dashboard.places.createNew.addPlace.name.placeholder.french')}
-                          style={{
-                            borderRadius: '4px',
-                            border: `${
-                              calendarContentLanguage === contentLanguage.BILINGUAL
-                                ? '4px solid #E8E8E8'
-                                : '1px solid #b6c1c9'
-                            }`,
-                            width: '423px',
-                          }}
-                          size="large"
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        data-cy="form-item-place-name-english"
-                        name={formFieldNames.ENGLISH}
-                        key={contentLanguage.ENGLISH}
-                        initialValue={
-                          placeData?.name?.en
-                            ? placeData?.name?.en
-                            : artsDataId
-                            ? artsData?.name?.en
-                            : externalCalendarEntityId &&
-                              externalCalendarEntityData?.length > 0 &&
-                              externalCalendarEntityData[0].name?.en
-                        }
-                        dependencies={[formFieldNames.FRENCH]}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.NAME)) {
-                                if (value || getFieldValue(formFieldNames.FRENCH)) {
-                                  return Promise.resolve();
-                                } else
-                                  return Promise.reject(
-                                    new Error(t('dashboard.places.createNew.addPlace.validations.nameRequired')),
-                                  );
-                              }
-                            },
-                          }),
-                        ]}>
-                        <TextArea
-                          data-cy="input-text-area-place-name-english"
-                          autoSize
-                          autoComplete="off"
-                          placeholder={t('dashboard.places.createNew.addPlace.name.placeholder.english')}
-                          style={{
-                            borderRadius: '4px',
-                            border: `${
-                              calendarContentLanguage === contentLanguage.BILINGUAL
-                                ? '4px solid #E8E8E8'
-                                : '1px solid #b6c1c9'
-                            }`,
-                            width: '423px',
-                          }}
-                          size="large"
-                        />
-                      </Form.Item>
-                    </BilingualInput>
-                  </ContentLanguageInput>
+                    form={form}
+                    name={formFieldNames.NAME}
+                    data={
+                      placeData?.name
+                        ? placeData?.name
+                        : artsDataId
+                        ? artsData?.name
+                        : externalCalendarEntityId &&
+                          externalCalendarEntityData?.length > 0 &&
+                          externalCalendarEntityData[0]?.name
+                    }
+                    required={true}
+                    validations={t('dashboard.places.createNew.addPlace.validations.nameRequired')}
+                    dataCy="form-item-place-name-"
+                    placeholder={placeHolderCollectionCreator({
+                      calendarContentLanguage,
+                      placeholderBase: 'dashboard.places.createNew.addPlace.name.placeholder',
+                      t,
+                      hasCommonPlaceHolder: true,
+                    })}>
+                    <TextArea
+                      autoSize
+                      autoComplete="off"
+                      style={{
+                        borderRadius: '4px',
+                        border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                        width: '423px',
+                      }}
+                      size="large"
+                    />
+                  </CreateMultiLingualFormItems>
                 </Form.Item>
 
                 <Form.Item
@@ -1571,228 +1499,66 @@ function CreateNewPlace() {
                   data-cy="form-item-place-disambiguating-description-title"
                   label={t('dashboard.places.createNew.addPlace.disambiguatingDescription.disambiguatingDescription')}
                   required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.DISAMBIGUATING_DESCRIPTION)}>
-                  <ContentLanguageInput
+                  <CreateMultiLingualFormItems
+                    entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
-                    isFieldsDirty={{
-                      fr: form.isFieldTouched(formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH),
-                      en: form.isFieldTouched(formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH),
-                    }}>
-                    <BilingualInput
-                      fieldData={
-                        placeData?.disambiguatingDescription
-                          ? placeData?.disambiguatingDescription
-                          : artsDataId
-                          ? artsData?.disambiguatingDescription
-                          : externalCalendarEntityId &&
-                            externalCalendarEntityData?.length > 0 &&
-                            externalCalendarEntityData[0].disambiguatingDescription
-                      }>
-                      <Form.Item
-                        name={formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH}
-                        key={contentLanguage.FRENCH}
-                        initialValue={
-                          placeData?.disambiguatingDescription?.fr
-                            ? placeData?.disambiguatingDescription?.fr
-                            : artsDataId
-                            ? artsData?.disambiguatingDescription?.fr
-                            : externalCalendarEntityId &&
-                              externalCalendarEntityData?.length > 0 &&
-                              externalCalendarEntityData[0].disambiguatingDescription?.fr
-                        }
-                        dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH]}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (
-                                requiredFieldNames?.includes(placeFormRequiredFieldNames?.DISAMBIGUATING_DESCRIPTION)
-                              ) {
-                                if (value || getFieldValue(formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH)) {
-                                  return Promise.resolve();
-                                } else return Promise.reject(new Error(t('common.validations.informationRequired')));
-                              }
-                            },
-                          }),
-                        ]}>
-                        <TextArea
-                          autoSize
-                          autoComplete="off"
-                          placeholder={t(
-                            'dashboard.places.createNew.addPlace.disambiguatingDescription.placeholder.french',
-                          )}
-                          style={{
-                            borderRadius: '4px',
-                            border: `${
-                              calendarContentLanguage === contentLanguage.BILINGUAL
-                                ? '4px solid #E8E8E8'
-                                : '1px solid #b6c1c9'
-                            }`,
-                            width: '423px',
-                          }}
-                          size="large"
-                          data-cy="input-place-disambiguating-description-french"
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        name={formFieldNames.DISAMBIGUATING_DESCRIPTION_ENGLISH}
-                        key={contentLanguage.ENGLISH}
-                        initialValue={
-                          placeData?.disambiguatingDescription?.en
-                            ? placeData?.disambiguatingDescription?.en
-                            : artsDataId
-                            ? artsData?.disambiguatingDescription?.en
-                            : externalCalendarEntityId &&
-                              externalCalendarEntityData?.length > 0 &&
-                              externalCalendarEntityData[0].disambiguatingDescription?.en
-                        }
-                        dependencies={[formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH]}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (
-                                requiredFieldNames?.includes(placeFormRequiredFieldNames?.DISAMBIGUATING_DESCRIPTION)
-                              ) {
-                                if (value || getFieldValue(formFieldNames.DISAMBIGUATING_DESCRIPTION_FRENCH)) {
-                                  return Promise.resolve();
-                                } else return Promise.reject(new Error(t('common.validations.informationRequired')));
-                              }
-                            },
-                          }),
-                        ]}>
-                        <TextArea
-                          autoSize
-                          autoComplete="off"
-                          placeholder={t(
-                            'dashboard.places.createNew.addPlace.disambiguatingDescription.placeholder.english',
-                          )}
-                          style={{
-                            borderRadius: '4px',
-                            border: `${
-                              calendarContentLanguage === contentLanguage.BILINGUAL
-                                ? '4px solid #E8E8E8'
-                                : '1px solid #b6c1c9'
-                            }`,
-                            width: '423px',
-                          }}
-                          size="large"
-                          data-cy="input-place-disambiguating-description-english"
-                        />
-                      </Form.Item>
-                    </BilingualInput>
-                  </ContentLanguageInput>
+                    form={form}
+                    name={formFieldNames.DISAMBIGUATING_DESCRIPTION}
+                    data={
+                      placeData?.disambiguatingDescription
+                        ? placeData?.disambiguatingDescription
+                        : artsDataId
+                        ? artsData?.disambiguatingDescription
+                        : externalCalendarEntityId &&
+                          externalCalendarEntityData?.length > 0 &&
+                          externalCalendarEntityData[0].disambiguatingDescription
+                    }
+                    required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.DISAMBIGUATING_DESCRIPTION)}
+                    validations={t('common.validations.informationRequired')}
+                    dataCy="input-place-disambiguating-description-"
+                    placeholder={placeHolderCollectionCreator({
+                      calendarContentLanguage,
+                      placeholderBase: 'dashboard.places.createNew.addPlace.disambiguatingDescription.placeholder',
+                      t,
+                      hasCommonPlaceHolder: true,
+                    })}>
+                    <TextArea
+                      autoSize
+                      autoComplete="off"
+                      style={{
+                        borderRadius: '4px',
+                        border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                        width: '423px',
+                      }}
+                      size="large"
+                    />
+                  </CreateMultiLingualFormItems>
                 </Form.Item>
                 <Form.Item
                   label={t('dashboard.places.createNew.addPlace.description.description')}
                   data-cy="form-item-place-description-title"
                   required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.DESCRIPTION)}>
-                  <ContentLanguageInput
+                  <MultiLingualTextEditor
+                    data={
+                      placeData?.description
+                        ? placeData?.description
+                        : artsData?.description && artsDataId
+                        ? artsData?.description
+                        : externalCalendarEntityId &&
+                          externalCalendarEntityData?.length > 0 &&
+                          externalCalendarEntityData[0].description
+                    }
+                    form={form}
                     calendarContentLanguage={calendarContentLanguage}
-                    isFieldsDirty={{
-                      en: form.isFieldTouched(formFieldNames.EDITOR_ENGLISH),
-                      fr: form.isFieldTouched(formFieldNames.EDITOR_FRENCH),
-                    }}>
-                    <BilingualInput
-                      fieldData={
-                        placeData?.description
-                          ? placeData?.description
-                          : artsData?.description && artsDataId
-                          ? artsData?.description
-                          : externalCalendarEntityId &&
-                            externalCalendarEntityData?.length > 0 &&
-                            externalCalendarEntityData[0].description
-                      }>
-                      <TextEditor
-                        data-cy="editor-place-description-french"
-                        formName={formFieldNames.EDITOR_FRENCH}
-                        key={contentLanguage.FRENCH}
-                        calendarContentLanguage={calendarContentLanguage}
-                        initialValue={
-                          placeData?.description?.fr
-                            ? placeData?.description?.fr
-                            : artsDataId
-                            ? artsData?.description?.fr
-                            : externalCalendarEntityId &&
-                              externalCalendarEntityData?.length > 0 &&
-                              externalCalendarEntityData[0].description?.fr
-                        }
-                        dependencies={[formFieldNames.EDITOR_ENGLISH]}
-                        currentReactQuillRef={reactQuillRefFr}
-                        editorLanguage={'fr'}
-                        placeholder={t('dashboard.events.addEditEvent.otherInformation.description.frenchPlaceholder')}
-                        descriptionMinimumWordCount={descriptionMinimumWordCount}
-                        rules={[
-                          () => ({
-                            validator() {
-                              if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.DESCRIPTION)) {
-                                if (
-                                  reactQuillRefFr?.current?.unprivilegedEditor?.getLength() > 1 ||
-                                  reactQuillRefEn?.current?.unprivilegedEditor?.getLength() > 1
-                                ) {
-                                  return Promise.resolve();
-                                } else
-                                  return Promise.reject(
-                                    new Error(
-                                      calendarContentLanguage === contentLanguage.ENGLISH ||
-                                      calendarContentLanguage === contentLanguage.FRENCH
-                                        ? t('common.validations.informationRequired')
-                                        : calendarContentLanguage === contentLanguage.BILINGUAL &&
-                                          t('common.validations.informationRequired', {
-                                            wordCount: descriptionMinimumWordCount,
-                                          }),
-                                    ),
-                                  );
-                              }
-                            },
-                          }),
-                        ]}
-                      />
-
-                      <TextEditor
-                        data-cy="editor-place-description-english"
-                        formName={formFieldNames.EDITOR_ENGLISH}
-                        key={contentLanguage.ENGLISH}
-                        initialValue={
-                          placeData?.description?.en
-                            ? placeData?.description?.en
-                            : artsDataId
-                            ? artsData?.description?.en
-                            : externalCalendarEntityId &&
-                              externalCalendarEntityData?.length > 0 &&
-                              externalCalendarEntityData[0].description?.en
-                        }
-                        calendarContentLanguage={calendarContentLanguage}
-                        dependencies={[formFieldNames.EDITOR_FRENCH]}
-                        currentReactQuillRef={reactQuillRefEn}
-                        editorLanguage={'en'}
-                        placeholder={t('dashboard.events.addEditEvent.otherInformation.description.englishPlaceholder')}
-                        descriptionMinimumWordCount={descriptionMinimumWordCount}
-                        rules={[
-                          () => ({
-                            validator() {
-                              if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.DESCRIPTION)) {
-                                if (
-                                  reactQuillRefFr?.current?.unprivilegedEditor?.getLength() > 1 ||
-                                  reactQuillRefEn?.current?.unprivilegedEditor?.getLength() > 1
-                                ) {
-                                  return Promise.resolve();
-                                } else
-                                  return Promise.reject(
-                                    new Error(
-                                      calendarContentLanguage === contentLanguage.ENGLISH ||
-                                      calendarContentLanguage === contentLanguage.FRENCH
-                                        ? t('common.validations.informationRequired')
-                                        : calendarContentLanguage === contentLanguage.BILINGUAL &&
-                                          t('common.validations.informationRequired', {
-                                            wordCount: descriptionMinimumWordCount,
-                                          }),
-                                    ),
-                                  );
-                              }
-                            },
-                          }),
-                        ]}
-                      />
-                    </BilingualInput>
-                  </ContentLanguageInput>
+                    name={formFieldNames.DESCRIPTION}
+                    placeholder={placeHolderCollectionCreator({
+                      calendarContentLanguage,
+                      t,
+                      placeholderBase: 'dashboard.events.addEditEvent.otherInformation.description.placeholder',
+                    })}
+                    descriptionMinimumWordCount={descriptionMinimumWordCount}
+                    required={requiredFieldNames?.includes(placeFormRequiredFieldNames?.DESCRIPTION)}
+                  />
                 </Form.Item>
                 <Form.Item
                   data-cy="form-item-place-image-title"
@@ -1911,8 +1677,7 @@ function CreateNewPlace() {
                         key={index}
                         name={[formFieldNames.DYNAMIC_FIELS, taxonomy?.id]}
                         label={bilingual({
-                          en: taxonomy?.name?.en,
-                          fr: taxonomy?.name?.fr,
+                          data: taxonomy?.name,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                         })}
                         initialValue={initialValues}
@@ -2016,221 +1781,77 @@ function CreateNewPlace() {
                   label={t('dashboard.places.createNew.addPlace.address.streetAddress')}
                   required={true}
                   data-cy="form-item-street-address-title">
-                  <ContentLanguageInput
+                  <CreateMultiLingualFormItems
+                    entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
-                    isFieldsDirty={{
-                      en: form.isFieldTouched(formFieldNames.STREET_ADDRESS_ENGLISH),
-                      fr: form.isFieldTouched(formFieldNames.STREET_ADDRESS_FRENCH),
-                    }}>
-                    <BilingualInput
-                      fieldData={
-                        placeData?.address?.streetAddress
-                          ? placeData?.address?.streetAddress
-                          : artsDataId
-                          ? artsData?.address?.streetAddress
-                          : externalCalendarEntityId &&
-                            externalCalendarEntityData?.length > 0 &&
-                            externalCalendarEntityData[0]?.address?.streetAddress
-                      }>
-                      <Form.Item
-                        name={formFieldNames.STREET_ADDRESS_FRENCH}
-                        key={contentLanguage.FRENCH}
-                        initialValue={
-                          placeData?.address?.streetAddress?.fr
-                            ? placeData?.address?.streetAddress?.fr
-                            : artsDataId
-                            ? artsData?.address?.streetAddress?.fr
-                            : externalCalendarEntityId &&
-                              externalCalendarEntityData?.length > 0 &&
-                              externalCalendarEntityData[0]?.address?.streetAddress?.fr
-                        }
-                        dependencies={[formFieldNames.STREET_ADDRESS_ENGLISH]}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator() {
-                              if (
-                                !getFieldValue(formFieldNames.STREET_ADDRESS_FRENCH)?.trim() &&
-                                !getFieldValue(formFieldNames.STREET_ADDRESS_ENGLISH)?.trim()
-                              )
-                                return Promise.reject(
-                                  new Error(t('dashboard.places.createNew.addPlace.validations.streetAddressRequired')),
-                                );
-
-                              return Promise.resolve();
-                            },
-                          }),
-                        ]}>
-                        <TextArea
-                          data-cy="input-text-area-place-street-address-french"
-                          autoSize
-                          autoComplete="off"
-                          placeholder={t('dashboard.places.createNew.addPlace.address.streetAddressPlaceholder.french')}
-                          style={{
-                            borderRadius: '4px',
-                            border: `${
-                              calendarContentLanguage === contentLanguage.BILINGUAL
-                                ? '4px solid #E8E8E8'
-                                : '1px solid #b6c1c9'
-                            }`,
-                            width: '423px',
-                          }}
-                          size="large"
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        name={formFieldNames.STREET_ADDRESS_ENGLISH}
-                        key={contentLanguage.ENGLISH}
-                        initialValue={
-                          placeData?.address?.streetAddress?.en
-                            ? placeData?.address?.streetAddress?.en
-                            : artsDataId
-                            ? artsData?.address?.streetAddress?.en
-                            : externalCalendarEntityId &&
-                              externalCalendarEntityData?.length > 0 &&
-                              externalCalendarEntityData[0]?.address?.streetAddress?.en
-                        }
-                        dependencies={[formFieldNames.STREET_ADDRESS_FRENCH]}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator() {
-                              if (
-                                !getFieldValue(formFieldNames.STREET_ADDRESS_FRENCH)?.trim() &&
-                                !getFieldValue(formFieldNames.STREET_ADDRESS_ENGLISH)?.trim()
-                              )
-                                return Promise.reject(
-                                  new Error(t('dashboard.places.createNew.addPlace.validations.streetAddressRequired')),
-                                );
-
-                              return Promise.resolve();
-                            },
-                          }),
-                        ]}>
-                        <TextArea
-                          data-cy="input-text-area-place-street-address-english"
-                          autoSize
-                          autoComplete="off"
-                          placeholder={t(
-                            'dashboard.places.createNew.addPlace.address.streetAddressPlaceholder.english',
-                          )}
-                          style={{
-                            borderRadius: '4px',
-                            border: `${
-                              calendarContentLanguage === contentLanguage.BILINGUAL
-                                ? '4px solid #E8E8E8'
-                                : '1px solid #b6c1c9'
-                            }`,
-                            width: '423px',
-                          }}
-                          size="large"
-                        />
-                      </Form.Item>
-                    </BilingualInput>
-                  </ContentLanguageInput>
+                    form={form}
+                    name={formFieldNames.STREET_ADDRESS}
+                    data={
+                      placeData?.address?.streetAddress
+                        ? placeData?.address?.streetAddress
+                        : artsDataId
+                        ? artsData?.address?.streetAddress
+                        : externalCalendarEntityId &&
+                          externalCalendarEntityData?.length > 0 &&
+                          externalCalendarEntityData[0]?.address?.streetAddress
+                    }
+                    required={true}
+                    validations={t('common.validations.informationRequired')}
+                    dataCy="input-text-area-place-street-address-"
+                    placeholder={placeHolderCollectionCreator({
+                      calendarContentLanguage,
+                      placeholderBase: 'dashboard.places.createNew.addPlace.address.streetAddressPlaceholder',
+                      t,
+                    })}>
+                    <TextArea
+                      autoSize
+                      autoComplete="off"
+                      style={{
+                        borderRadius: '4px',
+                        border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                        width: '423px',
+                      }}
+                      size="large"
+                    />
+                  </CreateMultiLingualFormItems>
                 </Form.Item>
                 <Form.Item
                   label={t('dashboard.places.createNew.addPlace.address.city.city')}
                   data-cy="form-item-place-city-title"
                   required={requiredFieldNames?.includes(placeFormRequiredFieldNames.CITY)}>
-                  <ContentLanguageInput
+                  <CreateMultiLingualFormItems
+                    entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
-                    isFieldsDirty={{
-                      en: form.isFieldTouched(formFieldNames.CITY_ENGLISH),
-                      fr: form.isFieldTouched(formFieldNames.CITY_FRENCH),
-                    }}>
-                    <BilingualInput
-                      fieldData={
-                        placeData?.address?.addressLocality
-                          ? placeData?.address?.addressLocality
-                          : artsDataId
-                          ? artsData?.address?.addressLocality
-                          : externalCalendarEntityId &&
-                            externalCalendarEntityData?.length > 0 &&
-                            externalCalendarEntityData[0]?.address?.addressLocality
-                      }>
-                      <Form.Item
-                        name={formFieldNames.CITY_FRENCH}
-                        key={contentLanguage.FRENCH}
-                        initialValue={
-                          placeData?.address?.addressLocality?.fr
-                            ? placeData?.address?.addressLocality?.fr
-                            : artsDataId
-                            ? artsData?.address?.addressLocality?.fr
-                            : externalCalendarEntityId &&
-                              externalCalendarEntityData?.length > 0 &&
-                              externalCalendarEntityData[0]?.address?.addressLocality?.fr
-                        }
-                        dependencies={[formFieldNames.CITY_ENGLISH]}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.CITY)) {
-                                if (value || getFieldValue(formFieldNames.CITY_ENGLISH)) {
-                                  return Promise.resolve();
-                                } else return Promise.reject(new Error(t('common.validations.informationRequired')));
-                              }
-                            },
-                          }),
-                        ]}>
-                        <TextArea
-                          data-cy="input-text-area-place-city-french"
-                          autoSize
-                          autoComplete="off"
-                          placeholder={t('dashboard.places.createNew.addPlace.address.city.placeholder.french')}
-                          style={{
-                            borderRadius: '4px',
-                            border: `${
-                              calendarContentLanguage === contentLanguage.BILINGUAL
-                                ? '4px solid #E8E8E8'
-                                : '1px solid #b6c1c9'
-                            }`,
-                            width: '423px',
-                          }}
-                          size="large"
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        name={formFieldNames.CITY_ENGLISH}
-                        key={contentLanguage.ENGLISH}
-                        initialValue={
-                          placeData?.address?.addressLocality?.en
-                            ? placeData?.address?.addressLocality?.en
-                            : artsDataId
-                            ? artsData?.address?.addressLocality?.en
-                            : externalCalendarEntityId &&
-                              externalCalendarEntityData?.length > 0 &&
-                              externalCalendarEntityData[0]?.address?.addressLocality?.en
-                        }
-                        dependencies={[formFieldNames.CITY_FRENCH]}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.CITY)) {
-                                if (value || getFieldValue(formFieldNames.CITY_FRENCH)) {
-                                  return Promise.resolve();
-                                } else return Promise.reject(new Error(t('common.validations.informationRequired')));
-                              }
-                            },
-                          }),
-                        ]}>
-                        <TextArea
-                          data-cy="input-text-area-place-city-english"
-                          autoSize
-                          autoComplete="off"
-                          placeholder={t('dashboard.places.createNew.addPlace.address.city.placeholder.english')}
-                          style={{
-                            borderRadius: '4px',
-                            border: `${
-                              calendarContentLanguage === contentLanguage.BILINGUAL
-                                ? '4px solid #E8E8E8'
-                                : '1px solid #b6c1c9'
-                            }`,
-                            width: '423px',
-                          }}
-                          size="large"
-                        />
-                      </Form.Item>
-                    </BilingualInput>
-                  </ContentLanguageInput>
+                    form={form}
+                    name={formFieldNames.CITY}
+                    data={
+                      placeData?.address?.addressLocality
+                        ? placeData?.address?.addressLocality
+                        : artsDataId
+                        ? artsData?.address?.addressLocality
+                        : externalCalendarEntityId &&
+                          externalCalendarEntityData?.length > 0 &&
+                          externalCalendarEntityData[0]?.address?.addressLocality
+                    }
+                    required={requiredFieldNames?.includes(placeFormRequiredFieldNames.CITY)}
+                    validations={t('common.validations.informationRequired')}
+                    dataCy="input-text-area-place-city-"
+                    placeholder={placeHolderCollectionCreator({
+                      calendarContentLanguage,
+                      placeholderBase: 'dashboard.places.createNew.addPlace.address.city.placeholder',
+                      t,
+                    })}>
+                    <TextArea
+                      autoSize
+                      autoComplete="off"
+                      style={{
+                        borderRadius: '4px',
+                        border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                        width: '423px',
+                      }}
+                      size="large"
+                    />
+                  </CreateMultiLingualFormItems>
                 </Form.Item>
                 <Form.Item
                   data-cy="form-item-postal-code-title"
@@ -2266,110 +1887,39 @@ function CreateNewPlace() {
                       label={t('dashboard.places.createNew.addPlace.address.province.province')}
                       data-cy="form-item-province-title"
                       required={requiredFieldNames?.includes(placeFormRequiredFieldNames.PROVINCE)}>
-                      <ContentLanguageInput
+                      <CreateMultiLingualFormItems
+                        entityId={placeId}
                         calendarContentLanguage={calendarContentLanguage}
-                        isFieldsDirty={{
-                          en: form.isFieldTouched(formFieldNames.PROVINCE_ENGLISH),
-                          fr: form.isFieldTouched(formFieldNames.PROVINCE_FRENCH),
-                        }}>
-                        <BilingualInput
-                          fieldData={
-                            placeData?.address?.addressRegion
-                              ? placeData?.address?.addressRegion
-                              : artsDataId
-                              ? artsData?.address?.addressRegion
-                              : externalCalendarEntityId &&
-                                externalCalendarEntityData?.length > 0 &&
-                                externalCalendarEntityData[0]?.address?.addressRegion
-                          }>
-                          <Form.Item
-                            name={formFieldNames.PROVINCE_FRENCH}
-                            key={contentLanguage.FRENCH}
-                            initialValue={
-                              placeData?.address?.addressRegion?.fr
-                                ? placeData?.address?.addressRegion?.fr
-                                : artsDataId
-                                ? artsData?.address?.addressRegion?.fr
-                                : externalCalendarEntityId &&
-                                  externalCalendarEntityData?.length > 0 &&
-                                  externalCalendarEntityData[0]?.address?.addressRegion?.fr
-                            }
-                            dependencies={[formFieldNames.PROVINCE_ENGLISH]}
-                            rules={[
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.PROVINCE)) {
-                                    if (value || getFieldValue(formFieldNames.PROVINCE_ENGLISH)) {
-                                      return Promise.resolve();
-                                    } else
-                                      return Promise.reject(new Error(t('common.validations.informationRequired')));
-                                  }
-                                },
-                              }),
-                            ]}>
-                            <TextArea
-                              data-cy="input-text-area-province-french"
-                              autoSize
-                              autoComplete="off"
-                              placeholder={t('dashboard.places.createNew.addPlace.address.province.placeholder.french')}
-                              style={{
-                                borderRadius: '4px',
-                                border: `${
-                                  calendarContentLanguage === contentLanguage.BILINGUAL
-                                    ? '4px solid #E8E8E8'
-                                    : '1px solid #b6c1c9'
-                                }`,
-                                width: '423px',
-                              }}
-                              size="large"
-                            />
-                          </Form.Item>
-                          <Form.Item
-                            name={formFieldNames.PROVINCE_ENGLISH}
-                            key={contentLanguage.ENGLISH}
-                            initialValue={
-                              placeData?.address?.addressRegion?.en
-                                ? placeData?.address?.addressRegion?.en
-                                : artsDataId
-                                ? artsData?.address?.addressRegion?.en
-                                : externalCalendarEntityId &&
-                                  externalCalendarEntityData?.length > 0 &&
-                                  externalCalendarEntityData[0]?.address?.addressRegion?.en
-                            }
-                            dependencies={[formFieldNames.PROVINCE_FRENCH]}
-                            rules={[
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.PROVINCE)) {
-                                    if (value || getFieldValue(formFieldNames.PROVINCE_FRENCH)) {
-                                      return Promise.resolve();
-                                    } else
-                                      return Promise.reject(new Error(t('common.validations.informationRequired')));
-                                  }
-                                },
-                              }),
-                            ]}>
-                            <TextArea
-                              data-cy="input-text-area-province-english"
-                              autoSize
-                              autoComplete="off"
-                              placeholder={t(
-                                'dashboard.places.createNew.addPlace.address.province.placeholder.english',
-                              )}
-                              style={{
-                                borderRadius: '4px',
-                                border: `${
-                                  calendarContentLanguage === contentLanguage.BILINGUAL
-                                    ? '4px solid #E8E8E8'
-                                    : '1px solid #b6c1c9'
-                                }`,
-                                width: '423px',
-                              }}
-                              size="large"
-                            />
-                          </Form.Item>
-                        </BilingualInput>
-                      </ContentLanguageInput>
+                        form={form}
+                        name={formFieldNames.PROVINCE}
+                        data={
+                          placeData?.address?.addressRegion
+                            ? placeData?.address?.addressRegion
+                            : artsDataId
+                            ? artsData?.address?.addressRegion
+                            : externalCalendarEntityId &&
+                              externalCalendarEntityData?.length > 0 &&
+                              externalCalendarEntityData[0]?.address?.addressRegion
+                        }
+                        required={requiredFieldNames?.includes(placeFormRequiredFieldNames.PROVINCE)}
+                        validations={t('common.validations.informationRequired')}
+                        dataCy="input-text-area-province-"
+                        placeholder={placeHolderCollectionCreator({
+                          calendarContentLanguage,
+                          placeholderBase: 'dashboard.places.createNew.addPlace.address.province.placeholder',
+                          t,
+                        })}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          style={{
+                            borderRadius: '4px',
+                            border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                            width: '423px',
+                          }}
+                          size="large"
+                        />
+                      </CreateMultiLingualFormItems>
                     </Form.Item>
                   </Col>
                   <Col span={12}>
@@ -2377,108 +1927,39 @@ function CreateNewPlace() {
                       label={t('dashboard.places.createNew.addPlace.address.country.country')}
                       data-cy="form-item-country-title"
                       required={requiredFieldNames?.includes(placeFormRequiredFieldNames.COUNTRY)}>
-                      <ContentLanguageInput
+                      <CreateMultiLingualFormItems
+                        entityId={placeId}
                         calendarContentLanguage={calendarContentLanguage}
-                        isFieldsDirty={{
-                          en: form.isFieldTouched(formFieldNames.COUNTRY_ENGLISH),
-                          fr: form.isFieldTouched(formFieldNames.COUNTRY_FRENCH),
-                        }}>
-                        <BilingualInput
-                          fieldData={
-                            placeData?.address?.addressCountry
-                              ? placeData?.address?.addressCountry
-                              : artsDataId
-                              ? artsData?.address?.addressCountry
-                              : externalCalendarEntityId &&
-                                externalCalendarEntityData?.length > 0 &&
-                                externalCalendarEntityData[0]?.address?.addressCountry
-                          }>
-                          <Form.Item
-                            name={formFieldNames.COUNTRY_FRENCH}
-                            key={contentLanguage.FRENCH}
-                            initialValue={
-                              placeData?.address?.addressCountry?.fr
-                                ? placeData?.address?.addressCountry?.fr
-                                : artsDataId
-                                ? artsData?.address?.addressCountry?.fr
-                                : externalCalendarEntityId &&
-                                  externalCalendarEntityData?.length > 0 &&
-                                  externalCalendarEntityData[0]?.address?.addressCountry?.fr
-                            }
-                            dependencies={[formFieldNames.COUNTRY_ENGLISH]}
-                            rules={[
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.COUNTRY)) {
-                                    if (value || getFieldValue(formFieldNames.COUNTRY_ENGLISH)) {
-                                      return Promise.resolve();
-                                    } else
-                                      return Promise.reject(new Error(t('common.validations.informationRequired')));
-                                  }
-                                },
-                              }),
-                            ]}>
-                            <TextArea
-                              data-cy="input-text-area-country-french"
-                              autoSize
-                              autoComplete="off"
-                              placeholder={t('dashboard.places.createNew.addPlace.address.country.placeholder.french')}
-                              style={{
-                                borderRadius: '4px',
-                                border: `${
-                                  calendarContentLanguage === contentLanguage.BILINGUAL
-                                    ? '4px solid #E8E8E8'
-                                    : '1px solid #b6c1c9'
-                                }`,
-                                width: '423px',
-                              }}
-                              size="large"
-                            />
-                          </Form.Item>
-                          <Form.Item
-                            name={formFieldNames.COUNTRY_ENGLISH}
-                            key={contentLanguage.ENGLISH}
-                            initialValue={
-                              placeData?.address?.addressCountry?.en
-                                ? placeData?.address?.addressCountry?.en
-                                : artsDataId
-                                ? artsData?.address?.addressCountry?.en
-                                : externalCalendarEntityId &&
-                                  externalCalendarEntityData?.length > 0 &&
-                                  externalCalendarEntityData[0]?.address?.addressCountry?.en
-                            }
-                            dependencies={[formFieldNames.COUNTRY_FRENCH]}
-                            rules={[
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  if (requiredFieldNames?.includes(placeFormRequiredFieldNames?.COUNTRY)) {
-                                    if (value || getFieldValue(formFieldNames.COUNTRY_FRENCH)) {
-                                      return Promise.resolve();
-                                    } else
-                                      return Promise.reject(new Error(t('common.validations.informationRequired')));
-                                  }
-                                },
-                              }),
-                            ]}>
-                            <TextArea
-                              data-cy="input-text-area-country-english"
-                              autoSize
-                              autoComplete="off"
-                              placeholder={t('dashboard.places.createNew.addPlace.address.country.placeholder.english')}
-                              style={{
-                                borderRadius: '4px',
-                                border: `${
-                                  calendarContentLanguage === contentLanguage.BILINGUAL
-                                    ? '4px solid #E8E8E8'
-                                    : '1px solid #b6c1c9'
-                                }`,
-                                width: '423px',
-                              }}
-                              size="large"
-                            />
-                          </Form.Item>
-                        </BilingualInput>
-                      </ContentLanguageInput>
+                        form={form}
+                        name={formFieldNames.COUNTRY}
+                        data={
+                          placeData?.address?.addressCountry
+                            ? placeData?.address?.addressCountry
+                            : artsDataId
+                            ? artsData?.address?.addressCountry
+                            : externalCalendarEntityId &&
+                              externalCalendarEntityData?.length > 0 &&
+                              externalCalendarEntityData[0]?.address?.addressCountry
+                        }
+                        required={requiredFieldNames?.includes(placeFormRequiredFieldNames.COUNTRY)}
+                        validations={t('common.validations.informationRequired')}
+                        dataCy="input-text-area-country-"
+                        placeholder={placeHolderCollectionCreator({
+                          calendarContentLanguage,
+                          placeholderBase: 'dashboard.places.createNew.addPlace.address.country.placeholder',
+                          t,
+                        })}>
+                        <TextArea
+                          autoSize
+                          autoComplete="off"
+                          style={{
+                            borderRadius: '4px',
+                            border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                            width: '423px',
+                          }}
+                          size="large"
+                        />
+                      </CreateMultiLingualFormItems>
                     </Form.Item>
                   </Col>
                 </Row>
@@ -3147,61 +2628,32 @@ function CreateNewPlace() {
                         !addedFields?.includes(placeAccessibilityTypeOptionsFieldNames.ACCESSIBILITY_NOTE_WRAP) &&
                         'none',
                     }}>
-                    <ContentLanguageInput
+                    <CreateMultiLingualFormItems
+                      entityId={placeId}
                       calendarContentLanguage={calendarContentLanguage}
-                      isFieldsDirty={{
-                        en: form.isFieldTouched(formFieldNames.ACCESSIBILITY_NOTE_ENGLISH),
-                        fr: form.isFieldTouched(formFieldNames.ACCESSIBILITY_NOTE_FRENCH),
-                      }}>
-                      <BilingualInput fieldData={placeData?.accessibilityNote}>
-                        <Form.Item
-                          name={formFieldNames.ACCESSIBILITY_NOTE_FRENCH}
-                          initialValue={placeData?.accessibilityNote?.fr}
-                          key={contentLanguage.FRENCH}>
-                          <TextArea
-                            autoComplete="off"
-                            placeholder={t(
-                              'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.placeholder.french',
-                            )}
-                            style={{
-                              borderRadius: '4px',
-                              border: `${
-                                calendarContentLanguage === contentLanguage.BILINGUAL
-                                  ? '4px solid #E8E8E8'
-                                  : '1px solid #b6c1c9'
-                              }`,
-                              width: '423px',
-                              resize: 'vertical',
-                            }}
-                            size="large"
-                            data-cy="input-text-area-venue-accessibility-french"
-                          />
-                        </Form.Item>
-                        <Form.Item
-                          name={formFieldNames.ACCESSIBILITY_NOTE_ENGLISH}
-                          initialValue={placeData?.accessibilityNote?.en}
-                          key={contentLanguage.ENGLISH}>
-                          <TextArea
-                            autoComplete="off"
-                            placeholder={t(
-                              'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.placeholder.english',
-                            )}
-                            style={{
-                              borderRadius: '4px',
-                              border: `${
-                                calendarContentLanguage === contentLanguage.BILINGUAL
-                                  ? '4px solid #E8E8E8'
-                                  : '1px solid #b6c1c9'
-                              }`,
-                              width: '423px',
-                              resize: 'vertical',
-                            }}
-                            size="large"
-                            data-cy="input-text-area-venue-accessibility-english"
-                          />
-                        </Form.Item>
-                      </BilingualInput>
-                    </ContentLanguageInput>
+                      form={form}
+                      name={formFieldNames.ACCESSIBILITY_NOTE}
+                      data={placeData?.accessibilityNote}
+                      required={false}
+                      validations={t('common.validations.informationRequired')}
+                      dataCy="input-text-area-venue-accessibility-"
+                      placeholder={placeHolderCollectionCreator({
+                        calendarContentLanguage,
+                        placeholderBase:
+                          'dashboard.places.createNew.addPlace.venueAccessibility.placeAccessibilityNote.placeholder',
+                        t,
+                      })}>
+                      <TextArea
+                        autoSize
+                        autoComplete="off"
+                        style={{
+                          borderRadius: '4px',
+                          border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                          width: '423px',
+                        }}
+                        size="large"
+                      />
+                    </CreateMultiLingualFormItems>
                   </Form.Item>
                 </>
                 <ChangeTypeLayout>
@@ -3246,10 +2698,9 @@ function CreateNewPlace() {
                             <SelectionItem
                               key={place._id}
                               name={
-                                place?.name?.en || place?.name?.fr
+                                isDataValid(place?.name)
                                   ? contentLanguageBilingual({
-                                      en: place?.name?.en,
-                                      fr: place?.name?.fr,
+                                      data: place?.name,
                                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                       calendarContentLanguage: calendarContentLanguage,
                                     })
@@ -3257,6 +2708,7 @@ function CreateNewPlace() {
                               }
                               icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
                               bordered
+                              calendarContentLanguage={calendarContentLanguage}
                               itemWidth="100%"
                             />;
                           })}
@@ -3274,10 +2726,9 @@ function CreateNewPlace() {
                               <SelectionItem
                                 key={org._id}
                                 name={
-                                  org?.name?.en || org?.name?.fr
+                                  isDataValid(org?.name)
                                     ? contentLanguageBilingual({
-                                        en: org?.name?.en,
-                                        fr: org?.name?.fr,
+                                        data: org?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })
@@ -3290,6 +2741,7 @@ function CreateNewPlace() {
                                     data-cy="organization-logo"
                                   />
                                 }
+                                calendarContentLanguage={calendarContentLanguage}
                                 bordered
                                 itemWidth="100%"
                               />
@@ -3308,16 +2760,16 @@ function CreateNewPlace() {
                             <SelectionItem
                               key={person._id}
                               name={
-                                person?.name?.en || person?.name?.fr
+                                isDataValid(person?.name)
                                   ? contentLanguageBilingual({
-                                      en: person?.name?.en,
-                                      fr: person?.name?.fr,
+                                      data: person?.name,
                                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                       calendarContentLanguage: calendarContentLanguage,
                                     })
                                   : typeof person?.name === 'string' && person?.name
                               }
                               icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
+                              calendarContentLanguage={calendarContentLanguage}
                               bordered
                               itemWidth="100%"
                             />;
@@ -3336,10 +2788,9 @@ function CreateNewPlace() {
                               <SelectionItem
                                 key={event._id}
                                 name={
-                                  event?.name?.en || event?.name?.fr
+                                  isDataValid(event?.name)
                                     ? contentLanguageBilingual({
-                                        en: event?.name?.en,
-                                        fr: event?.name?.fr,
+                                        data: event?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })
@@ -3347,6 +2798,7 @@ function CreateNewPlace() {
                                 }
                                 icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
                                 description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                                calendarContentLanguage={calendarContentLanguage}
                                 bordered
                                 itemWidth="100%"
                               />
