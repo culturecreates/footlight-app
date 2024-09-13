@@ -753,6 +753,11 @@ function EventReadOnly() {
                                       openingHours={locationPlace?.openingHours}
                                       calendarContentLanguage={calendarContentLanguage}
                                       bordered
+                                      onClickHandle={{
+                                        navigationFlag: true,
+                                        entityType: locationPlace?.type ?? 'Place',
+                                        entityId: locationPlace?.key,
+                                      }}
                                     />
                                   )}
                                 </div>
@@ -905,6 +910,11 @@ function EventReadOnly() {
                                         bordered
                                         closable={false}
                                         itemWidth="100%"
+                                        onClickHandle={{
+                                          navigationFlag: true,
+                                          entityType: organizer?.type,
+                                          entityId: organizer?.value,
+                                        }}
                                       />
                                     );
                                   })}
@@ -985,6 +995,11 @@ function EventReadOnly() {
                                         calendarContentLanguage={calendarContentLanguage}
                                         bordered
                                         closable={false}
+                                        onClickHandle={{
+                                          navigationFlag: true,
+                                          entityType: performer?.type,
+                                          entityId: performer?.value,
+                                        }}
                                         itemWidth="100%"
                                       />
                                     );
@@ -1011,6 +1026,11 @@ function EventReadOnly() {
                                         bordered
                                         itemWidth="100%"
                                         closable={false}
+                                        onClickHandle={{
+                                          navigationFlag: true,
+                                          entityType: supporter?.type,
+                                          entityId: supporter?.value,
+                                        }}
                                       />
                                     );
                                   })}

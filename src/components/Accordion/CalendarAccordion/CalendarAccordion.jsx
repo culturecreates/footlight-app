@@ -23,6 +23,7 @@ import { sortByOptionsOrgsPlacesPerson } from '../../../constants/sortByOptions'
 import { useLazyGetAllOrganizationQuery } from '../../../services/organization';
 import { UserOutlined } from '@ant-design/icons';
 import { useLazyGetAllPeopleQuery } from '../../../services/people';
+import { taxonomyClass } from '../../../constants/taxonomyClass';
 
 const { Panel } = Collapse;
 
@@ -362,6 +363,11 @@ function CalendarAccordion(props) {
                 name={organizer?.name}
                 description={organizer?.description}
                 bordered
+                onClickHandle={{
+                  navigationFlag: readOnly,
+                  entityType: organizer?.type ?? taxonomyClass.ORGANIZATION,
+                  entityId: organizer?.value,
+                }}
                 closable={readOnly ? false : true}
                 itemWidth="100%"
                 onClose={() => {
@@ -477,6 +483,11 @@ function CalendarAccordion(props) {
                     <UserOutlined style={{ color: '#607EFC' }} />
                   )
                 }
+                onClickHandle={{
+                  navigationFlag: readOnly,
+                  entityType: people?.type ?? taxonomyClass.PERSON,
+                  entityId: people?.value,
+                }}
                 name={people?.name}
                 description={people?.description}
                 calendarContentLanguage={calendarContentLanguage}
