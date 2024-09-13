@@ -12,6 +12,9 @@ import ReadOnlyProtectedComponent from '../../../layout/ReadOnlyProtectedCompone
 import LiteralBadge from '../../Badge/LiteralBadge';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions.js';
+import { taxonomyClass } from '../../../constants/taxonomyClass.js';
+import { PathName } from '../../../constants/pathName.js';
+import { useNavigate, useParams } from 'react-router-dom';
 function SelectionItem(props) {
   const {
     icon,
@@ -33,10 +36,12 @@ function SelectionItem(props) {
     edit,
     creatorId,
     fallbackConfig,
+    onClickHandle = { navigationFlag: false },
   } = props;
   const { t } = useTranslation();
   const { user } = useSelector(getUserDetails);
-
+  const navigate = useNavigate();
+  const { calendarId } = useParams();
   let literalKey = '?';
 
   const promptFlag = calendarContentLanguage.some((language) => {
@@ -58,10 +63,30 @@ function SelectionItem(props) {
     ? t('common.forms.languageLiterals.unKnownLanguagePromptText')
     : t('common.forms.languageLiterals.knownLanguagePromptText');
 
+  const routinghandler = (e) => {
+    const type = onClickHandle?.entityType;
+    const id = onClickHandle?.entityId;
+    e.stopPropagation();
+
+    if (type?.toUpperCase() == taxonomyClass.ORGANIZATION)
+      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Organizations}/${id}`);
+    else if (type?.toUpperCase() == taxonomyClass.PERSON)
+      navigate(`${PathName.Dashboard}/${calendarId}${PathName.People}/${id}`);
+    else if (type?.toUpperCase() == taxonomyClass.PLACE)
+      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Places}/${id}`);
+    else if (type?.toUpperCase() == taxonomyClass.EVENT)
+      navigate(`${PathName.Dashboard}/${calendarId}${PathName.Events}/${id}`);
+  };
+
   return (
     <div
       className="selection-item-wrapper"
-      style={{ border: bordered && '1px solid#607EFC', width: itemWidth && itemWidth }}>
+      onClick={onClickHandle?.navigationFlag && routinghandler}
+      style={{
+        border: bordered && '1px solid#607EFC',
+        width: itemWidth && itemWidth,
+        ...(onClickHandle?.navigationFlag && { cursor: 'pointer' }),
+      }}>
       <List.Item
         className="selection-item-list-wrapper"
         data-cy="list-item"

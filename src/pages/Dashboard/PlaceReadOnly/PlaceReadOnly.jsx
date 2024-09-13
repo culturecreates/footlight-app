@@ -801,6 +801,11 @@ function PlaceReadOnly() {
                                         calendarContentLanguage={calendarContentLanguage}
                                         bordered
                                         itemWidth="423px"
+                                        onClickHandle={{
+                                          navigationFlag: true,
+                                          entityType: containsPlace?.type ?? taxonomyClass.PLACE,
+                                          entityId: containsPlace?.key,
+                                        }}
                                       />
                                     );
                                   })}
@@ -833,6 +838,11 @@ function PlaceReadOnly() {
                                   itemWidth="423px"
                                   calendarContentLanguage={calendarContentLanguage}
                                   bordered
+                                  onClickHandle={{
+                                    navigationFlag: true,
+                                    entityType: locationPlace?.type ?? taxonomyClass.PLACE,
+                                    entityId: locationPlace?.key,
+                                  }}
                                 />
                               ) : (
                                 <p
@@ -872,7 +882,11 @@ function PlaceReadOnly() {
                                           : typeof place?.name === 'string' && place?.name
                                       }
                                       icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
-                                      // description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                                      onClickHandle={{
+                                        navigationFlag: true,
+                                        entityType: place?.type ?? taxonomyClass.PLACE,
+                                        entityId: place?._id,
+                                      }}
                                       calendarContentLanguage={calendarContentLanguage}
                                       bordered
                                       itemWidth="100%"
@@ -907,6 +921,11 @@ function PlaceReadOnly() {
                                             data-cy="organization-logo"
                                           />
                                         }
+                                        onClickHandle={{
+                                          navigationFlag: true,
+                                          entityType: org?.type ?? taxonomyClass.ORGANIZATION,
+                                          entityId: org?._id,
+                                        }}
                                         calendarContentLanguage={calendarContentLanguage}
                                         bordered
                                         itemWidth="100%"
@@ -937,6 +956,11 @@ function PlaceReadOnly() {
                                       calendarContentLanguage={calendarContentLanguage}
                                       icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
                                       bordered
+                                      onClickHandle={{
+                                        navigationFlag: true,
+                                        entityType: person?.type ?? taxonomyClass.PERSON,
+                                        entityId: person?._id,
+                                      }}
                                       itemWidth="100%"
                                     />;
                                   })}
@@ -965,6 +989,11 @@ function PlaceReadOnly() {
                                         icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
                                         description={moment(event.startDateTime).format('YYYY-MM-DD')}
                                         calendarContentLanguage={calendarContentLanguage}
+                                        onClickHandle={{
+                                          navigationFlag: true,
+                                          entityType: event?.type ?? taxonomyClass.EVENT,
+                                          entityId: event?._id,
+                                        }}
                                         bordered
                                         itemWidth="100%"
                                       />

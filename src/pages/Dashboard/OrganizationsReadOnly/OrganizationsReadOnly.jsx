@@ -575,6 +575,11 @@ function OrganizationsReadOnly() {
                                   openingHours={locationPlace?.openingHours}
                                   calendarContentLanguage={calendarContentLanguage}
                                   bordered
+                                  onClickHandle={{
+                                    navigationFlag: true,
+                                    entityType: locationPlace?.type ?? taxonomyClass.PLACE,
+                                    entityId: locationPlace?.value,
+                                  }}
                                 />
                               )}
                             </Col>
@@ -626,6 +631,11 @@ function OrganizationsReadOnly() {
                                       calendarContentLanguage={calendarContentLanguage}
                                       bordered
                                       itemWidth="100%"
+                                      onClickHandle={{
+                                        navigationFlag: true,
+                                        entityType: place?.type ?? taxonomyClass.PLACE,
+                                        entityId: place?._id,
+                                      }}
                                     />;
                                   })}
                                 </div>
@@ -652,6 +662,11 @@ function OrganizationsReadOnly() {
                                       icon={<UserOutlined style={{ color: '#607EFC' }} />}
                                       calendarContentLanguage={calendarContentLanguage}
                                       bordered
+                                      onClickHandle={{
+                                        navigationFlag: true,
+                                        entityType: person?.type ?? taxonomyClass.PERSON,
+                                        entityId: person?._id,
+                                      }}
                                       itemWidth="100%"
                                     />;
                                   })}
@@ -681,6 +696,11 @@ function OrganizationsReadOnly() {
                                         description={moment(event.startDateTime).format('YYYY-MM-DD')}
                                         calendarContentLanguage={calendarContentLanguage}
                                         bordered
+                                        onClickHandle={{
+                                          navigationFlag: true,
+                                          entityType: event?.type ?? taxonomyClass.EVENT,
+                                          entityId: event?._id,
+                                        }}
                                         itemWidth="100%"
                                       />
                                     );
