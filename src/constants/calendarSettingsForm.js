@@ -135,7 +135,7 @@ const MINIMUM_PIXEL = [
 
   () => ({
     validator(_, value) {
-      if (value && parseInt(value) <= 100) {
+      if (value && parseInt(value) < 100) {
         return Promise.reject(<Trans i18nKey="dashboard.settings.calendarSettings.validations.minimumPixel" />);
       } else return Promise.resolve();
     },
