@@ -127,6 +127,21 @@ const REQUIRED_MESSAGE = {
   message: <Trans i18nKey="common.validations.informationRequired" />,
 };
 
+const MINIMUM_PIXEL = [
+  {
+    required: true,
+    message: <Translation>{(t) => t('dashboard.settings.calendarSettings.validations.minimumPixel')}</Translation>,
+  },
+
+  () => ({
+    validator(_, value) {
+      if (value && parseInt(value) < 100) {
+        return Promise.reject(<Trans i18nKey="dashboard.settings.calendarSettings.validations.minimumPixel" />);
+      } else return Promise.resolve();
+    },
+  }),
+];
+
 export const calendarSettingsFormFields = {
   GENERAL_SETTINGS: [
     {
@@ -304,7 +319,7 @@ export const calendarSettingsFormFields = {
                 className="calendar-settings-small-label"
                 label={t('dashboard.settings.calendarSettings.siteImageSettings.maximumWidth')}
                 data-cy="form-item-image-max-width-thumbnail"
-                rules={[REQUIRED_MESSAGE]}>
+                rules={MINIMUM_PIXEL}>
                 <StyledInput
                   placeholder={t('dashboard.settings.calendarSettings.placeholders.imageMaxWidth')}
                   data-cy="input-calendar-image-max-width-thumbnail"
@@ -378,7 +393,7 @@ export const calendarSettingsFormFields = {
                   </Translation>
                 }
                 data-cy="form-item-image-max-width-large"
-                rules={[REQUIRED_MESSAGE]}>
+                rules={MINIMUM_PIXEL}>
                 <StyledInput
                   placeholder={t('dashboard.settings.calendarSettings.placeholders.imageMaxWidth')}
                   data-cy="input-calendar-image-max-width-large"
