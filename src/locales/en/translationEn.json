@@ -1032,6 +1032,9 @@
         },
         "notifications": {
           "update": "Success! Your calendar settings have been updated."
+        },
+        "validations": {
+          "minimumPixel": "A minimum value of 100 pixels is required."
         }
       },
       "mandatoryFields": {
