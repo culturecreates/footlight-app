@@ -33,7 +33,7 @@ import { widgetFontCollection } from '../../../../constants/fonts';
 const { useBreakpoint } = Grid;
 const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_BASE_URL;
 
-const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
+const WidgetSettings = ({ tabKey }) => {
   const { t } = useTranslation();
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
@@ -194,7 +194,6 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
       setIframeCode(
         `<iframe src="${urlCopy.href}" width="100%" style="max-width:${width}px; border:none" height="${height}px"></iframe>`,
       );
-      setDirtyStatus(true);
     }
   };
 
