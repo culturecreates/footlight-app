@@ -81,11 +81,11 @@ function SelectionItem(props) {
   return (
     <div
       className="selection-item-wrapper"
-      onClick={onClickHandle?.navigationFlag && routinghandler}
+      onClick={onClickHandle?.navigationFlag ? routinghandler : null}
       style={{
-        border: bordered && '1px solid#607EFC',
-        width: itemWidth && itemWidth,
-        ...(onClickHandle?.navigationFlag && { cursor: 'pointer' }),
+        border: bordered ? '1px solid #607EFC' : undefined,
+        width: itemWidth || undefined,
+        cursor: onClickHandle?.navigationFlag ? 'pointer' : undefined,
       }}>
       <List.Item
         className="selection-item-list-wrapper"
