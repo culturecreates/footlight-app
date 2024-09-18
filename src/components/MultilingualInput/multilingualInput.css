@@ -27,8 +27,8 @@
 }
 
 .bilingual-child-wrapper .literal-badge {
-  top: 11px;
-  right: 3px;
+  top: 9px;
+  right: -3px;
 }
 
 .bilingual-child-wrapper .ant-form-item {

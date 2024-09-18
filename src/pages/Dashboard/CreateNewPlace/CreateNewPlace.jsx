@@ -507,6 +507,11 @@ function CreateNewPlace() {
                 };
             });
           }
+          if (values?.coordinates) {
+            const coordinates = values.coordinates.split(/[, ]+/);
+            latitude = coordinates[0] || undefined;
+            longitude = coordinates[1] || undefined;
+          }
 
           const getFilteredFieldValue = (values) => {
             let filteredValues = {};
@@ -710,20 +715,6 @@ function CreateNewPlace() {
   const handleSelect = (address) => {
     geocodeByAddress(address)
       .then((results) => {
-        form.setFieldsValue({
-          address: results[0]?.formatted_address,
-          addressCountry: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
-          addressCountryEn: results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
-          addressLocality: results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
-          addressLocalityEn: results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
-          addressRegion: results[0].address_components.find((item) =>
-            item.types.includes('administrative_area_level_1'),
-          )?.short_name,
-          addressRegionEn: results[0].address_components.find((item) =>
-            item.types.includes('administrative_area_level_1'),
-          )?.short_name,
-          postalCode: results[0].address_components.find((item) => item.types.includes('postal_code'))?.long_name,
-        });
         let streetNumber =
           results[0].address_components.find((item) => item.types.includes('street_number'))?.long_name ?? null;
         let streetName = results[0].address_components.find((item) => item.types.includes('route'))?.long_name ?? null;
@@ -732,10 +723,31 @@ function CreateNewPlace() {
         else if (streetNumber && !streetName) streetAddress = streetNumber;
         else if (!streetNumber && streetName) streetAddress = streetName;
         else if (!streetNumber && !streetName) streetAddress = null;
-        form.setFieldsValue({
-          streetAddress: streetAddress,
-          streetAddressEn: streetAddress,
+
+        calendarContentLanguage.forEach((language) => {
+          const langKey = contentLanguageKeyMap[language];
+          form.setFieldValue([formFieldNames.STREET_ADDRESS, langKey], streetAddress);
+          form.setFieldValue(
+            [formFieldNames.COUNTRY, langKey],
+            results[0].address_components.find((item) => item.types.includes('country'))?.long_name,
+          );
+
+          form.setFieldValue(
+            [formFieldNames.CITY, langKey],
+            results[0].address_components.find((item) => item.types.includes('locality'))?.long_name,
+          );
+          form.setFieldValue(
+            [formFieldNames.PROVINCE, langKey],
+            results[0].address_components.find((item) => item.types.includes('administrative_area_level_1'))
+              ?.short_name,
+          );
         });
+
+        form.setFieldValue(
+          formFieldNames.POSTAL_CODE,
+          results[0].address_components.find((item) => item.types.includes('postal_code'))?.long_name,
+        );
+
         return getLatLng(results[0]);
       })
       .then((latLng) => {
@@ -1156,7 +1168,7 @@ function CreateNewPlace() {
             break;
           case placeFormRequiredFieldNames.DESCRIPTION:
             calendarContentLanguage.forEach((language) => {
-              publishValidateFields.push([formFieldNames.DESCRIPTION, [contentLanguageKeyMap[language]]]);
+              publishValidateFields.push([formFieldNames.DESCRIPTION, contentLanguageKeyMap[language]]);
             });
             // setDescriptionMinimumWordCount(Number(requiredField?.rule?.minimumWordCount));
             break;
@@ -1165,7 +1177,7 @@ function CreateNewPlace() {
             break;
           case placeFormRequiredFieldNames.STREET_ADDRESS:
             calendarContentLanguage.forEach((language) => {
-              publishValidateFields.push([formFieldNames.STREET_ADDRESS, [contentLanguageKeyMap[language]]]);
+              publishValidateFields.push([formFieldNames.STREET_ADDRESS, contentLanguageKeyMap[language]]);
             });
             break;
           case placeFormRequiredFieldNames.DISAMBIGUATING_DESCRIPTION:
@@ -1224,10 +1236,9 @@ function CreateNewPlace() {
     if (artsDataId) {
       getArtsDataPlace(artsDataId);
     } else if (newEntityName) {
-      const name = {};
       calendarContentLanguage.forEach((language) => {
         const langKey = contentLanguageKeyMap[language];
-        name[langKey] = newEntityName;
+        form.setFieldValue([formFieldNames.NAME, `${langKey}`], newEntityName);
       });
     }
   }, []);
@@ -1388,7 +1399,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={[formFieldNames.NAME]}
+                    name={formFieldNames.NAME}
                     data={
                       placeData?.name
                         ? placeData?.name
@@ -1492,7 +1503,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={[formFieldNames.DISAMBIGUATING_DESCRIPTION]}
+                    name={formFieldNames.DISAMBIGUATING_DESCRIPTION}
                     data={
                       placeData?.disambiguatingDescription
                         ? placeData?.disambiguatingDescription
@@ -1539,7 +1550,7 @@ function CreateNewPlace() {
                     }
                     form={form}
                     calendarContentLanguage={calendarContentLanguage}
-                    name={[formFieldNames.DESCRIPTION]}
+                    name={formFieldNames.DESCRIPTION}
                     placeholder={placeHolderCollectionCreator({
                       calendarContentLanguage,
                       t,
@@ -1774,7 +1785,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={[formFieldNames.STREET_ADDRESS]}
+                    name={formFieldNames.STREET_ADDRESS}
                     data={
                       placeData?.address?.streetAddress
                         ? placeData?.address?.streetAddress
@@ -1812,7 +1823,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={[formFieldNames.CITY]}
+                    name={formFieldNames.CITY}
                     data={
                       placeData?.address?.addressLocality
                         ? placeData?.address?.addressLocality
@@ -1880,7 +1891,7 @@ function CreateNewPlace() {
                         entityId={placeId}
                         calendarContentLanguage={calendarContentLanguage}
                         form={form}
-                        name={[formFieldNames.PROVINCE]}
+                        name={formFieldNames.PROVINCE}
                         data={
                           placeData?.address?.addressRegion
                             ? placeData?.address?.addressRegion
@@ -1920,7 +1931,7 @@ function CreateNewPlace() {
                         entityId={placeId}
                         calendarContentLanguage={calendarContentLanguage}
                         form={form}
-                        name={[formFieldNames.COUNTRY]}
+                        name={formFieldNames.COUNTRY}
                         data={
                           placeData?.address?.addressCountry
                             ? placeData?.address?.addressCountry
@@ -2621,7 +2632,7 @@ function CreateNewPlace() {
                       entityId={placeId}
                       calendarContentLanguage={calendarContentLanguage}
                       form={form}
-                      name={[formFieldNames.ACCESSIBILITY_NOTE]}
+                      name={formFieldNames.ACCESSIBILITY_NOTE}
                       data={placeData?.accessibilityNote}
                       required={false}
                       validations={t('common.validations.informationRequired')}

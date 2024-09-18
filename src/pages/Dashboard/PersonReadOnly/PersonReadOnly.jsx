@@ -531,6 +531,11 @@ function PersonReadOnly() {
                                           icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
                                           calendarContentLanguage={calendarContentLanguage}
                                           bordered
+                                          onClickHandle={{
+                                            navigationFlag: true,
+                                            entityType: place?.type ?? taxonomyClass.PLACE,
+                                            entityId: place?._id,
+                                          }}
                                           itemWidth="100%"
                                         />;
                                       })}
@@ -565,6 +570,11 @@ function PersonReadOnly() {
                                                 data-cy="organization-logo"
                                               />
                                             }
+                                            onClickHandle={{
+                                              navigationFlag: true,
+                                              entityType: org?.type ?? taxonomyClass.ORGANIZATION,
+                                              entityId: org?._id,
+                                            }}
                                             calendarContentLanguage={calendarContentLanguage}
                                             bordered
                                             itemWidth="100%"
@@ -596,6 +606,11 @@ function PersonReadOnly() {
                                             icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
                                             description={moment(event.startDateTime).format('YYYY-MM-DD')}
                                             bordered
+                                            onClickHandle={{
+                                              navigationFlag: true,
+                                              entityType: event?.type ?? taxonomyClass.EVENT,
+                                              entityId: event?._id,
+                                            }}
                                             calendarContentLanguage={calendarContentLanguage}
                                             itemWidth="100%"
                                           />

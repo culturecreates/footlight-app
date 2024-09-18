@@ -363,7 +363,7 @@ function AddEvent() {
         form
           .validateFields([
             ...new Set([
-              'name',
+              ...(calendarContentLanguage.map((language) => ['name', `${contentLanguageKeyMap[language]}`]) ?? []),
               'datePicker',
               'dateRangePicker',
               'datePickerWrapper',
@@ -1009,7 +1009,7 @@ function AddEvent() {
           (isValuesChanged || Object.keys(activeFallbackFieldsInfo).length > 0 || duplicateId) &&
           (type === 'PUBLISH' || type === 'REVIEW')
         ) {
-          saveAsDraftHandler(event, type === false)
+          saveAsDraftHandler(event, true, type)
             .then((id) => {
               updateEventState({ id: eventId ?? id, calendarId, publishState })
                 .unwrap()
@@ -1018,7 +1018,7 @@ function AddEvent() {
                     description:
                       calendar[0]?.role === userRoles.GUEST
                         ? t('dashboard.events.addEditEvent.notification.sendToReview')
-                        : eventData?.publishState === eventPublishState.DRAFT
+                        : eventData?.publishState === eventPublishState.DRAFT || type === 'PUBLISH'
                         ? t('dashboard.events.addEditEvent.notification.publish')
                         : t('dashboard.events.addEditEvent.notification.saveAsDraft'),
                     placement: 'top',
@@ -1834,7 +1834,7 @@ function AddEvent() {
             break;
           case eventFormRequiredFieldNames.DESCRIPTION:
             calendarContentLanguage.forEach((language) => {
-              publishValidateFields.push(['editor', [contentLanguageKeyMap[language]]]);
+              publishValidateFields.push(['editor', contentLanguageKeyMap[language]]);
             });
             setDescriptionMinimumWordCount(
               requiredField?.rule?.minimumWordCount ? Number(requiredField?.rule?.minimumWordCount) : 1,
@@ -2955,7 +2955,7 @@ function AddEvent() {
                   data={eventData?.description}
                   form={form}
                   calendarContentLanguage={calendarContentLanguage}
-                  name={['editor']}
+                  name={'editor'}
                   required={requiredFieldNames?.includes(eventFormRequiredFieldNames?.DESCRIPTION)}
                   placeholder={placeHolderCollectionCreator({
                     calendarContentLanguage,

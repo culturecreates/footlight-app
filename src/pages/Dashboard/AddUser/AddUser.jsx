@@ -117,7 +117,7 @@ const AddUser = () => {
         .unwrap()
         .then((response) => {
           const activeCalendars = response?.roles?.filter((r) => {
-            return r.status == userActivityStatus[0].key;
+            return r.status === userActivityStatus[0].key || r.status === userActivityStatus[2].key;
           });
           setSelectedCalendars(
             activeCalendars
@@ -147,7 +147,7 @@ const AddUser = () => {
         .unwrap()
         .then((response) => {
           const activeCalendars = response?.roles.filter((r) => {
-            return r.status == userActivityStatus[0].key;
+            return r.status == userActivityStatus[0].key || r.status == userActivityStatus[2].key;
           });
           setSelectedCalendars(
             activeCalendars

@@ -146,7 +146,7 @@ function QuickCreatePerson(props) {
       form
         .validateFields(validationFieldNames)
         .then(() => {
-          var values = form.getFieldsValue(true);
+          var values = form.getFieldsValue();
           let name = values?.name,
             url = {},
             occupation = [],

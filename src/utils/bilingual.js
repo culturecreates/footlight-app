@@ -1,5 +1,6 @@
 //Function which returns the language key depending on the interface language
 
+import i18next from 'i18next';
 import { contentLanguage, contentLanguageKeyMap } from '../constants/contentLanguage';
 import { userLanguages } from '../constants/userLanguages';
 
@@ -38,14 +39,26 @@ export const contentLanguageBilingual = ({ calendarContentLanguage, data, requir
    * @returns {string} The string data of required content language or an empty string if no data is available.
    **/
 
-  let contentLanguageKey = contentLanguageKeyMap[calendarContentLanguage[0]];
   if (!data) return '';
+
   if (requiredLanguageKey && data[requiredLanguageKey]) {
     return data[requiredLanguageKey];
   }
 
-  if (data[contentLanguageKey] === undefined) {
-    contentLanguageKey = Object.values(contentLanguageKeyMap).find((lanKey) => data[lanKey] !== undefined);
+  const interfaceLanguage = i18next.language;
+
+  const isInterfaceLanguageDataAvailable = calendarContentLanguage.some(
+    (lang) => contentLanguageKeyMap[lang] === interfaceLanguage && data[interfaceLanguage],
+  );
+
+  if (isInterfaceLanguageDataAvailable) {
+    return data[interfaceLanguage];
+  }
+
+  let contentLanguageKey = contentLanguageKeyMap[calendarContentLanguage[0]];
+  if (!data[contentLanguageKey]) {
+    contentLanguageKey =
+      Object.values(contentLanguageKeyMap).find((key) => data[key] !== undefined) || Object.keys(data)[0];
   }
 
   return data[contentLanguageKey] ?? '';

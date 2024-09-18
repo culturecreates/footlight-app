@@ -160,7 +160,13 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
   const onSaveHandler = () => {
     let requiredFields =
       calendarSettingsFormFields?.GENERAL_SETTINGS?.filter((field) => field.required)?.map((field) => field.name) ?? [];
-    requiredFields = [...requiredFields, ['imageAspectRatio', 'thumbnail'], ['imageMaxWidth', 'thumbnail']];
+    requiredFields = [
+      ...requiredFields,
+      ['imageAspectRatio', 'thumbnail'],
+      ['imageMaxWidth', 'thumbnail'],
+      ['imageMaxWidth', 'large'],
+      ['imageAspectRatio', 'large'],
+    ];
     requiredFields = requiredFields.concat(
       calendarSettingsFormFields?.WIDGET_SETTINGS?.filter((field) => field.required)?.map((field) => field.name) ?? [],
     );

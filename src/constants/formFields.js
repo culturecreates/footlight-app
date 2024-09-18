@@ -112,7 +112,7 @@ export const formFieldValue = [
           <CreateMultiLingualFormItems
             calendarContentLanguage={calendarContentLanguage}
             form={form}
-            name={name}
+            name={Array.isArray(name) ? name[0] : name}
             data={data}
             entityId={entityId}
             validations={validations}
@@ -524,7 +524,7 @@ export const formFieldValue = [
             data={data}
             form={form}
             calendarContentLanguage={calendarContentLanguage}
-            name={name}
+            name={Array.isArray(name) ? name[0] : name}
             entityId={entityId}
             placeholder={placeholder}
             descriptionMinimumWordCount={descriptionMinimumWordCount}
