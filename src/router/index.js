@@ -35,6 +35,7 @@ export const router = createBrowserRouter([
     path: PathName.Login,
     element: <Login />,
   },
+  { path: PathName.WellKnownPasswordReset, element: <ResetPassword /> },
   {
     path: PathName.ForgotPassword,
     element: <ForgotPassword />,
