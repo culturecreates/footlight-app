@@ -2606,7 +2606,7 @@ function AddEvent() {
 
                             setDateType(type.type);
 
-                            if (currentPartialDateValue) {
+                            if (currentPartialDateValue && !eventId) {
                               form.setFieldValue(
                                 activeField,
                                 activeField === 'datePicker'
