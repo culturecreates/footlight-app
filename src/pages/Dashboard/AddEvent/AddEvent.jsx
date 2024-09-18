@@ -2585,12 +2585,46 @@ function AddEvent() {
                           promptText={type.tooltip}
                           secondaryIcon={<InfoCircleOutlined />}
                           onClick={() => {
+                            let currentPartialDateValue;
+                            const fieldMap = {
+                              [dateTypes.SINGLE]: 'datePicker',
+                              [dateTypes.RANGE]: 'dateRangePicker',
+                              [dateTypes.MULTIPLE]: 'startDateRecur',
+                            };
+
+                            const activeField = fieldMap[type.type];
+
+                            //  to ensure during moving from one date type to other, current date type's date picker value is shown as startdate of other date type's datepicker
+                            if (dateType === dateTypes.SINGLE) {
+                              currentPartialDateValue = form.getFieldValue('datePicker');
+                            } else if (dateType === dateTypes.RANGE || dateType === dateTypes.MULTIPLE) {
+                              const fieldValue = form.getFieldValue(fieldMap[dateType]);
+                              if (Array.isArray(fieldValue) && fieldValue.length > 0) {
+                                currentPartialDateValue = fieldValue[0] ?? undefined;
+                              }
+                            }
+
                             setDateType(type.type);
-                            form.setFieldsValue({
-                              datePicker: undefined,
-                              dateRangePicker: undefined,
-                              startDateRecur: undefined,
-                            });
+
+                            if (currentPartialDateValue) {
+                              form.setFieldValue(
+                                activeField,
+                                activeField === 'datePicker'
+                                  ? currentPartialDateValue
+                                  : [currentPartialDateValue, null],
+                              );
+
+                              Object.keys(fieldMap).forEach((key) => {
+                                if (fieldMap[key] !== activeField) {
+                                  form.setFieldsValue({ [fieldMap[key]]: undefined });
+                                }
+                              });
+                            } else {
+                              Object.keys(fieldMap).forEach((key) => {
+                                form.setFieldsValue({ [fieldMap[key]]: undefined });
+                              });
+                            }
+
                             form.resetFields(['frequency']);
                             setFormValue(null);
                           }}
