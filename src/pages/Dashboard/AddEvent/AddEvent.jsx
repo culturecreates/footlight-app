@@ -2585,44 +2585,45 @@ function AddEvent() {
                           promptText={type.tooltip}
                           secondaryIcon={<InfoCircleOutlined />}
                           onClick={() => {
-                            let currentPartialDateValue;
-                            const fieldMap = {
-                              [dateTypes.SINGLE]: 'datePicker',
-                              [dateTypes.RANGE]: 'dateRangePicker',
-                              [dateTypes.MULTIPLE]: 'startDateRecur',
-                            };
-
-                            const activeField = fieldMap[type.type];
-
-                            //  to ensure during moving from one date type to other, current date type's date picker value is shown as startdate of other date type's datepicker
+                            let currentActiveDateValue;
+                            let activeDateType = type.type;
                             if (dateType === dateTypes.SINGLE) {
-                              currentPartialDateValue = form.getFieldValue('datePicker');
-                            } else if (dateType === dateTypes.RANGE || dateType === dateTypes.MULTIPLE) {
-                              const fieldValue = form.getFieldValue(fieldMap[dateType]);
-                              if (Array.isArray(fieldValue) && fieldValue.length > 0) {
-                                currentPartialDateValue = fieldValue[0] ?? undefined;
-                              }
+                              const datePickerValue = form.getFieldValue('datePicker');
+                              currentActiveDateValue = datePickerValue ? [datePickerValue, undefined] : undefined;
+                            } else if (dateType === dateTypes.RANGE) {
+                              setStartDate(undefined);
+                              setEndDate(undefined);
+                              currentActiveDateValue = form.getFieldValue('dateRangePicker') ?? undefined;
+                            } else if (dateType === dateTypes.MULTIPLE) {
+                              setStartDate(undefined);
+                              setEndDate(undefined);
+                              currentActiveDateValue = form.getFieldValue('startDateRecur') ?? undefined;
                             }
-
                             setDateType(type.type);
 
-                            if (currentPartialDateValue && !eventId) {
-                              form.setFieldValue(
-                                activeField,
-                                activeField === 'datePicker'
-                                  ? currentPartialDateValue
-                                  : [currentPartialDateValue, null],
-                              );
-
-                              Object.keys(fieldMap).forEach((key) => {
-                                if (fieldMap[key] !== activeField) {
-                                  form.setFieldsValue({ [fieldMap[key]]: undefined });
-                                }
-                              });
-                            } else {
-                              Object.keys(fieldMap).forEach((key) => {
-                                form.setFieldsValue({ [fieldMap[key]]: undefined });
-                              });
+                            if (currentActiveDateValue) {
+                              if (activeDateType === dateTypes.SINGLE) {
+                                form.setFieldValue(
+                                  'datePicker',
+                                  Array.isArray(currentActiveDateValue) ? currentActiveDateValue[0] : undefined,
+                                );
+                                form.setFieldsValue({
+                                  dateRangePicker: undefined,
+                                  startDateRecur: undefined,
+                                });
+                              } else if (activeDateType === dateTypes.RANGE) {
+                                form.setFieldValue('dateRangePicker', currentActiveDateValue);
+                                form.setFieldsValue({
+                                  datePicker: undefined,
+                                  startDateRecur: undefined,
+                                });
+                              } else if (activeDateType === dateTypes.MULTIPLE) {
+                                form.setFieldValue('startDateRecur', currentActiveDateValue);
+                                form.setFieldsValue({
+                                  datePicker: undefined,
+                                  dateRangePicker: undefined,
+                                });
+                              }
                             }
 
                             form.resetFields(['frequency']);
