@@ -776,6 +776,7 @@ function CreateNewPerson() {
                               allTaxonomyData,
                               user,
                               calendarContentLanguage,
+                              entityId: personId,
                               entityData: personData
                                 ? personData
                                 : artsDataId
