@@ -40,6 +40,7 @@ export const contentLanguageBilingual = ({ calendarContentLanguage, data, requir
    **/
 
   if (!data) return '';
+  if (typeof data == 'string') return data;
 
   if (requiredLanguageKey && data[requiredLanguageKey]) {
     return data[requiredLanguageKey];
