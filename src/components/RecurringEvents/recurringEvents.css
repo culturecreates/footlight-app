@@ -135,6 +135,13 @@
   color: #222732;
 }
 
+.recurring-modal .calendar .calendar-header .year-neighbor {
+  display: none !important;
+}
+.recurring-modal .calendar .calendar-header .year-neighbor2 {
+  display: none !important;
+}
+
 @media screen and (max-width: 480px) {
   .custom-date-column {
     height: 200px;
