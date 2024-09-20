@@ -1346,18 +1346,18 @@ function AddEvent() {
         currentActiveDateValue = datePickerValue ? [datePickerValue, undefined] : undefined;
         break;
       }
-      case dateTypes.RANGE: {
+      case dateTypes.RANGE:
         setStartDate(undefined);
         setEndDate(undefined);
         currentActiveDateValue = form.getFieldValue('dateRangePicker') ?? undefined;
         break;
-      }
-      case dateTypes.MULTIPLE: {
+
+      case dateTypes.MULTIPLE:
         setStartDate(undefined);
         setEndDate(undefined);
         currentActiveDateValue = form.getFieldValue('startDateRecur') ?? undefined;
         break;
-      }
+
       default:
         break;
     }
@@ -1366,7 +1366,7 @@ function AddEvent() {
 
     if (currentActiveDateValue && !eventId) {
       switch (activeDateType) {
-        case dateTypes.SINGLE: {
+        case dateTypes.SINGLE:
           form.setFieldValue(
             'datePicker',
             Array.isArray(currentActiveDateValue) ? currentActiveDateValue[0] : undefined,
@@ -1376,23 +1376,23 @@ function AddEvent() {
             startDateRecur: undefined,
           });
           break;
-        }
-        case dateTypes.RANGE: {
+
+        case dateTypes.RANGE:
           form.setFieldValue('dateRangePicker', currentActiveDateValue);
           form.setFieldsValue({
             datePicker: undefined,
             startDateRecur: undefined,
           });
           break;
-        }
-        case dateTypes.MULTIPLE: {
+
+        case dateTypes.MULTIPLE:
           form.setFieldValue('startDateRecur', currentActiveDateValue);
           form.setFieldsValue({
             datePicker: undefined,
             dateRangePicker: undefined,
           });
           break;
-        }
+
         default:
           break;
       }
