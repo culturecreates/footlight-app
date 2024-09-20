@@ -1340,10 +1340,12 @@ function AddEvent() {
 
   const handleDateTypeChange = (activeDateType) => {
     let currentActiveDateValue;
+
     switch (dateType) {
       case dateTypes.SINGLE: {
-        const datePickerValue = form.getFieldValue('datePicker');
-        currentActiveDateValue = datePickerValue ? [datePickerValue, undefined] : undefined;
+        currentActiveDateValue = form.getFieldValue('datePicker')
+          ? [form.getFieldValue('datePicker'), undefined]
+          : undefined;
         break;
       }
       case dateTypes.RANGE:
