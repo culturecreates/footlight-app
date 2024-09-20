@@ -2585,12 +2585,47 @@ function AddEvent() {
                           promptText={type.tooltip}
                           secondaryIcon={<InfoCircleOutlined />}
                           onClick={() => {
+                            let currentActiveDateValue;
+                            let activeDateType = type.type;
+                            if (dateType === dateTypes.SINGLE) {
+                              const datePickerValue = form.getFieldValue('datePicker');
+                              currentActiveDateValue = datePickerValue ? [datePickerValue, undefined] : undefined;
+                            } else if (dateType === dateTypes.RANGE) {
+                              setStartDate(undefined);
+                              setEndDate(undefined);
+                              currentActiveDateValue = form.getFieldValue('dateRangePicker') ?? undefined;
+                            } else if (dateType === dateTypes.MULTIPLE) {
+                              setStartDate(undefined);
+                              setEndDate(undefined);
+                              currentActiveDateValue = form.getFieldValue('startDateRecur') ?? undefined;
+                            }
                             setDateType(type.type);
-                            form.setFieldsValue({
-                              datePicker: undefined,
-                              dateRangePicker: undefined,
-                              startDateRecur: undefined,
-                            });
+
+                            if (currentActiveDateValue) {
+                              if (activeDateType === dateTypes.SINGLE) {
+                                form.setFieldValue(
+                                  'datePicker',
+                                  Array.isArray(currentActiveDateValue) ? currentActiveDateValue[0] : undefined,
+                                );
+                                form.setFieldsValue({
+                                  dateRangePicker: undefined,
+                                  startDateRecur: undefined,
+                                });
+                              } else if (activeDateType === dateTypes.RANGE) {
+                                form.setFieldValue('dateRangePicker', currentActiveDateValue);
+                                form.setFieldsValue({
+                                  datePicker: undefined,
+                                  startDateRecur: undefined,
+                                });
+                              } else if (activeDateType === dateTypes.MULTIPLE) {
+                                form.setFieldValue('startDateRecur', currentActiveDateValue);
+                                form.setFieldsValue({
+                                  datePicker: undefined,
+                                  dateRangePicker: undefined,
+                                });
+                              }
+                            }
+
                             form.resetFields(['frequency']);
                             setFormValue(null);
                           }}
