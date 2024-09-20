@@ -3,6 +3,7 @@ export const PathName = {
   Dashboard: '/dashboard',
   ForgotPassword: '/forgot-password',
   ResetPassword: '/reset-password',
+  WellKnownPasswordReset: '/.well-known/change-password',
   Events: '/events',
   Places: '/places',
   AddPlace: '/add-place',
