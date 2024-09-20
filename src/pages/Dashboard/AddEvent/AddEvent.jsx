@@ -1342,12 +1342,12 @@ function AddEvent() {
     let currentActiveDateValue;
 
     switch (dateType) {
-      case dateTypes.SINGLE: {
+      case dateTypes.SINGLE:
         currentActiveDateValue = form.getFieldValue('datePicker')
           ? [form.getFieldValue('datePicker'), undefined]
           : undefined;
         break;
-      }
+
       case dateTypes.RANGE:
         setStartDate(undefined);
         setEndDate(undefined);
