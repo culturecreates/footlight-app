@@ -1924,10 +1924,7 @@ function AddEvent() {
           case eventFormRequiredFieldNames.LOCATION:
             publishValidateFields.push('location-form-wrapper');
             break;
-          case eventFormRequiredFieldNames.VIRTUAL_LOCATION:
-            initialAddedFields = initialAddedFields?.concat(locationType?.fieldNames);
-            publishValidateFields.push('location-form-wrapper');
-            break;
+
           case eventFormRequiredFieldNames.IMAGE:
             publishValidateFields.push('draggerWrap');
             break;
