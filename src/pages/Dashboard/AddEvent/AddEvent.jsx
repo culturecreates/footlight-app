@@ -1720,7 +1720,7 @@ function AddEvent() {
       if (routinghandler(user, calendarId, eventData?.creator?.userId, eventData?.publishState, false) || duplicateId) {
         if (
           (eventData?.recurringEvent && Object.keys(eventData?.recurringEvent)?.length > 0) ||
-          eventData?.subEventConfiguration
+          eventData?.subEventConfiguration?.length > 0
         )
           isRecurring = true;
         let initialDateType = dateTimeTypeHandler(
