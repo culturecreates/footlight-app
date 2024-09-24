@@ -4,6 +4,10 @@
   font-weight: 400;
 }
 
+textarea {
+  overflow: hidden;
+}
+
 .ant-pagination-item > a {
   color: #222732;
 }
