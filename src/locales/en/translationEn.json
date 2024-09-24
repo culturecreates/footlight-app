@@ -360,7 +360,7 @@
         "notification": {
           "saveAsDraft": "Success! Your event has been saved as draft.",
           "sendToReview": "Success! Your event has been sent for review.",
-          "publish": "Success! Your event has been published",
+          "publish": "Success! Your event has been published.",
           "updateEvent": "Success! Your event has been updated.",
           "editFailedReviewForGuest": "This event needs attention. Review and update as needed, and then send to review."
         },
