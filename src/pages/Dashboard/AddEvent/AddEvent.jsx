@@ -34,7 +34,7 @@ import Select from '../../../components/Select';
 import { eventStatus, eventStatusOptions } from '../../../constants/eventStatus';
 import TimePickerStyled from '../../../components/TimePicker/TimePicker';
 import DateRangePicker from '../../../components/DateRangePicker';
-import { dateTypeOptions, dateTypes } from '../../../constants/dateTypes';
+import { dateFrequencyTypes, dateTypeOptions, dateTypes } from '../../../constants/dateTypes';
 import ChangeType from '../../../components/ChangeType';
 import CardEvent from '../../../components/Card/Common/Event';
 import Tags from '../../../components/Tags/Common/Tags';
@@ -103,6 +103,7 @@ import MultipleImageUpload from '../../../components/MultipleImageUpload';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import { getWeekDayDates } from '../../../utils/getWeekDayDates';
+import { arraysAreEqual } from '../../../utils/arraysAreEqual';
 import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems';
 import { isDataValid, placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import MultiLingualTextEditor from '../../../components/MultilingualTextEditor/MultiLingualTextEditor';
@@ -279,6 +280,41 @@ function AddEvent() {
     },
     { label: t('dashboard.events.addEditEvent.otherInformation.contact.email'), value: 'email' },
   ];
+  const hasSubEventConfigChanges = (customDates = [], subEventConfig = []) => {
+    // Convert both arrays to a simpler format for easier comparison
+    const formatCustomDates = customDates.flatMap(({ startDate, customTimes = [] }) =>
+      customTimes.length === 0 ? [{ startDate }] : customTimes.map((time) => ({ startDate, ...time })),
+    );
+
+    const formatSubEventConfig = subEventConfig.map(({ startDate, startTime, endTime }) => ({
+      startDate,
+      startTime,
+      endTime,
+      // sameAs,
+    }));
+
+    // Check if the length of both arrays are different
+    if (formatCustomDates.length !== formatSubEventConfig.length) {
+      return true;
+    }
+
+    // Function to compare two objects for equality
+    const isEqual = (obj1, obj2) =>
+      obj1 &&
+      obj2 &&
+      Object.keys(obj1).length === Object.keys(obj2).length &&
+      Object.keys(obj1).every((key) => obj1[key] === obj2[key]);
+
+    // Check each item in both arrays for differences
+    for (let i = 0; i < formatCustomDates.length; i++) {
+      if (!isEqual(formatCustomDates[i], formatSubEventConfig[i])) {
+        return true;
+      }
+    }
+
+    // If no differences found, return false
+    return false;
+  };
 
   const validateVideoLink = (rule, value) => {
     if (!value) {
@@ -292,7 +328,60 @@ function AddEvent() {
     return Promise.resolve();
   };
 
-  const addUpdateEventApiHandler = (eventObj, toggle) => {
+  const detectDateChange = ({
+    initialDateType,
+    currentDateType,
+    initialStartDate,
+    currentStartDate,
+    initialEndDate,
+    currentEndDate,
+    initialFrequency,
+    currentFrequency,
+    initialRecurringEvent,
+    currentRecurringEvent,
+    customDates,
+  }) => {
+    if (initialDateType !== currentDateType) return true;
+    else
+      switch (currentDateType) {
+        case dateTypes.RANGE:
+          if (initialStartDate != currentStartDate || initialEndDate != currentEndDate) return true;
+          else return false;
+        case dateTypes.MULTIPLE:
+          if (initialFrequency != currentFrequency) return true;
+          else
+            switch (currentFrequency) {
+              case dateFrequencyTypes.DAILY:
+                if (
+                  initialRecurringEvent?.startDate != currentRecurringEvent?.startDate ||
+                  initialRecurringEvent?.endDate != currentRecurringEvent?.endDate ||
+                  initialRecurringEvent?.startTime != currentRecurringEvent?.startTime ||
+                  initialRecurringEvent?.endTime != currentRecurringEvent?.endTime
+                )
+                  return true;
+                else return false;
+
+              case dateFrequencyTypes.WEEKLY:
+                if (
+                  initialRecurringEvent?.startDate != currentRecurringEvent?.startDate ||
+                  initialRecurringEvent?.endDate != currentRecurringEvent?.endDate ||
+                  initialRecurringEvent?.startTime != currentRecurringEvent?.startTime ||
+                  initialRecurringEvent?.endTime != currentRecurringEvent?.endTime ||
+                  !arraysAreEqual(initialRecurringEvent?.weekDays, currentRecurringEvent?.weekDays)
+                )
+                  return true;
+                else return false;
+
+              case dateFrequencyTypes.CUSTOM:
+                return hasSubEventConfigChanges(customDates, eventData?.subEventConfiguration);
+            }
+          break;
+        default:
+          break;
+      }
+  };
+
+  const addUpdateEventApiHandler = (eventObj, toggle, sameAs) => {
     var promise = new Promise(function (resolve, reject) {
       if ((!eventId || eventId === '') && newEventId === null) {
         addEvent({
@@ -322,7 +411,7 @@ function AddEvent() {
       } else {
         eventObj = {
           ...eventObj,
-          sameAs: eventData?.sameAs,
+          sameAs,
         };
         updateEvent({
           data: eventObj,
@@ -399,7 +488,9 @@ function AddEvent() {
               recurringEvent,
               description = {},
               name = {},
+              subEventConfiguration = undefined,
               inLanguage = [],
+              sameAs = eventId ? (eventData?.sameAs ? eventData?.sameAs : []) : [],
               eventDiscipline = [];
 
             let eventObj;
@@ -459,10 +550,10 @@ function AddEvent() {
             let multipleDatesFlag = false;
             let multipleStartTimeFlag = false;
             let multipleEndTimeFlag = false;
-
+            let recurEvent = {};
             if (dateTypeValue === dateTypes.MULTIPLE) {
-              const recurEvent = {
-                frequency: values.frequency,
+              recurEvent = {
+                frequency: form.getFieldsValue().frequency !== 'CUSTOM' && values.frequency,
                 startDate:
                   form.getFieldsValue().frequency !== 'CUSTOM'
                     ? moment(values.startDateRecur[0]).format('YYYY-MM-DD')
@@ -482,8 +573,8 @@ function AddEvent() {
                     ? moment(values.endTimeRecur).format('HH:mm')
                     : undefined,
                 weekDays: values.frequency === 'WEEKLY' ? values.daysOfWeek : undefined,
-                customDates:
-                  form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
+                // customDates:
+                //   form.getFieldsValue().frequency === 'CUSTOM' ? form.getFieldsValue().customDates : undefined,
               };
 
               customDatesFlag = !!recurEvent?.customDates;
@@ -530,6 +621,55 @@ function AddEvent() {
                 recurringEvent = recurEvent;
               }
             }
+            const { customDates, frequency } = form.getFieldsValue() || {};
+            if (customDates && frequency === 'CUSTOM') {
+              recurringEvent = undefined;
+              subEventConfiguration = [];
+              const subEventConfig = eventData?.subEventConfiguration || [];
+
+              const processCustomTimes = (startDate, customTimes) => {
+                if (customTimes.length === 0) {
+                  subEventConfiguration.push({ startDate });
+                } else {
+                  customTimes.forEach(({ startTime, endTime }) => {
+                    const sameAs = subEventConfig.find(
+                      ({ startDate: subStartDate, startTime: subStartTime, endTime: subEndTime }) => {
+                        return (
+                          subStartDate === startDate &&
+                          ((!subStartTime && !subEndTime) ||
+                            (subStartTime === startTime && !subEndTime) ||
+                            (!subStartTime && subEndTime === endTime) ||
+                            (subStartTime === startTime && subEndTime === endTime))
+                        );
+                      },
+                    );
+                    subEventConfiguration.push({
+                      startDate,
+                      startTime,
+                      endTime,
+                      sameAs: sameAs?.sameAs,
+                    });
+                  });
+                }
+              };
+
+              if (eventId) {
+                if (hasSubEventConfigChanges(customDates, subEventConfig)) {
+                  // Changes detected
+
+                  customDates.forEach(({ startDate, customTimes = [] }) => {
+                    processCustomTimes(startDate, customTimes);
+                  });
+                } else {
+                  // No changes detected
+                  subEventConfiguration = subEventConfig;
+                }
+              } else {
+                customDates.forEach(({ startDate, customTimes = [] }) => {
+                  processCustomTimes(startDate, customTimes);
+                });
+              }
+            }
 
             if (dateTypeValue === dateTypes.SINGLE) {
               if (startTimeValue) startDateTime = dateTimeConverter(datePickerValue, startTimeValue, customTimeFlag);
@@ -551,6 +691,30 @@ function AddEvent() {
                 endDateTime = moment
                   .tz(values?.dateRangePicker[1], eventData?.scheduleTimezone ?? 'Canada/Eastern')
                   .format('YYYY-MM-DD');
+            }
+
+            if (eventId && values?.initialDateType !== dateTypes.SINGLE) {
+              if (
+                detectDateChange({
+                  initialDateType: values.initialDateType,
+                  currentDateType: dateType,
+                  initialStartDate: eventData?.startDate ?? eventData?.startDateTime,
+                  currentStartDate: startDateTime,
+                  initialEndDate: eventData?.endDate ?? eventData?.endDateTime,
+                  currentEndDate: endDateTime,
+                  initialFrequency: eventData?.subEventConfiguration
+                    ? dateFrequencyTypes.CUSTOM
+                    : eventData?.recurringEvent?.frequency,
+                  currentFrequency: values.frequency,
+                  initialRecurringEvent: eventData?.recurringEvent,
+                  currentRecurringEvent: recurEvent,
+                  customDates,
+                })
+              ) {
+                if (eventData?.publishState === eventPublishState.PUBLISHED) {
+                  sameAs = eventData?.sameAs?.filter((item) => item?.type !== sameAsTypes.ARTSDATA_IDENTIFIER);
+                }
+              }
             }
 
             if (values?.eventType) {
@@ -766,7 +930,7 @@ function AddEvent() {
               ...(dateTypes.MULTIPLE && { recurringEvent }),
               inLanguage,
               isFeatured: values?.isFeatured,
-              subEventConfiguration: eventData?.subEventConfiguration,
+              subEventConfiguration,
             };
 
             let imageCrop = form.getFieldValue('imageCrop') ? [form.getFieldValue('imageCrop')] : [];
@@ -881,7 +1045,7 @@ function AddEvent() {
 
                     if (values.multipleImagesCrop?.length > 0) await uploadImageList();
                     eventObj['image'] = imageCrop;
-                    addUpdateEventApiHandler(eventObj, toggle)
+                    addUpdateEventApiHandler(eventObj, toggle, sameAs)
                       .then((id) => resolve(id))
                       .catch((error) => {
                         reject(error);
@@ -906,7 +1070,7 @@ function AddEvent() {
                 eventObj['image'] = [];
               } else eventObj['image'] = imageCrop;
 
-              addUpdateEventApiHandler(eventObj, toggle)
+              addUpdateEventApiHandler(eventObj, toggle, sameAs)
                 .then((id) => resolve(id))
                 .catch((error) => {
                   reject(error);
@@ -1559,15 +1723,17 @@ function AddEvent() {
           eventData?.subEventConfiguration
         )
           isRecurring = true;
-        setDateType(
-          dateTimeTypeHandler(
-            eventData?.startDate,
-            eventData?.startDateTime,
-            eventData?.endDate,
-            eventData?.endDateTime,
-            isRecurring,
-          ),
+        let initialDateType = dateTimeTypeHandler(
+          eventData?.startDate,
+          eventData?.startDateTime,
+          eventData?.endDate,
+          eventData?.endDateTime,
+          isRecurring,
         );
+        setDateType(initialDateType);
+        form.setFieldsValue({
+          initialDateType,
+        });
         setTicketType(eventData?.offerConfiguration?.category);
         if (initialPlace && initialPlace?.length > 0) {
           initialPlace[0] = {
@@ -1731,7 +1897,7 @@ function AddEvent() {
         if (eventData?.inLanguage?.length > 0)
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.inLanguage);
         setAddedFields(initialAddedFields);
-        if (eventData?.recurringEvent) {
+        if (eventData?.recurringEvent && eventData?.recurringEvent?.frequency != 'CUSTOM') {
           form.setFieldsValue({
             frequency: eventData?.recurringEvent?.frequency,
             startDateRecur: [
@@ -1792,7 +1958,7 @@ function AddEvent() {
           };
           setFormValue(obj);
         }
-        if (eventData?.subEventConfiguration) {
+        if (eventData?.subEventConfiguration && eventData?.subEventConfiguration?.length > 0) {
           form.setFieldsValue({
             frequency: 'CUSTOM',
             startDateRecur: [
