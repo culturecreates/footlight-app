@@ -51,17 +51,23 @@ export const dateTypeOptions = [
   },
 ];
 
+export const dateFrequencyTypes = {
+  DAILY: 'DAILY',
+  WEEKLY: 'WEEKLY',
+  CUSTOM: 'CUSTOM',
+};
+
 export const dateFrequencyOptions = [
   {
-    value: 'DAILY',
+    value: dateFrequencyTypes.DAILY,
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.daily')}</Translation>,
   },
   {
-    value: 'WEEKLY',
+    value: dateFrequencyTypes.WEEKLY,
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.weekly')}</Translation>,
   },
   {
-    value: 'CUSTOM',
+    value: dateFrequencyTypes.CUSTOM,
     label: <Translation>{(t) => t('dashboard.events.addEditEvent.dates.custom')}</Translation>,
   },
 ];
