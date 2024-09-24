@@ -38,6 +38,7 @@ function MandatoryFields({ setDirtyStatus, tabKey }) {
       formLabel: t('dashboard.settings.mandatoryFields.event'),
       taxonomyClass: entitiesClass.event,
       // prefilledFields: ['name', 'startDateTime', 'startDate', 'endDateTime', 'endDate', 'locationId'],
+      hiddenFields: ['VIRTUAL_LOCATION'],
     },
     {
       formName: 'Place',
@@ -78,19 +79,23 @@ function MandatoryFields({ setDirtyStatus, tabKey }) {
         standardAdminOnlyFields =
           field?.formFieldProperties?.adminOnlyFields?.standardFields?.map((f) => f?.fieldName) ?? [];
 
-        let modifiedField = field?.formFields?.map((f) => {
-          return {
-            ...f,
-            preFilled: minimumRequiredFields.includes(f?.name),
-            isRequiredField: standardAdminOnlyFields?.includes(f?.name)
-              ? false
-              : requiredFields.includes(f?.name) || minimumRequiredFields.includes(f?.name),
-            isAdminOnlyField: standardAdminOnlyFields?.includes(f?.name) || false,
-            rule: field?.formFieldProperties?.mandatoryFields?.standardFields?.find(
-              (standardField) => f?.name === standardField?.fieldName,
-            )?.rule,
-          };
-        });
+        let modifiedField = field?.formFields
+          ?.map((f) => {
+            if (preFilled?.hiddenFields?.includes(f?.name)) return null;
+            else
+              return {
+                ...f,
+                preFilled: minimumRequiredFields.includes(f?.name),
+                isRequiredField: standardAdminOnlyFields?.includes(f?.name)
+                  ? false
+                  : requiredFields.includes(f?.name) || minimumRequiredFields.includes(f?.name),
+                isAdminOnlyField: standardAdminOnlyFields?.includes(f?.name) || false,
+                rule: field?.formFieldProperties?.mandatoryFields?.standardFields?.find(
+                  (standardField) => f?.name === standardField?.fieldName,
+                )?.rule,
+              };
+          })
+          ?.filter((f) => f);
         modifiedField = modifiedField?.concat(
           allTaxonomyData?.data
             ?.filter((f) => f?.taxonomyClass === preFilled?.taxonomyClass && f?.isDynamicField)
