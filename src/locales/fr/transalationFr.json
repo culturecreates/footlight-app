@@ -312,7 +312,7 @@
           "eventLanguage1": "Langue de",
           "eventLanguage2": " l'événement",
           "eventLanguagePlaceholder": "Sélectionner la langue de l'événement",
-          "eventLanguageTooltip": "Sélectionnez le français, l'anglais, ou bilingue."
+          "eventLanguageTooltip": "Sélectionnez les langues utilisées dans l'événement."
         },
         "eventAccessibility": {
           "title": "Accessibilité",

@@ -1352,7 +1352,7 @@ function CreateNewOrganization() {
                                         calendarContentLanguage: calendarContentLanguage,
                                       })}
                                       promptText={contentLanguageBilingual({
-                                        data: field?.helperText,
+                                        data: field?.infoPopup,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })}
