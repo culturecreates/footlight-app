@@ -183,7 +183,7 @@ function TextEditor(props) {
   ]);
 
   return (
-    <div onDrop={onDropHandler}>
+    <div onDrop={onDropHandler} data-cy={`editor-description-${editorLanguage}`}>
       <Form.Item name={formName} initialValue={initialValue} dependencies={dependencies} rules={rules}>
         <ReactQuill
           ref={currentReactQuillRef}
