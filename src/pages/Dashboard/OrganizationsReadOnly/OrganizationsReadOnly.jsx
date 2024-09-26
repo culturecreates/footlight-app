@@ -34,6 +34,7 @@ import { getActiveTabKey } from '../../../redux/reducer/readOnlyTabSlice';
 import ReadOnlyPageTabLayout from '../../../layout/ReadOnlyPageTabLayout/ReadOnlyPageTabLayout';
 import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import { organizationFormFieldNames } from '../../../constants/personAndOrganizationFormFieldNames';
+import ImageUpload from '../../../components/ImageUpload';
 
 function OrganizationsReadOnly() {
   const { t } = useTranslation();
@@ -412,28 +413,43 @@ function OrganizationsReadOnly() {
                           )}
                           {checkIfFieldIsToBeDisplayed(
                             organizationFormFieldNames.IMAGE,
-                            organizationData?.organizationData?.image,
+                            organizationData?.image?.find((image) => image?.isMain),
+                          ) &&
+                            organizationData?.image?.find((image) => image?.isMain)?.large?.uri && (
+                              <ImageUpload
+                                imageUrl={organizationData?.image?.find((image) => image?.isMain)?.large?.uri}
+                                imageReadOnly={true}
+                                preview={true}
+                                eventImageData={organizationData?.image?.find((image) => image?.isMain)?.large}
+                              />
+                            )}
+                          {checkIfFieldIsToBeDisplayed(
+                            organizationFormFieldNames.IMAGE,
+                            imageConfig.enableGallery ? organizationData?.image?.filter((image) => !image?.isMain) : [],
                           ) && (
                             <div>
                               <p className="read-only-event-content-sub-title-primary">
                                 {t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
                               </p>
-                              {organizationData?.image?.length > 0 && imageConfig.enableGallery && (
-                                <MultipleImageUpload
-                                  imageReadOnly={true}
-                                  largeAspectRatio={
-                                    currentCalendarData?.imageConfig?.length > 0
-                                      ? imageConfig?.large?.aspectRatio
-                                      : null
-                                  }
-                                  thumbnailAspectRatio={
-                                    currentCalendarData?.imageConfig?.length > 0
-                                      ? imageConfig?.thumbnail?.aspectRatio
-                                      : null
-                                  }
-                                  eventImageData={organizationData?.image?.filter((image) => !image?.isMain)}
-                                />
-                              )}
+                              {organizationData?.image?.filter((image) => !image?.isMain)?.length > 0 &&
+                                imageConfig.enableGallery && (
+                                  <>
+                                    <MultipleImageUpload
+                                      imageReadOnly={true}
+                                      largeAspectRatio={
+                                        currentCalendarData?.imageConfig?.length > 0
+                                          ? imageConfig?.large?.aspectRatio
+                                          : null
+                                      }
+                                      thumbnailAspectRatio={
+                                        currentCalendarData?.imageConfig?.length > 0
+                                          ? imageConfig?.thumbnail?.aspectRatio
+                                          : null
+                                      }
+                                      eventImageData={organizationData?.image?.filter((image) => !image?.isMain)}
+                                    />
+                                  </>
+                                )}
                             </div>
                           )}
                           {checkIfFieldIsToBeDisplayed(
