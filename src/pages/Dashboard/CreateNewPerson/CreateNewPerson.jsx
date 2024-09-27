@@ -809,6 +809,7 @@ function CreateNewPerson() {
                               <Form.Item
                                 key={index}
                                 name={['dynamicFields', taxonomy?.id]}
+                                data-cy={`form-item-person-dynamic-fields-${index}`}
                                 label={bilingual({
                                   data: taxonomy?.name,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
