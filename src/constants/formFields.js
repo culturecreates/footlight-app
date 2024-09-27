@@ -70,17 +70,86 @@ export const formNames = {
 const rules = [
   {
     dataType: dataTypes.URI_STRING,
-    rule: {
-      type: 'url',
-      message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
-    },
+    rule: ({ required, t }) => [
+      {
+        type: 'url',
+        message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
+      },
+      {
+        required,
+        message: t('common.validations.informationRequired'),
+      },
+    ],
   },
   {
     dataType: dataTypes.EMAIL,
-    rule: {
-      type: 'email',
-      message: <Translation>{(t) => t('login.validations.invalidEmail')}</Translation>,
-    },
+    rule: ({ required }) => [
+      {
+        type: 'email',
+        message: <Translation>{(t) => t('login.validations.invalidEmail')}</Translation>,
+      },
+      {
+        required,
+        message: <Translation>{(t) => t('common.validations.informationRequired')}</Translation>,
+      },
+    ],
+  },
+  {
+    dataType: dataTypes.IMAGE,
+    rule: ({ image, t }) => [
+      ({ getFieldValue }) => ({
+        validator() {
+          if (
+            (getFieldValue('image') != undefined && getFieldValue('image')?.length > 0) ||
+            (image && !getFieldValue('image')) ||
+            (image && getFieldValue('image')?.length > 0)
+          ) {
+            return Promise.resolve();
+          } else
+            return Promise.reject(
+              new Error(t('dashboard.events.addEditEvent.validations.otherInformation.emptyImage')),
+            );
+        },
+      }),
+    ],
+  },
+  {
+    dataType: dataTypes.STRING,
+    rule: ({ required }) => [
+      {
+        required,
+        message: <Translation>{(t) => t('common.validations.informationRequired')}</Translation>,
+      },
+    ],
+  },
+  {
+    dataType: dataTypes.URI_STRING_ARRAY,
+    rule: ({ required }) => [
+      {
+        required,
+        message: <Translation>{(t) => t('common.validations.informationRequired')}</Translation>,
+      },
+    ],
+  },
+  {
+    dataType: dataTypes.STANDARD_FIELD,
+    rule: ({ required }) => [
+      {
+        required,
+        message: <Translation>{(t) => t('common.validations.informationRequired')}</Translation>,
+      },
+    ],
+  },
+  {
+    dataType: dataTypes.IDENTITY_STRING,
+    rule: ({ t }) => [
+      ({ getFieldValue }) => ({
+        validator() {
+          if (getFieldValue('location')) return Promise.resolve();
+          else return Promise.reject(new Error(t('common.validations.informationRequired')));
+        },
+      }),
+    ],
   },
 ];
 
@@ -115,7 +184,7 @@ export const formFieldValue = [
             name={Array.isArray(name) ? name[0] : name}
             data={data}
             entityId={entityId}
-            validations={validations}
+            validations={validations ?? t('common.validations.informationRequired')}
             dataCy={`input-text-area-${mappedField}-`}
             placeholder={placeholder}
             required={required}>
@@ -347,7 +416,6 @@ export const formFieldValue = [
       locationPlace,
       setLocationPlace,
       t,
-      name,
       placesSearch,
       calendarContentLanguage,
       allPlacesArtsdataList,
@@ -356,9 +424,10 @@ export const formFieldValue = [
       mappedField,
       isEntitiesFetching,
       isExternalSourceFetching,
+      fieldName,
     }) => {
       return (
-        <>
+        <div>
           <Popover
             data-cy={`popover-${mappedField}`}
             open={isPopoverOpen}
@@ -392,7 +461,7 @@ export const formFieldValue = [
                               }`}
                               onClick={() => {
                                 setLocationPlace(place);
-                                form.setFieldValue(name, place?.value);
+                                form.setFieldValue(fieldName, place?.value);
                                 setIsPopoverOpen(false);
                               }}
                               data-cy={`div-${mappedField}-footlight-place-${index}`}>
@@ -424,7 +493,7 @@ export const formFieldValue = [
                             }`}
                             onClick={() => {
                               setLocationPlace(place);
-                              form.setFieldValue(name, place?.value);
+                              form.setFieldValue(fieldName, place?.value);
                               setIsPopoverOpen(false);
                             }}
                             data-cy={`div-${mappedField}-footlight-place-${index}`}>
@@ -453,7 +522,7 @@ export const formFieldValue = [
                             className="event-popover-options"
                             onClick={() => {
                               setLocationPlace(place);
-                              form.setFieldValue(name, place?.uri);
+                              form.setFieldValue(fieldName, place?.uri);
                               setIsPopoverOpen(false);
                             }}
                             data-cy={`div-${mappedField}-artsdata-place-${index}`}>
@@ -494,14 +563,14 @@ export const formFieldValue = [
               closable
               onClose={() => {
                 setLocationPlace();
-                form.setFieldValue(name, undefined);
+                form.setFieldValue(fieldName, undefined);
               }}
               edit={locationPlace?.source === sourceOptions.CMS && true}
               onEdit={(e) => placeNavigationHandler(locationPlace?.value, locationPlace?.type, e)}
               creatorId={locationPlace?.creatorId}
             />
           )}
-        </>
+        </div>
       );
     },
   },
@@ -550,14 +619,16 @@ export const renderFormFields = ({
   mappedField,
   t,
   validations,
+  originalUrl,
+  fieldName,
 }) => {
   return (
     <>
       {position === 'top' && datatype !== dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
       <Form.Item
-        data-cy={`form-item-${mappedField}`}
+        data-cy={`form-item-${mappedField ?? fieldName}`}
         label={label}
-        name={name}
+        name={name ?? fieldName?.toLowerCase()}
         key={key}
         initialValue={
           Array.isArray(initialValue)
@@ -574,7 +645,9 @@ export const renderFormFields = ({
         className={mappedField}
         rules={rules
           ?.map((rule) => {
-            if (datatype === rule?.dataType) return rule.rule;
+            if (datatype === rule?.dataType) {
+              return rule.rule({ image: originalUrl, t, required, fieldName });
+            }
           })
           .concat([
             {
@@ -582,6 +655,7 @@ export const renderFormFields = ({
               message: validations ?? t('common.validations.informationRequired'),
             },
           ])
+          ?.flat()
           ?.filter((rule) => rule !== undefined)}
         help={
           position === 'bottom' && userTips ? (
@@ -639,6 +713,7 @@ export const returnFormDataWithFields = ({
     datatype: field?.datatype,
     required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
     element: formField?.element({
+      fieldName: field?.name,
       mappedField: field?.mappedField,
       data: entityData && entityData[field?.mappedField],
       datatype: field?.datatype,
@@ -728,5 +803,9 @@ export const returnFormDataWithFields = ({
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       locationPlace,
     }),
+    originalUrl:
+      field?.mappedField === mappedFieldTypes.IMAGE
+        ? entityData?.image?.find((image) => image?.isMain)?.original?.uri
+        : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo?.original?.uri,
   });
 };

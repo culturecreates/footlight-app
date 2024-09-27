@@ -278,13 +278,16 @@ function CreateNewOrganization() {
               collection.push([field?.mappedField, contentLanguageKeyMap[language]]);
             });
             return collection;
-          } else return field?.mappedField;
+          } else return field?.mappedField ?? field?.name?.toLowerCase();
         })
         ?.flat(),
     );
     validateFieldList = validateFieldList?.concat(
       formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => ['dynamicFields', field]),
     );
+    console.log(form.getFieldsError(['location']));
+    console.log(form.getFieldInstance('location'));
+    console.log(form.getFieldError('location'));
 
     var promise = new Promise(function (resolve, reject) {
       form
