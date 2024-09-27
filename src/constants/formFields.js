@@ -429,7 +429,7 @@ export const formFieldValue = [
       return (
         <div>
           <Popover
-            data-cy={`popover-${mappedField}`}
+            data-cy={`popover-${mappedField ?? fieldName}`}
             open={isPopoverOpen}
             onOpenChange={(open) => setIsPopoverOpen(open)}
             overlayClassName="event-popover"
@@ -441,7 +441,9 @@ export const formFieldValue = [
               <div>
                 <div>
                   <>
-                    <div className="popover-section-header" data-cy={`div-${mappedField}-footlight-place-title`}>
+                    <div
+                      className="popover-section-header"
+                      data-cy={`div-${mappedField ?? fieldName}-footlight-place-title`}>
                       {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                     </div>
                     <div className="search-scrollable-content">
@@ -464,7 +466,7 @@ export const formFieldValue = [
                                 form.setFieldValue(fieldName, place?.value);
                                 setIsPopoverOpen(false);
                               }}
-                              data-cy={`div-${mappedField}-footlight-place-${index}`}>
+                              data-cy={`div-${mappedField ?? fieldName}-footlight-place-${index}`}>
                               {place?.label}
                             </div>
                           ))
@@ -474,7 +476,9 @@ export const formFieldValue = [
                     </div>
                   </>
 
-                  <div className="popover-section-header" data-cy={`div-${mappedField}-footlight-place-title`}>
+                  <div
+                    className="popover-section-header"
+                    data-cy={`div-${mappedField ?? fieldName}-footlight-place-title`}>
                     {t('dashboard.organization.createNew.search.importsFromFootlight')}
                   </div>
                   <div className="search-scrollable-content">
@@ -496,7 +500,7 @@ export const formFieldValue = [
                               form.setFieldValue(fieldName, place?.value);
                               setIsPopoverOpen(false);
                             }}
-                            data-cy={`div-${mappedField}-footlight-place-${index}`}>
+                            data-cy={`div-${mappedField ?? fieldName}-footlight-place-${index}`}>
                             {place?.label}
                           </div>
                         ))
@@ -505,7 +509,9 @@ export const formFieldValue = [
                       ))}
                   </div>
 
-                  <div className="popover-section-header" data-cy={`div-${mappedField}-artsdata-place-title`}>
+                  <div
+                    className="popover-section-header"
+                    data-cy={`div-${mappedField ?? fieldName}-artsdata-place-title`}>
                     {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
                   </div>
                   <div className="search-scrollable-content">
@@ -525,7 +531,7 @@ export const formFieldValue = [
                               form.setFieldValue(fieldName, place?.uri);
                               setIsPopoverOpen(false);
                             }}
-                            data-cy={`div-${mappedField}-artsdata-place-${index}`}>
+                            data-cy={`div-${mappedField ?? fieldName}-artsdata-place-${index}`}>
                             {place?.label}
                           </div>
                         ))
@@ -546,7 +552,7 @@ export const formFieldValue = [
               onClick={() => {
                 setIsPopoverOpen(true);
               }}
-              data-cy={`input-${mappedField}`}
+              data-cy={`input-${mappedField ?? fieldName}`}
             />
           </Popover>
           {locationPlace && (
@@ -626,7 +632,7 @@ export const renderFormFields = ({
     <>
       {position === 'top' && datatype !== dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
       <Form.Item
-        data-cy={`form-item-${mappedField ?? fieldName}`}
+        data-cy={`form-item-${mappedField ?? fieldName?.toLowerCase()}`}
         label={label}
         name={name ?? fieldName?.toLowerCase()}
         key={key}
@@ -642,7 +648,7 @@ export const renderFormFields = ({
         required={required}
         hidden={hidden}
         style={style}
-        className={mappedField}
+        className={mappedField ?? fieldName?.toLowerCase()}
         rules={rules
           ?.map((rule) => {
             if (datatype === rule?.dataType) {
@@ -662,7 +668,7 @@ export const renderFormFields = ({
             <p
               className="add-event-date-heading"
               style={{ marginTop: '-15px' }}
-              data-cy={`form-item-helper-text-${mappedField}`}>
+              data-cy={`form-item-helper-text-${mappedField ?? fieldName?.toLowerCase()}`}>
               {userTips}
             </p>
           ) : undefined
@@ -713,7 +719,7 @@ export const returnFormDataWithFields = ({
     datatype: field?.datatype,
     required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
     element: formField?.element({
-      fieldName: field?.name,
+      fieldName: field?.name?.toLowerCase(),
       mappedField: field?.mappedField,
       data: entityData && entityData[field?.mappedField],
       datatype: field?.datatype,

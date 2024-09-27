@@ -1287,6 +1287,7 @@ function CreateNewOrganization() {
                               <Form.Item
                                 key={index}
                                 name={['dynamicFields', taxonomy?.id]}
+                                data-cy={`form-item-organization-dynamic-fields-${index}`}
                                 label={bilingual({
                                   data: taxonomy?.name,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
@@ -1304,6 +1305,7 @@ function CreateNewOrganization() {
                                   taxonomy?.isAdminOnly ? (adminCheckHandler({ calendar, user }) ? false : true) : false
                                 }>
                                 <TreeSelectOption
+                                  data-cy={`treeselect-organization-dynamic-fields-${index}`}
                                   allowClear
                                   treeDefaultExpandAll
                                   notFoundContent={<NoContent />}
@@ -1317,6 +1319,7 @@ function CreateNewOrganization() {
                                     const { label, closable, onClose } = props;
                                     return (
                                       <Tags
+                                        data-cy={`tag-organization-dynamic-field-${label}`}
                                         closable={closable}
                                         onClose={onClose}
                                         closeIcon={
