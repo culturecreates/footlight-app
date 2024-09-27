@@ -53,7 +53,7 @@ function Sort(props) {
             {sortByOptionsOrgsPlacesPerson?.map((sortBy, index) => {
               if (sortBy?.key === filter?.sort)
                 return (
-                  <span key={index} data-cy={`span-sort-option-${sortBy?.label}`}>
+                  <span key={index} data-cy={`span-sort-option-${sortBy['data-cy']}`}>
                     {sortBy?.label}
                   </span>
                 );
