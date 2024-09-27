@@ -24,10 +24,12 @@ export const sortByOptionsOrgsPlacesPerson = [
   {
     label: <Translation>{(t) => t('dashboard.events.filter.sort.name')}</Translation>,
     key: `name`,
+    ['data-cy']: 'name',
   },
   {
     label: <Translation>{(t) => t('dashboard.taxonomy.listing.sort.createdDate')}</Translation>,
     key: 'metadata.createdAt',
+    ['data-cy']: 'createdDate',
   },
 ];
 
