@@ -285,9 +285,6 @@ function CreateNewOrganization() {
     validateFieldList = validateFieldList?.concat(
       formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => ['dynamicFields', field]),
     );
-    console.log(form.getFieldsError(['location']));
-    console.log(form.getFieldInstance('location'));
-    console.log(form.getFieldError('location'));
 
     var promise = new Promise(function (resolve, reject) {
       form

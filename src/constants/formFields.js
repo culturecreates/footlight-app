@@ -142,10 +142,10 @@ const rules = [
   },
   {
     dataType: dataTypes.IDENTITY_STRING,
-    rule: ({ t }) => [
+    rule: ({ t, fieldName }) => [
       ({ getFieldValue }) => ({
         validator() {
-          if (getFieldValue('location')) return Promise.resolve();
+          if (getFieldValue(fieldName)) return Promise.resolve();
           else return Promise.reject(new Error(t('common.validations.informationRequired')));
         },
       }),
