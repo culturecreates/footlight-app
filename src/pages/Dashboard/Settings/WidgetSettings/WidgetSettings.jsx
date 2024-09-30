@@ -537,7 +537,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
                           name="font"
                           required
                           label={t(`${localePath}.font`)}
-                          initialValue={widgetFontCollection[0]}
+                          initialValue={widgetFontCollection[0]?.value ?? 'Roboto'}
                           data-cy="widget-settings-font">
                           <SelectOption
                             data-cy="widget-settings-font-dropdown"
