@@ -70,27 +70,19 @@ export const formNames = {
 const rules = [
   {
     dataType: dataTypes.URI_STRING,
-    rule: ({ required, t }) => [
+    rule: () => [
       {
         type: 'url',
         message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
-      },
-      {
-        required,
-        message: t('common.validations.informationRequired'),
       },
     ],
   },
   {
     dataType: dataTypes.EMAIL,
-    rule: ({ required }) => [
+    rule: () => [
       {
         type: 'email',
         message: <Translation>{(t) => t('login.validations.invalidEmail')}</Translation>,
-      },
-      {
-        required,
-        message: <Translation>{(t) => t('common.validations.informationRequired')}</Translation>,
       },
     ],
   },
@@ -109,44 +101,6 @@ const rules = [
             return Promise.reject(
               new Error(t('dashboard.events.addEditEvent.validations.otherInformation.emptyImage')),
             );
-        },
-      }),
-    ],
-  },
-  {
-    dataType: dataTypes.STRING,
-    rule: ({ required }) => [
-      {
-        required,
-        message: <Translation>{(t) => t('common.validations.informationRequired')}</Translation>,
-      },
-    ],
-  },
-  {
-    dataType: dataTypes.URI_STRING_ARRAY,
-    rule: ({ required }) => [
-      {
-        required,
-        message: <Translation>{(t) => t('common.validations.informationRequired')}</Translation>,
-      },
-    ],
-  },
-  {
-    dataType: dataTypes.STANDARD_FIELD,
-    rule: ({ required }) => [
-      {
-        required,
-        message: <Translation>{(t) => t('common.validations.informationRequired')}</Translation>,
-      },
-    ],
-  },
-  {
-    dataType: dataTypes.IDENTITY_STRING,
-    rule: ({ t, fieldName }) => [
-      ({ getFieldValue }) => ({
-        validator() {
-          if (getFieldValue(fieldName)) return Promise.resolve();
-          else return Promise.reject(new Error(t('common.validations.informationRequired')));
         },
       }),
     ],
@@ -184,7 +138,9 @@ export const formFieldValue = [
             name={Array.isArray(name) ? name[0] : name}
             data={data}
             entityId={entityId}
-            validations={validations ?? t('common.validations.informationRequired')}
+            validations={
+              validations && validations.trim() !== '' ? validations : t('common.validations.informationRequired')
+            }
             dataCy={`input-text-area-${mappedField}-`}
             placeholder={placeholder}
             required={required}>
@@ -658,7 +614,8 @@ export const renderFormFields = ({
           .concat([
             {
               required: required,
-              message: validations ?? t('common.validations.informationRequired'),
+              message:
+                validations && validations.trim() !== '' ? validations : t('common.validations.informationRequired'),
             },
           ])
           ?.flat()
@@ -713,7 +670,7 @@ export const returnFormDataWithFields = ({
 }) => {
   return renderFormFields({
     fieldName: field?.name,
-    name: [field?.mappedField],
+    name: field?.mappedField && [field?.mappedField],
     mappedField: field?.mappedField,
     type: field?.type,
     datatype: field?.datatype,
@@ -729,7 +686,7 @@ export const returnFormDataWithFields = ({
       type: field?.type,
       isDynamicField: false,
       calendarContentLanguage,
-      name: [field?.mappedField],
+      name: field?.mappedField && [field?.mappedField],
       preview: true,
       placeholder: bilingual({
         data: field?.placeholder,
