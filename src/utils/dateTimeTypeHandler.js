@@ -3,11 +3,18 @@ import { dateTypes } from '../constants/dateTypes';
 
 export const dateTimeTypeHandler = (startDate, startDateTime, endDate, endDateTime, isRecurring) => {
   if (isRecurring) return dateTypes.MULTIPLE;
-  else if ((startDate || startDateTime) && !endDate && !endDateTime) return dateTypes.SINGLE;
-  else if ((startDate || startDateTime) && endDateTime && !endDate) {
-    if (startDate && moment(startDate).isSame(endDateTime, 'day')) return dateTypes.SINGLE;
-    else if (startDate && !moment(startDate).isSame(endDateTime, 'day')) return dateTypes.RANGE;
-    else if (startDateTime && moment(startDateTime).isSame(endDateTime, 'day')) return dateTypes.SINGLE;
-    else if (startDateTime && !moment(startDateTime).isSame(endDateTime, 'day')) return dateTypes.RANGE;
-  } else if ((startDate || startDateTime) && !endDateTime && endDate) return dateTypes.RANGE;
+
+  const start = startDateTime || startDate;
+  const end = endDateTime || endDate;
+
+  // only start is provided
+  if (start && !end) return dateTypes.SINGLE;
+
+  // if both start and end are present
+  if (start && end) {
+    // If start and end are the same day, or within 24 hours
+    if (moment(start).isSame(end, 'day') || moment(end).diff(moment(start), 'hours') < 24) return dateTypes.SINGLE;
+
+    return dateTypes.RANGE;
+  }
 };
