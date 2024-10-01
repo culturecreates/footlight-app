@@ -278,7 +278,7 @@ function CreateNewOrganization() {
               collection.push([field?.mappedField, contentLanguageKeyMap[language]]);
             });
             return collection;
-          } else return field?.mappedField;
+          } else return field?.mappedField ?? field?.name?.toLowerCase();
         })
         ?.flat(),
     );

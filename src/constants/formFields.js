@@ -70,17 +70,40 @@ export const formNames = {
 const rules = [
   {
     dataType: dataTypes.URI_STRING,
-    rule: {
-      type: 'url',
-      message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
-    },
+    rule: () => [
+      {
+        type: 'url',
+        message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
+      },
+    ],
   },
   {
     dataType: dataTypes.EMAIL,
-    rule: {
-      type: 'email',
-      message: <Translation>{(t) => t('login.validations.invalidEmail')}</Translation>,
-    },
+    rule: () => [
+      {
+        type: 'email',
+        message: <Translation>{(t) => t('login.validations.invalidEmail')}</Translation>,
+      },
+    ],
+  },
+  {
+    dataType: dataTypes.IMAGE,
+    rule: ({ image, t }) => [
+      ({ getFieldValue }) => ({
+        validator() {
+          if (
+            (getFieldValue('image') != undefined && getFieldValue('image')?.length > 0) ||
+            (image && !getFieldValue('image')) ||
+            (image && getFieldValue('image')?.length > 0)
+          ) {
+            return Promise.resolve();
+          } else
+            return Promise.reject(
+              new Error(t('dashboard.events.addEditEvent.validations.otherInformation.emptyImage')),
+            );
+        },
+      }),
+    ],
   },
 ];
 
@@ -115,7 +138,9 @@ export const formFieldValue = [
             name={Array.isArray(name) ? name[0] : name}
             data={data}
             entityId={entityId}
-            validations={validations}
+            validations={
+              validations && validations.trim() !== '' ? validations : t('common.validations.informationRequired')
+            }
             dataCy={`input-text-area-${mappedField}-`}
             placeholder={placeholder}
             required={required}>
@@ -347,7 +372,6 @@ export const formFieldValue = [
       locationPlace,
       setLocationPlace,
       t,
-      name,
       placesSearch,
       calendarContentLanguage,
       allPlacesArtsdataList,
@@ -359,7 +383,7 @@ export const formFieldValue = [
       fieldName,
     }) => {
       return (
-        <>
+        <div>
           <Popover
             data-cy={`popover-${mappedField ?? fieldName}`}
             open={isPopoverOpen}
@@ -395,7 +419,7 @@ export const formFieldValue = [
                               }`}
                               onClick={() => {
                                 setLocationPlace(place);
-                                form.setFieldValue(name, place?.value);
+                                form.setFieldValue(fieldName, place?.value);
                                 setIsPopoverOpen(false);
                               }}
                               data-cy={`div-${mappedField ?? fieldName}-footlight-place-${index}`}>
@@ -429,7 +453,7 @@ export const formFieldValue = [
                             }`}
                             onClick={() => {
                               setLocationPlace(place);
-                              form.setFieldValue(name, place?.value);
+                              form.setFieldValue(fieldName, place?.value);
                               setIsPopoverOpen(false);
                             }}
                             data-cy={`div-${mappedField ?? fieldName}-footlight-place-${index}`}>
@@ -460,7 +484,7 @@ export const formFieldValue = [
                             className="event-popover-options"
                             onClick={() => {
                               setLocationPlace(place);
-                              form.setFieldValue(name, place?.uri);
+                              form.setFieldValue(fieldName, place?.uri);
                               setIsPopoverOpen(false);
                             }}
                             data-cy={`div-${mappedField ?? fieldName}-artsdata-place-${index}`}>
@@ -501,14 +525,14 @@ export const formFieldValue = [
               closable
               onClose={() => {
                 setLocationPlace();
-                form.setFieldValue(name, undefined);
+                form.setFieldValue(fieldName, undefined);
               }}
               edit={locationPlace?.source === sourceOptions.CMS && true}
               onEdit={(e) => placeNavigationHandler(locationPlace?.value, locationPlace?.type, e)}
               creatorId={locationPlace?.creatorId}
             />
           )}
-        </>
+        </div>
       );
     },
   },
@@ -557,6 +581,7 @@ export const renderFormFields = ({
   mappedField,
   t,
   validations,
+  originalUrl,
   fieldName,
 }) => {
   return (
@@ -565,7 +590,7 @@ export const renderFormFields = ({
       <Form.Item
         data-cy={`form-item-${mappedField ?? fieldName?.toLowerCase()}`}
         label={label}
-        name={name}
+        name={name ?? fieldName?.toLowerCase()}
         key={key}
         initialValue={
           Array.isArray(initialValue)
@@ -582,14 +607,18 @@ export const renderFormFields = ({
         className={mappedField ?? fieldName?.toLowerCase()}
         rules={rules
           ?.map((rule) => {
-            if (datatype === rule?.dataType) return rule.rule;
+            if (datatype === rule?.dataType) {
+              return rule.rule({ image: originalUrl, t, required, fieldName });
+            }
           })
           .concat([
             {
               required: required,
-              message: validations ?? t('common.validations.informationRequired'),
+              message:
+                validations && validations.trim() !== '' ? validations : t('common.validations.informationRequired'),
             },
           ])
+          ?.flat()
           ?.filter((rule) => rule !== undefined)}
         help={
           position === 'bottom' && userTips ? (
@@ -641,7 +670,7 @@ export const returnFormDataWithFields = ({
 }) => {
   return renderFormFields({
     fieldName: field?.name,
-    name: [field?.mappedField],
+    name: field?.mappedField && [field?.mappedField],
     mappedField: field?.mappedField,
     type: field?.type,
     datatype: field?.datatype,
@@ -657,7 +686,7 @@ export const returnFormDataWithFields = ({
       type: field?.type,
       isDynamicField: false,
       calendarContentLanguage,
-      name: [field?.mappedField],
+      name: field?.mappedField && [field?.mappedField],
       preview: true,
       placeholder: bilingual({
         data: field?.placeholder,
@@ -737,5 +766,9 @@ export const returnFormDataWithFields = ({
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       locationPlace,
     }),
+    originalUrl:
+      field?.mappedField === mappedFieldTypes.IMAGE
+        ? entityData?.image?.find((image) => image?.isMain)?.original?.uri
+        : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo?.original?.uri,
   });
 };
