@@ -2701,6 +2701,9 @@ function AddEvent() {
                               setStartDate(dates?.[0]);
                               setEndDate(dates?.[1]);
                             }}
+                            onOpenChange={(open) => {
+                              if (!open && startDate && !endDate) setStartDate(null);
+                            }}
                             disabledDate={(current) =>
                               (startDate && current.isSame(startDate, 'day')) ||
                               (endDate && current.isSame(endDate, 'day'))
@@ -2722,6 +2725,9 @@ function AddEvent() {
                             onCalendarChange={(dates) => {
                               setStartDate(dates?.[0]);
                               setEndDate(dates?.[1]);
+                            }}
+                            onOpenChange={(open) => {
+                              if (!open && startDate && !endDate) setStartDate(null);
                             }}
                             disabledDate={(current) =>
                               (startDate && current.isSame(startDate, 'day')) ||

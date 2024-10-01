@@ -25,6 +25,7 @@ const RecurringEvents = function ({
   setFormFields,
   dateType,
   disabledDate,
+  onOpenChange,
   onCalendarChange,
   setSubEventCount,
   subEventCount,
@@ -349,6 +350,7 @@ const RecurringEvents = function ({
               style={{ width: '423px' }}
               disabled={(isCustom || formFields?.frequency === 'CUSTOM') && startDateRecur?.length == 2 && true}
               disabledDate={disabledDate}
+              onOpenChange={onOpenChange}
               onCalendarChange={onCalendarChange}
               suffixIcon={
                 subEventCount > 0 && (
