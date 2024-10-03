@@ -107,6 +107,7 @@ function EventReadOnly() {
   let artsDataLink = eventData?.sameAs?.filter((item) => item?.type === sameAsTypes.ARTSDATA_IDENTIFIER);
   const mainImageData = eventData?.image?.find((image) => image?.isMain) || null;
   const imageConfig = currentCalendarData?.imageConfig?.length > 0 && currentCalendarData?.imageConfig[0];
+  const imageGalleryData = eventData?.image?.filter((image) => image && !image?.isMain) || [];
 
   const formConstants = currentCalendarData?.forms?.filter((form) => form?.formName === 'Event')[0];
   let mandatoryStandardFields = [];
@@ -862,7 +863,7 @@ function EventReadOnly() {
                                 )}
                               </div>
                             )}
-                            {eventData?.image?.length > 0 && imageConfig.enableGallery && (
+                            {imageGalleryData?.length > 0 && imageConfig.enableGallery && (
                               <div
                                 style={{
                                   display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
@@ -886,7 +887,7 @@ function EventReadOnly() {
                                       ? imageConfig?.thumbnail?.aspectRatio
                                       : null
                                   }
-                                  eventImageData={eventData?.image?.filter((image) => !image?.isMain)}
+                                  eventImageData={imageGalleryData}
                                 />
                               </div>
                             )}
