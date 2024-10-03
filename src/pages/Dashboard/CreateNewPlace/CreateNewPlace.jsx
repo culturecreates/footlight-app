@@ -92,6 +92,7 @@ import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurr
 import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems/CreateMultiLingualFormItems';
 import { isDataValid, placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import MultiLingualTextEditor from '../../../components/MultilingualTextEditor/MultiLingualTextEditor';
+import MapComponent from '../../../components/MapComponent';
 
 const { TextArea } = Input;
 
@@ -1988,6 +1989,7 @@ function CreateNewPlace() {
                   ]}>
                   <StyledInput data-cy="input-place-coordinates" />
                 </Form.Item>
+                <MapComponent />
                 <Form.Item
                   data-cy="form-item-place-region"
                   name={formFieldNames.REGION}
