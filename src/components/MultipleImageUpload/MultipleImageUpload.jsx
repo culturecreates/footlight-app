@@ -106,33 +106,37 @@ const MultipleImageUpload = (props) => {
 
   const [fileList, setFileList] = useState(
     eventImageData?.length > 0
-      ? eventImageData?.map((image) => {
-          return {
-            uid: image?.original?.entityId,
-            name: image?.original?.entityId,
-            status: 'done',
-            url: image?.original?.uri,
-            cropValues: {
-              large: {
-                x: image?.large?.xCoordinate ?? undefined,
-                y: image?.large?.yCoordinate ?? undefined,
-                height: image?.large?.height ?? undefined,
-                width: image?.large?.width ?? undefined,
-              },
-              original: {
-                entityId: image?.original?.entityId ?? null,
-                height: image?.original?.height ?? undefined,
-                width: image?.original?.width ?? undefined,
-              },
-              thumbnail: {
-                x: image?.thumbnail?.xCoordinate ?? undefined,
-                y: image?.thumbnail?.yCoordinate ?? undefined,
-                height: image?.thumbnail?.height ?? undefined,
-                width: image?.thumbnail?.width ?? undefined,
-              },
-            },
-          };
-        })
+      ? eventImageData
+          ?.map((image) => {
+            if (image)
+              return {
+                uid: image?.original?.entityId,
+                name: image?.original?.entityId,
+                status: 'done',
+                url: image?.original?.uri,
+                cropValues: {
+                  large: {
+                    x: image?.large?.xCoordinate ?? undefined,
+                    y: image?.large?.yCoordinate ?? undefined,
+                    height: image?.large?.height ?? undefined,
+                    width: image?.large?.width ?? undefined,
+                  },
+                  original: {
+                    entityId: image?.original?.entityId ?? null,
+                    height: image?.original?.height ?? undefined,
+                    width: image?.original?.width ?? undefined,
+                  },
+                  thumbnail: {
+                    x: image?.thumbnail?.xCoordinate ?? undefined,
+                    y: image?.thumbnail?.yCoordinate ?? undefined,
+                    height: image?.thumbnail?.height ?? undefined,
+                    width: image?.thumbnail?.width ?? undefined,
+                  },
+                },
+              };
+            else return [];
+          })
+          ?.flat()
       : [],
   );
 
