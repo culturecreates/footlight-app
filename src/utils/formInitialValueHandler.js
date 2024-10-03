@@ -14,6 +14,7 @@ export const formInitialValueHandler = (type, mappedField, datatype, data) => {
     case formTypes.MULTISELECT:
       if (initialData?.length > 0) return initialData?.map((concept) => concept?.entityId);
       else return [];
+
     case formTypes.IMAGE:
       if (Array.isArray(initialData) && initialData.length > 0) {
         return [
@@ -21,16 +22,16 @@ export const formInitialValueHandler = (type, mappedField, datatype, data) => {
             uid: initialData[0]?.original?.entityId,
             name: initialData[0]?.original?.entityId,
             status: 'done',
-            url: initialData[0].original.uri,
+            url: initialData[0]?.original?.uri,
           },
         ];
       } else if (initialData?.original?.uri) {
         return [
           {
-            uid: initialData.original.entityId,
-            name: initialData.original.entityId,
+            uid: initialData?.original?.entityId,
+            name: initialData?.original?.entityId,
             status: 'done',
-            url: initialData.original.uri,
+            url: initialData?.original?.uri,
           },
         ];
       }
