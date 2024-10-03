@@ -145,45 +145,46 @@ function ImageUpload(props) {
           maxCount={1}
           onRemove={onRemove}
           itemRender={(reactNode, file, fileList, actions) => {
-            return (
-              <span className="image-footer">
-                <span className="image-contents">
-                  <img
-                    className="image-thumbnail"
-                    style={{
-                      width: width ? `${width}px` : 'auto',
-                      minWidth: width ? `${width}px` : 'none',
-                    }}
-                    src={imageUrl || (file?.url ?? file?.thumbUrl)}
-                  />
-                  <a
-                    className="image-name"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href={file?.url ?? imageUrl}
-                    data-cy="anchor-image-link">
-                    {file?.name}
-                  </a>
+            if (imageUrl || (file?.url ?? file?.thumbUrl))
+              return (
+                <span className="image-footer">
+                  <span className="image-contents">
+                    <img
+                      className="image-thumbnail"
+                      style={{
+                        width: width ? `${width}px` : 'auto',
+                        minWidth: width ? `${width}px` : 'none',
+                      }}
+                      src={imageUrl || (file?.url ?? file?.thumbUrl)}
+                    />
+                    <a
+                      className="image-name"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href={file?.url ?? imageUrl}
+                      data-cy="anchor-image-link">
+                      {file?.name}
+                    </a>
+                  </span>
+                  <span className="image-actions">
+                    {props?.imageReadOnly && (
+                      <span onClick={actions?.download} data-cy="span-download-image">
+                        <DownloadOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
+                      </span>
+                    )}
+                    {!props?.imageReadOnly && imageUrl && (
+                      <span onClick={actions?.remove} data-cy="span-remove-image">
+                        <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
+                      </span>
+                    )}
+                    {!props?.imageReadOnly && (props?.imageUrl || imageUrl) && isCrop && (
+                      <span className="edit-image" onClick={actions?.preview} data-cy="span-preview-crop-image">
+                        <EditOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
+                      </span>
+                    )}
+                  </span>
                 </span>
-                <span className="image-actions">
-                  {props?.imageReadOnly && (
-                    <span onClick={actions?.download} data-cy="span-download-image">
-                      <DownloadOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
-                    </span>
-                  )}
-                  {!props?.imageReadOnly && imageUrl && (
-                    <span onClick={actions?.remove} data-cy="span-remove-image">
-                      <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
-                    </span>
-                  )}
-                  {!props?.imageReadOnly && (props?.imageUrl || imageUrl) && isCrop && (
-                    <span className="edit-image" onClick={actions?.preview} data-cy="span-preview-crop-image">
-                      <EditOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
-                    </span>
-                  )}
-                </span>
-              </span>
-            );
+              );
           }}
           defaultFileList={
             props?.imageUrl && [

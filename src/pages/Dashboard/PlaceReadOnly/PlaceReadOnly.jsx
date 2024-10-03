@@ -90,6 +90,7 @@ function PlaceReadOnly() {
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const mainImageData = placeData?.image?.find((image) => image?.isMain) || null;
   const imageConfig = currentCalendarData?.imageConfig?.length > 0 && currentCalendarData?.imageConfig[0];
+  const imageGalleryData = placeData?.image?.filter((image) => image && !image?.isMain) || [];
 
   const formConstants = currentCalendarData?.forms?.filter((form) => form?.formName === 'Place')[0];
   let mandatoryStandardFields = [];
@@ -475,7 +476,7 @@ function PlaceReadOnly() {
                                 )}
                               </Col>
                             )}
-                            {placeData?.image?.length > 0 && imageConfig.enableGallery && (
+                            {imageGalleryData?.length > 0 && imageConfig.enableGallery && (
                               <Col span={24}>
                                 <div>
                                   <p className="read-only-event-content-sub-title-primary">
@@ -493,7 +494,7 @@ function PlaceReadOnly() {
                                         ? imageConfig?.thumbnail?.aspectRatio
                                         : null
                                     }
-                                    eventImageData={placeData?.image?.filter((image) => !image?.isMain)}
+                                    eventImageData={imageGalleryData}
                                   />
                                 </div>
                               </Col>

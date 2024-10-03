@@ -86,6 +86,7 @@ function OrganizationsReadOnly() {
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const imageConfig = currentCalendarData?.imageConfig?.length > 0 && currentCalendarData?.imageConfig[0];
+  const imageGalleryData = organizationData?.image?.filter((image) => image && !image?.isMain) || [];
 
   const formConstants = currentCalendarData?.forms?.filter((form) => form?.formName === 'Organization')[0];
   let mandatoryStandardFields = [];
@@ -425,31 +426,30 @@ function OrganizationsReadOnly() {
                             )}
                           {checkIfFieldIsToBeDisplayed(
                             organizationFormFieldNames.IMAGE,
-                            imageConfig.enableGallery ? organizationData?.image?.filter((image) => !image?.isMain) : [],
+                            imageConfig.enableGallery ? imageGalleryData : [],
                           ) && (
                             <div>
                               <p className="read-only-event-content-sub-title-primary">
                                 {t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
                               </p>
-                              {organizationData?.image?.filter((image) => !image?.isMain)?.length > 0 &&
-                                imageConfig.enableGallery && (
-                                  <>
-                                    <MultipleImageUpload
-                                      imageReadOnly={true}
-                                      largeAspectRatio={
-                                        currentCalendarData?.imageConfig?.length > 0
-                                          ? imageConfig?.large?.aspectRatio
-                                          : null
-                                      }
-                                      thumbnailAspectRatio={
-                                        currentCalendarData?.imageConfig?.length > 0
-                                          ? imageConfig?.thumbnail?.aspectRatio
-                                          : null
-                                      }
-                                      eventImageData={organizationData?.image?.filter((image) => !image?.isMain)}
-                                    />
-                                  </>
-                                )}
+                              {imageGalleryData?.length > 0 && imageConfig.enableGallery && (
+                                <>
+                                  <MultipleImageUpload
+                                    imageReadOnly={true}
+                                    largeAspectRatio={
+                                      currentCalendarData?.imageConfig?.length > 0
+                                        ? imageConfig?.large?.aspectRatio
+                                        : null
+                                    }
+                                    thumbnailAspectRatio={
+                                      currentCalendarData?.imageConfig?.length > 0
+                                        ? imageConfig?.thumbnail?.aspectRatio
+                                        : null
+                                    }
+                                    eventImageData={imageGalleryData}
+                                  />
+                                </>
+                              )}
                             </div>
                           )}
                           {checkIfFieldIsToBeDisplayed(
