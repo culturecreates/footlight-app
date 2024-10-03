@@ -1530,7 +1530,7 @@ function AddEvent() {
 
     setDateType(activeDateType);
 
-    if (currentActiveDateValue && !eventId) {
+    if (currentActiveDateValue) {
       switch (activeDateType) {
         case dateTypes.SINGLE:
           form.setFieldValue(
