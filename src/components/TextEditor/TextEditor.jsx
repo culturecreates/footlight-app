@@ -24,6 +24,7 @@ function TextEditor(props) {
     editorLanguage,
     descriptionMinimumWordCount,
     calendarContentLanguage,
+    form,
   } = props;
   let translateTo;
 
@@ -163,6 +164,14 @@ function TextEditor(props) {
       }
     }
   };
+
+  useEffect(() => {
+    const editorWordCountMap = form.getFieldValue(`editor-wordcount-map`) ?? {};
+    form.setFieldValue(`editor-wordcount-map`, {
+      ...editorWordCountMap,
+      [editorLanguage]: wordCount > 0 ? true : false,
+    });
+  }, [wordCount]);
 
   useEffect(() => {
     const filteredCount = currentReactQuillRef?.current?.unprivilegedEditor

@@ -5,11 +5,17 @@
  * @param {Object} params.values - The current set of values that need to be filtered.
  * @param {Object} [params.activeFallbackFieldsInfo={}] - An object containing fallback status information for fields, where keys represent specific field names and values contain details like `tagDisplayStatus` and `fallbackLiteralValue`.
  * @param {string} params.fieldName - The name of the field that needs to be matched against the fallback fields info.
+ * @param {Object} params.additionalFilters - Object map that correspond to each language key in data and value corresponding if the value is to be included in the payload or not.
  *
  * @returns {Object} - A modified object with filtered values based on the fallback logic.
  */
 
-export const filterUneditedFallbackValues = ({ values, activeFallbackFieldsInfo = {}, fieldName }) => {
+export const filterUneditedFallbackValues = ({
+  values,
+  activeFallbackFieldsInfo = {},
+  fieldName,
+  additionalFilters,
+}) => {
   let requiredFallbackKeyForCurrentField;
 
   // If activeFallbackFieldsInfo is empty, return the original values
@@ -43,5 +49,14 @@ export const filterUneditedFallbackValues = ({ values, activeFallbackFieldsInfo 
     }
   });
 
+  if (additionalFilters) {
+    Object.keys(additionalFilters).forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(modifiedValues, key)) {
+        if (additionalFilters[key] === false) {
+          delete modifiedValues[key];
+        }
+      }
+    });
+  }
   return modifiedValues;
 };
