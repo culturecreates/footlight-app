@@ -742,8 +742,12 @@ function CreateNewOrganization() {
     setScrollToSelectedField(array?.at(-1));
   };
 
-  const onValuesChangeHandler = () => {
-    setShowDialog(true);
+  const onFieldsChange = (changedValue) => {
+    if (changedValue?.length > 0 && !showDialog) {
+      if (changedValue?.filter((field) => field?.touched).length > 0) {
+        setShowDialog(true);
+      }
+    }
   };
 
   const placeNavigationHandler = (id, type, event) => {
@@ -1073,7 +1077,7 @@ function CreateNewOrganization() {
       <RouteLeavingGuard isBlocking={showDialog} />
 
       <div className="add-edit-wrapper add-organization-wrapper">
-        <Form form={form} layout="vertical" name="organization" onValuesChange={onValuesChangeHandler}>
+        <Form form={form} layout="vertical" name="organization" onFieldsChange={onFieldsChange}>
           <Row gutter={[32, 24]}>
             <Col span={24}>
               <Row gutter={[32, 2]}>

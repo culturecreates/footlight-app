@@ -406,8 +406,12 @@ function CreateNewPerson() {
       });
   };
 
-  const onValuesChangeHandler = () => {
-    setShowDialog(true);
+  const onFieldsChange = (changedValue) => {
+    if (changedValue?.length > 0 && !showDialog) {
+      if (changedValue?.filter((field) => field?.touched).length > 0) {
+        setShowDialog(true);
+      }
+    }
   };
 
   const getArtsData = (id) => {
@@ -623,7 +627,7 @@ function CreateNewPerson() {
       <RouteLeavingGuard isBlocking={showDialog} />
 
       <div className="add-edit-wrapper add-organization-wrapper">
-        <Form form={form} layout="vertical" name="person" onValuesChange={onValuesChangeHandler}>
+        <Form form={form} layout="vertical" name="person" onFieldsChange={onFieldsChange}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
               <Row gutter={[32, 2]}>
