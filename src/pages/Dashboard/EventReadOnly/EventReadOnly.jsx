@@ -65,10 +65,11 @@ function EventReadOnly() {
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
 
-  const { data: eventData, isLoading } = useGetEventQuery(
-    { eventId, calendarId, sessionId: timestampRef },
-    { skip: eventId ? false : true },
-  );
+  const {
+    data: eventData,
+    isLoading,
+    isSuccess,
+  } = useGetEventQuery({ eventId, calendarId, sessionId: timestampRef }, { skip: eventId ? false : true });
   let taxonomyClassQuery = new URLSearchParams();
   taxonomyClassQuery.append('taxonomy-class', taxonomyClass.EVENT);
   const { currentData: allTaxonomyData, isLoading: taxonomyLoading } = useGetAllTaxonomyQuery({
@@ -138,101 +139,108 @@ function EventReadOnly() {
   };
 
   useEffect(() => {
-    if (eventData?.recurringEvent || eventData?.subEventConfiguration) setDateType(dateTypes.MULTIPLE);
-    else
-      setDateType(
-        dateTimeTypeHandler(eventData?.startDate, eventData?.startDateTime, eventData?.endDate, eventData?.endDateTime),
-      );
-    if (eventData?.organizer) {
-      let initialOrganizers = eventData?.organizer?.map((organizer) => {
-        return {
-          disambiguatingDescription: organizer?.entity?.disambiguatingDescription,
-          id: organizer?.entityId,
-          name: organizer?.entity?.name,
-          type: organizer?.type,
-          logo: organizer?.entity?.logo,
-          image: organizer?.entity?.image?.find((image) => image?.isMain),
-        };
-      });
-      setSelectedOrganizers(treeEntitiesOption(initialOrganizers, user, calendarContentLanguage, sourceOptions.CMS));
-    }
-    if (eventData?.performer) {
-      let initialPerformers = eventData?.performer?.map((performer) => {
-        return {
-          disambiguatingDescription: performer?.entity?.disambiguatingDescription,
-          id: performer?.entityId,
-          name: performer?.entity?.name,
-          type: performer?.type,
-          logo: performer?.entity?.logo,
-          image: performer?.entity?.image?.find((image) => image?.isMain),
-        };
-      });
-      setSelectedPerformers(treeEntitiesOption(initialPerformers, user, calendarContentLanguage, sourceOptions.CMS));
-    }
-    if (eventData?.collaborators) {
-      let initialSupporters = eventData?.collaborators?.map((supporter) => {
-        return {
-          disambiguatingDescription: supporter?.entity?.disambiguatingDescription,
-          id: supporter?.entityId,
-          name: supporter?.entity?.name,
-          type: supporter?.type,
-          logo: supporter?.entity?.logo,
-          image: supporter?.entity?.image?.find((image) => image?.isMain),
-        };
-      });
-      setSelectedSupporters(treeEntitiesOption(initialSupporters, user, calendarContentLanguage, sourceOptions.CMS));
-    }
-    if (initialPlace && initialPlace?.length > 0) {
-      initialPlace[0] = {
-        ...initialPlace[0],
-        ['openingHours']: initialPlace[0]?.openingHours?.uri,
-      };
-      let initialPlaceAccessibiltiy = [];
-      if (initialPlace[0]?.accessibility?.length > 0 || initialPlace[0]?.regions?.length > 0) {
-        let taxonomyClassQuery = new URLSearchParams();
-        taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
-        getAllTaxonomy({
-          calendarId,
-          search: '',
-          taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
-          includeConcepts: true,
-          sessionId: timestampRef,
-        })
-          .unwrap()
-          .then((res) => {
-            res?.data?.forEach((taxonomy) => {
-              if (taxonomy?.mappedToField === 'PlaceAccessibility') {
-                initialPlace[0]?.accessibility?.forEach((accessibility) => {
-                  taxonomy?.concept?.forEach((concept) => {
-                    if (concept?.id == accessibility?.entityId) {
-                      initialPlaceAccessibiltiy = initialPlaceAccessibiltiy?.concat([concept]);
-                    }
-                  });
-                });
-              }
-            });
-            initialPlace[0] = {
-              ...initialPlace[0],
-              ['accessibility']: initialPlaceAccessibiltiy,
-            };
-            res?.data?.map((taxonomy) => {
-              if (taxonomy?.mappedToField == 'Region') {
-                taxonomy?.concept?.forEach((t) => {
-                  if (initialPlace[0]?.regions[0]?.entityId == t?.id) {
-                    initialPlace[0] = { ...initialPlace[0], regions: [t] };
-                  }
-                });
-              }
-            });
-            setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0]);
-          })
-          .catch((error) => console.log(error));
-      } else {
+    if (!isLoading && isSuccess) {
+      if (eventData?.recurringEvent || eventData?.subEventConfiguration?.length > 0) setDateType(dateTypes.MULTIPLE);
+      else
+        setDateType(
+          dateTimeTypeHandler(
+            eventData?.startDate,
+            eventData?.startDateTime,
+            eventData?.endDate,
+            eventData?.endDateTime,
+          ),
+        );
+      if (eventData?.organizer) {
+        let initialOrganizers = eventData?.organizer?.map((organizer) => {
+          return {
+            disambiguatingDescription: organizer?.entity?.disambiguatingDescription,
+            id: organizer?.entityId,
+            name: organizer?.entity?.name,
+            type: organizer?.type,
+            logo: organizer?.entity?.logo,
+            image: organizer?.entity?.image?.find((image) => image?.isMain),
+          };
+        });
+        setSelectedOrganizers(treeEntitiesOption(initialOrganizers, user, calendarContentLanguage, sourceOptions.CMS));
+      }
+      if (eventData?.performer) {
+        let initialPerformers = eventData?.performer?.map((performer) => {
+          return {
+            disambiguatingDescription: performer?.entity?.disambiguatingDescription,
+            id: performer?.entityId,
+            name: performer?.entity?.name,
+            type: performer?.type,
+            logo: performer?.entity?.logo,
+            image: performer?.entity?.image?.find((image) => image?.isMain),
+          };
+        });
+        setSelectedPerformers(treeEntitiesOption(initialPerformers, user, calendarContentLanguage, sourceOptions.CMS));
+      }
+      if (eventData?.collaborators) {
+        let initialSupporters = eventData?.collaborators?.map((supporter) => {
+          return {
+            disambiguatingDescription: supporter?.entity?.disambiguatingDescription,
+            id: supporter?.entityId,
+            name: supporter?.entity?.name,
+            type: supporter?.type,
+            logo: supporter?.entity?.logo,
+            image: supporter?.entity?.image?.find((image) => image?.isMain),
+          };
+        });
+        setSelectedSupporters(treeEntitiesOption(initialSupporters, user, calendarContentLanguage, sourceOptions.CMS));
+      }
+      if (initialPlace && initialPlace?.length > 0) {
         initialPlace[0] = {
           ...initialPlace[0],
-          ['accessibility']: [],
+          ['openingHours']: initialPlace[0]?.openingHours?.uri,
         };
-        setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0]);
+        let initialPlaceAccessibiltiy = [];
+        if (initialPlace[0]?.accessibility?.length > 0 || initialPlace[0]?.regions?.length > 0) {
+          let taxonomyClassQuery = new URLSearchParams();
+          taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
+          getAllTaxonomy({
+            calendarId,
+            search: '',
+            taxonomyClass: decodeURIComponent(taxonomyClassQuery.toString()),
+            includeConcepts: true,
+            sessionId: timestampRef,
+          })
+            .unwrap()
+            .then((res) => {
+              res?.data?.forEach((taxonomy) => {
+                if (taxonomy?.mappedToField === 'PlaceAccessibility') {
+                  initialPlace[0]?.accessibility?.forEach((accessibility) => {
+                    taxonomy?.concept?.forEach((concept) => {
+                      if (concept?.id == accessibility?.entityId) {
+                        initialPlaceAccessibiltiy = initialPlaceAccessibiltiy?.concat([concept]);
+                      }
+                    });
+                  });
+                }
+              });
+              initialPlace[0] = {
+                ...initialPlace[0],
+                ['accessibility']: initialPlaceAccessibiltiy,
+              };
+              res?.data?.map((taxonomy) => {
+                if (taxonomy?.mappedToField == 'Region') {
+                  taxonomy?.concept?.forEach((t) => {
+                    if (initialPlace[0]?.regions[0]?.entityId == t?.id) {
+                      initialPlace[0] = { ...initialPlace[0], regions: [t] };
+                    }
+                  });
+                }
+              });
+              setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0]);
+            })
+            .catch((error) => console.log(error));
+        } else {
+          initialPlace[0] = {
+            ...initialPlace[0],
+            ['accessibility']: [],
+          };
+          setLocationPlace(placesOptions(initialPlace, user, calendarContentLanguage)[0]);
+        }
       }
     }
   }, [isLoading]);
@@ -601,7 +609,7 @@ function EventReadOnly() {
                                       style={{ textTransform: 'capitalize' }}>
                                       {eventData?.recurringEvent?.frequency
                                         ? eventData?.recurringEvent?.frequency?.toLowerCase()
-                                        : eventData?.subEventConfiguration && dateFrequencyOptions[2].value}
+                                        : eventData?.subEventConfiguration?.length > 0 && dateFrequencyOptions[2].value}
                                     </span>
                                   </span>
                                   {dateType === dateTypes.MULTIPLE && eventData?.subEvents?.length > 0 && (
