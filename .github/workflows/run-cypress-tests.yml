@@ -117,7 +117,7 @@ jobs:
 
       - name: Build and run Footlight Container
         run: |
-          sed -i 's|^REACT_APP_API_URL=.*|REACT_APP_API_URL="http://localhost:8080"|' .env.staging
+          sed -i 's|^REACT_APP_API_URL=.*|REACT_APP_API_URL="http://test.footlight.api:8080"|' .env.staging
           docker build -t footlight .
           docker run -d --name test.footlight.app --network footlight-network.test -p 3000:3000 footlight
 
