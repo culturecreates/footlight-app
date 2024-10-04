@@ -10,7 +10,7 @@ jobs:
   trigger-end-to-end-tests:
     uses: ./.github/workflows/run-cypress-tests.yml
     with:
-      baseUrl: ''
+      environment: 'production'
       grep: ''
       grepTags: '@essential'
       numContainers: '2'
