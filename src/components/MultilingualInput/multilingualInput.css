@@ -9,6 +9,35 @@
   background: #ffffff;
 }
 
+.bilingual-input-tab .ant-tabs-nav-more {
+  display: none;
+}
+
+.bilingual-input-tab .ant-tabs-tab {
+  user-select: none;
+  -webkit-user-select: none; /* For Safari */
+  -moz-user-select: none; /* For Firefox */
+}
+
+.bilingual-input-tab .ant-tabs-nav .ant-tabs-nav-wrap.ant-tabs-nav-wrap-ping-right::after {
+  opacity: 0;
+}
+
+.bilingual-input-tab .tabs-icon-extra:hover rect {
+  fill: #e6e6e6;
+}
+
+.bilingual-input-tab .tabs-icon-extra {
+  z-index: 1;
+  display: grid;
+  place-content: center;
+}
+
+.bilingual-input-tab .ant-tabs-extra-content {
+  display: grid;
+  place-content: center;
+}
+
 .ant-tabs > .ant-tabs-nav .ant-tabs-nav-list {
   border-radius: 4px 4px 0px 0px;
 }
