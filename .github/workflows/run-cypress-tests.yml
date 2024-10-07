@@ -183,7 +183,7 @@ jobs:
           -e DEBUG=cypress:network \
           -v ${GITHUB_WORKSPACE}/cypress/screenshots:/e2e/cypress/screenshots \
           -v ${GITHUB_WORKSPACE}/cypress/videos:/e2e/cypress/videos \
-          -v ${GITHUB_WORKSPACE}/cypress/logs:/e2e/cypress/logs
+          -v ${GITHUB_WORKSPACE}/cypress/logs:/e2e/cypress/logs \
           ghcr.io/kmdvs/cms-cypress_regression_tests:main npx cypress run --browser ${{ matrix.browser }} --headless --env "$env_arg" > /e2e/cypress/logs/debug.log 2>&1
 
       - name: Upload Cypress Debug Logs
