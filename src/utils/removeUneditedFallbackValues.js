@@ -19,7 +19,7 @@ export const filterUneditedFallbackValues = ({
   let requiredFallbackKeyForCurrentField;
 
   // If activeFallbackFieldsInfo is empty, return the original values
-  if (!(Object.keys(activeFallbackFieldsInfo).length > 0)) return values;
+  if (!(Object.keys(activeFallbackFieldsInfo).length > 0)) return emptyValueFilter(additionalFilters, values);
 
   // Determine the required fallback key for the current field
   Object.keys(activeFallbackFieldsInfo).forEach((key) => {
@@ -30,7 +30,7 @@ export const filterUneditedFallbackValues = ({
   });
 
   // If no matching fallback key is found, return the original values
-  if (!requiredFallbackKeyForCurrentField) return values;
+  if (!requiredFallbackKeyForCurrentField) return emptyValueFilter(additionalFilters, values);
 
   let modifiedValues = {};
 
@@ -49,6 +49,10 @@ export const filterUneditedFallbackValues = ({
     }
   });
 
+  return emptyValueFilter(additionalFilters, modifiedValues);
+};
+
+const emptyValueFilter = (additionalFilters, modifiedValues) => {
   if (additionalFilters) {
     Object.keys(additionalFilters).forEach((key) => {
       if (Object.prototype.hasOwnProperty.call(modifiedValues, key)) {
@@ -58,5 +62,6 @@ export const filterUneditedFallbackValues = ({
       }
     });
   }
+
   return modifiedValues;
 };
