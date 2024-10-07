@@ -35,6 +35,7 @@ function Lists(props) {
   const { user } = useSelector(getUserDetails);
   const [currentCalendarData, , , , , isReadOnly] = useOutletContext();
   const totalCount = data?.totalCount;
+  const dateTimeFormat = lang === 'fr' ? 'DD MMM YYYY - HH:mm' : 'DD MMM YYYY - h:mm a';
 
   const [selectedItemId, setSelectedItemId] = useState(null);
 
@@ -78,37 +79,71 @@ function Lists(props) {
         current: Number(pageNumber),
         showSizeChanger: false,
       }}
-      renderItem={(eventItem, index) => (
-        <List.Item
-          className="event-list-item-wrapper"
-          key={index}
-          actions={[
-            calendar[0]?.role === userRoles.GUEST ||
-            (calendar[0]?.role === userRoles.CONTRIBUTOR && eventItem?.creator?.userId != user?.id) ? (
-              !isReadOnly && (
-                <Dropdown
-                  className="calendar-dropdown-wrapper"
+      renderItem={(eventItem, index) => {
+        const hasStartTime = eventItem?.startDateTime?.includes('T') || eventItem?.startDate?.includes(' ');
+        const eventDateFormat =
+          hasStartTime &&
+          dateTimeTypeHandler(
+            eventItem?.startDate,
+            eventItem?.startDateTime,
+            eventItem?.endDate,
+            eventItem?.endDateTime,
+          ) == dateTypes.SINGLE
+            ? dateTimeFormat
+            : 'DD-MMM-YYYY';
+
+        return (
+          <List.Item
+            className="event-list-item-wrapper"
+            key={index}
+            actions={[
+              calendar[0]?.role === userRoles.GUEST ||
+              (calendar[0]?.role === userRoles.CONTRIBUTOR && eventItem?.creator?.userId != user?.id) ? (
+                !isReadOnly && (
+                  <Dropdown
+                    className="calendar-dropdown-wrapper"
+                    onOpenChange={(open) => {
+                      if (open) setSelectedItemId(eventItem?.id);
+                      else setSelectedItemId(null);
+                    }}
+                    overlayStyle={{
+                      minWidth: '150px',
+                    }}
+                    getPopupContainer={(trigger) => trigger.parentNode}
+                    menu={{
+                      items: [
+                        {
+                          key: '0',
+                          label: t('dashboard.events.publishOptions.duplicateEvent'),
+                        },
+                      ],
+                      onClick: ({ key }) => {
+                        if (key === '0')
+                          navigate(`${location.pathname}${PathName.AddEvent}?duplicateId=${eventItem?.id}`);
+                      },
+                    }}
+                    trigger={['click']}>
+                    <span>
+                      <MoreOutlined
+                        className="event-list-more-icon"
+                        style={{ color: selectedItemId === eventItem?.id && '#1B3DE6' }}
+                        key={index}
+                      />
+                    </span>
+                  </Dropdown>
+                )
+              ) : (
+                <EventStatusOptions
                   onOpenChange={(open) => {
                     if (open) setSelectedItemId(eventItem?.id);
                     else setSelectedItemId(null);
                   }}
-                  overlayStyle={{
-                    minWidth: '150px',
-                  }}
-                  getPopupContainer={(trigger) => trigger.parentNode}
-                  menu={{
-                    items: [
-                      {
-                        key: '0',
-                        label: t('dashboard.events.publishOptions.duplicateEvent'),
-                      },
-                    ],
-                    onClick: ({ key }) => {
-                      if (key === '0')
-                        navigate(`${location.pathname}${PathName.AddEvent}?duplicateId=${eventItem?.id}`);
-                    },
-                  }}
-                  trigger={['click']}>
+                  key={index}
+                  publishState={eventItem?.publishState}
+                  isFeatured={eventItem?.isFeatured}
+                  eventData={eventItem}
+                  creator={eventItem?.creator}
+                  eventId={eventItem?.id}>
                   <span>
                     <MoreOutlined
                       className="event-list-more-icon"
@@ -116,209 +151,195 @@ function Lists(props) {
                       key={index}
                     />
                   </span>
-                </Dropdown>
-              )
-            ) : (
-              <EventStatusOptions
-                onOpenChange={(open) => {
-                  if (open) setSelectedItemId(eventItem?.id);
-                  else setSelectedItemId(null);
-                }}
-                key={index}
-                publishState={eventItem?.publishState}
-                isFeatured={eventItem?.isFeatured}
-                eventData={eventItem}
-                creator={eventItem?.creator}
-                eventId={eventItem?.id}>
-                <span>
-                  <MoreOutlined
-                    className="event-list-more-icon"
-                    style={{ color: selectedItemId === eventItem?.id && '#1B3DE6' }}
-                    key={index}
-                  />
-                </span>
-              </EventStatusOptions>
-            ),
-          ]}
-          extra={[
-            <span key={index} className="event-list-options-responsive">
-              <EventStatusOptions
-                key={index}
-                publishState={eventItem?.publishState}
-                eventData={eventItem}
-                isFeatured={eventItem?.isFeatured}
-                creator={eventItem?.creator}
-                eventId={eventItem?.id}>
-                <span>
-                  <MoreOutlined className="event-list-more-icon-responsive" key={index} />
-                </span>
-              </EventStatusOptions>
-            </span>,
-          ]}>
-          <List.Item.Meta
-            className="event-list-item-meta"
-            onClick={() => {
-              navigate(`${location.pathname}/${eventItem?.id}`);
-            }}
-            avatar={
-              <>
-                {screens.md && (
-                  <div className="event-list-image-wrapper">
-                    {(calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) && eventItem?.isFeatured && (
-                      <div className="image-featured-badge">
-                        <StarOutlined
-                          style={{ fontSize: '12px', color: '#FFFFFF', position: 'absolute', top: '15%', left: '10%' }}
-                        />
-                      </div>
-                    )}
-                    <img
-                      src={eventItem?.image?.find((image) => image?.isMain)?.thumbnail?.uri}
-                      className="event-list-image"
-                      style={{
-                        border:
-                          (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) &&
-                          eventItem?.isFeatured &&
-                          '3px solid #1B3DE6',
-                        width: `${imageDimensions.width}px`,
-                        height: `${imageDimensions.height}px`,
-                      }}
-                      data-cy="image-event-thumbnail"
-                    />
-                  </div>
-                )}
-              </>
-            }
-            title={
-              <div className="event-list-title">
-                <span className="event-list-title-heading" data-cy="span-start-date-time">
-                  {(eventItem?.startDate || eventItem?.startDateTime) &&
-                    moment
-                      .tz(
-                        eventItem?.startDate ?? eventItem?.startDateTime,
-                        eventItem?.scheduleTimezone ?? 'Canada/Eastern',
-                      )
-                      .locale(lang)
-                      .format('DD-MMM-YYYY')
-                      ?.toUpperCase()}
-
-                  {dateTimeTypeHandler(
-                    eventItem?.startDate,
-                    eventItem?.startDateTime,
-                    eventItem?.endDate,
-                    eventItem?.endDateTime,
-                  ) === dateTypes.RANGE && (
-                    <>
-                      &nbsp;{t('dashboard.events.list.to')}&nbsp;
-                      {moment
+                </EventStatusOptions>
+              ),
+            ]}
+            extra={[
+              <span key={index} className="event-list-options-responsive">
+                <EventStatusOptions
+                  key={index}
+                  publishState={eventItem?.publishState}
+                  eventData={eventItem}
+                  isFeatured={eventItem?.isFeatured}
+                  creator={eventItem?.creator}
+                  eventId={eventItem?.id}>
+                  <span>
+                    <MoreOutlined className="event-list-more-icon-responsive" key={index} />
+                  </span>
+                </EventStatusOptions>
+              </span>,
+            ]}>
+            <List.Item.Meta
+              className="event-list-item-meta"
+              onClick={() => {
+                navigate(`${location.pathname}/${eventItem?.id}`);
+              }}
+              avatar={
+                <>
+                  {screens.md && (
+                    <div className="event-list-image-wrapper">
+                      {(calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) && eventItem?.isFeatured && (
+                        <div className="image-featured-badge">
+                          <StarOutlined
+                            style={{
+                              fontSize: '12px',
+                              color: '#FFFFFF',
+                              position: 'absolute',
+                              top: '15%',
+                              left: '10%',
+                            }}
+                          />
+                        </div>
+                      )}
+                      <img
+                        src={eventItem?.image?.find((image) => image?.isMain)?.thumbnail?.uri}
+                        className="event-list-image"
+                        style={{
+                          border:
+                            (calendar[0]?.role === userRoles.ADMIN || user?.isSuperAdmin) &&
+                            eventItem?.isFeatured &&
+                            '3px solid #1B3DE6',
+                          width: `${imageDimensions.width}px`,
+                          height: `${imageDimensions.height}px`,
+                        }}
+                        data-cy="image-event-thumbnail"
+                      />
+                    </div>
+                  )}
+                </>
+              }
+              title={
+                <div className="event-list-title">
+                  <span className="event-list-title-heading" data-cy="span-start-date-time">
+                    {(eventItem?.startDate || eventItem?.startDateTime) &&
+                      moment
                         .tz(
-                          eventItem?.endDate ?? eventItem?.endDateTime,
+                          eventItem?.startDate ?? eventItem?.startDateTime,
                           eventItem?.scheduleTimezone ?? 'Canada/Eastern',
                         )
                         .locale(lang)
-                        .format('DD-MMM-YYYY')
+                        .format(eventDateFormat)
                         ?.toUpperCase()}
-                    </>
-                  )}
-                </span>
-                &nbsp;&nbsp;
-                {eventItem?.subEventDetails?.totalSubEventCount &&
-                eventItem?.subEventDetails?.totalSubEventCount != 0 ? (
-                  <EventNumber label={eventItem?.subEventDetails?.totalSubEventCount} />
-                ) : (
-                  <></>
-                )}
-                {(eventItem?.eventStatus === eventStatus.EventPostponed ||
-                  eventItem?.eventStatus === eventStatus.EventCancelled) && (
-                  <EventStatus label={eventItem?.eventStatus} />
-                )}
-              </div>
-            }
-            description={
-              <div className="event-list-description">
-                <div className="event-list-description-name-container">
-                  {!screens.md && eventItem?.isFeatured && (
-                    <span>
-                      <StarFilled style={{ color: '#1B3DE6' }} />
-                    </span>
-                  )}
-                  <span className="event-list-description-name" data-cy="span-event-name">
-                    {contentLanguageBilingual({
-                      data: eventItem?.name,
-                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                      calendarContentLanguage: calendarContentLanguage,
-                    })}
+
+                    {dateTimeTypeHandler(
+                      eventItem?.startDate,
+                      eventItem?.startDateTime,
+                      eventItem?.endDate,
+                      eventItem?.endDateTime,
+                    ) === dateTypes.RANGE && (
+                      <>
+                        &nbsp;{t('dashboard.events.list.to')}&nbsp;
+                        {moment
+                          .tz(
+                            eventItem?.endDate ?? eventItem?.endDateTime,
+                            eventItem?.scheduleTimezone ?? 'Canada/Eastern',
+                          )
+                          .locale(lang)
+                          .format('DD-MMM-YYYY')
+                          ?.toUpperCase()}
+                      </>
+                    )}
                   </span>
+                  &nbsp;&nbsp;
+                  {eventItem?.subEventDetails?.totalSubEventCount &&
+                  eventItem?.subEventDetails?.totalSubEventCount != 0 ? (
+                    <EventNumber label={eventItem?.subEventDetails?.totalSubEventCount} />
+                  ) : (
+                    <></>
+                  )}
+                  {(eventItem?.eventStatus === eventStatus.EventPostponed ||
+                    eventItem?.eventStatus === eventStatus.EventCancelled) && (
+                    <EventStatus label={eventItem?.eventStatus} />
+                  )}
                 </div>
-                <span className="event-list-description-place" data-cy="span-event-location">
-                  {eventItem?.location
-                    ?.map((place) => {
-                      return contentLanguageBilingual({
-                        data: place?.name,
+              }
+              description={
+                <div className="event-list-description">
+                  <div className="event-list-description-name-container">
+                    {!screens.md && eventItem?.isFeatured && (
+                      <span>
+                        <StarFilled style={{ color: '#1B3DE6' }} />
+                      </span>
+                    )}
+                    <span className="event-list-description-name" data-cy="span-event-name">
+                      {contentLanguageBilingual({
+                        data: eventItem?.name,
                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                         calendarContentLanguage: calendarContentLanguage,
-                      });
-                    })
-                    .join(' | ')}
-                </span>
-              </div>
-            }
-          />
-          <List.Item.Meta
-            className="event-status-list-item"
-            onClick={() => {
-              navigate(`${location.pathname}/${eventItem?.id}`);
-            }}
-            title={
-              <div className="event-status-list-item-title-container">
-                <EventStatus label={eventItem?.publishState} />
-                {artsDataLinkChecker(eventItem)?.length > 0 && (
-                  <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      window.open(`${artsDataLinkChecker(eventItem)[0]?.uri}`, '_blank', 'noopener,noreferrer');
-                    }}
-                    className="artsdata-link-outlined-icon"
-                    data-cy="artsdata-link-outlined-icon">
-                    <span>
-                      <LinkOutlined style={{ fontSize: '14px' }} />
+                      })}
                     </span>
                   </div>
-                )}
-              </div>
-            }
-            description={
-              <div className="event-list-status" data-cy="span-event-creator">
-                <span className="event-list-status-created-by">
-                  {t('dashboard.events.list.createdBy')}&nbsp;
-                  {moment
-                    .tz(eventItem?.creator?.date, eventItem?.scheduleTimezone ?? 'Canada/Eastern')
-                    .locale(lang)
-                    .format('DD-MMM-YYYY')
-                    ?.toUpperCase()}
-                  &nbsp;
-                  {t('dashboard.events.list.by')}&nbsp;
-                  <Username userName={eventItem?.creator?.userName} data-cy="span-event-creator-username" />
-                </span>
-                {eventItem?.modifier?.userName ? (
-                  <span className="event-list-status-updated-by" data-cy="span-event-modifier">
-                    {t('dashboard.events.list.updatedBy')}&nbsp;
+                  <span className="event-list-description-place" data-cy="span-event-location">
+                    {eventItem?.location
+                      ?.map((place) => {
+                        return contentLanguageBilingual({
+                          data: place?.name,
+                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                          calendarContentLanguage: calendarContentLanguage,
+                        });
+                      })
+                      .join(' | ')}
+                  </span>
+                </div>
+              }
+            />
+            <List.Item.Meta
+              className="event-status-list-item"
+              onClick={() => {
+                navigate(`${location.pathname}/${eventItem?.id}`);
+              }}
+              title={
+                <div className="event-status-list-item-title-container">
+                  <EventStatus label={eventItem?.publishState} />
+                  {artsDataLinkChecker(eventItem)?.length > 0 && (
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.open(`${artsDataLinkChecker(eventItem)[0]?.uri}`, '_blank', 'noopener,noreferrer');
+                      }}
+                      className="artsdata-link-outlined-icon"
+                      data-cy="artsdata-link-outlined-icon">
+                      <span>
+                        <LinkOutlined style={{ fontSize: '14px' }} />
+                      </span>
+                    </div>
+                  )}
+                </div>
+              }
+              description={
+                <div className="event-list-status" data-cy="span-event-creator">
+                  <span className="event-list-status-created-by">
+                    {t('dashboard.events.list.createdBy')}&nbsp;
                     {moment
-                      .tz(eventItem?.modifier?.date, eventItem?.scheduleTimezone ?? 'Canada/Eastern')
+                      .tz(eventItem?.creator?.date, eventItem?.scheduleTimezone ?? 'Canada/Eastern')
                       .locale(lang)
                       .format('DD-MMM-YYYY')
                       ?.toUpperCase()}
                     &nbsp;
                     {t('dashboard.events.list.by')}&nbsp;
-                    <Username userName={eventItem?.modifier?.userName} data-cy="span-event-modifier-username" />
+                    <Username userName={eventItem?.creator?.userName} data-cy="span-event-creator-username" />
                   </span>
-                ) : (
-                  <></>
-                )}
-              </div>
-            }
-          />
-        </List.Item>
-      )}
+                  {eventItem?.modifier?.userName ? (
+                    <span className="event-list-status-updated-by" data-cy="span-event-modifier">
+                      {t('dashboard.events.list.updatedBy')}&nbsp;
+                      {moment
+                        .tz(eventItem?.modifier?.date, eventItem?.scheduleTimezone ?? 'Canada/Eastern')
+                        .locale(lang)
+                        .format('DD-MMM-YYYY')
+                        ?.toUpperCase()}
+                      &nbsp;
+                      {t('dashboard.events.list.by')}&nbsp;
+                      <Username userName={eventItem?.modifier?.userName} data-cy="span-event-modifier-username" />
+                    </span>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+              }
+            />
+          </List.Item>
+        );
+      }}
     />
   );
 }
