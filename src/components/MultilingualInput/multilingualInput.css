@@ -19,7 +19,8 @@
   -moz-user-select: none; /* For Firefox */
 }
 
-.bilingual-input-tab .ant-tabs-nav .ant-tabs-nav-wrap.ant-tabs-nav-wrap-ping-right::after {
+.bilingual-input-tab .ant-tabs-nav .ant-tabs-nav-wrap.ant-tabs-nav-wrap-ping-right::after,
+.bilingual-input-tab .ant-tabs-nav .ant-tabs-nav-wrap.ant-tabs-nav-wrap-ping-left::before {
   opacity: 0;
 }
 
@@ -31,6 +32,12 @@
   z-index: 1;
   display: grid;
   place-content: center;
+  border-radius: 4px;
+  padding: 0px;
+  border-color: #e6e6e6;
+  background: #ffffff;
+  width: 28px;
+  height: 28px;
 }
 
 .bilingual-input-tab .ant-tabs-extra-content {

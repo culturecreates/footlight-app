@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tabs } from 'antd';
+import { Button, Tabs } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
 import './multilingualInput.css';
 import { useTranslation } from 'react-i18next';
@@ -148,16 +148,8 @@ function MultilingualInput({ children, ...rest }) {
   };
 
   const extraNavigationIcons = {
-    left: (
-      <div onClick={handleMoveLeft} className="tabs-icon-extra">
-        <MoveLeftExtra />
-      </div>
-    ),
-    right: (
-      <div onClick={handleMoveRight} className="tabs-icon-extra">
-        <MoveRightExtra />
-      </div>
-    ),
+    left: <Button type="primary" onClick={handleMoveLeft} className="tabs-icon-extra" icon={<MoveLeftExtra />} />,
+    right: <Button type="primary" onClick={handleMoveRight} icon={<MoveRightExtra />} className="tabs-icon-extra" />,
   };
 
   return (
