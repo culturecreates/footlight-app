@@ -830,9 +830,13 @@ function CreateNewPlace() {
     setAddedFields(array);
     setScrollToSelectedField(array?.at(-1));
   };
-
-  const onValuesChangeHandler = () => {
-    setShowDialog(true);
+  //eslint-disable-next-line
+  const onFieldsChange = (changedValue, allValues) => {
+    if (changedValue?.length > 0 && !showDialog) {
+      if (changedValue?.filter((field) => field?.touched).length > 0) {
+        setShowDialog(true);
+      }
+    }
   };
 
   const getArtsDataPlace = (id) => {
@@ -1258,7 +1262,7 @@ function CreateNewPlace() {
       <RouteLeavingGuard isBlocking={showDialog} />
 
       <div className="add-edit-wrapper create-new-place-wrapper">
-        <Form form={form} layout="vertical" name="place" onValuesChange={onValuesChangeHandler}>
+        <Form form={form} layout="vertical" name="place" onFieldsChange={onFieldsChange}>
           <Row gutter={[32, 24]} className="add-edit-wrapper">
             <Col span={24}>
               <Row gutter={[32, 2]}>

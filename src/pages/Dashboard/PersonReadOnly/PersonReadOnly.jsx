@@ -85,6 +85,7 @@ function PersonReadOnly() {
 
   const mainImageData = personData?.image?.find((image) => image?.isMain) || null;
   const imageConfig = currentCalendarData?.imageConfig?.length > 0 && currentCalendarData?.imageConfig[0];
+  const imageGalleryData = personData?.image?.filter((image) => image && !image?.isMain) || [];
 
   const formConstants = currentCalendarData?.forms?.filter((form) => form?.formName === 'Organization')[0];
   let mandatoryStandardFields = [];
@@ -462,27 +463,25 @@ function PersonReadOnly() {
                                     ))}
                                 </Col>
                               )}
-                              {imageConfig.enableGallery && (
+                              {imageConfig.enableGallery && imageGalleryData?.length > 0 && (
                                 <Col span={24}>
                                   <p className="read-only-event-content-sub-title-primary">
                                     {t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
                                   </p>
-                                  {personData?.image?.length > 0 && (
-                                    <MultipleImageUpload
-                                      imageReadOnly={true}
-                                      largeAspectRatio={
-                                        currentCalendarData?.imageConfig?.length > 0
-                                          ? imageConfig?.large?.aspectRatio
-                                          : null
-                                      }
-                                      thumbnailAspectRatio={
-                                        currentCalendarData?.imageConfig?.length > 0
-                                          ? imageConfig?.thumbnail?.aspectRatio
-                                          : null
-                                      }
-                                      eventImageData={personData?.image?.filter((image) => !image?.isMain)}
-                                    />
-                                  )}
+                                  <MultipleImageUpload
+                                    imageReadOnly={true}
+                                    largeAspectRatio={
+                                      currentCalendarData?.imageConfig?.length > 0
+                                        ? imageConfig?.large?.aspectRatio
+                                        : null
+                                    }
+                                    thumbnailAspectRatio={
+                                      currentCalendarData?.imageConfig?.length > 0
+                                        ? imageConfig?.thumbnail?.aspectRatio
+                                        : null
+                                    }
+                                    eventImageData={imageGalleryData}
+                                  />
                                 </Col>
                               )}
                             </Row>
