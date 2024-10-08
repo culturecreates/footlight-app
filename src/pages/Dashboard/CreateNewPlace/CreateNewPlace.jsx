@@ -140,6 +140,7 @@ function CreateNewPlace() {
     ACCESSIBILITY_NOTE_WRAP: 'accessibilityNotewrap',
     REGION: 'region',
     CONTAINS_PLACE: 'containsPlace',
+    MAP: 'map',
   };
   const placeId = searchParams.get('id');
   const externalCalendarEntityId = searchParams.get('entityId');
@@ -228,6 +229,10 @@ function CreateNewPlace() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
   const [publishValidateFields, setPublishValidateFields] = useState([]);
+  const [coordinates, setCoordinates] = useState({
+    latitude: null,
+    longitude: null,
+  });
 
   let externalEntityData = externalCalendarEntityData?.length > 0 && externalCalendarEntityData[0];
   externalEntityData = {
@@ -756,6 +761,10 @@ function CreateNewPlace() {
           latitude: '' + latLng.lat,
           longitude: '' + latLng.lng,
           coordinates: latLng.lat + ',' + latLng.lng,
+        });
+        setCoordinates({
+          latitude: latLng.lat,
+          longitude: latLng.lng,
         });
       })
       .catch((error) => console.error(error));
@@ -1734,7 +1743,7 @@ function CreateNewPlace() {
                   <PlacesAutocomplete
                     googleCallbackName="initTwo"
                     searchOptions={{ componentRestrictions: { country: 'CA' } }}
-                    value={address}
+                    value={address ?? ''}
                     onChange={handleChange}
                     onSelect={handleSelect}
                     data-cy="google-places-autocomplete">
@@ -1989,7 +1998,15 @@ function CreateNewPlace() {
                   ]}>
                   <StyledInput data-cy="input-place-coordinates" />
                 </Form.Item>
-                <MapComponent />
+                <Form.Item name={formFieldNames.MAP}>
+                  <MapComponent
+                    longitude={coordinates.longitude}
+                    latitude={coordinates.latitude}
+                    setCoordinates={setCoordinates}
+                    form={form}
+                    fieldName={formFieldNames.COORDINATES}
+                  />
+                </Form.Item>
                 <Form.Item
                   data-cy="form-item-place-region"
                   name={formFieldNames.REGION}

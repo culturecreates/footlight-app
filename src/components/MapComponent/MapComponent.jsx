@@ -1,43 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleMap, Marker } from '@react-google-maps/api';
+//eslint-disable-next-line
+import { APIProvider, Map, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
 
+//eslint-disable-next-line
 const MapComponent = (props) => {
-  const { latitude, longitude } = props;
+  const { latitude, longitude, form, fieldName } = props;
+  const [markerPosition, setMarkerPosition] = useState({
+    lat: latitude ?? 54.35291352856401,
+    lng: longitude ?? -110.072423828125,
+  });
 
-  const mapStyles = {
-    height: '400px',
-    width: '100%',
-  };
-
-  // Provide default values if latitude and longitude props are not passed
-  const defaultCenter = {
-    lat: !isNaN(parseFloat(latitude)) ? parseFloat(latitude) : 45.421532,
-    lng: !isNaN(parseFloat(longitude)) ? parseFloat(longitude) : -75.697189,
-  };
-
-  const [selectedPosition, setSelectedPosition] = useState(defaultCenter);
-
-  useEffect(() => {
-    // Update selectedPosition if props change
-    setSelectedPosition({
-      lat: !isNaN(parseFloat(latitude)) ? parseFloat(latitude) : 45.421532,
-      lng: !isNaN(parseFloat(longitude)) ? parseFloat(longitude) : -75.697189,
+  const handleMarkerDragEnd = (event) => {
+    const { latLng } = event;
+    const newPosition = {
+      lat: latLng.lat(),
+      lng: latLng.lng(),
+    };
+    setMarkerPosition(newPosition);
+    form.setFieldsValue({
+      [fieldName]: `${newPosition.lat},${newPosition.lng}`,
+      latitude: newPosition.lat,
+      longitude: newPosition.lng,
     });
+    console.log('New position:', newPosition);
+  };
+  useEffect(() => {
+    if (latitude && longitude)
+      setMarkerPosition({
+        lat: latitude,
+        lng: longitude,
+      });
   }, [latitude, longitude]);
 
-  const onMapClick = (e) => {
-    const newPosition = {
-      lat: e.latLng.lat(),
-      lng: e.latLng.lng(),
-    };
-    setSelectedPosition(newPosition);
-  };
-
   return (
-    <GoogleMap mapContainerStyle={mapStyles} zoom={13} center={selectedPosition} onClick={onMapClick}>
-      {/* Render the marker when selectedPosition is valid */}
-      {selectedPosition && <Marker position={selectedPosition} draggable={true} />}
-    </GoogleMap>
+    <APIProvider apiKey={'AIzaSyA34hPcJ7CKANXj1ZPcEMX5d89563wexsw'}>
+      <Map
+        defaultZoom={5}
+        mapId="f39de469161f0d9c"
+        style={{
+          height: '40vh',
+          width: '100%',
+        }}
+        defaultCenter={markerPosition}
+        onCameraChanged={(ev) => console.log('camera changed:', ev.detail.center, 'zoom:', ev.detail.zoom)}>
+        <AdvancedMarker
+          position={markerPosition}
+          draggable={true} // Enable dragging
+          onDragEnd={handleMarkerDragEnd} // Handle drag end event
+        >
+          <Pin />
+        </AdvancedMarker>
+      </Map>
+    </APIProvider>
   );
 };
 
