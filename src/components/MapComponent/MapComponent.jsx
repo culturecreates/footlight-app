@@ -33,10 +33,10 @@ const MapComponent = (props) => {
   }, [latitude, longitude]);
 
   return (
-    <APIProvider apiKey={'AIzaSyA34hPcJ7CKANXj1ZPcEMX5d89563wexsw'}>
+    <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
       <Map
         defaultZoom={5}
-        mapId="f39de469161f0d9c"
+        mapId={process.env.REACT_APP_GOOGLE_MAPS_ID}
         style={{
           height: '40vh',
           width: '100%',
