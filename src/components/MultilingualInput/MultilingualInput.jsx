@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tabs } from 'antd';
+import { Button, Tabs } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
 import './multilingualInput.css';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,8 @@ import { capitalizeFirstLetter } from '../../utils/stringManipulations';
 import { useOutletContext } from 'react-router-dom';
 import useChildrenWithLanguageFallback from '../../hooks/useChildrenWithLanguageFallback';
 import { isDataValid } from '../../utils/MultiLingualFormItemSupportFunctions';
+import { ReactComponent as MoveLeftExtra } from '../../assets/icons/left.svg';
+import { ReactComponent as MoveRightExtra } from '../../assets/icons/Right.svg';
 
 /**
  * MultilingualInput Component
@@ -42,6 +44,7 @@ function MultilingualInput({ children, ...rest }) {
   } = rest;
   const [currentCalendarData] = useOutletContext();
   const { t } = useTranslation();
+  const [activeKey, setActiveKey] = React.useState(defaultTabProp);
 
   const { fallbackStatus = {}, modifiedChildren = children } =
     !skipChildModification &&
@@ -131,13 +134,33 @@ function MultilingualInput({ children, ...rest }) {
     itemCollection.push(tabItem);
   });
 
+  // Handle circular navigation for left and right clicks
+  const handleMoveLeft = () => {
+    const currentIndex = itemCollection.findIndex((item) => item.key === activeKey);
+    const newIndex = currentIndex > 0 ? currentIndex - 1 : itemCollection.length - 1;
+    setActiveKey(itemCollection[newIndex].key);
+  };
+
+  const handleMoveRight = () => {
+    const currentIndex = itemCollection.findIndex((item) => item.key === activeKey);
+    const newIndex = currentIndex < itemCollection.length - 1 ? currentIndex + 1 : 0;
+    setActiveKey(itemCollection[newIndex].key);
+  };
+
+  const extraNavigationIcons = {
+    left: <Button type="primary" onClick={handleMoveLeft} className="tabs-icon-extra" icon={<MoveLeftExtra />} />,
+    right: <Button type="primary" onClick={handleMoveRight} icon={<MoveRightExtra />} className="tabs-icon-extra" />,
+  };
+
   return (
     <Tabs
       type="card"
-      defaultActiveKey={defaultTab}
+      activeKey={activeKey}
+      defaultTab={defaultTab}
       items={itemCollection}
       size="small"
       tabBarGutter="0"
+      tabBarExtraContent={extraNavigationIcons}
       tabPosition="top"
       animated="false"
       tabBarStyle={{ margin: '0' }}
