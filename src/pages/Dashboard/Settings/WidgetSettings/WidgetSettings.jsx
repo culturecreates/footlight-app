@@ -292,7 +292,9 @@ const WidgetSettings = ({ tabKey }) => {
       currentCalendarData?.widgetSettings?.listEventsUrlTemplate
     );
     if (!isWidgetUrlAvailable) {
-      dispatch(setErrorStates({ errorType: 'pageNotFound', isError: true }));
+      dispatch(
+        setErrorStates({ errorType: 'pageNotFound', message: `${t('errorPage.notFoundMessage')}`, isError: true }),
+      );
     }
   }, []);
 
