@@ -53,7 +53,7 @@ export const filterUneditedFallbackValues = ({
 };
 
 const emptyValueFilter = (additionalFilters, modifiedValues) => {
-  if (additionalFilters) {
+  if (additionalFilters && Object.values(additionalFilters).some((value) => value === true)) {
     Object.keys(additionalFilters).forEach((key) => {
       if (Object.prototype.hasOwnProperty.call(modifiedValues, key)) {
         if (additionalFilters[key] === false) {
