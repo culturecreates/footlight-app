@@ -830,11 +830,35 @@ function CreateNewPlace() {
     setAddedFields(array);
     setScrollToSelectedField(array?.at(-1));
   };
-  //eslint-disable-next-line
-  const onFieldsChange = (changedValue, allValues) => {
-    if (changedValue?.length > 0 && !showDialog) {
-      if (changedValue?.filter((field) => field?.touched).length > 0) {
-        setShowDialog(true);
+  const isValidCoordinates = (latitude, longitude) => {
+    const isLatitudeValid = typeof latitude === 'number' && latitude >= -90 && latitude <= 90;
+    const isLongitudeValid = typeof longitude === 'number' && longitude >= -180 && longitude <= 180;
+
+    return isLatitudeValid && isLongitudeValid;
+  };
+
+  const onFieldsChange = (changedValue) => {
+    if (changedValue?.length > 0) {
+      if (!showDialog) {
+        if (changedValue?.filter((field) => field?.touched).length > 0) {
+          setShowDialog(true);
+        }
+      }
+      const coordinatesField = changedValue.find((field) => field.name[0] === formFieldNames.COORDINATES);
+
+      if (coordinatesField?.touched) {
+        const coordinates = form.getFieldValue(formFieldNames.COORDINATES)?.split(/[, ]+/).map(parseFloat);
+
+        if (
+          coordinates.length === 2 &&
+          coordinates.every((coord) => !isNaN(coord)) &&
+          isValidCoordinates(coordinates[0], coordinates[1])
+        ) {
+          setCoordinates({
+            latitude: coordinates[0],
+            longitude: coordinates[1],
+          });
+        }
       }
     }
   };
@@ -2002,7 +2026,7 @@ function CreateNewPlace() {
                   ]}>
                   <StyledInput data-cy="input-place-coordinates" />
                 </Form.Item>
-                <Form.Item name={formFieldNames.MAP}>
+                <Form.Item name={formFieldNames.MAP} hidden={!coordinates.latitude || !coordinates.longitude}>
                   <MapComponent
                     longitude={coordinates.longitude}
                     latitude={coordinates.latitude}
