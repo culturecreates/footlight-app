@@ -1,6 +1,6 @@
-import { Col, Row, Tabs } from 'antd';
+import { Col, notification, Row, Tabs } from 'antd';
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Translation, useTranslation } from 'react-i18next';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import './settings.css';
@@ -33,6 +33,16 @@ const Settings = () => {
 
   // Set content background color
   setContentBackgroundColor('#fff');
+
+  let isWidgetUrlAvailable = false;
+  currentCalendarData?.widgetSettings &&
+    Object.keys(currentCalendarData?.widgetSettings).forEach((key) => {
+      if (
+        currentCalendarData?.widgetSettings[key].eventDetailsUrlTemplate &&
+        currentCalendarData?.widgetSettings[key].listEventsUrlTemplate
+      )
+        isWidgetUrlAvailable = true;
+    });
 
   useEffect(() => {
     // Check if tabKey exists in sessionStorage
@@ -71,6 +81,14 @@ const Settings = () => {
     }
   };
 
+  const showInfoPopUp = () => {
+    notification.info({
+      key: 'widgetUrlMissingInfo',
+      message: <Translation>{(t) => t('dashboard.settings.widgetUrlMissingInfo')}</Translation>,
+      placement: 'top',
+    });
+  };
+
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   const items = [
@@ -82,10 +100,14 @@ const Settings = () => {
       adminOnly: false,
     },
     {
-      label: <span data-cy="tab-widget-settings">{t('dashboard.settings.tab2')}</span>,
+      label: (
+        <span onClick={isWidgetUrlAvailable ? showInfoPopUp : null} data-cy="tab-widget-settings">
+          {t('dashboard.settings.tab2')}
+        </span>
+      ),
       key: '2',
       children: <WidgetSettings tabKey={tabKey} />,
-      disabled: false,
+      disabled: isWidgetUrlAvailable,
       adminOnly: true,
     },
     {
