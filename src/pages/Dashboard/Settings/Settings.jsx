@@ -34,15 +34,10 @@ const Settings = () => {
   // Set content background color
   setContentBackgroundColor('#fff');
 
-  let isWidgetUrlAvailable = false;
-  currentCalendarData?.widgetSettings &&
-    Object.keys(currentCalendarData?.widgetSettings).forEach((key) => {
-      if (
-        currentCalendarData?.widgetSettings[key].eventDetailsUrlTemplate &&
-        currentCalendarData?.widgetSettings[key].listEventsUrlTemplate
-      )
-        isWidgetUrlAvailable = true;
-    });
+  const isWidgetUrlAvailable = !!(
+    currentCalendarData?.widgetSettings?.eventDetailsUrlTemplate &&
+    currentCalendarData?.widgetSettings?.listEventsUrlTemplate
+  );
 
   useEffect(() => {
     // Check if tabKey exists in sessionStorage
