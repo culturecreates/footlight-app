@@ -18,6 +18,13 @@ export const filterUneditedFallbackValues = ({
 }) => {
   let requiredFallbackKeyForCurrentField;
 
+  if (!additionalFilters && values) {
+    additionalFilters = Object.keys(values).reduce((filters, key) => {
+      filters[key] = values[key] !== '';
+      return filters;
+    }, {});
+  }
+
   // If activeFallbackFieldsInfo is empty, return the original values
   if (!(Object.keys(activeFallbackFieldsInfo).length > 0)) return emptyValueFilter(additionalFilters, values);
 
