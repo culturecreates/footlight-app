@@ -501,7 +501,7 @@ export const calendarSettingsFormFields = {
           data-cy="input-event-template"
         />
       ),
-      required: true,
+      required: false,
       extra: (
         <p className="calendar-settings-description">
           <Translation>{(t) => t('dashboard.settings.calendarSettings.eventTemplateDescription')}</Translation>
@@ -512,7 +512,6 @@ export const calendarSettingsFormFields = {
           type: 'url',
           message: <Trans i18nKey="dashboard.events.addEditEvent.validations.url" />,
         },
-        REQUIRED_MESSAGE,
       ],
     },
     {

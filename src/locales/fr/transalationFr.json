@@ -784,6 +784,7 @@
       "tab1": "Gestion des utilisateurs",
       "tab3": "Paramètres généraux",
       "tab4": "Champs obligatoires",
+      "widgetUrlMissingInfo": "Allez dans Paramètres généraux et ajoutez l'URL du modèle d'événement pour commencer à utiliser les widgets de liste.",
       "userManagement": {
         "searchPlaceholder": "Recherche d'utilisateurs",
         "sort": "Trier par",
