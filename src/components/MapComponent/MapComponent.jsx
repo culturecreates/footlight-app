@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-//eslint-disable-next-line
 import { APIProvider, Map, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
 
-//eslint-disable-next-line
 const MapComponent = (props) => {
   const { latitude, longitude, form, fieldName } = props;
   const [markerPosition, setMarkerPosition] = useState({
@@ -61,16 +59,8 @@ const MapComponent = (props) => {
           setZoom(ev.detail.zoom);
           setCenter(ev.detail.center);
         }}>
-        <AdvancedMarker
-          position={markerPosition}
-          draggable={true} // Enable dragging
-          onDragEnd={handleMarkerDragEnd} // Handle drag end event
-        >
-          <Pin
-            style={{
-              transform: 'translate(-50%, -100%)', // Center the pin above the location
-            }}
-          />
+        <AdvancedMarker position={markerPosition} draggable={true} onDragEnd={handleMarkerDragEnd}>
+          <Pin />
         </AdvancedMarker>
       </Map>
     </APIProvider>

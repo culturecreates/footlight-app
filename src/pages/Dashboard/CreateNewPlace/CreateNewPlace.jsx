@@ -233,6 +233,13 @@ function CreateNewPlace() {
     latitude: null,
     longitude: null,
   });
+  const [geocoder, setGeocoder] = useState(null);
+
+  useEffect(() => {
+    if (window.google) {
+      setGeocoder(new window.google.maps.Geocoder());
+    }
+  }, []);
 
   let externalEntityData = externalCalendarEntityData?.length > 0 && externalCalendarEntityData[0];
   externalEntityData = {
@@ -837,6 +844,52 @@ function CreateNewPlace() {
     return isLatitudeValid && isLongitudeValid;
   };
 
+  const handleGeocode = (coordinates) => {
+    if (!geocoder) return; // Ensure geocoder is initialized
+
+    const latlng = {
+      lat: parseFloat(coordinates[0]),
+      lng: parseFloat(coordinates[1]),
+    };
+
+    geocoder
+      .geocode({ location: latlng })
+      .then((response) => {
+        if (response.results[0]) {
+          const addressComponents = response.results[0].address_components;
+
+          const streetNumber =
+            addressComponents.find((item) => item.types.includes('street_number'))?.long_name || null;
+          const streetName = addressComponents.find((item) => item.types.includes('route'))?.long_name || null;
+          const streetAddress = [streetNumber, streetName].filter(Boolean).join(' ') || null;
+
+          calendarContentLanguage.forEach((language) => {
+            const langKey = contentLanguageKeyMap[language];
+
+            form.setFieldValue([formFieldNames.STREET_ADDRESS, langKey], streetAddress);
+            form.setFieldValue(
+              [formFieldNames.COUNTRY, langKey],
+              addressComponents.find((item) => item.types.includes('country'))?.long_name,
+            );
+            form.setFieldValue(
+              [formFieldNames.CITY, langKey],
+              addressComponents.find((item) => item.types.includes('locality'))?.long_name,
+            );
+            form.setFieldValue(
+              [formFieldNames.PROVINCE, langKey],
+              addressComponents.find((item) => item.types.includes('administrative_area_level_1'))?.short_name,
+            );
+          });
+
+          form.setFieldValue(
+            formFieldNames.POSTAL_CODE,
+            addressComponents.find((item) => item.types.includes('postal_code'))?.long_name,
+          );
+        }
+      })
+      .catch((e) => console.log(e));
+  };
+
   const onFieldsChange = (changedValue) => {
     if (changedValue?.length > 0) {
       if (!showDialog) {
@@ -858,6 +911,7 @@ function CreateNewPlace() {
             latitude: coordinates[0],
             longitude: coordinates[1],
           });
+          handleGeocode(coordinates);
         }
       }
     }
