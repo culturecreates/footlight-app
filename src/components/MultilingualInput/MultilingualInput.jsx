@@ -155,6 +155,10 @@ function MultilingualInput({ children, ...rest }) {
     right: <Button type="primary" onClick={handleMoveRight} icon={<MoveRightExtra />} className="tabs-icon-extra" />,
   };
 
+  const handleTabChange = (key) => {
+    setActiveKey(key);
+  };
+
   return (
     <Tabs
       type="card"
@@ -166,6 +170,7 @@ function MultilingualInput({ children, ...rest }) {
       tabBarExtraContent={extraNavigationIcons}
       tabPosition="top"
       animated="false"
+      onChange={handleTabChange}
       tabBarStyle={{ margin: '0' }}
       className="bilingual-input-tab"
       data-cy="bilingual-tabs"
