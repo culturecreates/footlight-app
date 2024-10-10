@@ -529,6 +529,7 @@ function AddEvent() {
               values: values?.editor,
               activeFallbackFieldsInfo: fallbackStatus,
               fieldName: 'editor',
+              additionalFilters: form.getFieldValue('editor-wordcount-map'),
             });
 
             // Use a regular expression to remove <p><br></p> tags at the end

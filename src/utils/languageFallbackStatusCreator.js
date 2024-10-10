@@ -8,6 +8,7 @@ import { contentLanguageKeyMap } from '../constants/contentLanguage';
  * @param {Object} params.fieldData - Collection of data for the field of each content languages.
  * @param {Object} [params.languageFallbacks={}] - Object containing language fallbacks.
  * @param {Object} params.isFieldsDirty - Object indicating which form fields are dirty.
+ * @param {Object} params.currentActiveDataInFormFields - The current active data in the form fields. Different from fieldData as fielddata only include data from api response. No realtime update.
  *
  * @returns {Object} An object containing the fallback status for each input item.
  *
@@ -28,6 +29,7 @@ export function languageFallbackStatusCreator({
   fieldData,
   languageFallbacks = {},
   isFieldsDirty,
+  currentActiveDataInFormFields = {},
 }) {
   let results = {};
 
@@ -36,7 +38,7 @@ export function languageFallbackStatusCreator({
   calendarContentLanguage.forEach((language) => {
     const languageKey = contentLanguageKeyMap[language];
 
-    const flag = !Object.hasOwnProperty.call(fieldData, languageKey);
+    let flag = !Object.hasOwnProperty.call(fieldData, languageKey);
 
     if (flag) {
       const fallbackInfo = languageFallbacks[languageKey]?.find((key) => Object.hasOwnProperty.call(fieldData, key));
@@ -49,7 +51,9 @@ export function languageFallbackStatusCreator({
       results[languageKey] = {
         tagDisplayStatus: !isFieldsDirty[languageKey] ? true : false,
         fallbackLiteralKey: fallbackErrorHandled?.key,
-        fallbackLiteralValue: fallbackErrorHandled?.value,
+        fallbackLiteralValue: isFieldsDirty[languageKey]
+          ? currentActiveDataInFormFields[languageKey] || ''
+          : fallbackErrorHandled?.value,
       };
     }
   });

@@ -26,6 +26,7 @@ import { ReactComponent as MoveRightExtra } from '../../assets/icons/Right.svg';
  * @param {Object} props.placeholderCollection - An object containing the placeholder attribute for each user interactable element eg. textarea. maintains the order of formItems.
  * @param {string} props.entityId - The entity id.
  * @param {Boolean} props.skipChildModification - A boolean to skip the modification of children. Default is false. Used as a prop for multilingual text editor.
+ * @param {Object} params.form - Form instance. Not relevent if skipChildModification is true.
  *
  * @returns {React.Element} The rendered form item components.
  */
@@ -41,6 +42,7 @@ function MultilingualInput({ children, ...rest }) {
     placeholderCollection,
     skipChildModification = false,
     entityId,
+    form,
   } = rest;
   const [currentCalendarData] = useOutletContext();
   const { t } = useTranslation();
@@ -56,6 +58,7 @@ function MultilingualInput({ children, ...rest }) {
       fieldData,
       dataCyCollection,
       placeholderCollection,
+      form,
     });
 
   let labelCollection = {};
