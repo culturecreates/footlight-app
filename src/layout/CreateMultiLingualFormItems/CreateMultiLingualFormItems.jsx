@@ -83,6 +83,7 @@ const CreateMultiLingualFormItems = ({ children, ...rest }) => {
       entityId={entityId}
       dataCyCollection={dataCyCollection}
       required={required}
+      form={form}
       placeholderCollection={placeholderCollection}>
       {formItemList}
     </MultilingualInput>
