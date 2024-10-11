@@ -15,10 +15,6 @@ on:
         description: 'Grep tags for selecting tests'
         required: false
         default: '@essential'
-      numContainers:
-        description: 'Number of containers to use for browsers'
-        required: false
-        default: '2'
 
   workflow_call:
     inputs:
@@ -35,11 +31,7 @@ on:
         required: false
         type: string
         default: '@essential'
-      numContainers:
-        description: 'Number of containers to use for browsers'
-        required: false
-        type: string
-        default: '2'
+
     secrets:
       DOCKER_PAT:
         required: true
@@ -50,10 +42,6 @@ on:
 jobs:
   built-and-run-cypress:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: [chrome, firefox]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -180,11 +168,9 @@ jobs:
           -e CYPRESS_ADMIN_FR_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
           -e CYPRESS_GUEST_EN_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
           -e CYPRESS_GUEST_FR_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
-          -e DEBUG=cypress:network \
           -v ${GITHUB_WORKSPACE}/cypress/screenshots:/e2e/cypress/screenshots \
           -v ${GITHUB_WORKSPACE}/cypress/videos:/e2e/cypress/videos \
-          -v ${GITHUB_WORKSPACE}/cypress/logs:/e2e/cypress/logs \
-          ghcr.io/kmdvs/cms-cypress_regression_tests:main /bin/bash -c "mkdir -p /e2e/cypress/logs && npx cypress run --browser ${{ matrix.browser }} --headless --env \"$env_arg\" > /e2e/cypress/logs/debug.log 2>&1"
+          ghcr.io/kmdvs/cms-cypress_regression_tests:main npx cypress run --browser firefox --headless --env "$env_arg"
 
       - name: Upload Cypress Debug Logs
         uses: actions/upload-artifact@v3
@@ -196,7 +182,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cypress-screenshots-${{ matrix.browser }}
+          name: cypress-screenshots-firefox
           path: cypress/screenshots
           if-no-files-found: ignore
 
@@ -204,6 +190,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cypress-videos-${{ matrix.browser }}
+          name: cypress-videos-firefox
           path: cypress/videos
           if-no-files-found: ignore
