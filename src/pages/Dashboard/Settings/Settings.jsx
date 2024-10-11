@@ -40,6 +40,22 @@ const Settings = () => {
   );
 
   useEffect(() => {
+    const disabledTab = document.querySelector(
+      '.settings-wrapper .settings-tabs > .ant-tabs-nav > .ant-tabs-nav-wrap > .ant-tabs-nav-list > .ant-tabs-tab-disabled',
+    );
+
+    if (disabledTab) {
+      disabledTab.onclick = function () {
+        notification.info({
+          key: 'widgetUrlMissingInfo',
+          message: <Translation>{(t) => t('dashboard.settings.widgetUrlMissingInfo')}</Translation>,
+          placement: 'top',
+        });
+      };
+    }
+  }, []);
+
+  useEffect(() => {
     // Check if tabKey exists in sessionStorage
     let initialTabKey;
     const tabKeyInParms = searchParams.get('tab');
@@ -76,14 +92,6 @@ const Settings = () => {
     }
   };
 
-  const showInfoPopUp = () => {
-    notification.info({
-      key: 'widgetUrlMissingInfo',
-      message: <Translation>{(t) => t('dashboard.settings.widgetUrlMissingInfo')}</Translation>,
-      placement: 'top',
-    });
-  };
-
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
 
   const items = [
@@ -95,15 +103,12 @@ const Settings = () => {
       adminOnly: false,
     },
     {
-      label: (
-        <span onClick={!isWidgetUrlAvailable ? showInfoPopUp : null} data-cy="tab-widget-settings">
-          {t('dashboard.settings.tab2')}
-        </span>
-      ),
+      label: <span data-cy="tab-widget-settings">{t('dashboard.settings.tab2')}</span>,
       key: '2',
       children: <WidgetSettings tabKey={tabKey} />,
       disabled: !isWidgetUrlAvailable,
       adminOnly: true,
+      className: 'widget-settings-tab',
     },
     {
       label: <span data-cy="tab-calendar-settings">{t('dashboard.settings.tab3')}</span>,
@@ -136,7 +141,7 @@ const Settings = () => {
             </h4>
           </Col>
           <Col span={24}>
-            <Tabs items={tabItems} activeKey={tabKey} onChange={onTabChange} />
+            <Tabs items={tabItems} activeKey={tabKey} onChange={onTabChange} className="settings-tabs" />
           </Col>
         </Row>
       )}
