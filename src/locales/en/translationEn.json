@@ -786,6 +786,7 @@
       "tab2": "Listing widgets",
       "tab3": "General settings",
       "tab4": "Mandatory fields",
+      "widgetUrlMissingInfo": "Go to General settings and add the Event template URL to start using Listing widgets.",
       "userManagement": {
         "searchPlaceholder": "Search users",
         "sort": "Sort by",
