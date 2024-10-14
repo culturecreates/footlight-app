@@ -1119,6 +1119,10 @@ function CreateNewPlace() {
             latitude: placeData.geoCoordinates && '' + placeData.geoCoordinates.latitude,
             longitude: placeData.geoCoordinates && '' + placeData.geoCoordinates.longitude,
           });
+          setCoordinates({
+            latitude: parseFloat(placeData.geoCoordinates?.latitude),
+            longitude: parseFloat(placeData.geoCoordinates?.longitude),
+          });
           setAddedFields(initialAddedFields);
         } else
           window.location.replace(
@@ -1234,6 +1238,10 @@ function CreateNewPlace() {
         form.setFieldsValue({
           latitude: externalCalendarEntityData[0].geo && '' + externalCalendarEntityData[0].geo.latitude,
           longitude: externalCalendarEntityData[0].geo && '' + externalCalendarEntityData[0].geo.longitude,
+        });
+        setCoordinates({
+          latitude: parseFloat(externalCalendarEntityData[0].geo?.latitude),
+          longitude: parseFloat(externalCalendarEntityData[0].geo?.longitude),
         });
         setAddedFields(initialAddedFields);
       }
@@ -2087,6 +2095,7 @@ function CreateNewPlace() {
                     setCoordinates={setCoordinates}
                     form={form}
                     fieldName={formFieldNames.COORDINATES}
+                    handleGeocode={handleGeocode}
                   />
                 </Form.Item>
                 <Form.Item

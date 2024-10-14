@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { APIProvider, Map, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
 
 const MapComponent = (props) => {
-  const { latitude, longitude, form, fieldName } = props;
+  const { latitude, longitude, form, fieldName, handleGeocode } = props;
   const [markerPosition, setMarkerPosition] = useState({
     lat: latitude ?? 54.35291352856401,
     lng: longitude ?? -110.072423828125,
@@ -28,6 +28,7 @@ const MapComponent = (props) => {
       latitude: newPosition.lat,
       longitude: newPosition.lng,
     });
+    handleGeocode([newPosition.lat, newPosition.lng]);
   };
   useEffect(() => {
     if (latitude && longitude) {
@@ -55,7 +56,6 @@ const MapComponent = (props) => {
         defaultCenter={center}
         center={center}
         onCameraChanged={(ev) => {
-          console.log('camera changed:', ev.detail.center, 'zoom:', ev.detail.zoom, ev);
           setZoom(ev.detail.zoom);
           setCenter(ev.detail.center);
         }}>
