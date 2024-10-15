@@ -40,10 +40,11 @@ function MultiLingualTextEditor(props) {
     }, {}),
   );
 
+  let combinedName = calendarContentLanguage.map((language) => `${name}` + contentLanguageKeyMap[language]).join('-');
   let isFieldsDirty = {}; // to keep track of dirty fields
   calendarContentLanguage.forEach((language) => {
     const lanKey = contentLanguageKeyMap[language];
-    const fieldName = name.concat([lanKey]);
+    const fieldName = [`${name}`, lanKey];
     isFieldsDirty[lanKey] = form.isFieldTouched(fieldName);
   });
 
@@ -126,11 +127,18 @@ function MultiLingualTextEditor(props) {
   useEffect(() => {
     if (!currentCalendarData) return;
 
+    const currentActiveDataInFormFields = {};
+    calendarContentLanguage.forEach((language) => {
+      const languageKey = contentLanguageKeyMap[language];
+      currentActiveDataInFormFields[languageKey] = form.getFieldValue([`${name}`, languageKey]);
+    });
+
     const status = languageFallbackStatusCreator({
       calendarContentLanguage,
       fieldData: data,
       languageFallbacks: currentCalendarData.languageFallbacks,
       isFieldsDirty,
+      currentActiveDataInFormFields,
     });
 
     // Only update fallbackStatus if it has actually changed
@@ -154,13 +162,9 @@ function MultiLingualTextEditor(props) {
   }, [fallbackStatus]);
 
   useEffect(() => {
-    const combinedName = calendarContentLanguage
-      .map((language) => `${name}` + contentLanguageKeyMap[language])
-      .join('-');
-
     const modifiedActiveFallbackFieldsInfo = {
-      [combinedName]: fallbackStatus,
       ...activeFallbackFieldsInfo,
+      [combinedName]: fallbackStatus,
     };
 
     const fallbackActiveFlag = calendarContentLanguage.find((language) => {

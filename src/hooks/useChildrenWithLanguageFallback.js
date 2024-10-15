@@ -16,32 +16,55 @@ import { languageFallbackStatusCreator } from '../utils/languageFallbackStatusCr
  * @param {Object} params.fieldData - Collection of data for the field of each content languages.
  * @param {string[]} params.placeholderCollection - Collection of placeholder texts for each inner child.
  * @param {string[]} params.dataCyCollection - Collection of data-cy attributes for each inner child.
+ * @param {Object} params.form - Form instance
  *
  * @returns {Object} The fallback status and modified children components.
  */
 
 function useChildrenWithLanguageFallback({
   children,
-  isFieldsDirty,
+  isFieldsDirty = {},
   currentCalendarData,
   calendarContentLanguage,
   fieldData,
   placeholderCollection,
   dataCyCollection,
+  form,
 }) {
   const dispatch = useDispatch();
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
 
   const [fallbackStatus, setFallbackStatus] = useState(null);
+  let combinedName = children
+    ?.map((child) => {
+      const name = child?.props?.name;
+      if (!name) return '';
+      if (Array.isArray(name)) return child?.props?.name.join('');
+      else return name;
+    })
+    .join('-');
 
   useEffect(() => {
     if (!currentCalendarData) return;
+
+    const currentActiveDataInFormFields = {};
+
+    children?.map((child) => {
+      const name = child?.props?.name;
+      if (Array.isArray(name)) {
+        const langKey = name?.length > 1 && name[1];
+        if (langKey) {
+          currentActiveDataInFormFields[langKey] = form.getFieldValue(name);
+        }
+      }
+    });
 
     const status = languageFallbackStatusCreator({
       calendarContentLanguage,
       fieldData,
       languageFallbacks: currentCalendarData.languageFallbacks,
       isFieldsDirty,
+      currentActiveDataInFormFields,
     });
 
     // Only update fallbackStatus if it has actually changed
@@ -51,15 +74,6 @@ function useChildrenWithLanguageFallback({
   }, [children, isFieldsDirty]);
 
   useEffect(() => {
-    const combinedName = children
-      ?.map((child) => {
-        const name = child?.props?.name;
-        if (!name) return '';
-        if (Array.isArray(name)) return child?.props?.name.join('');
-        else return name;
-      })
-      .join('-');
-
     const modifiedActiveFallbackFieldsInfo = {
       ...activeFallbackFieldsInfo,
       [combinedName]: fallbackStatus,
