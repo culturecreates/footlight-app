@@ -251,22 +251,7 @@ function CreateNewOrganization() {
 
   const onSaveHandler = (event, toggle = false) => {
     event?.preventDefault();
-    setShowDialog(false);
     let validateFieldList = [];
-    // if (
-    //   form.getFieldValue('socialMediaLinks')?.filter((link) => {
-    //     if (link) return true;
-    //   })?.length > 0
-    // ) {
-    //   validateFieldList = validateFieldList?.concat(
-    //     form
-    //       .getFieldValue('socialMediaLinks')
-    //       ?.filter((link) => {
-    //         if (link) return true;
-    //       })
-    //       ?.map((link, index) => ['socialMediaLinks', index]),
-    //   );
-    // }
     let mandatoryFields = standardMandatoryFieldNames;
     validateFieldList = validateFieldList?.concat(
       formFields
@@ -290,6 +275,7 @@ function CreateNewOrganization() {
       form
         .validateFields(validateFieldList)
         .then(async () => {
+          setShowDialog(false);
           var values = form.getFieldsValue(true);
           let organizationPayload = {};
           Object.keys(values)?.map((object) => {
