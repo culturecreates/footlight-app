@@ -105,7 +105,8 @@
           "sortBy": "Sort by",
           "name": "Name",
           "createdDate": "Date created",
-          "eventDate": "Event date"
+          "eventDate": "Event date",
+          "dateModified": "Date modified"
         },
         "dates": {
           "dates": "Dates",

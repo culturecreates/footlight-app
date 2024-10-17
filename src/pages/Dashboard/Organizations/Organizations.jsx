@@ -403,7 +403,9 @@ function Organizations() {
                     );
                 })}
               <Col>
-                {(filter?.order === sortOrder?.DESC || Object.keys(taxonomyFilter)?.length > 0) && (
+                {(filter?.order === sortOrder?.DESC ||
+                  Object.keys(taxonomyFilter)?.length > 0 ||
+                  filter?.sort != sortByOptionsOrgsPlacesPerson[0]?.key) && (
                   <Button
                     size="large"
                     className="filter-buttons"
