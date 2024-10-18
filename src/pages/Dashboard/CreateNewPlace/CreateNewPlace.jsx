@@ -427,11 +427,11 @@ function CreateNewPlace() {
 
   const onSaveHandler = (event) => {
     event?.preventDefault();
-    setShowDialog(false);
     var promise = new Promise(function (resolve, reject) {
       form
         .validateFields(publishValidateFields ?? [])
         .then(async () => {
+          setShowDialog(false);
           var values = form.getFieldsValue(true);
 
           let placeObj,

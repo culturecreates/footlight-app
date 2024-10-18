@@ -107,7 +107,7 @@ function Events() {
       : [],
     sort: searchParams.get('sortBy')
       ? searchParams.get('sortBy')
-      : sessionStorage.getItem('sortBy') ?? sortByOptions[2]?.key,
+      : sessionStorage.getItem('sortBy') ?? sortByOptions[3]?.key,
     order: searchParams.get('order') ? searchParams.get('order') : sessionStorage.getItem('order') ?? sortOrder?.ASC,
     dates:
       (searchParams.get('startDateRange') || sessionStorage.getItem('startDateRange')) &&
@@ -358,7 +358,7 @@ function Events() {
   const filterClearHandler = () => {
     setFilter({
       publication: [],
-      sort: sortByOptions[2]?.key,
+      sort: sortByOptions[3]?.key,
       order: sortOrder?.ASC,
       dates: [],
     });
@@ -1034,7 +1034,7 @@ function Events() {
                   filter?.publication?.length > 0 ||
                   filter?.dates?.length > 0 ||
                   filter?.order === sortOrder?.DESC ||
-                  filter?.sort != sortByOptions[2]?.key ||
+                  filter?.sort != sortByOptions[3]?.key ||
                   organizerFilter?.length > 0 ||
                   Object.keys(taxonomyFilter)?.length > 0 ||
                   Object.keys(standardTaxonomyFilter)?.length > 0) && (

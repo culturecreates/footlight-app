@@ -105,6 +105,7 @@
           "sortBy": "Trier par",
           "name": "Nom",
           "createdDate": "Date de création",
+          "dateModified": "Date de modification",
           "eventDate": "Date d’événement"
         },
         "dates": {

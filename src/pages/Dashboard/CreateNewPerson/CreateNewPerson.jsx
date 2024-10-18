@@ -219,7 +219,6 @@ function CreateNewPerson() {
 
   const onSaveHandler = (event) => {
     event?.preventDefault();
-    setShowDialog(false);
     let validateFieldList = [];
     let mandatoryFields = formFieldProperties?.mandatoryFields?.standardFields?.map((field) => field?.fieldName);
     validateFieldList = validateFieldList?.concat(
@@ -243,6 +242,7 @@ function CreateNewPerson() {
     form
       .validateFields(validateFieldList)
       .then(async () => {
+        setShowDialog(false);
         var values = form.getFieldsValue(true);
         let personPayload = {};
         Object.keys(values)?.map((object) => {
