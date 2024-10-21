@@ -2174,7 +2174,7 @@ function AddEvent() {
       if (
         allTaxonomyData?.data
           ?.find((taxonomy) => taxonomy?.mappedToField === 'inLanguage')
-          ?.concept?.map((concept) => (concept?.default === true ? concept?.id : null))
+          ?.concept?.map((concept) => (concept?.isDefault === true ? concept?.id : null))
           ?.filter((id) => id)?.length > 0
       )
         setAddedFields(addedFields.concat(otherInformationFieldNames?.inLanguage));
@@ -4304,7 +4304,7 @@ function AddEvent() {
                       })
                     : allTaxonomyData?.data
                         ?.find((taxonomy) => taxonomy?.mappedToField === 'inLanguage')
-                        ?.concept?.map((concept) => (concept?.default === true ? concept?.id : null))
+                        ?.concept?.map((concept) => (concept?.isDefault === true ? concept?.id : null))
                         ?.filter((id) => id)
                 }
                 data-cy="form-item-eventlanguage-label">
