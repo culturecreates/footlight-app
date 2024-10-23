@@ -2089,14 +2089,16 @@ function CreateNewPlace() {
                   <StyledInput data-cy="input-place-coordinates" />
                 </Form.Item>
                 <Form.Item name={formFieldNames.MAP} hidden={!coordinates.latitude || !coordinates.longitude}>
-                  <MapComponent
-                    longitude={coordinates.longitude}
-                    latitude={coordinates.latitude}
-                    setCoordinates={setCoordinates}
-                    form={form}
-                    fieldName={formFieldNames.COORDINATES}
-                    handleGeocode={handleGeocode}
-                  />
+                  {coordinates.latitude && coordinates.longitude && (
+                    <MapComponent
+                      longitude={coordinates.longitude}
+                      latitude={coordinates.latitude}
+                      setCoordinates={setCoordinates}
+                      form={form}
+                      fieldName={formFieldNames.COORDINATES}
+                      handleGeocode={handleGeocode}
+                    />
+                  )}
                 </Form.Item>
                 <Form.Item
                   data-cy="form-item-place-region"

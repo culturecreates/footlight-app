@@ -56,8 +56,8 @@ const MapComponent = (props) => {
         defaultCenter={center}
         center={center}
         onCameraChanged={(ev) => {
-          setZoom(ev.detail.zoom);
-          setCenter(ev.detail.center);
+          setZoom(ev?.detail?.zoom);
+          setCenter(ev?.detail?.center);
         }}>
         <AdvancedMarker position={markerPosition} draggable={true} onDragEnd={handleMarkerDragEnd}>
           <Pin />
