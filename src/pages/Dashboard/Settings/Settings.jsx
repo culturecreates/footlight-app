@@ -1,6 +1,6 @@
-import { Col, Row, Tabs } from 'antd';
+import { Col, notification, Row, Tabs } from 'antd';
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Translation, useTranslation } from 'react-i18next';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
 import { featureFlags } from '../../../utils/featureFlags';
 import './settings.css';
@@ -33,6 +33,27 @@ const Settings = () => {
 
   // Set content background color
   setContentBackgroundColor('#fff');
+
+  const isWidgetUrlAvailable = !!(
+    currentCalendarData?.widgetSettings?.eventDetailsUrlTemplate &&
+    currentCalendarData?.widgetSettings?.listEventsUrlTemplate
+  );
+
+  useEffect(() => {
+    const disabledTab = document.querySelector(
+      '.settings-wrapper .settings-tabs > .ant-tabs-nav > .ant-tabs-nav-wrap > .ant-tabs-nav-list > .ant-tabs-tab-disabled',
+    );
+
+    if (disabledTab) {
+      disabledTab.onclick = function () {
+        notification.info({
+          key: 'widgetUrlMissingInfo',
+          message: <Translation>{(t) => t('dashboard.settings.widgetUrlMissingInfo')}</Translation>,
+          placement: 'top',
+        });
+      };
+    }
+  }, []);
 
   useEffect(() => {
     // Check if tabKey exists in sessionStorage
@@ -75,28 +96,29 @@ const Settings = () => {
 
   const items = [
     {
-      label: t('dashboard.settings.tab1'),
+      label: <span data-cy="tab-user-management">{t('dashboard.settings.tab1')}</span>,
       key: '1',
       children: <UserManagement tabKey={tabKey} />,
       disabled: false,
       adminOnly: false,
     },
     {
-      label: t('dashboard.settings.tab2'),
+      label: <span data-cy="tab-widget-settings">{t('dashboard.settings.tab2')}</span>,
       key: '2',
-      children: <WidgetSettings tabKey={tabKey} setDirtyStatus={setIsFormDirty} />,
-      disabled: false,
+      children: <WidgetSettings tabKey={tabKey} />,
+      disabled: !isWidgetUrlAvailable,
       adminOnly: true,
+      className: 'widget-settings-tab',
     },
     {
-      label: t('dashboard.settings.tab3'),
+      label: <span data-cy="tab-calendar-settings">{t('dashboard.settings.tab3')}</span>,
       key: '3',
       children: currentCalendarData && <CalendarSettings tabKey={tabKey} setDirtyStatus={setIsFormDirty} />,
       disabled: false,
       adminOnly: true,
     },
     {
-      label: t('dashboard.settings.tab4'),
+      label: <span data-cy="tab-mandatory-fields">{t('dashboard.settings.tab4')}</span>,
       key: '4',
       children: <MandatoryFields tabKey={tabKey} setDirtyStatus={setIsFormDirty} />,
       disabled: false,
@@ -111,16 +133,18 @@ const Settings = () => {
   return (
     <FeatureFlag isFeatureEnabled={featureFlags.settingsScreenUsers}>
       <RouteLeavingGuard isBlocking={isFormDirty} />
-      <Row className="settings-wrapper">
-        <Col span={24}>
-          <h4 className="settings-heading" data-cy="heading-settings-title">
-            {t('dashboard.settings.heading')}
-          </h4>
-        </Col>
-        <Col span={24}>
-          <Tabs items={tabItems} activeKey={tabKey} onChange={onTabChange} />
-        </Col>
-      </Row>
+      {currentCalendarData && (
+        <Row className="settings-wrapper">
+          <Col span={24}>
+            <h4 className="settings-heading" data-cy="heading-settings-title">
+              {t('dashboard.settings.heading')}
+            </h4>
+          </Col>
+          <Col span={24}>
+            <Tabs items={tabItems} activeKey={tabKey} onChange={onTabChange} className="settings-tabs" />
+          </Col>
+        </Row>
+      )}
     </FeatureFlag>
   );
 };

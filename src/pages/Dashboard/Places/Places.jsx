@@ -351,8 +351,7 @@ function Places() {
                             }}
                             data-cy="button-filter-taxonomy-standard">
                             {bilingual({
-                              en: taxonomy?.name?.en,
-                              fr: taxonomy?.name?.fr,
+                              data: taxonomy?.name,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             })}
                             {standardTaxonomyFilter[taxonomy?.mappedToField]?.length > 0 && (
@@ -412,8 +411,7 @@ function Places() {
                             style={{ borderColor: taxonomyFilter[taxonomy?.id]?.length > 0 > 0 && '#607EFC' }}
                             data-cy="button-filter-taxonomy">
                             {bilingual({
-                              en: taxonomy?.name?.en,
-                              fr: taxonomy?.name?.fr,
+                              data: taxonomy?.name,
                               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                             })}
                             {taxonomyFilter[taxonomy?.id]?.length > 0 && (
@@ -429,7 +427,8 @@ function Places() {
               <Col>
                 {(filter?.order === sortOrder?.DESC ||
                   Object.keys(taxonomyFilter)?.length > 0 ||
-                  Object.keys(standardTaxonomyFilter)?.length > 0) && (
+                  Object.keys(standardTaxonomyFilter)?.length > 0 ||
+                  filter?.sort != sortByOptionsOrgsPlacesPerson[0]?.key) && (
                   <Button
                     size="large"
                     className="filter-buttons"
@@ -471,14 +470,12 @@ function Places() {
                           <EnvironmentOutlined style={{ color: '#607EFC', fontSize: '18px' }} data-cy="logo-place" />
                         }
                         title={contentLanguageBilingual({
-                          en: item?.name?.en,
-                          fr: item?.name?.fr,
+                          data: item?.name,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                           calendarContentLanguage: calendarContentLanguage,
                         })}
                         description={contentLanguageBilingual({
-                          en: item?.disambiguatingDescription?.en,
-                          fr: item?.disambiguatingDescription?.fr,
+                          data: item?.disambiguatingDescription,
                           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                           calendarContentLanguage: calendarContentLanguage,
                         })}

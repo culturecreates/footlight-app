@@ -37,7 +37,7 @@ function Dashboard() {
   const location = useLocation();
   const timestampRef = useRef(Date.now()).current;
   const { accessToken, user } = useSelector(getUserDetails);
-  const [getCalendar, { currentData: currentCalendarData }] = useLazyGetCalendarQuery();
+  const [getCalendar, { currentData: currentCalendarData, isCurrentCalendarInfoLoading }] = useLazyGetCalendarQuery();
   const reloadStatus = useSelector(getReloadStatusForCalendar);
   const screens = useBreakpoint();
   const { t } = useTranslation();
@@ -79,8 +79,10 @@ function Dashboard() {
   useEffect(() => {
     const accessTokenFromCookie = Cookies.get('accessToken');
     const refreshTokenFromCookie = Cookies.get('refreshToken');
-    const calendarIdFromCookie = Cookies.get('calendarId');
+    const calendarIdFromCookie = sessionStorage.getItem('calendarId');
+
     const calId = calendarId || calendarIdFromCookie;
+    if (calendarId) sessionStorage.setItem('calendarId', calId);
 
     if (!checkToken(accessToken, accessTokenFromCookie)) navigate(PathName.Login);
 
@@ -109,7 +111,7 @@ function Dashboard() {
 
     const checkedCalendarId = findActiveCalendar();
     if (checkedCalendarId != null) {
-      Cookies.set('calendarId', checkedCalendarId);
+      sessionStorage.setItem('calendarId', checkedCalendarId);
     }
 
     if (calendarId && accessToken) {
@@ -128,12 +130,12 @@ function Dashboard() {
         });
       dispatch(setSelectedCalendar(String(calendarId)));
     } else {
-      let activeCalendarId = Cookies.get('calendarId');
+      let activeCalendarId = sessionStorage.getItem('calendarId');
       if (activeCalendarId && accessToken) {
         navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
       } else if (!isLoading && allCalendarsData?.data) {
         activeCalendarId = allCalendarsData?.data[0]?.id;
-        Cookies.set('calendarId', activeCalendarId);
+        sessionStorage.setItem('calendarId', activeCalendarId);
         navigate(`${PathName.Dashboard}/${activeCalendarId}${PathName.Events}`);
       }
     }
@@ -172,7 +174,7 @@ function Dashboard() {
 
   return (
     <ErrorLayout asycErrorDetails={asycErrorDetails}>
-      {isSuccess && !isCurrentUserLoading ? (
+      {isSuccess && currentCalendarData && !isCurrentUserLoading ? (
         <Layout className="dashboard-wrapper">
           <Header className="dashboard-header">
             <NavigationBar
@@ -229,6 +231,7 @@ function Dashboard() {
                     setIsReadOnly,
                     refetch,
                     allCalendarsData?.data,
+                    isCurrentCalendarInfoLoading,
                   ]}
                 />
               </Content>

@@ -33,6 +33,10 @@ import moment from 'moment';
 import SelectionItem from '../../../components/List/SelectionItem';
 import { useLazyGetEntityDependencyDetailsQuery } from '../../../services/entities';
 import MultipleImageUpload from '../../../components/MultipleImageUpload';
+import { getActiveTabKey } from '../../../redux/reducer/readOnlyTabSlice';
+import ReadOnlyPageTabLayout from '../../../layout/ReadOnlyPageTabLayout/ReadOnlyPageTabLayout';
+import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
+import { personFormFieldNames } from '../../../constants/personAndOrganizationFormFieldNames';
 
 function PersonReadOnly() {
   const { t } = useTranslation();
@@ -70,6 +74,7 @@ function PersonReadOnly() {
   });
 
   const { user } = useSelector(getUserDetails);
+  const activeTabKey = useSelector(getActiveTabKey);
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -80,6 +85,35 @@ function PersonReadOnly() {
 
   const mainImageData = personData?.image?.find((image) => image?.isMain) || null;
   const imageConfig = currentCalendarData?.imageConfig?.length > 0 && currentCalendarData?.imageConfig[0];
+  const imageGalleryData = personData?.image?.filter((image) => image && !image?.isMain) || [];
+
+  const formConstants = currentCalendarData?.forms?.filter((form) => form?.formName === 'Organization')[0];
+  let mandatoryStandardFields = [];
+  let mandatoryDynamicFields = [];
+  formConstants?.formFieldProperties?.mandatoryFields?.standardFields?.forEach((field) => {
+    if (isDataValid(field)) {
+      const fieldValue = Object.values(field)[0];
+      mandatoryStandardFields.push(fieldValue);
+    }
+  });
+  formConstants?.formFieldProperties?.mandatoryFields?.dynamicFields?.forEach((field) => {
+    if (isDataValid(field)) {
+      mandatoryDynamicFields.push(field);
+    }
+  });
+
+  const checkIfFieldIsToBeDisplayed = (field, data, type = 'standard') => {
+    if (typeof data === 'string' && data !== '') return true;
+    if (Array.isArray(data) && data.length > 0 && data.every((item) => item !== null && item !== undefined))
+      return true;
+    if (data !== null && isDataValid(data)) return true;
+
+    if (type === 'standard') {
+      return mandatoryStandardFields.includes(field);
+    } else {
+      return mandatoryDynamicFields.includes(field);
+    }
+  };
 
   const getArtsData = (id) => {
     setArtsDataLoading(true);
@@ -136,8 +170,7 @@ function PersonReadOnly() {
               <Col flex="auto">
                 <Breadcrumbs
                   name={contentLanguageBilingual({
-                    en: personData?.name?.en,
-                    fr: personData?.name?.fr,
+                    data: personData?.name,
                     interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                     calendarContentLanguage: calendarContentLanguage,
                   })}
@@ -174,8 +207,7 @@ function PersonReadOnly() {
                 <div className="read-only-event-heading">
                   <h4 data-cy="heading-person-name">
                     {contentLanguageBilingual({
-                      en: personData?.name?.en,
-                      fr: personData?.name?.fr,
+                      data: personData?.name,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
@@ -184,8 +216,7 @@ function PersonReadOnly() {
                     className="read-only-event-content-sub-title-primary"
                     data-cy="para-person-disambiguating-description">
                     {contentLanguageBilingual({
-                      en: personData?.disambiguatingDescription?.en,
-                      fr: personData?.disambiguatingDescription?.fr,
+                      data: personData?.disambiguatingDescription,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
@@ -195,20 +226,18 @@ function PersonReadOnly() {
             </Row>
           </Col>
           {artsDataLinkChecker(personData?.sameAs) && (
-            <Col span={24} className="artsdata-link-wrapper top-level-column">
+            <Col span={24} className="artsdata-link-wrapper top-level-column" flex={'780px'}>
               <Row>
                 <Col flex={'780px'}>
                   <ArtsDataInfo
                     artsDataLink={artsDataLinkChecker(personData?.sameAs)}
                     name={contentLanguageBilingual({
-                      en: artsData?.name?.en,
-                      fr: artsData?.name?.fr,
+                      data: artsData?.name,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                     disambiguatingDescription={contentLanguageBilingual({
-                      en: artsData?.disambiguatingDescription?.en,
-                      fr: artsData?.disambiguatingDescription?.fr,
+                      data: artsData?.disambiguatingDescription,
                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
@@ -217,374 +246,388 @@ function PersonReadOnly() {
               </Row>
             </Col>
           )}
-          <Col className="read-only-content-wrapper top-level-column" span={24}>
+          <Col span={24} flex={'780px'}>
             <Row>
-              <Card marginResponsive="0">
-                <Col>
-                  <Row>
-                    <Col span={24}>
-                      <p
-                        className="read-only-event-content read-only-detail-heading"
-                        data-cy="para-person-details-title">
-                        {t('dashboard.people.readOnly.details')}
-                      </p>
-                    </Col>
-                    {(personData?.name?.fr || personData?.name?.en) && (
-                      <Col span={24}>
-                        <p className="read-only-event-content-sub-title-primary" data-cy="para-person-name-title">
-                          {t('dashboard.people.readOnly.name')}
-                        </p>
-                        {personData?.name?.fr && (
-                          <>
-                            <p
-                              className="read-only-event-content-sub-title-secondary"
-                              data-cy="para-person-name-french-title">
-                              {t('common.tabFrench')}
-                            </p>
-                            <p className="read-only-event-content" data-cy="para-person-name-french">
-                              {personData?.name?.fr}
-                            </p>
-                          </>
-                        )}
-                        {personData?.name?.en && (
-                          <>
-                            <p
-                              className="read-only-event-content-sub-title-secondary"
-                              data-cy="para-person-name-english-title">
-                              {t('common.tabEnglish')}
-                            </p>
-                            <p className="read-only-event-content" data-cy="para-person-name-english">
-                              {personData?.name?.en}
-                            </p>
-                          </>
-                        )}
-                      </Col>
-                    )}
-                    {personData?.occupation?.length > 0 && (
-                      <div>
-                        <p className="read-only-event-content-sub-title-primary" data-cy="para-person-occupation-title">
-                          {taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false)}
-                        </p>
-                        <TreeSelectOption
-                          data-cy="treeselect-person-occupation"
-                          style={{ marginBottom: '1rem' }}
-                          bordered={false}
-                          open={false}
-                          disabled
-                          treeData={treeTaxonomyOptions(
-                            allTaxonomyData,
-                            user,
-                            'Occupation',
-                            false,
-                            calendarContentLanguage,
-                          )}
-                          defaultValue={personData?.occupation?.map((type) => {
-                            return type?.entityId;
-                          })}
-                          tagRender={(props) => {
-                            const { label } = props;
-                            return <Tags data-cy={`tag-person-occupation-${label}`}>{label}</Tags>;
-                          }}
-                        />
-                      </div>
-                    )}
-                    {personData?.dynamicFields?.length > 0 && (
-                      <Col span={24}>
-                        {allTaxonomyData?.data?.map((taxonomy, index) => {
-                          if (taxonomy?.isDynamicField) {
-                            let initialValues,
-                              initialTaxonomy = [];
-                            personData?.dynamicFields?.forEach((dynamicField) => {
-                              if (taxonomy?.id === dynamicField?.taxonomyId) {
-                                initialValues = dynamicField?.conceptIds;
-                                initialTaxonomy.push(taxonomy?.id);
-                              }
-                            });
-                            if (initialTaxonomy?.includes(taxonomy?.id) && initialValues?.length > 0)
-                              return (
-                                <div>
-                                  <p className="read-only-event-content-sub-title-primary">
-                                    {bilingual({
-                                      en: taxonomy?.name?.en,
-                                      fr: taxonomy?.name?.fr,
-                                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                    })}
+              <ReadOnlyPageTabLayout>
+                <Col span={24}>
+                  <Row gutter={[32, 24]}>
+                    <Col className="read-only-content-wrapper top-level-column" span={24}>
+                      <Row>
+                        <Card marginResponsive="0">
+                          <Col>
+                            <Row>
+                              <Col span={24}>
+                                <p
+                                  className="read-only-event-content read-only-detail-heading"
+                                  data-cy="para-person-details-title">
+                                  {t('dashboard.people.readOnly.details')}
+                                </p>
+                              </Col>
+
+                              {checkIfFieldIsToBeDisplayed(personFormFieldNames.NAME, personData?.name) && (
+                                <Col span={24}>
+                                  <p
+                                    className="read-only-event-content-sub-title-primary"
+                                    data-cy="para-person-name-title">
+                                    {t('dashboard.people.readOnly.name')}
                                   </p>
-                                  <TreeSelectOption
-                                    data-cy={`treeselect-person-dynamic-field-${index}`}
-                                    key={index}
-                                    style={{ marginBottom: '1rem' }}
-                                    bordered={false}
-                                    open={false}
-                                    disabled
-                                    defaultValue={initialValues}
-                                    treeData={treeDynamicTaxonomyOptions(
-                                      taxonomy?.concept,
-                                      user,
-                                      calendarContentLanguage,
-                                    )}
-                                    tagRender={(props) => {
-                                      const { label } = props;
-                                      return <Tags data-cy={`tag-person-dynamic-field-${label}`}>{label}</Tags>;
-                                    }}
-                                  />
+                                  {Object.keys(personData?.name ?? {})?.length > 0 && (
+                                    <p className="read-only-event-content" data-cy="para-person-name-french">
+                                      {contentLanguageBilingual({
+                                        data: personData?.name,
+                                        calendarContentLanguage,
+                                        requiredLanguageKey: activeTabKey,
+                                      })}
+                                    </p>
+                                  )}
+                                </Col>
+                              )}
+                              {checkIfFieldIsToBeDisplayed(personFormFieldNames.OCCUPATION, personData?.occupation) && (
+                                <div>
+                                  <p
+                                    className="read-only-event-content-sub-title-primary"
+                                    data-cy="para-person-occupation-title">
+                                    {taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false)}
+                                  </p>
+                                  {personData?.occupation?.length > 0 && (
+                                    <TreeSelectOption
+                                      data-cy="treeselect-person-occupation"
+                                      style={{ marginBottom: '1rem' }}
+                                      bordered={false}
+                                      open={false}
+                                      disabled
+                                      treeData={treeTaxonomyOptions(
+                                        allTaxonomyData,
+                                        user,
+                                        'Occupation',
+                                        false,
+                                        calendarContentLanguage,
+                                      )}
+                                      defaultValue={personData?.occupation?.map((type) => {
+                                        return type?.entityId;
+                                      })}
+                                      tagRender={(props) => {
+                                        const { label } = props;
+                                        return <Tags data-cy={`tag-person-occupation-${label}`}>{label}</Tags>;
+                                      }}
+                                    />
+                                  )}
                                 </div>
-                              );
-                          }
-                        })}
-                      </Col>
-                    )}
-                    {(personData?.disambiguatingDescription?.en || personData?.disambiguatingDescription?.fr) && (
-                      <Col span={24}>
-                        <p
-                          className="read-only-event-content-sub-title-primary"
-                          data-cy="para-person-disambiguating-description-title">
-                          {t('dashboard.people.readOnly.disambiguatingDescription')}
-                        </p>
-                        {personData?.disambiguatingDescription?.fr && (
-                          <>
-                            <p
-                              className="read-only-event-content-sub-title-secondary"
-                              data-cy="para-person-disambiguating-description-french-title">
-                              {t('common.tabFrench')}
-                            </p>
-                            <p
-                              className="read-only-event-content"
-                              data-cy="para-person-disambiguating-description-french">
-                              {personData?.disambiguatingDescription?.fr}
-                            </p>
-                          </>
+                              )}
+                              {personData?.dynamicFields?.length > 0 && (
+                                <Col span={24}>
+                                  {allTaxonomyData?.data?.map((taxonomy, index) => {
+                                    if (taxonomy?.isDynamicField) {
+                                      let initialValues,
+                                        initialTaxonomy = [];
+                                      personData?.dynamicFields?.forEach((dynamicField) => {
+                                        if (taxonomy?.id === dynamicField?.taxonomyId) {
+                                          initialValues = dynamicField?.conceptIds;
+                                          initialTaxonomy.push(taxonomy?.id);
+                                        }
+                                      });
+                                      if (
+                                        checkIfFieldIsToBeDisplayed(
+                                          taxonomy?.id,
+                                          initialTaxonomy?.includes(taxonomy?.id) ? taxonomy : undefined,
+                                          'dynamic',
+                                        )
+                                      )
+                                        return (
+                                          <div>
+                                            <p className="read-only-event-content-sub-title-primary">
+                                              {bilingual({
+                                                data: taxonomy?.name,
+                                                interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                              })}
+                                            </p>
+                                            {initialTaxonomy?.includes(taxonomy?.id) && initialValues?.length > 0 && (
+                                              <TreeSelectOption
+                                                data-cy={`treeselect-person-dynamic-field-${index}`}
+                                                key={index}
+                                                style={{ marginBottom: '1rem' }}
+                                                bordered={false}
+                                                open={false}
+                                                disabled
+                                                defaultValue={initialValues}
+                                                treeData={treeDynamicTaxonomyOptions(
+                                                  taxonomy?.concept,
+                                                  user,
+                                                  calendarContentLanguage,
+                                                )}
+                                                tagRender={(props) => {
+                                                  const { label } = props;
+                                                  return (
+                                                    <Tags data-cy={`tag-person-dynamic-field-${label}`}>{label}</Tags>
+                                                  );
+                                                }}
+                                              />
+                                            )}
+                                          </div>
+                                        );
+                                    }
+                                  })}
+                                </Col>
+                              )}
+                              {checkIfFieldIsToBeDisplayed(
+                                personFormFieldNames.DISAMBIGUATING_DESCRIPTION,
+                                personData?.disambiguatingDescription,
+                              ) && (
+                                <Col span={24}>
+                                  <p
+                                    className="read-only-event-content-sub-title-primary"
+                                    data-cy="para-person-disambiguating-description-title">
+                                    {t('dashboard.people.readOnly.disambiguatingDescription')}
+                                  </p>
+                                  {Object.keys(personData?.disambiguatingDescription ?? {})?.length > 0 && (
+                                    <p
+                                      className="read-only-event-content"
+                                      data-cy="para-person-disambiguating-description-french">
+                                      {contentLanguageBilingual({
+                                        data: personData?.disambiguatingDescription,
+                                        calendarContentLanguage,
+                                        requiredLanguageKey: activeTabKey,
+                                      })}
+                                    </p>
+                                  )}
+                                </Col>
+                              )}
+
+                              {checkIfFieldIsToBeDisplayed(
+                                personFormFieldNames.DESCRIPTION,
+                                personData?.description,
+                              ) && (
+                                <Col span={24}>
+                                  <p
+                                    className="read-only-event-content-sub-title-primary"
+                                    data-cy="para-person-description-title">
+                                    {t('dashboard.people.readOnly.description')}
+                                  </p>
+                                  {Object.keys(personData?.description ?? {})?.length > 0 && (
+                                    <p className="read-only-event-content">
+                                      <div
+                                        dangerouslySetInnerHTML={{
+                                          __html: contentLanguageBilingual({
+                                            data: personData?.description,
+                                            calendarContentLanguage,
+                                            requiredLanguageKey: activeTabKey,
+                                          }),
+                                        }}
+                                        data-cy="div-person-description-french"
+                                      />
+                                    </p>
+                                  )}
+                                </Col>
+                              )}
+                              {checkIfFieldIsToBeDisplayed(personFormFieldNames.WEBSITE, personData?.url) && (
+                                <Col span={24}>
+                                  <p
+                                    className="read-only-event-content-sub-title-primary"
+                                    data-cy="para-person-website-title">
+                                    {t('dashboard.people.readOnly.website')}
+                                  </p>
+                                  {personData?.url?.uri && (
+                                    <p>
+                                      <a
+                                        href={personData?.url?.uri}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="url-links"
+                                        data-cy="anchor-person-website">
+                                        {personData?.url?.uri}
+                                      </a>
+                                    </p>
+                                  )}
+                                </Col>
+                              )}
+                              {checkIfFieldIsToBeDisplayed(
+                                personFormFieldNames.SOCIAL_MEDIA,
+                                personData?.socialMediaLinks,
+                              ) && (
+                                <Col span={24}>
+                                  <p className="read-only-event-content-sub-title-primary">
+                                    {t('dashboard.people.readOnly.socialMediaLinks')}
+                                  </p>
+                                  {personData?.socialMediaLinks?.length > 0 &&
+                                    personData?.socialMediaLinks?.map((link, index) => (
+                                      <p key={index}>
+                                        <a
+                                          href={link}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="url-links"
+                                          data-cy="anchor-person-social-media-links">
+                                          {link}
+                                        </a>
+                                      </p>
+                                    ))}
+                                </Col>
+                              )}
+                              {imageConfig.enableGallery && imageGalleryData?.length > 0 && (
+                                <Col span={24}>
+                                  <p className="read-only-event-content-sub-title-primary">
+                                    {t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
+                                  </p>
+                                  <MultipleImageUpload
+                                    imageReadOnly={true}
+                                    largeAspectRatio={
+                                      currentCalendarData?.imageConfig?.length > 0
+                                        ? imageConfig?.large?.aspectRatio
+                                        : null
+                                    }
+                                    thumbnailAspectRatio={
+                                      currentCalendarData?.imageConfig?.length > 0
+                                        ? imageConfig?.thumbnail?.aspectRatio
+                                        : null
+                                    }
+                                    eventImageData={imageGalleryData}
+                                  />
+                                </Col>
+                              )}
+                            </Row>
+                          </Col>
+                          <Col>
+                            {mainImageData?.original?.uri && (
+                              <div>
+                                <img
+                                  src={mainImageData?.original?.uri}
+                                  alt="avatar"
+                                  style={{
+                                    width: '151px',
+                                    height: '151px',
+                                    objectFit: 'contain',
+                                  }}
+                                  data-cy="image-person-original"
+                                />
+                              </div>
+                            )}
+                          </Col>
+                        </Card>
+
+                        {derivedEntitiesDisplayStatus && (
+                          <Card marginResponsive="0px">
+                            <div className="associated-with-section">
+                              <h5 className="associated-with-section-title">
+                                {t('dashboard.organization.createNew.addOrganization.associatedEntities.title')}
+                              </h5>
+                              {derivedEntitiesData?.places?.length > 0 && (
+                                <div>
+                                  <p className="associated-with-title">
+                                    {t('dashboard.organization.createNew.addOrganization.associatedEntities.place')}
+                                    <div className="associated-with-cards-wrapper">
+                                      {derivedEntitiesData?.places?.map((place) => {
+                                        <SelectionItem
+                                          key={place._id}
+                                          name={
+                                            Object.keys(place?.name ?? {})?.length > 0
+                                              ? contentLanguageBilingual({
+                                                  data: place?.name,
+                                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                                  calendarContentLanguage: calendarContentLanguage,
+                                                })
+                                              : typeof place?.name === 'string' && place?.name
+                                          }
+                                          icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
+                                          calendarContentLanguage={calendarContentLanguage}
+                                          bordered
+                                          onClickHandle={{
+                                            navigationFlag: true,
+                                            entityType: place?.type ?? taxonomyClass.PLACE,
+                                            entityId: place?._id,
+                                          }}
+                                          itemWidth="100%"
+                                        />;
+                                      })}
+                                    </div>
+                                  </p>
+                                </div>
+                              )}
+                              {derivedEntitiesData?.organizations?.length > 0 && (
+                                <div>
+                                  <p className="associated-with-title">
+                                    {t(
+                                      'dashboard.organization.createNew.addOrganization.associatedEntities.organizations',
+                                    )}
+                                    <div className="associated-with-cards-wrapper">
+                                      {derivedEntitiesData?.organizations?.map((org) => {
+                                        return (
+                                          <SelectionItem
+                                            key={org._id}
+                                            name={
+                                              Object.keys(org?.name ?? {})?.length > 0
+                                                ? contentLanguageBilingual({
+                                                    data: org?.name,
+                                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                                    calendarContentLanguage: calendarContentLanguage,
+                                                  })
+                                                : typeof org?.name === 'string' && org?.name
+                                            }
+                                            icon={
+                                              <Icon
+                                                component={OrganizationLogo}
+                                                style={{ color: '#607EFC', fontSize: '18px' }}
+                                                data-cy="organization-logo"
+                                              />
+                                            }
+                                            onClickHandle={{
+                                              navigationFlag: true,
+                                              entityType: org?.type ?? taxonomyClass.ORGANIZATION,
+                                              entityId: org?._id,
+                                            }}
+                                            calendarContentLanguage={calendarContentLanguage}
+                                            bordered
+                                            itemWidth="100%"
+                                          />
+                                        );
+                                      })}
+                                    </div>
+                                  </p>
+                                </div>
+                              )}
+                              {derivedEntitiesData?.events?.length > 0 && (
+                                <div>
+                                  <p className="associated-with-title">
+                                    {t('dashboard.organization.createNew.addOrganization.associatedEntities.events')}
+                                    <div className="associated-with-cards-wrapper">
+                                      {derivedEntitiesData?.events?.map((event) => {
+                                        return (
+                                          <SelectionItem
+                                            key={event._id}
+                                            name={
+                                              Object.keys(event?.name ?? {})?.length > 0
+                                                ? contentLanguageBilingual({
+                                                    data: event?.name,
+                                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                                    calendarContentLanguage: calendarContentLanguage,
+                                                  })
+                                                : typeof event?.name === 'string' && event?.name
+                                            }
+                                            icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
+                                            description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                                            bordered
+                                            onClickHandle={{
+                                              navigationFlag: true,
+                                              entityType: event?.type ?? taxonomyClass.EVENT,
+                                              entityId: event?._id,
+                                            }}
+                                            calendarContentLanguage={calendarContentLanguage}
+                                            itemWidth="100%"
+                                          />
+                                        );
+                                      })}
+                                    </div>
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                            <></>
+                          </Card>
                         )}
-                        {personData?.disambiguatingDescription?.en && (
-                          <>
-                            <p
-                              className="read-only-event-content-sub-title-secondary"
-                              data-cy="para-person-disambiguating-description-english-title">
-                              {t('common.tabEnglish')}
-                            </p>
-                            <p
-                              className="read-only-event-content"
-                              data-cy="para-person-disambiguating-description-english">
-                              {personData?.disambiguatingDescription?.en}
-                            </p>
-                          </>
-                        )}
-                      </Col>
-                    )}
-                    {(personData?.description?.fr || personData?.description?.en) && (
-                      <Col span={24}>
-                        <p
-                          className="read-only-event-content-sub-title-primary"
-                          data-cy="para-person-description-title">
-                          {t('dashboard.people.readOnly.description')}
-                        </p>
-                        {personData?.description?.fr && (
-                          <>
-                            <p
-                              className="read-only-event-content-sub-title-secondary"
-                              data-cy="para-person-description-french-title">
-                              {t('common.tabFrench')}
-                            </p>
-                            <p className="read-only-event-content">
-                              <div
-                                dangerouslySetInnerHTML={{ __html: personData?.description?.fr }}
-                                data-cy="div-person-description-french"
-                              />
-                            </p>
-                          </>
-                        )}
-                        {personData?.description?.en && (
-                          <>
-                            <p
-                              className="read-only-event-content-sub-title-secondary"
-                              data-cy="para-person-description-english-title">
-                              {t('common.tabEnglish')}
-                            </p>
-                            <p className="read-only-event-content">
-                              <div
-                                dangerouslySetInnerHTML={{ __html: personData?.description?.en }}
-                                data-cy="div-person-description-english"
-                              />
-                            </p>
-                          </>
-                        )}
-                      </Col>
-                    )}
-                    {personData?.url?.uri && (
-                      <Col span={24}>
-                        <p className="read-only-event-content-sub-title-primary" data-cy="para-person-website-title">
-                          {t('dashboard.people.readOnly.website')}
-                        </p>
-                        <p>
-                          <a
-                            href={personData?.url?.uri}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="url-links"
-                            data-cy="anchor-person-website">
-                            {personData?.url?.uri}
-                          </a>
-                        </p>
-                      </Col>
-                    )}
-                    {personData?.socialMediaLinks?.length > 0 && (
-                      <Col span={24}>
-                        <p className="read-only-event-content-sub-title-primary">
-                          {t('dashboard.people.readOnly.socialMediaLinks')}
-                        </p>
-                        {personData?.socialMediaLinks?.map((link, index) => (
-                          <p key={index}>
-                            <a
-                              href={link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="url-links"
-                              data-cy="anchor-person-social-media-links">
-                              {link}
-                            </a>
-                          </p>
-                        ))}
-                      </Col>
-                    )}
-                    {personData?.image?.length > 0 && imageConfig.enableGallery && (
-                      <Col span={24}>
-                        <p className="read-only-event-content-sub-title-primary">
-                          {t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
-                        </p>
-                        <MultipleImageUpload
-                          imageReadOnly={true}
-                          largeAspectRatio={
-                            currentCalendarData?.imageConfig?.length > 0 ? imageConfig?.large?.aspectRatio : null
-                          }
-                          thumbnailAspectRatio={
-                            currentCalendarData?.imageConfig?.length > 0 ? imageConfig?.thumbnail?.aspectRatio : null
-                          }
-                          eventImageData={personData?.image?.filter((image) => !image?.isMain)}
-                        />
-                      </Col>
-                    )}
+                      </Row>
+                    </Col>
                   </Row>
                 </Col>
-                <Col>
-                  {mainImageData?.original?.uri && (
-                    <div>
-                      <img
-                        src={mainImageData?.original?.uri}
-                        alt="avatar"
-                        style={{
-                          width: '151px',
-                          height: '151px',
-                          objectFit: 'contain',
-                        }}
-                        data-cy="image-person-original"
-                      />
-                    </div>
-                  )}
-                </Col>
-              </Card>
-
-              {derivedEntitiesDisplayStatus && (
-                <Card marginResponsive="0px">
-                  <div className="associated-with-section">
-                    <h5 className="associated-with-section-title">
-                      {t('dashboard.organization.createNew.addOrganization.associatedEntities.title')}
-                    </h5>
-                    {derivedEntitiesData?.places?.length > 0 && (
-                      <div>
-                        <p className="associated-with-title">
-                          {t('dashboard.organization.createNew.addOrganization.associatedEntities.place')}
-                          <div className="associated-with-cards-wrapper">
-                            {derivedEntitiesData?.places?.map((place) => {
-                              <SelectionItem
-                                key={place._id}
-                                name={
-                                  place?.name?.en || place?.name?.fr
-                                    ? contentLanguageBilingual({
-                                        en: place?.name?.en,
-                                        fr: place?.name?.fr,
-                                        interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                        calendarContentLanguage: calendarContentLanguage,
-                                      })
-                                    : typeof place?.name === 'string' && place?.name
-                                }
-                                icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
-                                bordered
-                                itemWidth="100%"
-                              />;
-                            })}
-                          </div>
-                        </p>
-                      </div>
-                    )}
-                    {derivedEntitiesData?.organizations?.length > 0 && (
-                      <div>
-                        <p className="associated-with-title">
-                          {t('dashboard.organization.createNew.addOrganization.associatedEntities.organizations')}
-                          <div className="associated-with-cards-wrapper">
-                            {derivedEntitiesData?.organizations?.map((org) => {
-                              return (
-                                <SelectionItem
-                                  key={org._id}
-                                  name={
-                                    org?.name?.en || org?.name?.fr
-                                      ? contentLanguageBilingual({
-                                          en: org?.name?.en,
-                                          fr: org?.name?.fr,
-                                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                          calendarContentLanguage: calendarContentLanguage,
-                                        })
-                                      : typeof org?.name === 'string' && org?.name
-                                  }
-                                  icon={
-                                    <Icon
-                                      component={OrganizationLogo}
-                                      style={{ color: '#607EFC', fontSize: '18px' }}
-                                      data-cy="organization-logo"
-                                    />
-                                  }
-                                  bordered
-                                  itemWidth="100%"
-                                />
-                              );
-                            })}
-                          </div>
-                        </p>
-                      </div>
-                    )}
-                    {derivedEntitiesData?.events?.length > 0 && (
-                      <div>
-                        <p className="associated-with-title">
-                          {t('dashboard.organization.createNew.addOrganization.associatedEntities.events')}
-                          <div className="associated-with-cards-wrapper">
-                            {derivedEntitiesData?.events?.map((event) => {
-                              return (
-                                <SelectionItem
-                                  key={event._id}
-                                  name={
-                                    event?.name?.en || event?.name?.fr
-                                      ? contentLanguageBilingual({
-                                          en: event?.name?.en,
-                                          fr: event?.name?.fr,
-                                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                                          calendarContentLanguage: calendarContentLanguage,
-                                        })
-                                      : typeof event?.name === 'string' && event?.name
-                                  }
-                                  icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
-                                  description={moment(event.startDateTime).format('YYYY-MM-DD')}
-                                  bordered
-                                  itemWidth="100%"
-                                />
-                              );
-                            })}
-                          </div>
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                  <></>
-                </Card>
-              )}
+              </ReadOnlyPageTabLayout>
             </Row>
           </Col>
         </Row>

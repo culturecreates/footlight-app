@@ -180,11 +180,11 @@ const UserReadOnly = () => {
                       },
                     })}
 
-                  {userInfo?.roles &&
+                  {(userInfo?.roles || userInfo?.isSuperAdmin) &&
                     createUserInfoRowItem({
                       isCopiableText: false,
                       infoType: 'userType',
-                      infoText: roleHandler({ roles: userInfo.roles, calendarId }),
+                      infoText: roleHandler({ roles: userInfo.roles, calendarId, isSuperAdmin: userInfo.isSuperAdmin }),
                     })}
 
                   {userInfo?.interfaceLanguage &&
@@ -223,8 +223,7 @@ const UserReadOnly = () => {
                                       key={index}
                                       selectedCalendarId={calendar?.calendarId}
                                       name={contentLanguageBilingual({
-                                        en: calendar?.name?.en,
-                                        fr: calendar?.name?.fr,
+                                        data: calendar?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })}

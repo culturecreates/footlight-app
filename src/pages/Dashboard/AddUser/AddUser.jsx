@@ -18,7 +18,7 @@ import {
   useUpdateUserByIdMutation,
 } from '../../../services/users';
 import AuthenticationInput from '../../../components/Input/Common/AuthenticationInput';
-import { userLanguages } from '../../../constants/userLanguagesÏ';
+import { userLanguages } from '../../../constants/userLanguages';
 import { useState, useEffect } from 'react';
 import { userRoles } from '../../../constants/userRoles';
 import { useDispatch, useSelector } from 'react-redux';
@@ -117,7 +117,7 @@ const AddUser = () => {
         .unwrap()
         .then((response) => {
           const activeCalendars = response?.roles?.filter((r) => {
-            return r.status == userActivityStatus[0].key;
+            return r.status === userActivityStatus[0].key || r.status === userActivityStatus[2].key;
           });
           setSelectedCalendars(
             activeCalendars
@@ -147,7 +147,7 @@ const AddUser = () => {
         .unwrap()
         .then((response) => {
           const activeCalendars = response?.roles.filter((r) => {
-            return r.status == userActivityStatus[0].key;
+            return r.status == userActivityStatus[0].key || r.status == userActivityStatus[2].key;
           });
           setSelectedCalendars(
             activeCalendars
@@ -892,8 +892,7 @@ const AddUser = () => {
                                       setRouteBlockingFlag={setRouteBlockingFlag}
                                       selectedCalendarId={selectedCalendar?.calendarId}
                                       name={contentLanguageBilingual({
-                                        en: selectedCalendar?.name?.en,
-                                        fr: selectedCalendar?.name?.fr,
+                                        data: selectedCalendar?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })}

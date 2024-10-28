@@ -4,9 +4,6 @@ import { CloseCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import Tags from '../components/Tags/Common/Tags';
 import TreeSelectOption from '../components/TreeSelectOption/TreeSelectOption';
 import { treeTaxonomyOptions } from '../components/TreeSelectOption/treeSelectOption.settings';
-import { contentLanguage } from './contentLanguage';
-import ContentLanguageInput from '../components/ContentLanguageInput/ContentLanguageInput';
-import BilingualInput from '../components/BilingualInput/BilingualInput';
 import ImageUpload from '../components/ImageUpload/ImageUpload';
 import { bilingual, contentLanguageBilingual } from '../utils/bilingual';
 import { Translation } from 'react-i18next';
@@ -15,11 +12,12 @@ import { formInitialValueHandler } from '../utils/formInitialValueHandler';
 import { featureFlags } from '../utils/featureFlags';
 import EventsSearch from '../components/Search/Events/EventsSearch';
 import SelectionItem from '../components/List/SelectionItem';
-import BilingualTextEditor from '../components/BilingualTextEditor';
 import Outlined from '../components/Button/Outlined';
 import { sourceOptions } from './sourceOptions';
 import LoadingIndicator from '../components/LoadingIndicator';
 import MultipleImageUpload from '../components/MultipleImageUpload';
+import CreateMultiLingualFormItems from '../layout/CreateMultiLingualFormItems';
+import MultiLingualTextEditor from '../components/MultilingualTextEditor/MultiLingualTextEditor';
 
 const { TextArea } = Input;
 
@@ -72,17 +70,40 @@ export const formNames = {
 const rules = [
   {
     dataType: dataTypes.URI_STRING,
-    rule: {
-      type: 'url',
-      message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
-    },
+    rule: () => [
+      {
+        type: 'url',
+        message: <Translation>{(t) => t('dashboard.events.addEditEvent.validations.url')}</Translation>,
+      },
+    ],
   },
   {
     dataType: dataTypes.EMAIL,
-    rule: {
-      type: 'email',
-      message: <Translation>{(t) => t('login.validations.invalidEmail')}</Translation>,
-    },
+    rule: () => [
+      {
+        type: 'email',
+        message: <Translation>{(t) => t('login.validations.invalidEmail')}</Translation>,
+      },
+    ],
+  },
+  {
+    dataType: dataTypes.IMAGE,
+    rule: ({ image, t }) => [
+      ({ getFieldValue }) => ({
+        validator() {
+          if (
+            (getFieldValue('image') != undefined && getFieldValue('image')?.length > 0) ||
+            (image && !getFieldValue('image')) ||
+            (image && getFieldValue('image')?.length > 0)
+          ) {
+            return Promise.resolve();
+          } else
+            return Promise.reject(
+              new Error(t('dashboard.events.addEditEvent.validations.otherInformation.emptyImage')),
+            );
+        },
+      }),
+    ],
   },
 ];
 
@@ -103,6 +124,7 @@ export const formFieldValue = [
       placeholder,
       user,
       t,
+      entityId,
       validations,
       required,
       mappedField,
@@ -110,88 +132,29 @@ export const formFieldValue = [
     }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
         return (
-          <ContentLanguageInput
+          <CreateMultiLingualFormItems
             calendarContentLanguage={calendarContentLanguage}
-            isFieldsDirty={{
-              en: form.isFieldTouched(name?.concat(['en'])),
-              fr: form.isFieldTouched(name?.concat(['fr'])),
-            }}>
-            <BilingualInput fieldData={data}>
-              <Form.Item
-                name={[`${name}`, 'fr']}
-                key={contentLanguage.FRENCH}
-                dependencies={[`${name}`, 'en']}
-                initialValue={data?.fr}
-                rules={
-                  required
-                    ? [
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (value || getFieldValue([`${name}`, 'en'])) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(
-                                new Error(validations ?? t('common.validations.informationRequired')),
-                              );
-                          },
-                        }),
-                      ]
-                    : undefined
-                }>
-                <TextArea
-                  autoSize
-                  autoComplete="off"
-                  placeholder={placeholder?.fr}
-                  style={{
-                    borderRadius: '4px',
-                    border: `${
-                      calendarContentLanguage === contentLanguage.BILINGUAL ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
-                    }`,
-                    width: '423px',
-                  }}
-                  size="large"
-                  data-cy={`input-text-area-${mappedField}-french`}
-                />
-              </Form.Item>
-
-              <Form.Item
-                name={[`${name}`, 'en']}
-                key={contentLanguage.ENGLISH}
-                dependencies={[`${name}`, 'fr']}
-                initialValue={data?.en}
-                rules={
-                  required
-                    ? [
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (value || getFieldValue([`${name}`, 'fr'])) {
-                              return Promise.resolve();
-                            } else
-                              return Promise.reject(
-                                new Error(validations ?? t('common.validations.informationRequired')),
-                              );
-                          },
-                        }),
-                      ]
-                    : undefined
-                }>
-                <TextArea
-                  autoSize
-                  autoComplete="off"
-                  placeholder={placeholder?.en}
-                  style={{
-                    borderRadius: '4px',
-                    border: `${
-                      calendarContentLanguage === contentLanguage.BILINGUAL ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
-                    }`,
-                    width: '100%',
-                  }}
-                  size="large"
-                  data-cy={`input-text-area-${mappedField}-english`}
-                />
-              </Form.Item>
-            </BilingualInput>
-          </ContentLanguageInput>
+            form={form}
+            name={Array.isArray(name) ? name[0] : name}
+            data={data}
+            entityId={entityId}
+            validations={
+              validations && validations.trim() !== '' ? validations : t('common.validations.informationRequired')
+            }
+            dataCy={`input-text-area-${mappedField}-`}
+            placeholder={placeholder}
+            required={required}>
+            <TextArea
+              autoSize
+              autoComplete="off"
+              style={{
+                borderRadius: '4px',
+                border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
+                width: '423px',
+              }}
+              size="large"
+            />
+          </CreateMultiLingualFormItems>
         );
       else if (datatype === dataTypes.URI_STRING)
         return (
@@ -207,8 +170,7 @@ export const formFieldValue = [
         return (
           <StyledInput
             placeholder={contentLanguageBilingual({
-              en: placeholder?.en,
-              fr: placeholder?.fr,
+              data: placeholder,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             })}
@@ -270,8 +232,7 @@ export const formFieldValue = [
         return (
           <StyledInput
             placeholder={contentLanguageBilingual({
-              en: placeholder?.en,
-              fr: placeholder?.fr,
+              data: placeholder,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             })}
@@ -287,16 +248,13 @@ export const formFieldValue = [
         autoSize
         autoComplete="off"
         placeholder={contentLanguageBilingual({
-          en: placeholder?.en,
-          fr: placeholder?.fr,
+          data: placeholder,
           interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           calendarContentLanguage: calendarContentLanguage,
         })}
         style={{
           borderRadius: '4px',
-          border: `${
-            calendarContentLanguage === contentLanguage.BILINGUAL ? '4px solid #E8E8E8' : '1px solid #b6c1c9'
-          }`,
+          border: `${calendarContentLanguage.length > 1 ? '1px solid #B6C1C9' : '1px solid #b6c1c9'}`,
           width: '423px',
         }}
         size="large"
@@ -322,8 +280,7 @@ export const formFieldValue = [
           treeDefaultExpandAll
           notFoundContent={<NoContent />}
           placeholder={contentLanguageBilingual({
-            en: placeholder?.en,
-            fr: placeholder?.fr,
+            data: placeholder,
             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
             calendarContentLanguage: calendarContentLanguage,
           })}
@@ -415,7 +372,6 @@ export const formFieldValue = [
       locationPlace,
       setLocationPlace,
       t,
-      name,
       placesSearch,
       calendarContentLanguage,
       allPlacesArtsdataList,
@@ -424,11 +380,12 @@ export const formFieldValue = [
       mappedField,
       isEntitiesFetching,
       isExternalSourceFetching,
+      fieldName,
     }) => {
       return (
-        <>
+        <div>
           <Popover
-            data-cy={`popover-${mappedField}`}
+            data-cy={`popover-${mappedField ?? fieldName}`}
             open={isPopoverOpen}
             onOpenChange={(open) => setIsPopoverOpen(open)}
             overlayClassName="event-popover"
@@ -440,7 +397,9 @@ export const formFieldValue = [
               <div>
                 <div>
                   <>
-                    <div className="popover-section-header" data-cy={`div-${mappedField}-footlight-place-title`}>
+                    <div
+                      className="popover-section-header"
+                      data-cy={`div-${mappedField ?? fieldName}-footlight-place-title`}>
                       {t('dashboard.organization.createNew.search.footlightSectionHeading')}
                     </div>
                     <div className="search-scrollable-content">
@@ -460,10 +419,10 @@ export const formFieldValue = [
                               }`}
                               onClick={() => {
                                 setLocationPlace(place);
-                                form.setFieldValue(name, place?.value);
+                                form.setFieldValue(fieldName, place?.value);
                                 setIsPopoverOpen(false);
                               }}
-                              data-cy={`div-${mappedField}-footlight-place-${index}`}>
+                              data-cy={`div-${mappedField ?? fieldName}-footlight-place-${index}`}>
                               {place?.label}
                             </div>
                           ))
@@ -473,7 +432,9 @@ export const formFieldValue = [
                     </div>
                   </>
 
-                  <div className="popover-section-header" data-cy={`div-${mappedField}-footlight-place-title`}>
+                  <div
+                    className="popover-section-header"
+                    data-cy={`div-${mappedField ?? fieldName}-footlight-place-title`}>
                     {t('dashboard.organization.createNew.search.importsFromFootlight')}
                   </div>
                   <div className="search-scrollable-content">
@@ -492,10 +453,10 @@ export const formFieldValue = [
                             }`}
                             onClick={() => {
                               setLocationPlace(place);
-                              form.setFieldValue(name, place?.value);
+                              form.setFieldValue(fieldName, place?.value);
                               setIsPopoverOpen(false);
                             }}
-                            data-cy={`div-${mappedField}-footlight-place-${index}`}>
+                            data-cy={`div-${mappedField ?? fieldName}-footlight-place-${index}`}>
                             {place?.label}
                           </div>
                         ))
@@ -504,7 +465,9 @@ export const formFieldValue = [
                       ))}
                   </div>
 
-                  <div className="popover-section-header" data-cy={`div-${mappedField}-artsdata-place-title`}>
+                  <div
+                    className="popover-section-header"
+                    data-cy={`div-${mappedField ?? fieldName}-artsdata-place-title`}>
                     {t('dashboard.organization.createNew.search.artsDataSectionHeading')}
                   </div>
                   <div className="search-scrollable-content">
@@ -521,10 +484,10 @@ export const formFieldValue = [
                             className="event-popover-options"
                             onClick={() => {
                               setLocationPlace(place);
-                              form.setFieldValue(name, place?.uri);
+                              form.setFieldValue(fieldName, place?.uri);
                               setIsPopoverOpen(false);
                             }}
-                            data-cy={`div-${mappedField}-artsdata-place-${index}`}>
+                            data-cy={`div-${mappedField ?? fieldName}-artsdata-place-${index}`}>
                             {place?.label}
                           </div>
                         ))
@@ -545,7 +508,7 @@ export const formFieldValue = [
               onClick={() => {
                 setIsPopoverOpen(true);
               }}
-              data-cy={`input-${mappedField}`}
+              data-cy={`input-${mappedField ?? fieldName}`}
             />
           </Popover>
           {locationPlace && (
@@ -562,14 +525,14 @@ export const formFieldValue = [
               closable
               onClose={() => {
                 setLocationPlace();
-                form.setFieldValue(name, undefined);
+                form.setFieldValue(fieldName, undefined);
               }}
               edit={locationPlace?.source === sourceOptions.CMS && true}
               onEdit={(e) => placeNavigationHandler(locationPlace?.value, locationPlace?.type, e)}
               creatorId={locationPlace?.creatorId}
             />
           )}
-        </>
+        </div>
       );
     },
   },
@@ -579,17 +542,21 @@ export const formFieldValue = [
       datatype,
       data,
       calendarContentLanguage,
-      name = [],
+      name = '',
       placeholder,
       required,
+      form,
+      entityId,
       descriptionMinimumWordCount,
     }) => {
       if (datatype === dataTypes.MULTI_LINGUAL)
         return (
-          <BilingualTextEditor
+          <MultiLingualTextEditor
             data={data}
+            form={form}
             calendarContentLanguage={calendarContentLanguage}
-            name={name}
+            name={Array.isArray(name) ? name[0] : name}
+            entityId={entityId}
             placeholder={placeholder}
             descriptionMinimumWordCount={descriptionMinimumWordCount}
             required={required}
@@ -614,14 +581,16 @@ export const renderFormFields = ({
   mappedField,
   t,
   validations,
+  originalUrl,
+  fieldName,
 }) => {
   return (
     <>
       {position === 'top' && datatype !== dataTypes.IMAGE && <p className="add-event-date-heading">{userTips}</p>}
       <Form.Item
-        data-cy={`form-item-${mappedField}`}
+        data-cy={`form-item-${mappedField ?? fieldName?.toLowerCase()}`}
         label={label}
-        name={name}
+        name={name ?? fieldName?.toLowerCase()}
         key={key}
         initialValue={
           Array.isArray(initialValue)
@@ -635,24 +604,28 @@ export const renderFormFields = ({
         required={required}
         hidden={hidden}
         style={style}
-        className={mappedField}
+        className={mappedField ?? fieldName?.toLowerCase()}
         rules={rules
           ?.map((rule) => {
-            if (datatype === rule?.dataType) return rule.rule;
+            if (datatype === rule?.dataType) {
+              return rule.rule({ image: originalUrl, t, required, fieldName });
+            }
           })
           .concat([
             {
               required: required,
-              message: validations ?? t('common.validations.informationRequired'),
+              message:
+                validations && validations.trim() !== '' ? validations : t('common.validations.informationRequired'),
             },
           ])
+          ?.flat()
           ?.filter((rule) => rule !== undefined)}
         help={
           position === 'bottom' && userTips ? (
             <p
               className="add-event-date-heading"
               style={{ marginTop: '-15px' }}
-              data-cy={`form-item-helper-text-${mappedField}`}>
+              data-cy={`form-item-helper-text-${mappedField ?? fieldName?.toLowerCase()}`}>
               {userTips}
             </p>
           ) : undefined
@@ -693,33 +666,34 @@ export const returnFormDataWithFields = ({
   adminOnlyFields,
   mandatoryFields,
   setShowDialog,
+  entityId,
 }) => {
   return renderFormFields({
     fieldName: field?.name,
-    name: [field?.mappedField],
+    name: field?.mappedField && [field?.mappedField],
     mappedField: field?.mappedField,
     type: field?.type,
     datatype: field?.datatype,
     required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
     element: formField?.element({
+      fieldName: field?.name?.toLowerCase(),
       mappedField: field?.mappedField,
       data: entityData && entityData[field?.mappedField],
       datatype: field?.datatype,
       taxonomyData: allTaxonomyData,
       user: user,
+      entityId,
       type: field?.type,
       isDynamicField: false,
       calendarContentLanguage,
-      name: [field?.mappedField],
+      name: field?.mappedField && [field?.mappedField],
       preview: true,
       placeholder: bilingual({
-        en: field?.placeholder?.en,
-        fr: field?.placeholder?.fr,
+        data: field?.placeholder,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       }),
       validations: bilingual({
-        en: field?.validations?.en,
-        fr: field?.validations?.fr,
+        data: field?.validations,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       }),
       largeUrl:
@@ -733,8 +707,7 @@ export const returnFormDataWithFields = ({
       required: checkMandatoryAdminOnlyFields(field?.name, mandatoryFields),
       t: t,
       userTips: bilingual({
-        en: field?.userTips?.text?.en,
-        fr: field?.userTips?.text?.fr,
+        data: field?.userTips?.text,
         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
         calendarContentLanguage: calendarContentLanguage,
       }),
@@ -774,13 +747,11 @@ export const returnFormDataWithFields = ({
     key: index,
     initialValue: formInitialValueHandler(field?.type, field?.mappedField, field?.datatype, entityData),
     label: bilingual({
-      en: field?.label?.en,
-      fr: field?.label?.fr,
+      data: field?.label,
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
     }),
     userTips: bilingual({
-      en: field?.userTips?.text?.en,
-      fr: field?.userTips?.text?.fr,
+      data: field?.userTips?.text,
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       calendarContentLanguage: calendarContentLanguage,
     }),
@@ -791,10 +762,13 @@ export const returnFormDataWithFields = ({
     taxonomyAlias: field?.taxonomyAlias,
     t,
     validations: bilingual({
-      en: field?.validations?.en,
-      fr: field?.validations?.fr,
+      data: field?.validations,
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       locationPlace,
     }),
+    originalUrl:
+      field?.mappedField === mappedFieldTypes.IMAGE
+        ? entityData?.image?.find((image) => image?.isMain)?.original?.uri
+        : field?.mappedField === mappedFieldTypes.LOGO && entityData?.logo?.original?.uri,
   });
 };

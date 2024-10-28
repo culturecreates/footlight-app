@@ -17,7 +17,7 @@ export const otherInformationOptions = [
     fieldNames: otherInformationFieldNames.contact,
     taxonomy: false,
     disabled: false,
-    label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.contact.contactTitle')}</Translation>,
+    label: <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.contact.title')}</Translation>,
     tooltip: (
       <Translation>{(t) => t('dashboard.events.addEditEvent.otherInformation.contact.contactTooltip')}</Translation>
     ),

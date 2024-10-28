@@ -10,13 +10,13 @@ import { CloseCircleOutlined, CopyOutlined, ExclamationCircleOutlined } from '@a
 import NoContent from '../../../../components/NoContent/NoContent';
 import { useGetAllTaxonomyQuery } from '../../../../services/taxonomy';
 import { taxonomyClass } from '../../../../constants/taxonomyClass';
-import { contentLanguage } from '../../../../constants/contentLanguage';
+import { contentLanguageKeyMap } from '../../../../constants/contentLanguage';
 import { useOutletContext, useParams } from 'react-router-dom';
 import { getUserDetails } from '../../../../redux/reducer/userSlice';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Tags from '../../../../components/Tags/Common/Tags';
 import { treeTaxonomyOptions } from '../../../../components/TreeSelectOption/treeSelectOption.settings';
-import { userLanguages } from '../../../../constants/userLanguagesÏ';
+import { userLanguages } from '../../../../constants/userLanguages';
 import SelectOption from '../../../../components/Select/SelectOption';
 import { placeTaxonomyMappedFieldTypes } from '../../../../constants/placeMappedFieldTypes';
 import { useGetEntitiesQuery, useLazyGetEntitiesQuery } from '../../../../services/entities';
@@ -29,11 +29,12 @@ import CustomModal from '../../../../components/Modal/Common/CustomModal';
 import { copyText } from '../../../../utils/copyText';
 import LoadingIndicator from '../../../../components/LoadingIndicator';
 import { widgetFontCollection } from '../../../../constants/fonts';
+import { setErrorStates } from '../../../../redux/reducer/ErrorSlice';
 
 const { useBreakpoint } = Grid;
 const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_BASE_URL;
 
-const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
+const WidgetSettings = ({ tabKey }) => {
   const { t } = useTranslation();
   const { calendarId } = useParams();
   const timestampRef = useRef(Date.now()).current;
@@ -41,6 +42,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
   const [currentCalendarData] = useOutletContext();
   const screens = useBreakpoint();
   const [form] = Form.useForm();
+  const dispatch = useDispatch();
 
   const localePath = 'dashboard.settings.widgetSettings';
   const regexForHexCode = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
@@ -110,13 +112,15 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
   });
 
   const lanFormat = () => {
-    if (calendarContentLanguage === contentLanguage.BILINGUAL) {
-      return userLanguages;
-    } else if (calendarContentLanguage === contentLanguage.ENGLISH) {
-      return [userLanguages[0]];
-    } else {
-      return [userLanguages[1]];
-    }
+    let requiredLanguages = [];
+    calendarContentLanguage.forEach((language) => {
+      const languageItem = userLanguages.find((item) => {
+        return item.key.toLowerCase() === contentLanguageKeyMap[language];
+      });
+      if (languageItem) requiredLanguages.push(languageItem);
+    });
+
+    return requiredLanguages.length === 0 ? userLanguages : requiredLanguages;
   };
 
   const languageOptions = lanFormat().map((item) => {
@@ -192,7 +196,6 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
       setIframeCode(
         `<iframe src="${urlCopy.href}" width="100%" style="max-width:${width}px; border:none" height="${height}px"></iframe>`,
       );
-      setDirtyStatus(true);
     }
   };
 
@@ -219,7 +222,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
           response.map((item) => {
             return {
               value: item?.id,
-              label: bilingual({ fr: item?.name?.fr, en: item?.name?.en, interfaceLanguage: user?.interfaceLanguage }),
+              label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
             };
           }),
         );
@@ -245,7 +248,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
           response.map((item) => {
             return {
               value: item?.id,
-              label: bilingual({ fr: item?.name?.fr, en: item?.name?.en, interfaceLanguage: user?.interfaceLanguage }),
+              label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
             };
           }),
         );
@@ -271,7 +274,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
           response.map((item) => {
             return {
               value: item?.id,
-              label: bilingual({ fr: item?.name?.fr, en: item?.name?.en, interfaceLanguage: user?.interfaceLanguage }),
+              label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
             };
           }),
         );
@@ -284,12 +287,24 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
   const debounceSearchPerson = useCallback(useDebounce(personSearch, SEARCH_DELAY), []);
 
   useEffect(() => {
+    const isWidgetUrlAvailable = !!(
+      currentCalendarData?.widgetSettings?.eventDetailsUrlTemplate &&
+      currentCalendarData?.widgetSettings?.listEventsUrlTemplate
+    );
+    if (!isWidgetUrlAvailable) {
+      dispatch(
+        setErrorStates({ errorType: 'pageNotFound', message: `${t('errorPage.notFoundMessage')}`, isError: true }),
+      );
+    }
+  }, []);
+
+  useEffect(() => {
     if (initialEntitiesLocations) {
       setLocationOptions(
         initialEntitiesLocations.map((item) => {
           return {
             value: item?.id,
-            label: bilingual({ fr: item?.name?.fr, en: item?.name?.en, interfaceLanguage: user?.interfaceLanguage }),
+            label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
           };
         }),
       );
@@ -302,7 +317,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
         initialEntitiesPerson.map((item) => {
           return {
             value: item?.id,
-            label: bilingual({ fr: item?.name?.fr, en: item?.name?.en, interfaceLanguage: user?.interfaceLanguage }),
+            label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
           };
         }),
       );
@@ -315,7 +330,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
         initialEntitiesOrganization.map((item) => {
           return {
             value: item?.id,
-            label: bilingual({ fr: item?.name?.fr, en: item?.name?.en, interfaceLanguage: user?.interfaceLanguage }),
+            label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
           };
         }),
       );
@@ -335,7 +350,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
     const height = form.getFieldValue('height') ?? 600;
     const limit = form.getFieldValue('limit') ?? 9;
     const font = form.getFieldValue('font') ?? 'Roboto';
-    const locale = form.getFieldValue('locale') ?? languageOptions[0].value;
+    const locale = form.getFieldValue('locale') ?? languageOptions[0]?.value;
 
     urlCopy.searchParams.append('logo', calendarLogoUri);
     urlCopy.searchParams.append('locale', onLanguageSelect(locale)?.key.toLowerCase());
@@ -535,7 +550,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
                           name="font"
                           required
                           label={t(`${localePath}.font`)}
-                          initialValue={widgetFontCollection[0]}
+                          initialValue={widgetFontCollection[0]?.value ?? 'Roboto'}
                           data-cy="widget-settings-font">
                           <SelectOption
                             data-cy="widget-settings-font-dropdown"
@@ -600,7 +615,7 @@ const WidgetSettings = ({ setDirtyStatus, tabKey }) => {
                           name="language"
                           label={t(`${localePath}.language`)}
                           required
-                          initialValue={languageOptions[0].value}
+                          initialValue={languageOptions[0]?.value ?? []}
                           data-cy="widget-settings-language-label">
                           <SelectOption
                             data-cy="widget-settings-language"

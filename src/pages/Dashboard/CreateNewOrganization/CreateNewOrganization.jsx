@@ -72,6 +72,8 @@ import {
 import Alert from '../../../components/Alert';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
+import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -249,47 +251,35 @@ function CreateNewOrganization() {
 
   const onSaveHandler = (event, toggle = false) => {
     event?.preventDefault();
-    setShowDialog(false);
     let validateFieldList = [];
-    // if (
-    //   form.getFieldValue('socialMediaLinks')?.filter((link) => {
-    //     if (link) return true;
-    //   })?.length > 0
-    // ) {
-    //   validateFieldList = validateFieldList?.concat(
-    //     form
-    //       .getFieldValue('socialMediaLinks')
-    //       ?.filter((link) => {
-    //         if (link) return true;
-    //       })
-    //       ?.map((link, index) => ['socialMediaLinks', index]),
-    //   );
-    // }
     let mandatoryFields = standardMandatoryFieldNames;
     validateFieldList = validateFieldList?.concat(
       formFields
         ?.filter((field) => mandatoryFields?.includes(field?.name))
         ?.map((field) => {
+          let collection = [];
           if (field?.datatype === dataTypes.MULTI_LINGUAL) {
-            return [
-              [field?.mappedField, 'en'],
-              [field?.mappedField, 'fr'],
-            ];
-          } else return field?.mappedField;
+            calendarContentLanguage.forEach((language) => {
+              collection.push([field?.mappedField, contentLanguageKeyMap[language]]);
+            });
+            return collection;
+          } else return field?.mappedField ?? field?.name?.toLowerCase();
         })
         ?.flat(),
     );
     validateFieldList = validateFieldList?.concat(
       formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => ['dynamicFields', field]),
     );
+
     var promise = new Promise(function (resolve, reject) {
       form
         .validateFields(validateFieldList)
         .then(async () => {
+          setShowDialog(false);
           var values = form.getFieldsValue(true);
           let organizationPayload = {};
           Object.keys(values)?.map((object) => {
-            let payload = formPayloadHandler(values[object], object, formFields);
+            let payload = formPayloadHandler(values[object], object, formFields, calendarContentLanguage);
             if (payload) {
               let newKeys = Object.keys(payload);
               let childKeys = object?.split('.');
@@ -738,8 +728,12 @@ function CreateNewOrganization() {
     setScrollToSelectedField(array?.at(-1));
   };
 
-  const onValuesChangeHandler = () => {
-    setShowDialog(true);
+  const onFieldsChange = (changedValue) => {
+    if (changedValue?.length > 0 && !showDialog) {
+      if (changedValue?.filter((field) => field?.touched).length > 0) {
+        setShowDialog(true);
+      }
+    }
   };
 
   const placeNavigationHandler = (id, type, event) => {
@@ -787,16 +781,17 @@ function CreateNewOrganization() {
   useEffect(() => {
     let shouldDisplay = true;
 
-    for (let key in activeFallbackFieldsInfo) {
-      if (Object.prototype.hasOwnProperty.call(activeFallbackFieldsInfo, key)) {
-        const tagDisplayStatus =
-          activeFallbackFieldsInfo[key]?.en?.tagDisplayStatus || activeFallbackFieldsInfo[key]?.fr?.tagDisplayStatus;
-        if (tagDisplayStatus) {
-          shouldDisplay = false;
-          break;
-        }
+    const fallbackFieldNames = Object.keys(activeFallbackFieldsInfo) || [];
+    let individualFallbackFieldsCollection = [];
+    fallbackFieldNames.forEach((name) => {
+      individualFallbackFieldsCollection.push(...Object.values(activeFallbackFieldsInfo[name] || []));
+    });
+
+    individualFallbackFieldsCollection.forEach((element) => {
+      if (element?.tagDisplayStatus) {
+        shouldDisplay = false;
       }
-    }
+    });
 
     if (!shouldDisplay) {
       dispatch(setLanguageLiteralBannerDisplayStatus(true));
@@ -1032,15 +1027,18 @@ function CreateNewOrganization() {
   }, [isReadOnly]);
 
   useEffect(() => {
+    const newEntityName = location?.state?.name;
     if (artsDataId) {
       getArtsData(artsDataId);
-    } else if (location?.state?.name)
-      setNewEntityData({
-        name: {
-          fr: location?.state?.name,
-          en: location?.state?.name,
-        },
+    } else if (newEntityName) {
+      const name = {};
+      calendarContentLanguage.forEach((language) => {
+        const langKey = contentLanguageKeyMap[language];
+        name[langKey] = newEntityName;
       });
+
+      setNewEntityData({ name });
+    }
 
     placesSearch('');
   }, []);
@@ -1065,7 +1063,7 @@ function CreateNewOrganization() {
       <RouteLeavingGuard isBlocking={showDialog} />
 
       <div className="add-edit-wrapper add-organization-wrapper">
-        <Form form={form} layout="vertical" name="organization" onValuesChange={onValuesChangeHandler}>
+        <Form form={form} layout="vertical" name="organization" onFieldsChange={onFieldsChange}>
           <Row gutter={[32, 24]}>
             <Col span={24}>
               <Row gutter={[32, 2]}>
@@ -1169,14 +1167,12 @@ function CreateNewOrganization() {
                                     : artsDataLinkChecker(artsData?.sameAs)
                                 }
                                 name={contentLanguageBilingual({
-                                  en: artsData?.name?.en,
-                                  fr: artsData?.name?.fr,
+                                  data: artsData?.name,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
                                 disambiguatingDescription={contentLanguageBilingual({
-                                  en: artsData?.disambiguatingDescription?.en,
-                                  fr: artsData?.disambiguatingDescription?.fr,
+                                  data: artsData?.disambiguatingDescription,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                   calendarContentLanguage: calendarContentLanguage,
                                 })}
@@ -1224,6 +1220,7 @@ function CreateNewOrganization() {
                             return returnFormDataWithFields({
                               field,
                               formField,
+                              entityId: organizationId,
                               allTaxonomyData,
                               user,
                               calendarContentLanguage,
@@ -1277,9 +1274,9 @@ function CreateNewOrganization() {
                               <Form.Item
                                 key={index}
                                 name={['dynamicFields', taxonomy?.id]}
+                                data-cy={`form-item-organization-dynamic-fields-${index}`}
                                 label={bilingual({
-                                  en: taxonomy?.name?.en,
-                                  fr: taxonomy?.name?.fr,
+                                  data: taxonomy?.name,
                                   interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                 })}
                                 initialValue={initialValues}
@@ -1295,6 +1292,7 @@ function CreateNewOrganization() {
                                   taxonomy?.isAdminOnly ? (adminCheckHandler({ calendar, user }) ? false : true) : false
                                 }>
                                 <TreeSelectOption
+                                  data-cy={`treeselect-organization-dynamic-fields-${index}`}
                                   allowClear
                                   treeDefaultExpandAll
                                   notFoundContent={<NoContent />}
@@ -1308,6 +1306,7 @@ function CreateNewOrganization() {
                                     const { label, closable, onClose } = props;
                                     return (
                                       <Tags
+                                        data-cy={`tag-organization-dynamic-field-${label}`}
                                         closable={closable}
                                         onClose={onClose}
                                         closeIcon={
@@ -1341,14 +1340,12 @@ function CreateNewOrganization() {
                                       primaryIcon={<PlusOutlined />}
                                       disabled={false}
                                       label={contentLanguageBilingual({
-                                        en: field?.label?.en,
-                                        fr: field?.label?.fr,
+                                        data: field?.label,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })}
                                       promptText={contentLanguageBilingual({
-                                        en: field?.helperText?.en,
-                                        fr: field?.helperText?.fr,
+                                        data: field?.infoPopup,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })}
@@ -1383,10 +1380,9 @@ function CreateNewOrganization() {
                             <SelectionItem
                               key={place._id}
                               name={
-                                place?.name?.en || place?.name?.fr
+                                isDataValid(place?.name)
                                   ? contentLanguageBilingual({
-                                      en: place?.name?.en,
-                                      fr: place?.name?.fr,
+                                      data: place?.name,
                                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                       calendarContentLanguage: calendarContentLanguage,
                                     })
@@ -1394,6 +1390,7 @@ function CreateNewOrganization() {
                               }
                               icon={<EnvironmentOutlined style={{ color: '#607EFC' }} />}
                               // description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                              calendarContentLanguage={calendarContentLanguage}
                               bordered
                               itemWidth="100%"
                             />;
@@ -1411,10 +1408,9 @@ function CreateNewOrganization() {
                             <SelectionItem
                               key={person._id}
                               name={
-                                person?.name?.en || person?.name?.fr
+                                isDataValid(person?.name)
                                   ? contentLanguageBilingual({
-                                      en: person?.name?.en,
-                                      fr: person?.name?.fr,
+                                      data: person?.name,
                                       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                       calendarContentLanguage: calendarContentLanguage,
                                     })
@@ -1422,6 +1418,7 @@ function CreateNewOrganization() {
                               }
                               icon={<UserOutlined style={{ color: '#607EFC' }} />}
                               // description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                              calendarContentLanguage={calendarContentLanguage}
                               bordered
                               itemWidth="100%"
                             />;
@@ -1440,10 +1437,9 @@ function CreateNewOrganization() {
                               <SelectionItem
                                 key={event._id}
                                 name={
-                                  event?.name?.en || event?.name?.fr
+                                  isDataValid(event?.name)
                                     ? contentLanguageBilingual({
-                                        en: event?.name?.en,
-                                        fr: event?.name?.fr,
+                                        data: event?.name,
                                         interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
                                         calendarContentLanguage: calendarContentLanguage,
                                       })
@@ -1451,6 +1447,7 @@ function CreateNewOrganization() {
                                 }
                                 icon={<CalendarOutlined style={{ color: '#607EFC' }} />}
                                 description={moment(event.startDateTime).format('YYYY-MM-DD')}
+                                calendarContentLanguage={calendarContentLanguage}
                                 bordered
                                 itemWidth="100%"
                               />

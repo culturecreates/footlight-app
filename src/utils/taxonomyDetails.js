@@ -18,8 +18,7 @@ export const taxonomyDetails = (data, user, mappedToField, field = false, isDyna
       if (selectedField && selectedField[0]) {
         if (selectedField[0] === 'name') {
           return bilingual({
-            en: fieldData[0]?.name?.en,
-            fr: fieldData[0]?.name?.fr,
+            data: fieldData[0]?.name,
             interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
           });
         } else

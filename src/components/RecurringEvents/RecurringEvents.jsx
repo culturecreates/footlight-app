@@ -25,6 +25,7 @@ const RecurringEvents = function ({
   setFormFields,
   dateType,
   disabledDate,
+  onOpenChange,
   onCalendarChange,
   setSubEventCount,
   subEventCount,
@@ -43,7 +44,11 @@ const RecurringEvents = function ({
 
   useEffect(() => {
     if (eventDetails) {
-      if (formFields?.frequency === 'CUSTOM' || eventDetails.recurringEvent?.frequency === 'CUSTOM') {
+      if (
+        formFields?.frequency === 'CUSTOM' ||
+        eventDetails.recurringEvent?.frequency === 'CUSTOM' ||
+        eventDetails.subEventConfiguration
+      ) {
         setDateModified(true);
         setIsCustom(true);
       } else setIsCustom(false);
@@ -345,6 +350,7 @@ const RecurringEvents = function ({
               style={{ width: '423px' }}
               disabled={(isCustom || formFields?.frequency === 'CUSTOM') && startDateRecur?.length == 2 && true}
               disabledDate={disabledDate}
+              onOpenChange={onOpenChange}
               onCalendarChange={onCalendarChange}
               suffixIcon={
                 subEventCount > 0 && (

@@ -10,6 +10,10 @@ export const sortByOptions = [
     key: 'metadata.createdAt',
   },
   {
+    label: <Translation>{(t) => t('dashboard.events.filter.sort.dateModified')}</Translation>,
+    key: 'metadata.modifiedAt',
+  },
+  {
     label: <Translation>{(t) => t('dashboard.events.filter.sort.eventDate')}</Translation>,
     key: 'upcomingEventDate',
   },
@@ -24,10 +28,17 @@ export const sortByOptionsOrgsPlacesPerson = [
   {
     label: <Translation>{(t) => t('dashboard.events.filter.sort.name')}</Translation>,
     key: `name`,
+    ['data-cy']: 'name',
   },
   {
     label: <Translation>{(t) => t('dashboard.taxonomy.listing.sort.createdDate')}</Translation>,
     key: 'metadata.createdAt',
+    ['data-cy']: 'createdDate',
+  },
+  {
+    label: <Translation>{(t) => t('dashboard.events.filter.sort.dateModified')}</Translation>,
+    key: 'metadata.modifiedAt',
+    ['data-cy']: 'modifiedAt',
   },
 ];
 
@@ -58,5 +69,9 @@ export const sortByOptionsTaxonomy = [
   {
     label: <Translation>{(t) => t('dashboard.taxonomy.listing.sort.createdDate')}</Translation>,
     key: 'metadata.createdAt',
+  },
+  {
+    label: <Translation>{(t) => t('dashboard.events.filter.sort.dateModified')}</Translation>,
+    key: 'metadata.modifiedAt',
   },
 ];

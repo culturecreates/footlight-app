@@ -101,11 +101,12 @@ function Sidebar(props) {
   }, [location]);
 
   useEffect(() => {
+    if (!calendarContentLanguage) return;
+
     const calendarLabel = contentLanguageBilingual({
-      en: currentCalendarData?.name?.en,
-      fr: currentCalendarData?.name?.fr,
       interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
       calendarContentLanguage: calendarContentLanguage,
+      data: currentCalendarData?.name,
     });
     setCalendarItem(selectedCalendar(currentCalendarData?.id, currentCalendarData?.logo?.original?.uri, calendarLabel));
   }, [currentCalendarData, user?.interfaceLanguage]);

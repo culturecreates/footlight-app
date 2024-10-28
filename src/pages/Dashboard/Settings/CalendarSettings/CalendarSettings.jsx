@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef } from 'react';
 import './calendarSettings.css';
 import { Row, Col, Form, Divider, notification, Button, message } from 'antd';
@@ -14,14 +13,13 @@ import { getUserDetails } from '../../../../redux/reducer/userSlice';
 import { useSelector } from 'react-redux';
 import PrimaryButton from '../../../../components/Button/Primary';
 import { useUpdateCalendarMutation } from '../../../../services/calendar';
-import { contentLanguage } from '../../../../constants/contentLanguage';
 import { useAddImageMutation } from '../../../../services/image';
 import { calendarModes } from '../../../../constants/calendarModes';
 
 function CalendarSettings({ setDirtyStatus, tabKey }) {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const [currentCalendarData, , , getCalendar, , , setIsReadOnly, refetch] = useOutletContext();
+  const [currentCalendarData, , , , , , , , , isCurrentCalendarInfoLoading] = useOutletContext();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId } = useParams();
   const { user } = useSelector(getUserDetails);
@@ -52,8 +50,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
         .map((taxonomy) => {
           return {
             label: contentLanguageBilingual({
-              en: taxonomy?.name?.en,
-              fr: taxonomy?.name?.fr,
+              data: taxonomy?.name,
               interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
               calendarContentLanguage: calendarContentLanguage,
             }),
@@ -123,17 +120,13 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
   const [aspectRatioOptions, setAspectRatioOptions] = React.useState(aspectRatios);
 
   const initialValues = {
-    calendarNameEn: currentCalendarData?.name?.en,
-    calendarNameFr: currentCalendarData?.name?.fr,
+    calendarName: currentCalendarData?.name,
     calendarContactEmail: currentCalendarData?.contact,
     calendarTimeZone: currentCalendarData?.timezone,
     calendarDateFormat: currentCalendarData?.dateFormatDisplay,
     eventTemplate: currentCalendarData?.widgetSettings?.eventDetailsUrlTemplate,
     searchResultTemplate: currentCalendarData?.widgetSettings?.listEventsUrlTemplate,
-    calendarLanguage:
-      currentCalendarData?.contentLanguage === contentLanguage.BILINGUAL
-        ? [contentLanguage.ENGLISH, contentLanguage.FRENCH]
-        : [currentCalendarData?.contentLanguage],
+    calendarLanguage: currentCalendarData?.contentLanguage,
     imageAspectRatio: {
       large: imageConfig?.large?.aspectRatio,
       thumbnail: imageConfig?.thumbnail?.aspectRatio,
@@ -152,33 +145,28 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
       .unwrap()
       .then(() => {
         setDirtyStatus(false);
-        getCalendar({ id: calendarId, sessionId: timestampRef })
-          .unwrap()
-          .then((response) => {
-            refetch();
-            if (response?.mode === calendarModes.READ_ONLY) setIsReadOnly(true);
-            else setIsReadOnly(false);
-            notification.success({
-              description: t('dashboard.settings.calendarSettings.notifications.update'),
-              placement: 'top',
-              closeIcon: <></>,
-              maxCount: 1,
-              duration: 3,
-            });
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        reloadWithCallback();
       })
       .catch((errorInfo) => {
         console.log(errorInfo);
       });
   };
 
+  function reloadWithCallback() {
+    sessionStorage.setItem('reloadCallback', 'true');
+    window.location.reload();
+  }
+
   const onSaveHandler = () => {
     let requiredFields =
       calendarSettingsFormFields?.GENERAL_SETTINGS?.filter((field) => field.required)?.map((field) => field.name) ?? [];
-    requiredFields = [...requiredFields, ['imageAspectRatio', 'thumbnail'], ['imageMaxWidth', 'thumbnail']];
+    requiredFields = [
+      ...requiredFields,
+      ['imageAspectRatio', 'thumbnail'],
+      ['imageMaxWidth', 'thumbnail'],
+      ['imageMaxWidth', 'large'],
+      ['imageAspectRatio', 'large'],
+    ];
     requiredFields = requiredFields.concat(
       calendarSettingsFormFields?.WIDGET_SETTINGS?.filter((field) => field.required)?.map((field) => field.name) ?? [],
     );
@@ -203,17 +191,11 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
         calendarData[entitiesClass.place] = values[entitiesClass.place]?.filter(
           (item) => !STATIC_FILTERS.FILTER_LIST.PLACE.includes(item),
         );
+
         if (values)
           calendarData = {
-            name: {
-              en: values.calendarNameEn,
-              fr: values.calendarNameFr,
-            },
-            contentLanguage:
-              values.calendarLanguage?.includes(contentLanguage.ENGLISH) &&
-              values.calendarLanguage?.includes(contentLanguage.FRENCH)
-                ? contentLanguage.BILINGUAL
-                : values.calendarLanguage[0],
+            name: values?.calendarName,
+            contentLanguage: values?.calendarLanguage,
             timezone: values.calendarTimeZone,
             contact: values.calendarContactEmail,
             dateFormatDisplay: values.calendarDateFormat,
@@ -328,8 +310,23 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
     form.resetFields();
   }, [tabKey]);
 
+  useEffect(() => {
+    if (sessionStorage.getItem('reloadCallback') === 'true') {
+      sessionStorage.removeItem('reloadCallback');
+
+      notification.success({
+        description: t('dashboard.settings.calendarSettings.notifications.update'),
+        placement: 'top',
+        closeIcon: <></>,
+        maxCount: 1,
+        duration: 3,
+      });
+    }
+  }, []);
+
   return (
     currentCalendarData &&
+    !isCurrentCalendarInfoLoading &&
     !taxonomyLoading && (
       <div style={{ paddingTop: '24px' }}>
         <Row className="calendar-settings-wrapper" gutter={[0, 18]}>
@@ -377,6 +374,7 @@ function CalendarSettings({ setDirtyStatus, tabKey }) {
                       form,
                       isCrop: false,
                       initialValues,
+                      calendarContentLanguage,
                       largeAspectRatio: imageConfig?.large?.aspectRatio,
                       thumbnailAspectRatio: imageConfig?.thumbnail?.aspectRatio,
                       largeMaxWidth: imageConfig?.large?.maxWidth,
