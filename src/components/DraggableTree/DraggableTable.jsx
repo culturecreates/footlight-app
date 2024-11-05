@@ -160,10 +160,6 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
     setValue(record[dataIndex]);
   }, [dataIndex, record]);
 
-  if (!editable) {
-    return <td {...restProps}>{children}</td>;
-  }
-
   let isFallbackPresent = false;
   let fallbackPromptText = '';
   const recordKey = contentLanguageKeyMap[title?.toUpperCase()];
@@ -176,6 +172,23 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
         : t('common.forms.languageLiterals.knownLanguagePromptText');
   }
 
+  const fallbackComponent = isFallbackPresent ? (
+    <span className="fallback-tag">
+      <LiteralBadge tagTitle={fallbackStatus[recordKey]?.fallbackLiteralKey} promptText={fallbackPromptText} />
+    </span>
+  ) : (
+    <></>
+  );
+
+  if (!editable) {
+    return (
+      <td {...restProps}>
+        {children}
+        {fallbackComponent}
+      </td>
+    );
+  }
+
   return (
     <td {...restProps}>
       {editing ? (
@@ -183,11 +196,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
       ) : (
         <div onClick={toggleEdit}>{children}</div>
       )}
-      {isFallbackPresent && (
-        <span className="fallback-tag">
-          <LiteralBadge tagTitle={fallbackStatus[recordKey]?.fallbackLiteralKey} promptText={fallbackPromptText} />
-        </span>
-      )}
+      {fallbackComponent}
     </td>
   );
 };
