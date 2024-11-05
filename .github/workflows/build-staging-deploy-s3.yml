@@ -18,13 +18,11 @@ jobs:
         uses: actions/checkout@v2
       - name: setup node
         run: npm install
-      - name: Make envfile
-        uses: SpicyPizza/create-envfile@v1.3
-        with:
-         envkey_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
-         envkey_GOOGLE_MAPS_ID: ${{ secrets.GOOGLE_MAPS_ID }}
-         file_name: .env.staging
-         fail_on_empty: false
+      # Append additional environment variables to .env.staging
+      - name: Add extra env variables
+        run: |
+          echo "REACT_APP_GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env.staging
+          echo "REACT_APP_GOOGLE_MAPS_ID=${{ secrets.GOOGLE_MAPS_ID }}" >> .env.staging
       - name: build
         run: npm run build:staging
       # Upload to S3

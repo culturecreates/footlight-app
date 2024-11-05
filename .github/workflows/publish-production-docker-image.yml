@@ -54,6 +54,8 @@ jobs:
           envkey_REACT_APP_ENV: staging
           envkey_REACT_APP_INVITE_URL: http://localhost:3001/join?invitationId=
           envkey_REACT_APP_ACCEPT_URL: http://localhost:3001/accept?invitationId=
+          envkey_REACT_APP_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          envkey_REACT_APP_GOOGLE_MAPS_ID: ${{ secrets.GOOGLE_MAPS_ID }}
           file_name: .env
           fail_on_empty: false
 
