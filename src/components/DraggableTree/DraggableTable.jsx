@@ -14,7 +14,7 @@ function deepClone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-function moveConcept(dragKey, dropKey, data) {
+function moveConcept(dragKey, dropKey, data, dropToGap = false) {
   let clonedData = deepClone(data);
 
   let dragParent = null;
@@ -51,16 +51,26 @@ function moveConcept(dragKey, dropKey, data) {
   }
 
   if (dragItem && dropResult) {
+    // Remove drag item from its original position
     if (dragParent) {
       dragParent.children = dragParent.children.filter((item) => item.key !== dragKey);
     } else {
       clonedData = clonedData.filter((item) => item.key !== dragKey);
     }
 
-    if (dropParent) {
-      dropParent.children.splice(dropIndex + 1, 0, dragItem);
+    if (dropToGap) {
+      // Add drag item as a child of the drop item
+      if (!dropResult.item.children) {
+        dropResult.item.children = [];
+      }
+      dropResult.item.children.push(dragItem);
     } else {
-      clonedData.splice(dropIndex + 1, 0, dragItem);
+      // Add drag item as a sibling at the drop index
+      if (dropParent) {
+        dropParent.children.splice(dropIndex + 1, 0, dragItem);
+      } else {
+        clonedData.splice(dropIndex + 1, 0, dragItem);
+      }
     }
   }
 
@@ -82,8 +92,9 @@ const DraggableBodyRow = ({ index, 'data-row-key': dataRowKey, moveRow, classNam
         dropClassName: dragIndex < index ? ' drop-over-downward' : ' drop-over-upward',
       };
     },
-    drop: (item) => {
-      moveRow(item.dataRowKey, dataRowKey);
+    drop: (item, monitor) => {
+      const dropToGap = monitor.getDifferenceFromInitialOffset()?.x > 30;
+      moveRow(item.dataRowKey, dataRowKey, dropToGap);
     },
   });
   const [, drag] = useDrag({
@@ -176,8 +187,8 @@ const DraggableTable = ({ data, setData }) => {
   }));
 
   const moveRow = useCallback(
-    (dragIndex, hoverIndex) => {
-      setData(moveConcept(dragIndex, hoverIndex, data));
+    (dragIndex, hoverIndex, dropToGap) => {
+      setData(moveConcept(dragIndex, hoverIndex, data, dropToGap));
     },
     [data],
   );

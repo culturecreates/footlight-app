@@ -12,9 +12,8 @@ import { useAddTaxonomyMutation, useLazyGetTaxonomyQuery, useUpdateTaxonomyMutat
 import Select from '../../../components/Select';
 import CardEvent from '../../../components/Card/Common/Event';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
-import { DownOutlined, PlusOutlined } from '@ant-design/icons';
+import { DownOutlined } from '@ant-design/icons';
 import { userRolesWithTranslation } from '../../../constants/userRoles';
-import Outlined from '../../../components/Button/Outlined';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
@@ -27,7 +26,7 @@ import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurr
 import { placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems/CreateMultiLingualFormItems';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
-import DraggableTree from '../../../components/DraggableTree/DraggableTree';
+import DraggableTable from '../../../components/DraggableTree/DraggableTable';
 
 const taxonomyClasses = taxonomyClassTranslations.map((item) => {
   return { ...item, value: item.key };
@@ -62,9 +61,7 @@ const AddTaxonomy = () => {
   const [standardFields, setStandardFields] = useState([]);
   const [dynamic, setDynamic] = useState(location.state?.dynamic ?? false);
   const [userAccess, setUserAccess] = useState();
-  const [deleteDisplayFlag, setDeleteDisplayFlag] = useState(true);
   const [conceptData, setConceptData] = useState([]);
-  const [addNewPopup, setAddNewPopup] = useState(false);
   const [isDirty, setIsDirty] = useState({
     formState: false,
     isSubmitting: false,
@@ -262,11 +259,6 @@ const AddTaxonomy = () => {
       return modifiedConcept;
     });
   }
-
-  const openAddNewConceptModal = () => {
-    setAddNewPopup(true);
-    setDeleteDisplayFlag(false);
-  };
 
   const handleValueChange = () => {
     setIsDirty({
@@ -501,14 +493,6 @@ const AddTaxonomy = () => {
                           <Col>
                             <Row gutter={[8, 8]} justify="space-between">
                               <Col className="heading-concepts">{t('dashboard.taxonomy.addNew.concepts.heading')}</Col>
-                              <Col>
-                                <Outlined
-                                  data-cy="button-taxonomy-add-item"
-                                  label={t('dashboard.taxonomy.addNew.concepts.item')}
-                                  onClick={openAddNewConceptModal}>
-                                  <PlusOutlined style={{ fontSize: '24px' }} />
-                                </Outlined>
-                              </Col>
                             </Row>
                             <Row>
                               <Col flex="423px" className="text-concepts">
@@ -526,16 +510,7 @@ const AddTaxonomy = () => {
                               width: 'calc(100% - 100px)',
                             }}>
                             <Row style={{ flex: 1 }}>
-                              <DraggableTree
-                                data={conceptData}
-                                form={form}
-                                setEmptyConceptName={setEmptyConceptName}
-                                setData={setConceptData}
-                                addNewPopup={addNewPopup}
-                                setAddNewPopup={setAddNewPopup}
-                                deleteDisplayFlag={deleteDisplayFlag}
-                                setDeleteDisplayFlag={setDeleteDisplayFlag}
-                              />
+                              <DraggableTable data={conceptData} setData={setConceptData} />
                             </Row>
                           </Col>
                         </Row>
