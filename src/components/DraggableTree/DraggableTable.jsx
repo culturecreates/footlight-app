@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -9,6 +10,8 @@ import './draggableTable.css';
 import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import Outlined from '../Button/Outlined';
 import { useTranslation } from 'react-i18next';
+import { languageFallbackStatusCreator } from '../../utils/languageFallbackStatusCreator';
+import LiteralBadge from '../Badge/LiteralBadge';
 
 function deepClone(obj) {
   return JSON.parse(JSON.stringify(obj));
@@ -78,7 +81,15 @@ function moveConcept(dragKey, dropKey, data, dropToGap = false) {
 }
 
 const type = 'DraggableBodyRow';
-const DraggableBodyRow = ({ index, 'data-row-key': dataRowKey, moveRow, className, style, ...restProps }) => {
+const DraggableBodyRow = ({
+  index,
+  'data-row-key': dataRowKey,
+  moveRow,
+  className,
+  style,
+  fallbackStatus,
+  ...restProps
+}) => {
   const ref = useRef(null);
   const [{ isOver, dropClassName }, drop] = useDrop({
     accept: type,
@@ -122,10 +133,11 @@ const DraggableBodyRow = ({ index, 'data-row-key': dataRowKey, moveRow, classNam
 };
 
 // Editable cell component
-const EditableCell = ({ editable, children, dataIndex, record, handleSave, ...restProps }) => {
+const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, fallbackStatus, ...restProps }) => {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState();
   const inputRef = useRef(null);
+  const { t } = useTranslation();
 
   const toggleEdit = () => {
     setEditing(!editing);
@@ -152,12 +164,29 @@ const EditableCell = ({ editable, children, dataIndex, record, handleSave, ...re
     return <td {...restProps}>{children}</td>;
   }
 
+  let isFallbackPresent = false;
+  let fallbackPromptText = '';
+  const recordKey = contentLanguageKeyMap[title?.toUpperCase()];
+
+  if (fallbackStatus && recordKey && fallbackStatus[recordKey]) {
+    isFallbackPresent = fallbackStatus[recordKey]?.tagDisplayStatus;
+    fallbackPromptText =
+      fallbackStatus[recordKey]?.fallbackLiteralKey == '?'
+        ? t('common.forms.languageLiterals.unKnownLanguagePromptText')
+        : t('common.forms.languageLiterals.knownLanguagePromptText');
+  }
+
   return (
     <td {...restProps}>
       {editing ? (
         <Input ref={inputRef} value={value} onChange={handleInputChange} onBlur={save} onPressEnter={save} />
       ) : (
         <div onClick={toggleEdit}>{children}</div>
+      )}
+      {isFallbackPresent && (
+        <span className="fallback-tag">
+          <LiteralBadge tagTitle={fallbackStatus[recordKey]?.fallbackLiteralKey} promptText={fallbackPromptText} />
+        </span>
       )}
     </td>
   );
@@ -169,6 +198,8 @@ const DraggableTable = ({ data, setData }) => {
   const { t } = useTranslation();
 
   const [transformedData, setTransformedData] = useState([]);
+  const [fallbackStatus, setFallbackStatus] = useState({});
+  const [transformationComplete, setTransformationComplete] = useState(false);
 
   const handleSave = (row) => {
     const newData = [...transformedData];
@@ -196,7 +227,22 @@ const DraggableTable = ({ data, setData }) => {
   const transformData = (data) => {
     if (!data) return data;
     const { name, children, ...rest } = data;
-    const transformed = { ...rest, ...name };
+    const languageFallbacks = languageFallbackStatusCreator({
+      calendarContentLanguage,
+      languageFallbacks: currentCalendarData?.languageFallbacks,
+      fieldData: name,
+      isFieldsDirty: {},
+    });
+    const fallbackKeys = Object.keys(languageFallbacks);
+    let extractedFallbackValues = {};
+    fallbackKeys.forEach((lanKey) => {
+      if (languageFallbacks[lanKey]?.tagDisplayStatus)
+        extractedFallbackValues[lanKey] = languageFallbacks[lanKey].fallbackLiteralValue;
+    });
+
+    const transformed = { ...rest, ...name, ...extractedFallbackValues };
+
+    setFallbackStatus((prev) => ({ ...prev, [transformed.key]: languageFallbacks }));
 
     if (children && Array.isArray(children)) {
       transformed.children = children.map((child) => transformData(child));
@@ -206,8 +252,9 @@ const DraggableTable = ({ data, setData }) => {
   };
 
   useEffect(() => {
-    if (!calendarContentLanguage) return;
+    if (!calendarContentLanguage || !data) return;
     setTransformedData(data.map((item) => transformData(item)));
+    setTransformationComplete(true);
   }, [data, calendarContentLanguage]);
 
   const handleAdd = () => {
@@ -239,62 +286,66 @@ const DraggableTable = ({ data, setData }) => {
       dataIndex: col.dataIndex,
       title: col.title,
       handleSave,
+      fallbackStatus: fallbackStatus[record.key],
     }),
   }));
 
   return (
-    <div className="custom-table">
-      <Outlined
-        data-cy="button-taxonomy-add-item"
-        label={t('dashboard.taxonomy.addNew.concepts.item')}
-        onClick={handleAdd}>
-        <PlusOutlined style={{ fontSize: '12px' }} />
-      </Outlined>
-      <DndProvider backend={HTML5Backend}>
-        <Table
-          columns={modifiedColumns}
-          dataSource={transformedData}
-          components={components}
-          pagination={false}
-          tableLayout="fixed"
-          expandable={{
-            expandIcon: ({ expanded, onExpand, record }) => {
-              let icon = null;
-              if (record.children) {
-                icon = expanded ? (
-                  <div className="icon-container">
-                    <MinusOutlined
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        return onExpand(record, e);
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <div className="icon-container">
-                    <PlusOutlined
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        return onExpand(record, e);
-                      }}
-                    />
-                  </div>
-                );
-              }
-              return icon;
-            },
-          }}
-          rowClassName="editable-row"
-          onRow={(_, index) => {
-            const attr = {
-              index,
-              moveRow,
-            };
-            return attr;
-          }}
-        />
-      </DndProvider>
-    </div>
+    transformationComplete && (
+      <div className="custom-table">
+        <Outlined
+          data-cy="button-taxonomy-add-item"
+          label={t('dashboard.taxonomy.addNew.concepts.item')}
+          onClick={handleAdd}>
+          <PlusOutlined style={{ fontSize: '12px' }} />
+        </Outlined>
+        <DndProvider backend={HTML5Backend}>
+          <Table
+            columns={modifiedColumns}
+            dataSource={transformedData}
+            components={components}
+            pagination={false}
+            tableLayout="fixed"
+            expandable={{
+              expandIcon: ({ expanded, onExpand, record }) => {
+                let icon = null;
+                if (record.children) {
+                  icon = expanded ? (
+                    <div className="icon-container">
+                      <MinusOutlined
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          return onExpand(record, e);
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="icon-container">
+                      <PlusOutlined
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          return onExpand(record, e);
+                        }}
+                      />
+                    </div>
+                  );
+                }
+                return icon;
+              },
+            }}
+            rowClassName="editable-row"
+            onRow={(_, index) => {
+              const attr = {
+                index,
+                moveRow,
+                fallbackStatus,
+              };
+              return attr;
+            }}
+          />
+        </DndProvider>
+      </div>
+    )
   );
 };
 
