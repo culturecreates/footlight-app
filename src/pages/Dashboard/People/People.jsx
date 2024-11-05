@@ -416,7 +416,8 @@ function People() {
               <Col>
                 {(filter?.order === sortOrder?.DESC ||
                   Object.keys(taxonomyFilter)?.length > 0 ||
-                  Object.keys(standardTaxonomyFilter)?.length > 0) && (
+                  Object.keys(standardTaxonomyFilter)?.length > 0 ||
+                  filter?.sort != sortByOptionsOrgsPlacesPerson[0]?.key) && (
                   <Button
                     size="large"
                     className="filter-buttons"

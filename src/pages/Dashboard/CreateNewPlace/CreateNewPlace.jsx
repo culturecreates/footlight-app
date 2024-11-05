@@ -92,6 +92,7 @@ import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurr
 import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems/CreateMultiLingualFormItems';
 import { isDataValid, placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import MultiLingualTextEditor from '../../../components/MultilingualTextEditor/MultiLingualTextEditor';
+import MapComponent from '../../../components/MapComponent';
 
 const { TextArea } = Input;
 
@@ -139,6 +140,7 @@ function CreateNewPlace() {
     ACCESSIBILITY_NOTE_WRAP: 'accessibilityNotewrap',
     REGION: 'region',
     CONTAINS_PLACE: 'containsPlace',
+    MAP: 'map',
   };
   const placeId = searchParams.get('id');
   const externalCalendarEntityId = searchParams.get('entityId');
@@ -227,6 +229,17 @@ function CreateNewPlace() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [quickCreateKeyword, setQuickCreateKeyword] = useState('');
   const [publishValidateFields, setPublishValidateFields] = useState([]);
+  const [coordinates, setCoordinates] = useState({
+    latitude: null,
+    longitude: null,
+  });
+  const [geocoder, setGeocoder] = useState(null);
+
+  useEffect(() => {
+    if (window.google) {
+      setGeocoder(new window.google.maps.Geocoder());
+    }
+  }, []);
 
   let externalEntityData = externalCalendarEntityData?.length > 0 && externalCalendarEntityData[0];
   externalEntityData = {
@@ -414,11 +427,11 @@ function CreateNewPlace() {
 
   const onSaveHandler = (event) => {
     event?.preventDefault();
-    setShowDialog(false);
     var promise = new Promise(function (resolve, reject) {
       form
         .validateFields(publishValidateFields ?? [])
         .then(async () => {
+          setShowDialog(false);
           var values = form.getFieldsValue(true);
 
           let placeObj,
@@ -756,6 +769,10 @@ function CreateNewPlace() {
           longitude: '' + latLng.lng,
           coordinates: latLng.lat + ',' + latLng.lng,
         });
+        setCoordinates({
+          latitude: latLng.lat,
+          longitude: latLng.lng,
+        });
       })
       .catch((error) => console.error(error));
     setDropdownOpen(false);
@@ -820,11 +837,82 @@ function CreateNewPlace() {
     setAddedFields(array);
     setScrollToSelectedField(array?.at(-1));
   };
-  //eslint-disable-next-line
-  const onFieldsChange = (changedValue, allValues) => {
-    if (changedValue?.length > 0 && !showDialog) {
-      if (changedValue?.filter((field) => field?.touched).length > 0) {
-        setShowDialog(true);
+  const isValidCoordinates = (latitude, longitude) => {
+    const isLatitudeValid = typeof latitude === 'number' && latitude >= -90 && latitude <= 90;
+    const isLongitudeValid = typeof longitude === 'number' && longitude >= -180 && longitude <= 180;
+
+    return isLatitudeValid && isLongitudeValid;
+  };
+
+  const handleGeocode = (coordinates) => {
+    if (!geocoder) return; // Ensure geocoder is initialized
+
+    const latlng = {
+      lat: parseFloat(coordinates[0]),
+      lng: parseFloat(coordinates[1]),
+    };
+
+    geocoder
+      .geocode({ location: latlng })
+      .then((response) => {
+        if (response.results[0]) {
+          const addressComponents = response.results[0].address_components;
+
+          const streetNumber =
+            addressComponents.find((item) => item.types.includes('street_number'))?.long_name || null;
+          const streetName = addressComponents.find((item) => item.types.includes('route'))?.long_name || null;
+          const streetAddress = [streetNumber, streetName].filter(Boolean).join(' ') || null;
+
+          calendarContentLanguage.forEach((language) => {
+            const langKey = contentLanguageKeyMap[language];
+
+            form.setFieldValue([formFieldNames.STREET_ADDRESS, langKey], streetAddress);
+            form.setFieldValue(
+              [formFieldNames.COUNTRY, langKey],
+              addressComponents.find((item) => item.types.includes('country'))?.long_name,
+            );
+            form.setFieldValue(
+              [formFieldNames.CITY, langKey],
+              addressComponents.find((item) => item.types.includes('locality'))?.long_name,
+            );
+            form.setFieldValue(
+              [formFieldNames.PROVINCE, langKey],
+              addressComponents.find((item) => item.types.includes('administrative_area_level_1'))?.short_name,
+            );
+          });
+
+          form.setFieldValue(
+            formFieldNames.POSTAL_CODE,
+            addressComponents.find((item) => item.types.includes('postal_code'))?.long_name,
+          );
+        }
+      })
+      .catch((e) => console.log(e));
+  };
+
+  const onFieldsChange = (changedValue) => {
+    if (changedValue?.length > 0) {
+      if (!showDialog) {
+        if (changedValue?.filter((field) => field?.touched).length > 0) {
+          setShowDialog(true);
+        }
+      }
+      const coordinatesField = changedValue.find((field) => field.name[0] === formFieldNames.COORDINATES);
+
+      if (coordinatesField?.touched) {
+        const coordinates = form.getFieldValue(formFieldNames.COORDINATES)?.split(/[, ]+/).map(parseFloat);
+
+        if (
+          coordinates.length === 2 &&
+          coordinates.every((coord) => !isNaN(coord)) &&
+          isValidCoordinates(coordinates[0], coordinates[1])
+        ) {
+          setCoordinates({
+            latitude: coordinates[0],
+            longitude: coordinates[1],
+          });
+          handleGeocode(coordinates);
+        }
       }
     }
   };
@@ -1031,6 +1119,10 @@ function CreateNewPlace() {
             latitude: placeData.geoCoordinates && '' + placeData.geoCoordinates.latitude,
             longitude: placeData.geoCoordinates && '' + placeData.geoCoordinates.longitude,
           });
+          setCoordinates({
+            latitude: parseFloat(placeData.geoCoordinates?.latitude),
+            longitude: parseFloat(placeData.geoCoordinates?.longitude),
+          });
           setAddedFields(initialAddedFields);
         } else
           window.location.replace(
@@ -1146,6 +1238,10 @@ function CreateNewPlace() {
         form.setFieldsValue({
           latitude: externalCalendarEntityData[0].geo && '' + externalCalendarEntityData[0].geo.latitude,
           longitude: externalCalendarEntityData[0].geo && '' + externalCalendarEntityData[0].geo.longitude,
+        });
+        setCoordinates({
+          latitude: parseFloat(externalCalendarEntityData[0].geo?.latitude),
+          longitude: parseFloat(externalCalendarEntityData[0].geo?.longitude),
         });
         setAddedFields(initialAddedFields);
       }
@@ -1737,7 +1833,7 @@ function CreateNewPlace() {
                   <PlacesAutocomplete
                     googleCallbackName="initTwo"
                     searchOptions={{ componentRestrictions: { country: 'CA' } }}
-                    value={address}
+                    value={address ?? ''}
                     onChange={handleChange}
                     onSelect={handleSelect}
                     data-cy="google-places-autocomplete">
@@ -1991,6 +2087,18 @@ function CreateNewPlace() {
                     },
                   ]}>
                   <StyledInput data-cy="input-place-coordinates" />
+                </Form.Item>
+                <Form.Item name={formFieldNames.MAP} hidden={!coordinates.latitude || !coordinates.longitude}>
+                  {coordinates.latitude && coordinates.longitude && (
+                    <MapComponent
+                      longitude={coordinates.longitude}
+                      latitude={coordinates.latitude}
+                      setCoordinates={setCoordinates}
+                      form={form}
+                      fieldName={formFieldNames.COORDINATES}
+                      handleGeocode={handleGeocode}
+                    />
+                  )}
                 </Form.Item>
                 <Form.Item
                   data-cy="form-item-place-region"

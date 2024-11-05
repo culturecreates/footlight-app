@@ -19,6 +19,12 @@ jobs:
         
       - name: setup node
         run: npm install
+
+      # Append additional environment variables to .env.staging
+      - name: Add extra env variables
+        run: |
+          echo "REACT_APP_GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env.production
+          echo "REACT_APP_GOOGLE_MAPS_ID=${{ secrets.GOOGLE_MAPS_ID }}" >> .env.production  
         
       - name: build
         run: npm run build:production

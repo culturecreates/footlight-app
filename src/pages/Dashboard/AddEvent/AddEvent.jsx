@@ -2169,6 +2169,18 @@ function AddEvent() {
     }
   }, [isReadOnly]);
 
+  useEffect(() => {
+    if (!taxonomyLoading && allTaxonomyData && !eventId && !duplicateId) {
+      if (
+        allTaxonomyData?.data
+          ?.find((taxonomy) => taxonomy?.mappedToField === 'inLanguage')
+          ?.concept?.map((concept) => (concept?.isDefault === true ? concept?.id : null))
+          ?.filter((id) => id)?.length > 0
+      )
+        setAddedFields(addedFields.concat(otherInformationFieldNames?.inLanguage));
+    }
+  }, [taxonomyLoading]);
+
   return !isLoading &&
     !taxonomyLoading &&
     currentCalendarData &&
@@ -4285,9 +4297,16 @@ function AddEvent() {
                     'none',
                 }}
                 label={taxonomyDetails(allTaxonomyData?.data, user, 'inLanguage', 'name', false)}
-                initialValue={eventData?.inLanguage?.map((inLanguage) => {
-                  return inLanguage?.entityId;
-                })}
+                initialValue={
+                  eventId
+                    ? eventData?.inLanguage?.map((inLanguage) => {
+                        return inLanguage?.entityId;
+                      })
+                    : allTaxonomyData?.data
+                        ?.find((taxonomy) => taxonomy?.mappedToField === 'inLanguage')
+                        ?.concept?.map((concept) => (concept?.isDefault === true ? concept?.id : null))
+                        ?.filter((id) => id)
+                }
                 data-cy="form-item-eventlanguage-label">
                 <TreeSelectOption
                   allowClear
