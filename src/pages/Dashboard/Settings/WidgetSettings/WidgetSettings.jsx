@@ -33,6 +33,7 @@ import { setErrorStates } from '../../../../redux/reducer/ErrorSlice';
 
 const { useBreakpoint } = Grid;
 const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_BASE_URL;
+console.log(widgetUrl);
 
 const WidgetSettings = ({ tabKey }) => {
   const { t } = useTranslation();
