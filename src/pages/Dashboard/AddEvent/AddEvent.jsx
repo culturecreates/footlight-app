@@ -1251,7 +1251,8 @@ function AddEvent() {
     if (
       calendar[0]?.role === userRoles.EDITOR ||
       calendar[0]?.role === userRoles.ADMIN ||
-      calendar[0]?.role === userRoles.CONTRIBUTOR
+      calendar[0]?.role === userRoles.CONTRIBUTOR ||
+      user.isSuperAdmin
     )
       return (
         <>
