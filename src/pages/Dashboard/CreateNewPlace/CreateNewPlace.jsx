@@ -498,7 +498,10 @@ function CreateNewPlace() {
             ];
           }
           if (values?.containedInPlace || values?.containedInPlace?.length > 0) {
-            if (containedInPlace?.source === sourceOptions.CMS)
+            if (
+              containedInPlace?.source === sourceOptions.CMS ||
+              containedInPlace?.source === externalSourceOptions.FOOTLIGHT
+            )
               containedInPlaceObj = {
                 entityId: values?.containedInPlace,
               };
@@ -510,7 +513,7 @@ function CreateNewPlace() {
 
           if (values?.containsPlace) {
             containsPlace = values?.containsPlace?.map((place) => {
-              if (place?.source === sourceOptions.CMS)
+              if (place?.source === sourceOptions.CMS || containedInPlace?.source === externalSourceOptions.FOOTLIGHT)
                 return {
                   entityId: place?.value,
                 };
