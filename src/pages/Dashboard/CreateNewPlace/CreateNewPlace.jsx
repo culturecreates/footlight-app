@@ -513,7 +513,7 @@ function CreateNewPlace() {
 
           if (values?.containsPlace) {
             containsPlace = values?.containsPlace?.map((place) => {
-              if (place?.source === sourceOptions.CMS || containedInPlace?.source === externalSourceOptions.FOOTLIGHT)
+              if (place?.source === sourceOptions.CMS || place?.source === externalSourceOptions.FOOTLIGHT)
                 return {
                   entityId: place?.value,
                 };
