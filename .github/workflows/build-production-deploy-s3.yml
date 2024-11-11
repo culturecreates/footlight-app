@@ -23,6 +23,7 @@ jobs:
       # Append additional environment variables to .env.staging
       - name: Add extra env variables
         run: |
+          echo "" >> .env.production
           echo "REACT_APP_GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env.production
           echo "REACT_APP_GOOGLE_MAPS_ID=${{ secrets.GOOGLE_MAPS_ID }}" >> .env.production  
         
