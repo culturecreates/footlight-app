@@ -13,7 +13,6 @@ jobs:
       environment: 'production'
       grep: ''
       grepTags: '@essential'
-      numContainers: '2'
     secrets:
       DOCKER_PAT: ${{ secrets.DOCKER_PAT }}
       CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}

@@ -10,10 +10,9 @@ jobs:
   trigger-end-to-end-tests:
     uses: ./.github/workflows/run-cypress-tests.yml
     with:
-      baseUrl: ''
+      environment: 'staging'
       grep: ''
       grepTags: '@general'
-      numContainers: '2'
     secrets:
       DOCKER_PAT: ${{ secrets.DOCKER_PAT }}
       CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
