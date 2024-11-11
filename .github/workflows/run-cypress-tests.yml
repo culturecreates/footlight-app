@@ -37,6 +37,10 @@ on:
         required: true
       CYPRESS_PASSWORD:
         required: true
+      S3_ACCESS_KEY_ID:
+        required: true
+      S3_SECRET_ACCESS_KEY:
+        required: true
 
 
 jobs:
@@ -88,9 +92,9 @@ jobs:
 
       - name: Pull and Run CMS Backend Docker Image
         run: |
-          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+          if [ "${{ inputs.environment }}" == "production" ]; then
             IMAGE="ghcr.io/culturecreates/footlight-calendar-api/footlight-admin-api:master"
-          elif [ "${{ github.event.inputs.environment }}" == "staging" ]; then
+          elif [ "${{ inputs.environment }}" == "staging" ]; then
             IMAGE="ghcr.io/culturecreates/footlight-calendar-api/footlight-admin-api:develop"
           fi
           
@@ -132,7 +136,7 @@ jobs:
 
           base_url="http://test.footlight.app:3000/"
           
-          grep_value="${{ github.event.inputs.grep }}"
+          grep_value="${{ inputs.grep }}"
           echo "Original grep_value: '$grep_value'"
           grep_value_clean=$(echo "$grep_value" | tr -d '\n\r')
           echo "Cleaned grep_value: '$grep_value_clean'"
@@ -146,7 +150,7 @@ jobs:
           echo "JSON grep_value: '$grep_value_json'"
           
           # Properly format the --env argument for Cypress
-          env_json="{\"grepTags\":\"${{ github.event.inputs.grepTags }}\",\"grep\":${grep_value_json}}"
+          env_json="{\"grepTags\":\"${{ inputs.grepTags }}\",\"grep\":${grep_value_json}}"
           echo "Formatted env JSON: $env_json"
           
           # Simulate the Cypress --env argument
