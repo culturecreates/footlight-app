@@ -1248,12 +1248,7 @@ function AddEvent() {
   };
 
   const roleCheckHandler = () => {
-    if (
-      calendar[0]?.role === userRoles.EDITOR ||
-      calendar[0]?.role === userRoles.ADMIN ||
-      calendar[0]?.role === userRoles.CONTRIBUTOR ||
-      user.isSuperAdmin
-    )
+    if ([userRoles.ADMIN, userRoles.CONTRIBUTOR, userRoles.EDITOR].includes(calendar[0]?.role) || user.isSuperAdmin)
       return (
         <>
           <Form.Item>
