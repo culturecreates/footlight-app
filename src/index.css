@@ -74,6 +74,10 @@ body.inheritCursors * {
   cursor: -webkit-grabbing;
 }
 
+.unsaved-changes-popup .ant-modal-confirm-title {
+  padding: 28px;
+}
+
 @media screen and (max-width: 480px) {
   .ant-pagination {
     display: flex;
