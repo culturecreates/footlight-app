@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -70,9 +69,9 @@ function moveConcept(dragKey, dropKey, data, dropToGap = false) {
     } else {
       // Add drag item as a sibling at the drop index
       if (dropParent) {
-        dropParent.children.splice(dropIndex + 1, 0, dragItem);
+        dropParent.children.splice(dropIndex, 0, dragItem);
       } else {
-        clonedData.splice(dropIndex + 1, 0, dragItem);
+        clonedData.splice(dropIndex, 0, dragItem);
       }
     }
   }
@@ -82,32 +81,39 @@ function moveConcept(dragKey, dropKey, data, dropToGap = false) {
 
 const type = 'DraggableBodyRow';
 const DraggableBodyRow = ({
-  index,
   'data-row-key': dataRowKey,
   moveRow,
   className,
+  numberOfParents,
   style,
+  // eslint-disable-next-line no-unused-vars
   fallbackStatus,
   ...restProps
 }) => {
   const ref = useRef(null);
+  const [isDroppingToGap, setIsDroppingToGap] = useState(false);
   const [{ isOver, dropClassName }, drop] = useDrop({
     accept: type,
+    hover: (_, monitor) => {
+      setIsDroppingToGap(monitor.getDifferenceFromInitialOffset()?.x > 40);
+    },
     collect: (monitor) => {
-      const { index: dragIndex } = monitor.getItem() || {};
-      if (dragIndex === index) {
+      const { dataRowKey: dragIndex } = monitor.getItem() || {};
+
+      if (dragIndex === dataRowKey) {
         return {};
       }
       return {
         isOver: monitor.isOver(),
-        dropClassName: dragIndex < index ? ' drop-over-downward' : ' drop-over-upward',
+        dropClassName: `${isDroppingToGap ? ' drop-over-upward-in-gap' : ' drop-over-upward'}`,
       };
     },
     drop: (item, monitor) => {
-      const dropToGap = monitor.getDifferenceFromInitialOffset()?.x > 30;
+      const dropToGap = monitor.getDifferenceFromInitialOffset()?.x > 40;
       moveRow(item.dataRowKey, dataRowKey, dropToGap);
     },
   });
+
   const [, drag] = useDrag({
     type,
     item: {
@@ -122,9 +128,10 @@ const DraggableBodyRow = ({
   return (
     <tr
       ref={ref}
-      className={`${className}${isOver ? dropClassName : ''}`}
+      className={`${className} ${isOver ? dropClassName : ''} table-row`}
       style={{
         cursor: 'move',
+        marginLeft: `${numberOfParents * 4}px`,
         ...style,
       }}
       {...restProps}
@@ -210,13 +217,75 @@ const DraggableTable = ({ data, setData }) => {
   const [fallbackStatus, setFallbackStatus] = useState({});
   const [transformationComplete, setTransformationComplete] = useState(false);
 
-  const handleSave = (row) => {
-    const newData = [...transformedData];
-    const index = newData.findIndex((item) => row.key === item.key);
-    if (index > -1) {
-      newData[index] = { ...newData[index], ...row };
-      setData(newData);
+  const handleSave = (row, data = transformedData, columnKey) => {
+    let fallbackStatusCloned = { ...fallbackStatus };
+    // Check if the row key exists in fallbackStatus
+    let rowsfallbackInfo = fallbackStatusCloned[row.key];
+
+    if (rowsfallbackInfo) {
+      // eslint-disable-next-line no-unused-vars
+      const { [columnKey]: _, ...updatedFallbackRowInfo } = rowsfallbackInfo;
+      fallbackStatusCloned[row.key] = updatedFallbackRowInfo;
     }
+
+    const updateNode = (nodes) => {
+      return nodes.map((node) => {
+        if (node.key === row.key) {
+          // Update the node if the keys match
+          return { ...node, ...row };
+        }
+        // Recursively check children if the node has any
+        if (node.children && node.children.length > 0) {
+          return { ...node, children: updateNode(node.children) };
+        }
+        return node;
+      });
+    };
+
+    const newData = updateNode(data);
+
+    // Iterate through newData to check and update items based on fallbackInfo
+    newData.forEach((item) => {
+      const fallbackInfo = fallbackStatusCloned[item.key];
+      if (fallbackInfo) {
+        Object.entries(fallbackInfo).forEach(([key, value]) => {
+          // Check if tagDisplayStatus is true and the key exists in item, then delete it
+          if (value.tagDisplayStatus === true && key in item) {
+            delete item[key];
+          }
+        });
+      }
+    });
+
+    // Iterate through newData to check and update items based on fallbackInfo and contentlanguagekeymap
+    newData.forEach((item) => {
+      const fallbackInfo = fallbackStatusCloned[item.key];
+
+      // Remove keys based on fallbackInfo conditions
+      if (fallbackInfo) {
+        Object.entries(fallbackInfo).forEach(([key, value]) => {
+          if (value.tagDisplayStatus === true && key in item) {
+            delete item[key];
+          }
+        });
+      }
+
+      // Create a name object with common language keys and remove them from item
+      const name = {};
+      Object.values(contentLanguageKeyMap).forEach((langKey) => {
+        if (langKey in item) {
+          name[langKey] = item[langKey];
+          delete item[langKey]; // Remove the language key from item
+        }
+      });
+
+      // Assign the name object to item if it has any language keys
+      if (Object.keys(name).length > 0) {
+        item.name = name;
+      }
+    });
+
+    setData(newData);
   };
 
   const columns = calendarContentLanguage.map((language) => ({
@@ -233,7 +302,7 @@ const DraggableTable = ({ data, setData }) => {
     [data],
   );
 
-  const transformData = (data) => {
+  const transformData = (data, parentCount = 0) => {
     if (!data) return data;
     const { name, children, ...rest } = data;
     const languageFallbacks = languageFallbackStatusCreator({
@@ -249,12 +318,17 @@ const DraggableTable = ({ data, setData }) => {
         extractedFallbackValues[lanKey] = languageFallbacks[lanKey].fallbackLiteralValue;
     });
 
-    const transformed = { ...rest, ...name, ...extractedFallbackValues };
+    const transformed = {
+      ...rest,
+      ...name,
+      ...extractedFallbackValues,
+      numberOfParents: parentCount,
+    };
 
     setFallbackStatus((prev) => ({ ...prev, [transformed.key]: languageFallbacks }));
 
     if (children && Array.isArray(children)) {
-      transformed.children = children.map((child) => transformData(child));
+      transformed.children = children.map((child) => transformData(child, parentCount + 1));
     }
 
     return transformed;
@@ -262,7 +336,7 @@ const DraggableTable = ({ data, setData }) => {
 
   useEffect(() => {
     if (!calendarContentLanguage || !data) return;
-    setTransformedData(data.map((item) => transformData(item)));
+    setTransformedData(data.map((item) => transformData(item, 0)));
     setTransformationComplete(true);
   }, [data, calendarContentLanguage]);
 
@@ -270,6 +344,7 @@ const DraggableTable = ({ data, setData }) => {
     const newKey = `new_${Date.now()}`;
     const newRow = {
       key: newKey,
+      isNew: true,
       ...columns.reduce((acc, col) => {
         acc[col.dataIndex] = `Concept ${col.title}`;
         return acc;
@@ -289,14 +364,16 @@ const DraggableTable = ({ data, setData }) => {
   const modifiedColumns = columns.map((col) => ({
     ...col,
     ellipsis: true,
-    onCell: (record) => ({
-      record,
-      editable: col.editable,
-      dataIndex: col.dataIndex,
-      title: col.title,
-      handleSave,
-      fallbackStatus: fallbackStatus[record.key],
-    }),
+    onCell: (record) => {
+      return {
+        record,
+        editable: col.editable,
+        dataIndex: col.dataIndex,
+        title: col.title,
+        handleSave: (row, data) => handleSave(row, data, col.dataIndex),
+        fallbackStatus: fallbackStatus[record.key],
+      };
+    },
   }));
 
   return (
@@ -315,39 +392,38 @@ const DraggableTable = ({ data, setData }) => {
             components={components}
             pagination={false}
             tableLayout="fixed"
+            indentSize={20}
             expandable={{
               expandIcon: ({ expanded, onExpand, record }) => {
-                let icon = null;
-                if (record.children) {
-                  icon = expanded ? (
-                    <div className="icon-container">
-                      <MinusOutlined
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          return onExpand(record, e);
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    <div className="icon-container">
-                      <PlusOutlined
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          return onExpand(record, e);
-                        }}
-                      />
-                    </div>
-                  );
-                }
-                return icon;
+                if (!record.children || record.children.length === 0) return null;
+                return expanded ? (
+                  <div className="icon-container">
+                    <MinusOutlined
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        return onExpand(record, e);
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="icon-container">
+                    <PlusOutlined
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        return onExpand(record, e);
+                      }}
+                    />
+                  </div>
+                );
               },
             }}
             rowClassName="editable-row"
-            onRow={(_, index) => {
+            onRow={(record, index) => {
               const attr = {
                 index,
                 moveRow,
                 fallbackStatus,
+                numberOfParents: record.numberOfParents,
               };
               return attr;
             }}

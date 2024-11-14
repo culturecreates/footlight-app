@@ -8,12 +8,26 @@
   flex: 1;
 }
 
-.custom-table .ant-table .ant-table-row:hover {
-  background-color: #eff2ff;
+.custom-table .table-row:hover,
+.custom-table .table-row:hover td {
+  background-color: #eff2ff !important;
 }
 
 .custom-table .ant-table-tbody .ant-table-cell > div:hover {
   cursor: text;
+}
+
+.custom-table .ant-table-tbody .indent-level-0 {
+  margin-left: 0;
+}
+.custom-table .ant-table-tbody .indent-level-1 {
+  margin-left: 4px;
+}
+.custom-table .ant-table-tbody .indent-level-2 {
+  margin-left: 8px;
+}
+.custom-table .ant-table-tbody .indent-level-3 {
+  margin-left: 12px;
 }
 
 .custom-table .ant-table-tbody .ant-table-cell > div {
@@ -21,9 +35,63 @@
   display: flex;
 }
 
+.custom-table .editable-row {
+  cursor: grab !important;
+}
+
+.custom-table .editable-row:active {
+  cursor: grabbing !important;
+}
+
+.custom-table .ant-table-tbody .drop-over-downward,
+.drop-over-upward {
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  transform: scale(1.02);
+  background-color: rgba(24, 144, 255, 0.1);
+}
+
 .custom-table .ant-table-tbody .ant-table-cell > div .icon-container {
   padding: 0px 8px;
   margin-left: -12px;
+}
+
+.custom-table .ant-table-tbody .ant-table-cell .literal-badge {
+  top: 15px;
+}
+
+.custom-table .ant-table-tbody .sort-handle-column {
+  width: 20px;
+}
+
+.custom-table tr.drop-over-downward td {
+  border-bottom: 2px dashed #1890ff;
+}
+
+.custom-table tr.drop-over-upward td {
+  border-top: 2px dashed #1890ff;
+}
+
+.custom-table .drop-over-upward-in-gap td:not(:first-child) {
+  border-top: 2px dashed #1890ff;
+}
+
+.custom-table .drop-over-upward-in-gap td:first-child {
+  position: relative;
+}
+
+.custom-table .drop-over-upward-in-gap td:first-child::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 40%;
+  width: 60%;
+  height: 0;
+  border-top: 2px dashed #1890ff;
+}
+
+.custom-table .ant-table-tbody td .ant-input:focus,
+.custom-table .ant-table-tbody td .ant-input-focused {
+  border: 1px solid #b6c1c9;
 }
 
 .custom-table .outlined-button {

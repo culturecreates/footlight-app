@@ -241,23 +241,13 @@ const AddTaxonomy = () => {
   };
 
   function modifyConceptData(conceptData) {
-    return conceptData?.map(function (item) {
-      let modifiedConcept;
-      if (item && item.isNew) {
-        modifiedConcept = {
-          name: item.name,
-          children: item.children ? modifyConceptData(item.children) : [],
-        };
-      } else {
-        modifiedConcept = {
-          id: item.id,
-          name: item.name,
-          children: item.children ? modifyConceptData(item.children) : [],
-        };
-      }
-
-      return modifiedConcept;
-    });
+    return (
+      conceptData?.map((item) => ({
+        ...(item.id && { id: item.id }),
+        name: item.name,
+        children: item.children ? modifyConceptData(item.children) : [],
+      })) || []
+    );
   }
 
   const handleValueChange = () => {
