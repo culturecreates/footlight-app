@@ -3091,6 +3091,7 @@ function AddEvent() {
                   setLoaderModalOpen={setLoaderModalOpen}
                   loaderModalOpen={loaderModalOpen}
                   setShowDialog={setShowDialog}
+                  currentCalendarData={currentCalendarData}
                 />
               </Form.Item>
               <Form.Item
