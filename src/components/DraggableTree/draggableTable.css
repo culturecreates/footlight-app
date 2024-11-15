@@ -33,6 +33,8 @@
 .custom-table .ant-table-tbody .ant-table-cell > div {
   width: fit-content;
   display: flex;
+  max-width: 80%;
+  text-wrap: wrap;
 }
 
 .custom-table .editable-row {

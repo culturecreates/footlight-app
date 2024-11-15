@@ -4,9 +4,11 @@ import { getStandardFieldTranslation, standardFieldsForTaxonomy } from '../../..
 import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
 import { Card, Checkbox, Col, Form, Input, Row, notification } from 'antd';
+import Alert from '../../../components/Alert';
 import BreadCrumbButton from '../../../components/Button/BreadCrumb/BreadCrumbButton';
 import { useTranslation } from 'react-i18next';
 import PrimaryButton from '../../../components/Button/Primary';
+import OutlinedButton from '../../..//components/Button/Outlined';
 import './addTaxonomy.css';
 import { useAddTaxonomyMutation, useLazyGetTaxonomyQuery, useUpdateTaxonomyMutation } from '../../../services/taxonomy';
 import Select from '../../../components/Select';
@@ -59,7 +61,9 @@ const AddTaxonomy = () => {
   setContentBackgroundColor('#F9FAFF');
 
   const [standardFields, setStandardFields] = useState([]);
+  const [languageLiteralBannerDisplayStatus, setLanguageLiteralBannerDisplayStatus] = useState(false);
   const [dynamic, setDynamic] = useState(location.state?.dynamic ?? false);
+  const [fallbackStatus, setFallbackStatus] = useState({});
   const [userAccess, setUserAccess] = useState();
   const [conceptData, setConceptData] = useState([]);
   const [isDirty, setIsDirty] = useState({
@@ -260,6 +264,18 @@ const AddTaxonomy = () => {
   useEffect(() => {
     if (isReadOnly) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}`, { replace: true });
   }, [isReadOnly]);
+
+  useEffect(() => {
+    const allTagDisplayStatuses = Object.values(fallbackStatus).flatMap((value) =>
+      typeof value === 'object'
+        ? Object.values(value).map((innerValue) => innerValue.tagdisplaystatus)
+        : [value.tagdisplaystatus],
+    );
+
+    allTagDisplayStatuses.every((status) => status === false)
+      ? setLanguageLiteralBannerDisplayStatus(false)
+      : setLanguageLiteralBannerDisplayStatus(true);
+  }, [fallbackStatus]);
 
   return (
     <>
@@ -479,18 +495,53 @@ const AddTaxonomy = () => {
                   <Card bordered={false}>
                     <Row justify="space-between" wrap={false}>
                       <Col>
-                        <Row>
+                        <Row gutter={[16, 16]}>
                           <Col>
                             <Row gutter={[8, 8]} justify="space-between">
                               <Col className="heading-concepts">{t('dashboard.taxonomy.addNew.concepts.heading')}</Col>
                             </Row>
+                          </Col>
+                          <Col>
                             <Row>
                               <Col flex="423px" className="text-concepts">
                                 {t('dashboard.taxonomy.addNew.concepts.description')}
                               </Col>
                             </Row>
                           </Col>
+                          <Col>
+                            <Row>
+                              {languageLiteralBannerDisplayStatus && (
+                                <Col span={24} className="language-literal-banner">
+                                  <Row>
+                                    <Col flex={'780px'}>
+                                      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                                        <Col span={24}>
+                                          <Alert
+                                            message={t('common.forms.languageLiterals.bannerTitle')}
+                                            type="info"
+                                            showIcon={false}
+                                            action={
+                                              <OutlinedButton
+                                                data-cy="button-change-fallback-banner"
+                                                size="large"
+                                                label={t('common.dismiss')}
+                                                onClick={() => {
+                                                  setLanguageLiteralBannerDisplayStatus(false);
+                                                  setFallbackStatus({});
+                                                }}
+                                              />
+                                            }
+                                          />
+                                        </Col>
+                                      </Row>
+                                    </Col>
+                                  </Row>
+                                </Col>
+                              )}
+                            </Row>
+                          </Col>
                         </Row>
+
                         <Row>
                           <Col
                             span={24}
@@ -500,7 +551,12 @@ const AddTaxonomy = () => {
                               width: 'calc(100% - 100px)',
                             }}>
                             <Row style={{ flex: 1 }}>
-                              <DraggableTable data={conceptData} setData={setConceptData} />
+                              <DraggableTable
+                                data={conceptData}
+                                setData={setConceptData}
+                                fallbackStatus={fallbackStatus}
+                                setFallbackStatus={setFallbackStatus}
+                              />
                             </Row>
                           </Col>
                         </Row>

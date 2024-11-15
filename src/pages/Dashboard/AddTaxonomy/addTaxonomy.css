@@ -23,6 +23,10 @@
   line-height: 24px;
 }
 
+.add-taxonomy-wrapper .language-literal-banner .ant-alert-message {
+  color: #1a64a7;
+}
+
 .add-taxonomy-wrapper .field-description {
   color: var(--content-neutral-secondary, #646d7b);
   font-size: 16px;

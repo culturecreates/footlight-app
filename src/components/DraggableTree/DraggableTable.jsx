@@ -208,13 +208,12 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
   );
 };
 
-const DraggableTable = ({ data, setData }) => {
+const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus }) => {
   const [currentCalendarData] = useOutletContext();
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const { t } = useTranslation();
 
   const [transformedData, setTransformedData] = useState([]);
-  const [fallbackStatus, setFallbackStatus] = useState({});
   const [transformationComplete, setTransformationComplete] = useState(false);
 
   const handleSave = (row, data = transformedData, columnKey) => {
