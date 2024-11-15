@@ -58,7 +58,10 @@
 }
 
 .custom-table .ant-table-tbody .ant-table-cell .literal-badge {
-  top: 15px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 12px;
 }
 
 .custom-table .ant-table-tbody .sort-handle-column {
@@ -94,6 +97,11 @@
 .custom-table .ant-table-tbody td .ant-input:focus,
 .custom-table .ant-table-tbody td .ant-input-focused {
   border: 1px solid #b6c1c9;
+}
+
+.custom-table .ant-table-tbody td .ant-input-lg {
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .custom-table .outlined-button {

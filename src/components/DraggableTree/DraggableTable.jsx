@@ -12,6 +12,8 @@ import { useTranslation } from 'react-i18next';
 import { languageFallbackStatusCreator } from '../../utils/languageFallbackStatusCreator';
 import LiteralBadge from '../Badge/LiteralBadge';
 
+const { TextArea } = Input;
+
 function deepClone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
@@ -180,9 +182,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
   }
 
   const fallbackComponent = isFallbackPresent ? (
-    <span className="fallback-tag">
-      <LiteralBadge tagTitle={fallbackStatus[recordKey]?.fallbackLiteralKey} promptText={fallbackPromptText} />
-    </span>
+    <LiteralBadge tagTitle={fallbackStatus[recordKey]?.fallbackLiteralKey} promptText={fallbackPromptText} />
   ) : (
     <></>
   );
@@ -199,7 +199,20 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
   return (
     <td {...restProps}>
       {editing ? (
-        <Input ref={inputRef} value={value} onChange={handleInputChange} onBlur={save} onPressEnter={save} />
+        <TextArea
+          ref={inputRef}
+          value={value}
+          onChange={handleInputChange}
+          onBlur={save}
+          onPressEnter={save}
+          autoSize
+          autoComplete="off"
+          style={{
+            borderRadius: '4px',
+            border: '1px solid #B6C1C9',
+          }}
+          size="large"
+        />
       ) : (
         <div onClick={toggleEdit}>{children}</div>
       )}
