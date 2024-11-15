@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useBlocker, useBeforeUnload, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Confirm } from '../components/Modal/Confirm/Confirm';
 
 export const RouteLeavingGuard = ({ isBlocking }) => {
+  let confirm = false;
+
   function useCallbackPrompt(when) {
     const navigate = useNavigate();
     const { t } = useTranslation();
@@ -16,12 +19,23 @@ export const RouteLeavingGuard = ({ isBlocking }) => {
           return false;
         }
 
-        const confirm = window.confirm(`${t('common.unsavedChanges')}`);
         if (confirm) {
           setConfirmedNavigation(true);
           setLastLocation(history.nextLocation);
           return false;
         }
+
+        Confirm({
+          content: t('common.unsavedChanges'),
+          closable: false,
+          className: 'unsaved-changes-popup',
+          onAction: () => {
+            setConfirmedNavigation(true);
+            confirm = true;
+            setLastLocation(history.nextLocation);
+            return false;
+          },
+        });
 
         return true;
       },
