@@ -34,6 +34,7 @@ import {
   createInitialNamesObjectFromKeyword,
   placeHolderCollectionCreator,
 } from '../../../utils/MultiLingualFormItemSupportFunctions';
+import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequiredFieldNames';
 
 const { TextArea } = Input;
 
@@ -52,7 +53,15 @@ function QuickCreatePlace(props) {
     setLoaderModalOpen,
     loaderModalOpen,
     setShowDialog,
+    currentCalendarData,
   } = props;
+
+  const fieldNames = {
+    name: 'name',
+    region: 'region',
+    address: 'address',
+    placeType: 'placeType',
+  };
 
   const [form] = Form.useForm();
   const { t } = useTranslation();
@@ -60,6 +69,13 @@ function QuickCreatePlace(props) {
   const navigate = useNavigate();
   const { user } = useSelector(getUserDetails);
   const { eventId } = useParams();
+
+  let requiredFields = currentCalendarData?.forms?.filter((form) => form?.formName === entitiesClass.place);
+  let requiredFieldNames = requiredFields
+    ? requiredFields[0]?.formFieldProperties?.mandatoryFields?.standardFields
+        ?.map((field) => field?.fieldName)
+        ?.concat(requiredFields[0]?.formFieldProperties?.mandatoryFields?.dynamicFields?.map((field) => field))
+    : [];
 
   const [event, setEvent] = useState([]);
   useEffect(() => {
@@ -162,13 +178,16 @@ function QuickCreatePlace(props) {
       .catch((error) => console.log(error));
   };
   const createPlaceHandler = (toggle = true) => {
-    const validationFieldNames = [];
+    let validationFieldNames = [];
     calendarContentLanguage.forEach((language) => {
-      validationFieldNames.push(['name', contentLanguageKeyMap[language]]);
+      validationFieldNames.push([fieldNames.name, contentLanguageKeyMap[language]]);
     });
+    if (requiredFieldNames?.includes(placeFormRequiredFieldNames.REGION)) {
+      validationFieldNames.push(fieldNames.region);
+    }
     return new Promise((resolve, reject) => {
       form
-        .validateFields([...validationFieldNames, 'address'])
+        .validateFields([...validationFieldNames, fieldNames.address])
         .then(() => {
           var values = form.getFieldsValue();
           var persistValues = form.getFieldsValue(true); // if toggle is false form is unmounted, hence the need to use both default and true values
@@ -334,7 +353,7 @@ function QuickCreatePlace(props) {
                   <CreateMultiLingualFormItems
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={['name']}
+                    name={[fieldNames.name]}
                     data={createInitialNamesObjectFromKeyword(keyword, calendarContentLanguage)}
                     validations={t('dashboard.events.addEditEvent.validations.title')}
                     dataCy={`text-area-quick-create-place-name-`}
@@ -358,7 +377,7 @@ function QuickCreatePlace(props) {
                   </CreateMultiLingualFormItems>
 
                   <Form.Item
-                    name="address"
+                    name={fieldNames.address}
                     label={t('dashboard.events.addEditEvent.location.quickCreatePlace.address')}
                     validateTrigger={['onBlur']}
                     rules={[
@@ -425,7 +444,7 @@ function QuickCreatePlace(props) {
                   </Form.Item>
 
                   <Form.Item
-                    name="placeType"
+                    name={fieldNames.placeType}
                     label={taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false)}
                     data-cy="form-item-quick-create-place-type-label">
                     <TreeSelectOption
@@ -454,7 +473,7 @@ function QuickCreatePlace(props) {
                     />
                   </Form.Item>
                   <Form.Item
-                    name={'region'}
+                    name={fieldNames.region}
                     label={taxonomyDetails(
                       allTaxonomyData?.data,
                       user,
@@ -462,6 +481,12 @@ function QuickCreatePlace(props) {
                       'name',
                       false,
                     )}
+                    rules={[
+                      {
+                        required: requiredFieldNames?.includes(placeFormRequiredFieldNames?.REGION),
+                        message: t('common.validations.informationRequired'),
+                      },
+                    ]}
                     data-cy="form-item-quick-create-place-region-label">
                     <TreeSelectOption
                       style={{
