@@ -11,12 +11,31 @@ import Outlined from '../Button/Outlined';
 import { useTranslation } from 'react-i18next';
 import { languageFallbackStatusCreator } from '../../utils/languageFallbackStatusCreator';
 import LiteralBadge from '../Badge/LiteralBadge';
+import { Dropdown, Menu } from 'antd';
+import { MoreOutlined } from '@ant-design/icons';
+import { Confirm } from '../Modal/Confirm/Confirm';
 
 const { TextArea } = Input;
 
 function deepClone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
+
+const deepCopy = (obj) => {
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(deepCopy);
+  }
+  const copiedObj = {};
+  for (let key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      copiedObj[key] = deepCopy(obj[key]);
+    }
+  }
+  return copiedObj;
+};
 
 function moveConcept(dragKey, dropKey, data, dropToGap = false) {
   let clonedData = deepClone(data);
@@ -82,16 +101,7 @@ function moveConcept(dragKey, dropKey, data, dropToGap = false) {
 }
 
 const type = 'DraggableBodyRow';
-const DraggableBodyRow = ({
-  'data-row-key': dataRowKey,
-  moveRow,
-  className,
-  numberOfParents,
-  style,
-  // eslint-disable-next-line no-unused-vars
-  fallbackStatus,
-  ...restProps
-}) => {
+const DraggableBodyRow = ({ 'data-row-key': dataRowKey, moveRow, className, numberOfParents, style, ...restProps }) => {
   const ref = useRef(null);
   const [isDroppingToGap, setIsDroppingToGap] = useState(false);
   const [{ isOver, dropClassName }, drop] = useDrop({
@@ -300,6 +310,38 @@ const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus }) =>
     setData(newData);
   };
 
+  const handleDelete = (key) => {
+    Confirm({
+      title: t('dashboard.taxonomy.addNew.concepts.deleteConceptHeading'),
+      onAction: () => {
+        const updatedData = deleteNodeFromData(data, key);
+        setData(updatedData);
+      },
+      content: t('dashboard.taxonomy.addNew.concepts.deleteConceptMessage'),
+      okText: t('dashboard.settings.addUser.delete'),
+      cancelText: t('dashboard.events.deleteEvent.cancel'),
+    });
+  };
+
+  const deleteNodeFromData = (data, key) => {
+    const deleteData = (items) => {
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].key === key) {
+          items.splice(i, 1);
+          return;
+        }
+        if (items[i].children) {
+          deleteData(items[i].children);
+        }
+      }
+    };
+
+    // Create a deep copy of the data to avoid mutating the original array
+    const newData = deepCopy(data);
+    deleteData(newData);
+    return newData;
+  };
+
   const columns = calendarContentLanguage.map((language) => ({
     title: capitalizeFirstLetter(language),
     dataIndex: contentLanguageKeyMap[language],
@@ -373,20 +415,49 @@ const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus }) =>
     },
   };
 
-  const modifiedColumns = columns.map((col) => ({
-    ...col,
-    ellipsis: true,
-    onCell: (record) => {
-      return {
-        record,
-        editable: col.editable,
-        dataIndex: col.dataIndex,
-        title: col.title,
-        handleSave: (row, data) => handleSave(row, data, col.dataIndex),
-        fallbackStatus: fallbackStatus[record.key],
-      };
+  const menu = (record) => (
+    <Menu>
+      <Menu.Item key="delete" onClick={() => handleDelete(record?.key)}>
+        {t('dashboard.taxonomy.addNew.concepts.delete')}
+      </Menu.Item>
+    </Menu>
+  );
+
+  const modifiedColumns = [
+    ...columns.map((col) => ({
+      ...col,
+      ellipsis: true,
+      onCell: (record) => {
+        return {
+          record,
+          editable: col.editable,
+          dataIndex: col.dataIndex,
+          title: col.title,
+          handleSave: (row, data) => handleSave(row, data, col.dataIndex),
+          fallbackStatus: fallbackStatus[record.key],
+        };
+      },
+    })),
+    {
+      title: '',
+      dataIndex: 'actions',
+      width: 30,
+      key: 'actions',
+      render: (_, record) => (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+          }}>
+          <Dropdown overlay={menu(record)} trigger={['click']}>
+            <MoreOutlined style={{ cursor: 'pointer', fontSize: '18px' }} />
+          </Dropdown>
+        </div>
+      ),
     },
-  }));
+  ];
 
   return (
     transformationComplete && (
@@ -409,22 +480,22 @@ const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus }) =>
               expandIcon: ({ expanded, onExpand, record }) => {
                 if (!record.children || record.children.length === 0) return null;
                 return expanded ? (
-                  <div className="icon-container">
-                    <MinusOutlined
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        return onExpand(record, e);
-                      }}
-                    />
+                  <div
+                    className="icon-container"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      return onExpand(record, e);
+                    }}>
+                    <MinusOutlined />
                   </div>
                 ) : (
-                  <div className="icon-container">
-                    <PlusOutlined
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        return onExpand(record, e);
-                      }}
-                    />
+                  <div
+                    className="icon-container"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      return onExpand(record, e);
+                    }}>
+                    <PlusOutlined />
                   </div>
                 );
               },

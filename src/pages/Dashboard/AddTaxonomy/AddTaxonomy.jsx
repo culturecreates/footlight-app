@@ -266,6 +266,7 @@ const AddTaxonomy = () => {
   }, [isReadOnly]);
 
   useEffect(() => {
+    // Flatten the fallbackStatus structure to extract all tagdisplaystatus values
     const allTagDisplayStatuses = Object.values(fallbackStatus).flatMap((value) =>
       typeof value === 'object'
         ? Object.values(value).map((innerValue) => innerValue.tagdisplaystatus)
