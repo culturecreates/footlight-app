@@ -14,28 +14,16 @@ import LiteralBadge from '../Badge/LiteralBadge';
 import { Dropdown, Menu } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
 import { Confirm } from '../Modal/Confirm/Confirm';
+import {
+  cloneFallbackStatus,
+  deepClone,
+  deepCopy,
+  sanitizeData,
+  transformLanguageKeys,
+  updateNodeData,
+} from '../../utils/draggableTableUtilFunctions';
 
 const { TextArea } = Input;
-
-function deepClone(obj) {
-  return JSON.parse(JSON.stringify(obj));
-}
-
-const deepCopy = (obj) => {
-  if (obj === null || typeof obj !== 'object') {
-    return obj;
-  }
-  if (Array.isArray(obj)) {
-    return obj.map(deepCopy);
-  }
-  const copiedObj = {};
-  for (let key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      copiedObj[key] = deepCopy(obj[key]);
-    }
-  }
-  return copiedObj;
-};
 
 function moveConcept(dragKey, dropKey, data, dropToGap = false) {
   let clonedData = deepClone(data);
@@ -231,91 +219,30 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
   );
 };
 
-const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus }) => {
+const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus, transformedData, setTransformedData }) => {
   const [currentCalendarData] = useOutletContext();
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const { t } = useTranslation();
 
-  const [transformedData, setTransformedData] = useState([]);
   const [transformationComplete, setTransformationComplete] = useState(false);
 
   const handleSave = (row, data = transformedData, columnKey) => {
-    let fallbackStatusCloned = { ...fallbackStatus };
-    // Check if the row key exists in fallbackStatus
-    let rowsfallbackInfo = fallbackStatusCloned[row.key];
+    const fallbackStatusCloned = cloneFallbackStatus(fallbackStatus, row, columnKey);
+    const updatedData = updateNodeData(data, row);
+    const sanitizedData = sanitizeData(updatedData, fallbackStatusCloned);
+    const transformedData = transformLanguageKeys(sanitizedData);
 
-    if (rowsfallbackInfo) {
-      // eslint-disable-next-line no-unused-vars
-      const { [columnKey]: _, ...updatedFallbackRowInfo } = rowsfallbackInfo;
-      fallbackStatusCloned[row.key] = updatedFallbackRowInfo;
-    }
-
-    const updateNode = (nodes) => {
-      return nodes.map((node) => {
-        if (node.key === row.key) {
-          // Update the node if the keys match
-          return { ...node, ...row };
-        }
-        // Recursively check children if the node has any
-        if (node.children && node.children.length > 0) {
-          return { ...node, children: updateNode(node.children) };
-        }
-        return node;
-      });
-    };
-
-    const newData = updateNode(data);
-
-    // Iterate through newData to check and update items based on fallbackInfo
-    newData.forEach((item) => {
-      const fallbackInfo = fallbackStatusCloned[item.key];
-      if (fallbackInfo) {
-        Object.entries(fallbackInfo).forEach(([key, value]) => {
-          // Check if tagDisplayStatus is true and the key exists in item, then delete it
-          if (value.tagDisplayStatus === true && key in item) {
-            delete item[key];
-          }
-        });
-      }
-    });
-
-    // Iterate through newData to check and update items based on fallbackInfo and contentlanguagekeymap
-    newData.forEach((item) => {
-      const fallbackInfo = fallbackStatusCloned[item.key];
-
-      // Remove keys based on fallbackInfo conditions
-      if (fallbackInfo) {
-        Object.entries(fallbackInfo).forEach(([key, value]) => {
-          if (value.tagDisplayStatus === true && key in item) {
-            delete item[key];
-          }
-        });
-      }
-
-      // Create a name object with common language keys and remove them from item
-      const name = {};
-      Object.values(contentLanguageKeyMap).forEach((langKey) => {
-        if (langKey in item) {
-          name[langKey] = item[langKey];
-          delete item[langKey]; // Remove the language key from item
-        }
-      });
-
-      // Assign the name object to item if it has any language keys
-      if (Object.keys(name).length > 0) {
-        item.name = name;
-      }
-    });
-
-    setData(newData);
+    setData(transformedData);
   };
 
   const handleDelete = (key) => {
     Confirm({
       title: t('dashboard.taxonomy.addNew.concepts.deleteConceptHeading'),
       onAction: () => {
-        const updatedData = deleteNodeFromData(data, key);
-        setData(updatedData);
+        const updatedData = deleteNodeFromData(transformedData, key);
+        const sanitizedData = sanitizeData(updatedData, fallbackStatus);
+        const filteredConceptData = transformLanguageKeys(sanitizedData);
+        setData(filteredConceptData);
       },
       content: t('dashboard.taxonomy.addNew.concepts.deleteConceptMessage'),
       okText: t('dashboard.settings.addUser.delete'),
@@ -405,7 +332,11 @@ const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus }) =>
       }, {}),
     };
 
-    setTransformedData((prevData) => [...prevData, newRow]);
+    const newConceptData = [...transformedData, newRow];
+    setTransformedData(newConceptData);
+    const sanitizedData = sanitizeData(newConceptData, fallbackStatus);
+    const filteredConceptData = transformLanguageKeys(sanitizedData);
+    setData(filteredConceptData);
   };
 
   const components = {

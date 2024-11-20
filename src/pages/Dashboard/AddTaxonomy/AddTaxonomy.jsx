@@ -29,6 +29,7 @@ import { placeHolderCollectionCreator } from '../../../utils/MultiLingualFormIte
 import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems/CreateMultiLingualFormItems';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import DraggableTable from '../../../components/DraggableTree/DraggableTable';
+import { sanitizeData, transformLanguageKeys } from '../../../utils/draggableTableUtilFunctions';
 
 const taxonomyClasses = taxonomyClassTranslations.map((item) => {
   return { ...item, value: item.key };
@@ -60,8 +61,9 @@ const AddTaxonomy = () => {
   const taxonomyId = searchParams.get('id');
   setContentBackgroundColor('#F9FAFF');
 
+  const [transformedConceptData, setTransformedConceptData] = useState([]);
   const [standardFields, setStandardFields] = useState([]);
-  const [languageLiteralBannerDisplayStatus, setLanguageLiteralBannerDisplayStatus] = useState(false);
+  const [languageLiteralBannerDisplayStatus, setLanguageLiteralBannerDisplayStatus] = useState(null);
   const [dynamic, setDynamic] = useState(location.state?.dynamic ?? false);
   const [fallbackStatus, setFallbackStatus] = useState({});
   const [userAccess, setUserAccess] = useState();
@@ -259,6 +261,15 @@ const AddTaxonomy = () => {
       formState: form.isFieldsTouched(['userAccess', 'disambiguatingDescription', 'name', 'mappedToField', 'class']),
       isSubmitting: false,
     });
+  };
+
+  const handleClearAllFallbackStatus = () => {
+    const sanitizedData = sanitizeData(transformedConceptData, {});
+    const filteredConceptData = transformLanguageKeys(sanitizedData);
+    setConceptData(filteredConceptData);
+
+    setLanguageLiteralBannerDisplayStatus(false);
+    setFallbackStatus({});
   };
 
   useEffect(() => {
@@ -526,10 +537,7 @@ const AddTaxonomy = () => {
                                                 data-cy="button-change-fallback-banner"
                                                 size="large"
                                                 label={t('common.dismiss')}
-                                                onClick={() => {
-                                                  setLanguageLiteralBannerDisplayStatus(false);
-                                                  setFallbackStatus({});
-                                                }}
+                                                onClick={() => handleClearAllFallbackStatus()}
                                               />
                                             }
                                           />
@@ -557,6 +565,8 @@ const AddTaxonomy = () => {
                                 setData={setConceptData}
                                 fallbackStatus={fallbackStatus}
                                 setFallbackStatus={setFallbackStatus}
+                                transformedData={transformedConceptData}
+                                setTransformedData={setTransformedConceptData}
                               />
                             </Row>
                           </Col>
