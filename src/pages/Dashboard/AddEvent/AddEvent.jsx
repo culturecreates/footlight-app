@@ -1815,18 +1815,21 @@ function AddEvent() {
         )
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.contact);
         if (eventData?.organizer) {
-          let initialOrganizers = eventData?.organizer?.map((organizer) => {
-            return {
-              disambiguatingDescription: organizer?.entity?.disambiguatingDescription,
-              id: organizer?.entityId,
-              name: organizer?.entity?.name,
-              type: organizer?.type,
-              logo: organizer?.entity?.logo,
-              image: organizer?.entity?.image?.find((image) => image?.isMain),
-              contactPoint: organizer?.entity?.contactPoint,
-              creator: organizer?.entity?.creator,
-            };
-          });
+          let initialOrganizers = eventData?.organizer
+            ?.map((organizer) => {
+              if (organizer?.entityId)
+                return {
+                  disambiguatingDescription: organizer?.entity?.disambiguatingDescription,
+                  id: organizer?.entityId,
+                  name: organizer?.entity?.name,
+                  type: organizer?.type,
+                  logo: organizer?.entity?.logo,
+                  image: organizer?.entity?.image?.find((image) => image?.isMain),
+                  contactPoint: organizer?.entity?.contactPoint,
+                  creator: organizer?.entity?.creator,
+                };
+            })
+            ?.filter((organizer) => organizer);
           setSelectedOrganizers(
             treeEntitiesOption(
               initialOrganizers,
@@ -1838,17 +1841,20 @@ function AddEvent() {
           );
         }
         if (eventData?.performer) {
-          let initialPerformers = eventData?.performer?.map((performer) => {
-            return {
-              disambiguatingDescription: performer?.entity?.disambiguatingDescription,
-              id: performer?.entityId,
-              name: performer?.entity?.name,
-              type: performer?.type,
-              logo: performer?.entity?.logo,
-              image: performer?.entity?.image?.find((image) => image?.isMain),
-              creator: performer?.entity?.creator,
-            };
-          });
+          let initialPerformers = eventData?.performer
+            ?.map((performer) => {
+              if (performer?.entityId)
+                return {
+                  disambiguatingDescription: performer?.entity?.disambiguatingDescription,
+                  id: performer?.entityId,
+                  name: performer?.entity?.name,
+                  type: performer?.type,
+                  logo: performer?.entity?.logo,
+                  image: performer?.entity?.image?.find((image) => image?.isMain),
+                  creator: performer?.entity?.creator,
+                };
+            })
+            ?.filter((performer) => performer);
           setSelectedPerformers(
             treeEntitiesOption(
               initialPerformers,
@@ -1861,17 +1867,20 @@ function AddEvent() {
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.performerWrap);
         }
         if (eventData?.collaborators) {
-          let initialSupporters = eventData?.collaborators?.map((supporter) => {
-            return {
-              disambiguatingDescription: supporter?.entity?.disambiguatingDescription,
-              id: supporter?.entityId,
-              name: supporter?.entity?.name,
-              type: supporter?.type,
-              logo: supporter?.entity?.logo,
-              image: supporter?.entity?.image?.find((image) => image?.isMain),
-              creator: supporter?.entity?.creator,
-            };
-          });
+          let initialSupporters = eventData?.collaborators
+            ?.map((supporter) => {
+              if (supporter?.entityId)
+                return {
+                  disambiguatingDescription: supporter?.entity?.disambiguatingDescription,
+                  id: supporter?.entityId,
+                  name: supporter?.entity?.name,
+                  type: supporter?.type,
+                  logo: supporter?.entity?.logo,
+                  image: supporter?.entity?.image?.find((image) => image?.isMain),
+                  creator: supporter?.entity?.creator,
+                };
+            })
+            ?.filter((supporter) => supporter);
           setSelectedSupporters(
             treeEntitiesOption(
               initialSupporters,
