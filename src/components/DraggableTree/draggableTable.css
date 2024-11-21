@@ -76,15 +76,15 @@
 }
 
 .custom-table tr.drop-over-downward td {
-  border-bottom: 2px dashed #1890ff;
+  border-bottom: 2px dashed #1b3de6;
 }
 
 .custom-table tr.drop-over-upward td {
-  border-top: 2px dashed #1890ff;
+  border-top: 2px dashed #1b3de6;
 }
 
 .custom-table .drop-over-upward-in-gap td:not(:first-child) {
-  border-top: 2px dashed #1890ff;
+  border-top: 2px dashed #1b3de6;
 }
 
 .custom-table .drop-over-upward-in-gap td:first-child {
@@ -98,7 +98,7 @@
   left: 40%;
   width: 60%;
   height: 0;
-  border-top: 2px dashed #1890ff;
+  border-top: 2px dashed #1b3de6;
 }
 
 .custom-table .ant-table-tbody td .ant-input:focus,
