@@ -67,11 +67,9 @@ function MandatoryField(props) {
   }, [tabKey, field]);
 
   const createLabel = (category, fieldName) => {
-    if (Array.isArray(category)) {
-      const updatedCategory = category.slice(1);
-      return `${updatedCategory.reverse().join(' - ')} - ${fieldName}`;
-    }
-    return fieldName;
+    if (Array.isArray(category)) return `${category.slice(1).reverse().join(' - ')} - ${fieldName}`;
+
+    return category === 'Contact' ? `${category} - ${fieldName}` : fieldName;
   };
 
   return (
