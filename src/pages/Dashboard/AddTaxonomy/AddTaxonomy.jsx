@@ -248,11 +248,16 @@ const AddTaxonomy = () => {
 
   function modifyConceptData(conceptData) {
     return (
-      conceptData?.map((item) => ({
-        ...(item.id && { id: item.id }),
-        name: item.name,
-        children: item.children ? modifyConceptData(item.children) : [],
-      })) || []
+      conceptData?.map((item) => {
+        // eslint-disable-next-line no-unused-vars
+        const filteredName = Object.fromEntries(Object.entries(item.name || {}).filter(([_, value]) => value !== ''));
+
+        return {
+          ...(item.id && { id: item.id }),
+          name: filteredName,
+          children: item.children ? modifyConceptData(item.children) : [],
+        };
+      }) || []
     );
   }
 

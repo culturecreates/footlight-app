@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import React, { useCallback, useEffect, useState } from 'react';
+import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Table, Input } from 'antd';
+import { Table } from 'antd';
 import { useOutletContext } from 'react-router-dom';
 import { capitalizeFirstLetter } from '../../utils/stringManipulations';
 import { contentLanguageKeyMap } from '../../constants/contentLanguage';
@@ -10,214 +10,19 @@ import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import Outlined from '../Button/Outlined';
 import { useTranslation } from 'react-i18next';
 import { languageFallbackStatusCreator } from '../../utils/languageFallbackStatusCreator';
-import LiteralBadge from '../Badge/LiteralBadge';
 import { Dropdown, Menu } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
 import { Confirm } from '../Modal/Confirm/Confirm';
 import {
   cloneFallbackStatus,
-  deepClone,
   deepCopy,
+  moveConcept,
   sanitizeData,
   transformLanguageKeys,
   updateNodeData,
 } from '../../utils/draggableTableUtilFunctions';
-
-const { TextArea } = Input;
-
-function moveConcept(dragKey, dropKey, data, dropToGap = false) {
-  let clonedData = deepClone(data);
-
-  let dragParent = null;
-  let dragItem = null;
-  let dropParent = null;
-  let dropIndex = -1;
-
-  function findItemAndParent(key, items, parent = null) {
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-
-      if (item.key === key) {
-        return { item, parent, index: i };
-      }
-
-      if (item.children) {
-        const result = findItemAndParent(key, item.children, item);
-        if (result) return result;
-      }
-    }
-    return null;
-  }
-
-  const dragResult = findItemAndParent(dragKey, clonedData);
-  if (dragResult) {
-    dragItem = dragResult.item;
-    dragParent = dragResult.parent;
-  }
-
-  const dropResult = findItemAndParent(dropKey, clonedData);
-  if (dropResult) {
-    dropParent = dropResult.parent;
-    dropIndex = dropResult.index;
-  }
-
-  if (dragItem && dropResult) {
-    // Remove drag item from its original position
-    if (dragParent) {
-      dragParent.children = dragParent.children.filter((item) => item.key !== dragKey);
-    } else {
-      clonedData = clonedData.filter((item) => item.key !== dragKey);
-    }
-
-    if (dropToGap) {
-      // Add drag item as a child of the drop item
-      if (!dropResult.item.children) {
-        dropResult.item.children = [];
-      }
-      dropResult.item.children.push(dragItem);
-    } else {
-      // Add drag item as a sibling at the drop index
-      if (dropParent) {
-        dropParent.children.splice(dropIndex, 0, dragItem);
-      } else {
-        clonedData.splice(dropIndex, 0, dragItem);
-      }
-    }
-  }
-
-  return clonedData;
-}
-
-const type = 'DraggableBodyRow';
-const DraggableBodyRow = ({ 'data-row-key': dataRowKey, moveRow, className, numberOfParents, style, ...restProps }) => {
-  const ref = useRef(null);
-  const [isDroppingToGap, setIsDroppingToGap] = useState(false);
-  const [{ isOver, dropClassName }, drop] = useDrop({
-    accept: type,
-    hover: (_, monitor) => {
-      setIsDroppingToGap(monitor.getDifferenceFromInitialOffset()?.x > 40);
-    },
-    collect: (monitor) => {
-      const { dataRowKey: dragIndex } = monitor.getItem() || {};
-
-      if (dragIndex === dataRowKey) {
-        return {};
-      }
-      return {
-        isOver: monitor.isOver(),
-        dropClassName: `${isDroppingToGap ? ' drop-over-upward-in-gap' : ' drop-over-upward'}`,
-      };
-    },
-    drop: (item, monitor) => {
-      const dropToGap = monitor.getDifferenceFromInitialOffset()?.x > 40;
-      moveRow(item.dataRowKey, dataRowKey, dropToGap);
-    },
-  });
-
-  const [, drag] = useDrag({
-    type,
-    item: {
-      dataRowKey,
-    },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  });
-  drop(drag(ref));
-
-  return (
-    <tr
-      ref={ref}
-      className={`${className} ${isOver ? dropClassName : ''} table-row`}
-      style={{
-        cursor: 'move',
-        marginLeft: `${numberOfParents * 4}px`,
-        ...style,
-      }}
-      {...restProps}
-    />
-  );
-};
-
-// Editable cell component
-const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, fallbackStatus, ...restProps }) => {
-  const [editing, setEditing] = useState(false);
-  const [value, setValue] = useState();
-  const inputRef = useRef(null);
-  const { t } = useTranslation();
-
-  const toggleEdit = () => {
-    setEditing(!editing);
-    setTimeout(() => inputRef.current && inputRef.current.focus(), 0);
-  };
-
-  const save = () => {
-    handleSave({ ...record, [dataIndex]: value });
-    setEditing(false);
-  };
-
-  const handleInputChange = (e) => {
-    setValue(e.target.value);
-  };
-
-  useEffect(() => {
-    if (!record) return;
-    if (!record[dataIndex]) return;
-
-    setValue(record[dataIndex]);
-  }, [dataIndex, record]);
-
-  let isFallbackPresent = false;
-  let fallbackPromptText = '';
-  const recordKey = contentLanguageKeyMap[title?.toUpperCase()];
-
-  if (fallbackStatus && recordKey && fallbackStatus[recordKey]) {
-    isFallbackPresent = fallbackStatus[recordKey]?.tagDisplayStatus;
-    fallbackPromptText =
-      fallbackStatus[recordKey]?.fallbackLiteralKey == '?'
-        ? t('common.forms.languageLiterals.unKnownLanguagePromptText')
-        : t('common.forms.languageLiterals.knownLanguagePromptText');
-  }
-
-  const fallbackComponent = isFallbackPresent ? (
-    <LiteralBadge tagTitle={fallbackStatus[recordKey]?.fallbackLiteralKey} promptText={fallbackPromptText} />
-  ) : (
-    <></>
-  );
-
-  if (!editable) {
-    return (
-      <td {...restProps}>
-        {children}
-        {fallbackComponent}
-      </td>
-    );
-  }
-
-  return (
-    <td {...restProps}>
-      {editing ? (
-        <TextArea
-          ref={inputRef}
-          value={value}
-          onChange={handleInputChange}
-          onBlur={save}
-          onPressEnter={save}
-          autoSize
-          autoComplete="off"
-          style={{
-            borderRadius: '4px',
-            border: '1px solid #B6C1C9',
-          }}
-          size="large"
-        />
-      ) : (
-        <div onClick={toggleEdit}>{children}</div>
-      )}
-      {fallbackComponent}
-    </td>
-  );
-};
+import EditableCell from './EditableCell';
+import DraggableBodyRow from './DraggableRow';
 
 const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus, transformedData, setTransformedData }) => {
   const [currentCalendarData] = useOutletContext();
