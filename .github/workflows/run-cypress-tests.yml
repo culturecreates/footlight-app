@@ -131,39 +131,55 @@ jobs:
       - name: Pull cypress docker image
         run: docker pull ghcr.io/kmdvs/cms-cypress_regression_tests:main
 
+      - name: Write grep and grepTags to cypress.env.json
+        run: |
+          mkdir -p cypress
+          cd cypress
+          mkdir -p logs screenshots videos
+
+          echo '{
+            "grep": "${{ inputs.grep }}",
+            "grepTags": "${{ inputs.grepTags }}"
+          }' > cypress.env.json
+
+      - name: Verify contents of cypress.env.json
+        run: |
+          cat cypress/cypress.env.json
+
       - name: Run Cypress tests
         run: |
 
           base_url="http://test.footlight.app:3000/"
           
-          grep_value="${{ inputs.grep }}"
-          echo "Original grep_value: '$grep_value'"
-          grep_value_clean=$(echo "$grep_value" | tr -d '\n\r')
-          echo "Cleaned grep_value: '$grep_value_clean'"
+          # grep_value="${{ inputs.grep }}"
+          # echo "Original grep_value: '$grep_value'"
+          # grep_value_clean=$(echo "$grep_value" | tr -d '\n\r')
+          # echo "Cleaned grep_value: '$grep_value_clean'"
 
-          if [ -z "$grep_value_clean" ]; then
-            grep_value_json='""'
-          else
-            grep_value_json=$(printf '%s' "$grep_value_clean" | sed 's/"/\\"/g; s/.*/"&"/')
-          fi
+          # if [ -z "$grep_value_clean" ]; then
+          #   grep_value_json='""'
+          # else
+          #   grep_value_json=$(printf '%s' "$grep_value_clean" | sed 's/"/\\"/g; s/.*/"&"/')
+          # fi
 
-          echo "JSON grep_value: '$grep_value_json'"
+          # echo "JSON grep_value: '$grep_value_json'"
           
-          # Properly format the --env argument for Cypress
-          env_json="{\"grepTags\":\"${{ inputs.grepTags }}\",\"grep\":${grep_value_json}}"
-          echo "Formatted env JSON: $env_json"
+          # # Properly format the --env argument for Cypress
+          # env_json="{\"grepTags\":\"${{ inputs.grepTags }}\",\"grep\":${grep_value_json}}"
+          # echo "Formatted env JSON: $env_json"
           
-          # Simulate the Cypress --env argument
-          env_arg=$(printf '%s' "$env_json")
-          echo "Simulated --env argument for Cypress: $env_arg"
+          # # Simulate the Cypress --env argument
+          # env_arg=$(printf '%s' "$env_json")
+          # echo "Simulated --env argument for Cypress: $env_arg"
           
-          # Validate JSON formatting
-          echo "$env_json" | jq . # Validate JSON formatting
+          # # Validate JSON formatting
+          # echo "$env_json" | jq . # Validate JSON formatting
 
 
           # Run Cypress tests with the formatted --env argument
           docker run \
           --network footlight-network.test \
+          -e DEBUG="" \
           -e XDG_RUNTIME_DIR=/tmp/runtime \
           -e CYPRESS_BASE_URL=$base_url \
           -e CYPRESS_ADMIN_EN_EMAIL="${{ vars.CYPRESS_ADMIN_EN_EMAIL }}" \
@@ -174,15 +190,20 @@ jobs:
           -e CYPRESS_ADMIN_FR_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
           -e CYPRESS_GUEST_EN_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
           -e CYPRESS_GUEST_FR_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
+          -e HEADLESS="true" \
           -v ${GITHUB_WORKSPACE}/cypress/screenshots:/e2e/cypress/screenshots \
           -v ${GITHUB_WORKSPACE}/cypress/videos:/e2e/cypress/videos \
-          ghcr.io/kmdvs/cms-cypress_regression_tests:main npx cypress run --browser firefox --headless --env "$env_arg"
+          -v ${GITHUB_WORKSPACE}/cypress/logs:/e2e/cypress/logs \
+          -v ${GITHUB_WORKSPACE}/cypress/cypress.env.json:/e2e/cypress/cypress.env.json \
+          ghcr.io/kmdvs/cms-cypress_regression_tests:main \
+          npx cypress run --browser firefox > ${GITHUB_WORKSPACE}/cypress/logs/debug-firefox.log 2>&1
 
       - name: Upload Cypress Debug Logs
         uses: actions/upload-artifact@v3
+        if: always()
         with:
           name: cypress-debug-logs
-          path: cypress/logs/debug.log
+          path: cypress/logs/debug-firefox.log
 
       - name: Upload Cypress Screenshots
         uses: actions/upload-artifact@v4
