@@ -11,4 +11,4 @@ COPY . .
 
 EXPOSE 3000
 
-ENTRYPOINT ["sh","./footlight-app-start.sh"]
+ENTRYPOINT ["npm","run", "start:staging"]
