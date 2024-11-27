@@ -15,6 +15,22 @@ on:
         description: 'Grep tags for selecting tests'
         required: false
         default: '@essential'
+      CYPRESS_ADMIN_EN_EMAIL:
+        description: 'Admin email for English tests'
+        required: true
+        type: string
+      CYPRESS_ADMIN_FR_EMAIL:
+        description: 'Admin email for French tests'
+        required: true
+        type: string
+      CYPRESS_GUEST_EN_EMAIL:
+        description: 'Guest email for English tests'
+        required: true
+        type: string
+      CYPRESS_GUEST_FR_EMAIL:
+        description: 'Guest email for French tests'
+        required: true
+        type: string
 
   workflow_call:
     inputs:
@@ -31,6 +47,22 @@ on:
         required: false
         type: string
         default: '@essential'
+      CYPRESS_ADMIN_EN_EMAIL:
+        description: 'Admin email for English tests'
+        required: true
+        type: string
+      CYPRESS_ADMIN_FR_EMAIL:
+        description: 'Admin email for French tests'
+        required: true
+        type: string
+      CYPRESS_GUEST_EN_EMAIL:
+        description: 'Guest email for English tests'
+        required: true
+        type: string
+      CYPRESS_GUEST_FR_EMAIL:
+        description: 'Guest email for French tests'
+        required: true
+        type: string
 
     secrets:
       DOCKER_PAT:
@@ -150,31 +182,6 @@ jobs:
         run: |
 
           base_url="http://test.footlight.app:3000/"
-          
-          # grep_value="${{ inputs.grep }}"
-          # echo "Original grep_value: '$grep_value'"
-          # grep_value_clean=$(echo "$grep_value" | tr -d '\n\r')
-          # echo "Cleaned grep_value: '$grep_value_clean'"
-
-          # if [ -z "$grep_value_clean" ]; then
-          #   grep_value_json='""'
-          # else
-          #   grep_value_json=$(printf '%s' "$grep_value_clean" | sed 's/"/\\"/g; s/.*/"&"/')
-          # fi
-
-          # echo "JSON grep_value: '$grep_value_json'"
-          
-          # # Properly format the --env argument for Cypress
-          # env_json="{\"grepTags\":\"${{ inputs.grepTags }}\",\"grep\":${grep_value_json}}"
-          # echo "Formatted env JSON: $env_json"
-          
-          # # Simulate the Cypress --env argument
-          # env_arg=$(printf '%s' "$env_json")
-          # echo "Simulated --env argument for Cypress: $env_arg"
-          
-          # # Validate JSON formatting
-          # echo "$env_json" | jq . # Validate JSON formatting
-
 
           # Run Cypress tests with the formatted --env argument
           docker run \
@@ -182,10 +189,10 @@ jobs:
           -e DEBUG="" \
           -e XDG_RUNTIME_DIR=/tmp/runtime \
           -e CYPRESS_BASE_URL=$base_url \
-          -e CYPRESS_ADMIN_EN_EMAIL="${{ vars.CYPRESS_ADMIN_EN_EMAIL }}" \
-          -e CYPRESS_ADMIN_FR_EMAIL="${{ vars.CYPRESS_ADMIN_FR_EMAIL }}" \
-          -e CYPRESS_GUEST_EN_EMAIL="${{ vars.CYPRESS_GUEST_EN_EMAIL }}" \
-          -e CYPRESS_GUEST_FR_EMAIL="${{ vars.CYPRESS_GUEST_FR_EMAIL }}" \
+          -e CYPRESS_ADMIN_EN_EMAIL="${{ inputs.CYPRESS_ADMIN_EN_EMAIL }}" \
+          -e CYPRESS_ADMIN_FR_EMAIL="${{ inputs.CYPRESS_ADMIN_FR_EMAIL }}" \
+          -e CYPRESS_GUEST_EN_EMAIL="${{ inputs.CYPRESS_GUEST_EN_EMAIL }}" \
+          -e CYPRESS_GUEST_FR_EMAIL="${{ inputs.CYPRESS_GUEST_FR_EMAIL }}" \
           -e CYPRESS_ADMIN_EN_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
           -e CYPRESS_ADMIN_FR_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
           -e CYPRESS_GUEST_EN_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
