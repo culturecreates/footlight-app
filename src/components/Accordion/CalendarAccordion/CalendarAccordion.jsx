@@ -84,6 +84,22 @@ function CalendarAccordion(props) {
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
+  const processEntities = (entities) => {
+    if (!entities) return [];
+    return entities.map((v) => ({
+      ...v,
+      image: Array.isArray(v?.image)
+        ? v?.image.find((image) => image?.isMain) || null
+        : typeof v?.image === 'object' && v?.image !== null
+        ? v?.image
+        : null,
+    }));
+  };
+
+  const updateList = (entities, setter) => {
+    setter(treeEntitiesOption(processEntities(entities), user, calendarContentLanguage, sourceOptions.CMS));
+  };
+
   const organizationPersonSearch = (value, type) => {
     const queryMap = {
       organizers: query,
@@ -95,25 +111,10 @@ function CalendarAccordion(props) {
     getEntities({ searchKey: value, classes: decodeURIComponent(currentQuery.toString()), calendarId })
       .unwrap()
       .then((response) => {
-        if (type == 'organizers') {
-          setOrganizersList(
-            treeEntitiesOption(
-              response?.map((v) => ({ ...v, image: v?.image?.find((image) => image?.isMain) })),
-              user,
-              calendarContentLanguage,
-              sourceOptions.CMS,
-            ),
-          );
-        }
-        if (type == 'people') {
-          setPeopleList(
-            treeEntitiesOption(
-              response?.map((v) => ({ ...v, image: v?.image?.find((image) => image?.isMain) })),
-              user,
-              calendarContentLanguage,
-              sourceOptions.CMS,
-            ),
-          );
+        if (type === 'organizers') {
+          updateList(response, setOrganizersList);
+        } else if (type === 'people') {
+          updateList(response, setPeopleList);
         }
       })
       .catch((error) => console.log(error));
@@ -131,27 +132,13 @@ function CalendarAccordion(props) {
 
   useEffect(() => {
     if (initialEntities && currentCalendarData) {
-      setOrganizersList(
-        treeEntitiesOption(
-          initialEntities?.map((v) => ({ ...v, image: v?.image?.find((image) => image?.isMain) })),
-          user,
-          calendarContentLanguage,
-          sourceOptions.CMS,
-        ),
-      );
+      updateList(initialEntities, setOrganizersList);
     }
   }, [initialEntityLoading, currentCalendarData]);
 
   useEffect(() => {
     if (initialPersonEntities && currentCalendarData) {
-      setPeopleList(
-        treeEntitiesOption(
-          initialPersonEntities?.map((v) => ({ ...v, image: v?.image?.find((image) => image?.isMain) })),
-          user,
-          calendarContentLanguage,
-          sourceOptions.CMS,
-        ),
-      );
+      updateList(initialPersonEntities, setPeopleList);
     }
   }, [initialPersonEntityLoading, currentCalendarData]);
 
