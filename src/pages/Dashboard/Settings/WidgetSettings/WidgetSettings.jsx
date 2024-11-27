@@ -33,6 +33,10 @@ import { setErrorStates } from '../../../../redux/reducer/ErrorSlice';
 
 const { useBreakpoint } = Grid;
 const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_BASE_URL;
+const fieldName = {
+  organizer: 'organizer',
+  performer: 'performer',
+};
 
 const WidgetSettings = ({ tabKey }) => {
   const { t } = useTranslation();
@@ -54,8 +58,8 @@ const WidgetSettings = ({ tabKey }) => {
 
   const [color, setColor] = useState('#607EFC');
   const [locationOptions, setLocationOptions] = useState([]);
-  const [organizationOptions, setOrganizationOptions] = useState([]);
-  const [personOptions, setPersonOptions] = useState([]);
+  const [organizerOptions, setOrganizerOptions] = useState([]);
+  const [performerOptions, setPerformerOptions] = useState([]);
   const [searchKey, setSearchKey] = useState([]);
   const [iframeCode, setIframeCode] = useState('');
   const [previewModal, setPreviewModal] = useState(false);
@@ -85,23 +89,16 @@ const WidgetSettings = ({ tabKey }) => {
   });
 
   let queryLocation = new URLSearchParams();
-  let queryPerson = new URLSearchParams();
-  let queryOrganization = new URLSearchParams();
+  let queryPersonOrganization = new URLSearchParams();
 
-  queryOrganization.append('classes', entitiesClass.organization);
-  queryPerson.append('classes', entitiesClass.person);
+  queryPersonOrganization.append('classes', entitiesClass.person);
+  queryPersonOrganization.append('classes', entitiesClass.organization);
   queryLocation.append('classes', entitiesClass.place);
 
-  const { currentData: initialEntitiesOrganization } = useGetEntitiesQuery({
+  const { currentData: initialEntitiesPersonOrganization } = useGetEntitiesQuery({
     calendarId,
     searchKey: '',
-    classes: decodeURIComponent(queryOrganization.toString()),
-    sessionId: timestampRef,
-  });
-  const { currentData: initialEntitiesPerson } = useGetEntitiesQuery({
-    calendarId,
-    searchKey: '',
-    classes: decodeURIComponent(queryPerson.toString()),
+    classes: decodeURIComponent(queryPersonOrganization.toString()),
     sessionId: timestampRef,
   });
   const { currentData: initialEntitiesLocations } = useGetEntitiesQuery({
@@ -230,61 +227,32 @@ const WidgetSettings = ({ tabKey }) => {
       .catch((error) => console.log(error));
   };
 
-  const organizerSearch = (inputValue) => {
-    let query = new URLSearchParams();
-    query.append('classes', entitiesClass.organization);
-    setOrganizationOptions([]);
-
-    let sourceQuery = new URLSearchParams();
-    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
+  const performerOrganizerSearch = (inputValue, field) => {
     getEntities({
       searchKey: inputValue,
-      classes: decodeURIComponent(query.toString()),
+      classes: decodeURIComponent(queryPersonOrganization.toString()),
       calendarId,
     })
       .unwrap()
       .then((response) => {
-        setOrganizationOptions(
-          response.map((item) => {
-            return {
-              value: item?.id,
-              label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
-            };
-          }),
-        );
-      })
-      .catch((error) => console.log(error));
-  };
+        if (field === fieldName.organizer || field === fieldName.performer) {
+          const options = response.map((item) => ({
+            value: item?.id,
+            label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
+          }));
 
-  const personSearch = (inputValue) => {
-    let query = new URLSearchParams();
-    query.append('classes', entitiesClass.person);
-    setPersonOptions([]);
-
-    let sourceQuery = new URLSearchParams();
-    sourceQuery.append('sources', externalSourceOptions.FOOTLIGHT);
-    getEntities({
-      searchKey: inputValue,
-      classes: decodeURIComponent(query.toString()),
-      calendarId,
-    })
-      .unwrap()
-      .then((response) => {
-        setPersonOptions(
-          response.map((item) => {
-            return {
-              value: item?.id,
-              label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
-            };
-          }),
-        );
+          if (field === fieldName.organizer) {
+            setOrganizerOptions(options);
+          } else if (field === fieldName.performer) {
+            setPerformerOptions(options);
+          }
+        }
       })
       .catch((error) => console.log(error));
   };
 
   const debounceSearchPlace = useCallback(useDebounce(placesSearch, SEARCH_DELAY), []);
-  const debounceSearchOrganizer = useCallback(useDebounce(organizerSearch, SEARCH_DELAY), []);
-  const debounceSearchPerson = useCallback(useDebounce(personSearch, SEARCH_DELAY), []);
+  const debounceSearchPerformerOrganizer = useCallback(useDebounce(performerOrganizerSearch, SEARCH_DELAY), []);
 
   useEffect(() => {
     const isWidgetUrlAvailable = !!(
@@ -312,30 +280,16 @@ const WidgetSettings = ({ tabKey }) => {
   }, [initialEntitiesLocations]);
 
   useEffect(() => {
-    if (initialEntitiesPerson) {
-      setPersonOptions(
-        initialEntitiesPerson.map((item) => {
-          return {
-            value: item?.id,
-            label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
-          };
-        }),
-      );
-    }
-  }, [initialEntitiesPerson]);
+    if (initialEntitiesPersonOrganization) {
+      const options = initialEntitiesPersonOrganization.map((item) => ({
+        value: item?.id,
+        label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
+      }));
 
-  useEffect(() => {
-    if (initialEntitiesOrganization) {
-      setOrganizationOptions(
-        initialEntitiesOrganization.map((item) => {
-          return {
-            value: item?.id,
-            label: bilingual({ data: item?.name, interfaceLanguage: user?.interfaceLanguage }),
-          };
-        }),
-      );
+      setOrganizerOptions(options);
+      setPerformerOptions(options);
     }
-  }, [initialEntitiesOrganization]);
+  }, [initialEntitiesPersonOrganization]);
 
   useEffect(() => {
     if (tabKey != '2') return;
@@ -717,7 +671,7 @@ const WidgetSettings = ({ tabKey }) => {
                           <SelectOption
                             mode="multiple"
                             filterOption={false}
-                            onSearch={debounceSearchOrganizer}
+                            onSearch={(value) => debounceSearchPerformerOrganizer(value, fieldName.organizer)}
                             showSearch
                             allowClear
                             placeholder={<span>{t(`${localePath}.placeholder.OrganizationsAndPeople`)}</span>}
@@ -731,7 +685,7 @@ const WidgetSettings = ({ tabKey }) => {
                                 <NoContent />
                               )
                             }
-                            options={organizationOptions}
+                            options={organizerOptions}
                             tagRender={(props) => {
                               const { label, closable, onClose } = props;
                               return (
@@ -753,7 +707,7 @@ const WidgetSettings = ({ tabKey }) => {
                           <SelectOption
                             mode="multiple"
                             filterOption={false}
-                            onSearch={debounceSearchPerson}
+                            onSearch={(value) => debounceSearchPerformerOrganizer(value, fieldName.performer)}
                             showSearch
                             allowClear
                             placeholder={<span>{t(`${localePath}.placeholder.OrganizationsAndPeople`)}</span>}
@@ -767,7 +721,7 @@ const WidgetSettings = ({ tabKey }) => {
                                 <NoContent />
                               )
                             }
-                            options={personOptions}
+                            options={performerOptions}
                             tagRender={(props) => {
                               const { label, closable, onClose } = props;
                               return (

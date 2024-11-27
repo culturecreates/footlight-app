@@ -4,17 +4,18 @@ import { getStandardFieldTranslation, standardFieldsForTaxonomy } from '../../..
 import { useLocation, useNavigate, useOutletContext, useParams, useSearchParams } from 'react-router-dom';
 import { taxonomyClassTranslations } from '../../../constants/taxonomyClass';
 import { Card, Checkbox, Col, Form, Input, Row, notification } from 'antd';
+import Alert from '../../../components/Alert';
 import BreadCrumbButton from '../../../components/Button/BreadCrumb/BreadCrumbButton';
 import { useTranslation } from 'react-i18next';
 import PrimaryButton from '../../../components/Button/Primary';
+import OutlinedButton from '../../..//components/Button/Outlined';
 import './addTaxonomy.css';
 import { useAddTaxonomyMutation, useLazyGetTaxonomyQuery, useUpdateTaxonomyMutation } from '../../../services/taxonomy';
 import Select from '../../../components/Select';
 import CardEvent from '../../../components/Card/Common/Event';
 import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
-import { DownOutlined, PlusOutlined } from '@ant-design/icons';
+import { DownOutlined } from '@ant-design/icons';
 import { userRolesWithTranslation } from '../../../constants/userRoles';
-import Outlined from '../../../components/Button/Outlined';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { setErrorStates } from '../../../redux/reducer/ErrorSlice';
@@ -27,7 +28,8 @@ import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurr
 import { placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems/CreateMultiLingualFormItems';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
-import DraggableTree from '../../../components/DraggableTree/DraggableTree';
+import DraggableTable from '../../../components/DraggableTree/DraggableTable';
+import { sanitizeData, transformLanguageKeys } from '../../../utils/draggableTableUtilFunctions';
 
 const taxonomyClasses = taxonomyClassTranslations.map((item) => {
   return { ...item, value: item.key };
@@ -59,12 +61,13 @@ const AddTaxonomy = () => {
   const taxonomyId = searchParams.get('id');
   setContentBackgroundColor('#F9FAFF');
 
+  const [transformedConceptData, setTransformedConceptData] = useState([]);
   const [standardFields, setStandardFields] = useState([]);
+  const [languageLiteralBannerDisplayStatus, setLanguageLiteralBannerDisplayStatus] = useState(null);
   const [dynamic, setDynamic] = useState(location.state?.dynamic ?? false);
+  const [fallbackStatus, setFallbackStatus] = useState({});
   const [userAccess, setUserAccess] = useState();
-  const [deleteDisplayFlag, setDeleteDisplayFlag] = useState(true);
   const [conceptData, setConceptData] = useState([]);
-  const [addNewPopup, setAddNewPopup] = useState(false);
   const [isDirty, setIsDirty] = useState({
     formState: false,
     isSubmitting: false,
@@ -244,29 +247,19 @@ const AddTaxonomy = () => {
   };
 
   function modifyConceptData(conceptData) {
-    return conceptData?.map(function (item) {
-      let modifiedConcept;
-      if (item && item.isNew) {
-        modifiedConcept = {
-          name: item.name,
-          children: item.children ? modifyConceptData(item.children) : [],
-        };
-      } else {
-        modifiedConcept = {
-          id: item.id,
-          name: item.name,
-          children: item.children ? modifyConceptData(item.children) : [],
-        };
-      }
+    return (
+      conceptData?.map((item) => {
+        // eslint-disable-next-line no-unused-vars
+        const filteredName = Object.fromEntries(Object.entries(item.name || {}).filter(([_, value]) => value !== ''));
 
-      return modifiedConcept;
-    });
+        return {
+          ...(item.id && { id: item.id }),
+          name: filteredName,
+          children: item.children ? modifyConceptData(item.children) : [],
+        };
+      }) || []
+    );
   }
-
-  const openAddNewConceptModal = () => {
-    setAddNewPopup(true);
-    setDeleteDisplayFlag(false);
-  };
 
   const handleValueChange = () => {
     setIsDirty({
@@ -275,9 +268,31 @@ const AddTaxonomy = () => {
     });
   };
 
+  const handleClearAllFallbackStatus = () => {
+    const sanitizedData = sanitizeData(transformedConceptData, {});
+    const filteredConceptData = transformLanguageKeys(sanitizedData);
+    setConceptData(filteredConceptData);
+
+    setLanguageLiteralBannerDisplayStatus(false);
+    setFallbackStatus({});
+  };
+
   useEffect(() => {
     if (isReadOnly) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}`, { replace: true });
   }, [isReadOnly]);
+
+  useEffect(() => {
+    // Flatten the fallbackStatus structure to extract all tagdisplaystatus values
+    const allTagDisplayStatuses = Object.values(fallbackStatus).flatMap((value) =>
+      typeof value === 'object'
+        ? Object.values(value).map((innerValue) => innerValue.tagdisplaystatus)
+        : [value.tagdisplaystatus],
+    );
+
+    allTagDisplayStatuses.every((status) => status === false)
+      ? setLanguageLiteralBannerDisplayStatus(false)
+      : setLanguageLiteralBannerDisplayStatus(true);
+  }, [fallbackStatus]);
 
   return (
     <>
@@ -497,26 +512,50 @@ const AddTaxonomy = () => {
                   <Card bordered={false}>
                     <Row justify="space-between" wrap={false}>
                       <Col>
-                        <Row>
+                        <Row gutter={[16, 16]}>
                           <Col>
                             <Row gutter={[8, 8]} justify="space-between">
                               <Col className="heading-concepts">{t('dashboard.taxonomy.addNew.concepts.heading')}</Col>
-                              <Col>
-                                <Outlined
-                                  data-cy="button-taxonomy-add-item"
-                                  label={t('dashboard.taxonomy.addNew.concepts.item')}
-                                  onClick={openAddNewConceptModal}>
-                                  <PlusOutlined style={{ fontSize: '24px' }} />
-                                </Outlined>
-                              </Col>
                             </Row>
+                          </Col>
+                          <Col>
                             <Row>
                               <Col flex="423px" className="text-concepts">
                                 {t('dashboard.taxonomy.addNew.concepts.description')}
                               </Col>
                             </Row>
                           </Col>
+                          <Col>
+                            <Row>
+                              {languageLiteralBannerDisplayStatus && (
+                                <Col span={24} className="language-literal-banner">
+                                  <Row>
+                                    <Col flex={'780px'}>
+                                      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                                        <Col span={24}>
+                                          <Alert
+                                            message={t('common.forms.languageLiterals.bannerTitle')}
+                                            type="info"
+                                            showIcon={false}
+                                            action={
+                                              <OutlinedButton
+                                                data-cy="button-change-fallback-banner"
+                                                size="large"
+                                                label={t('common.dismiss')}
+                                                onClick={() => handleClearAllFallbackStatus()}
+                                              />
+                                            }
+                                          />
+                                        </Col>
+                                      </Row>
+                                    </Col>
+                                  </Row>
+                                </Col>
+                              )}
+                            </Row>
+                          </Col>
                         </Row>
+
                         <Row>
                           <Col
                             span={24}
@@ -526,15 +565,13 @@ const AddTaxonomy = () => {
                               width: 'calc(100% - 100px)',
                             }}>
                             <Row style={{ flex: 1 }}>
-                              <DraggableTree
+                              <DraggableTable
                                 data={conceptData}
-                                form={form}
-                                setEmptyConceptName={setEmptyConceptName}
                                 setData={setConceptData}
-                                addNewPopup={addNewPopup}
-                                setAddNewPopup={setAddNewPopup}
-                                deleteDisplayFlag={deleteDisplayFlag}
-                                setDeleteDisplayFlag={setDeleteDisplayFlag}
+                                fallbackStatus={fallbackStatus}
+                                setFallbackStatus={setFallbackStatus}
+                                transformedData={transformedConceptData}
+                                setTransformedData={setTransformedConceptData}
                               />
                             </Row>
                           </Col>
