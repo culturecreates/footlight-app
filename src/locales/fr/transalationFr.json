@@ -1153,7 +1153,8 @@
           "conceptName": "Nom",
           "placeHolder": "Indiquer un nom en {{language}}",
           "deleteConceptHeading": "Supprimer le concept",
-          "deleteConceptMessage": "Êtes-vous sûr de vouloir supprimer définitivement ce concept ? Cette action le supprimera également partout où il a été utilisé, y compris dans les événements."
+          "deleteConceptMessage": "Êtes-vous sûr de vouloir supprimer définitivement ce concept ? Cette action le supprimera également partout où il a été utilisé, y compris dans les événements.",
+          "delete": "Supprimer"
         }
       }
     }
