@@ -66,6 +66,12 @@ function MandatoryField(props) {
     setAvailableFields(field?.filter((f) => !f?.isRequiredField && !f?.preFilled && !f?.isAdminOnlyField));
   }, [tabKey, field]);
 
+  const createLabel = (category, fieldName) => {
+    if (Array.isArray(category)) return `${category.slice(1).reverse().join(' - ')} - ${fieldName}`;
+
+    return category === 'Contact' ? `${category} - ${fieldName}` : fieldName;
+  };
+
   return (
     <Card className="mandatory-card-wrapper" bodyStyle={{ padding: '24px 16px 24px 16px' }}>
       <Row gutter={[0, 18]}>
@@ -79,10 +85,13 @@ function MandatoryField(props) {
               <Col span={24}>
                 <AddField
                   key={index}
-                  label={bilingual({
-                    data: field?.label,
-                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                  })}
+                  label={createLabel(
+                    field?.category,
+                    bilingual({
+                      data: field?.label,
+                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                    }),
+                  )}
                   disabled={field?.preFilled}
                   onClick={() => removeFromFields(index)}
                   icon={<MinusOutlined />}
@@ -101,10 +110,13 @@ function MandatoryField(props) {
               <Col span={24}>
                 <AddField
                   key={index}
-                  label={bilingual({
-                    data: field?.label,
-                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                  })}
+                  label={createLabel(
+                    field?.category,
+                    bilingual({
+                      data: field?.label,
+                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                    }),
+                  )}
                   onClick={() => addToFields(field)}
                   icon={<PlusOutlined />}
                 />
