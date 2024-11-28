@@ -36,10 +36,6 @@ export const filterUneditedFallbackValues = ({
     if (fieldName === fieldNameFlag) requiredFallbackKeyForCurrentField = key;
   });
 
-  if (fieldName == 'virtualLocation') {
-    console.log(emptyValueFilter(additionalFilters, values));
-  }
-
   // If no matching fallback key is found, return the original values
   if (!requiredFallbackKeyForCurrentField) return emptyValueFilter(additionalFilters, values);
 
