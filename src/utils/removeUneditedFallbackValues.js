@@ -60,15 +60,32 @@ export const filterUneditedFallbackValues = ({
 };
 
 const emptyValueFilter = (additionalFilters, modifiedValues) => {
-  if (additionalFilters && Object.values(additionalFilters).some((value) => value === true)) {
+  if (
+    typeof additionalFilters !== 'object' ||
+    typeof modifiedValues !== 'object' ||
+    !additionalFilters ||
+    !modifiedValues
+  ) {
+    return undefined;
+  }
+
+  const modifiedValuesCopy = { ...modifiedValues };
+
+  if (Object.values(additionalFilters).some((value) => value === true)) {
     Object.keys(additionalFilters).forEach((key) => {
-      if (Object.prototype.hasOwnProperty.call(modifiedValues, key)) {
+      if (Object.prototype.hasOwnProperty.call(modifiedValuesCopy, key)) {
         if (additionalFilters[key] === false) {
-          delete modifiedValues[key];
+          delete modifiedValuesCopy[key];
         }
       }
     });
   }
 
-  return modifiedValues;
+  Object.keys(modifiedValuesCopy).forEach((key) => {
+    if (typeof modifiedValuesCopy[key] === 'string' && modifiedValuesCopy[key].trim() === '') {
+      delete modifiedValuesCopy[key];
+    }
+  });
+
+  return Object.keys(modifiedValuesCopy).length ? modifiedValuesCopy : undefined;
 };
