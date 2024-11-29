@@ -1657,6 +1657,24 @@ function AddEvent() {
       }
     }
   };
+  const mapEntities = (entities) => {
+    return entities
+      ?.map((entity) => {
+        if (entity?.entityId) {
+          return {
+            disambiguatingDescription: entity.entity?.disambiguatingDescription,
+            id: entity.entityId,
+            name: entity.entity?.name,
+            type: entity.type,
+            logo: entity.entity?.logo,
+            image: entity.entity?.image?.find((image) => image?.isMain),
+            ...(entity.entity?.contactPoint ? { contactPoint: entity.entity.contactPoint } : {}),
+            creator: entity.entity?.creator,
+          };
+        }
+      })
+      ?.filter((mappedEntity) => mappedEntity);
+  };
 
   useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());
@@ -1814,19 +1832,8 @@ function AddEvent() {
           isDataValid(eventData?.contactPoint?.name)
         )
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.contact);
-        if (eventData?.organizer) {
-          let initialOrganizers = eventData?.organizer?.map((organizer) => {
-            return {
-              disambiguatingDescription: organizer?.entity?.disambiguatingDescription,
-              id: organizer?.entityId,
-              name: organizer?.entity?.name,
-              type: organizer?.type,
-              logo: organizer?.entity?.logo,
-              image: organizer?.entity?.image?.find((image) => image?.isMain),
-              contactPoint: organizer?.entity?.contactPoint,
-              creator: organizer?.entity?.creator,
-            };
-          });
+        if (eventData.organizer) {
+          const initialOrganizers = mapEntities(eventData.organizer);
           setSelectedOrganizers(
             treeEntitiesOption(
               initialOrganizers,
@@ -1837,18 +1844,9 @@ function AddEvent() {
             ),
           );
         }
-        if (eventData?.performer) {
-          let initialPerformers = eventData?.performer?.map((performer) => {
-            return {
-              disambiguatingDescription: performer?.entity?.disambiguatingDescription,
-              id: performer?.entityId,
-              name: performer?.entity?.name,
-              type: performer?.type,
-              logo: performer?.entity?.logo,
-              image: performer?.entity?.image?.find((image) => image?.isMain),
-              creator: performer?.entity?.creator,
-            };
-          });
+
+        if (eventData.performer) {
+          const initialPerformers = mapEntities(eventData.performer);
           setSelectedPerformers(
             treeEntitiesOption(
               initialPerformers,
@@ -1860,18 +1858,9 @@ function AddEvent() {
           );
           initialAddedFields = initialAddedFields?.concat(otherInformationFieldNames?.performerWrap);
         }
-        if (eventData?.collaborators) {
-          let initialSupporters = eventData?.collaborators?.map((supporter) => {
-            return {
-              disambiguatingDescription: supporter?.entity?.disambiguatingDescription,
-              id: supporter?.entityId,
-              name: supporter?.entity?.name,
-              type: supporter?.type,
-              logo: supporter?.entity?.logo,
-              image: supporter?.entity?.image?.find((image) => image?.isMain),
-              creator: supporter?.entity?.creator,
-            };
-          });
+
+        if (eventData.collaborators) {
+          const initialSupporters = mapEntities(eventData.collaborators);
           setSelectedSupporters(
             treeEntitiesOption(
               initialSupporters,
