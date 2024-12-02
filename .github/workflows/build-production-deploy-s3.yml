@@ -10,10 +10,6 @@ jobs:
       environment: 'production'
       grep: ''
       grepTags: '@essential'
-      CYPRESS_ADMIN_EN_EMAIL: ${{ vars.CYPRESS_ADMIN_EN_EMAIL }}
-      CYPRESS_ADMIN_FR_EMAIL: ${{ vars.CYPRESS_ADMIN_FR_EMAIL }}
-      CYPRESS_GUEST_EN_EMAIL: ${{ vars.CYPRESS_GUEST_EN_EMAIL }}
-      CYPRESS_GUEST_FR_EMAIL: ${{ vars.CYPRESS_GUEST_FR_EMAIL }}
     secrets:
       DOCKER_PAT: ${{ secrets.DOCKER_PAT }}
       CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
