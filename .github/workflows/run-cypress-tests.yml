@@ -15,22 +15,6 @@ on:
         description: 'Grep tags for selecting tests'
         required: false
         default: '@essential'
-      CYPRESS_ADMIN_EN_EMAIL:
-        description: 'Admin email for English tests'
-        required: true
-        type: string
-      CYPRESS_ADMIN_FR_EMAIL:
-        description: 'Admin email for French tests'
-        required: true
-        type: string
-      CYPRESS_GUEST_EN_EMAIL:
-        description: 'Guest email for English tests'
-        required: true
-        type: string
-      CYPRESS_GUEST_FR_EMAIL:
-        description: 'Guest email for French tests'
-        required: true
-        type: string
 
   workflow_call:
     inputs:
@@ -47,22 +31,6 @@ on:
         required: false
         type: string
         default: '@essential'
-      CYPRESS_ADMIN_EN_EMAIL:
-        description: 'Admin email for English tests'
-        required: true
-        type: string
-      CYPRESS_ADMIN_FR_EMAIL:
-        description: 'Admin email for French tests'
-        required: true
-        type: string
-      CYPRESS_GUEST_EN_EMAIL:
-        description: 'Guest email for English tests'
-        required: true
-        type: string
-      CYPRESS_GUEST_FR_EMAIL:
-        description: 'Guest email for French tests'
-        required: true
-        type: string
 
     secrets:
       DOCKER_PAT:
@@ -163,23 +131,31 @@ jobs:
       - name: Pull cypress docker image
         run: docker pull ghcr.io/kmdvs/cms-cypress_regression_tests:main
 
-      - name: Write grep and grepTags to cypress.env.json
-        run: |
-          mkdir -p cypress
-          cd cypress
-          mkdir -p logs screenshots videos
-
-          echo '{
-            "grep": "${{ inputs.grep }}",
-            "grepTags": "${{ inputs.grepTags }}"
-          }' > cypress.env.json
-
-      - name: Verify contents of cypress.env.json
-        run: |
-          cat cypress/cypress.env.json
-
       - name: Run Cypress tests
         run: |
+
+          grep_value="${{ inputs.grep }}"
+          echo "Original grep_value: '$grep_value'"
+          grep_value_clean=$(echo "$grep_value" | tr -d '\n\r')
+          echo "Cleaned grep_value: '$grep_value_clean'"
+
+          if [ -z "$grep_value_clean" ]; then
+            grep_value_json='""'
+          else
+            grep_value_json=$(printf '%s' "$grep_value_clean" | sed 's/"/\\"/g; s/.*/"&"/')
+          fi
+          echo "JSON grep_value: '$grep_value_json'"
+          
+          # Properly format the --env argument for Cypress
+          env_json="{\"grepTags\":\"${{ inputs.grepTags }}\",\"grep\":${grep_value_json}}"
+          echo "Formatted env JSON: $env_json"
+          
+          # Simulate the Cypress --env argument
+          env_arg=$(printf '%s' "$env_json")
+          echo "Simulated --env argument for Cypress: $env_arg"
+          
+          # Validate JSON formatting
+          echo "$env_json" | jq . # Validate JSON formatting
 
           base_url="http://test.footlight.app:3000/"
 
@@ -189,10 +165,7 @@ jobs:
           -e DEBUG="" \
           -e XDG_RUNTIME_DIR=/tmp/runtime \
           -e CYPRESS_BASE_URL=$base_url \
-          -e CYPRESS_ADMIN_EN_EMAIL="${{ inputs.CYPRESS_ADMIN_EN_EMAIL }}" \
-          -e CYPRESS_ADMIN_FR_EMAIL="${{ inputs.CYPRESS_ADMIN_FR_EMAIL }}" \
-          -e CYPRESS_GUEST_EN_EMAIL="${{ inputs.CYPRESS_GUEST_EN_EMAIL }}" \
-          -e CYPRESS_GUEST_FR_EMAIL="${{ inputs.CYPRESS_GUEST_FR_EMAIL }}" \
+          -e CYPRESS_PRINT_LOGS_TO_CONSOLE="never" \
           -e CYPRESS_ADMIN_EN_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
           -e CYPRESS_ADMIN_FR_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
           -e CYPRESS_GUEST_EN_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
@@ -201,9 +174,8 @@ jobs:
           -v ${GITHUB_WORKSPACE}/cypress/screenshots:/e2e/cypress/screenshots \
           -v ${GITHUB_WORKSPACE}/cypress/videos:/e2e/cypress/videos \
           -v ${GITHUB_WORKSPACE}/cypress/logs:/e2e/cypress/logs \
-          -v ${GITHUB_WORKSPACE}/cypress/cypress.env.json:/e2e/cypress/cypress.env.json \
           ghcr.io/kmdvs/cms-cypress_regression_tests:main \
-          npx cypress run --browser firefox > ${GITHUB_WORKSPACE}/cypress/logs/debug-firefox.log 2>&1
+          npx cypress run --browser firefox --env "$env_arg"
 
       - name: Upload Cypress Debug Logs
         uses: actions/upload-artifact@v3
