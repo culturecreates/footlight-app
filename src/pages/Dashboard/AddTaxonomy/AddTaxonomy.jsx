@@ -239,11 +239,15 @@ const AddTaxonomy = () => {
   };
 
   const handleSelectChange = (selectedKeys, option) => {
-    Object.keys(option).forEach((key) => {
-      if (key != 'value' && key != 'key' && key != 'label') {
-        form.setFieldValue(['name', key], option[key]);
-      }
+    let name = {};
+    calendarContentLanguage.forEach((language) => {
+      const langKey = contentLanguageKeyMap[language];
+      if (Object.prototype.hasOwnProperty.call(option, langKey)) {
+        name[langKey] = option[langKey];
+      } else name[langKey] = option[contentLanguageKeyMap.ENGLISH];
     });
+
+    form.setFieldsValue({ name });
   };
 
   function modifyConceptData(conceptData) {
