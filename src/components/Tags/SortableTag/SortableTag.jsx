@@ -5,7 +5,7 @@ import { CloseCircleOutlined } from '@ant-design/icons';
 import { Tag } from 'antd';
 import '../Common/tags.css';
 
-function SortableTag({ label, value, closable, onClose, onRemove }) {
+function SortableTag({ label, value, closable, onClose, onRemove, dataCy }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: value,
   });
@@ -23,7 +23,7 @@ function SortableTag({ label, value, closable, onClose, onRemove }) {
       closable={closable}
       {...attributes}
       className="tags-wrapper"
-      data-cy={`tag-event-type-${label}`}
+      data-cy={dataCy}
       closeIcon={
         <CloseCircleOutlined
           style={{ color: '#1b3de6', fontSize: '12px' }}

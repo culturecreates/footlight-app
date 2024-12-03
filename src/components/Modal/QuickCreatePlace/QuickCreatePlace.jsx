@@ -447,6 +447,7 @@ function QuickCreatePlace(props) {
                     label={taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false)}
                     data-cy="form-item-quick-create-place-type-label">
                     <SortableTreeSelect
+                      dataCy={`tags-quick-create-place-type`}
                       form={form}
                       draggable
                       fieldName={fieldNames.placeType}
@@ -479,6 +480,7 @@ function QuickCreatePlace(props) {
                     ]}
                     data-cy="form-item-quick-create-place-region-label">
                     <SortableTreeSelect
+                      dataCy={`tags-quick-create-region`}
                       form={form}
                       draggable
                       fieldName={fieldNames.region}

@@ -1293,6 +1293,7 @@ function CreateNewOrganization() {
                                 <SortableTreeSelect
                                   form={form}
                                   draggable
+                                  dataCy={`tag-organization-dynamic-field`}
                                   fieldName={['dynamicFields', taxonomy?.id]}
                                   data-cy={`treeselect-organization-dynamic-fields-${index}`}
                                   allowClear

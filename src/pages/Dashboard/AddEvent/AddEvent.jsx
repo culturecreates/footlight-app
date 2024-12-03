@@ -2369,6 +2369,7 @@ function AddEvent() {
                   data-cy="form-item-event-type-label">
                   <SortableTreeSelect
                     form={form}
+                    dataCy={`tag-event-type`}
                     draggable
                     fieldName="eventType"
                     placeholder={t('dashboard.events.addEditEvent.language.placeHolderEventType')}
@@ -2404,6 +2405,7 @@ function AddEvent() {
                   ]}
                   data-cy="form-item-audience-label">
                   <SortableTreeSelect
+                    dataCy={`tag-audience`}
                     form={form}
                     draggable
                     fieldName="targetAudience"
@@ -2440,6 +2442,7 @@ function AddEvent() {
                   <SortableTreeSelect
                     form={form}
                     draggable
+                    dataCy={`tag-event-discipline`}
                     fieldName="eventDiscipline"
                     allowClear
                     treeDefaultExpandAll
@@ -2493,6 +2496,7 @@ function AddEvent() {
                         <SortableTreeSelect
                           form={form}
                           draggable
+                          dataCy={`tag-${taxonomy?.id}`}
                           fieldName={['dynamicFields', taxonomy?.id]}
                           allowClear
                           treeDefaultExpandAll
@@ -4259,6 +4263,7 @@ function AddEvent() {
                 }
                 data-cy="form-item-eventlanguage-label">
                 <SortableTreeSelect
+                  dataCy={`tag-event-language`}
                   form={form}
                   draggable
                   fieldName={otherInformationFieldNames.inLanguage}
@@ -4358,6 +4363,7 @@ function AddEvent() {
                   }
                   data-cy="form-item-event-accessibility-label">
                   <SortableTreeSelect
+                    dataCy={`tag-event-accessibility`}
                     form={form}
                     draggable
                     fieldName="eventAccessibility"

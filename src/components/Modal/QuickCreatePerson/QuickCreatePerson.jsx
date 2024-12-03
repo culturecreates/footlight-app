@@ -298,6 +298,7 @@ function QuickCreatePerson(props) {
                     hidden={taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false) ? false : true}
                     data-cy="form-item-quick-create-person-occupation-label">
                     <SortableTreeSelect
+                      dataCy={`tags-quick-create-person-occupation`}
                       form={form}
                       draggable
                       fieldName={'occupation'}

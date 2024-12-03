@@ -7,7 +7,7 @@ import SortableTag from '../Tags/SortableTag/SortableTag';
 import Tags from '../Tags/Common/Tags';
 import './treeSelectOption.css';
 
-function SortableTreeSelect({ form, fieldName, draggable = false, ...props }) {
+function SortableTreeSelect({ form, fieldName, draggable = false, dataCy, ...props }) {
   const [selectedValues, setSelectedValues] = useState(props.value || []);
   const TITLE = 'title';
   const LABEL = 'label';
@@ -38,6 +38,7 @@ function SortableTreeSelect({ form, fieldName, draggable = false, ...props }) {
     if (draggable) {
       return (
         <SortableTag
+          dataCy={`${dataCy}-${label}`}
           key={value}
           tag={value}
           value={value}
@@ -60,7 +61,7 @@ function SortableTreeSelect({ form, fieldName, draggable = false, ...props }) {
         closable={closable}
         onClose={onClose}
         closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}
-        data-cy={`tag-event-type-${label}`}>
+        data-cy={`${dataCy}-${label}`}>
         {label}
       </Tags>
     );

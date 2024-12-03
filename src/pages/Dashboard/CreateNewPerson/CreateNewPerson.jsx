@@ -830,6 +830,7 @@ function CreateNewPerson() {
                                   taxonomy?.isAdminOnly ? (adminCheckHandler({ calendar, user }) ? false : true) : false
                                 }>
                                 <SortableTreeSelect
+                                  dataCy={`tag-person-dynamic-field`}
                                   form={form}
                                   draggable
                                   fieldName={['dynamicFields', taxonomy?.id]}

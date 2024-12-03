@@ -1570,6 +1570,7 @@ function CreateNewPlace() {
                       ) && 'none',
                   }}>
                   <SortableTreeSelect
+                    dataCy={`tag-place-type`}
                     form={form}
                     draggable
                     fieldName={formFieldNames.TYPE}
@@ -1782,6 +1783,7 @@ function CreateNewPlace() {
                         ]}
                         hidden={taxonomy?.isAdminOnly ? (adminCheckHandler({ calendar, user }) ? false : true) : false}>
                         <SortableTreeSelect
+                          dataCy={`tag-place-dynamic-field`}
                           form={form}
                           draggable
                           fieldName={[formFieldNames.DYNAMIC_FIELS, taxonomy?.id]}
@@ -2125,6 +2127,7 @@ function CreateNewPlace() {
                     },
                   ]}>
                   <SortableTreeSelect
+                    dataCy={`tag-place`}
                     form={form}
                     draggable
                     fieldName={formFieldNames.REGION}
@@ -2673,6 +2676,7 @@ function CreateNewPlace() {
                       },
                     ]}>
                     <SortableTreeSelect
+                      dataCy={`tag-venue-accessibility`}
                       form={form}
                       draggable
                       fieldName={formFieldNames.PLACE_ACCESSIBILITY}

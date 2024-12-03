@@ -276,6 +276,7 @@ export const formFieldValue = [
     }) => {
       return (
         <SortableTreeSelect
+          dataCy={`tag-${mappedField}`}
           form={form}
           draggable
           fieldName={name}
