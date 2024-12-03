@@ -13,9 +13,7 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
-import TreeSelectOption from '../../TreeSelectOption/TreeSelectOption';
 import NoContent from '../../NoContent/NoContent';
-import Tags from '../../Tags/Common/Tags';
 import StyledInput from '../../Input/Common';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import { useAddPostalAddressMutation } from '../../../services/postalAddress';
@@ -35,6 +33,7 @@ import {
   placeHolderCollectionCreator,
 } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequiredFieldNames';
+import SortableTreeSelect from '../../TreeSelectOption/SortableTreeSelect';
 
 const { TextArea } = Input;
 
@@ -447,7 +446,10 @@ function QuickCreatePlace(props) {
                     name={fieldNames.placeType}
                     label={taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false)}
                     data-cy="form-item-quick-create-place-type-label">
-                    <TreeSelectOption
+                    <SortableTreeSelect
+                      form={form}
+                      draggable
+                      fieldName={fieldNames.placeType}
                       style={{
                         display: !taxonomyDetails(allTaxonomyData?.data, user, 'Type', 'name', false) && 'none',
                       }}
@@ -457,18 +459,6 @@ function QuickCreatePlace(props) {
                       notFoundContent={<NoContent />}
                       clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                       treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Type', false, calendarContentLanguage)}
-                      tagRender={(props) => {
-                        const { closable, onClose, label } = props;
-                        return (
-                          <Tags
-                            closable={closable}
-                            onClose={onClose}
-                            closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}
-                            data-cy={`tags-quick-create-place-type-${label}`}>
-                            {label}
-                          </Tags>
-                        );
-                      }}
                       data-cy="treeselect-quick-create-place-type"
                     />
                   </Form.Item>
@@ -488,7 +478,10 @@ function QuickCreatePlace(props) {
                       },
                     ]}
                     data-cy="form-item-quick-create-place-region-label">
-                    <TreeSelectOption
+                    <SortableTreeSelect
+                      form={form}
+                      draggable
+                      fieldName={fieldNames.region}
                       style={{
                         display:
                           !taxonomyDetails(
@@ -511,18 +504,6 @@ function QuickCreatePlace(props) {
                         false,
                         calendarContentLanguage,
                       )}
-                      tagRender={(props) => {
-                        const { label, closable, onClose } = props;
-                        return (
-                          <Tags
-                            closable={closable}
-                            onClose={onClose}
-                            closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}
-                            data-cy={`tags-quick-create-region-${label}`}>
-                            {label}
-                          </Tags>
-                        );
-                      }}
                       data-cy="treeselect-quick-create-region"
                     />
                   </Form.Item>
