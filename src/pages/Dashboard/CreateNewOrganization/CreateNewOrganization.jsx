@@ -305,11 +305,7 @@ function CreateNewOrganization() {
               };
             }
           });
-          if (values?.name.fr) {
-            console.log(organizationPayload);
 
-            return;
-          }
           if (locationPlace?.source === sourceOptions.ARTSDATA) {
             organizationPayload = {
               ...organizationPayload,

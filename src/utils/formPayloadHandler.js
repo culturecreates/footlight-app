@@ -37,7 +37,6 @@ export const formPayloadHandler = (
             activeFallbackFieldsInfo,
             fieldName: mappedField,
           });
-          console.log(value, 'fallbackFilteredValues', activeFallbackFieldsInfo);
 
           calendarContentLanguage.forEach((language) => {
             const languageKey = contentLanguageKeyMap[language];
