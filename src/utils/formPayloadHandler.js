@@ -1,5 +1,6 @@
 import { contentLanguageKeyMap } from '../constants/contentLanguage';
 import { dataTypes, formTypes } from '../constants/formFields';
+import { filterUneditedFallbackValues } from './removeUneditedFallbackValues';
 
 const write = (object, path, value) => {
   return path.reduceRight((obj, next, idx, fullPath) => {
@@ -11,7 +12,13 @@ const write = (object, path, value) => {
   }, object);
 };
 
-export const formPayloadHandler = (value, mappedField, formFields, calendarContentLanguage) => {
+export const formPayloadHandler = (
+  value,
+  mappedField,
+  formFields,
+  calendarContentLanguage,
+  activeFallbackFieldsInfo = {},
+) => {
   const currentField = formFields?.filter((field) => field?.mappedField === mappedField);
   let currentMappedField = mappedField?.split('.');
   let payload;
@@ -25,9 +32,16 @@ export const formPayloadHandler = (value, mappedField, formFields, calendarConte
     switch (currentDatatype) {
       case dataTypes.MULTI_LINGUAL:
         if (currentField[0]?.type === formTypes.INPUT || currentField[0]?.type === formTypes.EDITOR) {
+          const fallbackFilteredValues = filterUneditedFallbackValues({
+            values: value,
+            activeFallbackFieldsInfo,
+            fieldName: mappedField,
+          });
+          console.log(value, 'fallbackFilteredValues', activeFallbackFieldsInfo);
+
           calendarContentLanguage.forEach((language) => {
             const languageKey = contentLanguageKeyMap[language];
-            returnValues[languageKey] = value?.[languageKey]?.trim();
+            returnValues[languageKey] = fallbackFilteredValues?.[languageKey]?.trim();
             fallbackValue[languageKey] = '';
           });
         }

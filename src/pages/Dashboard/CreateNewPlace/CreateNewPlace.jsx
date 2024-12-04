@@ -84,6 +84,8 @@ import {
   getActiveFallbackFieldsInfo,
   getLanguageLiteralBannerDisplayStatus,
   setLanguageLiteralBannerDisplayStatus,
+  setBannerDismissed,
+  getIsBannerDismissed,
 } from '../../../redux/reducer/languageLiteralSlice';
 import Alert from '../../../components/Alert';
 import MultipleImageUpload from '../../../components/MultipleImageUpload';
@@ -93,6 +95,7 @@ import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormI
 import { isDataValid, placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import MultiLingualTextEditor from '../../../components/MultilingualTextEditor/MultiLingualTextEditor';
 import MapComponent from '../../../components/MapComponent';
+import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 
 const { TextArea } = Input;
 
@@ -113,6 +116,7 @@ function CreateNewPlace() {
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
+  const isBannerDismissed = useSelector(getIsBannerDismissed);
   const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { user } = useSelector(getUserDetails);
   const { calendarId } = useParams();
@@ -433,6 +437,7 @@ function CreateNewPlace() {
         .then(async () => {
           setShowDialog(false);
           var values = form.getFieldsValue(true);
+          let fallbackStatus = activeFallbackFieldsInfo;
 
           let placeObj,
             dynamicFields,
@@ -446,10 +451,19 @@ function CreateNewPlace() {
               const languageKey = contentLanguageKeyMap[language];
 
               const addIfValidString = (field, fieldName) => {
-                if (values?.[fieldName]?.[languageKey] && typeof values[fieldName]?.[languageKey] === 'string') {
+                const fallbackFilteredFieldvalue = filterUneditedFallbackValues({
+                  values: values?.[fieldName],
+                  activeFallbackFieldsInfo: fallbackStatus,
+                  fieldName: fieldName,
+                });
+
+                if (
+                  fallbackFilteredFieldvalue?.[languageKey] &&
+                  typeof fallbackFilteredFieldvalue[fieldName]?.[languageKey] === 'string'
+                ) {
                   acc[field] = {
                     ...(acc[field] || {}),
-                    [languageKey]: values[fieldName]?.[languageKey]?.trim(),
+                    [languageKey]: fallbackFilteredFieldvalue?.[languageKey]?.trim(),
                   };
                 }
               };
@@ -529,20 +543,33 @@ function CreateNewPlace() {
             longitude = coordinates[1] || undefined;
           }
 
-          const getFilteredFieldValue = (values) => {
-            let filteredValues = {};
-            Object.keys(values).map((key) => {
-              const value = values[key]?.trim();
-              if (value) filteredValues[key] = value;
-            });
-            return filteredValues;
-          };
+          let name = {},
+            description = {},
+            accessibilityNote = {},
+            disambiguatingDescription = {};
+
+          name = filterUneditedFallbackValues({
+            values: values?.name,
+            activeFallbackFieldsInfo: fallbackStatus,
+            fieldName: 'name',
+          });
+          description = filterUneditedFallbackValues({
+            values: values?.description,
+            activeFallbackFieldsInfo: fallbackStatus,
+            fieldName: 'description',
+          });
+          accessibilityNote = filterUneditedFallbackValues({
+            values: values?.accessibilityNote,
+            activeFallbackFieldsInfo: fallbackStatus,
+            fieldName: 'accessibilityNote',
+          });
+          disambiguatingDescription = filterUneditedFallbackValues({ values: values?.disambiguatingDescription });
 
           placeObj = {
-            name: getFilteredFieldValue(values.name),
-            ...(isDataValid(values?.description) && {
-              description: getFilteredFieldValue(values.description),
-            }),
+            ...(isDataValid(name) && { name }),
+            ...(isDataValid(description) && { description }),
+            ...(isDataValid(accessibilityNote) && { accessibilityNote }),
+            ...(isDataValid(disambiguatingDescription) && { disambiguatingDescription }),
             ...(values?.openingHours && { openingHours: { uri: urlProtocolCheck(values?.openingHours) } }),
             ...(values?.containedInPlace && {
               containedInPlace: containedInPlaceObj,
@@ -552,9 +579,6 @@ function CreateNewPlace() {
               longitude,
             },
 
-            ...(isDataValid(values?.accessibilityNote) && {
-              accessibilityNote: getFilteredFieldValue(values?.accessibilityNote),
-            }),
             accessibility: values?.placeAccessibility
               ? values?.placeAccessibility.map((item) => {
                   const obj = {
@@ -580,9 +604,6 @@ function CreateNewPlace() {
                 })
               : undefined,
 
-            ...(isDataValid(values?.disambiguatingDescription) && {
-              disambiguatingDescription: getFilteredFieldValue(values?.disambiguatingDescription),
-            }),
             ...(values?.dynamicFields && { dynamicFields }),
             ...(values?.containsPlace && { containsPlace }),
           };
@@ -962,6 +983,7 @@ function CreateNewPlace() {
 
   useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());
+    dispatch(setBannerDismissed(false));
   }, []);
 
   useEffect(() => {
@@ -979,7 +1001,7 @@ function CreateNewPlace() {
       }
     });
 
-    if (!shouldDisplay) {
+    if (!shouldDisplay && !isBannerDismissed) {
       dispatch(setLanguageLiteralBannerDisplayStatus(true));
     } else {
       dispatch(setLanguageLiteralBannerDisplayStatus(false));
@@ -1425,7 +1447,7 @@ function CreateNewPlace() {
                                   label={t('common.dismiss')}
                                   onClick={() => {
                                     dispatch(setLanguageLiteralBannerDisplayStatus(false));
-                                    dispatch(clearActiveFallbackFieldsInfo({}));
+                                    dispatch(setBannerDismissed(true));
                                   }}
                                 />
                               }
@@ -1502,7 +1524,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={formFieldNames.NAME}
+                    name={[formFieldNames.NAME]}
                     data={
                       placeData?.name
                         ? placeData?.name
@@ -1606,7 +1628,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={formFieldNames.DISAMBIGUATING_DESCRIPTION}
+                    name={[formFieldNames.DISAMBIGUATING_DESCRIPTION]}
                     data={
                       placeData?.disambiguatingDescription
                         ? placeData?.disambiguatingDescription
@@ -1888,7 +1910,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={formFieldNames.STREET_ADDRESS}
+                    name={[formFieldNames.STREET_ADDRESS]}
                     data={
                       placeData?.address?.streetAddress
                         ? placeData?.address?.streetAddress
@@ -1926,7 +1948,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={formFieldNames.CITY}
+                    name={[formFieldNames.CITY]}
                     data={
                       placeData?.address?.addressLocality
                         ? placeData?.address?.addressLocality
@@ -1994,7 +2016,7 @@ function CreateNewPlace() {
                         entityId={placeId}
                         calendarContentLanguage={calendarContentLanguage}
                         form={form}
-                        name={formFieldNames.PROVINCE}
+                        name={[formFieldNames.PROVINCE]}
                         data={
                           placeData?.address?.addressRegion
                             ? placeData?.address?.addressRegion
@@ -2034,7 +2056,7 @@ function CreateNewPlace() {
                         entityId={placeId}
                         calendarContentLanguage={calendarContentLanguage}
                         form={form}
-                        name={formFieldNames.COUNTRY}
+                        name={[formFieldNames.COUNTRY]}
                         data={
                           placeData?.address?.addressCountry
                             ? placeData?.address?.addressCountry
@@ -2747,7 +2769,7 @@ function CreateNewPlace() {
                       entityId={placeId}
                       calendarContentLanguage={calendarContentLanguage}
                       form={form}
-                      name={formFieldNames.ACCESSIBILITY_NOTE}
+                      name={[formFieldNames.ACCESSIBILITY_NOTE]}
                       data={placeData?.accessibilityNote}
                       required={false}
                       validations={t('common.validations.informationRequired')}

@@ -68,6 +68,8 @@ import {
   getActiveFallbackFieldsInfo,
   getLanguageLiteralBannerDisplayStatus,
   setLanguageLiteralBannerDisplayStatus,
+  setBannerDismissed,
+  getIsBannerDismissed,
 } from '../../../redux/reducer/languageLiteralSlice';
 import Alert from '../../../components/Alert';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
@@ -93,6 +95,7 @@ function CreateNewOrganization() {
   setContentBackgroundColor('#F9FAFF');
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
   const { user } = useSelector(getUserDetails);
+  const isBannerDismissed = useSelector(getIsBannerDismissed);
   const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { calendarId } = useParams();
   let [searchParams] = useSearchParams();
@@ -252,6 +255,7 @@ function CreateNewOrganization() {
   const onSaveHandler = (event, toggle = false) => {
     event?.preventDefault();
     let validateFieldList = [];
+    let fallbackStatus = activeFallbackFieldsInfo;
     let mandatoryFields = standardMandatoryFieldNames;
     validateFieldList = validateFieldList?.concat(
       formFields
@@ -279,7 +283,13 @@ function CreateNewOrganization() {
           var values = form.getFieldsValue(true);
           let organizationPayload = {};
           Object.keys(values)?.map((object) => {
-            let payload = formPayloadHandler(values[object], object, formFields, calendarContentLanguage);
+            let payload = formPayloadHandler(
+              values[object],
+              object,
+              formFields,
+              calendarContentLanguage,
+              fallbackStatus,
+            );
             if (payload) {
               let newKeys = Object.keys(payload);
               let childKeys = object?.split('.');
@@ -295,6 +305,11 @@ function CreateNewOrganization() {
               };
             }
           });
+          if (values?.name.fr) {
+            console.log(organizationPayload);
+
+            return;
+          }
           if (locationPlace?.source === sourceOptions.ARTSDATA) {
             organizationPayload = {
               ...organizationPayload,
@@ -776,6 +791,7 @@ function CreateNewOrganization() {
 
   useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());
+    dispatch(setBannerDismissed(false));
   }, []);
 
   useEffect(() => {
@@ -793,7 +809,7 @@ function CreateNewOrganization() {
       }
     });
 
-    if (!shouldDisplay) {
+    if (!shouldDisplay && !isBannerDismissed) {
       dispatch(setLanguageLiteralBannerDisplayStatus(true));
     } else {
       dispatch(setLanguageLiteralBannerDisplayStatus(false));
@@ -1130,7 +1146,7 @@ function CreateNewOrganization() {
                                   label={t('common.dismiss')}
                                   onClick={() => {
                                     dispatch(setLanguageLiteralBannerDisplayStatus(false));
-                                    dispatch(clearActiveFallbackFieldsInfo({}));
+                                    dispatch(setBannerDismissed(true));
                                   }}
                                 />
                               }
