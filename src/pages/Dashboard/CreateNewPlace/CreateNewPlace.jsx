@@ -37,13 +37,11 @@ import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import { placeTaxonomyMappedFieldTypes } from '../../../constants/placeMappedFieldTypes';
 import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
-import TreeSelectOption from '../../../components/TreeSelectOption';
 import NoContent from '../../../components/NoContent/NoContent';
 import {
   treeDynamicTaxonomyOptions,
   treeTaxonomyOptions,
 } from '../../../components/TreeSelectOption/treeSelectOption.settings';
-import Tags from '../../../components/Tags/Common/Tags';
 import StyledInput from '../../../components/Input/Common';
 import SelectionItem from '../../../components/List/SelectionItem';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
@@ -93,6 +91,7 @@ import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormI
 import { isDataValid, placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import MultiLingualTextEditor from '../../../components/MultilingualTextEditor/MultiLingualTextEditor';
 import MapComponent from '../../../components/MapComponent';
+import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 
 const { TextArea } = Input;
 
@@ -1570,7 +1569,11 @@ function CreateNewPlace() {
                         false,
                       ) && 'none',
                   }}>
-                  <TreeSelectOption
+                  <SortableTreeSelect
+                    dataCy={`tag-place-type`}
+                    form={form}
+                    draggable
+                    fieldName={formFieldNames.TYPE}
                     data-cy="treeselect-place-type"
                     placeholder={t('dashboard.places.createNew.addPlace.placeType.placeholder')}
                     allowClear
@@ -1584,18 +1587,6 @@ function CreateNewPlace() {
                       false,
                       calendarContentLanguage,
                     )}
-                    tagRender={(props) => {
-                      const { label, closable, onClose } = props;
-                      return (
-                        <Tags
-                          data-cy={`tag-place-type-${label}`}
-                          closable={closable}
-                          onClose={onClose}
-                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                          {label}
-                        </Tags>
-                      );
-                    }}
                   />
                 </Form.Item>
                 <Form.Item
@@ -1791,30 +1782,17 @@ function CreateNewPlace() {
                           },
                         ]}
                         hidden={taxonomy?.isAdminOnly ? (adminCheckHandler({ calendar, user }) ? false : true) : false}>
-                        <TreeSelectOption
+                        <SortableTreeSelect
+                          dataCy={`tag-place-dynamic-field`}
+                          form={form}
+                          draggable
+                          fieldName={[formFieldNames.DYNAMIC_FIELS, taxonomy?.id]}
                           data-cy={`treeselect-place-dynamic-field-${index}`}
                           allowClear
                           treeDefaultExpandAll
                           notFoundContent={<NoContent />}
                           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                           treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
-                          tagRender={(props) => {
-                            const { label, closable, onClose } = props;
-                            return (
-                              <Tags
-                                data-cy={`tag-place-dynamic-field-${label}`}
-                                closable={closable}
-                                onClose={onClose}
-                                closeIcon={
-                                  <CloseCircleOutlined
-                                    style={{ color: '#1b3de6', fontSize: '12px' }}
-                                    data-cy={`icon-place-dynamic-taxonomy-close-${label}`}
-                                  />
-                                }>
-                                {label}
-                              </Tags>
-                            );
-                          }}
                         />
                       </Form.Item>
                     );
@@ -2148,7 +2126,11 @@ function CreateNewPlace() {
                       message: t('common.validations.informationRequired'),
                     },
                   ]}>
-                  <TreeSelectOption
+                  <SortableTreeSelect
+                    dataCy={`tag-place`}
+                    form={form}
+                    draggable
+                    fieldName={formFieldNames.REGION}
                     data-cy="treeselect-place-region"
                     placeholder={t('dashboard.places.createNew.addPlace.address.region.placeholder')}
                     allowClear
@@ -2162,18 +2144,6 @@ function CreateNewPlace() {
                       false,
                       calendarContentLanguage,
                     )}
-                    tagRender={(props) => {
-                      const { label, closable, onClose } = props;
-                      return (
-                        <Tags
-                          data-cy={`tag-place-${label}`}
-                          closable={closable}
-                          onClose={onClose}
-                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                          {label}
-                        </Tags>
-                      );
-                    }}
                   />
                 </Form.Item>
                 <Form.Item
@@ -2705,7 +2675,11 @@ function CreateNewPlace() {
                         message: t('common.validations.informationRequired'),
                       },
                     ]}>
-                    <TreeSelectOption
+                    <SortableTreeSelect
+                      dataCy={`tag-venue-accessibility`}
+                      form={form}
+                      draggable
+                      fieldName={formFieldNames.PLACE_ACCESSIBILITY}
                       data-cy="treeselect-venue-accessibility"
                       placeholder={t('dashboard.places.createNew.addPlace.venueAccessibility.placeholder')}
                       allowClear
@@ -2719,18 +2693,6 @@ function CreateNewPlace() {
                         false,
                         calendarContentLanguage,
                       )}
-                      tagRender={(props) => {
-                        const { label, closable, onClose } = props;
-                        return (
-                          <Tags
-                            data-cy={`tag-venue-accessibility-${label}`}
-                            closable={closable}
-                            onClose={onClose}
-                            closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                            {label}
-                          </Tags>
-                        );
-                      }}
                     />
                   </Form.Item>
                   <Form.Item
