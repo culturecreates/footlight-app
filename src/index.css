@@ -22,6 +22,11 @@ body,
   --primary-white: #ffffff;
   --content-neutral-primary: #222732;
   --content-neutral-secondary: #646d7b;
+  --content-action-default: #1b3de6;
+  --content-action-lighter: #607efc;
+  --background-neutrals-ground: #ffffff;
+  --content-neutral-secondary: #646d7b;
+  --background-highlight-light: #eff2ff;
 }
 
 body {
