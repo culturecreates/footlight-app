@@ -213,6 +213,11 @@
   background: #1b3de6 !important;
   border-color: #1b3de6;
 }
+.merge-event-wrapper .duplicate-found {
+  color: var(--content-action-default);
+  font-size: 16px;
+  font-weight: 400;
+}
 
 @media screen and (max-width: 480px) {
   .merge-event-wrapper .add-edit-event-heading h4 {
