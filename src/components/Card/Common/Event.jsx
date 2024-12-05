@@ -38,6 +38,7 @@ function Event(props) {
             </Col>
           </Row>
         </Col>
+        {props?.children?.length > 2 && <Col flex={'auto'}>{props?.children[2]}</Col>}
       </Row>
     </Col>
   );
