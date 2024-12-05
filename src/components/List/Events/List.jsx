@@ -237,7 +237,23 @@ function Lists(props) {
                         .locale(lang)
                         .format(eventDateFormat)
                         ?.toUpperCase()}
-
+                    {doesEventExceedNextDay(
+                      eventItem?.startDateTime,
+                      eventItem?.endDateTime,
+                      eventItem?.scheduleTimezone ?? 'Canada/Eastern',
+                    ) && (
+                      <>
+                        {moment
+                          .tz(
+                            eventItem?.endDate ?? eventItem?.endDateTime,
+                            eventItem?.scheduleTimezone ?? 'Canada/Eastern',
+                          )
+                          .locale(lang)
+                          .format('- h:mm a')
+                          ?.toUpperCase()}
+                        <sup>+1</sup>
+                      </>
+                    )}
                     {dateTimeTypeHandler(
                       eventItem?.startDate,
                       eventItem?.startDateTime,
