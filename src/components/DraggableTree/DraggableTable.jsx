@@ -50,7 +50,7 @@ const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus, tran
         setData(filteredConceptData);
       },
       content: t('dashboard.taxonomy.addNew.concepts.deleteConceptMessage'),
-      okText: t('dashboard.settings.addUser.delete'),
+      okText: t('dashboard.taxonomy.addNew.concepts.delete'),
       cancelText: t('dashboard.events.deleteEvent.cancel'),
     });
   };
@@ -79,6 +79,7 @@ const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus, tran
     dataIndex: contentLanguageKeyMap[language],
     key: contentLanguageKeyMap[language],
     editable: true,
+    ['data-cy']: `taxonomy-concept-row-more-btn-${language}`,
   }));
 
   const moveRow = useCallback(
@@ -153,7 +154,7 @@ const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus, tran
 
   const menu = (record) => (
     <Menu>
-      <Menu.Item key="delete" onClick={() => handleDelete(record?.key)}>
+      <Menu.Item key="delete" onClick={() => handleDelete(record?.key)} data-cy="taxonomy-concept-row-delete-btn">
         {t('dashboard.taxonomy.addNew.concepts.delete')}
       </Menu.Item>
     </Menu>
@@ -186,7 +187,8 @@ const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus, tran
             justifyContent: 'center',
             alignItems: 'center',
             height: '100%',
-          }}>
+          }}
+          data-cy="taxonomy-concept-row-more-btn-wrapper">
           <Dropdown overlay={menu(record)} trigger={['click']}>
             <MoreOutlined style={{ cursor: 'pointer', fontSize: '18px' }} />
           </Dropdown>
@@ -237,6 +239,12 @@ const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus, tran
               },
             }}
             rowClassName="editable-row"
+            onHeaderRow={() => {
+              return {
+                'data-cy': `taxonomy-concept-row-header`,
+                className: 'custom-header-row',
+              };
+            }}
             onRow={(record, index) => {
               const attr = {
                 index,

@@ -43,7 +43,6 @@ import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { dateTimeTypeHandler } from '../../../utils/dateTimeTypeHandler';
 import ImageUpload from '../../../components/ImageUpload';
 import { useAddImageMutation } from '../../../services/image';
-import TreeSelectOption from '../../../components/TreeSelectOption';
 import {
   treeDynamicTaxonomyOptions,
   treeEntitiesOption,
@@ -111,6 +110,7 @@ import { isDataValid, placeHolderCollectionCreator } from '../../../utils/MultiL
 import MultiLingualTextEditor from '../../../components/MultilingualTextEditor/MultiLingualTextEditor';
 import MultilingualInput from '../../../components/MultilingualInput';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
+import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 
 const { TextArea } = Input;
 
@@ -2366,25 +2366,17 @@ function AddEvent() {
                     },
                   ]}
                   data-cy="form-item-event-type-label">
-                  <TreeSelectOption
+                  <SortableTreeSelect
+                    form={form}
+                    dataCy={`tag-event-type`}
+                    draggable
+                    fieldName="eventType"
                     placeholder={t('dashboard.events.addEditEvent.language.placeHolderEventType')}
                     allowClear
                     treeDefaultExpandAll
                     notFoundContent={<NoContent />}
                     clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                     treeData={treeTaxonomyOptions(allTaxonomyData, user, 'EventType', false, calendarContentLanguage)}
-                    tagRender={(props) => {
-                      const { label, closable, onClose } = props;
-                      return (
-                        <Tags
-                          closable={closable}
-                          onClose={onClose}
-                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}
-                          data-cy={`tag-event-type-${label}`}>
-                          {label}
-                        </Tags>
-                      );
-                    }}
                     data-cy="treeselect-event-type"
                   />
                 </Form.Item>
@@ -2411,7 +2403,11 @@ function AddEvent() {
                     },
                   ]}
                   data-cy="form-item-audience-label">
-                  <TreeSelectOption
+                  <SortableTreeSelect
+                    dataCy={`tag-audience`}
+                    form={form}
+                    draggable
+                    fieldName="targetAudience"
                     allowClear
                     treeDefaultExpandAll
                     notFoundContent={<NoContent />}
@@ -2419,18 +2415,6 @@ function AddEvent() {
                     treeData={treeTaxonomyOptions(allTaxonomyData, user, 'Audience', false, calendarContentLanguage)}
                     placeholder={t('dashboard.events.addEditEvent.language.placeHolderTargetAudience')}
                     data-cy="treeselect-audience"
-                    tagRender={(props) => {
-                      const { closable, onClose, label } = props;
-                      return (
-                        <Tags
-                          data-cy={`tag-audience-${label}`}
-                          closable={closable}
-                          onClose={onClose}
-                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                          {label}
-                        </Tags>
-                      );
-                    }}
                   />
                 </Form.Item>
                 <Form.Item
@@ -2454,7 +2438,11 @@ function AddEvent() {
                     },
                   ]}
                   data-cy="form-item-event-discipline-label">
-                  <TreeSelectOption
+                  <SortableTreeSelect
+                    form={form}
+                    draggable
+                    dataCy={`tag-event-discipline`}
+                    fieldName="eventDiscipline"
                     allowClear
                     treeDefaultExpandAll
                     notFoundContent={<NoContent />}
@@ -2466,18 +2454,6 @@ function AddEvent() {
                       false,
                       calendarContentLanguage,
                     )}
-                    tagRender={(props) => {
-                      const { label, closable, onClose } = props;
-                      return (
-                        <Tags
-                          closable={closable}
-                          onClose={onClose}
-                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}
-                          data-cy={`tag-event-discipline-${label}`}>
-                          {label}
-                        </Tags>
-                      );
-                    }}
                     data-cy="treeselect-event-discipline"
                   />
                 </Form.Item>
@@ -2516,25 +2492,17 @@ function AddEvent() {
                             message: t('common.validations.informationRequired'),
                           },
                         ]}>
-                        <TreeSelectOption
+                        <SortableTreeSelect
+                          form={form}
+                          draggable
+                          dataCy={`tag-${taxonomy?.id}`}
+                          fieldName={['dynamicFields', taxonomy?.id]}
                           allowClear
                           treeDefaultExpandAll
                           notFoundContent={<NoContent />}
                           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                           treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
                           data-cy={`treeselect-${taxonomy?.id}`}
-                          tagRender={(props) => {
-                            const { label, closable, onClose } = props;
-                            return (
-                              <Tags
-                                data-cy={`tag-${taxonomy?.id}`}
-                                closable={closable}
-                                onClose={onClose}
-                                closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                                {label}
-                              </Tags>
-                            );
-                          }}
                         />
                       </Form.Item>
                     );
@@ -4293,7 +4261,11 @@ function AddEvent() {
                         ?.filter((id) => id)
                 }
                 data-cy="form-item-eventlanguage-label">
-                <TreeSelectOption
+                <SortableTreeSelect
+                  dataCy={`tag-event-language`}
+                  form={form}
+                  draggable
+                  fieldName={otherInformationFieldNames.inLanguage}
                   allowClear
                   treeDefaultExpandAll
                   placeholder={t('dashboard.events.addEditEvent.otherInformation.eventLanguagePlaceholder')}
@@ -4301,18 +4273,6 @@ function AddEvent() {
                   clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                   treeData={treeTaxonomyOptions(allTaxonomyData, user, 'inLanguage', false, calendarContentLanguage)}
                   data-cy="treeselect-event-language"
-                  tagRender={(props) => {
-                    const { closable, onClose, label } = props;
-                    return (
-                      <Tags
-                        data-cy={`tag-event-language-${label}`}
-                        closable={closable}
-                        onClose={onClose}
-                        closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                        {label}
-                      </Tags>
-                    );
-                  }}
                 />
               </Form.Item>
             </>
@@ -4401,7 +4361,11 @@ function AddEvent() {
                     </p>
                   }
                   data-cy="form-item-event-accessibility-label">
-                  <TreeSelectOption
+                  <SortableTreeSelect
+                    dataCy={`tag-event-accessibility`}
+                    form={form}
+                    draggable
+                    fieldName="eventAccessibility"
                     allowClear
                     treeDefaultExpandAll
                     style={{ width: '423px' }}
@@ -4416,18 +4380,6 @@ function AddEvent() {
                     )}
                     placeholder={t('dashboard.events.addEditEvent.eventAccessibility.placeHolderEventAccessibility')}
                     data-cy="treeselect-event-accessibility"
-                    tagRender={(props) => {
-                      const { label, closable, onClose } = props;
-                      return (
-                        <Tags
-                          data-cy={`tag-event-accessibility-${label}`}
-                          closable={closable}
-                          onClose={onClose}
-                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                          {label}
-                        </Tags>
-                      );
-                    }}
                   />
                 </Form.Item>
                 <Form.Item

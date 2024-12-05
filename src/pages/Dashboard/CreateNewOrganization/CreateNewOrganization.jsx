@@ -31,10 +31,8 @@ import {
 } from '../../../services/organization';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
-import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 import NoContent from '../../../components/NoContent/NoContent';
 import { treeDynamicTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
-import Tags from '../../../components/Tags/Common/Tags';
 import { formFieldsHandler } from '../../../utils/formFieldsHandler';
 import { formPayloadHandler } from '../../../utils/formPayloadHandler';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
@@ -76,6 +74,7 @@ import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
+import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -1303,7 +1302,11 @@ function CreateNewOrganization() {
                                 hidden={
                                   taxonomy?.isAdminOnly ? (adminCheckHandler({ calendar, user }) ? false : true) : false
                                 }>
-                                <TreeSelectOption
+                                <SortableTreeSelect
+                                  form={form}
+                                  draggable
+                                  dataCy={`tag-organization-dynamic-field`}
+                                  fieldName={['dynamicFields', taxonomy?.id]}
                                   data-cy={`treeselect-organization-dynamic-fields-${index}`}
                                   allowClear
                                   treeDefaultExpandAll
@@ -1314,20 +1317,6 @@ function CreateNewOrganization() {
                                     user,
                                     calendarContentLanguage,
                                   )}
-                                  tagRender={(props) => {
-                                    const { label, closable, onClose } = props;
-                                    return (
-                                      <Tags
-                                        data-cy={`tag-organization-dynamic-field-${label}`}
-                                        closable={closable}
-                                        onClose={onClose}
-                                        closeIcon={
-                                          <CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />
-                                        }>
-                                        {label}
-                                      </Tags>
-                                    );
-                                  }}
                                 />
                               </Form.Item>
                             );

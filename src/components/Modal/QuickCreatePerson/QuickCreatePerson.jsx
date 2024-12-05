@@ -16,8 +16,6 @@ import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import NoContent from '../../NoContent/NoContent';
-import TreeSelectOption from '../../TreeSelectOption/TreeSelectOption';
-import Tags from '../../Tags/Common/Tags';
 import { sourceOptions } from '../../../constants/sourceOptions';
 import Outlined from '../../Button/Outlined';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -30,6 +28,7 @@ import {
 } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
+import SortableTreeSelect from '../../TreeSelectOption/SortableTreeSelect';
 
 const { TextArea } = Input;
 
@@ -298,7 +297,11 @@ function QuickCreatePerson(props) {
                     label={taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false)}
                     hidden={taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false) ? false : true}
                     data-cy="form-item-quick-create-person-occupation-label">
-                    <TreeSelectOption
+                    <SortableTreeSelect
+                      dataCy={`tags-quick-create-person-occupation`}
+                      form={form}
+                      draggable
+                      fieldName={'occupation'}
                       style={{
                         display: !taxonomyDetails(allTaxonomyData?.data, user, 'Occupation', 'name', false) && 'none',
                       }}
@@ -317,18 +320,6 @@ function QuickCreatePerson(props) {
                         calendarContentLanguage,
                       )}
                       data-cy="treeselect-quick-create-person-occupation"
-                      tagRender={(props) => {
-                        const { label, closable, onClose } = props;
-                        return (
-                          <Tags
-                            closable={closable}
-                            onClose={onClose}
-                            closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}
-                            data-cy={`tags-quick-create-person-occupation-${label}`}>
-                            {label}
-                          </Tags>
-                        );
-                      }}
                     />
                   </Form.Item>
                   <Form.Item
