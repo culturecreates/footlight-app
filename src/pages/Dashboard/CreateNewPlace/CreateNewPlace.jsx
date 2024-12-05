@@ -458,7 +458,7 @@ function CreateNewPlace() {
 
                 if (
                   fallbackFilteredFieldvalue?.[languageKey] &&
-                  typeof fallbackFilteredFieldvalue[fieldName]?.[languageKey] === 'string'
+                  typeof fallbackFilteredFieldvalue?.[languageKey] === 'string'
                 ) {
                   acc[field] = {
                     ...(acc[field] || {}),
@@ -476,6 +476,11 @@ function CreateNewPlace() {
             },
             { postalCode: typeof values?.postalCode === 'string' ? values.postalCode.trim() : values?.postalCode },
           );
+
+          if (values.name.fr) {
+            console.log(postalObj);
+            return;
+          }
 
           if (values?.dynamicFields) {
             dynamicFields = Object.keys(values?.dynamicFields)?.map((dynamicField) => {
