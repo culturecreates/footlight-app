@@ -95,6 +95,8 @@ import {
   clearActiveFallbackFieldsInfo,
   getActiveFallbackFieldsInfo,
   getLanguageLiteralBannerDisplayStatus,
+  setBannerDismissed,
+  getIsBannerDismissed,
   setLanguageLiteralBannerDisplayStatus,
 } from '../../../redux/reducer/languageLiteralSlice';
 import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
@@ -125,6 +127,7 @@ function AddEvent() {
   let duplicateId = searchParams.get('duplicateId');
   const { user } = useSelector(getUserDetails);
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
+  const isBannerDismissed = useSelector(getIsBannerDismissed);
   const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { t } = useTranslation();
   const [
@@ -447,7 +450,7 @@ function AddEvent() {
     const previousShowDialog = showDialog;
     setShowDialog(false);
 
-    const action = ({ clear = false, previousShowDialog, toggle, type }) => {
+    const action = ({ previousShowDialog, toggle, type }) => {
       var promise = new Promise(function (resolve, reject) {
         form
           .validateFields([
@@ -464,11 +467,6 @@ function AddEvent() {
           ])
           .then(async () => {
             let fallbackStatus = activeFallbackFieldsInfo;
-            if (clear) {
-              dispatch(setLanguageLiteralBannerDisplayStatus(false));
-              dispatch(clearActiveFallbackFieldsInfo());
-              fallbackStatus = {};
-            }
             var values = form.getFieldsValue(true);
 
             var startDateTime,
@@ -1123,7 +1121,7 @@ function AddEvent() {
           cancelText: t('dashboard.places.deletePlace.cancel'),
           className: 'fallback-modal-container',
           onAction: () => {
-            action({ clear: true, previousShowDialog, toggle, type })
+            action({ previousShowDialog, toggle, type })
               .then((id) => {
                 resolve(id);
               })
@@ -1133,7 +1131,7 @@ function AddEvent() {
           },
         });
       } else
-        action({ clear: false, previousShowDialog, toggle, type }).then((id) => {
+        action({ previousShowDialog, toggle, type }).then((id) => {
           resolve(id);
         });
     });
@@ -1678,6 +1676,7 @@ function AddEvent() {
 
   useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());
+    dispatch(setBannerDismissed(false));
   }, []);
 
   useEffect(() => {
@@ -1695,7 +1694,7 @@ function AddEvent() {
       }
     });
 
-    if (!shouldDisplay) {
+    if (!shouldDisplay && !isBannerDismissed) {
       dispatch(setLanguageLiteralBannerDisplayStatus(true));
     } else {
       dispatch(setLanguageLiteralBannerDisplayStatus(false));
@@ -2241,7 +2240,7 @@ function AddEvent() {
                             label={t('common.dismiss')}
                             onClick={() => {
                               dispatch(setLanguageLiteralBannerDisplayStatus(false));
-                              dispatch(clearActiveFallbackFieldsInfo({}));
+                              dispatch(setBannerDismissed(true));
                             }}
                           />
                         }
