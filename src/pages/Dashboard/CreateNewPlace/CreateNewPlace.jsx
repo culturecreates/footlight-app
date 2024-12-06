@@ -477,11 +477,6 @@ function CreateNewPlace() {
             { postalCode: typeof values?.postalCode === 'string' ? values.postalCode.trim() : values?.postalCode },
           );
 
-          if (values.name.fr) {
-            console.log(postalObj);
-            return;
-          }
-
           if (values?.dynamicFields) {
             dynamicFields = Object.keys(values?.dynamicFields)?.map((dynamicField) => {
               return {
