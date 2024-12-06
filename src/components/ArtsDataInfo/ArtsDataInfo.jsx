@@ -2,6 +2,7 @@ import React from 'react';
 import './artsDataInfo.css';
 import { Badge, Col, Row } from 'antd';
 import { LinkOutlined } from '@ant-design/icons';
+import Link from 'antd/lib/typography/Link';
 
 function ArtsDataInfo(props) {
   const { artsDataLink, name, disambiguatingDescription } = props;
@@ -9,13 +10,12 @@ function ArtsDataInfo(props) {
     <Row className="arts-data-info" align={'middle'} justify={'space-between'}>
       <Col span={20}>
         <Row gutter={[8, 0]} align={'middle'}>
-          <Col
-            className="arts-data-title"
-            onClick={() => window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer')}
-            data-cy="col-artsdata-link">
-            <span style={{ textDecoration: 'underline' }} data-cy="span-artsdata-text">
-              Artsdata
-            </span>
+          <Col className="arts-data-title" data-cy="col-artsdata-link">
+            <Link href={artsDataLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+              <span style={{ textDecoration: 'underline', color: '#0f0e98' }} data-cy="span-artsdata-text">
+                Artsdata
+              </span>
+            </Link>
           </Col>
           <Col className="arts-data-name">
             <span data-cy="span-artsdata-name">{name}</span>
@@ -34,12 +34,12 @@ function ArtsDataInfo(props) {
           )}
         </Row>
       </Col>
-      <Col
-        onClick={() => window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer')}
-        data-cy="artsdata-link-outlined-icon">
-        <span>
-          <LinkOutlined />
-        </span>
+      <Col data-cy="artsdata-link-outlined-icon">
+        <Link href={artsDataLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+          <span>
+            <LinkOutlined style={{ color: '#0f0e98' }} />
+          </span>
+        </Link>
       </Col>
     </Row>
   );
