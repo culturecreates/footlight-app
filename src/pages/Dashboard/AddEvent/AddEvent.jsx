@@ -280,6 +280,18 @@ function AddEvent() {
     },
     { label: t('dashboard.events.addEditEvent.otherInformation.contact.email'), value: 'email' },
   ];
+
+  const adjustEndDateTimeIfBeforeStart = (startDateTime, endDateTime, timezone) => {
+    const start = moment.tz(startDateTime, timezone);
+    let end = moment.tz(endDateTime, timezone);
+
+    if (end.isBefore(start)) {
+      end.add(1, 'days');
+    }
+
+    return end.toISOString();
+  };
+
   const hasSubEventConfigChanges = (customDates = [], subEventConfig = []) => {
     // Convert both arrays to a simpler format for easier comparison
     const formatCustomDates = customDates.flatMap(({ startDate, customTimes = [] }) =>
@@ -678,7 +690,11 @@ function AddEvent() {
                 startDateTime = moment
                   .tz(datePickerValue, eventData?.scheduleTimezone ?? 'Canada/Eastern')
                   .format('YYYY-MM-DD');
-              if (endTimeValue) endDateTime = dateTimeConverter(datePickerValue, endTimeValue, customTimeFlag);
+              if (endTimeValue) {
+                endDateTime = dateTimeConverter(datePickerValue, endTimeValue, customTimeFlag);
+                if (startDateTime && endDateTime)
+                  endDateTime = adjustEndDateTimeIfBeforeStart(startDateTime, endDateTime, eventData?.scheduleTimezone);
+              }
             }
 
             if (dateTypeValue === dateTypes.RANGE) {
