@@ -1153,7 +1153,7 @@
           "editBtn": "Save",
           "conceptName": "Name",
           "placeHolder": "Enter {{language}} name",
-          "deleteConceptMessage": "Are you sure you want to permanently delete this concept? This action will also delete it everywhere it was used, including in events.",
+          "deleteConceptMessage": "Are you sure that you want to permanently delete this concept? This action will also delete subconcepts and everywhere the concepts are used, including in events.",
           "deleteConceptHeading": "Delete concept",
           "delete": "Delete"
         }
