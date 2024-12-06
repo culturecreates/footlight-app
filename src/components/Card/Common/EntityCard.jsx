@@ -21,12 +21,7 @@ const EntityCard = (props) => {
       </div>
       <div className="link-container">
         {artsDataLink && (
-          <ArtsDataLink
-            onClick={(e) => {
-              e.stopPropagation();
-              window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer');
-            }}
-            data-cy="tag-entity-artsdata">
+          <ArtsDataLink data-cy="tag-entity-artsdata">
             <Link href={artsDataLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
               <div style={{ display: 'flex', gap: '7px' }}>
                 <span style={{ textDecoration: 'underline', color: '#0f0e98' }} data-cy="span-artsdata-link">
