@@ -15,6 +15,7 @@ import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions
 import { taxonomyClass } from '../../../constants/taxonomyClass.js';
 import { PathName } from '../../../constants/pathName.js';
 import { useNavigate, useParams } from 'react-router-dom';
+import Link from 'antd/lib/typography/Link.js';
 function SelectionItem(props) {
   const {
     icon,
@@ -92,14 +93,13 @@ function SelectionItem(props) {
         data-cy="list-item"
         actions={[
           showExternalSourceLink && artsDataLink && (
-            <ArtsDataLink
-              onClick={(e) => {
-                e.stopPropagation();
-                window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer');
-              }}
-              data-cy="artsdata-link-tag">
-              <span style={{ textDecoration: 'underline' }}>Artsdata</span>
-              <LinkOutlined />
+            <ArtsDataLink data-cy="artsdata-link-tag">
+              <Link href={artsDataLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                <div style={{ display: 'flex', gap: '7px', color: '#0f0e98' }}>
+                  <span style={{ textDecoration: 'underline' }}>Artsdata</span>
+                  <LinkOutlined style={{ display: 'grid', placeContent: 'center', color: '#0f0e98' }} />
+                </div>
+              </Link>
             </ArtsDataLink>
           ),
           edit && (

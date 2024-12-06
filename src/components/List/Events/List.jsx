@@ -21,6 +21,7 @@ import moment from 'moment-timezone';
 import { LinkOutlined, StarFilled } from '@ant-design/icons';
 import { sameAsTypes } from '../../../constants/sameAsTypes';
 import { getWidthFromAspectRatio } from '../../../utils/getWidthFromAspectRatio';
+import Link from 'antd/lib/typography/Link';
 
 const { useBreakpoint } = Grid;
 
@@ -292,16 +293,14 @@ function Lists(props) {
                 <div className="event-status-list-item-title-container">
                   <EventStatus label={eventItem?.publishState} />
                   {artsDataLinkChecker(eventItem)?.length > 0 && (
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        window.open(`${artsDataLinkChecker(eventItem)[0]?.uri}`, '_blank', 'noopener,noreferrer');
-                      }}
-                      className="artsdata-link-outlined-icon"
-                      data-cy="artsdata-link-outlined-icon">
-                      <span>
+                    <div className="artsdata-link-outlined-icon" data-cy="artsdata-link-outlined-icon">
+                      <Link
+                        href={artsDataLinkChecker(eventItem)[0]?.uri}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}>
                         <LinkOutlined style={{ fontSize: '14px' }} />
-                      </span>
+                      </Link>
                     </div>
                   )}
                 </div>

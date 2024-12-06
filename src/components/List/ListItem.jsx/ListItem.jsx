@@ -7,6 +7,7 @@ import moment from 'moment-timezone';
 import i18n from 'i18next';
 import Username from '../../Username/Username';
 import ArtsDataLink from '../../Tags/ArtsDataLink/ArtsDataLink';
+import Link from 'antd/lib/typography/Link';
 
 function ListItem(props) {
   const {
@@ -79,16 +80,15 @@ function ListItem(props) {
         className="event-status-list-item"
         title={
           artsDataLink && (
-            <ArtsDataLink
-              onClick={(e) => {
-                e.stopPropagation();
-                window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer');
-              }}
-              data-cy="tag-entity-artsdata">
-              <span style={{ textDecoration: 'underline' }} data-cy="span-entity-artsdata">
-                Artsdata
-              </span>
-              <LinkOutlined />
+            <ArtsDataLink data-cy="tag-entity-artsdata">
+              <Link href={artsDataLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                <div style={{ display: 'flex', gap: '7px' }}>
+                  <span style={{ textDecoration: 'underline', color: '#0f0e98' }} data-cy="span-entity-artsdata">
+                    Artsdata
+                  </span>
+                  <LinkOutlined style={{ display: 'grid', placeContent: 'center', color: '#0f0e98' }} />
+                </div>
+              </Link>
             </ArtsDataLink>
           )
         }
