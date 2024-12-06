@@ -61,23 +61,6 @@ function Lists(props) {
     return { width, height };
   };
 
-  function doesEventExceedNextDay(startDateTime, endDateTime, timezone) {
-    // Parse start and end datetimes in the given timezone
-    if (startDateTime && endDateTime) {
-      const start = moment.tz(startDateTime, timezone);
-      const end = moment.tz(endDateTime, timezone);
-
-      // If the end time is earlier than the start time, it means the event ends the next day
-      if (end.isBefore(start)) {
-        return true;
-      }
-
-      // If the day of start and end is different, it also exceeds to the next day
-      return !start.isSame(end, 'day');
-    }
-    return false;
-  }
-
   let imageDimensions = calculateImageDimensions(aspectRatioString, 104, 150);
 
   return (
@@ -237,23 +220,7 @@ function Lists(props) {
                         .locale(lang)
                         .format(eventDateFormat)
                         ?.toUpperCase()}
-                    {doesEventExceedNextDay(
-                      eventItem?.startDateTime,
-                      eventItem?.endDateTime,
-                      eventItem?.scheduleTimezone ?? 'Canada/Eastern',
-                    ) && (
-                      <>
-                        {moment
-                          .tz(
-                            eventItem?.endDate ?? eventItem?.endDateTime,
-                            eventItem?.scheduleTimezone ?? 'Canada/Eastern',
-                          )
-                          .locale(lang)
-                          .format('- h:mm a')
-                          ?.toUpperCase()}
-                        <sup>+1</sup>
-                      </>
-                    )}
+
                     {dateTimeTypeHandler(
                       eventItem?.startDate,
                       eventItem?.startDateTime,
