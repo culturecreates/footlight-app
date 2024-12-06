@@ -109,6 +109,7 @@ import { isDataValid, placeHolderCollectionCreator } from '../../../utils/MultiL
 import MultiLingualTextEditor from '../../../components/MultilingualTextEditor/MultiLingualTextEditor';
 import MultilingualInput from '../../../components/MultilingualInput';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
+import { doesEventExceedNextDay } from '../../../utils/doesEventExceed';
 
 const { TextArea } = Input;
 
@@ -117,8 +118,8 @@ function AddEvent() {
   const location = useLocation();
   const dispatch = useDispatch();
   const [form] = Form.useForm();
-  Form.useWatch('startTime', form);
-  Form.useWatch('endTime', form);
+  const start_Time = Form.useWatch('startTime', form);
+  const end_Time = Form.useWatch('endTime', form);
   const timestampRef = useRef(Date.now()).current;
   const { calendarId, eventId } = useParams();
   let [searchParams] = useSearchParams();
@@ -2655,6 +2656,7 @@ function AddEvent() {
                                     ? moment.tz(eventData?.endDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
                                     : undefined
                                 }
+                                dependencies={['startTime']}
                                 data-cy="form-item-single-date-end-time-label">
                                 <TimePickerStyled
                                   placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
@@ -2665,6 +2667,14 @@ function AddEvent() {
                                       endTime: value,
                                     });
                                   }}
+                                  suffixIcon={
+                                    dateType === dateTypes.SINGLE &&
+                                    doesEventExceedNextDay(
+                                      start_Time,
+                                      end_Time,
+                                      eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                    ) && <sup> +1&nbsp;{t('common.day')}</sup>
+                                  }
                                   data-cy="single-date-end-time"
                                 />
                               </Form.Item>
