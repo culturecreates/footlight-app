@@ -50,6 +50,7 @@ import { routinghandler } from '../../../utils/roleRoutingHandler';
 import ReadOnlyPageTabLayout from '../../../layout/ReadOnlyPageTabLayout';
 import { getActiveTabKey } from '../../../redux/reducer/readOnlyTabSlice';
 import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
+import { doesEventExceedNextDay } from '../../../utils/doesEventExceed';
 
 function EventReadOnly() {
   const { t } = useTranslation();
@@ -675,6 +676,12 @@ function EventReadOnly() {
                                       {moment
                                         .tz(eventData?.endDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
                                         .format(i18n?.language === 'en' ? 'h:mm a' : 'HH:mm')}
+                                      {dateType === dateTypes.SINGLE &&
+                                        doesEventExceedNextDay(
+                                          eventData?.startDateTime,
+                                          eventData?.endDateTime,
+                                          eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                        ) && <sup> +1&nbsp;{t('common.day')}</sup>}
                                     </p>
                                   </Col>
                                 )}
