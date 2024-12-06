@@ -31,10 +31,8 @@ import {
 } from '../../../services/organization';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
-import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 import NoContent from '../../../components/NoContent/NoContent';
 import { treeDynamicTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
-import Tags from '../../../components/Tags/Common/Tags';
 import { formFieldsHandler } from '../../../utils/formFieldsHandler';
 import { formPayloadHandler } from '../../../utils/formPayloadHandler';
 import LoadingIndicator from '../../../components/LoadingIndicator/LoadingIndicator';
@@ -68,12 +66,15 @@ import {
   getActiveFallbackFieldsInfo,
   getLanguageLiteralBannerDisplayStatus,
   setLanguageLiteralBannerDisplayStatus,
+  setBannerDismissed,
+  getIsBannerDismissed,
 } from '../../../redux/reducer/languageLiteralSlice';
 import Alert from '../../../components/Alert';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
+import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -93,6 +94,7 @@ function CreateNewOrganization() {
   setContentBackgroundColor('#F9FAFF');
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
   const { user } = useSelector(getUserDetails);
+  const isBannerDismissed = useSelector(getIsBannerDismissed);
   const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { calendarId } = useParams();
   let [searchParams] = useSearchParams();
@@ -252,6 +254,7 @@ function CreateNewOrganization() {
   const onSaveHandler = (event, toggle = false) => {
     event?.preventDefault();
     let validateFieldList = [];
+    let fallbackStatus = activeFallbackFieldsInfo;
     let mandatoryFields = standardMandatoryFieldNames;
     validateFieldList = validateFieldList?.concat(
       formFields
@@ -279,7 +282,13 @@ function CreateNewOrganization() {
           var values = form.getFieldsValue(true);
           let organizationPayload = {};
           Object.keys(values)?.map((object) => {
-            let payload = formPayloadHandler(values[object], object, formFields, calendarContentLanguage);
+            let payload = formPayloadHandler(
+              values[object],
+              object,
+              formFields,
+              calendarContentLanguage,
+              fallbackStatus,
+            );
             if (payload) {
               let newKeys = Object.keys(payload);
               let childKeys = object?.split('.');
@@ -295,6 +304,7 @@ function CreateNewOrganization() {
               };
             }
           });
+
           if (locationPlace?.source === sourceOptions.ARTSDATA) {
             organizationPayload = {
               ...organizationPayload,
@@ -776,6 +786,7 @@ function CreateNewOrganization() {
 
   useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());
+    dispatch(setBannerDismissed(false));
   }, []);
 
   useEffect(() => {
@@ -793,7 +804,7 @@ function CreateNewOrganization() {
       }
     });
 
-    if (!shouldDisplay) {
+    if (!shouldDisplay && !isBannerDismissed) {
       dispatch(setLanguageLiteralBannerDisplayStatus(true));
     } else {
       dispatch(setLanguageLiteralBannerDisplayStatus(false));
@@ -1130,7 +1141,7 @@ function CreateNewOrganization() {
                                   label={t('common.dismiss')}
                                   onClick={() => {
                                     dispatch(setLanguageLiteralBannerDisplayStatus(false));
-                                    dispatch(clearActiveFallbackFieldsInfo({}));
+                                    dispatch(setBannerDismissed(true));
                                   }}
                                 />
                               }
@@ -1291,7 +1302,11 @@ function CreateNewOrganization() {
                                 hidden={
                                   taxonomy?.isAdminOnly ? (adminCheckHandler({ calendar, user }) ? false : true) : false
                                 }>
-                                <TreeSelectOption
+                                <SortableTreeSelect
+                                  form={form}
+                                  draggable
+                                  dataCy={`tag-organization-dynamic-field`}
+                                  fieldName={['dynamicFields', taxonomy?.id]}
                                   data-cy={`treeselect-organization-dynamic-fields-${index}`}
                                   allowClear
                                   treeDefaultExpandAll
@@ -1302,20 +1317,6 @@ function CreateNewOrganization() {
                                     user,
                                     calendarContentLanguage,
                                   )}
-                                  tagRender={(props) => {
-                                    const { label, closable, onClose } = props;
-                                    return (
-                                      <Tags
-                                        data-cy={`tag-organization-dynamic-field-${label}`}
-                                        closable={closable}
-                                        onClose={onClose}
-                                        closeIcon={
-                                          <CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />
-                                        }>
-                                        {label}
-                                      </Tags>
-                                    );
-                                  }}
                                 />
                               </Form.Item>
                             );

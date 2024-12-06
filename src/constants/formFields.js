@@ -1,8 +1,6 @@
 import { Col, Form, Input, Popover, Row } from 'antd';
 import NoContent from '../components/NoContent/NoContent';
 import { CloseCircleOutlined, DeleteOutlined } from '@ant-design/icons';
-import Tags from '../components/Tags/Common/Tags';
-import TreeSelectOption from '../components/TreeSelectOption/TreeSelectOption';
 import { treeTaxonomyOptions } from '../components/TreeSelectOption/treeSelectOption.settings';
 import ImageUpload from '../components/ImageUpload/ImageUpload';
 import { bilingual, contentLanguageBilingual } from '../utils/bilingual';
@@ -18,6 +16,7 @@ import LoadingIndicator from '../components/LoadingIndicator';
 import MultipleImageUpload from '../components/MultipleImageUpload';
 import CreateMultiLingualFormItems from '../layout/CreateMultiLingualFormItems';
 import MultiLingualTextEditor from '../components/MultilingualTextEditor/MultiLingualTextEditor';
+import SortableTreeSelect from '../components/TreeSelectOption/SortableTreeSelect';
 
 const { TextArea } = Input;
 
@@ -135,7 +134,7 @@ export const formFieldValue = [
           <CreateMultiLingualFormItems
             calendarContentLanguage={calendarContentLanguage}
             form={form}
-            name={Array.isArray(name) ? name[0] : name}
+            name={!Array.isArray(name) ? [name] : name}
             data={data}
             entityId={entityId}
             validations={
@@ -272,9 +271,15 @@ export const formFieldValue = [
       calendarContentLanguage,
       placeholder,
       mappedField,
+      name,
+      form,
     }) => {
       return (
-        <TreeSelectOption
+        <SortableTreeSelect
+          dataCy={`tag-${mappedField}`}
+          form={form}
+          draggable
+          fieldName={name}
           data-cy={`treeselect-${mappedField}`}
           allowClear
           treeDefaultExpandAll
@@ -290,18 +295,6 @@ export const formFieldValue = [
             display:
               !treeTaxonomyOptions(taxonomyData, user, taxonomyAlias, isDynamicField, calendarContentLanguage) &&
               'none',
-          }}
-          tagRender={(props) => {
-            const { label, closable, onClose } = props;
-            return (
-              <Tags
-                data-cy={`tag-${mappedField}-${label}`}
-                closable={closable}
-                onClose={onClose}
-                closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                {label}
-              </Tags>
-            );
           }}
         />
       );

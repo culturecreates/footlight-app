@@ -30,6 +30,7 @@ import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormI
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import DraggableTable from '../../../components/DraggableTree/DraggableTable';
 import { sanitizeData, transformLanguageKeys } from '../../../utils/draggableTableUtilFunctions';
+import { getIsBannerDismissed, setBannerDismissed } from '../../../redux/reducer/languageLiteralSlice';
 
 const taxonomyClasses = taxonomyClassTranslations.map((item) => {
   return { ...item, value: item.key };
@@ -50,6 +51,7 @@ const AddTaxonomy = () => {
   const { t } = useTranslation();
   const timestampRef = useRef(Date.now()).current;
   const { calendarId } = useParams();
+  const isBannerDismissed = useSelector(getIsBannerDismissed);
   const { user } = useSelector(getUserDetails);
   const location = useLocation();
   const navigate = useNavigate();
@@ -251,8 +253,9 @@ const AddTaxonomy = () => {
   };
 
   function modifyConceptData(conceptData) {
+    const sanitizedConceptData = sanitizeData(conceptData, fallbackStatus);
     return (
-      conceptData?.map((item) => {
+      sanitizedConceptData?.map((item) => {
         // eslint-disable-next-line no-unused-vars
         const filteredName = Object.fromEntries(Object.entries(item.name || {}).filter(([_, value]) => value !== ''));
 
@@ -273,13 +276,17 @@ const AddTaxonomy = () => {
   };
 
   const handleClearAllFallbackStatus = () => {
-    const sanitizedData = sanitizeData(transformedConceptData, {});
+    dispatch(setBannerDismissed(true));
+    setLanguageLiteralBannerDisplayStatus(false);
+
+    const sanitizedData = sanitizeData(transformedConceptData, fallbackStatus);
     const filteredConceptData = transformLanguageKeys(sanitizedData);
     setConceptData(filteredConceptData);
-
-    setLanguageLiteralBannerDisplayStatus(false);
-    setFallbackStatus({});
   };
+
+  useEffect(() => {
+    dispatch(setBannerDismissed(false));
+  }, []);
 
   useEffect(() => {
     if (isReadOnly) navigate(`${PathName.Dashboard}/${calendarId}${PathName.Taxonomies}`, { replace: true });
@@ -293,9 +300,13 @@ const AddTaxonomy = () => {
         : [value.tagdisplaystatus],
     );
 
-    allTagDisplayStatuses.every((status) => status === false)
-      ? setLanguageLiteralBannerDisplayStatus(false)
-      : setLanguageLiteralBannerDisplayStatus(true);
+    if (!isBannerDismissed) {
+      allTagDisplayStatuses.every((status) => status === false)
+        ? setLanguageLiteralBannerDisplayStatus(false)
+        : setLanguageLiteralBannerDisplayStatus(true);
+    } else {
+      setLanguageLiteralBannerDisplayStatus(false);
+    }
   }, [fallbackStatus]);
 
   return (

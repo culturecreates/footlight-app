@@ -23,10 +23,8 @@ import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
-import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 import NoContent from '../../../components/NoContent/NoContent';
 import { treeDynamicTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
-import Tags from '../../../components/Tags/Common/Tags';
 import { formFieldsHandler } from '../../../utils/formFieldsHandler';
 import { formPayloadHandler } from '../../../utils/formPayloadHandler';
 import { useAddPersonMutation, useGetPersonQuery, useUpdatePersonMutation } from '../../../services/people';
@@ -48,12 +46,15 @@ import {
   getActiveFallbackFieldsInfo,
   getLanguageLiteralBannerDisplayStatus,
   setLanguageLiteralBannerDisplayStatus,
+  setBannerDismissed,
+  getIsBannerDismissed,
 } from '../../../redux/reducer/languageLiteralSlice';
 import Alert from '../../../components/Alert';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
+import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 
 function CreateNewPerson() {
   const timestampRef = useRef(Date.now()).current;
@@ -72,6 +73,7 @@ function CreateNewPerson() {
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
   const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
+  const isBannerDismissed = useSelector(getIsBannerDismissed);
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
   const { user } = useSelector(getUserDetails);
   const { calendarId } = useParams();
@@ -220,6 +222,7 @@ function CreateNewPerson() {
   const onSaveHandler = (event) => {
     event?.preventDefault();
     let validateFieldList = [];
+    let fallbackStatus = activeFallbackFieldsInfo;
     let mandatoryFields = formFieldProperties?.mandatoryFields?.standardFields?.map((field) => field?.fieldName);
     validateFieldList = validateFieldList?.concat(
       formFields
@@ -246,7 +249,7 @@ function CreateNewPerson() {
         var values = form.getFieldsValue(true);
         let personPayload = {};
         Object.keys(values)?.map((object) => {
-          let payload = formPayloadHandler(values[object], object, formFields, calendarContentLanguage);
+          let payload = formPayloadHandler(values[object], object, formFields, calendarContentLanguage, fallbackStatus);
           if (payload) {
             let newKeys = Object.keys(payload);
             personPayload = {
@@ -429,6 +432,7 @@ function CreateNewPerson() {
 
   useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());
+    dispatch(setBannerDismissed(false));
   }, []);
 
   useEffect(() => {
@@ -446,7 +450,7 @@ function CreateNewPerson() {
       }
     });
 
-    if (!shouldDisplay) {
+    if (!shouldDisplay && !isBannerDismissed) {
       dispatch(setLanguageLiteralBannerDisplayStatus(true));
     } else {
       dispatch(setLanguageLiteralBannerDisplayStatus(false));
@@ -692,7 +696,7 @@ function CreateNewPerson() {
                                   label={t('common.dismiss')}
                                   onClick={() => {
                                     dispatch(setLanguageLiteralBannerDisplayStatus(false));
-                                    dispatch(clearActiveFallbackFieldsInfo({}));
+                                    dispatch(setBannerDismissed(true));
                                   }}
                                 />
                               }
@@ -830,7 +834,11 @@ function CreateNewPerson() {
                                 hidden={
                                   taxonomy?.isAdminOnly ? (adminCheckHandler({ calendar, user }) ? false : true) : false
                                 }>
-                                <TreeSelectOption
+                                <SortableTreeSelect
+                                  dataCy={`tag-person-dynamic-field`}
+                                  form={form}
+                                  draggable
+                                  fieldName={['dynamicFields', taxonomy?.id]}
                                   data-cy={`treeselect-person-dynamic-fields-${index}`}
                                   allowClear
                                   treeDefaultExpandAll
@@ -841,20 +849,6 @@ function CreateNewPerson() {
                                     user,
                                     calendarContentLanguage,
                                   )}
-                                  tagRender={(props) => {
-                                    const { label, closable, onClose } = props;
-                                    return (
-                                      <Tags
-                                        data-cy={`tag-person-dynamic-field-${label}`}
-                                        closable={closable}
-                                        onClose={onClose}
-                                        closeIcon={
-                                          <CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />
-                                        }>
-                                        {label}
-                                      </Tags>
-                                    );
-                                  }}
                                 />
                               </Form.Item>
                             );

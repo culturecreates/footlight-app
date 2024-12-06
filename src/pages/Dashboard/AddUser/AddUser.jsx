@@ -286,19 +286,21 @@ const AddUser = () => {
             calendarId,
             organizationIds: organizations,
             peopleIds: people,
-          }).then((res) => {
-            if (res?.data?.statusCode == 202) {
-              notification.success({
-                description: t(`dashboard.settings.addUser.notification.invitation`),
-                key: res.message,
-                placement: 'top',
-                closeIcon: <></>,
-                maxCount: 1,
-                duration: 3,
-              });
-            }
-            navigate(-2);
-          });
+          })
+            .unwrap()
+            .then((res) => {
+              if (res?.data?.statusCode == 202) {
+                notification.success({
+                  description: t(`dashboard.settings.addUser.notification.invitation`),
+                  key: res.message,
+                  placement: 'top',
+                  closeIcon: <></>,
+                  maxCount: 1,
+                  duration: 3,
+                });
+              }
+              navigate(-2);
+            });
         })
         .catch((errors) => {
           notification.success({
@@ -818,6 +820,10 @@ const AddUser = () => {
                         {
                           validator: (_, value) =>
                             validateNotEmpty(_, value, t('dashboard.settings.addUser.validationTexts.email')),
+                        },
+                        {
+                          type: 'email',
+                          message: t('login.validations.invalidEmail'),
                         },
                       ]}>
                       <Row>

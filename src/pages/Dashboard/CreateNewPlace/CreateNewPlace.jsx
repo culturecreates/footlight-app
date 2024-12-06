@@ -37,13 +37,11 @@ import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 import { placeTaxonomyMappedFieldTypes } from '../../../constants/placeMappedFieldTypes';
 import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
-import TreeSelectOption from '../../../components/TreeSelectOption';
 import NoContent from '../../../components/NoContent/NoContent';
 import {
   treeDynamicTaxonomyOptions,
   treeTaxonomyOptions,
 } from '../../../components/TreeSelectOption/treeSelectOption.settings';
-import Tags from '../../../components/Tags/Common/Tags';
 import StyledInput from '../../../components/Input/Common';
 import SelectionItem from '../../../components/List/SelectionItem';
 import EventsSearch from '../../../components/Search/Events/EventsSearch';
@@ -84,6 +82,8 @@ import {
   getActiveFallbackFieldsInfo,
   getLanguageLiteralBannerDisplayStatus,
   setLanguageLiteralBannerDisplayStatus,
+  setBannerDismissed,
+  getIsBannerDismissed,
 } from '../../../redux/reducer/languageLiteralSlice';
 import Alert from '../../../components/Alert';
 import MultipleImageUpload from '../../../components/MultipleImageUpload';
@@ -93,6 +93,8 @@ import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormI
 import { isDataValid, placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import MultiLingualTextEditor from '../../../components/MultilingualTextEditor/MultiLingualTextEditor';
 import MapComponent from '../../../components/MapComponent';
+import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
+import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 
 const { TextArea } = Input;
 
@@ -113,6 +115,7 @@ function CreateNewPlace() {
   ] = useOutletContext();
   setContentBackgroundColor('#F9FAFF');
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
+  const isBannerDismissed = useSelector(getIsBannerDismissed);
   const languageLiteralBannerDisplayStatus = useSelector(getLanguageLiteralBannerDisplayStatus);
   const { user } = useSelector(getUserDetails);
   const { calendarId } = useParams();
@@ -433,6 +436,7 @@ function CreateNewPlace() {
         .then(async () => {
           setShowDialog(false);
           var values = form.getFieldsValue(true);
+          let fallbackStatus = activeFallbackFieldsInfo;
 
           let placeObj,
             dynamicFields,
@@ -446,10 +450,19 @@ function CreateNewPlace() {
               const languageKey = contentLanguageKeyMap[language];
 
               const addIfValidString = (field, fieldName) => {
-                if (values?.[fieldName]?.[languageKey] && typeof values[fieldName]?.[languageKey] === 'string') {
+                const fallbackFilteredFieldvalue = filterUneditedFallbackValues({
+                  values: values?.[fieldName],
+                  activeFallbackFieldsInfo: fallbackStatus,
+                  fieldName: fieldName,
+                });
+
+                if (
+                  fallbackFilteredFieldvalue?.[languageKey] &&
+                  typeof fallbackFilteredFieldvalue?.[languageKey] === 'string'
+                ) {
                   acc[field] = {
                     ...(acc[field] || {}),
-                    [languageKey]: values[fieldName]?.[languageKey]?.trim(),
+                    [languageKey]: fallbackFilteredFieldvalue?.[languageKey]?.trim(),
                   };
                 }
               };
@@ -463,6 +476,11 @@ function CreateNewPlace() {
             },
             { postalCode: typeof values?.postalCode === 'string' ? values.postalCode.trim() : values?.postalCode },
           );
+
+          if (values.name.fr) {
+            console.log(postalObj);
+            return;
+          }
 
           if (values?.dynamicFields) {
             dynamicFields = Object.keys(values?.dynamicFields)?.map((dynamicField) => {
@@ -529,20 +547,33 @@ function CreateNewPlace() {
             longitude = coordinates[1] || undefined;
           }
 
-          const getFilteredFieldValue = (values) => {
-            let filteredValues = {};
-            Object.keys(values).map((key) => {
-              const value = values[key]?.trim();
-              if (value) filteredValues[key] = value;
-            });
-            return filteredValues;
-          };
+          let name = {},
+            description = {},
+            accessibilityNote = {},
+            disambiguatingDescription = {};
+
+          name = filterUneditedFallbackValues({
+            values: values?.name,
+            activeFallbackFieldsInfo: fallbackStatus,
+            fieldName: 'name',
+          });
+          description = filterUneditedFallbackValues({
+            values: values?.description,
+            activeFallbackFieldsInfo: fallbackStatus,
+            fieldName: 'description',
+          });
+          accessibilityNote = filterUneditedFallbackValues({
+            values: values?.accessibilityNote,
+            activeFallbackFieldsInfo: fallbackStatus,
+            fieldName: 'accessibilityNote',
+          });
+          disambiguatingDescription = filterUneditedFallbackValues({ values: values?.disambiguatingDescription });
 
           placeObj = {
-            name: getFilteredFieldValue(values.name),
-            ...(isDataValid(values?.description) && {
-              description: getFilteredFieldValue(values.description),
-            }),
+            ...(isDataValid(name) && { name }),
+            ...(isDataValid(description) && { description }),
+            ...(isDataValid(accessibilityNote) && { accessibilityNote }),
+            ...(isDataValid(disambiguatingDescription) && { disambiguatingDescription }),
             ...(values?.openingHours && { openingHours: { uri: urlProtocolCheck(values?.openingHours) } }),
             ...(values?.containedInPlace && {
               containedInPlace: containedInPlaceObj,
@@ -552,9 +583,6 @@ function CreateNewPlace() {
               longitude,
             },
 
-            ...(isDataValid(values?.accessibilityNote) && {
-              accessibilityNote: getFilteredFieldValue(values?.accessibilityNote),
-            }),
             accessibility: values?.placeAccessibility
               ? values?.placeAccessibility.map((item) => {
                   const obj = {
@@ -580,9 +608,6 @@ function CreateNewPlace() {
                 })
               : undefined,
 
-            ...(isDataValid(values?.disambiguatingDescription) && {
-              disambiguatingDescription: getFilteredFieldValue(values?.disambiguatingDescription),
-            }),
             ...(values?.dynamicFields && { dynamicFields }),
             ...(values?.containsPlace && { containsPlace }),
           };
@@ -962,6 +987,7 @@ function CreateNewPlace() {
 
   useEffect(() => {
     dispatch(clearActiveFallbackFieldsInfo());
+    dispatch(setBannerDismissed(false));
   }, []);
 
   useEffect(() => {
@@ -979,7 +1005,7 @@ function CreateNewPlace() {
       }
     });
 
-    if (!shouldDisplay) {
+    if (!shouldDisplay && !isBannerDismissed) {
       dispatch(setLanguageLiteralBannerDisplayStatus(true));
     } else {
       dispatch(setLanguageLiteralBannerDisplayStatus(false));
@@ -1425,7 +1451,7 @@ function CreateNewPlace() {
                                   label={t('common.dismiss')}
                                   onClick={() => {
                                     dispatch(setLanguageLiteralBannerDisplayStatus(false));
-                                    dispatch(clearActiveFallbackFieldsInfo({}));
+                                    dispatch(setBannerDismissed(true));
                                   }}
                                 />
                               }
@@ -1502,7 +1528,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={formFieldNames.NAME}
+                    name={[formFieldNames.NAME]}
                     data={
                       placeData?.name
                         ? placeData?.name
@@ -1570,7 +1596,11 @@ function CreateNewPlace() {
                         false,
                       ) && 'none',
                   }}>
-                  <TreeSelectOption
+                  <SortableTreeSelect
+                    dataCy={`tag-place-type`}
+                    form={form}
+                    draggable
+                    fieldName={formFieldNames.TYPE}
                     data-cy="treeselect-place-type"
                     placeholder={t('dashboard.places.createNew.addPlace.placeType.placeholder')}
                     allowClear
@@ -1584,18 +1614,6 @@ function CreateNewPlace() {
                       false,
                       calendarContentLanguage,
                     )}
-                    tagRender={(props) => {
-                      const { label, closable, onClose } = props;
-                      return (
-                        <Tags
-                          data-cy={`tag-place-type-${label}`}
-                          closable={closable}
-                          onClose={onClose}
-                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                          {label}
-                        </Tags>
-                      );
-                    }}
                   />
                 </Form.Item>
                 <Form.Item
@@ -1606,7 +1624,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={formFieldNames.DISAMBIGUATING_DESCRIPTION}
+                    name={[formFieldNames.DISAMBIGUATING_DESCRIPTION]}
                     data={
                       placeData?.disambiguatingDescription
                         ? placeData?.disambiguatingDescription
@@ -1791,30 +1809,17 @@ function CreateNewPlace() {
                           },
                         ]}
                         hidden={taxonomy?.isAdminOnly ? (adminCheckHandler({ calendar, user }) ? false : true) : false}>
-                        <TreeSelectOption
+                        <SortableTreeSelect
+                          dataCy={`tag-place-dynamic-field`}
+                          form={form}
+                          draggable
+                          fieldName={[formFieldNames.DYNAMIC_FIELS, taxonomy?.id]}
                           data-cy={`treeselect-place-dynamic-field-${index}`}
                           allowClear
                           treeDefaultExpandAll
                           notFoundContent={<NoContent />}
                           clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
                           treeData={treeDynamicTaxonomyOptions(taxonomy?.concept, user, calendarContentLanguage)}
-                          tagRender={(props) => {
-                            const { label, closable, onClose } = props;
-                            return (
-                              <Tags
-                                data-cy={`tag-place-dynamic-field-${label}`}
-                                closable={closable}
-                                onClose={onClose}
-                                closeIcon={
-                                  <CloseCircleOutlined
-                                    style={{ color: '#1b3de6', fontSize: '12px' }}
-                                    data-cy={`icon-place-dynamic-taxonomy-close-${label}`}
-                                  />
-                                }>
-                                {label}
-                              </Tags>
-                            );
-                          }}
                         />
                       </Form.Item>
                     );
@@ -1888,7 +1893,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={formFieldNames.STREET_ADDRESS}
+                    name={[formFieldNames.STREET_ADDRESS]}
                     data={
                       placeData?.address?.streetAddress
                         ? placeData?.address?.streetAddress
@@ -1926,7 +1931,7 @@ function CreateNewPlace() {
                     entityId={placeId}
                     calendarContentLanguage={calendarContentLanguage}
                     form={form}
-                    name={formFieldNames.CITY}
+                    name={[formFieldNames.CITY]}
                     data={
                       placeData?.address?.addressLocality
                         ? placeData?.address?.addressLocality
@@ -1994,7 +1999,7 @@ function CreateNewPlace() {
                         entityId={placeId}
                         calendarContentLanguage={calendarContentLanguage}
                         form={form}
-                        name={formFieldNames.PROVINCE}
+                        name={[formFieldNames.PROVINCE]}
                         data={
                           placeData?.address?.addressRegion
                             ? placeData?.address?.addressRegion
@@ -2034,7 +2039,7 @@ function CreateNewPlace() {
                         entityId={placeId}
                         calendarContentLanguage={calendarContentLanguage}
                         form={form}
-                        name={formFieldNames.COUNTRY}
+                        name={[formFieldNames.COUNTRY]}
                         data={
                           placeData?.address?.addressCountry
                             ? placeData?.address?.addressCountry
@@ -2148,7 +2153,11 @@ function CreateNewPlace() {
                       message: t('common.validations.informationRequired'),
                     },
                   ]}>
-                  <TreeSelectOption
+                  <SortableTreeSelect
+                    dataCy={`tag-place`}
+                    form={form}
+                    draggable
+                    fieldName={formFieldNames.REGION}
                     data-cy="treeselect-place-region"
                     placeholder={t('dashboard.places.createNew.addPlace.address.region.placeholder')}
                     allowClear
@@ -2162,18 +2171,6 @@ function CreateNewPlace() {
                       false,
                       calendarContentLanguage,
                     )}
-                    tagRender={(props) => {
-                      const { label, closable, onClose } = props;
-                      return (
-                        <Tags
-                          data-cy={`tag-place-${label}`}
-                          closable={closable}
-                          onClose={onClose}
-                          closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                          {label}
-                        </Tags>
-                      );
-                    }}
                   />
                 </Form.Item>
                 <Form.Item
@@ -2705,7 +2702,11 @@ function CreateNewPlace() {
                         message: t('common.validations.informationRequired'),
                       },
                     ]}>
-                    <TreeSelectOption
+                    <SortableTreeSelect
+                      dataCy={`tag-venue-accessibility`}
+                      form={form}
+                      draggable
+                      fieldName={formFieldNames.PLACE_ACCESSIBILITY}
                       data-cy="treeselect-venue-accessibility"
                       placeholder={t('dashboard.places.createNew.addPlace.venueAccessibility.placeholder')}
                       allowClear
@@ -2719,18 +2720,6 @@ function CreateNewPlace() {
                         false,
                         calendarContentLanguage,
                       )}
-                      tagRender={(props) => {
-                        const { label, closable, onClose } = props;
-                        return (
-                          <Tags
-                            data-cy={`tag-venue-accessibility-${label}`}
-                            closable={closable}
-                            onClose={onClose}
-                            closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}>
-                            {label}
-                          </Tags>
-                        );
-                      }}
                     />
                   </Form.Item>
                   <Form.Item
@@ -2747,7 +2736,7 @@ function CreateNewPlace() {
                       entityId={placeId}
                       calendarContentLanguage={calendarContentLanguage}
                       form={form}
-                      name={formFieldNames.ACCESSIBILITY_NOTE}
+                      name={[formFieldNames.ACCESSIBILITY_NOTE]}
                       data={placeData?.accessibilityNote}
                       required={false}
                       validations={t('common.validations.informationRequired')}

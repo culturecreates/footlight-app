@@ -1155,7 +1155,7 @@
           "placeHolder": "Enter {{language}} name",
           "deleteConceptMessage": "Are you sure you want to permanently delete this concept? This action will also delete it everywhere it was used, including in events.",
           "deleteConceptHeading": "Delete concept",
-          "delete": "delete"
+          "delete": "Delete"
         }
       }
     }
