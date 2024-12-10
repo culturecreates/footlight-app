@@ -92,9 +92,10 @@
   place-content: center;
 }
 
-.event-list-wrapper .event-status-list-item-title-container .artsdata-link-outlined-icon > span {
+.event-list-wrapper .event-status-list-item-title-container .artsdata-link-outlined-icon span {
   display: grid;
   place-content: center;
+  color: #0f0e98;
 }
 
 .event-list-wrapper .event-list-item-meta .image-featured-badge {
