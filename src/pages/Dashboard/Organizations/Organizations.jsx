@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './organizations.css';
-import { List, Grid, Row, Col, Space, Button, Popover, Tree, Badge } from 'antd';
+import { List, Grid, Row, Col, Space, Button, Popover, Tree, Badge, Checkbox, Divider } from 'antd';
 import Icon, { DeleteOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
@@ -27,7 +27,7 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
-import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../../constants/sortByOptions';
+import { sortByOptionsOrgsPlacesPerson, sortByOptionsUsers, sortOrder } from '../../../constants/sortByOptions';
 import i18n from 'i18next';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
@@ -36,6 +36,11 @@ import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSe
 import { useLazyGetEntityDependencyCountQuery } from '../../../services/entities';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import { useLazyGetAllUsersQuery } from '../../../services/users';
+import { useDebounce } from '../../../hooks/debounce';
+import { SEARCH_DELAY } from '../../../constants/search';
+import { removeObjectArrayDuplicates } from '../../../utils/removeObjectArrayDuplicates';
+import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
 
 const { useBreakpoint } = Grid;
 
@@ -59,6 +64,8 @@ function Organizations() {
   setContentBackgroundColor('#fff');
 
   let taxonomyClassQuery = new URLSearchParams();
+  let initialSelectedUsers = {};
+
   taxonomyClassQuery.append('taxonomy-class', taxonomyClass.ORGANIZATION);
   const { currentData: allTaxonomyData } = useGetAllTaxonomyQuery({
     calendarId,
@@ -73,9 +80,22 @@ function Organizations() {
     { currentData: allOrganizationData, isFetching: allOrganizationFetching, isSuccess: allOrganizationSuccess },
   ] = useLazyGetAllOrganizationQuery();
 
+  const [getAllUsers, { isFetching: allUsersLoading, isSuccess: allUsersSuccess }] = useLazyGetAllUsersQuery();
   const [getDependencyDetails, { isFetching: dependencyDetailsFetching }] = useLazyGetEntityDependencyCountQuery();
   const [deleteOrganization] = useDeleteOrganizationMutation();
 
+  const [selectedUsers, setSelectedUsers] = useState(initialSelectedUsers ?? {});
+  const [selectedUsersData, setSelectedUsersData] = useState([]);
+  const [searchKey, setSearchKey] = useState();
+  const [usersData, setUsersData] = useState([]);
+  const [userFilter, setUserFilter] = useState(
+    searchParams.get('users')
+      ? decodeURIComponent(searchParams.get('users'))?.split(',')
+      : sessionStorage.getItem('users')
+      ? decodeURIComponent(sessionStorage.getItem('users'))?.split(',')
+      : [],
+  );
+  const [isUserOpen, setIsUserOpen] = useState(false);
   const [pageNumber, setPageNumber] = useState(
     searchParams.get('page') ? searchParams.get('page') : sessionStorage.getItem('organizationPage') ?? 1,
   );
@@ -173,8 +193,17 @@ function Organizations() {
       order: sortOrder?.ASC,
     });
     setTaxonomyFilter({});
+    setUserFilter([]);
     setPageNumber(1);
+
+    let usersToClear = selectedUsers;
+    Object.keys(usersToClear)?.forEach(function (key) {
+      usersToClear[key] = false;
+    });
+    setSelectedUsers(Object.assign({}, usersToClear));
+
     sessionStorage.removeItem('organizationPage');
+    sessionStorage.removeItem('organizationUsers');
     sessionStorage.removeItem('organizationSearchQuery');
     sessionStorage.removeItem('organizationOrder');
     sessionStorage.removeItem('organizationTaxonomyFilter');
@@ -182,9 +211,60 @@ function Organizations() {
     sessionStorage.removeItem('organizationSortBy');
   };
 
+  const onCheckboxChange = (e) => {
+    let currentUsersFilter = selectedUsers ?? {};
+    Object.assign(currentUsersFilter, { [e?.target?.value]: e?.target?.checked });
+    setSelectedUsers(currentUsersFilter);
+    let filteredUsers = Object.keys(currentUsersFilter).filter(function (key) {
+      return currentUsersFilter[key];
+    });
+    setSelectedUsersData(
+      usersData?.filter((userData) => {
+        if (filteredUsers?.includes(userData?._id)) return true;
+        else return false;
+      }),
+    );
+
+    setUserFilter(filteredUsers);
+    setPageNumber(1);
+  };
+
+  const userSearch = (userSearchKey, selectedData) => {
+    getAllUsers({
+      page: pageNumber,
+      limit: 30,
+      query: userSearchKey,
+      filters: `sort=asc(${sortByOptionsUsers[1].key})`,
+      sessionId: timestampRef,
+      calendarId: calendarId,
+      includeCalenderFilter: true,
+    })
+      .then((response) => {
+        let currentUserList = selectedData?.concat(response?.data?.data);
+        currentUserList = [{ _id: user?.id, ...user }]?.concat(currentUserList);
+        let uniqueArray = removeObjectArrayDuplicates(currentUserList, '_id');
+        setUsersData(uniqueArray);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const debounceUsersSearch = useCallback(useDebounce(userSearch, SEARCH_DELAY), []);
+
+  useEffect(() => {
+    let uniqueArray = removeObjectArrayDuplicates(
+      [{ _id: user?.id, ...user }]?.concat(selectedUsersData)?.concat(usersData),
+      '_id',
+    );
+    setUsersData(uniqueArray);
+  }, [isUserOpen]);
+
   useEffect(() => {
     let sortQuery = new URLSearchParams();
     let query = new URLSearchParams();
+    let usersQuery;
+
+    userFilter?.forEach((user) => query.append('user', user));
+    if (userFilter?.length > 0) usersQuery = encodeURIComponent(userFilter);
 
     sortQuery.append(
       'sort',
@@ -211,6 +291,7 @@ function Organizations() {
     let params = {
       page: pageNumber,
       order: filter?.order,
+      ...(usersQuery && { users: usersQuery }),
       sortBy: filter?.sort,
       ...(Object.keys(taxonomyFilter)?.length > 0 && { taxonomyFilter: JSON.stringify(taxonomyFilter) }),
     };
@@ -220,7 +301,9 @@ function Organizations() {
         query: organizationSearchQuery,
       };
     setSearchParams(createSearchParams(params));
+
     sessionStorage.setItem('organizationPage', pageNumber);
+    sessionStorage.setItem('organizationUsers', usersQuery);
     sessionStorage.setItem('organizationSearchQuery', organizationSearchQuery);
     sessionStorage.setItem('organizationOrder', filter?.order);
     sessionStorage.setItem('organizationSortBy', filter?.sort);
@@ -230,7 +313,7 @@ function Organizations() {
     if (Object.keys(standardTaxonomyFilter)?.length > 0)
       sessionStorage.setItem('standardOrganizationTaxonomyFilter', JSON.stringify(standardTaxonomyFilter));
     else sessionStorage.removeItem('standardOrganizationTaxonomyFilter');
-  }, [pageNumber, organizationSearchQuery, filter, taxonomyFilter, standardTaxonomyFilter]);
+  }, [pageNumber, organizationSearchQuery, userFilter, filter, taxonomyFilter, standardTaxonomyFilter]);
   return (
     <>
       {dependencyDetailsFetching && (
@@ -402,9 +485,102 @@ function Organizations() {
                       </Col>
                     );
                 })}
+
+              <Col className="event-filter-item-mobile-full-width">
+                <SearchableCheckbox
+                  allowSearch={true}
+                  loading={allUsersLoading}
+                  open={isUserOpen}
+                  setOpen={setIsUserOpen}
+                  selectedData={selectedUsersData}
+                  overlayStyle={{ height: '304px' }}
+                  searchImplementation={debounceUsersSearch}
+                  setSearchKey={setSearchKey}
+                  onOpenChangeHandler={() => {
+                    if (!allUsersSuccess && (usersData.length === 0 || usersData.length === 1)) {
+                      let allUsersWithSelected = [];
+                      if (user?.id !== '' && user?.id) {
+                        getAllUsers({
+                          page: 1,
+                          limit: 30,
+                          query: '',
+                          filters: `sort=asc(${sortByOptionsUsers[1].key})`,
+                          sessionId: timestampRef,
+                          calendarId: calendarId,
+                          includeCalenderFilter: true,
+                        })
+                          .unwrap()
+                          .then((response) => {
+                            allUsersWithSelected = [{ _id: user?.id, ...user }]?.concat(response?.data);
+                            allUsersWithSelected = removeObjectArrayDuplicates(allUsersWithSelected, '_id');
+                            if (userFilter?.length > 0) {
+                              let userIds = new URLSearchParams();
+                              userFilter?.forEach((userId) => userIds.append('ids', userId));
+                              getAllUsers({
+                                page: 1,
+                                limit: 30,
+                                query: '',
+                                filters: `sort=asc(${sortByOptionsUsers[1].key})&${userIds}`,
+                                sessionId: timestampRef,
+                                calendarId: calendarId,
+                                includeCalenderFilter: true,
+                              })
+                                .unwrap()
+                                .then((response) => {
+                                  setSelectedUsersData(response?.data);
+                                  allUsersWithSelected = response?.data?.concat(allUsersWithSelected);
+                                  allUsersWithSelected = [{ _id: user?.id, ...user }]?.concat(allUsersWithSelected);
+                                  let uniqueArray = removeObjectArrayDuplicates(allUsersWithSelected, '_id');
+                                  setUsersData(uniqueArray);
+                                })
+                                .catch((error) => console.log(error));
+                            } else setUsersData(allUsersWithSelected);
+                          })
+                          .catch((error) => console.log(error));
+                      }
+                    }
+                  }}
+                  searchKey={searchKey}
+                  data={usersData?.map((userDetail) => {
+                    return {
+                      key: userDetail?._id,
+                      label: (
+                        <>
+                          <Checkbox
+                            value={userDetail?._id}
+                            key={userDetail?._id}
+                            style={{ marginLeft: '8px' }}
+                            onChange={(e) => onCheckboxChange(e)}>
+                            {user?.id == userDetail?._id
+                              ? t('dashboard.people.filter.users.myEvents')
+                              : userDetail?.userName}
+                          </Checkbox>
+                          {user?.id == userDetail?._id && <Divider style={{ margin: 8 }} />}
+                        </>
+                      ),
+                      filtervalue: userDetail?.userName,
+                    };
+                  })}
+                  value={userFilter}>
+                  <Button
+                    size="large"
+                    className="filter-buttons"
+                    style={{ borderColor: userFilter?.length > 0 && '#607EFC' }}
+                    data-cy="button-filter-users">
+                    {t('dashboard.events.filter.users.label')}
+                    {userFilter?.length > 0 && (
+                      <>
+                        &nbsp; <Badge count={userFilter?.length} showZero={false} color="#1B3DE6" />
+                      </>
+                    )}
+                  </Button>
+                </SearchableCheckbox>
+              </Col>
+
               <Col>
                 {(filter?.order === sortOrder?.DESC ||
                   Object.keys(taxonomyFilter)?.length > 0 ||
+                  userFilter.length > 0 ||
                   filter?.sort != sortByOptionsOrgsPlacesPerson[0]?.key) && (
                   <Button
                     size="large"
@@ -418,6 +594,7 @@ function Organizations() {
                 )}
               </Col>
             </Space>
+
             <div className="responsvie-list-wrapper-class">
               {!allOrganizationFetching ? (
                 allOrganizationData?.data?.length > 0 ? (
