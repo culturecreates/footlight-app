@@ -573,7 +573,7 @@ function CreateNewPlace() {
 
           placeObj = {
             ...(isDataValid(name) && { name }),
-            ...(isDataValid(description) && { description }),
+            ...(isDataValid(description) ? { description } : { description: {} }),
             ...(isDataValid(accessibilityNote) && { accessibilityNote }),
             ...(isDataValid(disambiguatingDescription) && { disambiguatingDescription }),
             ...(values?.openingHours && { openingHours: { uri: urlProtocolCheck(values?.openingHours) } }),
