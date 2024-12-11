@@ -28,7 +28,7 @@ import { externalSourceOptions } from '../../../../constants/sourceOptions';
 import CustomModal from '../../../../components/Modal/Common/CustomModal';
 import { copyText } from '../../../../utils/copyText';
 import LoadingIndicator from '../../../../components/LoadingIndicator';
-import { widgetFontCollection } from '../../../../constants/fonts';
+import { redirectionModes, widgetFontCollection } from '../../../../constants/widgetConstants';
 import { setErrorStates } from '../../../../redux/reducer/ErrorSlice';
 
 const { useBreakpoint } = Grid;
@@ -148,6 +148,7 @@ const WidgetSettings = ({ tabKey }) => {
       const height = form.getFieldValue('height') ?? 600;
       const limit = form.getFieldValue('limit') ?? 9;
       const font = form.getFieldValue('font') ?? 'Roboto';
+      const redirectionMode = form.getFieldValue('redirectionMode') ?? redirectionModes[0].value;
 
       const filtersParam =
         arrayToQueryParam(allValues?.eventType ?? [], 'type') +
@@ -164,6 +165,7 @@ const WidgetSettings = ({ tabKey }) => {
       // Add query parameters to the URL
       urlCopy.searchParams.append('width', width);
       urlCopy.searchParams.append('font', font);
+      urlCopy.searchParams.append('redirectionMode', redirectionMode);
       urlCopy.searchParams.append('limit', limit);
       urlCopy.searchParams.append('calendar', calendarSlug);
       urlCopy.searchParams.append('calendarName', calendarName);
@@ -180,6 +182,7 @@ const WidgetSettings = ({ tabKey }) => {
       urlCopyMobile.searchParams.append('calendar', calendarSlug);
       urlCopyMobile.searchParams.append('calendarName', calendarName);
       urlCopyMobile.searchParams.append('font', font);
+      urlCopyMobile.searchParams.append('redirectionMode', redirectionMode);
       urlCopyMobile.searchParams.append('logo', calendarLogoUri);
       urlCopyMobile.searchParams.append('searchEventsFilters', searchEventsFilters);
       urlCopyMobile.searchParams.append('locale', locale?.key.toLowerCase());
@@ -304,6 +307,7 @@ const WidgetSettings = ({ tabKey }) => {
     const height = form.getFieldValue('height') ?? 600;
     const limit = form.getFieldValue('limit') ?? 9;
     const font = form.getFieldValue('font') ?? 'Roboto';
+    const redirectionMode = form.getFieldValue('redirectionMode') ?? redirectionModes[0].value;
     const locale = form.getFieldValue('locale') ?? languageOptions[0]?.value;
 
     urlCopy.searchParams.append('logo', calendarLogoUri);
@@ -311,6 +315,7 @@ const WidgetSettings = ({ tabKey }) => {
     urlCopy.searchParams.append('limit', limit);
     urlCopy.searchParams.append('color', color);
     urlCopy.searchParams.append('font', font);
+    urlCopy.searchParams.append('redirectionMode', redirectionMode);
 
     urlCopy.searchParams.append('calendar', calendarSlug);
     urlCopy.searchParams.append('calendarName', calendarName);
@@ -322,6 +327,7 @@ const WidgetSettings = ({ tabKey }) => {
     urlCopyMobile.searchParams.append('limit', limit);
     urlCopyMobile.searchParams.append('color', color);
     urlCopyMobile.searchParams.append('font', font);
+    urlCopyMobile.searchParams.append('redirectionMode', redirectionMode);
     urlCopyMobile.searchParams.append('calendar', calendarSlug);
     urlCopyMobile.searchParams.append('calendarName', calendarName);
     urlCopyMobile.searchParams.append('height', '600');
@@ -513,6 +519,24 @@ const WidgetSettings = ({ tabKey }) => {
                               padding: '8px 0px',
                             }}
                             options={widgetFontCollection}
+                          />
+                        </Form.Item>
+                      </Col>
+
+                      <Col flex="448px">
+                        <Form.Item
+                          name="redirectionMode"
+                          required
+                          label={t(`${localePath}.redirectionMode`)}
+                          initialValue={redirectionModes[0].value}
+                          data-cy="widget-settings-redirection-mode">
+                          <SelectOption
+                            data-cy="widget-settings-font-dropdown"
+                            styles={{
+                              minWidth: '100%',
+                              padding: '8px 0px',
+                            }}
+                            options={redirectionModes}
                           />
                         </Form.Item>
                       </Col>
