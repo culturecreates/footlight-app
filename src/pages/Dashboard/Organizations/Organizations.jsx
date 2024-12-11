@@ -552,7 +552,7 @@ function Organizations() {
                             style={{ marginLeft: '8px' }}
                             onChange={(e) => onCheckboxChange(e)}>
                             {user?.id == userDetail?._id
-                              ? t('dashboard.people.filter.users.myEvents')
+                              ? t('dashboard.organization.filter.users.myEvents')
                               : userDetail?.userName}
                           </Checkbox>
                           {user?.id == userDetail?._id && <Divider style={{ margin: 8 }} />}
