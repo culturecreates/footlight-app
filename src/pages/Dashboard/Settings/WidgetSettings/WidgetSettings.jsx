@@ -13,7 +13,7 @@ import { taxonomyClass } from '../../../../constants/taxonomyClass';
 import { contentLanguageKeyMap } from '../../../../constants/contentLanguage';
 import { useOutletContext, useParams } from 'react-router-dom';
 import { getUserDetails } from '../../../../redux/reducer/userSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Tags from '../../../../components/Tags/Common/Tags';
 import { treeTaxonomyOptions } from '../../../../components/TreeSelectOption/treeSelectOption.settings';
 import { userLanguages } from '../../../../constants/userLanguages';
@@ -29,7 +29,6 @@ import CustomModal from '../../../../components/Modal/Common/CustomModal';
 import { copyText } from '../../../../utils/copyText';
 import LoadingIndicator from '../../../../components/LoadingIndicator';
 import { redirectionModes, widgetFontCollection } from '../../../../constants/widgetConstants';
-import { setErrorStates } from '../../../../redux/reducer/ErrorSlice';
 
 const { useBreakpoint } = Grid;
 const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_BASE_URL;
@@ -46,7 +45,6 @@ const WidgetSettings = ({ tabKey }) => {
   const [currentCalendarData] = useOutletContext();
   const screens = useBreakpoint();
   const [form] = Form.useForm();
-  const dispatch = useDispatch();
 
   const localePath = 'dashboard.settings.widgetSettings';
   const regexForHexCode = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
@@ -55,6 +53,13 @@ const WidgetSettings = ({ tabKey }) => {
   const calendarSlug = currentCalendarData?.slug;
   const calendarName = currentCalendarData?.name[user?.interfaceLanguage?.toLowerCase()];
   const calendarLogoUri = currentCalendarData?.logo?.original?.uri || '';
+  const isWidgetUrlAvailable = !!(
+    currentCalendarData?.widgetSettings?.eventDetailsUrlTemplate &&
+    currentCalendarData?.widgetSettings?.listEventsUrlTemplate
+  );
+  const redirectionModesModified = redirectionModes.map((mode) =>
+    isWidgetUrlAvailable ? { ...mode, disabled: false } : mode,
+  );
 
   const [color, setColor] = useState('#607EFC');
   const [locationOptions, setLocationOptions] = useState([]);
@@ -148,7 +153,7 @@ const WidgetSettings = ({ tabKey }) => {
       const height = form.getFieldValue('height') ?? 600;
       const limit = form.getFieldValue('limit') ?? 9;
       const font = form.getFieldValue('font') ?? 'Roboto';
-      const redirectionMode = form.getFieldValue('redirectionMode') ?? redirectionModes[0].value;
+      const redirectionMode = form.getFieldValue('redirectionMode') ?? redirectionModesModified[0].value;
 
       const filtersParam =
         arrayToQueryParam(allValues?.eventType ?? [], 'type') +
@@ -257,17 +262,17 @@ const WidgetSettings = ({ tabKey }) => {
   const debounceSearchPlace = useCallback(useDebounce(placesSearch, SEARCH_DELAY), []);
   const debounceSearchPerformerOrganizer = useCallback(useDebounce(performerOrganizerSearch, SEARCH_DELAY), []);
 
-  useEffect(() => {
-    const isWidgetUrlAvailable = !!(
-      currentCalendarData?.widgetSettings?.eventDetailsUrlTemplate &&
-      currentCalendarData?.widgetSettings?.listEventsUrlTemplate
-    );
-    if (!isWidgetUrlAvailable) {
-      dispatch(
-        setErrorStates({ errorType: 'pageNotFound', message: `${t('errorPage.notFoundMessage')}`, isError: true }),
-      );
-    }
-  }, []);
+  // useEffect(() => {
+  //   const isWidgetUrlAvailable = !!(
+  //     currentCalendarData?.widgetSettings?.eventDetailsUrlTemplate &&
+  //     currentCalendarData?.widgetSettings?.listEventsUrlTemplate
+  //   );
+  //   if (!isWidgetUrlAvailable) {
+  //     dispatch(
+  //       setErrorStates({ errorType: 'pageNotFound', message: `${t('errorPage.notFoundMessage')}`, isError: true }),
+  //     );
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (initialEntitiesLocations) {
@@ -307,7 +312,7 @@ const WidgetSettings = ({ tabKey }) => {
     const height = form.getFieldValue('height') ?? 600;
     const limit = form.getFieldValue('limit') ?? 9;
     const font = form.getFieldValue('font') ?? 'Roboto';
-    const redirectionMode = form.getFieldValue('redirectionMode') ?? redirectionModes[0].value;
+    const redirectionMode = form.getFieldValue('redirectionMode') ?? redirectionModesModified[0].value;
     const locale = form.getFieldValue('locale') ?? languageOptions[0]?.value;
 
     urlCopy.searchParams.append('logo', calendarLogoUri);
@@ -528,15 +533,15 @@ const WidgetSettings = ({ tabKey }) => {
                           name="redirectionMode"
                           required
                           label={t(`${localePath}.redirectionMode`)}
-                          initialValue={redirectionModes[0].value}
+                          initialValue={redirectionModesModified[0].value}
                           data-cy="widget-settings-redirection-mode">
                           <SelectOption
-                            data-cy="widget-settings-font-dropdown"
+                            data-cy="widget-settings-redirectionMode-dropdown"
                             styles={{
                               minWidth: '100%',
                               padding: '8px 0px',
                             }}
-                            options={redirectionModes}
+                            options={redirectionModesModified}
                           />
                         </Form.Item>
                       </Col>

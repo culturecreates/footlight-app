@@ -20,5 +20,6 @@ export const redirectionModes = [
   {
     label: <Translation>{(t) => t('dashboard.settings.widgetSettings.redirectionModeExternal')}</Translation>,
     value: 'EXTERNAL',
+    disabled: true,
   },
 ];
