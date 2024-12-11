@@ -107,7 +107,7 @@ function Places() {
   const [userFilter, setUserFilter] = useState(
     searchParams.get('users')
       ? decodeURIComponent(searchParams.get('users'))?.split(',')
-      : sessionStorage.getItem('users')
+      : sessionStorage.getItem('placesUsers')
       ? decodeURIComponent(sessionStorage.getItem('users'))?.split(',')
       : [],
   );
@@ -275,7 +275,7 @@ function Places() {
     let query = new URLSearchParams();
     let usersQuery;
 
-    userFilter?.forEach((user) => query.append('user', user));
+    userFilter?.forEach((user) => query.append('created-by', user));
     if (userFilter?.length > 0) usersQuery = encodeURIComponent(userFilter);
 
     sortQuery.append(
@@ -326,7 +326,7 @@ function Places() {
       };
     setSearchParams(createSearchParams(params));
 
-    if (usersQuery) sessionStorage.setItem('placesUsers', usersQuery);
+    usersQuery && sessionStorage.setItem('placesUsers', usersQuery);
     sessionStorage.setItem('placesPage', pageNumber);
     sessionStorage.setItem('placesSearchQuery', placesSearchQuery);
     sessionStorage.setItem('placeOrder', filter?.order);

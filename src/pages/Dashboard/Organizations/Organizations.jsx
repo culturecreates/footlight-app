@@ -91,7 +91,7 @@ function Organizations() {
   const [userFilter, setUserFilter] = useState(
     searchParams.get('users')
       ? decodeURIComponent(searchParams.get('users'))?.split(',')
-      : sessionStorage.getItem('users')
+      : sessionStorage.getItem('organizationUsers')
       ? decodeURIComponent(sessionStorage.getItem('users'))?.split(',')
       : [],
   );
@@ -263,7 +263,7 @@ function Organizations() {
     let query = new URLSearchParams();
     let usersQuery;
 
-    userFilter?.forEach((user) => query.append('user', user));
+    userFilter?.forEach((user) => query.append('created-by', user));
     if (userFilter?.length > 0) usersQuery = encodeURIComponent(userFilter);
 
     sortQuery.append(
@@ -303,7 +303,7 @@ function Organizations() {
     setSearchParams(createSearchParams(params));
 
     sessionStorage.setItem('organizationPage', pageNumber);
-    sessionStorage.setItem('organizationUsers', usersQuery);
+    usersQuery && sessionStorage.setItem('organizationUsers', usersQuery);
     sessionStorage.setItem('organizationSearchQuery', organizationSearchQuery);
     sessionStorage.setItem('organizationOrder', filter?.order);
     sessionStorage.setItem('organizationSortBy', filter?.sort);

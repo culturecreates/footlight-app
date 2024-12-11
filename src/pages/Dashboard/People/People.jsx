@@ -93,7 +93,7 @@ function People() {
   const [userFilter, setUserFilter] = useState(
     searchParams.get('users')
       ? decodeURIComponent(searchParams.get('users'))?.split(',')
-      : sessionStorage.getItem('users')
+      : sessionStorage.getItem('peopleUsers')
       ? decodeURIComponent(sessionStorage.getItem('users'))?.split(',')
       : [],
   );
@@ -263,7 +263,7 @@ function People() {
     let query = new URLSearchParams();
     let usersQuery;
 
-    userFilter?.forEach((user) => query.append('user', user));
+    userFilter?.forEach((user) => query.append('created-by', user));
     if (userFilter?.length > 0) usersQuery = encodeURIComponent(userFilter);
 
     sortQuery.append(
@@ -314,7 +314,7 @@ function People() {
       };
     setSearchParams(createSearchParams(params));
 
-    if (usersQuery) sessionStorage.setItem('peopleUsers', usersQuery);
+    usersQuery && sessionStorage.setItem('peopleUsers', usersQuery);
     sessionStorage.setItem('peoplePage', pageNumber);
     sessionStorage.setItem('peopleSearchQuery', peopleSearchQuery);
     sessionStorage.setItem('peopleOrder', filter?.order);
