@@ -903,7 +903,7 @@ function AddEvent() {
                 endDate: endDateTime,
               }),
               eventStatus: values?.eventStatus,
-              ...(Object.keys(description ?? {})?.length > 0 && { description }),
+              ...(Object.keys(description ?? {})?.length > 0 ? { description } : { description: {} }),
               ...(values?.eventAccessibility && {
                 accessibility,
               }),
