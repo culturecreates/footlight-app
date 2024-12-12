@@ -468,6 +468,13 @@
       "search": {
         "placeholder": "Search Organizations"
       },
+      "filter": {
+        "users": {
+          "label": "Users",
+          "placeholderSearch": "Search name",
+          "myEvents": "My Organizations"
+        }
+      },
       "deleteOrganization": {
         "title": "Confirm Delete",
         "description": "Are you sure you want to permanently delete this organization? The organization will be deleted everywhere it is used.",
@@ -548,6 +555,13 @@
       "places": "Places",
       "search": {
         "placeholder": "Search Places"
+      },
+      "filter": {
+        "users": {
+          "label": "Users",
+          "placeholderSearch": "Search name",
+          "myEvents": "My Places"
+        }
       },
       "deletePlace": {
         "title": "Confirm Delete",
@@ -702,6 +716,13 @@
       "people": "People",
       "search": {
         "placeholder": "Search People"
+      },
+      "filter": {
+        "users": {
+          "label": "Users",
+          "placeholderSearch": "Search name",
+          "myEvents": "My People"
+        }
       },
       "deletePerson": {
         "title": "Confirm Delete",
