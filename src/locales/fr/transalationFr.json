@@ -1153,7 +1153,7 @@
           "conceptName": "Nom",
           "placeHolder": "Indiquer un nom en {{language}}",
           "deleteConceptHeading": "Supprimer le concept",
-          "deleteConceptMessage": "Êtes-vous sûr de vouloir supprimer définitivement ce concept ? Cette action le supprimera également partout où il a été utilisé, y compris dans les événements.",
+          "deleteConceptMessage": "Êtes-vous sûr de vouloir supprimer définitivement ce concept ? Cette action supprimera aussi ses sous-concepts et partout où ils ont été utilisé, y compris dans les événements.",
           "delete": "Supprimer"
         }
       }
@@ -1179,6 +1179,7 @@
     "unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous les ignorer ?",
     "keepEditing": "Poursuivre l'édition",
     "discard": "Ignorer",
+    "day": "jour",
     "copied": "Copié dans le presse-papiers",
     "validations": {
       "informationRequired": "Des informations sont requises"

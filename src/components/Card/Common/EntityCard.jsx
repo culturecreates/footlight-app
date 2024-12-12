@@ -2,6 +2,7 @@ import React from 'react';
 import './entityCard.css';
 import ArtsDataLink from '../../Tags/ArtsDataLink/ArtsDataLink';
 import { LinkOutlined } from '@ant-design/icons';
+import Link from 'antd/lib/typography/Link';
 
 const EntityCard = (props) => {
   const { title, description, artsDataLink, Logo, linkText, onClick } = props;
@@ -20,16 +21,15 @@ const EntityCard = (props) => {
       </div>
       <div className="link-container">
         {artsDataLink && (
-          <ArtsDataLink
-            onClick={(e) => {
-              e.stopPropagation();
-              window.open(`${artsDataLink}`, '_blank', 'noopener,noreferrer');
-            }}
-            data-cy="tag-entity-artsdata">
-            <span style={{ textDecoration: 'underline' }} data-cy="span-artsdata-link">
-              {linkText}
-            </span>
-            <LinkOutlined />
+          <ArtsDataLink data-cy="tag-entity-artsdata">
+            <Link href={artsDataLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+              <div style={{ display: 'flex', gap: '7px' }}>
+                <span style={{ textDecoration: 'underline', color: '#0f0e98' }} data-cy="span-artsdata-link">
+                  {linkText}
+                </span>
+                <LinkOutlined style={{ display: 'grid', placeContent: 'center', color: '#0f0e98' }} />
+              </div>
+            </Link>
           </ArtsDataLink>
         )}
       </div>

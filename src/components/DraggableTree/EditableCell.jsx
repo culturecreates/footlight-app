@@ -72,8 +72,13 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
     );
   }
 
+  let dataCy = ``;
+  if (typeof value === 'string') {
+    dataCy = `taxonomy-concept-cell-${value.replace(/\s+/g, '')}-${recordKey}`;
+  }
+
   return (
-    <td {...restProps}>
+    <td {...restProps} data-cy={dataCy}>
       {editing ? (
         <TextArea
           ref={inputRef}

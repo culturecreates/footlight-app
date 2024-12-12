@@ -40,6 +40,9 @@ function MultiLingualTextEditor(props) {
     }, {}),
   );
 
+  const [isFallbackStatusCreationComplete, setIsFallbackStatusCreationComplete] = useState(false);
+  const [isLabelWarningVisible, setIsLabelWarningVisible] = useState({});
+
   let combinedName = calendarContentLanguage.map((language) => `${name}` + contentLanguageKeyMap[language]).join('-');
   let isFieldsDirty = {}; // to keep track of dirty fields
   calendarContentLanguage.forEach((language) => {
@@ -120,7 +123,6 @@ function MultiLingualTextEditor(props) {
   const dispatch = useDispatch();
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
 
-  const [isInitialRender, setIsInitialRender] = useState(true);
   const [fallbackStatus, setFallbackStatus] = useState(null);
   const [fallbackPromptTextCollection, setFallbackPromptTextCollection] = useState({});
 
@@ -179,17 +181,29 @@ function MultiLingualTextEditor(props) {
       const { [combinedName]: _, ...rest } = activeFallbackFieldsInfo;
       dispatch(setActiveFallbackFieldsInfo({ data: rest, method: 'remove' }));
     }
-    if (fallbackStatus != null) {
-      setIsInitialRender(false);
-    }
+  }, [fallbackStatus]);
+
+  useEffect(() => {
+    if (fallbackStatus == null) return;
+
+    calendarContentLanguage.forEach((language) => {
+      const languageKey = contentLanguageKeyMap[language];
+      setIsLabelWarningVisible((prev) => ({
+        ...prev,
+        [languageKey]: fallbackStatus?.[languageKey]?.tagDisplayStatus ?? false,
+      }));
+    });
+
+    setIsFallbackStatusCreationComplete(true);
   }, [fallbackStatus]);
 
   return (
-    !isInitialRender && (
+    isFallbackStatusCreationComplete && (
       <MultilingualInput
         fieldData={data}
         required={required}
         entityId={entityId}
+        isLabelWarningVisible={isLabelWarningVisible}
         calendarContentLanguage={calendarContentLanguage}
         skipChildModification={true}>
         {calendarContentLanguage.map((language) => {
