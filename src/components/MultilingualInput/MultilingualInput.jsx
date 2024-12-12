@@ -26,6 +26,7 @@ import { ReactComponent as MoveRightExtra } from '../../assets/icons/Right.svg';
  * @param {Object} props.placeholderCollection - An object containing the placeholder attribute for each user interactable element eg. textarea. maintains the order of formItems.
  * @param {string} props.entityId - The entity id.
  * @param {Boolean} props.skipChildModification - A boolean to skip the modification of children. Default is false. Used as a prop for multilingual text editor.
+ * @param {Object} props.isLabelWarningVisible - An object containing the status of the label warning for each language only relevant if skipChildModification is true.
  * @param {Object} params.form - Form instance. Not relevent if skipChildModification is true.
  *
  * @returns {React.Element} The rendered form item components.
@@ -41,6 +42,7 @@ function MultilingualInput({ children, ...rest }) {
     required,
     placeholderCollection,
     skipChildModification = false,
+    isLabelWarningVisible = {},
     entityId,
     form,
   } = rest;
@@ -82,6 +84,10 @@ function MultilingualInput({ children, ...rest }) {
   const shouldDisplayLabel = (required, fieldData, entityId, langKey) => {
     const hasFieldData = fieldData != null ? isDataValid(fieldData) : false;
     const isFieldEmpty = !fieldData?.[langKey] || fieldData[langKey] === '';
+
+    if (skipChildModification) {
+      return isLabelWarningVisible[langKey] ?? false;
+    }
 
     if (entityId && isFieldEmpty) {
       return required || (!required && hasFieldData);
