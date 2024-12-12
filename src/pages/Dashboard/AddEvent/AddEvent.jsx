@@ -110,6 +110,7 @@ import { isDataValid, placeHolderCollectionCreator } from '../../../utils/MultiL
 import MultiLingualTextEditor from '../../../components/MultilingualTextEditor/MultiLingualTextEditor';
 import MultilingualInput from '../../../components/MultilingualInput';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
+import { doesEventExceedNextDay } from '../../../utils/doesEventExceed';
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
 
 const { TextArea } = Input;
@@ -119,8 +120,8 @@ function AddEvent() {
   const location = useLocation();
   const dispatch = useDispatch();
   const [form] = Form.useForm();
-  Form.useWatch('startTime', form);
-  Form.useWatch('endTime', form);
+  const start_Time = Form.useWatch('startTime', form);
+  const end_Time = Form.useWatch('endTime', form);
   const timestampRef = useRef(Date.now()).current;
   const { calendarId, eventId } = useParams();
   let [searchParams] = useSearchParams();
@@ -283,6 +284,18 @@ function AddEvent() {
     },
     { label: t('dashboard.events.addEditEvent.otherInformation.contact.email'), value: 'email' },
   ];
+
+  const adjustEndDateTimeIfBeforeStart = (startDateTime, endDateTime, timezone) => {
+    const start = moment.tz(startDateTime, timezone);
+    let end = moment.tz(endDateTime, timezone);
+
+    if (end.isBefore(start)) {
+      end.add(1, 'days');
+    }
+
+    return end.toISOString();
+  };
+
   const hasSubEventConfigChanges = (customDates = [], subEventConfig = []) => {
     // Convert both arrays to a simpler format for easier comparison
     const formatCustomDates = customDates.flatMap(({ startDate, customTimes = [] }) =>
@@ -676,7 +689,11 @@ function AddEvent() {
                 startDateTime = moment
                   .tz(datePickerValue, eventData?.scheduleTimezone ?? 'Canada/Eastern')
                   .format('YYYY-MM-DD');
-              if (endTimeValue) endDateTime = dateTimeConverter(datePickerValue, endTimeValue, customTimeFlag);
+              if (endTimeValue) {
+                endDateTime = dateTimeConverter(datePickerValue, endTimeValue, customTimeFlag);
+                if (startDateTime && endDateTime)
+                  endDateTime = adjustEndDateTimeIfBeforeStart(startDateTime, endDateTime, eventData?.scheduleTimezone);
+              }
             }
 
             if (dateTypeValue === dateTypes.RANGE) {
@@ -2606,6 +2623,7 @@ function AddEvent() {
                                     ? moment.tz(eventData?.endDateTime, eventData?.scheduleTimezone ?? 'Canada/Eastern')
                                     : undefined
                                 }
+                                dependencies={['startTime']}
                                 data-cy="form-item-single-date-end-time-label">
                                 <TimePickerStyled
                                   placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
@@ -2616,6 +2634,14 @@ function AddEvent() {
                                       endTime: value,
                                     });
                                   }}
+                                  suffixIcon={
+                                    dateType === dateTypes.SINGLE &&
+                                    doesEventExceedNextDay(
+                                      start_Time,
+                                      end_Time,
+                                      eventData?.scheduleTimezone ?? 'Canada/Eastern',
+                                    ) && <sup> +1&nbsp;{t('common.day')}</sup>
+                                  }
                                   data-cy="single-date-end-time"
                                 />
                               </Form.Item>
