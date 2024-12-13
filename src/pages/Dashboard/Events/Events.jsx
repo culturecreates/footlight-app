@@ -444,7 +444,7 @@ function Events() {
     let sortQuery = new URLSearchParams();
     let usersQuery, publicationQuery, organizerQuery;
 
-    userFilter?.forEach((user) => query.append('user', user));
+    userFilter?.forEach((user) => query.append('created-by', user));
     organizerFilter?.forEach((organizer) => query.append('person-organization', organizer));
     filter?.publication?.forEach((state) => query.append('publish-state', state));
     if (userFilter?.length > 0) usersQuery = encodeURIComponent(userFilter);
