@@ -159,7 +159,8 @@ const WidgetSettings = ({ tabKey }) => {
         arrayToQueryParam(allValues?.eventType ?? [], 'type') +
         arrayToQueryParam(allValues?.location ?? [], 'place') +
         arrayToQueryParam(allValues?.region ?? [], 'region') +
-        arrayToQueryParam([...(allValues?.person ?? []), ...(allValues?.organizer ?? [])], 'person-organization');
+        arrayToQueryParam([...(allValues?.organizer ?? [])], 'person-organization') +
+        arrayToQueryParam([...(allValues?.person ?? [])], 'performer');
 
       const searchEventsFilters = filtersParam;
 
@@ -261,18 +262,6 @@ const WidgetSettings = ({ tabKey }) => {
 
   const debounceSearchPlace = useCallback(useDebounce(placesSearch, SEARCH_DELAY), []);
   const debounceSearchPerformerOrganizer = useCallback(useDebounce(performerOrganizerSearch, SEARCH_DELAY), []);
-
-  // useEffect(() => {
-  //   const isWidgetUrlAvailable = !!(
-  //     currentCalendarData?.widgetSettings?.eventDetailsUrlTemplate &&
-  //     currentCalendarData?.widgetSettings?.listEventsUrlTemplate
-  //   );
-  //   if (!isWidgetUrlAvailable) {
-  //     dispatch(
-  //       setErrorStates({ errorType: 'pageNotFound', message: `${t('errorPage.notFoundMessage')}`, isError: true }),
-  //     );
-  //   }
-  // }, []);
 
   useEffect(() => {
     if (initialEntitiesLocations) {
