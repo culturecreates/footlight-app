@@ -87,6 +87,10 @@
 .events-wrapper .bulk-select-checkbox {
   display: inherit;
 }
+
+.events-wrapper .bulk-select-checkbox .ant-checkbox-wrapper {
+  padding: 0 28px 0 28px;
+}
 @media only screen and (max-width: 768px) {
   .events-wrapper .events-heading-wrapper .events-heading {
     font-size: 24px;
