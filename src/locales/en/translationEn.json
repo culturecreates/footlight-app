@@ -94,7 +94,8 @@
       "addEvent": "Event",
       "duplicates": {
         "mergeDuplicates": "Merge duplicates",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "selectAll": "Select all"
       },
       "filter": {
         "users": {

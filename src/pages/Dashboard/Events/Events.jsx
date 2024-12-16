@@ -37,7 +37,7 @@ import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import PrimaryButton from '../../../components/Button/Primary';
 import Text from '../../../components/Button/Text';
-// import CheckBox from '../../../components/CheckBox';
+import CheckBox from '../../../components/CheckBox';
 
 const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
@@ -230,6 +230,8 @@ function Events() {
   );
 
   const [selectedDuplicates, setSelectedDuplicates] = useState([]);
+  const [indeterminate, setIndeterminate] = useState(false);
+  const [checkAll, setCheckAll] = useState(false);
 
   let customFilters = currentCalendarData?.filterPersonalization?.customFields;
   const dateTypeSelector = (dates) => {
@@ -241,8 +243,6 @@ function Events() {
   };
 
   const [selectedDateType, setSelectedDateType] = useState(dateTypeSelector(filter.dates));
-  // const [indeterminate, setIndeterminate] = useState(false);
-  // const [checkAll, setCheckAll] = useState(false);
 
   const userSearch = (userSearchKey, selectedData) => {
     getAllUsers({
@@ -449,6 +449,11 @@ function Events() {
     }
   };
 
+  const updateSelectAllState = (checkedValues, totalItems) => {
+    setIndeterminate(checkedValues.length > 0 && checkedValues.length < totalItems);
+    setCheckAll(checkedValues.length === totalItems);
+  };
+
   const getSelectedDuplicatesForPage = (pageNumber) => {
     const storedData = sessionStorage.getItem(storageKeys.eventDuplicates);
     const parsedData = storedData ? JSON.parse(storedData) : {};
@@ -456,36 +461,30 @@ function Events() {
   };
 
   const onCheckboxChangeHandler = (checkedValues) => {
-    // Retrieve existing data from session storage
     const storedData = sessionStorage.getItem(storageKeys.eventDuplicates);
     const parsedData = storedData ? JSON.parse(storedData) : {};
 
-    // Update the data for the current page
     parsedData[`page_${pageNumber}`] = checkedValues;
 
-    // Store the updated data back in session storage
     sessionStorage.setItem(storageKeys.eventDuplicates, JSON.stringify(parsedData));
 
-    // Update the state
     setSelectedDuplicates(checkedValues);
-    // setIndeterminate(true);
+    updateSelectAllState(checkedValues, eventsData?.data?.length);
   };
 
-  // const onCheckAllChange = (e) => {
-  //   const checkedValues = e.target.checked ? eventsData?.data?.map((event) => event?.id) : [];
-  //   setSelectedDuplicates(checkedValues);
-  //   const storedData = sessionStorage.getItem(storageKeys.eventDuplicates);
-  //   const parsedData = storedData ? JSON.parse(storedData) : {};
+  const onSelectAllChange = (e) => {
+    const allItemIds = e.target.checked ? eventsData?.data?.map((item) => item.id) : [];
 
-  //   // Update the data for the current page
-  //   parsedData[`page_${pageNumber}`] = checkedValues;
+    const storedData = sessionStorage.getItem(storageKeys.eventDuplicates);
+    const parsedData = storedData ? JSON.parse(storedData) : {};
 
-  //   // Store the updated data back in session storage
-  //   sessionStorage.setItem(storageKeys.eventDuplicates, JSON.stringify(parsedData));
+    parsedData[`page_${pageNumber}`] = allItemIds;
 
-  //   // setIndeterminate(false);
-  //   // setCheckAll(e.target.checked);
-  // };
+    sessionStorage.setItem(storageKeys.eventDuplicates, JSON.stringify(parsedData));
+    setSelectedDuplicates(allItemIds);
+    setIndeterminate(false);
+    setCheckAll(e.target.checked);
+  };
 
   const mergeHandler = () => {
     // Retrieve existing data from session storage
@@ -581,57 +580,60 @@ function Events() {
       filterkeys: decodeURIComponent(query.toString()),
       sort: sortQuery,
       sessionId: timestampRef,
-    });
+    })
+      .unwrap()
+      .then((response) => {
+        let params = {
+          page: pageNumber,
+          order: filter?.order,
+          sortBy: filter?.sort,
+          ...(filter?.dates?.length > 0 && filter?.dates[0] && { startDateRange: query?.get('start-date-range') }),
+          ...(filter?.dates?.length > 1 && filter?.dates[1] && { endDateRange: query?.get('end-date-range') }),
+          ...(usersQuery && { users: usersQuery }),
+          ...(organizerQuery && { organizers: organizerQuery }),
+          ...(publicationQuery && { publication: publicationQuery }),
+          ...(Object.keys(taxonomyFilter)?.length > 0 && { taxonomyFilter: JSON.stringify(taxonomyFilter) }),
+          ...(Object.keys(standardTaxonomyFilter)?.length > 0 && {
+            standardTaxonomyFilter: JSON.stringify(standardTaxonomyFilter),
+          }),
+        };
 
-    let params = {
-      page: pageNumber,
-      order: filter?.order,
-      sortBy: filter?.sort,
-      ...(filter?.dates?.length > 0 && filter?.dates[0] && { startDateRange: query?.get('start-date-range') }),
-      ...(filter?.dates?.length > 1 && filter?.dates[1] && { endDateRange: query?.get('end-date-range') }),
-      ...(usersQuery && { users: usersQuery }),
-      ...(organizerQuery && { organizers: organizerQuery }),
-      ...(publicationQuery && { publication: publicationQuery }),
-      ...(Object.keys(taxonomyFilter)?.length > 0 && { taxonomyFilter: JSON.stringify(taxonomyFilter) }),
-      ...(Object.keys(standardTaxonomyFilter)?.length > 0 && {
-        standardTaxonomyFilter: JSON.stringify(standardTaxonomyFilter),
-      }),
-    };
+        if (eventSearchQuery && eventSearchQuery !== '')
+          params = {
+            ...params,
+            query: eventSearchQuery,
+          };
+        setSearchParams(createSearchParams(params));
 
-    if (eventSearchQuery && eventSearchQuery !== '')
-      params = {
-        ...params,
-        query: eventSearchQuery,
-      };
-    setSearchParams(createSearchParams(params));
+        const duplicates = getSelectedDuplicatesForPage(pageNumber);
+        setSelectedDuplicates(duplicates);
+        updateSelectAllState(duplicates, response?.data?.length);
 
-    const duplicates = getSelectedDuplicatesForPage(pageNumber);
-    setSelectedDuplicates(duplicates);
-
-    sessionStorage.setItem('page', pageNumber);
-    sessionStorage.setItem('query', eventSearchQuery);
-    sessionStorage.setItem('order', filter?.order);
-    sessionStorage.setItem('sortBy', filter?.sort);
-    if (usersQuery) sessionStorage.setItem('users', usersQuery);
-    else sessionStorage.removeItem('users');
-    if (organizerQuery) sessionStorage.setItem('organizers', organizerQuery);
-    else sessionStorage.removeItem('organizers');
-    if (publicationQuery) sessionStorage.setItem('publication', publicationQuery);
-    else if (sessionStorage.getItem('publication')) {
-      sessionStorage.removeItem('publication');
-    }
-    if (filter?.dates?.length > 0 && filter?.dates[0] && filter?.dates[0] !== '')
-      sessionStorage.setItem('startDateRange', filter?.dates[0]);
-    else sessionStorage.setItem('startDateRange', query?.get('start-date-range'));
-    if (filter?.dates?.length > 1 && filter?.dates[1] && filter?.dates[1] !== '')
-      sessionStorage.setItem('endDateRange', filter?.dates[1]);
-    else sessionStorage.setItem('endDateRange', query?.get('end-date-range'));
-    if (Object.keys(taxonomyFilter)?.length > 0)
-      sessionStorage.setItem('taxonomyFilter', JSON.stringify(taxonomyFilter));
-    else sessionStorage.removeItem('taxonomyFilter');
-    if (Object.keys(standardTaxonomyFilter)?.length > 0)
-      sessionStorage.setItem('standardTaxonomyFilter', JSON.stringify(standardTaxonomyFilter));
-    else sessionStorage.removeItem('standardTaxonomyFilter');
+        sessionStorage.setItem('page', pageNumber);
+        sessionStorage.setItem('query', eventSearchQuery);
+        sessionStorage.setItem('order', filter?.order);
+        sessionStorage.setItem('sortBy', filter?.sort);
+        if (usersQuery) sessionStorage.setItem('users', usersQuery);
+        else sessionStorage.removeItem('users');
+        if (organizerQuery) sessionStorage.setItem('organizers', organizerQuery);
+        else sessionStorage.removeItem('organizers');
+        if (publicationQuery) sessionStorage.setItem('publication', publicationQuery);
+        else if (sessionStorage.getItem('publication')) {
+          sessionStorage.removeItem('publication');
+        }
+        if (filter?.dates?.length > 0 && filter?.dates[0] && filter?.dates[0] !== '')
+          sessionStorage.setItem('startDateRange', filter?.dates[0]);
+        else sessionStorage.setItem('startDateRange', query?.get('start-date-range'));
+        if (filter?.dates?.length > 1 && filter?.dates[1] && filter?.dates[1] !== '')
+          sessionStorage.setItem('endDateRange', filter?.dates[1]);
+        else sessionStorage.setItem('endDateRange', query?.get('end-date-range'));
+        if (Object.keys(taxonomyFilter)?.length > 0)
+          sessionStorage.setItem('taxonomyFilter', JSON.stringify(taxonomyFilter));
+        else sessionStorage.removeItem('taxonomyFilter');
+        if (Object.keys(standardTaxonomyFilter)?.length > 0)
+          sessionStorage.setItem('standardTaxonomyFilter', JSON.stringify(standardTaxonomyFilter));
+        else sessionStorage.removeItem('standardTaxonomyFilter');
+      });
   }, [
     calendarId,
     pageNumber,
@@ -1131,14 +1133,6 @@ function Events() {
               </Col>
             </Row>
           </Col>
-          {/* <Col span={24}>
-            <CheckBox
-              label={'Select all'}
-              indeterminate={indeterminate}
-              onChange={onCheckAllChange}
-              checked={checkAll}
-            />
-          </Col> */}
         </Row>
         <Row className="events-content">
           <Col flex="832px">
@@ -1150,36 +1144,51 @@ function Events() {
             {!isFetching &&
               currentCalendarData &&
               (eventsData?.data?.length > 0 ? (
-                <Checkbox.Group
-                  className="bulk-select-checkbox"
-                  onChange={onCheckboxChangeHandler}
-                  value={selectedDuplicates}>
-                  <EventList
-                    data={eventsData}
-                    pageNumber={pageNumber}
-                    setPageNumber={setPageNumber}
-                    calendarContentLanguage={calendarContentLanguage}
-                  />
-                </Checkbox.Group>
+                <>
+                  <Col span={24}>
+                    <CheckBox
+                      indeterminate={indeterminate}
+                      onChange={onSelectAllChange}
+                      checked={checkAll}
+                      label={t('dashboard.events.duplicates.selectAll')}
+                      data-cy="checkbox-select-all"
+                      style={{ padding: '0 28px 0 28px' }}
+                    />
+                  </Col>
+
+                  <Checkbox.Group
+                    className="bulk-select-checkbox"
+                    onChange={onCheckboxChangeHandler}
+                    value={selectedDuplicates}>
+                    <EventList
+                      data={eventsData}
+                      pageNumber={pageNumber}
+                      setPageNumber={setPageNumber}
+                      calendarContentLanguage={calendarContentLanguage}
+                    />
+                  </Checkbox.Group>
+                </>
               ) : (
                 <NoContent style={{ height: '200px' }} />
               ))}
           </Col>
         </Row>
-        <section id="footer">
-          <Row justify={'space-between'} align={'middle'}>
-            <Col className="footer">
-              <PrimaryButton
-                data-cy="button-bulk-duplicate"
-                label={t('dashboard.events.duplicates.mergeDuplicates')}
-                onClick={mergeHandler}
-              />
-            </Col>
-            <Col className="footer">
-              <Text data-cy="button-bulk-cancel" size="large" label={t('dashboard.events.duplicates.cancel')} />
-            </Col>
-          </Row>
-        </section>
+        {eventsData?.data?.length > 0 && (
+          <section id="footer">
+            <Row justify={'space-between'} align={'middle'}>
+              <Col className="footer">
+                <PrimaryButton
+                  data-cy="button-bulk-duplicate"
+                  label={t('dashboard.events.duplicates.mergeDuplicates')}
+                  onClick={mergeHandler}
+                />
+              </Col>
+              <Col className="footer">
+                <Text data-cy="button-bulk-cancel" size="large" label={t('dashboard.events.duplicates.cancel')} />
+              </Col>
+            </Row>
+          </section>
+        )}
       </Col>
     </Row>
   ) : (
