@@ -73,9 +73,8 @@ const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus, tran
     deleteData(newData);
     return newData;
   };
-
   const columns = calendarContentLanguage.map((language) => ({
-    title: capitalizeFirstLetter(language),
+    title: t(`common.tab${capitalizeFirstLetter(language)}`),
     dataIndex: contentLanguageKeyMap[language],
     key: contentLanguageKeyMap[language],
     editable: true,
