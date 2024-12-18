@@ -1303,6 +1303,7 @@ function CreateNewOrganization() {
                                   taxonomy?.isAdminOnly ? (adminCheckHandler({ calendar, user }) ? false : true) : false
                                 }>
                                 <SortableTreeSelect
+                                  setShowDialog={setShowDialog}
                                   form={form}
                                   draggable
                                   dataCy={`tag-organization-dynamic-field`}
