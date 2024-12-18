@@ -1202,6 +1202,7 @@
     "keepEditing": "Keep editing",
     "copied": "Copied to clipboard",
     "discard": "Discard",
+    "day": "day",
     "validations": {
       "informationRequired": "Information is required"
     },

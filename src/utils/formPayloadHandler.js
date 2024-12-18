@@ -1,6 +1,7 @@
 import { contentLanguageKeyMap } from '../constants/contentLanguage';
 import { dataTypes, formTypes } from '../constants/formFields';
 import { filterUneditedFallbackValues } from './removeUneditedFallbackValues';
+import { stripHtml } from './stringManipulations';
 
 const write = (object, path, value) => {
   return path.reduceRight((obj, next, idx, fullPath) => {
@@ -33,7 +34,15 @@ export const formPayloadHandler = (
       case dataTypes.MULTI_LINGUAL:
         if (currentField[0]?.type === formTypes.INPUT || currentField[0]?.type === formTypes.EDITOR) {
           const fallbackFilteredValues = filterUneditedFallbackValues({
-            values: value,
+            values:
+              currentField[0]?.type === formTypes.EDITOR
+                ? Object.keys(value || {}).reduce((acc, key) => {
+                    //strips editor html value to its inner text
+                    const content = value[key];
+                    acc[key] = stripHtml(content);
+                    return acc;
+                  }, {})
+                : value,
             activeFallbackFieldsInfo,
             fieldName: mappedField,
           });

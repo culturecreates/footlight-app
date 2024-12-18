@@ -1200,6 +1200,7 @@
     "unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous les ignorer ?",
     "keepEditing": "Poursuivre l'édition",
     "discard": "Ignorer",
+    "day": "jour",
     "copied": "Copié dans le presse-papiers",
     "validations": {
       "informationRequired": "Des informations sont requises"
