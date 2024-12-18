@@ -7,7 +7,7 @@ import SortableTag from '../Tags/SortableTag/SortableTag';
 import Tags from '../Tags/Common/Tags';
 import './treeSelectOption.css';
 
-function SortableTreeSelect({ form, fieldName, draggable = false, dataCy, ...props }) {
+function SortableTreeSelect({ form, fieldName, draggable = false, dataCy, setShowDialog, ...props }) {
   const [selectedValues, setSelectedValues] = useState(props.value || []);
   const TITLE = 'title';
   const LABEL = 'label';
@@ -24,6 +24,7 @@ function SortableTreeSelect({ form, fieldName, draggable = false, dataCy, ...pro
 
       form.setFieldValue(fieldName, reorderedValues);
     }
+    setShowDialog(true);
   };
 
   const handleChange = (values) => {
@@ -31,6 +32,7 @@ function SortableTreeSelect({ form, fieldName, draggable = false, dataCy, ...pro
     setSelectedValues(uniqueValues);
 
     form.setFieldValue(fieldName, uniqueValues);
+    setShowDialog(true);
   };
 
   const tagRender = (props) => {
@@ -51,6 +53,7 @@ function SortableTreeSelect({ form, fieldName, draggable = false, dataCy, ...pro
               selectedValues.filter((v) => v !== value),
             );
             handleChange(selectedValues.filter((v) => v !== value));
+            setShowDialog(true);
           }}
         />
       );
