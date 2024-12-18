@@ -468,6 +468,13 @@
       "search": {
         "placeholder": "Recherche d'organisations"
       },
+      "filter": {
+        "users": {
+          "label": "Utilisateurs",
+          "placeholderSearch": "Rechercher un nom",
+          "myEvents": "Mes Organisations"
+        }
+      },
       "deleteOrganization": {
         "title": "Confirmer la suppression",
         "description": "Êtes-vous sûr de vouloir supprimer définitivement cette fiche d'organization ? Elle sera supprimée dans tout CMS Footlight.",
@@ -547,6 +554,13 @@
       "places": "Lieux",
       "search": {
         "placeholder": "Recherche de lieux"
+      },
+      "filter": {
+        "users": {
+          "label": "Utilisateurs",
+          "placeholderSearch": "Rechercher un nom",
+          "myEvents": "Mes Lieux"
+        }
       },
       "deletePlace": {
         "title": "Confirmer la suppression",
@@ -702,6 +716,13 @@
       "people": "Personnes",
       "search": {
         "placeholder": "Rechercher une personne"
+      },
+      "filter": {
+        "users": {
+          "label": "Utilisateurs",
+          "placeholderSearch": "Rechercher un nom",
+          "myEvents": "Mes Personnes"
+        }
       },
       "deletePerson": {
         "title": "Confirmer la suppression",
