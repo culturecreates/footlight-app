@@ -2385,6 +2385,7 @@ function AddEvent() {
                   data-cy="form-item-event-type-label">
                   <SortableTreeSelect
                     form={form}
+                    setShowDialog={setShowDialog}
                     dataCy={`tag-event-type`}
                     draggable
                     fieldName="eventType"
@@ -2421,6 +2422,7 @@ function AddEvent() {
                   ]}
                   data-cy="form-item-audience-label">
                   <SortableTreeSelect
+                    setShowDialog={setShowDialog}
                     dataCy={`tag-audience`}
                     form={form}
                     draggable
@@ -2456,6 +2458,7 @@ function AddEvent() {
                   ]}
                   data-cy="form-item-event-discipline-label">
                   <SortableTreeSelect
+                    setShowDialog={setShowDialog}
                     form={form}
                     draggable
                     dataCy={`tag-event-discipline`}
@@ -2510,6 +2513,7 @@ function AddEvent() {
                           },
                         ]}>
                         <SortableTreeSelect
+                          setShowDialog={setShowDialog}
                           form={form}
                           draggable
                           dataCy={`tag-${taxonomy?.id}`}
@@ -4288,6 +4292,7 @@ function AddEvent() {
                 }
                 data-cy="form-item-eventlanguage-label">
                 <SortableTreeSelect
+                  setShowDialog={setShowDialog}
                   dataCy={`tag-event-language`}
                   form={form}
                   draggable
@@ -4388,6 +4393,7 @@ function AddEvent() {
                   }
                   data-cy="form-item-event-accessibility-label">
                   <SortableTreeSelect
+                    setShowDialog={setShowDialog}
                     dataCy={`tag-event-accessibility`}
                     form={form}
                     draggable

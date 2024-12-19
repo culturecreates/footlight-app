@@ -1599,6 +1599,7 @@ function CreateNewPlace() {
                       ) && 'none',
                   }}>
                   <SortableTreeSelect
+                    setShowDialog={setShowDialog}
                     dataCy={`tag-place-type`}
                     form={form}
                     draggable
@@ -1812,6 +1813,7 @@ function CreateNewPlace() {
                         ]}
                         hidden={taxonomy?.isAdminOnly ? (adminCheckHandler({ calendar, user }) ? false : true) : false}>
                         <SortableTreeSelect
+                          setShowDialog={setShowDialog}
                           dataCy={`tag-place-dynamic-field`}
                           form={form}
                           draggable
@@ -2156,6 +2158,7 @@ function CreateNewPlace() {
                     },
                   ]}>
                   <SortableTreeSelect
+                    setShowDialog={setShowDialog}
                     dataCy={`tag-place`}
                     form={form}
                     draggable
@@ -2705,6 +2708,7 @@ function CreateNewPlace() {
                       },
                     ]}>
                     <SortableTreeSelect
+                      setShowDialog={setShowDialog}
                       dataCy={`tag-venue-accessibility`}
                       form={form}
                       draggable
