@@ -88,14 +88,16 @@ export const treeEntitiesOption = (
     isFieldsDirty[langKey] = false;
   });
   let options = data?.map((entity) => {
+    let mainImageData = entity?.image;
+
     return {
       label: (
         <SelectionItem
           itemWidth="100%"
           icon={
             entity?.type?.toUpperCase() == taxonomyClass.ORGANIZATION ? (
-              entity?.logo?.thumbnail?.uri ? (
-                <img src={entity?.logo?.thumbnail?.uri} />
+              entity?.logo?.thumbnail?.uri || mainImageData?.original?.uri ? (
+                <img src={entity?.logo?.thumbnail?.uri ?? mainImageData?.original?.uri} />
               ) : (
                 <Icon component={Organizations} style={{ color: '#607EFC' }} />
               )
