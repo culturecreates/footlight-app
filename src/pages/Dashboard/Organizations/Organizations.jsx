@@ -437,50 +437,53 @@ function Organizations() {
                       current: Number(pageNumber),
                       showSizeChanger: false,
                     }}
-                    renderItem={(item, index) => (
-                      <ListItem
-                        data-cy={`antd-organization-list-item-${index}`}
-                        key={index}
-                        id={index}
-                        logo={item?.logo?.thumbnail?.uri}
-                        defaultLogo={
-                          <Icon
-                            component={OrganizationLogo}
-                            style={{ color: '#607EFC', fontSize: '18px' }}
-                            data-cy="organization-logo"
-                          />
-                        }
-                        title={contentLanguageBilingual({
-                          data: item?.name,
-                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                          calendarContentLanguage: calendarContentLanguage,
-                        })}
-                        description={contentLanguageBilingual({
-                          data: item?.disambiguatingDescription,
-                          interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
-                          calendarContentLanguage: calendarContentLanguage,
-                        })}
-                        createdDate={item?.creator?.date}
-                        createdByUserName={item?.creator?.userName}
-                        updatedDate={item?.modifier?.date}
-                        updatedByUserName={item?.modifier?.userName}
-                        artsDataLink={artsDataLinkChecker(item?.sameAs)}
-                        listItemHandler={() => listItemHandler(item?.id)}
-                        actions={[
-                          adminCheckHandler({ calendar, user }) && !isReadOnly && (
-                            <DeleteOutlined
-                              key={'delete-icon'}
-                              style={{ color: '#222732', fontSize: '24px' }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                deleteOrganizationHandler(item?.id);
-                              }}
-                              data-cy="delete-organization"
+                    renderItem={(item, index) => {
+                      const mainImageData = item?.image?.find((image) => image?.isMain) || null;
+                      return (
+                        <ListItem
+                          data-cy={`antd-organization-list-item-${index}`}
+                          key={index}
+                          id={index}
+                          logo={item?.logo?.thumbnail?.uri ?? mainImageData?.original?.uri}
+                          defaultLogo={
+                            <Icon
+                              component={OrganizationLogo}
+                              style={{ color: '#607EFC', fontSize: '18px' }}
+                              data-cy="organization-logo"
                             />
-                          ),
-                        ]}
-                      />
-                    )}
+                          }
+                          title={contentLanguageBilingual({
+                            data: item?.name,
+                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                            calendarContentLanguage: calendarContentLanguage,
+                          })}
+                          description={contentLanguageBilingual({
+                            data: item?.disambiguatingDescription,
+                            interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                            calendarContentLanguage: calendarContentLanguage,
+                          })}
+                          createdDate={item?.creator?.date}
+                          createdByUserName={item?.creator?.userName}
+                          updatedDate={item?.modifier?.date}
+                          updatedByUserName={item?.modifier?.userName}
+                          artsDataLink={artsDataLinkChecker(item?.sameAs)}
+                          listItemHandler={() => listItemHandler(item?.id)}
+                          actions={[
+                            adminCheckHandler({ calendar, user }) && !isReadOnly && (
+                              <DeleteOutlined
+                                key={'delete-icon'}
+                                style={{ color: '#222732', fontSize: '24px' }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteOrganizationHandler(item?.id);
+                                }}
+                                data-cy="delete-organization"
+                              />
+                            ),
+                          ]}
+                        />
+                      );
+                    }}
                   />
                 ) : (
                   <NoContent style={{ height: '200px' }} data-cy="empty-organization" />

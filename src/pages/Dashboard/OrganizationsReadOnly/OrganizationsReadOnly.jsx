@@ -87,6 +87,7 @@ function OrganizationsReadOnly() {
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const imageConfig = currentCalendarData?.imageConfig?.length > 0 && currentCalendarData?.imageConfig[0];
   const imageGalleryData = organizationData?.image?.filter((image) => image && !image?.isMain) || [];
+  const mainImageData = organizationData?.image?.find((image) => image?.isMain) || null;
 
   const formConstants = currentCalendarData?.forms?.filter((form) => form?.formName === 'Organization')[0];
   let mandatoryStandardFields = [];
@@ -603,10 +604,10 @@ function OrganizationsReadOnly() {
                         </Row>
                       </Col>
                       <Col className="top-level-column">
-                        {organizationData?.logo?.original?.uri && (
+                        {(organizationData?.logo?.original?.uri || mainImageData?.original?.uri) && (
                           <div>
                             <img
-                              src={organizationData?.logo?.original?.uri}
+                              src={organizationData?.logo?.original?.uri ?? mainImageData?.original?.uri}
                               alt="avatar"
                               style={{
                                 objectFit: 'contain',
