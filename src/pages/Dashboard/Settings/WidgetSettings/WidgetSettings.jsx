@@ -13,7 +13,7 @@ import { taxonomyClass } from '../../../../constants/taxonomyClass';
 import { contentLanguageKeyMap } from '../../../../constants/contentLanguage';
 import { useOutletContext, useParams } from 'react-router-dom';
 import { getUserDetails } from '../../../../redux/reducer/userSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Tags from '../../../../components/Tags/Common/Tags';
 import { treeTaxonomyOptions } from '../../../../components/TreeSelectOption/treeSelectOption.settings';
 import { userLanguages } from '../../../../constants/userLanguages';
@@ -28,8 +28,7 @@ import { externalSourceOptions } from '../../../../constants/sourceOptions';
 import CustomModal from '../../../../components/Modal/Common/CustomModal';
 import { copyText } from '../../../../utils/copyText';
 import LoadingIndicator from '../../../../components/LoadingIndicator';
-import { widgetFontCollection } from '../../../../constants/fonts';
-import { setErrorStates } from '../../../../redux/reducer/ErrorSlice';
+import { redirectionModes, widgetFontCollection } from '../../../../constants/widgetConstants';
 
 const { useBreakpoint } = Grid;
 const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_BASE_URL;
@@ -46,7 +45,6 @@ const WidgetSettings = ({ tabKey }) => {
   const [currentCalendarData] = useOutletContext();
   const screens = useBreakpoint();
   const [form] = Form.useForm();
-  const dispatch = useDispatch();
 
   const localePath = 'dashboard.settings.widgetSettings';
   const regexForHexCode = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
@@ -55,6 +53,13 @@ const WidgetSettings = ({ tabKey }) => {
   const calendarSlug = currentCalendarData?.slug;
   const calendarName = currentCalendarData?.name[user?.interfaceLanguage?.toLowerCase()];
   const calendarLogoUri = currentCalendarData?.logo?.original?.uri || '';
+  const isWidgetUrlAvailable = !!(
+    currentCalendarData?.widgetSettings?.eventDetailsUrlTemplate &&
+    currentCalendarData?.widgetSettings?.listEventsUrlTemplate
+  );
+  const redirectionModesModified = redirectionModes.map((mode) =>
+    isWidgetUrlAvailable ? { ...mode, disabled: false } : mode,
+  );
 
   const [color, setColor] = useState('#607EFC');
   const [locationOptions, setLocationOptions] = useState([]);
@@ -148,12 +153,14 @@ const WidgetSettings = ({ tabKey }) => {
       const height = form.getFieldValue('height') ?? 600;
       const limit = form.getFieldValue('limit') ?? 9;
       const font = form.getFieldValue('font') ?? 'Roboto';
+      const redirectionMode = form.getFieldValue('redirectionMode') ?? redirectionModesModified[0].value;
 
       const filtersParam =
         arrayToQueryParam(allValues?.eventType ?? [], 'type') +
         arrayToQueryParam(allValues?.location ?? [], 'place') +
         arrayToQueryParam(allValues?.region ?? [], 'region') +
-        arrayToQueryParam([...(allValues?.person ?? []), ...(allValues?.organizer ?? [])], 'person-organization');
+        arrayToQueryParam([...(allValues?.organizer ?? [])], 'person-organization') +
+        arrayToQueryParam([...(allValues?.person ?? [])], 'performer');
 
       const searchEventsFilters = filtersParam;
 
@@ -164,6 +171,7 @@ const WidgetSettings = ({ tabKey }) => {
       // Add query parameters to the URL
       urlCopy.searchParams.append('width', width);
       urlCopy.searchParams.append('font', font);
+      urlCopy.searchParams.append('redirectionMode', redirectionMode);
       urlCopy.searchParams.append('limit', limit);
       urlCopy.searchParams.append('calendar', calendarSlug);
       urlCopy.searchParams.append('calendarName', calendarName);
@@ -180,6 +188,7 @@ const WidgetSettings = ({ tabKey }) => {
       urlCopyMobile.searchParams.append('calendar', calendarSlug);
       urlCopyMobile.searchParams.append('calendarName', calendarName);
       urlCopyMobile.searchParams.append('font', font);
+      urlCopyMobile.searchParams.append('redirectionMode', redirectionMode);
       urlCopyMobile.searchParams.append('logo', calendarLogoUri);
       urlCopyMobile.searchParams.append('searchEventsFilters', searchEventsFilters);
       urlCopyMobile.searchParams.append('locale', locale?.key.toLowerCase());
@@ -255,18 +264,6 @@ const WidgetSettings = ({ tabKey }) => {
   const debounceSearchPerformerOrganizer = useCallback(useDebounce(performerOrganizerSearch, SEARCH_DELAY), []);
 
   useEffect(() => {
-    const isWidgetUrlAvailable = !!(
-      currentCalendarData?.widgetSettings?.eventDetailsUrlTemplate &&
-      currentCalendarData?.widgetSettings?.listEventsUrlTemplate
-    );
-    if (!isWidgetUrlAvailable) {
-      dispatch(
-        setErrorStates({ errorType: 'pageNotFound', message: `${t('errorPage.notFoundMessage')}`, isError: true }),
-      );
-    }
-  }, []);
-
-  useEffect(() => {
     if (initialEntitiesLocations) {
       setLocationOptions(
         initialEntitiesLocations.map((item) => {
@@ -304,6 +301,7 @@ const WidgetSettings = ({ tabKey }) => {
     const height = form.getFieldValue('height') ?? 600;
     const limit = form.getFieldValue('limit') ?? 9;
     const font = form.getFieldValue('font') ?? 'Roboto';
+    const redirectionMode = form.getFieldValue('redirectionMode') ?? redirectionModesModified[0].value;
     const locale = form.getFieldValue('locale') ?? languageOptions[0]?.value;
 
     urlCopy.searchParams.append('logo', calendarLogoUri);
@@ -311,6 +309,7 @@ const WidgetSettings = ({ tabKey }) => {
     urlCopy.searchParams.append('limit', limit);
     urlCopy.searchParams.append('color', color);
     urlCopy.searchParams.append('font', font);
+    urlCopy.searchParams.append('redirectionMode', redirectionMode);
 
     urlCopy.searchParams.append('calendar', calendarSlug);
     urlCopy.searchParams.append('calendarName', calendarName);
@@ -322,6 +321,7 @@ const WidgetSettings = ({ tabKey }) => {
     urlCopyMobile.searchParams.append('limit', limit);
     urlCopyMobile.searchParams.append('color', color);
     urlCopyMobile.searchParams.append('font', font);
+    urlCopyMobile.searchParams.append('redirectionMode', redirectionMode);
     urlCopyMobile.searchParams.append('calendar', calendarSlug);
     urlCopyMobile.searchParams.append('calendarName', calendarName);
     urlCopyMobile.searchParams.append('height', '600');
@@ -513,6 +513,24 @@ const WidgetSettings = ({ tabKey }) => {
                               padding: '8px 0px',
                             }}
                             options={widgetFontCollection}
+                          />
+                        </Form.Item>
+                      </Col>
+
+                      <Col flex="448px">
+                        <Form.Item
+                          name="redirectionMode"
+                          required
+                          label={t(`${localePath}.redirectionMode`)}
+                          initialValue={redirectionModesModified[0].value}
+                          data-cy="widget-settings-redirection-mode">
+                          <SelectOption
+                            data-cy="widget-settings-redirectionMode-dropdown"
+                            styles={{
+                              minWidth: '100%',
+                              padding: '8px 0px',
+                            }}
+                            options={redirectionModesModified}
                           />
                         </Form.Item>
                       </Col>
