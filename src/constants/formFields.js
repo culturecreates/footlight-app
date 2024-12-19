@@ -273,9 +273,11 @@ export const formFieldValue = [
       mappedField,
       name,
       form,
+      setShowDialog,
     }) => {
       return (
         <SortableTreeSelect
+          setShowDialog={setShowDialog}
           dataCy={`tag-${mappedField}`}
           form={form}
           draggable
