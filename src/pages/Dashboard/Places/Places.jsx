@@ -303,6 +303,7 @@ function Places() {
             />
             <Space>
               {allTaxonomyData?.data?.length > 0 &&
+                adminCheckHandler({ user, calendar }) &&
                 allTaxonomyData?.data?.map((taxonomy, index) => {
                   if (!taxonomy?.isDynamicField && customFilters?.includes(taxonomy?.id))
                     return (
@@ -365,6 +366,7 @@ function Places() {
                     );
                 })}
               {allTaxonomyData?.data?.length > 0 &&
+                adminCheckHandler({ user, calendar }) &&
                 allTaxonomyData?.data?.map((taxonomy, index) => {
                   if (taxonomy?.isDynamicField === true && customFilters?.includes(taxonomy?.id))
                     return (
