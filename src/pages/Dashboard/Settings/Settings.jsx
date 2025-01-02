@@ -34,11 +34,6 @@ const Settings = () => {
   // Set content background color
   setContentBackgroundColor('#fff');
 
-  const isWidgetUrlAvailable = !!(
-    currentCalendarData?.widgetSettings?.eventDetailsUrlTemplate &&
-    currentCalendarData?.widgetSettings?.listEventsUrlTemplate
-  );
-
   useEffect(() => {
     const disabledTab = document.querySelector(
       '.settings-wrapper .settings-tabs > .ant-tabs-nav > .ant-tabs-nav-wrap > .ant-tabs-nav-list > .ant-tabs-tab-disabled',
@@ -106,7 +101,6 @@ const Settings = () => {
       label: <span data-cy="tab-widget-settings">{t('dashboard.settings.tab2')}</span>,
       key: '2',
       children: <WidgetSettings tabKey={tabKey} />,
-      disabled: !isWidgetUrlAvailable,
       adminOnly: true,
       className: 'widget-settings-tab',
     },
