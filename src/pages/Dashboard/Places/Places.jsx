@@ -1,6 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import './places.css';
-import { List, Grid, Popover, Col, Button, Row, Tree, Badge, Space } from 'antd';
+import { List, Grid, Popover, Col, Button, Row, Tree, Badge, Space, Checkbox, Divider } from 'antd';
 import { DeleteOutlined, EnvironmentOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
@@ -25,7 +25,7 @@ import { useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { artsDataLinkChecker } from '../../../utils/artsDataLinkChecker';
 import { useDeletePlacesMutation, useLazyGetAllPlacesQuery } from '../../../services/places';
-import { sortByOptionsOrgsPlacesPerson, sortOrder } from '../../../constants/sortByOptions';
+import { sortByOptionsOrgsPlacesPerson, sortByOptionsUsers, sortOrder } from '../../../constants/sortByOptions';
 import i18n from 'i18next';
 import { PathName } from '../../../constants/pathName';
 import { Confirm } from '../../../components/Modal/Confirm/Confirm';
@@ -35,6 +35,11 @@ import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSe
 import { useLazyGetEntityDependencyCountQuery } from '../../../services/entities';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import SearchableCheckbox from '../../../components/Filter/SearchableCheckbox';
+import { useLazyGetAllUsersQuery } from '../../../services/users';
+import { removeObjectArrayDuplicates } from '../../../utils/removeObjectArrayDuplicates';
+import { useDebounce } from '../../../hooks/debounce';
+import { SEARCH_DELAY } from '../../../constants/search';
 
 const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
@@ -71,6 +76,7 @@ function Places() {
   ] = useOutletContext();
   setContentBackgroundColor('#fff');
 
+  let initialSelectedUsers = {};
   let taxonomyClassQuery = new URLSearchParams();
   taxonomyClassQuery.append('taxonomy-class', taxonomyClass.PLACE);
   const { currentData: allTaxonomyData } = useGetAllTaxonomyQuery({
@@ -81,6 +87,7 @@ function Places() {
     sessionId: timestampRef,
     addToFilter: true,
   });
+  const [getAllUsers, { isFetching: allUsersLoading, isSuccess: allUsersSuccess }] = useLazyGetAllUsersQuery();
   const [getAllPlaces, { currentData: allPlacesData, isFetching: allPlacesFetching, isSuccess: allPlacesSuccess }] =
     useLazyGetAllPlacesQuery();
   const [deletePlaces] = useDeletePlacesMutation();
@@ -92,6 +99,20 @@ function Places() {
   const [placesSearchQuery, setPlacesSearchQuery] = useState(
     searchParams.get('query') ? searchParams.get('query') : sessionStorage.getItem('placesSearchQuery') ?? '',
   );
+
+  const [selectedUsers, setSelectedUsers] = useState(initialSelectedUsers ?? {});
+  const [selectedUsersData, setSelectedUsersData] = useState([]);
+  const [searchKey, setSearchKey] = useState();
+  const [usersData, setUsersData] = useState([]);
+  const [userFilter, setUserFilter] = useState(
+    searchParams.get('users')
+      ? decodeURIComponent(searchParams.get('users'))?.split(',')
+      : sessionStorage.getItem('placesUsers')
+      ? decodeURIComponent(sessionStorage.getItem('users'))?.split(',')
+      : [],
+  );
+  const [isUserOpen, setIsUserOpen] = useState(false);
+
   const [filter, setFilter] = useState({
     sort: searchParams.get('sortBy')
       ? searchParams.get('sortBy')
@@ -185,6 +206,15 @@ function Places() {
     setTaxonomyFilter({});
     setStandardTaxonomyFilter({});
     setPageNumber(1);
+    setUserFilter([]);
+
+    let usersToClear = selectedUsers;
+    Object.keys(usersToClear)?.forEach(function (key) {
+      usersToClear[key] = false;
+    });
+    setSelectedUsers(Object.assign({}, usersToClear));
+
+    sessionStorage.removeItem('placesUsers');
     sessionStorage.removeItem('placesPage');
     sessionStorage.removeItem('placesSearchQuery');
     sessionStorage.removeItem('placeOrder');
@@ -193,9 +223,61 @@ function Places() {
     sessionStorage.removeItem('placeSortBy');
   };
 
+  const onCheckboxChange = (e) => {
+    let currentUsersFilter = selectedUsers ?? {};
+    Object.assign(currentUsersFilter, { [e?.target?.value]: e?.target?.checked });
+    setSelectedUsers(currentUsersFilter);
+    let filteredUsers = Object.keys(currentUsersFilter).filter(function (key) {
+      return currentUsersFilter[key];
+    });
+    setSelectedUsersData(
+      usersData?.filter((userData) => {
+        if (filteredUsers?.includes(userData?._id)) return true;
+        else return false;
+      }),
+    );
+
+    setUserFilter(filteredUsers);
+    setPageNumber(1);
+  };
+
+  const userSearch = (userSearchKey, selectedData) => {
+    getAllUsers({
+      page: pageNumber,
+      limit: 30,
+      query: userSearchKey,
+      filters: `sort=asc(${sortByOptionsUsers[1].key})`,
+      sessionId: timestampRef,
+      calendarId: calendarId,
+      includeCalenderFilter: true,
+    })
+      .then((response) => {
+        let currentUserList = selectedData?.concat(response?.data?.data);
+        currentUserList = [{ _id: user?.id, ...user }]?.concat(currentUserList);
+        let uniqueArray = removeObjectArrayDuplicates(currentUserList, '_id');
+        setUsersData(uniqueArray);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const debounceUsersSearch = useCallback(useDebounce(userSearch, SEARCH_DELAY), []);
+
+  useEffect(() => {
+    let uniqueArray = removeObjectArrayDuplicates(
+      [{ _id: user?.id, ...user }]?.concat(selectedUsersData)?.concat(usersData),
+      '_id',
+    );
+    setUsersData(uniqueArray);
+  }, [isUserOpen]);
+
   useEffect(() => {
     let sortQuery = new URLSearchParams();
     let query = new URLSearchParams();
+    let usersQuery;
+
+    userFilter?.forEach((user) => query.append('created-by', user));
+    if (userFilter?.length > 0) usersQuery = encodeURIComponent(userFilter);
+
     sortQuery.append(
       'sort',
       encodeURIComponent(
@@ -231,6 +313,7 @@ function Places() {
       page: pageNumber,
       order: filter?.order,
       sortBy: filter?.sort,
+      ...(usersQuery && { users: usersQuery }),
       ...(Object.keys(taxonomyFilter)?.length > 0 && { taxonomyFilter: JSON.stringify(taxonomyFilter) }),
       ...(Object.keys(standardTaxonomyFilter)?.length > 0 && {
         standardTaxonomyFilter: JSON.stringify(standardTaxonomyFilter),
@@ -242,6 +325,8 @@ function Places() {
         query: placesSearchQuery,
       };
     setSearchParams(createSearchParams(params));
+
+    usersQuery && sessionStorage.setItem('placesUsers', usersQuery);
     sessionStorage.setItem('placesPage', pageNumber);
     sessionStorage.setItem('placesSearchQuery', placesSearchQuery);
     sessionStorage.setItem('placeOrder', filter?.order);
@@ -252,7 +337,7 @@ function Places() {
     if (Object.keys(standardTaxonomyFilter)?.length > 0)
       sessionStorage.setItem('standardPlaceTaxonomyFilter', JSON.stringify(standardTaxonomyFilter));
     else sessionStorage.removeItem('standardPlaceTaxonomyFilter');
-  }, [pageNumber, placesSearchQuery, filter, taxonomyFilter, standardTaxonomyFilter]);
+  }, [pageNumber, placesSearchQuery, userFilter, filter, taxonomyFilter, standardTaxonomyFilter]);
   return (
     <>
       {dependencyDetailsFetching && (
@@ -426,9 +511,100 @@ function Places() {
                       </Col>
                     );
                 })}
+              <Col className="event-filter-item-mobile-full-width">
+                <SearchableCheckbox
+                  allowSearch={true}
+                  loading={allUsersLoading}
+                  open={isUserOpen}
+                  setOpen={setIsUserOpen}
+                  selectedData={selectedUsersData}
+                  overlayStyle={{ height: '304px' }}
+                  searchImplementation={debounceUsersSearch}
+                  setSearchKey={setSearchKey}
+                  onOpenChangeHandler={() => {
+                    if (!allUsersSuccess && (usersData.length === 0 || usersData.length === 1)) {
+                      let allUsersWithSelected = [];
+                      if (user?.id !== '' && user?.id) {
+                        getAllUsers({
+                          page: 1,
+                          limit: 30,
+                          query: '',
+                          filters: `sort=asc(${sortByOptionsUsers[1].key})`,
+                          sessionId: timestampRef,
+                          calendarId: calendarId,
+                          includeCalenderFilter: true,
+                        })
+                          .unwrap()
+                          .then((response) => {
+                            allUsersWithSelected = [{ _id: user?.id, ...user }]?.concat(response?.data);
+                            allUsersWithSelected = removeObjectArrayDuplicates(allUsersWithSelected, '_id');
+                            if (userFilter?.length > 0) {
+                              let userIds = new URLSearchParams();
+                              userFilter?.forEach((userId) => userIds.append('ids', userId));
+                              getAllUsers({
+                                page: 1,
+                                limit: 30,
+                                query: '',
+                                filters: `sort=asc(${sortByOptionsUsers[1].key})&${userIds}`,
+                                sessionId: timestampRef,
+                                calendarId: calendarId,
+                                includeCalenderFilter: true,
+                              })
+                                .unwrap()
+                                .then((response) => {
+                                  setSelectedUsersData(response?.data);
+                                  allUsersWithSelected = response?.data?.concat(allUsersWithSelected);
+                                  allUsersWithSelected = [{ _id: user?.id, ...user }]?.concat(allUsersWithSelected);
+                                  let uniqueArray = removeObjectArrayDuplicates(allUsersWithSelected, '_id');
+                                  setUsersData(uniqueArray);
+                                })
+                                .catch((error) => console.log(error));
+                            } else setUsersData(allUsersWithSelected);
+                          })
+                          .catch((error) => console.log(error));
+                      }
+                    }
+                  }}
+                  searchKey={searchKey}
+                  data={usersData?.map((userDetail) => {
+                    return {
+                      key: userDetail?._id,
+                      label: (
+                        <>
+                          <Checkbox
+                            value={userDetail?._id}
+                            key={userDetail?._id}
+                            style={{ marginLeft: '8px' }}
+                            onChange={(e) => onCheckboxChange(e)}>
+                            {user?.id == userDetail?._id
+                              ? t('dashboard.places.filter.users.myEvents')
+                              : userDetail?.userName}
+                          </Checkbox>
+                          {user?.id == userDetail?._id && <Divider style={{ margin: 8 }} />}
+                        </>
+                      ),
+                      filtervalue: userDetail?.userName,
+                    };
+                  })}
+                  value={userFilter}>
+                  <Button
+                    size="large"
+                    className="filter-buttons"
+                    style={{ borderColor: userFilter?.length > 0 && '#607EFC' }}
+                    data-cy="button-filter-users">
+                    {t('dashboard.events.filter.users.label')}
+                    {userFilter?.length > 0 && (
+                      <>
+                        &nbsp; <Badge count={userFilter?.length} showZero={false} color="#1B3DE6" />
+                      </>
+                    )}
+                  </Button>
+                </SearchableCheckbox>
+              </Col>
               <Col>
                 {(filter?.order === sortOrder?.DESC ||
                   Object.keys(taxonomyFilter)?.length > 0 ||
+                  userFilter.length > 0 ||
                   Object.keys(standardTaxonomyFilter)?.length > 0 ||
                   filter?.sort != sortByOptionsOrgsPlacesPerson[0]?.key) && (
                   <Button
