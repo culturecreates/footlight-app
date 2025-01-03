@@ -74,7 +74,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
 
   let dataCy = ``;
   if (typeof value === 'string') {
-    dataCy = `taxonomy-concept-cell-${value.replace(/\s+/g, '')}-${recordKey}`;
+    dataCy = `taxonomy-concept-cell${value.replace(/\s+/g, '')}`;
   }
 
   return (
