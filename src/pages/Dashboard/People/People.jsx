@@ -376,6 +376,7 @@ function People() {
             />
             <Space>
               {allTaxonomyData?.data?.length > 0 &&
+                adminCheckHandler({ user, calendar }) &&
                 allTaxonomyData?.data?.map((taxonomy, index) => {
                   if (!taxonomy?.isDynamicField && customFilters?.includes(taxonomy?.id))
                     return (
@@ -438,6 +439,7 @@ function People() {
                     );
                 })}
               {allTaxonomyData?.data?.length > 0 &&
+                adminCheckHandler({ user, calendar }) &&
                 allTaxonomyData?.data?.map((taxonomy, index) => {
                   if (taxonomy?.isDynamicField === true && customFilters?.includes(taxonomy?.id))
                     return (
