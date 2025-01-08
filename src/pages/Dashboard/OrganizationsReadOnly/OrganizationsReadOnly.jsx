@@ -35,6 +35,8 @@ import ReadOnlyPageTabLayout from '../../../layout/ReadOnlyPageTabLayout/ReadOnl
 import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import { organizationFormFieldNames } from '../../../constants/personAndOrganizationFormFieldNames';
 import ImageUpload from '../../../components/ImageUpload';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 function OrganizationsReadOnly() {
   const { t } = useTranslation();
@@ -76,6 +78,8 @@ function OrganizationsReadOnly() {
     sessionId: timestampRef,
   });
   const { user } = useSelector(getUserDetails);
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
+
   const activeTabKey = useSelector(getActiveTabKey);
 
   const [locationPlace, setLocationPlace] = useState();
@@ -104,8 +108,9 @@ function OrganizationsReadOnly() {
     }
   });
 
-  const checkIfFieldIsToBeDisplayed = (field, data, type = 'standard') => {
+  const checkIfFieldIsToBeDisplayed = (field, data, type = 'standard', adminOnly = false) => {
     if (typeof data === 'string' && data !== '') return true;
+    if (adminOnly && !adminCheckHandler({ calendar, user })) return false;
     if (Array.isArray(data) && data.length > 0 && data.every((item) => item !== null && item !== undefined))
       return true;
     if (data !== null && isDataValid(data)) return true;
@@ -534,6 +539,7 @@ function OrganizationsReadOnly() {
                                       taxonomy?.id,
                                       initialTaxonomy?.includes(taxonomy?.id) ? taxonomy : undefined,
                                       'dynamic',
+                                      taxonomy?.isAdminOnly,
                                     )
                                   )
                                     return (
