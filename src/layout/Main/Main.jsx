@@ -26,7 +26,9 @@ function Main(props) {
           </Col>
           <Col>{children?.length > 3 && children[3]}</Col>
         </Row>
-        <Row style={{ paddingTop: 16 }}>
+        <Row
+          gutter={[20, 10]}
+          style={{ paddingTop: '20px', ...(!screens.md && { paddingRight: '4px', marginRight: 0 }) }}>
           <Col>
             <Row gutter={20}>{children?.length > 4 && children[4]}</Row>
           </Col>
