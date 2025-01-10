@@ -392,7 +392,12 @@ function CreateNewOrganization() {
               }
             }
           };
-          if ((values?.image || (values?.image && values?.image?.length > 0)) && !values?.logo) {
+
+          if (
+            (values?.image || (values?.image && values?.image?.length > 0)) &&
+            (!values?.logo || (Array.isArray(values?.logo) && values?.logo?.length === 0))
+          ) {
+            organizationPayload['logo'] = [];
             if (values?.image?.length > 0 && values?.image[0]?.originFileObj) {
               const formdata = new FormData();
               formdata.append('file', values?.image[0].originFileObj);
@@ -452,7 +457,7 @@ function CreateNewOrganization() {
                 // Main image is removed and no new image is added
                 // No gallery images are added
                 organizationPayload['image'] = [];
-              } else organizationPayload['image'] = imageCrop;
+              } else organizationPayload['image'] = organizationData?.image;
               addUpdateOrganizationApiHandler(organizationPayload, toggle)
                 .then((id) => resolve(id))
                 .catch((error) => {

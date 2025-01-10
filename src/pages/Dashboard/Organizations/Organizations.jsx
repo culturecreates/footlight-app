@@ -276,7 +276,7 @@ function Organizations() {
     );
     Object.keys(taxonomyFilter)?.forEach((taxonomy) => {
       if (taxonomyFilter[taxonomy]?.length > 0) {
-        taxonomyFilter[taxonomy]?.forEach((concept) => query.append('concept', concept));
+        taxonomyFilter[taxonomy]?.forEach((concept) => query.append('concept-ids', concept));
       }
     });
 
@@ -364,6 +364,7 @@ function Organizations() {
             />
             <Space>
               {allTaxonomyData?.data?.length > 0 &&
+                adminCheckHandler({ user, calendar }) &&
                 allTaxonomyData?.data?.map((taxonomy, index) => {
                   if (!taxonomy?.isDynamicField && customFilters?.includes(taxonomy?.id))
                     return (
@@ -426,6 +427,7 @@ function Organizations() {
                     );
                 })}
               {allTaxonomyData?.data?.length > 0 &&
+                adminCheckHandler({ user, calendar }) &&
                 allTaxonomyData?.data?.map((taxonomy, index) => {
                   if (taxonomy?.isDynamicField === true && customFilters?.includes(taxonomy?.id))
                     return (

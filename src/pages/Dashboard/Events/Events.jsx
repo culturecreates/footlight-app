@@ -35,6 +35,8 @@ import { dateFilterOptions, dateFilterTypes } from '../../../constants/dateFilte
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { treeTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 const { useBreakpoint } = Grid;
 const standardTaxonomyMaps = [
@@ -211,6 +213,7 @@ function Events() {
       : {},
   );
 
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
   let customFilters = currentCalendarData?.filterPersonalization?.customFields;
   const dateTypeSelector = (dates) => {
     if (dates?.length == 2) {
@@ -907,6 +910,7 @@ function Events() {
                 </SearchableCheckbox>
               </Col>
               {allTaxonomyData?.data?.length > 0 &&
+                adminCheckHandler({ user, calendar }) &&
                 allTaxonomyData?.data?.map((taxonomy, index) => {
                   if (!taxonomy?.isDynamicField && customFilters?.includes(taxonomy?.id))
                     return (
@@ -969,6 +973,7 @@ function Events() {
                     );
                 })}
               {allTaxonomyData?.data?.length > 0 &&
+                adminCheckHandler({ user, calendar }) &&
                 allTaxonomyData?.data?.map((taxonomy, index) => {
                   if (taxonomy?.isDynamicField === true && customFilters?.includes(taxonomy?.id))
                     return (

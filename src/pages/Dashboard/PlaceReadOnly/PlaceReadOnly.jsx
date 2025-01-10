@@ -40,6 +40,8 @@ import ReadOnlyPageTabLayout from '../../../layout/ReadOnlyPageTabLayout/ReadOnl
 import { getActiveTabKey } from '../../../redux/reducer/readOnlyTabSlice';
 import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequiredFieldNames';
+import { adminCheckHandler } from '../../../utils/adminCheckHandler';
+import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -79,6 +81,7 @@ function PlaceReadOnly() {
   });
 
   const { user } = useSelector(getUserDetails);
+  const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
   const activeTabKey = useSelector(getActiveTabKey);
 
   const [locationPlace, setLocationPlace] = useState();
@@ -107,8 +110,10 @@ function PlaceReadOnly() {
     }
   });
 
-  const checkIfFieldIsToBeDisplayed = (field, data, type = 'standard') => {
+  const checkIfFieldIsToBeDisplayed = (field, data, type = 'standard', adminOnly = false) => {
     if (typeof data === 'string' && data !== '') return true;
+    if (adminOnly && !adminCheckHandler({ calendar, user })) return false;
+
     if (Array.isArray(data) && data.length > 0 && data.every((item) => item !== null && item !== undefined))
       return true;
     if (data !== null && isDataValid(data)) return true;
@@ -386,6 +391,7 @@ function PlaceReadOnly() {
                                       taxonomy?.id,
                                       initialTaxonomy?.includes(taxonomy?.id) ? taxonomy : undefined,
                                       'dynamic',
+                                      taxonomy?.isAdminOnly,
                                     )
                                   )
                                     return (
