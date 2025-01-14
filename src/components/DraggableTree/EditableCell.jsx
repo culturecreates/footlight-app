@@ -73,7 +73,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
   }
 
   return (
-    <td {...restProps} data-cy="taxonomy-concept-cell">
+    <td {...restProps} data-cy={'taxonomy-concept-cell-' + dataIndex}>
       {editing ? (
         <TextArea
           ref={inputRef}
