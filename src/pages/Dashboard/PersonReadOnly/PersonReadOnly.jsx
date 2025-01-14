@@ -39,6 +39,7 @@ import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions
 import { personFormFieldNames } from '../../../constants/personAndOrganizationFormFieldNames';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import ImageUpload from '../../../components/ImageUpload';
 
 function PersonReadOnly() {
   const { t } = useTranslation();
@@ -469,6 +470,20 @@ function PersonReadOnly() {
                                     ))}
                                 </Col>
                               )}
+                              {checkIfFieldIsToBeDisplayed(personFormFieldNames.IMAGE, mainImageData) &&
+                                mainImageData?.large?.uri && (
+                                  <div>
+                                    <p className="read-only-event-content-sub-title-primary">
+                                      {t('dashboard.organization.readOnly.image.mainImage')}
+                                    </p>
+                                    <ImageUpload
+                                      imageUrl={mainImageData?.large?.uri}
+                                      imageReadOnly={true}
+                                      preview={true}
+                                      eventImageData={mainImageData?.large}
+                                    />
+                                  </div>
+                                )}
                               {imageConfig.enableGallery && imageGalleryData?.length > 0 && (
                                 <Col span={24}>
                                   <p className="read-only-event-content-sub-title-primary">

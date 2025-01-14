@@ -499,7 +499,13 @@
         "memberOf": "Membre de",
         "location": "Endroit",
         "edit": "Éditer",
-        "socialMediaLinks": "Liens vers les réseaux sociaux"
+        "socialMediaLinks": "Liens vers les réseaux sociaux",
+        "image": {
+          "image": "Image",
+          "mainImage": "Image principale",
+          "additionalImages": "Images supplémentaires"
+        },
+        "logo": "Logo"
       },
       "createNew": {
         "search": {

@@ -500,7 +500,13 @@
         "location": "Location",
         "edit": "Edit",
         "Edit": "Edit",
-        "socialMediaLinks": "Social media links"
+        "socialMediaLinks": "Social media links",
+        "image": {
+          "image": "Image",
+          "mainImage": "Main image",
+          "additionalImages": "Additional images"
+        },
+        "logo": "Logo"
       },
       "createNew": {
         "search": {

@@ -42,6 +42,7 @@ import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions
 import { placeFormRequiredFieldNames } from '../../../constants/placeFormRequiredFieldNames';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import ImageUpload from '../../../components/ImageUpload';
 
 function PlaceReadOnly() {
   const { t } = useTranslation();
@@ -482,6 +483,20 @@ function PlaceReadOnly() {
                                 )}
                               </Col>
                             )}
+                            {checkIfFieldIsToBeDisplayed(placeFormRequiredFieldNames.IMAGE, mainImageData) &&
+                              mainImageData?.large?.uri && (
+                                <div>
+                                  <p className="read-only-event-content-sub-title-primary">
+                                    {t('dashboard.organization.readOnly.image.mainImage')}
+                                  </p>
+                                  <ImageUpload
+                                    imageUrl={mainImageData?.large?.uri}
+                                    imageReadOnly={true}
+                                    preview={true}
+                                    eventImageData={mainImageData?.large}
+                                  />
+                                </div>
+                              )}
                             {imageGalleryData?.length > 0 && imageConfig.enableGallery && (
                               <Col span={24}>
                                 <div>
