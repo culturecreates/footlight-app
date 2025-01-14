@@ -78,7 +78,7 @@ const DraggableTable = ({ data, setData, fallbackStatus, setFallbackStatus, tran
     dataIndex: contentLanguageKeyMap[language],
     key: contentLanguageKeyMap[language],
     editable: true,
-    ['data-cy']: `taxonomy-concept-row-more-btn-${language}`,
+    ['data-cy']: `taxonomy-concept-row-more-btn`,
   }));
 
   const moveRow = useCallback(
