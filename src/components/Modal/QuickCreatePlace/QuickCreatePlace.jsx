@@ -97,10 +97,8 @@ function QuickCreatePlace(props) {
             });
           }
         })
-        .catch((error) => {
-          if (error) {
-            setLoaderModalOpen(false);
-          }
+        .catch(() => {
+          setLoaderModalOpen(false);
         });
     }
   }, [locationPlace]);

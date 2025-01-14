@@ -83,10 +83,8 @@ function QuickCreatePerson(props) {
             });
           }
         })
-        .catch((error) => {
-          if (error) {
-            setLoaderModalOpen(false);
-          }
+        .catch(() => {
+          setLoaderModalOpen(false);
         });
     }
   }, [selectedOrganizers, selectedPerformers, selectedSupporters]);

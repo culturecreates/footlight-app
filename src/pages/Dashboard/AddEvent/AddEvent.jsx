@@ -1095,6 +1095,9 @@ function AddEvent() {
             }
           })
           .catch((error) => {
+            if (loaderModalOpen) {
+              setLoaderModalOpen(false);
+            }
             console.log(error);
             reject(error);
             setShowDialog(previousShowDialog);
