@@ -458,6 +458,45 @@ function AddEvent() {
     return promise;
   };
 
+  const validateFormFields = (
+    form,
+    calendarContentLanguage,
+    contentLanguageKeyMap,
+    eventId,
+    eventData,
+    eventPublishState,
+    validateFields,
+    type,
+  ) => {
+    return new Promise((resolve, reject) => {
+      try {
+        const fieldsToValidate = [
+          ...new Set([
+            ...(calendarContentLanguage.map((language) => ['name', `${contentLanguageKeyMap[language]}`]) ?? []),
+            'datePicker',
+            'dateRangePicker',
+            'datePickerWrapper',
+            'startDateRecur',
+            ...(eventId && eventData?.publishState === eventPublishState.PUBLISHED && type !== eventPublishState.DRAFT
+              ? validateFields
+              : []),
+          ]),
+        ];
+
+        form
+          .validateFields(fieldsToValidate)
+          .then((validatedValues) => {
+            resolve(validatedValues);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  };
+
   const saveAsDraftHandler = (event, toggle = false, type = eventPublishState.PUBLISHED) => {
     event?.preventDefault();
     const previousShowDialog = showDialog;
@@ -465,19 +504,15 @@ function AddEvent() {
 
     const action = ({ previousShowDialog, toggle, type }) => {
       var promise = new Promise(function (resolve, reject) {
-        form
-          .validateFields([
-            ...new Set([
-              ...(calendarContentLanguage.map((language) => ['name', `${contentLanguageKeyMap[language]}`]) ?? []),
-              'datePicker',
-              'dateRangePicker',
-              'datePickerWrapper',
-              'startDateRecur',
-              ...(eventId && eventData?.publishState === eventPublishState.PUBLISHED && type !== eventPublishState.DRAFT
-                ? validateFields
-                : []),
-            ]),
-          ])
+        validateFormFields(
+          form,
+          calendarContentLanguage,
+          contentLanguageKeyMap,
+          eventId,
+          eventData,
+          type,
+          validateFields,
+        )
           .then(async () => {
             let fallbackStatus = activeFallbackFieldsInfo;
             var values = form.getFieldsValue(true);
