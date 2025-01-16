@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 import { Form } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -26,22 +26,28 @@ import MultilingualInput from '../../components/MultilingualInput';
 
 const CreateMultiLingualFormItems = ({ children, ...rest }) => {
   const { calendarContentLanguage, form, name, data, required, validations, dataCy, placeholder, entityId } = rest;
+  Form.useWatch(name[0], form);
   const { t } = useTranslation();
 
-  // State to track dirty fields
-  const [isFieldDirty, setIsFieldDirty] = useState({});
+  // State to force re-render on trackFormValue change
 
+  let isFieldDirty = {}; // to keep track of dirty fields
   let dataCyCollection = [];
   let placeholderCollection = [];
 
-  const formItemList = calendarContentLanguage.map((language) => {
+  calendarContentLanguage.forEach((language) => {
     const lanKey = contentLanguageKeyMap[language];
+    const fieldName = name.concat([lanKey]);
+    isFieldDirty[lanKey] = form.isFieldTouched(fieldName);
+  });
+
+  const formItemList = calendarContentLanguage.map((language) => {
     const dependencies = calendarContentLanguage // dependencies for each form item
       .filter((lan) => lan !== language)
       .map((lan) => [name, contentLanguageKeyMap[lan]]);
 
     dataCyCollection.push(`${dataCy}${language.toLowerCase()}`);
-    placeholderCollection.push(placeholder[lanKey] ?? '');
+    placeholderCollection.push(placeholder[contentLanguageKeyMap[language]] ?? '');
 
     const validationRules = required // validation rules for each form item
       ? [
@@ -62,21 +68,11 @@ const CreateMultiLingualFormItems = ({ children, ...rest }) => {
 
     return (
       <Form.Item
-        name={[`${name}`, lanKey]}
+        name={[`${name}`, contentLanguageKeyMap[language]]}
         key={language}
         dependencies={dependencies}
-        initialValue={data?.[lanKey]}
-        rules={validationRules}
-        shouldUpdate={() => {
-          const updatedIsFieldDirty = {};
-          calendarContentLanguage.forEach((language) => {
-            const lanKey = contentLanguageKeyMap[language];
-            const fieldName = name.concat([lanKey]);
-            updatedIsFieldDirty[lanKey] = form.isFieldTouched(fieldName);
-          });
-          setIsFieldDirty(updatedIsFieldDirty);
-          return true;
-        }}>
+        initialValue={data?.[contentLanguageKeyMap[language]]}
+        rules={validationRules}>
         {children}
       </Form.Item>
     );
