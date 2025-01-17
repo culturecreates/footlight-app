@@ -29,8 +29,6 @@ const CreateMultiLingualFormItems = ({ children, ...rest }) => {
   Form.useWatch(name[0], form);
   const { t } = useTranslation();
 
-  // State to force re-render on trackFormValue change
-
   let isFieldDirty = {}; // to keep track of dirty fields
   let dataCyCollection = [];
   let placeholderCollection = [];
