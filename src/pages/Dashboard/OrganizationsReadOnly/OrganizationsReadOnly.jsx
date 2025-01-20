@@ -418,17 +418,36 @@ function OrganizationsReadOnly() {
                                 ))}
                             </Col>
                           )}
+                          {checkIfFieldIsToBeDisplayed(organizationFormFieldNames.LOGO, organizationData?.logo) &&
+                            organizationData?.logo?.large?.uri && (
+                              <div>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.organization.readOnly.logo')}
+                                </p>
+                                <ImageUpload
+                                  imageUrl={organizationData?.logo?.large?.uri}
+                                  imageReadOnly={true}
+                                  preview={true}
+                                  eventImageData={organizationData?.logo?.large}
+                                />
+                              </div>
+                            )}
                           {checkIfFieldIsToBeDisplayed(
                             organizationFormFieldNames.IMAGE,
                             organizationData?.image?.find((image) => image?.isMain),
                           ) &&
                             organizationData?.image?.find((image) => image?.isMain)?.large?.uri && (
-                              <ImageUpload
-                                imageUrl={organizationData?.image?.find((image) => image?.isMain)?.large?.uri}
-                                imageReadOnly={true}
-                                preview={true}
-                                eventImageData={organizationData?.image?.find((image) => image?.isMain)?.large}
-                              />
+                              <div>
+                                <p className="read-only-event-content-sub-title-primary">
+                                  {t('dashboard.organization.readOnly.image.mainImage')}
+                                </p>
+                                <ImageUpload
+                                  imageUrl={organizationData?.image?.find((image) => image?.isMain)?.large?.uri}
+                                  imageReadOnly={true}
+                                  preview={true}
+                                  eventImageData={organizationData?.image?.find((image) => image?.isMain)?.large}
+                                />
+                              </div>
                             )}
                           {checkIfFieldIsToBeDisplayed(
                             organizationFormFieldNames.IMAGE,
