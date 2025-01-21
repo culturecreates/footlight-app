@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './quickCreatePerson.css';
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import CustomModal from '../Common/CustomModal';
 import TextButton from '../../Button/Text/Text';
 import { useTranslation } from 'react-i18next';
 import PrimaryButton from '../../Button/Primary/Primary';
-import { Row, Col, Form, Input, notification } from 'antd';
+import { Row, Col, Form, Input, notification, Button, message } from 'antd';
 import StyledInput from '../../Input/Common';
 import { treeEntitiesOption, treeTaxonomyOptions } from '../../TreeSelectOption/treeSelectOption.settings';
 import { useSelector } from 'react-redux';
@@ -43,6 +43,7 @@ function QuickCreatePerson(props) {
     setSelectedOrganizers,
     selectedOrganizers,
     selectedPerformers,
+    eventForm,
     setSelectedPerformers,
     selectedSupporters,
     setSelectedSupporters,
@@ -198,10 +199,41 @@ function QuickCreatePerson(props) {
   };
 
   const goToAddFullDetailsPageHandler = async (e) => {
-    const response = await createPersonHandler(false);
-    if (response) {
-      setEvent([e, response]);
-    }
+    eventForm
+      .validateFields([
+        ...new Set([
+          ...(calendarContentLanguage.map((language) => ['name', `${contentLanguageKeyMap[language]}`]) ?? []),
+          'datePicker',
+          'dateRangePicker',
+          'datePickerWrapper',
+          'startDateRecur',
+        ]),
+      ])
+      .then(async () => {
+        const response = await createPersonHandler(false);
+        if (response) {
+          setEvent([e, response]);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        message.warning({
+          duration: 10,
+          maxCount: 1,
+          key: 'event-save-as-warning',
+          content: (
+            <>
+              {t('dashboard.events.addEditEvent.validations.errorDraft')} &nbsp;
+              <Button
+                type="text"
+                icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                onClick={() => message.destroy('event-save-as-warning')}
+              />
+            </>
+          ),
+          icon: <ExclamationCircleOutlined />,
+        });
+      });
   };
 
   return (
