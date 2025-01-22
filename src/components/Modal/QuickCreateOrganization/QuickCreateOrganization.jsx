@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import CustomModal from '../Common/CustomModal';
+import { CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import TextButton from '../../Button/Text/Text';
 import { useTranslation } from 'react-i18next';
 import PrimaryButton from '../../Button/Primary/Primary';
-import { Row, Col, Form, Input, notification } from 'antd';
+import { Row, Col, Form, Input, notification, message, Button } from 'antd';
 import ImageUpload from '../../ImageUpload/ImageUpload';
 import StyledInput from '../../Input/Common';
 import { useAddImageMutation } from '../../../services/image';
@@ -42,6 +43,7 @@ function QuickCreateOrganization(props) {
     setSelectedPerformers,
     selectedSupporters,
     setSelectedSupporters,
+    eventForm,
     selectedOrganizerPerformerSupporterType,
     organizerPerformerSupporterTypes,
     saveAsDraftHandler,
@@ -228,10 +230,41 @@ function QuickCreateOrganization(props) {
   };
 
   const goToAddFullDetailsPageHandler = async (e) => {
-    const response = await createOrganizationHandler(false);
-    if (response) {
-      setEvent([e, response]);
-    }
+    eventForm
+      .validateFields([
+        ...new Set([
+          ...(calendarContentLanguage.map((language) => ['name', `${contentLanguageKeyMap[language]}`]) ?? []),
+          'datePicker',
+          'dateRangePicker',
+          'datePickerWrapper',
+          'startDateRecur',
+        ]),
+      ])
+      .then(async () => {
+        const response = await createOrganizationHandler(false);
+        if (response) {
+          setEvent([e, response]);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        message.warning({
+          duration: 10,
+          maxCount: 1,
+          key: 'event-save-as-warning',
+          content: (
+            <>
+              {t('dashboard.events.addEditEvent.validations.errorDraft')} &nbsp;
+              <Button
+                type="text"
+                icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                onClick={() => message.destroy('event-save-as-warning')}
+              />
+            </>
+          ),
+          icon: <ExclamationCircleOutlined />,
+        });
+      });
   };
 
   return (

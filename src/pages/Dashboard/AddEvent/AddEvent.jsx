@@ -3064,6 +3064,7 @@ function AddEvent() {
                 )}
                 <QuickCreatePlace
                   open={quickCreatePlaceModal}
+                  validateFields={validateFields}
                   setOpen={setQuickCreatePlaceModal}
                   calendarId={calendarId}
                   keyword={quickCreateKeyword}
@@ -3433,6 +3434,7 @@ function AddEvent() {
                 />
                 <QuickCreateOrganization
                   open={quickCreateOrganizerModal}
+                  validateFields={validateFields}
                   setOpen={setQuickCreateOrganizerModal}
                   calendarId={calendarId}
                   keyword={quickCreateKeyword}
@@ -3448,14 +3450,17 @@ function AddEvent() {
                   selectedOrganizerPerformerSupporterType={selectedOrganizerPerformerSupporterType}
                   organizerPerformerSupporterTypes={organizerPerformerSupporterTypes}
                   saveAsDraftHandler={saveAsDraftHandler}
+                  eventForm={form}
                   setLoaderModalOpen={setLoaderModalOpen}
                   loaderModalOpen={loaderModalOpen}
                   setShowDialog={setShowDialog}
                 />
                 <QuickCreatePerson
                   open={quickCreatePersonModal}
+                  validateFields={validateFields}
                   setOpen={setQuickCreatePersonModal}
                   calendarId={calendarId}
+                  eventForm={form}
                   keyword={quickCreateKeyword}
                   setKeyword={setQuickCreateKeyword}
                   interfaceLanguage={user?.interfaceLanguage?.toLowerCase()}
