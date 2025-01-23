@@ -4,9 +4,9 @@ import CustomModal from '../Common/CustomModal';
 import TextButton from '../../Button/Text/Text';
 import { useTranslation } from 'react-i18next';
 import PrimaryButton from '../../Button/Primary/Primary';
-import { Row, Col, Form, Input, notification, Dropdown } from 'antd';
+import { Row, Col, Form, Input, notification, Dropdown, message, Button } from 'antd';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
-import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, SearchOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { treeTaxonomyOptions } from '../../TreeSelectOption/treeSelectOption.settings';
 import { useSelector } from 'react-redux';
@@ -282,10 +282,41 @@ function QuickCreatePlace(props) {
   };
 
   const goToAddFullDetailsPageHandler = async (e) => {
-    const response = await createPlaceHandler(false);
-    if (response) {
-      setEvent([e, response]);
-    }
+    eventForm
+      .validateFields([
+        ...new Set([
+          ...(calendarContentLanguage.map((language) => ['name', `${contentLanguageKeyMap[language]}`]) ?? []),
+          'datePicker',
+          'dateRangePicker',
+          'datePickerWrapper',
+          'startDateRecur',
+        ]),
+      ])
+      .then(async () => {
+        const response = await createPlaceHandler(false);
+        if (response) {
+          setEvent([e, response]);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        message.warning({
+          duration: 10,
+          maxCount: 1,
+          key: 'event-save-as-warning',
+          content: (
+            <>
+              {t('dashboard.events.addEditEvent.validations.errorDraft')} &nbsp;
+              <Button
+                type="text"
+                icon={<CloseCircleOutlined style={{ color: '#222732' }} />}
+                onClick={() => message.destroy('event-save-as-warning')}
+              />
+            </>
+          ),
+          icon: <ExclamationCircleOutlined />,
+        });
+      });
   };
 
   return (
