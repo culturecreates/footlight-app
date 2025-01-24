@@ -69,18 +69,10 @@ jobs:
 
     steps:
       - uses: licenseware/send-email-notification@v1
+
         with:
           api-key: ${{ secrets.SENDGRID_API_KEY }}
           subject: Footlight CMS Deployment
           from-email: ${{ vars.SENDGRID_FROM_EMAIL }}
           to-email: ${{ matrix.to-emails }}
-          markdown-body: |
-            # Footlight CMS Update  
-
-            ## New Release Announcement  
-
-            We are excited to announce that we have just released a new version of Footlight CMS!  
-            The latest release can be found [here](https://github.com/culturecreates/footlight-app/releases/latest).  
-
-            Best,  
-            Footlight Admin
+          markdown-body: ${{vars.NEW_RELEASE_MARKDOWN_PAGE}}
