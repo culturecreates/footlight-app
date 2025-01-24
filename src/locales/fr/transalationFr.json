@@ -256,6 +256,16 @@
             "dragAndDrop": "ou glisser pour télécharger",
             "browse": "Parcourir",
             "imageGallery": "Galerie d'images",
+            "options": {
+              "cropImage": "Recadrer l’image",
+              "imageCredit": "Ajouter des crédits photos à l'image",
+              "altText": "Ajouter un texte alternatif à l’image",
+              "imageCaptions": "Ajouter une légende à l’image",
+              "deleteImage": "Supprimer l’image",
+              "editImageCredit": "Éditer les crédits photos à l'image",
+              "editAltText": "Éditer le texte alternatif à l’image",
+              "editImageCaptions": "Éditer la légende à l’image"
+            },
             "crop": {
               "title": "Positionnement de l’image",
               "subHeading": "Ajustez la position de l’image si nécessaire.",

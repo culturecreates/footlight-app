@@ -256,6 +256,16 @@
             "dragAndDrop": "or drag and drop to upload",
             "browse": "Browse",
             "imageGallery": "Image Gallery",
+            "options": {
+              "cropImage": "Crop image",
+              "imageCredit": "Add image credit",
+              "altText": "Add alt text",
+              "imageCaptions": "Add image caption",
+              "deleteImage": "Delete image",
+              "editImageCredit": "Edit image credit",
+              "editAltText": "Edit alt text",
+              "editImageCaptions": "Edit image caption"
+            },
             "crop": {
               "title": "Position image",
               "subHeading": "Adjust position if necessary.",
