@@ -59,7 +59,7 @@ const FallbackInjectorForReadOnlyPages = (props) => {
         setFallbackPromptTextCollection(updatedCollection);
       }
     }
-  }, [activeFallbackFieldsInfo]);
+  }, [activeFallbackFieldsInfo, currentCalendarData]);
 
   useEffect(() => {
     if (!data || !currentCalendarData) return;
