@@ -7,6 +7,7 @@ import { getActiveTabKey } from '../../redux/reducer/readOnlyTabSlice';
 import './fallbackInjectorForReadOnlyPages.css';
 import { useTranslation } from 'react-i18next';
 import { languageFallbackStatusCreator } from '../../utils/languageFallbackStatusCreator';
+import { useOutletContext } from 'react-router-dom';
 
 /**
  * FallbackInjectorForReadOnlyPages Component
@@ -32,8 +33,10 @@ import { languageFallbackStatusCreator } from '../../utils/languageFallbackStatu
  */
 
 const FallbackInjectorForReadOnlyPages = (props) => {
-  const { children = <></>, fieldName, currentCalendarData, calendarContentLanguage, data } = props;
+  const { children = <></>, fieldName, data } = props;
 
+  const [currentCalendarData] = useOutletContext();
+  const calendarContentLanguage = currentCalendarData?.contentLanguage;
   const langKey = useSelector(getActiveTabKey);
   const activeFallbackFieldsInfo = useSelector(getActiveFallbackFieldsInfo);
   const { t } = useTranslation();

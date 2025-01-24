@@ -6,7 +6,7 @@ import { Col, Row } from 'antd';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { PathName } from '../../../constants/pathName';
 import { bilingual, contentLanguageBilingual } from '../../../utils/bilingual';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../../redux/reducer/userSlice';
 import { ReactComponent as OrganizationLogo } from '../../../assets/icons/organization-light.svg';
 import { taxonomyClass } from '../../../constants/taxonomyClass';
@@ -40,6 +40,8 @@ import { personFormFieldNames } from '../../../constants/personAndOrganizationFo
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
 import ImageUpload from '../../../components/ImageUpload';
+import FallbackInjectorForReadOnlyPages from '../../../components/FallbackInjectorForReadOnlyPages/FallbackInjectorForReadOnlyPages';
+import { clearActiveFallbackFieldsInfo } from '../../../redux/reducer/languageLiteralSlice';
 
 function PersonReadOnly() {
   const { t } = useTranslation();
@@ -79,6 +81,7 @@ function PersonReadOnly() {
   const { user } = useSelector(getUserDetails);
   const calendar = getCurrentCalendarDetailsFromUserDetails(user, calendarId);
   const activeTabKey = useSelector(getActiveTabKey);
+  const dispatch = useDispatch();
 
   const calendarContentLanguage = currentCalendarData?.contentLanguage;
 
@@ -135,6 +138,10 @@ function PersonReadOnly() {
   };
 
   useEffect(() => {
+    dispatch(clearActiveFallbackFieldsInfo());
+  }, []);
+
+  useEffect(() => {
     if (personError) navigate(`${PathName.NotFound}`);
   }, [personError]);
 
@@ -177,7 +184,7 @@ function PersonReadOnly() {
                 <Breadcrumbs
                   name={contentLanguageBilingual({
                     data: personData?.name,
-                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                    requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                     calendarContentLanguage: calendarContentLanguage,
                   })}
                 />
@@ -214,7 +221,7 @@ function PersonReadOnly() {
                   <h4 data-cy="heading-person-name">
                     {contentLanguageBilingual({
                       data: personData?.name,
-                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                   </h4>
@@ -223,7 +230,7 @@ function PersonReadOnly() {
                     data-cy="para-person-disambiguating-description">
                     {contentLanguageBilingual({
                       data: personData?.disambiguatingDescription,
-                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                   </p>
@@ -239,12 +246,12 @@ function PersonReadOnly() {
                     artsDataLink={artsDataLinkChecker(personData?.sameAs)}
                     name={contentLanguageBilingual({
                       data: artsData?.name,
-                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                     disambiguatingDescription={contentLanguageBilingual({
                       data: artsData?.disambiguatingDescription,
-                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                   />
@@ -278,13 +285,15 @@ function PersonReadOnly() {
                                     {t('dashboard.people.readOnly.name')}
                                   </p>
                                   {Object.keys(personData?.name ?? {})?.length > 0 && (
-                                    <p className="read-only-event-content" data-cy="para-person-name-french">
-                                      {contentLanguageBilingual({
-                                        data: personData?.name,
-                                        calendarContentLanguage,
-                                        requiredLanguageKey: activeTabKey,
-                                      })}
-                                    </p>
+                                    <FallbackInjectorForReadOnlyPages fieldName="name" data={personData?.name}>
+                                      <p className="read-only-event-content" data-cy="para-person-name-french">
+                                        {contentLanguageBilingual({
+                                          data: personData?.name,
+                                          calendarContentLanguage,
+                                          requiredLanguageKey: activeTabKey,
+                                        })}
+                                      </p>
+                                    </FallbackInjectorForReadOnlyPages>
                                   )}
                                 </Col>
                               )}
@@ -387,15 +396,19 @@ function PersonReadOnly() {
                                     {t('dashboard.people.readOnly.disambiguatingDescription')}
                                   </p>
                                   {Object.keys(personData?.disambiguatingDescription ?? {})?.length > 0 && (
-                                    <p
-                                      className="read-only-event-content"
-                                      data-cy="para-person-disambiguating-description-french">
-                                      {contentLanguageBilingual({
-                                        data: personData?.disambiguatingDescription,
-                                        calendarContentLanguage,
-                                        requiredLanguageKey: activeTabKey,
-                                      })}
-                                    </p>
+                                    <FallbackInjectorForReadOnlyPages
+                                      fieldName="disambiguatingDescription"
+                                      data={personData?.disambiguatingDescription}>
+                                      <p
+                                        className="read-only-event-content"
+                                        data-cy="para-person-disambiguating-description-french">
+                                        {contentLanguageBilingual({
+                                          data: personData?.disambiguatingDescription,
+                                          calendarContentLanguage,
+                                          requiredLanguageKey: activeTabKey,
+                                        })}
+                                      </p>
+                                    </FallbackInjectorForReadOnlyPages>
                                   )}
                                 </Col>
                               )}
@@ -411,18 +424,22 @@ function PersonReadOnly() {
                                     {t('dashboard.people.readOnly.description')}
                                   </p>
                                   {Object.keys(personData?.description ?? {})?.length > 0 && (
-                                    <p className="read-only-event-content">
-                                      <div
-                                        dangerouslySetInnerHTML={{
-                                          __html: contentLanguageBilingual({
-                                            data: personData?.description,
-                                            calendarContentLanguage,
-                                            requiredLanguageKey: activeTabKey,
-                                          }),
-                                        }}
-                                        data-cy="div-person-description-french"
-                                      />
-                                    </p>
+                                    <FallbackInjectorForReadOnlyPages
+                                      fieldName="description"
+                                      data={personData?.description}>
+                                      <p className="read-only-event-content">
+                                        <div
+                                          dangerouslySetInnerHTML={{
+                                            __html: contentLanguageBilingual({
+                                              data: personData?.description,
+                                              calendarContentLanguage,
+                                              requiredLanguageKey: activeTabKey,
+                                            }),
+                                          }}
+                                          data-cy="div-person-description-french"
+                                        />
+                                      </p>
+                                    </FallbackInjectorForReadOnlyPages>
                                   )}
                                 </Col>
                               )}
@@ -543,7 +560,7 @@ function PersonReadOnly() {
                                             Object.keys(place?.name ?? {})?.length > 0
                                               ? contentLanguageBilingual({
                                                   data: place?.name,
-                                                  interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                                  requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                                                   calendarContentLanguage: calendarContentLanguage,
                                                 })
                                               : typeof place?.name === 'string' && place?.name
@@ -578,7 +595,7 @@ function PersonReadOnly() {
                                               Object.keys(org?.name ?? {})?.length > 0
                                                 ? contentLanguageBilingual({
                                                     data: org?.name,
-                                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                                    requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                                                     calendarContentLanguage: calendarContentLanguage,
                                                   })
                                                 : typeof org?.name === 'string' && org?.name
@@ -618,7 +635,7 @@ function PersonReadOnly() {
                                               Object.keys(event?.name ?? {})?.length > 0
                                                 ? contentLanguageBilingual({
                                                     data: event?.name,
-                                                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                                                    requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                                                     calendarContentLanguage: calendarContentLanguage,
                                                   })
                                                 : typeof event?.name === 'string' && event?.name

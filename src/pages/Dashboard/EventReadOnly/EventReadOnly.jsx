@@ -266,7 +266,7 @@ function EventReadOnly() {
                 <Breadcrumbs
                   name={contentLanguageBilingual({
                     data: eventData?.name,
-                    interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                    requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                     calendarContentLanguage: calendarContentLanguage,
                   })}
                 />
@@ -317,12 +317,12 @@ function EventReadOnly() {
                     artsDataLink={artsDataLinkChecker(artsDataLink[0]?.uri)}
                     name={contentLanguageBilingual({
                       data: eventData?.name,
-                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                     disambiguatingDescription={contentLanguageBilingual({
                       data: eventData?.disambiguatingDescription,
-                      interfaceLanguage: user?.interfaceLanguage?.toLowerCase(),
+                      requiredLanguageKey: user?.interfaceLanguage?.toLowerCase(),
                       calendarContentLanguage: calendarContentLanguage,
                     })}
                   />
@@ -374,11 +374,7 @@ function EventReadOnly() {
                                   {t('dashboard.events.addEditEvent.language.title')}
                                 </p>
                               )}
-                              <FallbackInjectorForReadOnlyPages
-                                fieldName="name"
-                                currentCalendarData={currentCalendarData}
-                                calendarContentLanguage={calendarContentLanguage}
-                                data={eventData?.name}>
+                              <FallbackInjectorForReadOnlyPages fieldName="name" data={eventData?.name}>
                                 {eventData?.name && (
                                   <p className="read-only-event-content">
                                     {contentLanguageBilingual({
@@ -803,8 +799,6 @@ function EventReadOnly() {
                               )}
                               <FallbackInjectorForReadOnlyPages
                                 fieldName="virtualLocation"
-                                currentCalendarData={currentCalendarData}
-                                calendarContentLanguage={calendarContentLanguage}
                                 data={initialVirtualLocation[0]?.name}>
                                 {initialVirtualLocation[0] && initialVirtualLocation[0]?.name && (
                                   <p className="read-only-event-content">
@@ -858,11 +852,7 @@ function EventReadOnly() {
                                 eventFormRequiredFieldNames?.DESCRIPTION,
                                 eventData?.description,
                               ) && (
-                                <FallbackInjectorForReadOnlyPages
-                                  fieldName="description"
-                                  currentCalendarData={currentCalendarData}
-                                  calendarContentLanguage={calendarContentLanguage}
-                                  data={eventData?.description}>
+                                <FallbackInjectorForReadOnlyPages fieldName="description" data={eventData?.description}>
                                   <>
                                     <p className="read-only-event-content-sub-title-primary">
                                       {t('dashboard.events.addEditEvent.otherInformation.description.title')}
@@ -974,8 +964,6 @@ function EventReadOnly() {
                             {eventData?.contactPoint && (
                               <FallbackInjectorForReadOnlyPages
                                 fieldName="contactPoint"
-                                currentCalendarData={currentCalendarData}
-                                calendarContentLanguage={calendarContentLanguage}
                                 data={eventData?.contactPoint?.name}>
                                 <>
                                   <p className="read-only-event-content">
@@ -1265,8 +1253,6 @@ function EventReadOnly() {
                                   </p>
                                   <FallbackInjectorForReadOnlyPages
                                     fieldName="accessibilityNote"
-                                    currentCalendarData={currentCalendarData}
-                                    calendarContentLanguage={calendarContentLanguage}
                                     data={eventData?.accessibilityNote}>
                                     <p className="read-only-event-content">
                                       {contentLanguageBilingual({
@@ -1366,11 +1352,7 @@ function EventReadOnly() {
                                             </p>
                                           </td>
                                           <td>
-                                            <FallbackInjectorForReadOnlyPages
-                                              fieldName="offerName"
-                                              currentCalendarData={currentCalendarData}
-                                              calendarContentLanguage={calendarContentLanguage}
-                                              data={offer?.name}>
+                                            <FallbackInjectorForReadOnlyPages fieldName="offerName" data={offer?.name}>
                                               <p className="read-only-event-content">
                                                 {contentLanguageBilingual({
                                                   data: offer?.name,
@@ -1392,8 +1374,6 @@ function EventReadOnly() {
                                   </p>
                                   <FallbackInjectorForReadOnlyPages
                                     fieldName="offerConfiguration"
-                                    currentCalendarData={currentCalendarData}
-                                    calendarContentLanguage={calendarContentLanguage}
                                     data={eventData?.offerConfiguration?.name}>
                                     <p className="read-only-event-content">
                                       {contentLanguageBilingual({
