@@ -272,18 +272,21 @@
               "credit": {
                 "title": "Ajouter des crédits photos à l'image",
                 "label": "Ajouter des crédits photos à l'image",
-                "placeholder": "Indiquer les crédits photos à l'image"
+                "placeholder": "Indiquer les crédits photos à l'image",
+                "credit": "Crédit image"
               },
               "altText": {
                 "title": "Ajouter un texte alternatif à l’image",
                 "label": "Ajouter un texte alternatif à l’image",
                 "description": "Ajouter une brève description pour rendre le contenu accessible à tout les utilisateurs.",
-                "placeholder": "Indiquer un texte alternatif à l’image"
+                "placeholder": "Indiquer un texte alternatif à l’image",
+                "altText": "Texte alternatif"
               },
               "caption": {
                 "title": "Ajouter une légende à l’image",
                 "label": "Ajouter une légende à l’image",
-                "placeholder": "Indiquer une légende à l’image" 
+                "placeholder": "Indiquer une légende à l’image",
+                "caption": "Légende de l'image"
               }
             },
             "crop": {
