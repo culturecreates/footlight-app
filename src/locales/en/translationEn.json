@@ -266,6 +266,26 @@
               "editAltText": "Edit alt text",
               "editImageCaptions": "Edit image caption"
             },
+            "modalTexts": {
+              "cancel": "Cancel",
+              "save": "Save",
+              "credit": {
+                "title": "Add image credit",
+                "label": "Add image credit",
+                "placeholder": "Enter image credit"
+              },
+              "altText": {
+                "title": "Add alt text",
+                "label": "Add alt text",
+                "description": "Add a brief description to make the content accessible to all users.",
+                "placeholder": "Enter alt text"
+              },
+              "caption": {
+                "title": "Add image caption",
+                "label": "Add image caption",
+                "placeholder": "Enter image caption"  
+              }
+            },
             "crop": {
               "title": "Position image",
               "subHeading": "Adjust position if necessary.",

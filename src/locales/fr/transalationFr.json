@@ -266,6 +266,26 @@
               "editAltText": "Éditer le texte alternatif à l’image",
               "editImageCaptions": "Éditer la légende à l’image"
             },
+            "modalTexts": {
+              "cancel": "Annuler",
+              "save": "Sauvegarder",
+              "credit": {
+                "title": "Ajouter des crédits photos à l'image",
+                "label": "Ajouter des crédits photos à l'image",
+                "placeholder": "Indiquer les crédits photos à l'image"
+              },
+              "altText": {
+                "title": "Ajouter un texte alternatif à l’image",
+                "label": "Ajouter un texte alternatif à l’image",
+                "description": "Ajouter une brève description pour rendre le contenu accessible à tout les utilisateurs.",
+                "placeholder": "Indiquer un texte alternatif à l’image"
+              },
+              "caption": {
+                "title": "Ajouter une légende à l’image",
+                "label": "Ajouter une légende à l’image",
+                "placeholder": "Indiquer une légende à l’image" 
+              }
+            },
             "crop": {
               "title": "Positionnement de l’image",
               "subHeading": "Ajustez la position de l’image si nécessaire.",
