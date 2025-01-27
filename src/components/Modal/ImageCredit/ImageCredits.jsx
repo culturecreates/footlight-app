@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input } from 'antd';
 import CustomModal from '../Common/CustomModal';
 import TextButton from '../../Button/Text';
@@ -11,14 +11,17 @@ const { TextArea } = Input;
 const ImageCredits = (props) => {
   const { t } = useTranslation();
 
-  const { open, setOpen, selectedField, imageCreditInitialValues, isImageGallery, form } = props;
+  const {
+    open,
+    setOpen,
+    selectedField,
+    imageCreditInitialValues,
+    isImageGallery,
+    form,
+    imageOptions,
+    setImageOptions,
+  } = props;
   const { initialCredit, initialAltText, initialCaption } = imageCreditInitialValues;
-
-  const [imageOptions, setImageOptions] = useState({
-    credit: null,
-    altText: null,
-    caption: null,
-  });
 
   let formItems = [
     {
@@ -60,8 +63,8 @@ const ImageCredits = (props) => {
     <CustomModal
       closable={true}
       title={
-        <div className="custom-modal-title-wrapper">
-          <span className="custom-modal-title-heading" data-cy="span-duplicate-time-heading">
+        <div className="custom-modal-title-wrapper" data-cy="div-image-options-heading">
+          <span className="custom-modal-title-heading" data-cy="span-image-options-heading">
             {selectedTitle && t(selectedTitle)}
           </span>
         </div>
@@ -76,19 +79,19 @@ const ImageCredits = (props) => {
             setImageOptions({ credit: initialCredit, altText: initialAltText, caption: initialCaption });
             setOpen(false);
           }}
-          data-cy="button-cancel-duplicate-time"
+          data-cy="button-cancel-image-options"
         />,
         <PrimaryButton
           key="add-dates"
           label={t('dashboard.events.addEditEvent.otherInformation.image.modalTexts.save')}
           onClick={onFinish}
-          data-cy="button-save-duplicate-time"
+          data-cy="button-save-image-options"
         />,
       ]}
-      className="copy-modal">
+      className="image-credit-modal">
       {formItems.map((item, index) => (
-        <Form layout="vertical" name="imageDetails" key={index}>
-          <Form.Item label={t(item.label)} hidden={selectedField !== item.key}>
+        <Form layout="vertical" name="imageDetails" key={index} data-cy="form-image-options">
+          <Form.Item label={t(item.label)} hidden={selectedField !== item.key} data-cy="form-item-image-options">
             <TextArea
               value={imageOptions[item.name]}
               onChange={(e) => setImageOptions({ ...imageOptions, [item.name]: e.target.value })}
@@ -101,6 +104,7 @@ const ImageCredits = (props) => {
               }}
               size="large"
               placeholder={t(item.placeholder)}
+              data-cy={`textarea-${item.name}`}
             />
           </Form.Item>
         </Form>
