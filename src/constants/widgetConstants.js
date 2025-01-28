@@ -23,3 +23,19 @@ export const redirectionModes = [
     disabled: true,
   },
 ];
+
+export const filterOptions = [
+  {
+    label: <Translation>{(t) => t('dashboard.settings.widgetSettings.date')}</Translation>,
+    value: 'DATES',
+    disabled: true,
+  },
+  {
+    label: <Translation>{(t) => t('dashboard.settings.widgetSettings.eventType')}</Translation>,
+    value: 'EVENT_TYPE',
+  },
+  {
+    label: <Translation>{(t) => t('dashboard.settings.widgetSettings.audience')}</Translation>,
+    value: 'AUDIENCE',
+  },
+];
