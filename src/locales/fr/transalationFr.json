@@ -988,7 +988,8 @@
           "width": "Indiquez la largeur en pixels",
           "height": "Indiquez la hauteur en pixels",
           "color": "Collez votre code couleur ou sélectionnez une couleur",
-          "limit": "Indiquez le nombre maximum à afficher"
+          "limit": "Indiquez le nombre maximum à afficher",
+          "limitMax": "Le nombre d'événements est trop élevé. Le nombre maximale est 100."
         },
         "placeholder": {
           "headerText": "Indiquer le titre",

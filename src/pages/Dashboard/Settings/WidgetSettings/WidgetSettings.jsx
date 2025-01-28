@@ -601,6 +601,9 @@ const WidgetSettings = ({ tabKey }) => {
                                 if (!value || !/^[1-9][0-9]*$/.test(value)) {
                                   return Promise.reject(t(`${localePath}.validation.limit`));
                                 }
+                                if (value > 100) {
+                                  return Promise.reject(t(`${localePath}.validation.limitMax`));
+                                }
                                 return Promise.resolve();
                               },
                             },
