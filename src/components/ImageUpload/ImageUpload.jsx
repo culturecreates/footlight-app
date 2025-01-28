@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import './imageUpload.css';
-import { message, Upload, Form } from 'antd';
-import { LoadingOutlined, DownloadOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { message, Upload, Form, Dropdown, Space } from 'antd';
+import { LoadingOutlined, DownloadOutlined, DeleteOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons';
 import Outlined from '../Button/Outlined';
 import { useTranslation } from 'react-i18next';
 import { ImageCrop } from '../ImageCrop';
 import { useOutletContext } from 'react-router-dom';
 import { getWidthFromAspectRatio } from '../../utils/getWidthFromAspectRatio';
+import { IMAGE_ACTIONS, imageUploadOptions } from '../../constants/imageUploadOptions';
+import ImageCredits from '../Modal/ImageCredit';
+import Credit from '../Tags/Credit';
 
 function ImageUpload(props) {
   const {
@@ -27,6 +30,18 @@ function ImageUpload(props) {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(props?.imageUrl ?? null);
   const [originalImage, setOriginalImage] = useState(originalImageUrl ?? null);
+  const [imageOptionsModalOpen, setImageOptionsModalOpen] = useState(false);
+  const [selectedField, setSelectedField] = useState(null);
+  const [imageOptionsInitialValues, setImageOptionsInitialValues] = useState({
+    initialCredit: eventImageData?.creditText,
+    initialAltText: eventImageData?.description,
+    initialCaption: eventImageData?.caption,
+  });
+  const [imageOptions, setImageOptions] = useState({
+    credit: null,
+    altText: null,
+    caption: null,
+  });
   const [currentCalendarData] = useOutletContext();
 
   const [cropValues, setCropValues] = useState({
@@ -91,6 +106,11 @@ function ImageUpload(props) {
         thumbnail: undefined,
         original: undefined,
       });
+      setImageOptionsInitialValues({
+        initialCredit: null,
+        initialAltText: null,
+        initialCaption: null,
+      });
       getBase64(info.file.originFileObj, (url) => {
         setLoading(false);
         setImageUrl(url);
@@ -109,6 +129,11 @@ function ImageUpload(props) {
   const onRemove = () => {
     form.setFieldsValue({
       imageCrop: null,
+    });
+    setImageOptionsInitialValues({
+      initialCredit: null,
+      initialAltText: null,
+      initialCaption: null,
     });
     setImageUrl(false);
   };
@@ -157,14 +182,27 @@ function ImageUpload(props) {
                       }}
                       src={imageUrl || (file?.url ?? file?.thumbUrl)}
                     />
-                    <a
-                      className="image-name"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href={file?.url ?? imageUrl}
-                      data-cy="anchor-image-link">
-                      {file?.name}
-                    </a>
+                    <span className="image-name-wrapper" data-cy="span-image-name-wrapper">
+                      <a
+                        className="image-name"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href={file?.url ?? imageUrl}
+                        data-cy="anchor-image-link">
+                        {file?.name}
+                      </a>
+                      <span className="image-credits" data-cy="span-image-credits">
+                        {Object.entries(imageOptions).map(
+                          ([key, value]) =>
+                            value &&
+                            value != '' && (
+                              <Credit key={key} data-cy={`span-image-credit-${key}`}>
+                                {t(`dashboard.events.addEditEvent.otherInformation.image.modalTexts.${key}.${key}`)}
+                              </Credit>
+                            ),
+                        )}
+                      </span>
+                    </span>
                   </span>
                   <span className="image-actions">
                     {props?.imageReadOnly && (
@@ -172,15 +210,47 @@ function ImageUpload(props) {
                         <DownloadOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
                       </span>
                     )}
-                    {!props?.imageReadOnly && imageUrl && (
+                    {!props?.imageReadOnly && imageUrl && !isCrop && (
                       <span onClick={actions?.remove} data-cy="span-remove-image">
                         <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
                       </span>
                     )}
                     {!props?.imageReadOnly && (props?.imageUrl || imageUrl) && isCrop && (
-                      <span className="edit-image" onClick={actions?.preview} data-cy="span-preview-crop-image">
-                        <EditOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
-                      </span>
+                      <Dropdown
+                        overlayStyle={{ width: '200px' }}
+                        menu={{
+                          items: imageUploadOptions({
+                            credits: imageOptions.credit,
+                            altText: imageOptions.altText,
+                            caption: imageOptions.caption,
+                          }),
+                          onClick: ({ key }) => {
+                            if ([IMAGE_ACTIONS.CREDIT, IMAGE_ACTIONS.ALT_TEXT, IMAGE_ACTIONS.CAPTION].includes(key)) {
+                              setImageOptionsModalOpen(true);
+                              setSelectedField(key); // Dynamically set the selected field
+                            } else {
+                              switch (key) {
+                                case IMAGE_ACTIONS.CROP:
+                                  actions.preview();
+                                  break;
+                                case IMAGE_ACTIONS.DELETE:
+                                  actions.remove();
+                                  break;
+                                default:
+                                  break;
+                              }
+                            }
+                          },
+                        }}
+                        trigger={['click']}>
+                        <Space>
+                          <MoreOutlined
+                            className="image-options-more-icon"
+                            style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }}
+                            data-cy="span-image-options-icon"
+                          />
+                        </Space>
+                      </Dropdown>
                     )}
                   </span>
                 </span>
@@ -237,6 +307,16 @@ function ImageUpload(props) {
           thumbnailAspectRatio={thumbnailAspectRatio}
         />
       )}
+      <ImageCredits
+        open={imageOptionsModalOpen}
+        selectedField={selectedField}
+        setOpen={setImageOptionsModalOpen}
+        imageCreditInitialValues={imageOptionsInitialValues}
+        form={form}
+        isImageGallery={false}
+        setImageOptions={setImageOptions}
+        imageOptions={imageOptions}
+      />
     </>
   );
 }

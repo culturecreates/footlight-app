@@ -47,10 +47,17 @@
 .image-footer .image-actions {
   cursor: pointer;
 }
-.image-footer .image-name {
+.upload-wrapper .image-footer .image-name {
   /* white-space: nowrap; */
   cursor: pointer;
+  font-size: 14px;
 }
+.image-footer .image-options-more-icon:hover {
+  background-color: #eff2ff;
+  border-radius: 4px;
+  padding: 4px;
+}
+
 .image-footer .image-thumbnail {
   display: block;
   height: 48px;
@@ -68,6 +75,15 @@
   color: #646d7b;
   font-weight: 400;
   font-size: 16px;
+}
+
+.image-footer .image-contents .image-name-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.image-footer .image-contents .image-name-wrapper .image-credits {
+  display: flex;
 }
 
 @media (max-width: 480px) {
