@@ -31,6 +31,13 @@
 .multiple-image-upload-wrapper .image-footer .image-name {
   white-space: nowrap;
   cursor: pointer;
+  font-size: 12px;
+}
+
+.multiple-image-upload-wrapper .image-footer .image-options-more-icon:hover {
+  background-color: #eff2ff;
+  border-radius: 4px;
+  padding: 4px;
 }
 .multiple-image-upload-wrapper .image-footer .image-thumbnail {
   display: block;
@@ -59,6 +66,14 @@
   padding-left: 48px;
 }
 
+.multiple-image-upload-wrapper .image-footer .image-contents .image-name-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.multiple-image-upload-wrapper .image-footer .image-contents .image-name-wrapper .image-credits {
+  display: flex;
+}
 @media (max-width: 480px) {
   .multiple-image-upload-wrapper .image-footer .image-name {
     text-wrap: wrap;

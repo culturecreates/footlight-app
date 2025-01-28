@@ -1,5 +1,5 @@
-import { DownloadOutlined, DeleteOutlined, HolderOutlined } from '@ant-design/icons';
-import { Upload, message } from 'antd';
+import { DownloadOutlined, DeleteOutlined, HolderOutlined, MoreOutlined } from '@ant-design/icons';
+import { Dropdown, Upload, message, Space } from 'antd';
 import update from 'immutability-helper';
 import React, { useCallback, useRef, useState } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
@@ -10,8 +10,22 @@ const type = 'DragableUploadList';
 import './multipleImageUpload.css';
 import { getWidthFromAspectRatio } from '../../utils/getWidthFromAspectRatio';
 import { useOutletContext } from 'react-router-dom';
+import { IMAGE_ACTIONS, imageUploadOptions } from '../../constants/imageUploadOptions';
+import ImageCredits from '../Modal/ImageCredit';
+import Credit from '../Tags/Credit';
 
-const DragableUploadListItem = ({ moveRow, file, fileList, actions, width }) => {
+const DragableUploadListItem = ({
+  moveRow,
+  file,
+  fileList,
+  actions,
+  width,
+  setSelectedField,
+  setImageOptionsModalOpen,
+  setSelectedImageOptions,
+  t,
+  setSelectedUID,
+}) => {
   const ref = useRef(null);
 
   const index = fileList.indexOf(file);
@@ -41,7 +55,6 @@ const DragableUploadListItem = ({ moveRow, file, fileList, actions, width }) => 
     }),
   });
   drop(drag(ref));
-  // const errorNode = <Tooltip title="Upload Error">{originNode.props.children}</Tooltip>;
   return (
     <div
       ref={ref}
@@ -69,22 +82,75 @@ const DragableUploadListItem = ({ moveRow, file, fileList, actions, width }) => 
               minWidth: width ? `${width}px` : 'none',
             }}
           />
-          <a
-            className="image-name"
-            target="_blank"
-            rel="noopener noreferrer"
-            href={file?.url}
-            data-cy="anchor-image-link">
-            {file?.name}
-          </a>
-        </span>
-        <span className="image-actions">
-          <span onClick={actions?.remove} data-cy="span-download-image">
-            <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
+          <span className="image-name-wrapper" data-cy="span-multiple-image-name-wrapper">
+            <a
+              className="image-name"
+              target="_blank"
+              rel="noopener noreferrer"
+              href={file?.url}
+              data-cy="anchor-image-link">
+              {file?.name}
+            </a>
+            <span className="image-credits" data-cy="span-maultiple-image-credits">
+              {Object.entries(file?.imageOptions).map(
+                ([key, value]) =>
+                  value &&
+                  value != '' && (
+                    <Credit key={key} data-cy={`span-image-credit-${key}`}>
+                      {t(`dashboard.events.addEditEvent.otherInformation.image.modalTexts.${key}.${key}`)}
+                    </Credit>
+                  ),
+              )}
+            </span>
           </span>
         </span>
+        <span className="image-actions">
+          {file?.url && (
+            <Dropdown
+              overlayStyle={{ width: '200px' }}
+              getPopupContainer={(triggerNode) => triggerNode.parentNode}
+              menu={{
+                items: imageUploadOptions({
+                  credits: file.imageOptions?.credit,
+                  altText: file.imageOptions?.altText,
+                  caption: file.imageOptions?.caption,
+                }),
+                onClick: ({ key }) => {
+                  switch (key) {
+                    case IMAGE_ACTIONS.CROP:
+                      actions.preview();
+                      break;
+
+                    case IMAGE_ACTIONS.CREDIT:
+                    case IMAGE_ACTIONS.ALT_TEXT:
+                    case IMAGE_ACTIONS.CAPTION:
+                      setSelectedImageOptions(file.imageOptions);
+                      setSelectedField(key); // Use `key` directly as it corresponds to the field
+                      setSelectedUID(file.uid);
+                      setImageOptionsModalOpen(true);
+                      break;
+
+                    case IMAGE_ACTIONS.DELETE:
+                      actions.remove();
+                      break;
+
+                    default:
+                      break;
+                  }
+                },
+              }}
+              trigger={['click']}>
+              <Space>
+                <MoreOutlined
+                  className="image-options-more-icon"
+                  style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }}
+                  data-cy="span-image-options-icon"
+                />
+              </Space>
+            </Dropdown>
+          )}
+        </span>
       </span>
-      {/* {file.status === 'error' ? errorNode : originNode} */}
     </div>
   );
 };
@@ -99,49 +165,75 @@ const getBase64 = (img, callback) => {
     image.src = _loadedImageUrl;
   });
 };
+
+const generateImageObject = (image) => {
+  if (!image) return {};
+
+  return {
+    uid: image?.original?.entityId,
+    name: image?.original?.entityId,
+    status: 'done',
+    url: image?.original?.uri,
+    cropValues: {
+      large: {
+        x: image?.large?.xCoordinate ?? undefined,
+        y: image?.large?.yCoordinate ?? undefined,
+        height: image?.large?.height ?? undefined,
+        width: image?.large?.width ?? undefined,
+      },
+      original: {
+        entityId: image?.original?.entityId ?? null,
+        height: image?.original?.height ?? undefined,
+        width: image?.original?.width ?? undefined,
+      },
+      thumbnail: {
+        x: image?.thumbnail?.xCoordinate ?? undefined,
+        y: image?.thumbnail?.yCoordinate ?? undefined,
+        height: image?.thumbnail?.height ?? undefined,
+        width: image?.thumbnail?.width ?? undefined,
+      },
+    },
+    imageOptions: {
+      credit: image?.creditText ?? null,
+      altText: image?.description ?? null,
+      caption: image?.caption ?? null,
+    },
+  };
+};
+
 const MultipleImageUpload = (props) => {
   const { eventImageData, form, imageReadOnly, setShowDialog } = props;
   const { t } = useTranslation();
   const [currentCalendarData] = useOutletContext();
 
   const [fileList, setFileList] = useState(
-    eventImageData?.length > 0
-      ? eventImageData
-          ?.map((image) => {
-            if (image)
-              return {
-                uid: image?.original?.entityId,
-                name: image?.original?.entityId,
-                status: 'done',
-                url: image?.original?.uri,
-                cropValues: {
-                  large: {
-                    x: image?.large?.xCoordinate ?? undefined,
-                    y: image?.large?.yCoordinate ?? undefined,
-                    height: image?.large?.height ?? undefined,
-                    width: image?.large?.width ?? undefined,
-                  },
-                  original: {
-                    entityId: image?.original?.entityId ?? null,
-                    height: image?.original?.height ?? undefined,
-                    width: image?.original?.width ?? undefined,
-                  },
-                  thumbnail: {
-                    x: image?.thumbnail?.xCoordinate ?? undefined,
-                    y: image?.thumbnail?.yCoordinate ?? undefined,
-                    height: image?.thumbnail?.height ?? undefined,
-                    width: image?.thumbnail?.width ?? undefined,
-                  },
-                },
-              };
-            else return [];
-          })
-          ?.flat()
-      : [],
+    eventImageData?.length > 0 ? eventImageData?.map(generateImageObject)?.flat() : [],
   );
+  const [imageOptionsModalOpen, setImageOptionsModalOpen] = useState(false);
+  const [selectedField, setSelectedField] = useState(null);
+  const [selectedImageOptions, setSelectedImageOptions] = useState({
+    credit: null,
+    altText: null,
+    caption: null,
+  });
+  const [selectedUID, setSelectedUID] = useState(null);
 
   let aspectRatio;
   let width;
+  let initialFileList =
+    eventImageData?.length > 0
+      ? eventImageData
+          ?.map((image) => {
+            const imageObj = generateImageObject(image);
+            imageObj.imageOptions = {
+              initialCredit: image?.creditText ?? null,
+              initialAltText: image?.description ?? null,
+              initialCaption: image?.caption ?? null,
+            };
+            return imageObj;
+          })
+          ?.flat()
+      : [];
 
   if (currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio) {
     aspectRatio = currentCalendarData.imageConfig[0]?.large.aspectRatio;
@@ -189,6 +281,12 @@ const MultipleImageUpload = (props) => {
                 height: undefined,
                 width: undefined,
               },
+            };
+          if (!fileList[index].imageOptions)
+            fileList[index].imageOptions = {
+              credit: null,
+              altText: null,
+              caption: null,
             };
           fileList[index].status = 'done';
         });
@@ -238,6 +336,12 @@ const MultipleImageUpload = (props) => {
                 moveRow={moveRow}
                 actions={actions}
                 width={width}
+                setSelectedField={setSelectedField}
+                setImageOptionsModalOpen={setImageOptionsModalOpen}
+                setSelectedImageOptions={setSelectedImageOptions}
+                t={t}
+                selectedUID={selectedUID}
+                setSelectedUID={setSelectedUID}
               />
             ) : (
               <span className="image-footer">
@@ -250,14 +354,27 @@ const MultipleImageUpload = (props) => {
                       minWidth: width ? `${width}px` : 'none',
                     }}
                   />
-                  <a
-                    className="image-name"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href={file?.url}
-                    data-cy="anchor-image-link">
-                    {file?.name}
-                  </a>
+                  <span className="image-name-wrapper" data-cy="span-multiple-image-name-wrapper-read-only">
+                    <a
+                      className="image-name"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href={file?.url}
+                      data-cy="anchor-image-link">
+                      {file?.name}
+                    </a>
+                    <span className="image-credits" data-cy="span-maultiple-image-credits-read-only">
+                      {Object.entries(file?.imageOptions).map(
+                        ([key, value]) =>
+                          value &&
+                          value != '' && (
+                            <Credit key={key} data-cy={`span-image-credit-${key}`}>
+                              {t(`dashboard.events.addEditEvent.otherInformation.image.modalTexts.${key}.${key}`)}
+                            </Credit>
+                          ),
+                      )}
+                    </span>
+                  </span>
                 </span>
                 <span className="image-actions">
                   <span onClick={actions?.download} data-cy="span-download-image">
@@ -287,6 +404,20 @@ const MultipleImageUpload = (props) => {
           )}
         </Upload>
       </DndProvider>
+      <ImageCredits
+        open={imageOptionsModalOpen}
+        selectedField={selectedField}
+        setOpen={setImageOptionsModalOpen}
+        imageCreditInitialValues={initialFileList.find((file) => file.uid === selectedUID)?.imageOptions}
+        form={form}
+        isImageGallery={true}
+        setImageOptions={setSelectedImageOptions}
+        imageOptions={selectedImageOptions}
+        fileList={fileList}
+        setFileList={setFileList}
+        selectedUID={selectedUID}
+        setSelectedUID={setSelectedUID}
+      />
     </div>
   );
 };
