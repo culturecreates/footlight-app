@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import './imageCredits.css';
 import { Form, Input } from 'antd';
 import CustomModal from '../Common/CustomModal';
 import TextButton from '../../Button/Text';
@@ -20,9 +21,12 @@ const ImageCredits = (props) => {
     form,
     imageOptions,
     setImageOptions,
+    fileList,
+    setFileList,
+    selectedUID,
+    setSelectedUID,
   } = props;
-  const { initialCredit, initialAltText, initialCaption } = imageCreditInitialValues;
-
+  const { initialCredit, initialAltText, initialCaption } = imageCreditInitialValues || {};
   let formItems = [
     {
       label: 'dashboard.events.addEditEvent.otherInformation.image.modalTexts.credit.label',
@@ -51,17 +55,52 @@ const ImageCredits = (props) => {
   const onFinish = () => {
     if (!isImageGallery) {
       form.setFieldValue('mainImageOptions', imageOptions);
+    } else {
+      setFileList((prev) => {
+        const index = prev.findIndex((file) => file.uid === selectedUID);
+        const newFile = { ...prev[index], imageOptions };
+        prev[index] = newFile;
+        return [...prev];
+      });
+      setSelectedUID(null);
+      form.setFieldsValue({
+        multipleImagesCrop: fileList,
+      });
     }
+
+    setOpen(false);
+  };
+
+  const onClose = () => {
+    if (selectedField === IMAGE_ACTIONS.CREDIT) {
+      setImageOptions({
+        credit: initialCredit,
+        ...imageOptions,
+      });
+    } else if (selectedField === IMAGE_ACTIONS.ALT_TEXT) {
+      setImageOptions({
+        altText: initialAltText,
+        ...imageOptions,
+      });
+    } else if (selectedField === IMAGE_ACTIONS.CAPTION) {
+      setImageOptions({
+        caption: initialCaption,
+        ...imageOptions,
+      });
+    }
+    if (selectedUID) setSelectedUID(null);
     setOpen(false);
   };
 
   useEffect(() => {
-    setImageOptions({ credit: initialCredit, altText: initialAltText, caption: initialCaption });
+    if (!selectedUID) setImageOptions({ credit: initialCredit, altText: initialAltText, caption: initialCaption });
   }, [initialCredit, initialAltText, initialCaption]);
 
   return (
     <CustomModal
       closable={true}
+      maskClosable={true}
+      onCancel={onClose}
       title={
         <div className="custom-modal-title-wrapper" data-cy="div-image-options-heading">
           <span className="custom-modal-title-heading" data-cy="span-image-options-heading">
@@ -75,10 +114,7 @@ const ImageCredits = (props) => {
           key="cancel"
           size="large"
           label={t('dashboard.events.addEditEvent.otherInformation.image.modalTexts.cancel')}
-          onClick={() => {
-            setImageOptions({ credit: initialCredit, altText: initialAltText, caption: initialCaption });
-            setOpen(false);
-          }}
+          onClick={onClose}
           data-cy="button-cancel-image-options"
         />,
         <PrimaryButton
@@ -89,9 +125,18 @@ const ImageCredits = (props) => {
         />,
       ]}
       className="image-credit-modal">
-      {formItems.map((item, index) => (
-        <Form layout="vertical" name="imageDetails" key={index} data-cy="form-image-options">
-          <Form.Item label={t(item.label)} hidden={selectedField !== item.key} data-cy="form-item-image-options">
+      <Form layout="vertical" name="imageDetails" data-cy="form-image-options" className="form-image-options">
+        {selectedField === IMAGE_ACTIONS.ALT_TEXT && (
+          <p className="add-alt-text-description" data-cy="para-alt-text-description">
+            {t('dashboard.events.addEditEvent.otherInformation.image.modalTexts.altText.description')}
+          </p>
+        )}
+        {formItems.map((item, index) => (
+          <Form.Item
+            label={t(item.label)}
+            hidden={selectedField !== item.key}
+            data-cy="form-item-image-options"
+            key={index}>
             <TextArea
               value={imageOptions[item.name]}
               onChange={(e) => setImageOptions({ ...imageOptions, [item.name]: e.target.value })}
@@ -107,8 +152,8 @@ const ImageCredits = (props) => {
               data-cy={`textarea-${item.name}`}
             />
           </Form.Item>
-        </Form>
-      ))}
+        ))}
+      </Form>
     </CustomModal>
   );
 };
