@@ -192,15 +192,16 @@ function ImageUpload(props) {
                         {file?.name}
                       </a>
                       <span className="image-credits" data-cy="span-image-credits">
-                        {Object.entries(imageOptions).map(
-                          ([key, value]) =>
-                            value &&
-                            value != '' && (
-                              <Credit key={key} data-cy={`span-image-credit-${key}`}>
-                                {t(`dashboard.events.addEditEvent.otherInformation.image.modalTexts.${key}.${key}`)}
-                              </Credit>
-                            ),
-                        )}
+                        {imageOptions &&
+                          Object.entries(imageOptions).map(
+                            ([key, value]) =>
+                              value &&
+                              value != '' && (
+                                <Credit key={key} data-cy={`span-image-credit-${key}`}>
+                                  {t(`dashboard.events.addEditEvent.otherInformation.image.modalTexts.${key}.${key}`)}
+                                </Credit>
+                              ),
+                          )}
                       </span>
                     </span>
                   </span>
