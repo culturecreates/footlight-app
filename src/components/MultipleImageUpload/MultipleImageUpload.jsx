@@ -13,6 +13,7 @@ import { useOutletContext } from 'react-router-dom';
 import { IMAGE_ACTIONS, imageUploadOptions } from '../../constants/imageUploadOptions';
 import ImageCredits from '../Modal/ImageCredit';
 import Credit from '../Tags/Credit';
+import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 
 const DragableUploadListItem = ({
   moveRow,
@@ -25,6 +26,7 @@ const DragableUploadListItem = ({
   setSelectedImageOptions,
   t,
   setSelectedUID,
+  form,
 }) => {
   const ref = useRef(null);
 
@@ -93,15 +95,21 @@ const DragableUploadListItem = ({
             </a>
             <span className="image-credits" data-cy="span-maultiple-image-credits">
               {file?.imageOptions &&
-                Object.entries(file?.imageOptions).map(
-                  ([key, value]) =>
+                Object.entries(file?.imageOptions).map(([key, value]) => {
+                  if (
                     value &&
-                    value != '' && (
+                    typeof value === 'object' &&
+                    Object.values(value).some((langValue) => langValue && langValue !== '')
+                  ) {
+                    console.log(value);
+                    return (
                       <Credit key={key} data-cy={`span-image-credit-${key}`}>
                         {t(`dashboard.events.addEditEvent.otherInformation.image.modalTexts.${key}.${key}`)}
                       </Credit>
-                    ),
-                )}
+                    );
+                  }
+                  return null;
+                })}
             </span>
           </span>
         </span>
@@ -125,8 +133,14 @@ const DragableUploadListItem = ({
                     case IMAGE_ACTIONS.CREDIT:
                     case IMAGE_ACTIONS.ALT_TEXT:
                     case IMAGE_ACTIONS.CAPTION:
+                      form.setFieldsValue({
+                        credit: file.imageOptions?.credit,
+                        altText: file.imageOptions?.altText,
+                        caption: file.imageOptions?.caption,
+                      });
                       setSelectedImageOptions(file.imageOptions);
-                      setSelectedField(key); // Use `key` directly as it corresponds to the field
+
+                      setSelectedField(key);
                       setSelectedUID(file.uid);
                       setImageOptionsModalOpen(true);
                       break;
@@ -195,9 +209,24 @@ const generateImageObject = (image) => {
       },
     },
     imageOptions: {
-      credit: image?.creditText ?? null,
-      altText: image?.description ?? null,
-      caption: image?.caption ?? null,
+      credit:
+        image?.creditText ??
+        Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+          acc[contentLanguageKeyMap[lang]] = '';
+          return acc;
+        }, {}),
+      altText:
+        image?.description ??
+        Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+          acc[contentLanguageKeyMap[lang]] = '';
+          return acc;
+        }, {}),
+      caption:
+        image?.caption ??
+        Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+          acc[contentLanguageKeyMap[lang]] = '';
+          return acc;
+        }, {}),
     },
   };
 };
@@ -213,28 +242,23 @@ const MultipleImageUpload = (props) => {
   const [imageOptionsModalOpen, setImageOptionsModalOpen] = useState(false);
   const [selectedField, setSelectedField] = useState(null);
   const [selectedImageOptions, setSelectedImageOptions] = useState({
-    credit: null,
-    altText: null,
-    caption: null,
+    credit: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+      acc[contentLanguageKeyMap[lang]] = '';
+      return acc;
+    }, {}),
+    altText: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+      acc[contentLanguageKeyMap[lang]] = '';
+      return acc;
+    }, {}),
+    caption: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+      acc[contentLanguageKeyMap[lang]] = '';
+      return acc;
+    }, {}),
   });
   const [selectedUID, setSelectedUID] = useState(null);
 
   let aspectRatio;
   let width;
-  let initialFileList =
-    eventImageData?.length > 0
-      ? eventImageData
-          ?.map((image) => {
-            const imageObj = generateImageObject(image);
-            imageObj.imageOptions = {
-              initialCredit: image?.creditText ?? null,
-              initialAltText: image?.description ?? null,
-              initialCaption: image?.caption ?? null,
-            };
-            return imageObj;
-          })
-          ?.flat()
-      : [];
 
   if (currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio) {
     aspectRatio = currentCalendarData.imageConfig[0]?.large.aspectRatio;
@@ -285,9 +309,18 @@ const MultipleImageUpload = (props) => {
             };
           if (!fileList[index].imageOptions)
             fileList[index].imageOptions = {
-              credit: null,
-              altText: null,
-              caption: null,
+              credit: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+                acc[contentLanguageKeyMap[lang]] = '';
+                return acc;
+              }, {}),
+              altText: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+                acc[contentLanguageKeyMap[lang]] = '';
+                return acc;
+              }, {}),
+              caption: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+                acc[contentLanguageKeyMap[lang]] = '';
+                return acc;
+              }, {}),
             };
           fileList[index].status = 'done';
         });
@@ -343,6 +376,7 @@ const MultipleImageUpload = (props) => {
                 t={t}
                 selectedUID={selectedUID}
                 setSelectedUID={setSelectedUID}
+                form={form}
               />
             ) : (
               <span className="image-footer">
@@ -409,7 +443,6 @@ const MultipleImageUpload = (props) => {
         open={imageOptionsModalOpen}
         selectedField={selectedField}
         setOpen={setImageOptionsModalOpen}
-        imageCreditInitialValues={initialFileList.find((file) => file.uid === selectedUID)?.imageOptions}
         form={form}
         isImageGallery={true}
         setImageOptions={setSelectedImageOptions}
@@ -418,6 +451,7 @@ const MultipleImageUpload = (props) => {
         setFileList={setFileList}
         selectedUID={selectedUID}
         setSelectedUID={setSelectedUID}
+        calendarContentLanguage={currentCalendarData?.contentLanguage}
       />
     </div>
   );

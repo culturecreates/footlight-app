@@ -10,6 +10,7 @@ import { getWidthFromAspectRatio } from '../../utils/getWidthFromAspectRatio';
 import { IMAGE_ACTIONS, imageUploadOptions } from '../../constants/imageUploadOptions';
 import ImageCredits from '../Modal/ImageCredit';
 import Credit from '../Tags/Credit';
+import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 
 function ImageUpload(props) {
   const {
@@ -32,15 +33,25 @@ function ImageUpload(props) {
   const [originalImage, setOriginalImage] = useState(originalImageUrl ?? null);
   const [imageOptionsModalOpen, setImageOptionsModalOpen] = useState(false);
   const [selectedField, setSelectedField] = useState(null);
-  const [imageOptionsInitialValues, setImageOptionsInitialValues] = useState({
-    initialCredit: eventImageData?.creditText,
-    initialAltText: eventImageData?.description,
-    initialCaption: eventImageData?.caption,
-  });
   const [imageOptions, setImageOptions] = useState({
-    credit: null,
-    altText: null,
-    caption: null,
+    credit:
+      eventImageData?.creditText ??
+      Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+        acc[contentLanguageKeyMap[lang]] = '';
+        return acc;
+      }, {}),
+    altText:
+      eventImageData?.description ??
+      Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+        acc[contentLanguageKeyMap[lang]] = '';
+        return acc;
+      }, {}),
+    caption:
+      eventImageData?.caption ??
+      Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+        acc[contentLanguageKeyMap[lang]] = '';
+        return acc;
+      }, {}),
   });
   const [currentCalendarData] = useOutletContext();
 
@@ -66,7 +77,6 @@ function ImageUpload(props) {
 
   let aspectRatio;
   let width;
-
   if (!isCalendarLogo && currentCalendarData?.imageConfig[0]?.thumbnail?.aspectRatio) {
     aspectRatio = currentCalendarData.imageConfig[0]?.large.aspectRatio;
     width = getWidthFromAspectRatio(aspectRatio, 48);
@@ -106,10 +116,19 @@ function ImageUpload(props) {
         thumbnail: undefined,
         original: undefined,
       });
-      setImageOptionsInitialValues({
-        initialCredit: null,
-        initialAltText: null,
-        initialCaption: null,
+      setImageOptions({
+        credit: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+          acc[contentLanguageKeyMap[lang]] = '';
+          return acc;
+        }, {}),
+        altText: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+          acc[contentLanguageKeyMap[lang]] = '';
+          return acc;
+        }, {}),
+        caption: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+          acc[contentLanguageKeyMap[lang]] = '';
+          return acc;
+        }, {}),
       });
       getBase64(info.file.originFileObj, (url) => {
         setLoading(false);
@@ -130,10 +149,8 @@ function ImageUpload(props) {
     form.setFieldsValue({
       imageCrop: null,
     });
-    setImageOptionsInitialValues({
-      initialCredit: null,
-      initialAltText: null,
-      initialCaption: null,
+    form.setFieldsValue({
+      mainImageOptions: null,
     });
     setImageUrl(false);
   };
@@ -193,15 +210,20 @@ function ImageUpload(props) {
                       </a>
                       <span className="image-credits" data-cy="span-image-credits">
                         {imageOptions &&
-                          Object.entries(imageOptions).map(
-                            ([key, value]) =>
+                          Object.entries(imageOptions).map(([key, value]) => {
+                            if (
                               value &&
-                              value != '' && (
+                              typeof value === 'object' &&
+                              Object.values(value).some((langValue) => langValue && langValue !== '')
+                            ) {
+                              return (
                                 <Credit key={key} data-cy={`span-image-credit-${key}`}>
                                   {t(`dashboard.events.addEditEvent.otherInformation.image.modalTexts.${key}.${key}`)}
                                 </Credit>
-                              ),
-                          )}
+                              );
+                            }
+                            return null;
+                          })}
                       </span>
                     </span>
                   </span>
@@ -228,7 +250,12 @@ function ImageUpload(props) {
                           onClick: ({ key }) => {
                             if ([IMAGE_ACTIONS.CREDIT, IMAGE_ACTIONS.ALT_TEXT, IMAGE_ACTIONS.CAPTION].includes(key)) {
                               setImageOptionsModalOpen(true);
-                              setSelectedField(key); // Dynamically set the selected field
+                              form.setFieldsValue({
+                                credit: imageOptions?.credit,
+                                altText: imageOptions?.altText,
+                                caption: imageOptions?.caption,
+                              });
+                              setSelectedField(key);
                             } else {
                               switch (key) {
                                 case IMAGE_ACTIONS.CROP:
@@ -308,16 +335,18 @@ function ImageUpload(props) {
           thumbnailAspectRatio={thumbnailAspectRatio}
         />
       )}
-      <ImageCredits
-        open={imageOptionsModalOpen}
-        selectedField={selectedField}
-        setOpen={setImageOptionsModalOpen}
-        imageCreditInitialValues={imageOptionsInitialValues}
-        form={form}
-        isImageGallery={false}
-        setImageOptions={setImageOptions}
-        imageOptions={imageOptions}
-      />
+      {currentCalendarData?.contentLanguage && (
+        <ImageCredits
+          open={imageOptionsModalOpen}
+          selectedField={selectedField}
+          setOpen={setImageOptionsModalOpen}
+          form={form}
+          isImageGallery={false}
+          setImageOptions={setImageOptions}
+          imageOptions={imageOptions}
+          calendarContentLanguage={currentCalendarData?.contentLanguage}
+        />
+      )}
     </>
   );
 }
