@@ -259,6 +259,7 @@ function CreateNewPerson() {
           }
         });
         let imageCrop = form.getFieldValue('imageCrop') ? [form.getFieldValue('imageCrop')] : [];
+        let mainImageOptions = form.getFieldValue('mainImageOptions');
         if (imageCrop.length > 0) {
           imageCrop = [
             {
@@ -280,6 +281,9 @@ function CreateNewPerson() {
                 width: imageCrop[0]?.original?.width,
               },
               isMain: true,
+              description: mainImageOptions?.altText,
+              creditText: mainImageOptions?.credit,
+              caption: mainImageOptions?.caption,
             },
           ];
         }
@@ -287,8 +291,22 @@ function CreateNewPerson() {
           for (let i = 0; i < values.multipleImagesCrop.length; i++) {
             const file = values.multipleImagesCrop[i]?.originFileObj;
             if (!file) {
-              if (values.multipleImagesCrop[i]?.cropValues) imageCrop.push(values.multipleImagesCrop[i]?.cropValues);
-              else imageCrop.push(values.multipleImagesCrop[i]);
+              const cropValues = values.multipleImagesCrop[i]?.cropValues || {};
+              const imageOptions = values.multipleImagesCrop[i]?.imageOptions || {};
+              if (cropValues)
+                imageCrop.push({
+                  ...cropValues,
+                  creditText: imageOptions.credit || null,
+                  description: imageOptions.altText || null,
+                  caption: imageOptions.caption || null,
+                });
+              else
+                imageCrop.push({
+                  ...values.multipleImagesCrop[i],
+                  creditText: imageOptions.credit || null,
+                  description: imageOptions.altText || null,
+                  caption: imageOptions.caption || null,
+                });
               continue;
             }
 
@@ -301,6 +319,7 @@ function CreateNewPerson() {
               // Process each image in the list
               const { large, thumbnail } = values.multipleImagesCrop[i]?.cropValues || {};
               const { original, height, width } = response?.data || {};
+              const { altText, credit, caption } = values.multipleImagesCrop[i]?.imageOptions || {};
 
               const galleryImage = {
                 large: {
@@ -320,6 +339,9 @@ function CreateNewPerson() {
                   height: thumbnail?.height,
                   width: thumbnail?.width,
                 },
+                description: altText,
+                creditText: credit,
+                caption,
               };
 
               // Add the processed image to imageCrop
@@ -349,6 +371,9 @@ function CreateNewPerson() {
                         height: response?.data?.height,
                         width: response?.data?.width,
                       },
+                      description: mainImageOptions?.altText,
+                      creditText: mainImageOptions?.credit,
+                      caption: mainImageOptions?.caption,
                     },
                   ];
                 } else
@@ -362,6 +387,9 @@ function CreateNewPerson() {
                         height: response?.data?.height,
                         width: response?.data?.width,
                       },
+                      description: mainImageOptions?.altText,
+                      creditText: mainImageOptions?.credit,
+                      caption: mainImageOptions?.caption,
                     },
                   ];
 
@@ -485,6 +513,11 @@ function CreateNewPerson() {
                     height: mainImage?.thumbnail?.height,
                     width: mainImage?.thumbnail?.width,
                   },
+                  mainImageOptions: {
+                    credit: mainImage?.creditText,
+                    altText: mainImage?.description,
+                    caption: mainImage?.caption,
+                  },
                 },
               });
             }
@@ -507,6 +540,11 @@ function CreateNewPerson() {
                   y: image?.thumbnail?.yCoordinate,
                   height: image?.thumbnail?.height,
                   width: image?.thumbnail?.width,
+                },
+                imageOptions: {
+                  credit: image?.creditText,
+                  altText: image?.description,
+                  caption: image?.caption,
                 },
               }));
 
@@ -550,6 +588,11 @@ function CreateNewPerson() {
                   height: mainImage?.thumbnail?.height,
                   width: mainImage?.thumbnail?.width,
                 },
+                mainImageOptions: {
+                  credit: mainImage?.creditText,
+                  altText: mainImage?.description,
+                  caption: mainImage?.caption,
+                },
               },
             });
           }
@@ -572,6 +615,11 @@ function CreateNewPerson() {
                 y: image?.thumbnail?.yCoordinate,
                 height: image?.thumbnail?.height,
                 width: image?.thumbnail?.width,
+              },
+              imageOptions: {
+                credit: image?.creditText,
+                altText: image?.description,
+                caption: image?.caption,
               },
             }));
 
