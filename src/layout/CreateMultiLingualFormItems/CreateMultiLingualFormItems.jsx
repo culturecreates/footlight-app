@@ -33,13 +33,13 @@ const CreateMultiLingualFormItems = ({ children, ...rest }) => {
   let dataCyCollection = [];
   let placeholderCollection = [];
 
-  calendarContentLanguage.forEach((language) => {
+  calendarContentLanguage?.forEach((language) => {
     const lanKey = contentLanguageKeyMap[language];
     const fieldName = name.concat([lanKey]);
     isFieldDirty[lanKey] = form.isFieldTouched(fieldName);
   });
 
-  const formItemList = calendarContentLanguage.map((language) => {
+  const formItemList = calendarContentLanguage?.map((language) => {
     const dependencies = calendarContentLanguage // dependencies for each form item
       .filter((lan) => lan !== language)
       .map((lan) => [name, contentLanguageKeyMap[lan]]);
