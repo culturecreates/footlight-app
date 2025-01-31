@@ -399,15 +399,21 @@ const MultipleImageUpload = (props) => {
                       {file?.name}
                     </a>
                     <span className="image-credits" data-cy="span-maultiple-image-credits-read-only">
-                      {Object.entries(file?.imageOptions).map(
-                        ([key, value]) =>
-                          value &&
-                          value != '' && (
-                            <Credit key={key} data-cy={`span-image-credit-${key}`}>
-                              {t(`dashboard.events.addEditEvent.otherInformation.image.modalTexts.${key}.${key}`)}
-                            </Credit>
-                          ),
-                      )}
+                      {file?.imageOptions &&
+                        Object.entries(file?.imageOptions).map(([key, value]) => {
+                          if (
+                            value &&
+                            typeof value === 'object' &&
+                            Object.values(value).some((langValue) => langValue && langValue !== '')
+                          ) {
+                            return (
+                              <Credit key={key} data-cy={`span-image-credit-${key}`}>
+                                {t(`dashboard.events.addEditEvent.otherInformation.image.modalTexts.${key}.${key}`)}
+                              </Credit>
+                            );
+                          }
+                          return null;
+                        })}
                     </span>
                   </span>
                 </span>
