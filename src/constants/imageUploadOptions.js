@@ -9,8 +9,10 @@ export const IMAGE_ACTIONS = {
   ALT_TEXT: 'ALTTEXT',
   CAPTION: 'CAPTION',
 };
+const hasValidValue = (obj) =>
+  obj && typeof obj === 'object' && Object.values(obj).some((value) => value && value !== '');
 
-const getFieldOperation = (value) => (value ? IMAGE_ACTIONS.EDIT : IMAGE_ACTIONS.ADD);
+const getFieldOperation = (value) => (hasValidValue(value) ? IMAGE_ACTIONS.EDIT : IMAGE_ACTIONS.ADD);
 
 export const imageUploadOptions = ({ credits, altText, caption }) => {
   return [
