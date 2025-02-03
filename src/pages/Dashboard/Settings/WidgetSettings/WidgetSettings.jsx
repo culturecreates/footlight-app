@@ -151,75 +151,70 @@ const WidgetSettings = ({ tabKey }) => {
     });
   };
 
+  const generateUrlWithParams = (baseURL, params, extraParams = {}) => {
+    const url = new URL(baseURL);
+
+    Object.entries({ ...params, ...extraParams }).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        url.searchParams.append(key, value);
+      }
+    });
+
+    return url;
+  };
+
   const handleFormValuesChange = (changedValues, allValues) => {
     if (regexForHexCode.test(color)) {
-      const width = form.getFieldValue('width') ?? 0;
-      const height = form.getFieldValue('height') ?? 600;
-      const limit = form.getFieldValue('limit') ?? 9;
-      const font = form.getFieldValue('font') ?? 'Roboto';
-      const redirectionMode = form.getFieldValue('redirectionMode') ?? redirectionModesModified[0].value;
-      const showFooter = form.getFieldValue('footer-control') ?? false;
-      const headerText = form.getFieldValue('header-text');
-      const disableGroups = form.getFieldValue('disableGroups') ?? false;
-      const alwaysOnDatePicker = form.getFieldValue('alwaysOnDatePicker');
-      const filterOptions = form.getFieldValue('filterOptions')?.join('|');
+      const formValues = {
+        width: form.getFieldValue('width') ?? 0,
+        height: form.getFieldValue('height') ?? 600,
+        limit: form.getFieldValue('limit') ?? 9,
+        font: form.getFieldValue('font') ?? 'Roboto',
+        redirectionMode: form.getFieldValue('redirectionMode') ?? redirectionModesModified[0].value,
+        showFooter: form.getFieldValue('footer-control') ?? false,
+        headerText: form.getFieldValue('header-text'),
+        disableGroups: form.getFieldValue('disableGroups') ?? false,
+        alwaysOnDatePicker: form.getFieldValue('alwaysOnDatePicker'),
+        filterOptions: form.getFieldValue('filterOptions')?.join('|'),
+        searchEventsFilters:
+          arrayToQueryParam(allValues?.eventType ?? [], 'type') +
+          arrayToQueryParam(allValues?.location ?? [], 'place') +
+          arrayToQueryParam(allValues?.region ?? [], 'region') +
+          arrayToQueryParam([...(allValues?.organizer ?? [])], 'person-organization') +
+          arrayToQueryParam([...(allValues?.person ?? [])], 'performer'),
+        locale: onLanguageSelect(allValues?.language)?.key.toLowerCase(),
+        color: changedValues.color || color,
+      };
 
-      const filtersParam =
-        arrayToQueryParam(allValues?.eventType ?? [], 'type') +
-        arrayToQueryParam(allValues?.location ?? [], 'place') +
-        arrayToQueryParam(allValues?.region ?? [], 'region') +
-        arrayToQueryParam([...(allValues?.organizer ?? [])], 'person-organization') +
-        arrayToQueryParam([...(allValues?.person ?? [])], 'performer');
-      const searchEventsFilters = filtersParam;
+      const params = {
+        width: formValues.width,
+        font: formValues.font,
+        redirectionMode: formValues.redirectionMode,
+        limit: formValues.limit,
+        calendar: calendarSlug,
+        calendarName,
+        logo: calendarLogoUri,
+        searchEventsFilters: formValues.searchEventsFilters,
+        locale: formValues.locale,
+        height: formValues.height,
+      };
 
-      const locale = onLanguageSelect(allValues?.language);
-      const urlCopy = new URL(widgetUrl);
-      const urlCopyMobile = new URL(widgetUrl);
+      if (process.env.REACT_APP_ENABLE_SHOW_FOOTER === 'true') params.showFooter = formValues.showFooter;
+      if (process.env.REACT_APP_DISABLE_GROUPING === 'true') params.disableGrouping = formValues.disableGroups;
+      if (process.env.REACT_APP_ENABLE_ALWAYS_ON_DATE_PICKER === 'true')
+        params.alwaysOnDatePicker = formValues.alwaysOnDatePicker;
+      if (process.env.REACT_APP_ENABLE_HEADER_TITLE === 'true' && formValues.headerText)
+        params.headerTitle = formValues.headerText;
+      if (process.env.REACT_APP_ENABLE_FILTER_OPTIONS === 'true') params.filterOptions = formValues.filterOptions;
 
-      // Add query parameters to the URL
-
-      urlCopy.searchParams.append('showFooter', showFooter);
-      urlCopy.searchParams.append('disableGrouping', disableGroups);
-      urlCopy.searchParams.append('alwaysOnDatePicker', alwaysOnDatePicker);
-      headerText && urlCopy.searchParams.append('headerTitle', headerText);
-      urlCopy.searchParams.append('width', width);
-      urlCopy.searchParams.append('font', font);
-      urlCopy.searchParams.append('redirectionMode', redirectionMode);
-      urlCopy.searchParams.append('limit', limit);
-      urlCopy.searchParams.append('calendar', calendarSlug);
-      urlCopy.searchParams.append('calendarName', calendarName);
-      urlCopy.searchParams.append('logo', calendarLogoUri);
-      urlCopy.searchParams.append('searchEventsFilters', searchEventsFilters);
-      urlCopy.searchParams.append('locale', locale?.key.toLowerCase());
-      urlCopy.searchParams.append('filterOptions', filterOptions);
-
-      if (changedValues.color) {
-        urlCopy.searchParams.append('color', changedValues.color);
-      } else urlCopy.searchParams.append('color', color);
-      urlCopy.searchParams.append('height', height);
-
-      urlCopyMobile.searchParams.append('showFooter', showFooter);
-      urlCopyMobile.searchParams.append('disableGrouping', disableGroups);
-      urlCopyMobile.searchParams.append('alwaysOnDatePicker', alwaysOnDatePicker);
-      headerText && urlCopyMobile.searchParams.append('headerTitle', headerText);
-      urlCopyMobile.searchParams.append('limit', limit);
-      urlCopyMobile.searchParams.append('calendar', calendarSlug);
-      urlCopyMobile.searchParams.append('calendarName', calendarName);
-      urlCopyMobile.searchParams.append('font', font);
-      urlCopyMobile.searchParams.append('redirectionMode', redirectionMode);
-      urlCopyMobile.searchParams.append('logo', calendarLogoUri);
-      urlCopyMobile.searchParams.append('searchEventsFilters', searchEventsFilters);
-      urlCopyMobile.searchParams.append('locale', locale?.key.toLowerCase());
-      urlCopyMobile.searchParams.append('filterOptions', filterOptions);
-      urlCopyMobile.searchParams.append('height', '600');
-      if (changedValues.color) {
-        urlCopyMobile.searchParams.append('color', changedValues.color);
-      } else urlCopyMobile.searchParams.append('color', color);
-      setUrlMObile(urlCopyMobile);
+      const urlCopy = generateUrlWithParams(widgetUrl, params, { color: formValues.color });
+      const urlCopyMobile = generateUrlWithParams(widgetUrl, params, { color: formValues.color, height: '600' });
 
       setUrl(urlCopy);
+      setUrlMObile(urlCopyMobile);
+
       setIframeCode(
-        `<iframe src="${urlCopy.href}" width="100%" style="max-width:${width}px; border:none" height="${height}px"></iframe>`,
+        `<iframe src="${urlCopy.href}" width="100%" style="max-width:${formValues.width}px; border:none" height="${formValues.height}px"></iframe>`,
       );
     }
   };
@@ -308,62 +303,54 @@ const WidgetSettings = ({ tabKey }) => {
   }, [initialEntitiesPersonOrganization]);
 
   useEffect(() => {
-    if (tabKey != '2') return;
+    if (tabKey !== '2') return;
 
     form.resetFields();
     setColor('#607EFC');
     form.setFieldValue('color', color);
 
-    const urlCopy = new URL(widgetUrl);
-    const urlCopyMobile = new URL(widgetUrl);
+    const formValues = {
+      height: form.getFieldValue('height') ?? 600,
+      limit: form.getFieldValue('limit') ?? 9,
+      font: form.getFieldValue('font') ?? 'Roboto',
+      redirectionMode: form.getFieldValue('redirectionMode') ?? redirectionModesModified[0].value,
+      locale: onLanguageSelect(form.getFieldValue('locale') ?? languageOptions[0]?.value)?.key.toLowerCase(),
+      showFooter: form.getFieldValue('footer-control') ?? false,
+      headerText: form.getFieldValue('header-text'),
+      disableGroups: form.getFieldValue('disableGroups') ?? false,
+      alwaysOnDatePicker: form.getFieldValue('alwaysOnDatePicker'),
+      filterOptions: form.getFieldValue('filterOptions')?.join('|'),
+      color,
+    };
 
-    const height = form.getFieldValue('height') ?? 600;
-    const limit = form.getFieldValue('limit') ?? 9;
-    const font = form.getFieldValue('font') ?? 'Roboto';
-    const redirectionMode = form.getFieldValue('redirectionMode') ?? redirectionModesModified[0].value;
-    const locale = form.getFieldValue('locale') ?? languageOptions[0]?.value;
-    const showFooter = form.getFieldValue('footer-control') ?? false;
-    const headerText = form.getFieldValue('header-text');
-    const disableGroups = form.getFieldValue('disableGroups') ?? false;
-    const alwaysOnDatePicker = form.getFieldValue('alwaysOnDatePicker');
-    const filterOptions = form.getFieldValue('filterOptions')?.join('|');
+    const params = {
+      logo: calendarLogoUri,
+      locale: formValues.locale,
+      limit: formValues.limit,
+      color: formValues.color,
+      font: formValues.font,
+      redirectionMode: formValues.redirectionMode,
+      calendar: calendarSlug,
+      calendarName,
+      height: formValues.height,
+    };
 
-    urlCopy.searchParams.append('logo', calendarLogoUri);
-    urlCopy.searchParams.append('locale', onLanguageSelect(locale)?.key.toLowerCase());
-    urlCopy.searchParams.append('limit', limit);
-    urlCopy.searchParams.append('color', color);
-    urlCopy.searchParams.append('font', font);
-    urlCopy.searchParams.append('redirectionMode', redirectionMode);
-    urlCopy.searchParams.append('showFooter', showFooter);
-    urlCopy.searchParams.append('disableGrouping', disableGroups);
-    urlCopy.searchParams.append('alwaysOnDatePicker', alwaysOnDatePicker);
-    urlCopy.searchParams.append('filterOptions', filterOptions);
-    headerText && urlCopy.searchParams.append('headerTitle', headerText);
+    if (process.env.REACT_APP_ENABLE_SHOW_FOOTER === 'true') params.showFooter = formValues.showFooter;
+    if (process.env.REACT_APP_DISABLE_GROUPING === 'true') params.disableGrouping = formValues.disableGroups;
+    if (process.env.REACT_APP_ENABLE_ALWAYS_ON_DATE_PICKER === 'true')
+      params.alwaysOnDatePicker = formValues.alwaysOnDatePicker;
+    if (process.env.REACT_APP_ENABLE_HEADER_TITLE === 'true' && formValues.headerText)
+      params.headerTitle = formValues.headerText;
+    if (process.env.REACT_APP_ENABLE_FILTER_OPTIONS === 'true') params.filterOptions = formValues.filterOptions;
 
-    urlCopy.searchParams.append('calendar', calendarSlug);
-    urlCopy.searchParams.append('calendarName', calendarName);
-    urlCopy.searchParams.append('height', height);
+    const urlCopy = generateUrlWithParams(widgetUrl, params);
+    const urlCopyMobile = generateUrlWithParams(widgetUrl, params, { height: '600' });
+
     setUrl(urlCopy);
-
-    urlCopyMobile.searchParams.append('showFooter', showFooter);
-    urlCopyMobile.searchParams.append('disableGrouping', disableGroups);
-    urlCopyMobile.searchParams.append('alwaysOnDatePicker', alwaysOnDatePicker);
-    headerText && urlCopyMobile.searchParams.append('headerTitle', headerText);
-    urlCopyMobile.searchParams.append('logo', calendarLogoUri);
-    urlCopyMobile.searchParams.append('locale', onLanguageSelect(locale)?.key.toLowerCase());
-    urlCopyMobile.searchParams.append('limit', limit);
-    urlCopyMobile.searchParams.append('color', color);
-    urlCopyMobile.searchParams.append('font', font);
-    urlCopyMobile.searchParams.append('redirectionMode', redirectionMode);
-    urlCopyMobile.searchParams.append('calendar', calendarSlug);
-    urlCopyMobile.searchParams.append('calendarName', calendarName);
-    urlCopyMobile.searchParams.append('height', '600');
-    urlCopyMobile.searchParams.append('filterOptions', filterOptions);
-
     setUrlMObile(urlCopyMobile);
 
     setIframeCode(
-      `<iframe src="${urlCopy.href}" width="100%" style="max-width:1000px; border:none" height="${height}px"></iframe>`,
+      `<iframe src="${urlCopy.href}" width="100%" style="max-width:1000px; border:none" height="${formValues.height}px"></iframe>`,
     );
   }, [calendarContentLanguage, tabKey]);
 
@@ -436,19 +423,30 @@ const WidgetSettings = ({ tabKey }) => {
                     form={form}
                     onValuesChange={handleFormValuesChange}>
                     <Row gutter={[32, 4]} className="form-item-container">
-                      <Col flex="448px" className="header-text-wrapper">
+                      <Col
+                        flex="448px"
+                        className="header-text-wrapper"
+                        style={{ display: process.env.REACT_APP_ENABLE_HEADER_TITLE === 'true' ? 'initial' : 'none' }}>
                         <Form.Item
                           name="header-text"
                           label={t(`${localePath}.headerText`)}
-                          data-cy="widget-settings-headerText">
+                          data-cy="widget-settings-headerText"
+                          hidden={process.env.REACT_APP_ENABLE_HEADER_TITLE !== 'true'}>
                           <StyledInput />
                         </Form.Item>
                         <p className="header-text-description" data-cy="widget-settings-header-text-description">
                           {t(`${localePath}.headerTextDescription`)}
                         </p>
                       </Col>
-                      <Col flex="448px" className="footer-control-wrapper">
-                        <Form.Item name="footer-control" initialValue={false} data-cy="widget-settings-headerText">
+                      <Col
+                        flex="448px"
+                        className="footer-control-wrapper"
+                        style={{ display: process.env.REACT_APP_ENABLE_SHOW_FOOTER === 'true' ? 'initial' : 'none' }}>
+                        <Form.Item
+                          name="footer-control"
+                          initialValue={false}
+                          data-cy="widget-settings-headerText"
+                          hidden={process.env.REACT_APP_ENABLE_SHOW_FOOTER !== 'true'}>
                           <StyledSwitch defaultChecked={false} />
                         </Form.Item>
                         <p className="footer-control" data-cy="widget-settings-footer-control-label">
@@ -566,13 +564,18 @@ const WidgetSettings = ({ tabKey }) => {
                         </Form.Item>
                       </Col>
 
-                      <Col flex="448px">
+                      <Col
+                        flex="448px"
+                        style={{
+                          display: process.env.REACT_APP_ENABLE_FILTER_OPTIONS === 'true' ? 'initial' : 'none',
+                        }}>
                         <Form.Item
                           name="filterOptions"
                           label={t(`${localePath}.filterOptions`)}
                           initialValue={[filterOptions[0]?.value]}
                           className="widget-settings-filter-options"
-                          data-cy="widget-settings-filter-options">
+                          data-cy="widget-settings-filter-options"
+                          hidden={process.env.REACT_APP_ENABLE_FILTER_OPTIONS !== 'true'}>
                           <TreeSelectOption
                             treeDefaultExpandAll
                             notFoundContent={<NoContent />}
@@ -595,11 +598,17 @@ const WidgetSettings = ({ tabKey }) => {
                         </Form.Item>
                       </Col>
 
-                      <Col flex="448px" className="datepicker-control-wrapper">
+                      <Col
+                        flex="448px"
+                        className="datepicker-control-wrapper"
+                        style={{
+                          display: process.env.REACT_APP_ENABLE_ALWAYS_ON_DATE_PICKER === 'true' ? 'initial' : 'none',
+                        }}>
                         <Form.Item
                           name="alwaysOnDatePicker"
                           initialValue={false}
-                          data-cy="widget-settings-datepicker-toggle">
+                          data-cy="widget-settings-datepicker-toggle"
+                          hidden={process.env.REACT_APP_ENABLE_ALWAYS_ON_DATE_PICKER !== 'true'}>
                           <StyledSwitch defaultChecked={false} />
                         </Form.Item>
                         <p className="datepicker-control" data-cy="widget-settings-datepicker-control-label">
@@ -631,12 +640,18 @@ const WidgetSettings = ({ tabKey }) => {
                         </Form.Item>
                       </Col>
 
-                      <Col flex="448px" className="disable-grouping-flag-wrapper">
+                      <Col
+                        flex="448px"
+                        className="disable-grouping-flag-wrapper"
+                        style={{
+                          display: process.env.REACT_APP_DISABLE_GROUPING === 'true' ? 'initial' : 'none',
+                        }}>
                         <Form.Item
                           name="disableGroups"
                           required
                           initialValue={false}
-                          data-cy="widget-settings-disable-groups">
+                          data-cy="widget-settings-disable-groups"
+                          hidden={process.env.REACT_APP_DISABLE_GROUPING !== 'true'}>
                           <StyledSwitch defaultChecked={false} />
                         </Form.Item>
                         <p className="disable-groups-description" data-cy="disable-groups-description">
