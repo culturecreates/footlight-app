@@ -178,7 +178,7 @@ jobs:
           npx cypress run --browser firefox --env "$env_arg"
 
       - name: Upload Cypress Debug Logs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: cypress-debug-logs

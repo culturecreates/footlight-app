@@ -55,29 +55,24 @@ jobs:
         env:
           DISTRIBUTION: E3S97I9K4Q2UXB
           PATHS: "/*"
-        
-      - name: Send Email on Success
-        if: success()
-        run: |
-          curl -X "POST" \
-          'https://api.sendgrid.com/v3/mail/send' \
-          -H 'Authorization:Bearer ${{ secrets.SENDGRID_API_KEY }}' \
-          -H 'Content-Type:application/json' \
-          -d '{
-            "personalizations":[
-              {
-                "to":[
-                {"email":"${{ vars.SENDGRID_TO_EMAIL }}"},
-                {"email":"${{ vars.SUPPORT_EMAIL}}"}
-                ]
-              }
-            ],
-            "from":{"email":"${{ vars.SENDGRID_FROM_EMAIL }}"},
-            "subject":"Footlight CMS Deployment",
-            "content":[
-              {
-                "type":"text/html",
-                "value":"${{ vars.NEW_RELEASE_HTML_PAGE }}"
-              }
-            ]
-          }'
+
+  release-notification:
+    if: success()
+    name: Send Email on Success
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        to-emails:
+          - ${{ vars.SENDGRID_TO_EMAIL }}
+          - ${{ vars.SUPPORT_EMAIL}}
+
+    steps:
+      - uses: licenseware/send-email-notification@v1
+
+        with:
+          api-key: ${{ secrets.SENDGRID_API_KEY }}
+          subject: Footlight CMS Deployment
+          from-email: ${{ vars.SENDGRID_FROM_EMAIL }}
+          to-email: ${{ matrix.to-emails }}
+          markdown-body: ${{vars.NEW_RELEASE_MARKDOWN_PAGE}}
