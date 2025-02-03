@@ -30,6 +30,8 @@ import { copyText } from '../../../../utils/copyText';
 import LoadingIndicator from '../../../../components/LoadingIndicator';
 import { filterOptions, redirectionModes, widgetFontCollection } from '../../../../constants/widgetConstants';
 import StyledSwitch from '../../../../components/Switch';
+import { eventTaxonomyMappedField } from '../../../../constants/eventTaxonomyMappedField';
+import { EVENT } from '../../../../constants/standardFieldsTranslations';
 
 const { useBreakpoint } = Grid;
 const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_BASE_URL;
@@ -71,12 +73,13 @@ const WidgetSettings = ({ tabKey }) => {
   const [previewModal, setPreviewModal] = useState(false);
   const [url, setUrl] = useState(new URL(widgetUrl));
   const [urlMobile, setUrlMObile] = useState(new URL(widgetUrl));
+  const [filterOptionsList, setFilterOptionsList] = useState([]);
 
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
 
   let taxonomyClassQuery = new URLSearchParams();
   taxonomyClassQuery.append('taxonomy-class', taxonomyClass.EVENT);
-  const { currentData: taxonomyDataEventType } = useGetAllTaxonomyQuery({
+  const { currentData: taxonomyDataEventType, isFetching: isEventTaxonomyFetching } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
     filters: '',
@@ -159,7 +162,7 @@ const WidgetSettings = ({ tabKey }) => {
       const headerText = form.getFieldValue('header-text');
       const disableGroups = form.getFieldValue('disableGroups') ?? false;
       const alwaysOnDatePicker = form.getFieldValue('alwaysOnDatePicker');
-      const filterOptions = form.getFieldValue('filterOptions').join('|');
+      const filterOptions = form.getFieldValue('filterOptions')?.join('|');
 
       const filtersParam =
         arrayToQueryParam(allValues?.eventType ?? [], 'type') +
@@ -323,7 +326,7 @@ const WidgetSettings = ({ tabKey }) => {
     const headerText = form.getFieldValue('header-text');
     const disableGroups = form.getFieldValue('disableGroups') ?? false;
     const alwaysOnDatePicker = form.getFieldValue('alwaysOnDatePicker');
-    const filterOptions = form.getFieldValue('filterOptions').join('|');
+    const filterOptions = form.getFieldValue('filterOptions')?.join('|');
 
     urlCopy.searchParams.append('logo', calendarLogoUri);
     urlCopy.searchParams.append('locale', onLanguageSelect(locale)?.key.toLowerCase());
@@ -363,6 +366,22 @@ const WidgetSettings = ({ tabKey }) => {
       `<iframe src="${urlCopy.href}" width="100%" style="max-width:1000px; border:none" height="${height}px"></iframe>`,
     );
   }, [calendarContentLanguage, tabKey]);
+
+  useEffect(() => {
+    if (!taxonomyDataEventType || isEventTaxonomyFetching) return;
+
+    const allowedFields = [eventTaxonomyMappedField.EVENT_TYPE, eventTaxonomyMappedField.AUDIENCE];
+
+    const dynamicFilters = taxonomyDataEventType.data
+      ?.filter((item) => allowedFields.includes(item.mappedToField))
+      .map((item) => ({
+        label: EVENT.find((translation) => translation.key === item.mappedToField)?.label || '',
+        value: item.id,
+      }))
+      .filter(Boolean);
+
+    setFilterOptionsList([filterOptions[0], ...dynamicFilters]);
+  }, [taxonomyDataEventType, isEventTaxonomyFetching]);
 
   function arrayToQueryParam(arr, paramName) {
     if (!arr || arr.length === 0) {
@@ -557,9 +576,8 @@ const WidgetSettings = ({ tabKey }) => {
                           <TreeSelectOption
                             treeDefaultExpandAll
                             notFoundContent={<NoContent />}
-                            defaultValue={filterOptions[0]}
                             clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
-                            treeData={filterOptions}
+                            treeData={filterOptionsList}
                             tagRender={(props) => {
                               const { label, closable, onClose } = props;
                               return (
