@@ -977,6 +977,7 @@
         "eventType": "Event type",
         "date": "Date",
         "audience": "Audience",
+        "place": "Place",
         "region": "Region",
         "location": "Location",
         "organizer": "Event Organiser",

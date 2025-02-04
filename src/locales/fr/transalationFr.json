@@ -974,6 +974,7 @@
         "filterOptions": "Ajouter d'autres filtres à la vue de la liste.",
         "date": "Date",
         "audience": "Public",
+        "place": "Lieu",
         "region": "Région",
         "location": "Lieu",
         "organizer": "Organisateur",

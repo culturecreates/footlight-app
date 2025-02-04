@@ -38,4 +38,8 @@ export const filterOptions = [
     label: <Translation>{(t) => t('dashboard.settings.widgetSettings.audience')}</Translation>,
     value: 'AUDIENCE',
   },
+  {
+    label: <Translation>{(t) => t('dashboard.settings.widgetSettings.place')}</Translation>,
+    value: 'PLACE',
+  },
 ];

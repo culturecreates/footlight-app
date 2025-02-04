@@ -371,6 +371,9 @@ const WidgetSettings = ({ tabKey }) => {
     if (!taxonomyDataEventType || isEventTaxonomyFetching) return;
 
     const allowedFields = [eventTaxonomyMappedField.EVENT_TYPE, eventTaxonomyMappedField.AUDIENCE];
+    const selectedStaticFilters = ['DATES', 'PLACE'];
+
+    const selectedFilters = filterOptions.filter((option) => selectedStaticFilters.includes(option.value));
 
     const dynamicFilters = taxonomyDataEventType.data
       ?.filter((item) => allowedFields.includes(item.mappedToField))
@@ -380,7 +383,7 @@ const WidgetSettings = ({ tabKey }) => {
       }))
       .filter(Boolean);
 
-    setFilterOptionsList([filterOptions[0], ...dynamicFilters]);
+    setFilterOptionsList([...selectedFilters, ...dynamicFilters]);
   }, [taxonomyDataEventType, isEventTaxonomyFetching]);
 
   function arrayToQueryParam(arr, paramName) {
