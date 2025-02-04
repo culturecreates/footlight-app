@@ -198,14 +198,13 @@ const WidgetSettings = ({ tabKey }) => {
         locale: formValues.locale,
         height: formValues.height,
       };
-
-      if (process.env.REACT_APP_ENABLE_SHOW_FOOTER === 'true') params.showFooter = formValues.showFooter;
-      if (process.env.REACT_APP_DISABLE_GROUPING === 'true') params.disableGrouping = formValues.disableGroups;
-      if (process.env.REACT_APP_ENABLE_ALWAYS_ON_DATE_PICKER === 'true')
+      if (process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true') {
+        params.showFooter = formValues.showFooter;
+        params.disableGrouping = formValues.disableGroups;
         params.alwaysOnDatePicker = formValues.alwaysOnDatePicker;
-      if (process.env.REACT_APP_ENABLE_HEADER_TITLE === 'true' && formValues.headerText)
-        params.headerTitle = formValues.headerText;
-      if (process.env.REACT_APP_ENABLE_FILTER_OPTIONS === 'true') params.filterOptions = formValues.filterOptions;
+        if (formValues.headerText) params.headerTitle = formValues.headerText;
+        params.filterOptions = formValues.filterOptions;
+      }
 
       const urlCopy = generateUrlWithParams(widgetUrl, params, { color: formValues.color });
       const urlCopyMobile = generateUrlWithParams(widgetUrl, params, { color: formValues.color, height: '600' });
@@ -335,13 +334,13 @@ const WidgetSettings = ({ tabKey }) => {
       height: formValues.height,
     };
 
-    if (process.env.REACT_APP_ENABLE_SHOW_FOOTER === 'true') params.showFooter = formValues.showFooter;
-    if (process.env.REACT_APP_DISABLE_GROUPING === 'true') params.disableGrouping = formValues.disableGroups;
-    if (process.env.REACT_APP_ENABLE_ALWAYS_ON_DATE_PICKER === 'true')
+    if (process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true') {
+      params.showFooter = formValues.showFooter;
+      params.disableGrouping = formValues.disableGroups;
       params.alwaysOnDatePicker = formValues.alwaysOnDatePicker;
-    if (process.env.REACT_APP_ENABLE_HEADER_TITLE === 'true' && formValues.headerText)
-      params.headerTitle = formValues.headerText;
-    if (process.env.REACT_APP_ENABLE_FILTER_OPTIONS === 'true') params.filterOptions = formValues.filterOptions;
+      if (formValues.headerText) params.headerTitle = formValues.headerText;
+      params.filterOptions = formValues.filterOptions;
+    }
 
     const urlCopy = generateUrlWithParams(widgetUrl, params);
     const urlCopyMobile = generateUrlWithParams(widgetUrl, params, { height: '600' });
@@ -426,12 +425,14 @@ const WidgetSettings = ({ tabKey }) => {
                       <Col
                         flex="448px"
                         className="header-text-wrapper"
-                        style={{ display: process.env.REACT_APP_ENABLE_HEADER_TITLE === 'true' ? 'initial' : 'none' }}>
+                        style={{
+                          display: process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true' ? 'initial' : 'none',
+                        }}>
                         <Form.Item
                           name="header-text"
                           label={t(`${localePath}.headerText`)}
                           data-cy="widget-settings-headerText"
-                          hidden={process.env.REACT_APP_ENABLE_HEADER_TITLE !== 'true'}>
+                          hidden={process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 !== 'true'}>
                           <StyledInput />
                         </Form.Item>
                         <p className="header-text-description" data-cy="widget-settings-header-text-description">
@@ -441,12 +442,14 @@ const WidgetSettings = ({ tabKey }) => {
                       <Col
                         flex="448px"
                         className="footer-control-wrapper"
-                        style={{ display: process.env.REACT_APP_ENABLE_SHOW_FOOTER === 'true' ? 'initial' : 'none' }}>
+                        style={{
+                          display: process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true' ? 'initial' : 'none',
+                        }}>
                         <Form.Item
                           name="footer-control"
                           initialValue={false}
                           data-cy="widget-settings-headerText"
-                          hidden={process.env.REACT_APP_ENABLE_SHOW_FOOTER !== 'true'}>
+                          hidden={process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 !== 'true'}>
                           <StyledSwitch defaultChecked={false} />
                         </Form.Item>
                         <p className="footer-control" data-cy="widget-settings-footer-control-label">
@@ -567,7 +570,7 @@ const WidgetSettings = ({ tabKey }) => {
                       <Col
                         flex="448px"
                         style={{
-                          display: process.env.REACT_APP_ENABLE_FILTER_OPTIONS === 'true' ? 'initial' : 'none',
+                          display: process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true' ? 'initial' : 'none',
                         }}>
                         <Form.Item
                           name="filterOptions"
@@ -575,7 +578,7 @@ const WidgetSettings = ({ tabKey }) => {
                           initialValue={[filterOptions[0]?.value]}
                           className="widget-settings-filter-options"
                           data-cy="widget-settings-filter-options"
-                          hidden={process.env.REACT_APP_ENABLE_FILTER_OPTIONS !== 'true'}>
+                          hidden={process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 !== 'true'}>
                           <TreeSelectOption
                             treeDefaultExpandAll
                             notFoundContent={<NoContent />}
@@ -602,13 +605,13 @@ const WidgetSettings = ({ tabKey }) => {
                         flex="448px"
                         className="datepicker-control-wrapper"
                         style={{
-                          display: process.env.REACT_APP_ENABLE_ALWAYS_ON_DATE_PICKER === 'true' ? 'initial' : 'none',
+                          display: process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true' ? 'initial' : 'none',
                         }}>
                         <Form.Item
                           name="alwaysOnDatePicker"
                           initialValue={false}
                           data-cy="widget-settings-datepicker-toggle"
-                          hidden={process.env.REACT_APP_ENABLE_ALWAYS_ON_DATE_PICKER !== 'true'}>
+                          hidden={process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 !== 'true'}>
                           <StyledSwitch defaultChecked={false} />
                         </Form.Item>
                         <p className="datepicker-control" data-cy="widget-settings-datepicker-control-label">
@@ -644,14 +647,14 @@ const WidgetSettings = ({ tabKey }) => {
                         flex="448px"
                         className="disable-grouping-flag-wrapper"
                         style={{
-                          display: process.env.REACT_APP_DISABLE_GROUPING === 'true' ? 'initial' : 'none',
+                          display: process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true' ? 'initial' : 'none',
                         }}>
                         <Form.Item
                           name="disableGroups"
                           required
                           initialValue={false}
                           data-cy="widget-settings-disable-groups"
-                          hidden={process.env.REACT_APP_DISABLE_GROUPING !== 'true'}>
+                          hidden={process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 !== 'true'}>
                           <StyledSwitch defaultChecked={false} />
                         </Form.Item>
                         <p className="disable-groups-description" data-cy="disable-groups-description">
