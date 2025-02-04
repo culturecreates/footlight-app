@@ -357,7 +357,7 @@ function OrganizationsReadOnly() {
                                 {t('dashboard.organization.readOnly.description')}
                               </p>
                               {Object.keys(organizationData?.description ?? {})?.length > 0 && (
-                                <p className="read-only-event-content">
+                                <p>
                                   <div
                                     dangerouslySetInnerHTML={{
                                       __html: contentLanguageBilingual({

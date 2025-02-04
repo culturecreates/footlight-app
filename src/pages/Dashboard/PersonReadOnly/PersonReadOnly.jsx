@@ -411,7 +411,7 @@ function PersonReadOnly() {
                                     {t('dashboard.people.readOnly.description')}
                                   </p>
                                   {Object.keys(personData?.description ?? {})?.length > 0 && (
-                                    <p className="read-only-event-content">
+                                    <p>
                                       <div
                                         dangerouslySetInnerHTML={{
                                           __html: contentLanguageBilingual({
