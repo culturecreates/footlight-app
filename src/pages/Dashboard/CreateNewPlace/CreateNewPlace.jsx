@@ -1821,6 +1821,13 @@ function CreateNewPlace() {
                   label={t('dashboard.places.createNew.addPlace.image.additionalImages')}
                   data-cy="form-item-event-multiple-image"
                   hidden={!imageConfig?.enableGallery}>
+                  <Row>
+                    <Col>
+                      <p className="add-event-date-heading" data-cy="para-place-image-helper-text">
+                        {t('dashboard.places.createNew.addPlace.image.subheading')}
+                      </p>
+                    </Col>
+                  </Row>
                   <MultipleImageUpload
                     setShowDialog={setShowDialog}
                     form={form}
