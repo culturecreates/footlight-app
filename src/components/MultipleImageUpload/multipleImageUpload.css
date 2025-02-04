@@ -14,7 +14,7 @@
   gap: 10px;
   border: 1px solid #607efc;
   border-radius: 4px;
-  height: 66px;
+  height: auto;
   padding: 8px;
   margin-top: 8px;
 }
@@ -73,6 +73,8 @@
 
 .multiple-image-upload-wrapper .image-footer .image-contents .image-name-wrapper .image-credits {
   display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
 }
 @media (max-width: 480px) {
   .multiple-image-upload-wrapper .image-footer .image-name {
