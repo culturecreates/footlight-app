@@ -93,7 +93,7 @@ const DragableUploadListItem = ({
               data-cy="anchor-image-link">
               {file?.name}
             </a>
-            <span className="image-credits" data-cy="span-maultiple-image-credits">
+            <span className="image-credits" data-cy="span-multiple-image-credits">
               {file?.imageOptions &&
                 Object.entries(file?.imageOptions).map(([key, value]) => {
                   if (
@@ -101,7 +101,6 @@ const DragableUploadListItem = ({
                     typeof value === 'object' &&
                     Object.values(value).some((langValue) => langValue && langValue !== '')
                   ) {
-                    console.log(value);
                     return (
                       <Credit key={key} data-cy={`span-image-credit-${key}`}>
                         {t(`dashboard.events.addEditEvent.otherInformation.image.modalTexts.${key}.${key}`)}

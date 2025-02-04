@@ -73,7 +73,6 @@ const ImageCredits = (props) => {
       formItems.forEach((item) => {
         if (item.key === selectedField) {
           form.validateFields([item.name]).then((values) => {
-            console.log('values', values);
             setFileList((prev) => {
               const index = prev.findIndex((file) => file.uid === selectedUID);
               const newFile = {
@@ -84,7 +83,6 @@ const ImageCredits = (props) => {
                 },
               };
               prev[index] = newFile;
-              console.log('prev', prev);
               form.setFieldsValue({
                 multipleImagesCrop: [...prev],
               });
