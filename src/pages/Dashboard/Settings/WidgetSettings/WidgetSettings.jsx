@@ -28,7 +28,10 @@ import { externalSourceOptions } from '../../../../constants/sourceOptions';
 import CustomModal from '../../../../components/Modal/Common/CustomModal';
 import { copyText } from '../../../../utils/copyText';
 import LoadingIndicator from '../../../../components/LoadingIndicator';
-import { redirectionModes, widgetFontCollection } from '../../../../constants/widgetConstants';
+import { filterOptions, redirectionModes, widgetFontCollection } from '../../../../constants/widgetConstants';
+import StyledSwitch from '../../../../components/Switch';
+import { eventTaxonomyMappedField } from '../../../../constants/eventTaxonomyMappedField';
+import { EVENT } from '../../../../constants/standardFieldsTranslations';
 
 const { useBreakpoint } = Grid;
 const widgetUrl = process.env.REACT_APP_CALENDAR_WIDGET_BASE_URL;
@@ -70,12 +73,13 @@ const WidgetSettings = ({ tabKey }) => {
   const [previewModal, setPreviewModal] = useState(false);
   const [url, setUrl] = useState(new URL(widgetUrl));
   const [urlMobile, setUrlMObile] = useState(new URL(widgetUrl));
+  const [filterOptionsList, setFilterOptionsList] = useState([]);
 
   const [getEntities, { isFetching: isEntitiesFetching }] = useLazyGetEntitiesQuery({ sessionId: timestampRef });
 
   let taxonomyClassQuery = new URLSearchParams();
   taxonomyClassQuery.append('taxonomy-class', taxonomyClass.EVENT);
-  const { currentData: taxonomyDataEventType } = useGetAllTaxonomyQuery({
+  const { currentData: taxonomyDataEventType, isFetching: isEventTaxonomyFetching } = useGetAllTaxonomyQuery({
     calendarId,
     search: '',
     filters: '',
@@ -154,6 +158,11 @@ const WidgetSettings = ({ tabKey }) => {
       const limit = form.getFieldValue('limit') ?? 9;
       const font = form.getFieldValue('font') ?? 'Roboto';
       const redirectionMode = form.getFieldValue('redirectionMode') ?? redirectionModesModified[0].value;
+      const showFooter = form.getFieldValue('footer-control') ?? false;
+      const headerText = form.getFieldValue('header-text');
+      const disableGroups = form.getFieldValue('disableGroups') ?? false;
+      const alwaysOnDatePicker = form.getFieldValue('alwaysOnDatePicker');
+      const filterOptions = form.getFieldValue('filterOptions')?.join('|');
 
       const filtersParam =
         arrayToQueryParam(allValues?.eventType ?? [], 'type') +
@@ -161,7 +170,6 @@ const WidgetSettings = ({ tabKey }) => {
         arrayToQueryParam(allValues?.region ?? [], 'region') +
         arrayToQueryParam([...(allValues?.organizer ?? [])], 'person-organization') +
         arrayToQueryParam([...(allValues?.person ?? [])], 'performer');
-
       const searchEventsFilters = filtersParam;
 
       const locale = onLanguageSelect(allValues?.language);
@@ -169,6 +177,11 @@ const WidgetSettings = ({ tabKey }) => {
       const urlCopyMobile = new URL(widgetUrl);
 
       // Add query parameters to the URL
+
+      urlCopy.searchParams.append('showFooter', showFooter);
+      urlCopy.searchParams.append('disableGrouping', disableGroups);
+      urlCopy.searchParams.append('alwaysOnDatePicker', alwaysOnDatePicker);
+      headerText && urlCopy.searchParams.append('headerTitle', headerText);
       urlCopy.searchParams.append('width', width);
       urlCopy.searchParams.append('font', font);
       urlCopy.searchParams.append('redirectionMode', redirectionMode);
@@ -178,12 +191,17 @@ const WidgetSettings = ({ tabKey }) => {
       urlCopy.searchParams.append('logo', calendarLogoUri);
       urlCopy.searchParams.append('searchEventsFilters', searchEventsFilters);
       urlCopy.searchParams.append('locale', locale?.key.toLowerCase());
+      urlCopy.searchParams.append('filterOptions', filterOptions);
 
       if (changedValues.color) {
         urlCopy.searchParams.append('color', changedValues.color);
       } else urlCopy.searchParams.append('color', color);
       urlCopy.searchParams.append('height', height);
 
+      urlCopyMobile.searchParams.append('showFooter', showFooter);
+      urlCopyMobile.searchParams.append('disableGrouping', disableGroups);
+      urlCopyMobile.searchParams.append('alwaysOnDatePicker', alwaysOnDatePicker);
+      headerText && urlCopyMobile.searchParams.append('headerTitle', headerText);
       urlCopyMobile.searchParams.append('limit', limit);
       urlCopyMobile.searchParams.append('calendar', calendarSlug);
       urlCopyMobile.searchParams.append('calendarName', calendarName);
@@ -192,6 +210,7 @@ const WidgetSettings = ({ tabKey }) => {
       urlCopyMobile.searchParams.append('logo', calendarLogoUri);
       urlCopyMobile.searchParams.append('searchEventsFilters', searchEventsFilters);
       urlCopyMobile.searchParams.append('locale', locale?.key.toLowerCase());
+      urlCopyMobile.searchParams.append('filterOptions', filterOptions);
       urlCopyMobile.searchParams.append('height', '600');
       if (changedValues.color) {
         urlCopyMobile.searchParams.append('color', changedValues.color);
@@ -303,6 +322,11 @@ const WidgetSettings = ({ tabKey }) => {
     const font = form.getFieldValue('font') ?? 'Roboto';
     const redirectionMode = form.getFieldValue('redirectionMode') ?? redirectionModesModified[0].value;
     const locale = form.getFieldValue('locale') ?? languageOptions[0]?.value;
+    const showFooter = form.getFieldValue('footer-control') ?? false;
+    const headerText = form.getFieldValue('header-text');
+    const disableGroups = form.getFieldValue('disableGroups') ?? false;
+    const alwaysOnDatePicker = form.getFieldValue('alwaysOnDatePicker');
+    const filterOptions = form.getFieldValue('filterOptions')?.join('|');
 
     urlCopy.searchParams.append('logo', calendarLogoUri);
     urlCopy.searchParams.append('locale', onLanguageSelect(locale)?.key.toLowerCase());
@@ -310,12 +334,21 @@ const WidgetSettings = ({ tabKey }) => {
     urlCopy.searchParams.append('color', color);
     urlCopy.searchParams.append('font', font);
     urlCopy.searchParams.append('redirectionMode', redirectionMode);
+    urlCopy.searchParams.append('showFooter', showFooter);
+    urlCopy.searchParams.append('disableGrouping', disableGroups);
+    urlCopy.searchParams.append('alwaysOnDatePicker', alwaysOnDatePicker);
+    urlCopy.searchParams.append('filterOptions', filterOptions);
+    headerText && urlCopy.searchParams.append('headerTitle', headerText);
 
     urlCopy.searchParams.append('calendar', calendarSlug);
     urlCopy.searchParams.append('calendarName', calendarName);
     urlCopy.searchParams.append('height', height);
     setUrl(urlCopy);
 
+    urlCopyMobile.searchParams.append('showFooter', showFooter);
+    urlCopyMobile.searchParams.append('disableGrouping', disableGroups);
+    urlCopyMobile.searchParams.append('alwaysOnDatePicker', alwaysOnDatePicker);
+    headerText && urlCopyMobile.searchParams.append('headerTitle', headerText);
     urlCopyMobile.searchParams.append('logo', calendarLogoUri);
     urlCopyMobile.searchParams.append('locale', onLanguageSelect(locale)?.key.toLowerCase());
     urlCopyMobile.searchParams.append('limit', limit);
@@ -325,6 +358,7 @@ const WidgetSettings = ({ tabKey }) => {
     urlCopyMobile.searchParams.append('calendar', calendarSlug);
     urlCopyMobile.searchParams.append('calendarName', calendarName);
     urlCopyMobile.searchParams.append('height', '600');
+    urlCopyMobile.searchParams.append('filterOptions', filterOptions);
 
     setUrlMObile(urlCopyMobile);
 
@@ -332,6 +366,25 @@ const WidgetSettings = ({ tabKey }) => {
       `<iframe src="${urlCopy.href}" width="100%" style="max-width:1000px; border:none" height="${height}px"></iframe>`,
     );
   }, [calendarContentLanguage, tabKey]);
+
+  useEffect(() => {
+    if (!taxonomyDataEventType || isEventTaxonomyFetching) return;
+
+    const allowedFields = [eventTaxonomyMappedField.EVENT_TYPE, eventTaxonomyMappedField.AUDIENCE];
+    const selectedStaticFilters = ['DATES', 'PLACE'];
+
+    const selectedFilters = filterOptions.filter((option) => selectedStaticFilters.includes(option.value));
+
+    const dynamicFilters = taxonomyDataEventType.data
+      ?.filter((item) => allowedFields.includes(item.mappedToField))
+      .map((item) => ({
+        label: EVENT.find((translation) => translation.key === item.mappedToField)?.label || '',
+        value: item.id,
+      }))
+      .filter(Boolean);
+
+    setFilterOptionsList([...selectedFilters, ...dynamicFilters]);
+  }, [taxonomyDataEventType, isEventTaxonomyFetching]);
 
   function arrayToQueryParam(arr, paramName) {
     if (!arr || arr.length === 0) {
@@ -386,25 +439,24 @@ const WidgetSettings = ({ tabKey }) => {
                     form={form}
                     onValuesChange={handleFormValuesChange}>
                     <Row gutter={[32, 4]} className="form-item-container">
-                      <Col flex="448px">
+                      <Col flex="448px" className="header-text-wrapper">
                         <Form.Item
-                          name="limit"
-                          required
-                          label={t(`${localePath}.limit`)}
-                          initialValue={9}
-                          rules={[
-                            {
-                              validator: (_, value) => {
-                                if (!value || !/^[1-9][0-9]*$/.test(value)) {
-                                  return Promise.reject(t(`${localePath}.validation.limit`));
-                                }
-                                return Promise.resolve();
-                              },
-                            },
-                          ]}
-                          data-cy="widget-settings-limit">
+                          name="header-text"
+                          label={t(`${localePath}.headerText`)}
+                          data-cy="widget-settings-headerText">
                           <StyledInput />
                         </Form.Item>
+                        <p className="header-text-description" data-cy="widget-settings-header-text-description">
+                          {t(`${localePath}.headerTextDescription`)}
+                        </p>
+                      </Col>
+                      <Col flex="448px" className="footer-control-wrapper">
+                        <Form.Item name="footer-control" initialValue={false} data-cy="widget-settings-headerText">
+                          <StyledSwitch defaultChecked={false} />
+                        </Form.Item>
+                        <p className="footer-control" data-cy="widget-settings-footer-control-label">
+                          {t(`${localePath}.showFooter`)}
+                        </p>
                       </Col>
                       <Col flex="448px" className="color-select-wrapper">
                         <Form.Item
@@ -519,6 +571,84 @@ const WidgetSettings = ({ tabKey }) => {
 
                       <Col flex="448px">
                         <Form.Item
+                          name="filterOptions"
+                          label={t(`${localePath}.filterOptions`)}
+                          initialValue={[filterOptions[0]?.value]}
+                          className="widget-settings-filter-options"
+                          data-cy="widget-settings-filter-options">
+                          <TreeSelectOption
+                            treeDefaultExpandAll
+                            notFoundContent={<NoContent />}
+                            clearIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '14px' }} />}
+                            treeData={filterOptionsList}
+                            tagRender={(props) => {
+                              const { label, closable, onClose } = props;
+                              return (
+                                <Tags
+                                  closable={closable}
+                                  onClose={onClose}
+                                  closeIcon={<CloseCircleOutlined style={{ color: '#1b3de6', fontSize: '12px' }} />}
+                                  data-cy={`tag-event-type-${label}`}>
+                                  {label}
+                                </Tags>
+                              );
+                            }}
+                            data-cy="widget-settings-treeselect-filter-options"
+                          />
+                        </Form.Item>
+                      </Col>
+
+                      <Col flex="448px" className="datepicker-control-wrapper">
+                        <Form.Item
+                          name="alwaysOnDatePicker"
+                          initialValue={false}
+                          data-cy="widget-settings-datepicker-toggle">
+                          <StyledSwitch defaultChecked={false} />
+                        </Form.Item>
+                        <p className="datepicker-control" data-cy="widget-settings-datepicker-control-label">
+                          {t(`${localePath}.datepickerToggle`)}
+                        </p>
+                      </Col>
+
+                      <Col flex="448px">
+                        <Form.Item
+                          name="limit"
+                          required
+                          label={t(`${localePath}.limit`)}
+                          initialValue={9}
+                          rules={[
+                            {
+                              validator: (_, value) => {
+                                if (!value || !/^[1-9][0-9]*$/.test(value)) {
+                                  return Promise.reject(t(`${localePath}.validation.limit`));
+                                }
+                                if (value > 100) {
+                                  return Promise.reject(t(`${localePath}.validation.limitMax`));
+                                }
+                                return Promise.resolve();
+                              },
+                            },
+                          ]}
+                          data-cy="widget-settings-limit">
+                          <StyledInput />
+                        </Form.Item>
+                      </Col>
+
+                      <Col flex="448px" className="disable-grouping-flag-wrapper">
+                        <Form.Item
+                          name="disableGroups"
+                          required
+                          initialValue={false}
+                          data-cy="widget-settings-disable-groups">
+                          <StyledSwitch defaultChecked={false} />
+                        </Form.Item>
+                        <p className="disable-groups-description" data-cy="disable-groups-description">
+                          {t(`${localePath}.disableGroups`)}
+                        </p>
+                      </Col>
+
+                      <Col flex="448px" className="redirection-mode-wrapper">
+                        <Form.Item
                           name="redirectionMode"
                           required
                           label={t(`${localePath}.redirectionMode`)}
@@ -533,6 +663,9 @@ const WidgetSettings = ({ tabKey }) => {
                             options={redirectionModesModified}
                           />
                         </Form.Item>
+                        <p className="redirection-mode-description" data-cy="redirection-mode-description">
+                          {t(`${localePath}.redirectionModeDescription`)}
+                        </p>
                       </Col>
 
                       <Divider />
