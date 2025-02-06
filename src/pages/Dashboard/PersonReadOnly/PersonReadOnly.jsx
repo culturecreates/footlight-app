@@ -480,7 +480,7 @@ function PersonReadOnly() {
                                       imageUrl={mainImageData?.large?.uri}
                                       imageReadOnly={true}
                                       preview={true}
-                                      eventImageData={mainImageData?.large}
+                                      eventImageData={mainImageData}
                                     />
                                   </div>
                                 )}

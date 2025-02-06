@@ -486,6 +486,7 @@ function CreateNewPlace() {
             });
           }
           let imageCrop = form.getFieldValue('imageCrop') ? [form.getFieldValue('imageCrop')] : [];
+          let mainImageOptions = form.getFieldValue('mainImageOptions');
           if (imageCrop.length > 0) {
             imageCrop = [
               {
@@ -507,6 +508,9 @@ function CreateNewPlace() {
                   width: imageCrop[0]?.original?.width,
                 },
                 isMain: true,
+                description: mainImageOptions?.altText,
+                creditText: mainImageOptions?.credit,
+                caption: mainImageOptions?.caption,
               },
             ];
           }
@@ -612,8 +616,22 @@ function CreateNewPlace() {
             for (let i = 0; i < values.multipleImagesCrop.length; i++) {
               const file = values.multipleImagesCrop[i]?.originFileObj;
               if (!file) {
-                if (values.multipleImagesCrop[i]?.cropValues) imageCrop.push(values.multipleImagesCrop[i]?.cropValues);
-                else imageCrop.push(values.multipleImagesCrop[i]);
+                const cropValues = values.multipleImagesCrop[i]?.cropValues || {};
+                const imageOptions = values.multipleImagesCrop[i]?.imageOptions || {};
+                if (cropValues)
+                  imageCrop.push({
+                    ...cropValues,
+                    creditText: imageOptions.credit || null,
+                    description: imageOptions.altText || null,
+                    caption: imageOptions.caption || null,
+                  });
+                else
+                  imageCrop.push({
+                    ...values.multipleImagesCrop[i],
+                    creditText: imageOptions.credit || null,
+                    description: imageOptions.altText || null,
+                    caption: imageOptions.caption || null,
+                  });
                 continue;
               }
 
@@ -626,6 +644,7 @@ function CreateNewPlace() {
                 // Process each image in the list
                 const { large, thumbnail } = values.multipleImagesCrop[i]?.cropValues || {};
                 const { original, height, width } = response?.data || {};
+                const { altText, credit, caption } = values.multipleImagesCrop[i]?.imageOptions || {};
 
                 const galleryImage = {
                   large: {
@@ -645,6 +664,9 @@ function CreateNewPlace() {
                     height: thumbnail?.height,
                     width: thumbnail?.width,
                   },
+                  description: altText,
+                  creditText: credit,
+                  caption,
                 };
 
                 // Add the processed image to imageCrop
@@ -674,6 +696,9 @@ function CreateNewPlace() {
                           height: response?.data?.height,
                           width: response?.data?.width,
                         },
+                        description: mainImageOptions?.altText,
+                        creditText: mainImageOptions?.credit,
+                        caption: mainImageOptions?.caption,
                       },
                     ];
                   } else
@@ -687,6 +712,9 @@ function CreateNewPlace() {
                           height: response?.data?.height,
                           width: response?.data?.width,
                         },
+                        description: mainImageOptions?.altText,
+                        creditText: mainImageOptions?.credit,
+                        caption: mainImageOptions?.caption,
                       },
                     ];
 
@@ -1093,6 +1121,11 @@ function CreateNewPlace() {
                     height: mainImage?.thumbnail?.height,
                     width: mainImage?.thumbnail?.width,
                   },
+                  mainImageOptions: {
+                    credit: mainImage?.creditText,
+                    altText: mainImage?.description,
+                    caption: mainImage?.caption,
+                  },
                 },
               });
             }
@@ -1115,6 +1148,11 @@ function CreateNewPlace() {
                   y: image?.thumbnail?.yCoordinate,
                   height: image?.thumbnail?.height,
                   width: image?.thumbnail?.width,
+                },
+                imageOptions: {
+                  credit: image?.creditText,
+                  altText: image?.description,
+                  caption: image?.caption,
                 },
               }));
 
@@ -1186,6 +1224,11 @@ function CreateNewPlace() {
                   height: mainImage?.thumbnail?.height,
                   width: mainImage?.thumbnail?.width,
                 },
+                mainImageOptions: {
+                  credit: mainImage?.creditText,
+                  altText: mainImage?.description,
+                  caption: mainImage?.caption,
+                },
               },
             });
           }
@@ -1208,6 +1251,11 @@ function CreateNewPlace() {
                 y: image?.thumbnail?.yCoordinate,
                 height: image?.thumbnail?.height,
                 width: image?.thumbnail?.width,
+              },
+              imageOptions: {
+                credit: image?.creditText,
+                altText: image?.description,
+                caption: image?.caption,
               },
             }));
 
@@ -1767,6 +1815,13 @@ function CreateNewPlace() {
                   label={t('dashboard.places.createNew.addPlace.image.additionalImages')}
                   data-cy="form-item-event-multiple-image"
                   hidden={!imageConfig?.enableGallery}>
+                  <Row>
+                    <Col>
+                      <p className="add-event-date-heading" data-cy="para-place-image-helper-text">
+                        {t('dashboard.places.createNew.addPlace.image.subheading')}
+                      </p>
+                    </Col>
+                  </Row>
                   <MultipleImageUpload
                     setShowDialog={setShowDialog}
                     form={form}
