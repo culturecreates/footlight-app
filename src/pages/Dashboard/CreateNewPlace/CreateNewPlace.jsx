@@ -95,6 +95,7 @@ import MultiLingualTextEditor from '../../../components/MultilingualTextEditor/M
 import MapComponent from '../../../components/MapComponent';
 import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
+import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
 
 const { TextArea } = Input;
 
@@ -612,71 +613,6 @@ function CreateNewPlace() {
             ...(values?.containsPlace && { containsPlace }),
           };
 
-          const uploadImageList = async () => {
-            for (let i = 0; i < values.multipleImagesCrop.length; i++) {
-              const file = values.multipleImagesCrop[i]?.originFileObj;
-              if (!file) {
-                const cropValues = values.multipleImagesCrop[i]?.cropValues || {};
-                const imageOptions = values.multipleImagesCrop[i]?.imageOptions || {};
-                if (cropValues)
-                  imageCrop.push({
-                    ...cropValues,
-                    creditText: imageOptions.credit || null,
-                    description: imageOptions.altText || null,
-                    caption: imageOptions.caption || null,
-                  });
-                else
-                  imageCrop.push({
-                    ...values.multipleImagesCrop[i],
-                    creditText: imageOptions.credit || null,
-                    description: imageOptions.altText || null,
-                    caption: imageOptions.caption || null,
-                  });
-                continue;
-              }
-
-              const formdata = new FormData();
-              formdata.append('file', file);
-
-              try {
-                const response = await addImage({ data: formdata, calendarId }).unwrap();
-
-                // Process each image in the list
-                const { large, thumbnail } = values.multipleImagesCrop[i]?.cropValues || {};
-                const { original, height, width } = response?.data || {};
-                const { altText, credit, caption } = values.multipleImagesCrop[i]?.imageOptions || {};
-
-                const galleryImage = {
-                  large: {
-                    xCoordinate: large?.x,
-                    yCoordinate: large?.y,
-                    height: large?.height,
-                    width: large?.width,
-                  },
-                  original: {
-                    entityId: original?.entityId ?? null,
-                    height,
-                    width,
-                  },
-                  thumbnail: {
-                    xCoordinate: thumbnail?.x,
-                    yCoordinate: thumbnail?.y,
-                    height: thumbnail?.height,
-                    width: thumbnail?.width,
-                  },
-                  description: altText,
-                  creditText: credit,
-                  caption,
-                };
-
-                // Add the processed image to imageCrop
-                imageCrop.push(galleryImage);
-              } catch (error) {
-                console.log(error);
-                throw error; // rethrow to stop further execution
-              }
-            }
-          };
           if (values?.dragger?.length > 0 && values?.dragger[0]?.originFileObj) {
             const formdata = new FormData();
             formdata.append('file', values?.dragger[0].originFileObj);
@@ -718,7 +654,8 @@ function CreateNewPlace() {
                       },
                     ];
 
-                  if (values.multipleImagesCrop?.length > 0) await uploadImageList();
+                  if (values.multipleImagesCrop?.length > 0)
+                    await uploadImageListHelper(values, addImage, calendarId, imageCrop);
                   placeObj['image'] = imageCrop;
                   addUpdatePlaceApiHandler(placeObj, postalObj)
                     .then((id) => resolve(id))
@@ -733,7 +670,8 @@ function CreateNewPlace() {
                   element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
                 });
           } else {
-            if (values.multipleImagesCrop?.length > 0) await uploadImageList();
+            if (values.multipleImagesCrop?.length > 0)
+              await uploadImageListHelper(values, addImage, calendarId, imageCrop);
             if (
               values?.draggerWrap &&
               values?.dragger?.length === 0 &&
