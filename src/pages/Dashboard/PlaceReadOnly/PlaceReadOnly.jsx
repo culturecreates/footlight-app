@@ -468,7 +468,7 @@ function PlaceReadOnly() {
                                   {t('dashboard.places.readOnly.description')}
                                 </p>
                                 {Object.keys(placeData?.description ?? {})?.length > 0 && (
-                                  <p className="read-only-event-content">
+                                  <p>
                                     <div
                                       dangerouslySetInnerHTML={{
                                         __html: contentLanguageBilingual({

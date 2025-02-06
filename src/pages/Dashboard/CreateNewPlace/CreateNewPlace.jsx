@@ -95,7 +95,6 @@ import MultiLingualTextEditor from '../../../components/MultilingualTextEditor/M
 import MapComponent from '../../../components/MapComponent';
 import { filterUneditedFallbackValues } from '../../../utils/removeUneditedFallbackValues';
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
-import { stripHtml } from '../../../utils/stringManipulations';
 import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
 
 const { TextArea } = Input;
@@ -559,12 +558,7 @@ function CreateNewPlace() {
             fieldName: 'name',
           });
           description = filterUneditedFallbackValues({
-            values: Object.keys(values?.description || {}).reduce((acc, key) => {
-              //strips editor html value to its inner text
-              const content = values.description[key];
-              acc[key] = stripHtml(content);
-              return acc;
-            }, {}),
+            values: values?.description,
             activeFallbackFieldsInfo: fallbackStatus,
             fieldName: 'description',
           });
