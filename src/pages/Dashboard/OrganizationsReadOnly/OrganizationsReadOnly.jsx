@@ -428,7 +428,7 @@ function OrganizationsReadOnly() {
                                   imageUrl={organizationData?.logo?.large?.uri}
                                   imageReadOnly={true}
                                   preview={true}
-                                  eventImageData={organizationData?.logo?.large}
+                                  eventImageData={organizationData?.logo}
                                 />
                               </div>
                             )}
@@ -445,7 +445,7 @@ function OrganizationsReadOnly() {
                                   imageUrl={organizationData?.image?.find((image) => image?.isMain)?.large?.uri}
                                   imageReadOnly={true}
                                   preview={true}
-                                  eventImageData={organizationData?.image?.find((image) => image?.isMain)?.large}
+                                  eventImageData={organizationData?.image?.find((image) => image?.isMain)}
                                 />
                               </div>
                             )}

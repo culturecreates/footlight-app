@@ -70,7 +70,7 @@ function MultilingualInput({ children, ...rest }) {
 
   if (!defaultTabProp) {
     let flag = false;
-    for (let index = 0; index < calendarContentLanguage.length; index++) {
+    for (let index = 0; index < calendarContentLanguage?.length; index++) {
       const langKey = contentLanguageKeyMap[calendarContentLanguage[index]];
       if (fieldData && fieldData[langKey]) {
         defaultTab = langKey;
@@ -97,7 +97,7 @@ function MultilingualInput({ children, ...rest }) {
   };
 
   // Label creation for each tab
-  calendarContentLanguage.map((language) => {
+  calendarContentLanguage?.map((language) => {
     const langKey = contentLanguageKeyMap[language];
     const langLabel = t(`common.tab${capitalizeFirstLetter(language)}`);
     labelCollection[langKey] = langLabel;
@@ -122,7 +122,7 @@ function MultilingualInput({ children, ...rest }) {
           : t('common.forms.languageLiterals.knownLanguagePromptText');
     });
 
-  calendarContentLanguage.forEach((language, index) => {
+  calendarContentLanguage?.forEach((language, index) => {
     const langKey = contentLanguageKeyMap[language];
     let tabItem = {
       label: labelCollection[langKey],

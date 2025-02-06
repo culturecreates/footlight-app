@@ -75,6 +75,7 @@ import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurr
 import { contentLanguageKeyMap } from '../../../constants/contentLanguage';
 import { isDataValid } from '../../../utils/MultiLingualFormItemSupportFunctions';
 import SortableTreeSelect from '../../../components/TreeSelectOption/SortableTreeSelect';
+import { uploadImageListHelper } from '../../../utils/uploadImageListHelper';
 
 function CreateNewOrganization() {
   const timestampRef = useRef(Date.now()).current;
@@ -321,6 +322,7 @@ function CreateNewOrganization() {
             };
           }
           let imageCrop = form.getFieldValue('imageCrop') ? [form.getFieldValue('imageCrop')] : [];
+          let mainImageOptions = form.getFieldValue('mainImageOptions');
           if (imageCrop.length > 0) {
             imageCrop = [
               {
@@ -342,56 +344,12 @@ function CreateNewOrganization() {
                   width: imageCrop[0]?.original?.width,
                 },
                 isMain: true,
+                description: mainImageOptions?.altText,
+                creditText: mainImageOptions?.credit,
+                caption: mainImageOptions?.caption,
               },
             ];
           }
-          const uploadImageList = async () => {
-            for (let i = 0; i < values?.multipleImagesCrop.length; i++) {
-              const file = values.multipleImagesCrop[i]?.originFileObj;
-              if (!file) {
-                if (values.multipleImagesCrop[i]?.cropValues) imageCrop.push(values.multipleImagesCrop[i]?.cropValues);
-                else imageCrop.push(values.multipleImagesCrop[i]);
-                continue;
-              }
-
-              const formdata = new FormData();
-              formdata.append('file', file);
-
-              try {
-                const response = await addImage({ data: formdata, calendarId }).unwrap();
-
-                // Process each image in the list
-                const { large, thumbnail } = values.multipleImagesCrop[i]?.cropValues || {};
-                const { original, height, width } = response?.data || {};
-
-                const galleryImage = {
-                  large: {
-                    xCoordinate: large?.x,
-                    yCoordinate: large?.y,
-                    height: large?.height,
-                    width: large?.width,
-                  },
-                  original: {
-                    entityId: original?.entityId ?? null,
-                    height,
-                    width,
-                  },
-                  thumbnail: {
-                    xCoordinate: thumbnail?.x,
-                    yCoordinate: thumbnail?.y,
-                    height: thumbnail?.height,
-                    width: thumbnail?.width,
-                  },
-                };
-
-                // Add the processed image to imageCrop
-                imageCrop.push(galleryImage);
-              } catch (error) {
-                console.log(error);
-                throw error; // rethrow to stop further execution
-              }
-            }
-          };
 
           if (
             (values?.image || (values?.image && values?.image?.length > 0)) &&
@@ -417,6 +375,9 @@ function CreateNewOrganization() {
                             height: response?.data?.height,
                             width: response?.data?.width,
                           },
+                          description: mainImageOptions?.altText,
+                          creditText: mainImageOptions?.credit,
+                          caption: mainImageOptions?.caption,
                         },
                       ];
                     } else
@@ -430,10 +391,14 @@ function CreateNewOrganization() {
                             height: response?.data?.height,
                             width: response?.data?.width,
                           },
+                          description: mainImageOptions?.altText,
+                          creditText: mainImageOptions?.credit,
+                          caption: mainImageOptions?.caption,
                         },
                       ];
 
-                    if (values.multipleImagesCrop?.length > 0) await uploadImageList();
+                    if (values.multipleImagesCrop?.length > 0)
+                      await uploadImageListHelper(values, addImage, calendarId, imageCrop);
                     organizationPayload['image'] = imageCrop;
                     addUpdateOrganizationApiHandler(organizationPayload, toggle)
                       .then((id) => resolve(id))
@@ -448,7 +413,8 @@ function CreateNewOrganization() {
                     element && element[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
                   });
             } else {
-              if (values.multipleImagesCrop?.length > 0) await uploadImageList();
+              if (values.multipleImagesCrop?.length > 0)
+                await uploadImageListHelper(values, addImage, calendarId, imageCrop);
               if (
                 values?.image &&
                 values?.image?.length === 0 &&
@@ -482,7 +448,8 @@ function CreateNewOrganization() {
                       large: {},
                       thumbnail: {},
                     };
-                    if (values.multipleImagesCrop?.length > 0) await uploadImageList();
+                    if (values.multipleImagesCrop?.length > 0)
+                      await uploadImageListHelper(values, addImage, calendarId, imageCrop);
                     organizationPayload['image'] = imageCrop;
                     addUpdateOrganizationApiHandler(organizationPayload, toggle);
                   })
@@ -493,7 +460,7 @@ function CreateNewOrganization() {
                   });
             } else {
               if (values.multipleImagesCrop?.length > 0) {
-                await uploadImageList();
+                await uploadImageListHelper(values, addImage, calendarId, imageCrop);
                 organizationPayload['image'] = imageCrop;
               }
               if (values?.logo) {
@@ -530,6 +497,9 @@ function CreateNewOrganization() {
                             height: response?.data?.height,
                             width: response?.data?.width,
                           },
+                          description: mainImageOptions?.altText,
+                          creditText: mainImageOptions?.credit,
+                          caption: mainImageOptions?.caption,
                         },
                       ];
                     } else
@@ -543,10 +513,14 @@ function CreateNewOrganization() {
                             height: response?.data?.height,
                             width: response?.data?.width,
                           },
+                          description: mainImageOptions?.altText,
+                          creditText: mainImageOptions?.credit,
+                          caption: mainImageOptions?.caption,
                         },
                       ];
 
-                    if (values.multipleImagesCrop?.length > 0) await uploadImageList();
+                    if (values.multipleImagesCrop?.length > 0)
+                      await uploadImageListHelper(values, addImage, calendarId, imageCrop);
                     organizationPayload['image'] = imageCrop;
                     if (values?.logo?.length > 0 && values?.logo[0]?.originFileObj) {
                       const formdata = new FormData();
@@ -596,7 +570,7 @@ function CreateNewOrganization() {
                   });
             } else {
               if (values.multipleImagesCrop?.length > 0) {
-                await uploadImageList();
+                await uploadImageListHelper(values, addImage, calendarId, imageCrop);
                 organizationPayload['image'] = imageCrop;
               }
               if (
@@ -655,7 +629,7 @@ function CreateNewOrganization() {
               else organizationPayload['logo'] = organizationData?.logo;
             }
             if (values.multipleImagesCrop?.length > 0) {
-              await uploadImageList();
+              await uploadImageListHelper(values, addImage, calendarId, imageCrop);
               organizationPayload['image'] = imageCrop;
             }
             if (
@@ -846,6 +820,11 @@ function CreateNewOrganization() {
                     height: mainImage?.thumbnail?.height,
                     width: mainImage?.thumbnail?.width,
                   },
+                  mainImageOptions: {
+                    credit: mainImage?.creditText,
+                    altText: mainImage?.description,
+                    caption: mainImage?.caption,
+                  },
                 },
               });
             }
@@ -868,6 +847,11 @@ function CreateNewOrganization() {
                   y: image?.thumbnail?.yCoordinate,
                   height: image?.thumbnail?.height,
                   width: image?.thumbnail?.width,
+                },
+                imageOptions: {
+                  credit: image?.creditText,
+                  altText: image?.description,
+                  caption: image?.caption,
                 },
               }));
 
@@ -963,6 +947,11 @@ function CreateNewOrganization() {
                   height: mainImage?.thumbnail?.height,
                   width: mainImage?.thumbnail?.width,
                 },
+                mainImageOptions: {
+                  credit: mainImage?.creditText,
+                  altText: mainImage?.description,
+                  caption: mainImage?.caption,
+                },
               },
             });
           }
@@ -985,6 +974,11 @@ function CreateNewOrganization() {
                 y: image?.thumbnail?.yCoordinate,
                 height: image?.thumbnail?.height,
                 width: image?.thumbnail?.width,
+              },
+              imageOptions: {
+                credit: image?.creditText,
+                altText: image?.description,
+                caption: image?.caption,
               },
             }));
 

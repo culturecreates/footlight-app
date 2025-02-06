@@ -345,6 +345,13 @@ export const formFieldValue = [
             label={t('dashboard.events.addEditEvent.otherInformation.image.additionalImages')}
             data-cy="form-item-event-multiple-image"
             hidden={!enableGallery}>
+            <Row>
+              <Col>
+                <p className="add-event-date-heading" data-cy="para-image-upload-sub-text">
+                  {t('dashboard.events.addEditEvent.otherInformation.image.subHeading')}
+                </p>
+              </Col>
+            </Row>
             <MultipleImageUpload
               setShowDialog={setShowDialog}
               form={form}

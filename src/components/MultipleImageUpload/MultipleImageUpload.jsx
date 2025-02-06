@@ -1,5 +1,5 @@
-import { DownloadOutlined, DeleteOutlined, HolderOutlined } from '@ant-design/icons';
-import { Upload, message } from 'antd';
+import { DownloadOutlined, DeleteOutlined, HolderOutlined, MoreOutlined } from '@ant-design/icons';
+import { Dropdown, Upload, message, Space } from 'antd';
 import update from 'immutability-helper';
 import React, { useCallback, useRef, useState } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
@@ -10,8 +10,24 @@ const type = 'DragableUploadList';
 import './multipleImageUpload.css';
 import { getWidthFromAspectRatio } from '../../utils/getWidthFromAspectRatio';
 import { useOutletContext } from 'react-router-dom';
+import { IMAGE_ACTIONS, imageUploadOptions } from '../../constants/imageUploadOptions';
+import ImageCredits from '../Modal/ImageCredit';
+import Credit from '../Tags/Credit';
+import { contentLanguageKeyMap } from '../../constants/contentLanguage';
 
-const DragableUploadListItem = ({ moveRow, file, fileList, actions, width }) => {
+const DragableUploadListItem = ({
+  moveRow,
+  file,
+  fileList,
+  actions,
+  width,
+  setSelectedField,
+  setImageOptionsModalOpen,
+  setSelectedImageOptions,
+  t,
+  setSelectedUID,
+  form,
+}) => {
   const ref = useRef(null);
 
   const index = fileList.indexOf(file);
@@ -41,7 +57,6 @@ const DragableUploadListItem = ({ moveRow, file, fileList, actions, width }) => 
     }),
   });
   drop(drag(ref));
-  // const errorNode = <Tooltip title="Upload Error">{originNode.props.children}</Tooltip>;
   return (
     <div
       ref={ref}
@@ -69,22 +84,87 @@ const DragableUploadListItem = ({ moveRow, file, fileList, actions, width }) => 
               minWidth: width ? `${width}px` : 'none',
             }}
           />
-          <a
-            className="image-name"
-            target="_blank"
-            rel="noopener noreferrer"
-            href={file?.url}
-            data-cy="anchor-image-link">
-            {file?.name}
-          </a>
-        </span>
-        <span className="image-actions">
-          <span onClick={actions?.remove} data-cy="span-download-image">
-            <DeleteOutlined style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }} />
+          <span className="image-name-wrapper" data-cy="span-multiple-image-name-wrapper">
+            <a
+              className="image-name"
+              target="_blank"
+              rel="noopener noreferrer"
+              href={file?.url}
+              data-cy="anchor-image-link">
+              {file?.name}
+            </a>
+            <span className="image-credits" data-cy="span-multiple-image-credits">
+              {file?.imageOptions &&
+                Object.entries(file?.imageOptions).map(([key, value]) => {
+                  if (
+                    value &&
+                    typeof value === 'object' &&
+                    Object.values(value).some((langValue) => langValue && langValue !== '')
+                  ) {
+                    return (
+                      <Credit key={key} data-cy={`span-image-credit-${key}`}>
+                        {t(`dashboard.events.addEditEvent.otherInformation.image.modalTexts.${key}.${key}`)}
+                      </Credit>
+                    );
+                  }
+                  return null;
+                })}
+            </span>
           </span>
         </span>
+        <span className="image-actions">
+          {file?.url && (
+            <Dropdown
+              overlayStyle={{ width: '200px' }}
+              getPopupContainer={(triggerNode) => triggerNode.parentNode}
+              menu={{
+                items: imageUploadOptions({
+                  credits: file.imageOptions?.credit,
+                  altText: file.imageOptions?.altText,
+                  caption: file.imageOptions?.caption,
+                }),
+                onClick: ({ key }) => {
+                  switch (key) {
+                    case IMAGE_ACTIONS.CROP:
+                      actions.preview();
+                      break;
+
+                    case IMAGE_ACTIONS.CREDIT:
+                    case IMAGE_ACTIONS.ALT_TEXT:
+                    case IMAGE_ACTIONS.CAPTION:
+                      form.setFieldsValue({
+                        credit: file.imageOptions?.credit,
+                        altText: file.imageOptions?.altText,
+                        caption: file.imageOptions?.caption,
+                      });
+                      setSelectedImageOptions(file.imageOptions);
+
+                      setSelectedField(key);
+                      setSelectedUID(file.uid);
+                      setImageOptionsModalOpen(true);
+                      break;
+
+                    case IMAGE_ACTIONS.DELETE:
+                      actions.remove();
+                      break;
+
+                    default:
+                      break;
+                  }
+                },
+              }}
+              trigger={['click']}>
+              <Space>
+                <MoreOutlined
+                  className="image-options-more-icon"
+                  style={{ color: '#1B3DE6', fontWeight: '600', fontSize: '16px' }}
+                  data-cy="span-image-options-icon"
+                />
+              </Space>
+            </Dropdown>
+          )}
+        </span>
       </span>
-      {/* {file.status === 'error' ? errorNode : originNode} */}
     </div>
   );
 };
@@ -99,46 +179,82 @@ const getBase64 = (img, callback) => {
     image.src = _loadedImageUrl;
   });
 };
+
+const generateImageObject = (image) => {
+  if (!image) return {};
+
+  return {
+    uid: image?.original?.entityId,
+    name: image?.original?.entityId,
+    status: 'done',
+    url: image?.original?.uri,
+    cropValues: {
+      large: {
+        x: image?.large?.xCoordinate ?? undefined,
+        y: image?.large?.yCoordinate ?? undefined,
+        height: image?.large?.height ?? undefined,
+        width: image?.large?.width ?? undefined,
+      },
+      original: {
+        entityId: image?.original?.entityId ?? null,
+        height: image?.original?.height ?? undefined,
+        width: image?.original?.width ?? undefined,
+      },
+      thumbnail: {
+        x: image?.thumbnail?.xCoordinate ?? undefined,
+        y: image?.thumbnail?.yCoordinate ?? undefined,
+        height: image?.thumbnail?.height ?? undefined,
+        width: image?.thumbnail?.width ?? undefined,
+      },
+    },
+    imageOptions: {
+      credit:
+        image?.creditText ??
+        Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+          acc[contentLanguageKeyMap[lang]] = '';
+          return acc;
+        }, {}),
+      altText:
+        image?.description ??
+        Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+          acc[contentLanguageKeyMap[lang]] = '';
+          return acc;
+        }, {}),
+      caption:
+        image?.caption ??
+        Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+          acc[contentLanguageKeyMap[lang]] = '';
+          return acc;
+        }, {}),
+    },
+  };
+};
+
 const MultipleImageUpload = (props) => {
   const { eventImageData, form, imageReadOnly, setShowDialog } = props;
   const { t } = useTranslation();
   const [currentCalendarData] = useOutletContext();
 
   const [fileList, setFileList] = useState(
-    eventImageData?.length > 0
-      ? eventImageData
-          ?.map((image) => {
-            if (image)
-              return {
-                uid: image?.original?.entityId,
-                name: image?.original?.entityId,
-                status: 'done',
-                url: image?.original?.uri,
-                cropValues: {
-                  large: {
-                    x: image?.large?.xCoordinate ?? undefined,
-                    y: image?.large?.yCoordinate ?? undefined,
-                    height: image?.large?.height ?? undefined,
-                    width: image?.large?.width ?? undefined,
-                  },
-                  original: {
-                    entityId: image?.original?.entityId ?? null,
-                    height: image?.original?.height ?? undefined,
-                    width: image?.original?.width ?? undefined,
-                  },
-                  thumbnail: {
-                    x: image?.thumbnail?.xCoordinate ?? undefined,
-                    y: image?.thumbnail?.yCoordinate ?? undefined,
-                    height: image?.thumbnail?.height ?? undefined,
-                    width: image?.thumbnail?.width ?? undefined,
-                  },
-                },
-              };
-            else return [];
-          })
-          ?.flat()
-      : [],
+    eventImageData?.length > 0 ? eventImageData?.map(generateImageObject)?.flat() : [],
   );
+  const [imageOptionsModalOpen, setImageOptionsModalOpen] = useState(false);
+  const [selectedField, setSelectedField] = useState(null);
+  const [selectedImageOptions, setSelectedImageOptions] = useState({
+    credit: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+      acc[contentLanguageKeyMap[lang]] = '';
+      return acc;
+    }, {}),
+    altText: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+      acc[contentLanguageKeyMap[lang]] = '';
+      return acc;
+    }, {}),
+    caption: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+      acc[contentLanguageKeyMap[lang]] = '';
+      return acc;
+    }, {}),
+  });
+  const [selectedUID, setSelectedUID] = useState(null);
 
   let aspectRatio;
   let width;
@@ -190,6 +306,21 @@ const MultipleImageUpload = (props) => {
                 width: undefined,
               },
             };
+          if (!fileList[index].imageOptions)
+            fileList[index].imageOptions = {
+              credit: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+                acc[contentLanguageKeyMap[lang]] = '';
+                return acc;
+              }, {}),
+              altText: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+                acc[contentLanguageKeyMap[lang]] = '';
+                return acc;
+              }, {}),
+              caption: Object.keys(contentLanguageKeyMap).reduce((acc, lang) => {
+                acc[contentLanguageKeyMap[lang]] = '';
+                return acc;
+              }, {}),
+            };
           fileList[index].status = 'done';
         });
       }
@@ -238,6 +369,13 @@ const MultipleImageUpload = (props) => {
                 moveRow={moveRow}
                 actions={actions}
                 width={width}
+                setSelectedField={setSelectedField}
+                setImageOptionsModalOpen={setImageOptionsModalOpen}
+                setSelectedImageOptions={setSelectedImageOptions}
+                t={t}
+                selectedUID={selectedUID}
+                setSelectedUID={setSelectedUID}
+                form={form}
               />
             ) : (
               <span className="image-footer">
@@ -250,14 +388,33 @@ const MultipleImageUpload = (props) => {
                       minWidth: width ? `${width}px` : 'none',
                     }}
                   />
-                  <a
-                    className="image-name"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href={file?.url}
-                    data-cy="anchor-image-link">
-                    {file?.name}
-                  </a>
+                  <span className="image-name-wrapper" data-cy="span-multiple-image-name-wrapper-read-only">
+                    <a
+                      className="image-name"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href={file?.url}
+                      data-cy="anchor-image-link">
+                      {file?.name}
+                    </a>
+                    <span className="image-credits" data-cy="span-maultiple-image-credits-read-only">
+                      {file?.imageOptions &&
+                        Object.entries(file?.imageOptions).map(([key, value]) => {
+                          if (
+                            value &&
+                            typeof value === 'object' &&
+                            Object.values(value).some((langValue) => langValue && langValue !== '')
+                          ) {
+                            return (
+                              <Credit key={key} data-cy={`span-image-credit-${key}`}>
+                                {t(`dashboard.events.addEditEvent.otherInformation.image.modalTexts.${key}.${key}`)}
+                              </Credit>
+                            );
+                          }
+                          return null;
+                        })}
+                    </span>
+                  </span>
                 </span>
                 <span className="image-actions">
                   <span onClick={actions?.download} data-cy="span-download-image">
@@ -287,6 +444,20 @@ const MultipleImageUpload = (props) => {
           )}
         </Upload>
       </DndProvider>
+      <ImageCredits
+        open={imageOptionsModalOpen}
+        selectedField={selectedField}
+        setOpen={setImageOptionsModalOpen}
+        form={form}
+        isImageGallery={true}
+        setImageOptions={setSelectedImageOptions}
+        imageOptions={selectedImageOptions}
+        fileList={fileList}
+        setFileList={setFileList}
+        selectedUID={selectedUID}
+        setSelectedUID={setSelectedUID}
+        calendarContentLanguage={currentCalendarData?.contentLanguage}
+      />
     </div>
   );
 };
