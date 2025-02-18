@@ -188,7 +188,7 @@ const AddTaxonomy = () => {
         return {
           ...item,
           name: cleanedName,
-          children: item.children ? cleanNames(item.children) : item.children,
+          children: item.children ? cleanEmptyNames(item.children) : item.children,
         };
       })
       .filter((item) => Object.keys(item.name).length > 0);
