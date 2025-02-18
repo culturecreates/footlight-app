@@ -84,6 +84,17 @@ const AddTaxonomy = () => {
   const { taxonomyClass } = taxonomyData || {};
   const selectedClass = location.state?.selectedClass;
 
+  function cleanNames(data) {
+    return data.map((item) => {
+      return {
+        ...item,
+        // eslint-disable-next-line no-unused-vars
+        name: Object.fromEntries(Object.entries(item?.name || {}).filter(([_, value]) => value !== '')),
+        children: item?.children ? cleanNames(item.children) : undefined,
+      };
+    });
+  }
+
   useEffect(() => {
     if (taxonomyId && currentCalendarData) {
       getTaxonomy({ id: taxonomyId, includeConcepts: true, calendarId })
@@ -93,7 +104,7 @@ const AddTaxonomy = () => {
             res?.taxonomyClass,
             currentCalendarData?.fieldTaxonomyMaps,
           );
-          setConceptData(res.concepts);
+          setConceptData(cleanNames(res?.concepts));
           setUserAccess(res?.isAdminOnly && [userRolesWithTranslation[0].key]);
           setStandardFields([
             ...availableStandardFields,
