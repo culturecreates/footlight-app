@@ -90,7 +90,14 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
           size="large"
         />
       ) : (
-        <div onClick={toggleEdit}>{children}</div>
+        <div
+          onClick={toggleEdit}
+          style={{
+            minHeight: '20px',
+            minWidth: '50px',
+          }}>
+          {children}
+        </div>
       )}
       {fallbackComponent}
     </td>
