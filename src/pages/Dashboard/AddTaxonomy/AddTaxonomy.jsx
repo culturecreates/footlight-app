@@ -175,6 +175,32 @@ const AddTaxonomy = () => {
     form.setFieldValue('conceptName', initialConceptName);
   };
 
+  function cleanEmptyNames(data) {
+    return data
+      .map((item) => {
+        const cleanedName = Object.fromEntries(
+          // eslint-disable-next-line no-unused-vars
+          Object.entries(item.name || {}).filter(([_, value]) => value.trim() !== ''),
+        );
+
+        return {
+          ...item,
+          name: cleanedName,
+          children: item.children ? cleanNames(item.children) : item.children,
+        };
+      })
+      .filter((item) => Object.keys(item.name).length > 0);
+  }
+
+  function cleanConcepts(data) {
+    if (!data.concepts || !Array.isArray(data.concepts)) return data;
+
+    return {
+      ...data,
+      concepts: cleanEmptyNames(data.concepts),
+    };
+  }
+
   const saveTaxonomyHandler = (e) => {
     e.preventDefault();
     const filteredConceptData = modifyConceptData(conceptData);
@@ -197,7 +223,7 @@ const AddTaxonomy = () => {
           }),
           isAdminOnly: userAccess?.length > 0,
           disambiguatingDescription: values?.disambiguatingDescription,
-          concepts: { concepts: [...filteredConceptData] },
+          concepts: cleanConcepts({ concepts: [...filteredConceptData] }).concepts,
           addToFilter: values?.addToFilter,
         };
 
