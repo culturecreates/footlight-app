@@ -85,14 +85,16 @@ const AddTaxonomy = () => {
   const selectedClass = location.state?.selectedClass;
 
   function cleanNames(data) {
-    return data.map((item) => {
-      return {
-        ...item,
-        // eslint-disable-next-line no-unused-vars
-        name: Object.fromEntries(Object.entries(item?.name || {}).filter(([_, value]) => value !== '')),
-        children: item?.children ? cleanNames(item.children) : undefined,
-      };
-    });
+    return data
+      .map((item) => {
+        return {
+          ...item,
+          // eslint-disable-next-line no-unused-vars
+          name: Object.fromEntries(Object.entries(item?.name || {}).filter(([_, value]) => value.trim() !== '')),
+          children: item?.children ? cleanNames(item.children) : undefined,
+        };
+      })
+      .filter((item) => Object.keys(item.name).length > 0);
   }
 
   useEffect(() => {
