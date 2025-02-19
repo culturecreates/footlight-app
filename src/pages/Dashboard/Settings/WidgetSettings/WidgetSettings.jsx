@@ -174,7 +174,6 @@ const WidgetSettings = ({ tabKey }) => {
         showFooter: form.getFieldValue('footer-control') ?? false,
         headerText: form.getFieldValue('header-text'),
         disableGroups: form.getFieldValue('disableGroups') ?? false,
-        alwaysOnDatePicker: form.getFieldValue('alwaysOnDatePicker'),
         filterOptions: form.getFieldValue('filterOptions')?.join('|'),
         searchEventsFilters:
           arrayToQueryParam(allValues?.eventType ?? [], 'type') +
@@ -201,7 +200,6 @@ const WidgetSettings = ({ tabKey }) => {
       if (process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true') {
         params.showFooter = formValues.showFooter;
         params.disableGrouping = formValues.disableGroups;
-        params.alwaysOnDatePicker = formValues.alwaysOnDatePicker;
         if (formValues.headerText) params.headerTitle = formValues.headerText;
         params.filterOptions = formValues.filterOptions;
       }
@@ -317,7 +315,6 @@ const WidgetSettings = ({ tabKey }) => {
       showFooter: form.getFieldValue('footer-control') ?? false,
       headerText: form.getFieldValue('header-text'),
       disableGroups: form.getFieldValue('disableGroups') ?? false,
-      alwaysOnDatePicker: form.getFieldValue('alwaysOnDatePicker'),
       filterOptions: form.getFieldValue('filterOptions')?.join('|'),
       color,
     };
@@ -337,7 +334,6 @@ const WidgetSettings = ({ tabKey }) => {
     if (process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true') {
       params.showFooter = formValues.showFooter;
       params.disableGrouping = formValues.disableGroups;
-      params.alwaysOnDatePicker = formValues.alwaysOnDatePicker;
       if (formValues.headerText) params.headerTitle = formValues.headerText;
       params.filterOptions = formValues.filterOptions;
     }
@@ -608,13 +604,13 @@ const WidgetSettings = ({ tabKey }) => {
                         flex="448px"
                         className="datepicker-control-wrapper"
                         style={{
-                          display: process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true' ? 'initial' : 'none',
+                          display: 'none',
                         }}>
                         <Form.Item
                           name="alwaysOnDatePicker"
                           initialValue={false}
                           data-cy="widget-settings-datepicker-toggle"
-                          hidden={process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 !== 'true'}>
+                          hidden={true}>
                           <StyledSwitch defaultChecked={false} />
                         </Form.Item>
                         <p className="datepicker-control" data-cy="widget-settings-datepicker-control-label">
