@@ -225,7 +225,7 @@ const AddTaxonomy = () => {
           }),
           isAdminOnly: userAccess?.length > 0,
           disambiguatingDescription: values?.disambiguatingDescription,
-          concepts: cleanConcepts({ concepts: [...filteredConceptData] }).concepts,
+          concepts: cleanConcepts({ concepts: [...filteredConceptData] }),
           addToFilter: values?.addToFilter,
         };
 
