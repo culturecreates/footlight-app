@@ -608,13 +608,13 @@ const WidgetSettings = ({ tabKey }) => {
                         flex="448px"
                         className="datepicker-control-wrapper"
                         style={{
-                          display: process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true' ? 'initial' : 'none',
+                          display: process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true' ? 'none' : 'intial',
                         }}>
                         <Form.Item
                           name="alwaysOnDatePicker"
                           initialValue={false}
                           data-cy="widget-settings-datepicker-toggle"
-                          hidden={process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 !== 'true'}>
+                          hidden={process.env.REACT_APP_FEATURE_FLAG_WIDGET_V2 === 'true' ? true : false}>
                           <StyledSwitch defaultChecked={false} />
                         </Form.Item>
                         <p className="datepicker-control" data-cy="widget-settings-datepicker-control-label">
