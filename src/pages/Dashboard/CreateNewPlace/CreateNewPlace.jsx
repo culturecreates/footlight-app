@@ -1831,7 +1831,7 @@ function CreateNewPlace() {
                 <Form.Item name="addressSearch">
                   <PlacesAutocomplete
                     googleCallbackName="initTwo"
-                    searchOptions={{ componentRestrictions: { country: 'CA' } }}
+                    searchOptions={{ componentRestrictions: { country: ['CA', 'JP'] } }}
                     value={address ?? ''}
                     onChange={handleChange}
                     onSelect={handleSelect}
