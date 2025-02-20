@@ -138,6 +138,10 @@ jobs:
           echo "Footlight did not start in time!"
           exit 1   
 
+      - name: Checking for migrations on test database
+        run: |
+          docker exec test.footlight.api npm run migrate:up
+
       - name: Pull cypress docker image
         run: docker pull ghcr.io/kmdvs/cms-cypress_regression_tests:main
 
