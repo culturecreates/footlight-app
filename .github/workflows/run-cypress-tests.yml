@@ -72,6 +72,16 @@ jobs:
 
           docker cp ./latest_file test.mongo:/dump
           docker exec test.mongo mongorestore --db footlight-calendar /dump/$latest_file/footlight-calendar
+
+      - name: Import dev users to test database
+        env:
+          PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY_UBUNTU_USER  }}
+          STAGING_IP: ${{ secrets.STAGING_SERVER_IP }}
+        run: |
+          sudo apt install python3-pymongo
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          scp -o StrictHostKeyChecking=no -i private_key ubuntu@${STAGING_IP}:application/scripts/add-dev-users.py .
+          python3 add-dev-users.py --mongo_uri "mongodb://localhost:27017/"
         
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
