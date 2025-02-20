@@ -41,6 +41,10 @@ on:
         required: true
       S3_SECRET_ACCESS_KEY:
         required: true
+      STAGING_SERVER_IP:
+        required: true
+      AWS_PRIVATE_KEY_UBUNTU_USER:
+        required: true
 
 
 jobs:
