@@ -125,10 +125,6 @@ const DragableUploadListItem = ({
                 }),
                 onClick: ({ key }) => {
                   switch (key) {
-                    case IMAGE_ACTIONS.CROP:
-                      actions.preview();
-                      break;
-
                     case IMAGE_ACTIONS.CREDIT:
                     case IMAGE_ACTIONS.ALT_TEXT:
                     case IMAGE_ACTIONS.CAPTION:
