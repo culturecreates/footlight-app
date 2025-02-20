@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { ImageCrop } from '../ImageCrop';
 import { useOutletContext } from 'react-router-dom';
 import { getWidthFromAspectRatio } from '../../utils/getWidthFromAspectRatio';
-import { IMAGE_ACTIONS, imageUploadOptions } from '../../constants/imageUploadOptions';
+import { IMAGE_ACTIONS, mainImageUploadOptions } from '../../constants/imageUploadOptions';
 import ImageCredits from '../Modal/ImageCredit';
 import Credit from '../Tags/Credit';
 import { contentLanguageKeyMap } from '../../constants/contentLanguage';
@@ -242,7 +242,7 @@ function ImageUpload(props) {
                       <Dropdown
                         overlayStyle={{ width: '200px' }}
                         menu={{
-                          items: imageUploadOptions({
+                          items: mainImageUploadOptions({
                             credits: imageOptions.credit,
                             altText: imageOptions.altText,
                             caption: imageOptions.caption,
