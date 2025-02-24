@@ -60,8 +60,8 @@ export const eventsApi = createApi({
       }),
     }),
     featureEvents: builder.mutation({
-      query: ({ eventIds, state, calendarId }) => ({
-        url: `events/toggle-featured?${eventIds}&state=${state}`,
+      query: ({ eventIds, calendarId }) => ({
+        url: `events/toggle-featured?${eventIds}`,
         method: 'PUT',
         headers: {
           'calendar-id': calendarId,
