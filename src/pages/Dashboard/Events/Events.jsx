@@ -476,9 +476,7 @@ function Events() {
     const isFirstSort = sortKey === sortByOptions[0]?.key;
     const isFourthSort = sortKey === sortByOptions[3]?.key;
 
-    const rarityScoreSort = isFourthSort
-      ? `,${orderKey === sortOrder.ASC ? sortOrder.DESC : sortOrder.ASC}(metadata.rarityScore)`
-      : '';
+    const rarityScoreSort = isFourthSort ? `,${orderKey}(metadata.rarityScore)` : '';
 
     const sortingQuery = `${orderKey}(${sortKey}${isFirstSort ? '.' + i18n.language : ''})${rarityScoreSort}`;
 
