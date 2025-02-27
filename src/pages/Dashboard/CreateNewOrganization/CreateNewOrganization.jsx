@@ -1243,7 +1243,7 @@ function CreateNewOrganization() {
                                 : newEntityData,
                               index,
                               t,
-                              adminCheckHandler,
+                              adminCheck: adminCheckHandler({ calendar, user }),
                               currentCalendarData,
                               imageCropOpen,
                               setImageCropOpen,

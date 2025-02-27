@@ -781,7 +781,7 @@ function CreateNewPerson() {
                                 : newEntityData,
                               index,
                               t,
-                              adminCheckHandler,
+                              adminCheck: adminCheckHandler({ calendar, user }),
                               currentCalendarData,
                               imageCropOpen,
                               setImageCropOpen,
