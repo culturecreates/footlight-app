@@ -15,7 +15,10 @@ import SelectionItem from '../../../components/List/SelectionItem/SelectionItem'
 import { taxonomyClass } from '../../../constants/taxonomyClass';
 import { useGetAllTaxonomyQuery, useLazyGetAllTaxonomyQuery } from '../../../services/taxonomy';
 import { placesOptions } from '../../../components/Select/selectOption.settings';
-import { treeDynamicTaxonomyOptions } from '../../../components/TreeSelectOption/treeSelectOption.settings';
+import {
+  treeDynamicTaxonomyOptions,
+  treeTaxonomyOptions,
+} from '../../../components/TreeSelectOption/treeSelectOption.settings';
 import Tags from '../../../components/Tags/Common/Tags';
 import TreeSelectOption from '../../../components/TreeSelectOption/TreeSelectOption';
 import FeatureFlag from '../../../layout/FeatureFlag/FeatureFlag';
@@ -37,6 +40,7 @@ import { organizationFormFieldNames } from '../../../constants/personAndOrganiza
 import ImageUpload from '../../../components/ImageUpload';
 import { adminCheckHandler } from '../../../utils/adminCheckHandler';
 import { getCurrentCalendarDetailsFromUserDetails } from '../../../utils/getCurrentCalendarDetailsFromUserDetails';
+import { taxonomyDetails } from '../../../utils/taxonomyDetails';
 
 function OrganizationsReadOnly() {
   const { t } = useTranslation();
@@ -324,6 +328,41 @@ function OrganizationsReadOnly() {
                                 </p>
                               )}
                             </Col>
+                          )}
+                          {checkIfFieldIsToBeDisplayed(
+                            organizationFormFieldNames.ORGANIZATION_TYPE,
+                            organizationData?.additionalType,
+                          ) && (
+                            <div>
+                              <p
+                                className="read-only-event-content-sub-title-primary"
+                                data-cy="para-organization-type-title">
+                                {taxonomyDetails(allTaxonomyData?.data, user, 'OrganizationType', 'name', false)}
+                              </p>
+                              {organizationData?.additionalType?.length > 0 && (
+                                <TreeSelectOption
+                                  data-cy="treeselect-organization-type"
+                                  style={{ marginBottom: '1rem' }}
+                                  bordered={false}
+                                  open={false}
+                                  disabled
+                                  treeData={treeTaxonomyOptions(
+                                    allTaxonomyData,
+                                    user,
+                                    'OrganizationType',
+                                    false,
+                                    calendarContentLanguage,
+                                  )}
+                                  defaultValue={organizationData?.additionalType?.map((type) => {
+                                    return type?.entityId;
+                                  })}
+                                  tagRender={(props) => {
+                                    const { label } = props;
+                                    return <Tags data-cy={`tag-organization-type-${label}`}>{label}</Tags>;
+                                  }}
+                                />
+                              )}
+                            </div>
                           )}
                           {checkIfFieldIsToBeDisplayed(
                             organizationFormFieldNames.DISAMBIGUATING_DESCRIPTION,

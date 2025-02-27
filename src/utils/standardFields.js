@@ -1,4 +1,4 @@
-import { EVENT, PERSON, PLACE } from '../constants/standardFieldsTranslations';
+import { EVENT, ORGANIZATION, PERSON, PLACE } from '../constants/standardFieldsTranslations';
 import { taxonomyClass } from '../constants/taxonomyClass';
 
 export const standardFieldsForTaxonomy = (value, takenFields) => {
@@ -34,44 +34,30 @@ export const standardFieldsForTaxonomy = (value, takenFields) => {
     filter(PERSON, taxonomyClass.PERSON);
     return [...new Set(returnArr)];
   } else {
-    const arr = [];
-    filter(arr, taxonomyClass.ORGANIZATION);
+    filter(ORGANIZATION, taxonomyClass.ORGANIZATION);
     return [...new Set(returnArr)];
   }
 };
 
 export const getStandardFieldArrayForClass = (value) => {
-  let arr = [];
-  switch (value?.toUpperCase()) {
-    case taxonomyClass.PERSON:
-      arr = PERSON;
-      break;
-    case taxonomyClass.EVENT:
-      arr = EVENT;
-      break;
-    case taxonomyClass.PLACE:
-      arr = PLACE;
-      break;
-    default:
-      break;
-  }
-  return arr;
+  const taxonomyMap = {
+    [taxonomyClass.PERSON]: PERSON,
+    [taxonomyClass.EVENT]: EVENT,
+    [taxonomyClass.PLACE]: PLACE,
+    [taxonomyClass.ORGANIZATION]: ORGANIZATION,
+  };
+
+  return taxonomyMap[value?.toUpperCase()] || [];
 };
 
 export const getStandardFieldTranslation = ({ value, classType }) => {
-  let field = [];
-  switch (classType?.toUpperCase()) {
-    case taxonomyClass.PERSON:
-      field = PERSON.find((s) => s.key === value);
-      break;
-    case taxonomyClass.EVENT:
-      field = EVENT.find((s) => s.key === value);
-      break;
-    case taxonomyClass.PLACE:
-      field = PLACE.find((s) => s.key === value);
-      break;
-    default:
-      break;
-  }
-  return field;
+  const taxonomyMap = {
+    [taxonomyClass.PERSON]: PERSON,
+    [taxonomyClass.EVENT]: EVENT,
+    [taxonomyClass.PLACE]: PLACE,
+    [taxonomyClass.ORGANIZATION]: ORGANIZATION,
+  };
+
+  const fieldList = taxonomyMap[classType?.toUpperCase()];
+  return fieldList?.find((s) => s.key === value);
 };
