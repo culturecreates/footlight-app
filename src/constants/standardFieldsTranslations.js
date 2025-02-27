@@ -71,3 +71,13 @@ export const PERSON = [
     fr: 'Occupation',
   },
 ];
+
+export const ORGANIZATION = [
+  {
+    label: <Translation>{(t) => t('dashboard.taxonomy.standardFields.organization.organizationType')}</Translation>,
+    key: 'OrganizationType',
+    value: 'OrganizationType',
+    en: 'Organization type',
+    fr: "Type d'organisme",
+  },
+];

@@ -1145,7 +1145,10 @@
           "PerformerRole": "Performer Role",
           "SupporterRole": "Contributor Role"
         },
-        "Person": { "Occupation": "Occupation" }
+        "Person": { "Occupation": "Occupation" },
+        "organization": {
+          "organizationType": "Organization type"
+        }
       },
       "listing": {
         "heading": "Taxonomies",
