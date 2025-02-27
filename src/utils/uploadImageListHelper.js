@@ -1,24 +1,19 @@
-export const uploadImageListHelper = async (values, addImage, calendarId, imageCrop) => {
-  for (let i = 0; i < values.multipleImagesCrop.length; i++) {
-    const file = values.multipleImagesCrop[i]?.originFileObj;
-    if (!file) {
-      const cropValues = values.multipleImagesCrop[i]?.cropValues || {};
-      const imageOptions = values.multipleImagesCrop[i]?.imageOptions || {};
+import { filterNonEmptyValues } from './filterNonEmptyValues';
 
-      if (cropValues)
-        imageCrop.push({
-          ...cropValues,
-          creditText: imageOptions.credit || null,
-          description: imageOptions.altText || null,
-          caption: imageOptions.caption || null,
-        });
-      else
-        imageCrop.push({
-          ...values.multipleImagesCrop[i],
-          creditText: imageOptions.credit || null,
-          description: imageOptions.altText || null,
-          caption: imageOptions.caption || null,
-        });
+export const uploadImageListHelper = async (values, addImage, calendarId, imageCrop) => {
+  for (const imageItem of values.multipleImagesCrop) {
+    const file = imageItem?.originFileObj;
+    const cropValues = imageItem?.cropValues || {};
+    const imageOptions = imageItem?.imageOptions || {};
+
+    const filteredImageOptions = {
+      creditText: filterNonEmptyValues(imageOptions.credit) || null,
+      description: filterNonEmptyValues(imageOptions.altText) || null,
+      caption: filterNonEmptyValues(imageOptions.caption) || null,
+    };
+
+    if (!file) {
+      imageCrop.push({ ...cropValues, ...filteredImageOptions });
       continue;
     }
 
@@ -28,11 +23,10 @@ export const uploadImageListHelper = async (values, addImage, calendarId, imageC
     try {
       const response = await addImage({ data: formData, calendarId }).unwrap();
 
-      const { large, thumbnail } = values.multipleImagesCrop[i]?.cropValues || {};
+      const { large, thumbnail } = cropValues;
       const { original, height, width } = response?.data || {};
-      const { altText, credit, caption } = values.multipleImagesCrop[i]?.imageOptions || {};
 
-      const galleryImage = {
+      imageCrop.push({
         large: {
           xCoordinate: large?.x,
           yCoordinate: large?.y,
@@ -50,14 +44,10 @@ export const uploadImageListHelper = async (values, addImage, calendarId, imageC
           height: thumbnail?.height,
           width: thumbnail?.width,
         },
-        description: altText,
-        creditText: credit,
-        caption,
-      };
-
-      imageCrop.push(galleryImage);
+        ...filteredImageOptions,
+      });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       throw error;
     }
   }
