@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { IMAGE_ACTIONS } from '../../../constants/imageUploadOptions';
 import CreateMultiLingualFormItems from '../../../layout/CreateMultiLingualFormItems';
 import { placeHolderCollectionCreator } from '../../../utils/MultiLingualFormItemSupportFunctions';
+import { filterNonEmptyValues } from '../../../utils/filterNonEmptyValues';
 
 const { TextArea } = Input;
 
@@ -53,49 +54,36 @@ const ImageCredits = (props) => {
   let selectedTitle = formItems.find((item) => item.key === selectedField)?.title;
 
   const onFinish = () => {
-    if (!isImageGallery) {
-      formItems.forEach((item) => {
-        if (item.key === selectedField) {
-          form.validateFields([item.name]).then((values) => {
-            setImageOptions({
-              ...imageOptions,
-              [item.name]: values[item.name],
-            });
-            form.setFieldValue('mainImageOptions', {
-              ...imageOptions,
-              [item.name]: values[item.name],
-            });
-            setOpen(false);
-          });
-        }
-      });
-    } else {
-      formItems.forEach((item) => {
-        if (item.key === selectedField) {
-          form.validateFields([item.name]).then((values) => {
-            setFileList((prev) => {
-              const index = prev.findIndex((file) => file.uid === selectedUID);
-              const newFile = {
-                ...prev[index],
-                imageOptions: {
-                  ...prev[index].imageOptions,
-                  [item.name]: values[item.name],
-                },
-              };
-              prev[index] = newFile;
-              form.setFieldsValue({
-                multipleImagesCrop: [...prev],
-              });
-              return [...prev];
-            });
-          });
-        }
-      });
+    form.validateFields(formItems.map((item) => item.name)).then((values) => {
+      const filteredValues = Object.fromEntries(
+        Object.entries(values).map(([key, value]) => [key, filterNonEmptyValues(value)]),
+      );
 
-      setSelectedUID(null);
-    }
+      if (!isImageGallery) {
+        setImageOptions((prev) => ({ ...prev, ...filteredValues }));
+        form.setFieldsValue({
+          mainImageOptions: { ...imageOptions, ...filteredValues },
+        });
+      } else {
+        setFileList((prev) => {
+          const index = prev.findIndex((file) => file.uid === selectedUID);
+          if (index !== -1) {
+            const newFileList = [...prev];
+            newFileList[index] = {
+              ...prev[index],
+              imageOptions: { ...prev[index].imageOptions, ...filteredValues },
+            };
+            form.setFieldsValue({ multipleImagesCrop: newFileList });
+            return newFileList;
+          }
+          return prev;
+        });
 
-    setOpen(false);
+        setSelectedUID(null);
+      }
+
+      setOpen(false);
+    });
   };
 
   const onClose = () => {
