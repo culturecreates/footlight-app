@@ -885,7 +885,7 @@ function EventReadOnly() {
                               <div
                                 style={{
                                   display: standardAdminOnlyFields?.includes(eventFormRequiredFieldNames?.IMAGE)
-                                    ? adminCheckHandler()
+                                    ? adminCheckHandler({ calendar, user })
                                       ? 'initial'
                                       : 'none'
                                     : 'initial',

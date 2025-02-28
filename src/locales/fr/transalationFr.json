@@ -1142,7 +1142,10 @@
           "PerformerRole": "Rôle d'interprète",
           "SupporterRole": "Rôle de contributeur"
         },
-        "Person": { "Occupation": "Occupation" }
+        "Person": { "Occupation": "Occupation" },
+        "organization": {
+          "organizationType": "Type d'organisme"
+        }
       },
       "listing": {
         "heading": "Taxonomies",
