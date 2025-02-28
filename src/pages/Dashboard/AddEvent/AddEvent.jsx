@@ -656,12 +656,13 @@ function AddEvent() {
                         );
                       },
                     );
-                    subEventConfiguration.push({
-                      startDate,
-                      startTime,
-                      endTime,
-                      sameAs: sameAs?.sameAs,
-                    });
+                    if (startTime || endTime)
+                      subEventConfiguration.push({
+                        startDate,
+                        startTime,
+                        endTime,
+                        sameAs: sameAs?.sameAs,
+                      });
                   });
                 }
               };
