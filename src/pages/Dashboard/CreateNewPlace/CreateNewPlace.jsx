@@ -1878,7 +1878,7 @@ function CreateNewPlace() {
                 </Form.Item>
                 <Form.Item
                   label={t('dashboard.places.createNew.addPlace.address.streetAddress')}
-                  required={true}
+                  required={requiredFieldNames?.includes(placeFormRequiredFieldNames.STREET_ADDRESS)}
                   data-cy="form-item-street-address-title">
                   <CreateMultiLingualFormItems
                     entityId={placeId}
@@ -1894,7 +1894,7 @@ function CreateNewPlace() {
                           externalCalendarEntityData?.length > 0 &&
                           externalCalendarEntityData[0]?.address?.streetAddress
                     }
-                    required={true}
+                    required={requiredFieldNames?.includes(placeFormRequiredFieldNames.STREET_ADDRESS)}
                     validations={t('common.validations.informationRequired')}
                     dataCy="input-text-area-place-street-address-"
                     placeholder={placeHolderCollectionCreator({
