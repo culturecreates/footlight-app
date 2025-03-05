@@ -2607,6 +2607,7 @@ function AddEvent() {
                                   placeholder={t('dashboard.events.addEditEvent.dates.timeFormatPlaceholder')}
                                   use12Hours={i18n?.language === 'en' ? true : false}
                                   format={i18n?.language === 'en' ? 'h:mm a' : 'HH:mm'}
+                                  disabled={!start_Time}
                                   onSelect={(value) => {
                                     form.setFieldsValue({
                                       endTime: value,
