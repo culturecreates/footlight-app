@@ -17,8 +17,8 @@ export const genericObjectCompare = (obj1, obj2) => {
     return obj1 === obj2;
   }
 
-  const keys1 = Object.keys(obj1);
-  const keys2 = Object.keys(obj2);
+  const keys1 = Object.keys(obj1).filter((key) => obj1[key] !== undefined);
+  const keys2 = Object.keys(obj2).filter((key) => obj2[key] !== undefined);
 
   if (keys1.length !== keys2.length) {
     return false;
@@ -26,8 +26,10 @@ export const genericObjectCompare = (obj1, obj2) => {
 
   for (let key of keys1) {
     if (key === 'children') {
-      if (!compareArraysOfObjects(obj1[key], obj2[key])) return false;
-    } else if (!keys2.includes(key) || !genericObjectCompare(obj1[key], obj2[key])) return false;
+      if (!compareArraysOfObjects(obj1[key] ?? [], obj2[key] ?? [])) return false;
+    } else if (!keys2.includes(key) || !genericObjectCompare(obj1[key], obj2[key])) {
+      return false;
+    }
   }
 
   return true;

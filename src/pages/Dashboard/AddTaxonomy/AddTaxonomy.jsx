@@ -309,7 +309,14 @@ const AddTaxonomy = () => {
 
   const handleValueChange = () => {
     setIsDirty({
-      formState: form.isFieldsTouched(['userAccess', 'disambiguatingDescription', 'name', 'mappedToField', 'class']),
+      formState: form.isFieldsTouched([
+        'userAccess',
+        'disambiguatingDescription',
+        'name',
+        'mappedToField',
+        'class',
+        'addToFilter',
+      ]),
       isSubmitting: false,
     });
   };
@@ -519,6 +526,10 @@ const AddTaxonomy = () => {
                         onFilterChange={(values) => {
                           form.setFieldValue('userAccess', values);
                           setUserAccess(values);
+                          setIsDirty({
+                            ...isDirty,
+                            formState: true,
+                          });
                         }}
                         data={[userRolesWithTranslation[0]]?.map((role) => {
                           return {
