@@ -205,7 +205,7 @@ const WidgetSettings = ({ tabKey }) => {
       }
 
       const urlCopy = generateUrlWithParams(widgetUrl, params, { color: formValues.color });
-      const urlCopyMobile = generateUrlWithParams(widgetUrl, params, { color: formValues.color, height: '1000' });
+      const urlCopyMobile = generateUrlWithParams(widgetUrl, params, { color: formValues.color, height: '600' });
 
       setUrl(urlCopy);
       setUrlMObile(urlCopyMobile);
@@ -339,7 +339,7 @@ const WidgetSettings = ({ tabKey }) => {
     }
 
     const urlCopy = generateUrlWithParams(widgetUrl, params);
-    const urlCopyMobile = generateUrlWithParams(widgetUrl, params, { height: '1000' });
+    const urlCopyMobile = generateUrlWithParams(widgetUrl, params, { height: '600' });
 
     setUrl(urlCopy);
     setUrlMObile(urlCopyMobile);
