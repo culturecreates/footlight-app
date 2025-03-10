@@ -167,7 +167,7 @@ const WidgetSettings = ({ tabKey }) => {
     if (regexForHexCode.test(color)) {
       const formValues = {
         width: form.getFieldValue('width') ?? 0,
-        height: form.getFieldValue('height') ?? 600,
+        height: form.getFieldValue('height') ?? 1000,
         limit: form.getFieldValue('limit') ?? 9,
         font: form.getFieldValue('font') ?? 'Roboto',
         redirectionMode: form.getFieldValue('redirectionMode') ?? redirectionModesModified[0].value,
@@ -307,7 +307,7 @@ const WidgetSettings = ({ tabKey }) => {
     form.setFieldValue('color', color);
 
     const formValues = {
-      height: form.getFieldValue('height') ?? 600,
+      height: form.getFieldValue('height') ?? 1000,
       limit: form.getFieldValue('limit') ?? 9,
       font: form.getFieldValue('font') ?? 'Roboto',
       redirectionMode: form.getFieldValue('redirectionMode') ?? redirectionModesModified[0].value,
@@ -509,7 +509,7 @@ const WidgetSettings = ({ tabKey }) => {
                               name="height"
                               label={t(`${localePath}.height`)}
                               required
-                              initialValue={600}
+                              initialValue={1000}
                               rules={[
                                 {
                                   validator: (_, value) => {
@@ -993,7 +993,7 @@ const WidgetSettings = ({ tabKey }) => {
                     onCancel={() => setPreviewModal(false)}>
                     <iframe
                       width="100%"
-                      height={form.getFieldValue('height') ? `${form.getFieldValue('height')}px` : '600px'}
+                      height={form.getFieldValue('height') ? `${form.getFieldValue('height')}px` : '1000px'}
                       style={{
                         border: 'none',
                         maxWidth: form.getFieldValue('width') ? `${form.getFieldValue('width')}px` : '100%',
