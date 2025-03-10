@@ -470,6 +470,7 @@ function PlaceReadOnly() {
                                 {Object.keys(placeData?.description ?? {})?.length > 0 && (
                                   <p>
                                     <div
+                                      className="read-only-place-description"
                                       dangerouslySetInnerHTML={{
                                         __html: contentLanguageBilingual({
                                           data: placeData?.description,

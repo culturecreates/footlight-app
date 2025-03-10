@@ -846,6 +846,7 @@ function EventReadOnly() {
                                   </p>
                                   {eventData?.description && (
                                     <div
+                                      className="read-only-event-description"
                                       dangerouslySetInnerHTML={{
                                         __html: contentLanguageBilingual({
                                           data: eventData?.description,

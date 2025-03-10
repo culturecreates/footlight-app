@@ -100,6 +100,10 @@ th {
   padding: 0px !important;
 }
 
+.events-read-only-wrapper .read-only-event-description > p {
+  margin: 0;
+}
+
 @media only screen and (max-width: 480px) {
   .events-read-only-wrapper .read-only-event-heading h4 {
     font-size: 24px;
