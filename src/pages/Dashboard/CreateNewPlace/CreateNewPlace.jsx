@@ -579,10 +579,7 @@ function CreateNewPlace() {
             ...(values?.containedInPlace && {
               containedInPlace: containedInPlaceObj,
             }),
-            geo: {
-              latitude,
-              longitude,
-            },
+            geo: latitude && longitude && latitude !== '' && longitude !== '' ? { latitude, longitude } : undefined,
 
             accessibility: values?.placeAccessibility
               ? values?.placeAccessibility.map((item) => {
