@@ -641,6 +641,8 @@ function AddEvent() {
               const customDatesData =
                 customDates ||
                 customDatesCollection.map((item) => {
+                  // Handles the edge case where customDates is undefined if the user didn’t interact with RecurringModal
+                  //  but has selected a date for a custom frequency in the date picker.
                   const obj = {
                     startDate: moment(item.startDate).format('YYYY-MM-DD'),
                     customTimes: item.time
