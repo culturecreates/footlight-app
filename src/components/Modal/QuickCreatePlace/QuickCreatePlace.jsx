@@ -233,13 +233,13 @@ function QuickCreatePlace(props) {
                     };
                   });
                 }
+                let latitude = persistValues?.latitude;
+                let longitude = persistValues?.longitude;
                 placeObj = {
                   name,
                   additionalType,
-                  geo: {
-                    latitude: persistValues?.latitude,
-                    longitude: persistValues?.longitude,
-                  },
+                  geo:
+                    latitude && longitude && latitude !== '' && longitude !== '' ? { latitude, longitude } : undefined,
                   postalAddressId: {
                     entityId: response?.id,
                   },

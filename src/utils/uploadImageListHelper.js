@@ -13,7 +13,19 @@ export const uploadImageListHelper = async (values, addImage, calendarId, imageC
     };
 
     if (!file) {
-      imageCrop.push({ ...cropValues, ...filteredImageOptions });
+      const cropData =
+        cropValues?.large || cropValues?.thumbnail
+          ? { ...cropValues }
+          : {
+              large: imageItem?.large,
+              original: imageItem?.original,
+              thumbnail: imageItem?.thumbnail,
+            };
+
+      imageCrop.push({
+        ...cropData,
+        ...filteredImageOptions,
+      });
       continue;
     }
 

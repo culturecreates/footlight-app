@@ -448,6 +448,7 @@ const RecurringModal = ({
                                 endTimeCustom: value,
                               });
                             }}
+                            disabled={form.getFieldValue('startTimeCustom') ? false : true}
                             data-cy="custom-end-time"
                           />
                         </Form.Item>

@@ -413,6 +413,7 @@ function PersonReadOnly() {
                                   {Object.keys(personData?.description ?? {})?.length > 0 && (
                                     <p>
                                       <div
+                                        className="read-only-person-description"
                                         dangerouslySetInnerHTML={{
                                           __html: contentLanguageBilingual({
                                             data: personData?.description,

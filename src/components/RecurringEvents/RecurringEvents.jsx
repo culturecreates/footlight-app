@@ -406,6 +406,7 @@ const RecurringEvents = function ({
                       disabledHours={disabledHours}
                       disabledMinutes={disabledMinutes}
                       data-cy="multiple-end-time"
+                      disabled={form.getFieldValue('startTimeRecur') ? false : true}
                       onSelect={(value) => {
                         form.setFieldsValue({
                           endTimeRecur: value,

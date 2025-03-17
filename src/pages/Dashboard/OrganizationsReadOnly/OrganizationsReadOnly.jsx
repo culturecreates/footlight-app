@@ -398,6 +398,7 @@ function OrganizationsReadOnly() {
                               {Object.keys(organizationData?.description ?? {})?.length > 0 && (
                                 <p>
                                   <div
+                                    className="read-only-organization-description"
                                     dangerouslySetInnerHTML={{
                                       __html: contentLanguageBilingual({
                                         data: organizationData?.description,
